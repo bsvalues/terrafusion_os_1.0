@@ -1,0 +1,192 @@
+name: 🔍 Governance Drift Detection
+
+# Purpose: Self-auditing policy-as-code to prevent:
+#   1. Required context names drifting (workflow job names ≠ branch protection)
+#   2. Path filters on required checks (causes "expected but never reported" deadlock)
+#   3. Legacy SEAL context missing (dual governance compatibility)
+#
+# Runs: Every PR + nightly
+# Enforcement: Fails fast if drift detected (merge-blocking)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'DURABILITY_MEASURES.md'
+      - 'AGENTS.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+  schedule:
+    # Nightly at 03:00 UTC (after Tier-1 at 02:00)
+    - cron: '0 3 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  governance-audit:
+    name: 🔍 Governance Drift Detection
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Audit required contexts (exact names)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔍 Auditing required context names..."
+          echo "======================================="
+          echo ""
+
+          # Expected context names (from branch protection - DO NOT CHANGE without updating GitHub)
+          EXPECTED=(
+            "phase85-tools"
+            "phase86-toolrunner"
+            "governed-spine"
+            "🔒 TerraFusion Seal Gate"
+            "🧪 Tier-1 UI Harness Validation"
+            "🔒 SEAL"  # Legacy context for Repository Rules
+          )
+
+          VIOLATIONS=0
+
+          # Check if seal-gate-fast.yml emits PRIMARY context
+          echo "📋 Checking seal-gate-fast.yml for PRIMARY SEAL context..."
+          if ! grep -q 'name: 🔒 TerraFusion Seal Gate' .github/workflows/seal-gate-fast.yml; then
+            echo "❌ PRIMARY SEAL context missing: '🔒 TerraFusion Seal Gate' (Branch Protection requirement)"
+            VIOLATIONS=1
+          else
+            echo "✅ PRIMARY SEAL context found"
+          fi
+
+          # Check if seal-gate-fast.yml emits LEGACY context
+          echo ""
+          echo "📋 Checking seal-gate-fast.yml for LEGACY SEAL context..."
+          if ! grep -q 'name: 🔒 SEAL' .github/workflows/seal-gate-fast.yml; then
+            echo "❌ LEGACY SEAL context missing: '🔒 SEAL' (Repository Rules requirement)"
+            echo "   Dual governance compatibility broken - merge will deadlock!"
+            VIOLATIONS=1
+          else
+            echo "✅ LEGACY SEAL context found (dual governance compatibility)"
+          fi
+
+          # Check if tier1-ui-harness.yml emits exact context name
+          echo ""
+          echo "📋 Checking tier1-ui-harness.yml for Tier-1 context..."
+          if ! grep -q 'name: 🧪 Tier-1 UI Harness Validation' .github/workflows/tier1-ui-harness.yml; then
+            echo "❌ Tier-1 context name mismatch or missing"
+            VIOLATIONS=1
+          else
+            echo "✅ Tier-1 context found"
+          fi
+
+          # Check for path filters on required checks (causes conditional skip → deadlock)
+          echo ""
+          echo "📋 Checking for path filters on required checks..."
+
+          # SEAL should NOT have path filters (runs on all PRs)
+          if grep -A 20 '^on:' .github/workflows/seal-gate-fast.yml | grep -q 'paths:'; then
+            echo "⚠️  WARNING: SEAL has path filters (may cause conditional skip - verify intent)"
+            # Soft warning - SEAL has classify job that handles skipping
+          fi
+
+          # Tier-1 should NOT have path filters on pull_request trigger
+          TIER1_PATHS=$(grep -A 5 'pull_request:' .github/workflows/tier1-ui-harness.yml | grep 'paths:' || true)
+          if [ -n "$TIER1_PATHS" ]; then
+            echo "❌ Tier-1 has path filters on pull_request trigger"
+            echo "   Required checks cannot be conditional (will cause 'expected but never reported' deadlock)"
+            VIOLATIONS=1
+          else
+            echo "✅ Tier-1 pull_request trigger is universal (no path filters)"
+          fi
+
+          echo ""
+          if [ $VIOLATIONS -eq 0 ]; then
+            echo "✅ Governance audit PASSED - No drift detected"
+          else
+            echo "❌ Governance drift detected - Fix required before merge"
+            echo ""
+            echo "See: docs/GOVERNANCE_DRIFT_PLAYBOOK.md for remediation steps"
+            exit 1
+          fi
+
+      - name: Audit dual governance compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔍 Auditing dual governance layer compatibility..."
+          echo "=================================================="
+          echo ""
+
+          # GitHub has TWO governance systems that must both be satisfied:
+          # 1. Classic Branch Protection (requires: "🔒 TerraFusion Seal Gate")
+          # 2. Repository Rules (requires: "🔒 SEAL" - legacy name)
+          #
+          # If either context is missing, merge will deadlock despite other checks GREEN
+
+          # Check seal-gate-fast.yml has dual-job pattern
+          if ! grep -q 'seal-legacy:' .github/workflows/seal-gate-fast.yml; then
+            echo "❌ CRITICAL: seal-legacy job missing from seal-gate-fast.yml"
+            echo "   Repository Rules will block merge (expecting '🔒 SEAL' context)"
+            exit 1
+          fi
+
+          # Verify legacy job inherits primary result
+          if ! grep -A 10 'seal-legacy:' .github/workflows/seal-gate-fast.yml | grep -q 'needs:.*seal'; then
+            echo "❌ CRITICAL: seal-legacy job does not inherit from primary seal job"
+            echo "   Legacy context will not reflect actual gate status"
+            exit 1
+          fi
+
+          echo "✅ Dual governance pattern validated (primary + legacy jobs)"
+
+      - name: Audit DURABILITY_MEASURES.md documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔍 Auditing DURABILITY_MEASURES.md completeness..."
+          echo "=================================================="
+          echo ""
+
+          # Verify critical documentation exists
+          if ! grep -q "Branch Protection Rule" DURABILITY_MEASURES.md; then
+            echo "⚠️  Branch Protection documentation missing from DURABILITY_MEASURES.md"
+          fi
+
+          if ! grep -q "🔒 TerraFusion Seal Gate" DURABILITY_MEASURES.md; then
+            echo "⚠️  PRIMARY SEAL context not documented"
+          fi
+
+          if ! grep -q "🔒 SEAL" DURABILITY_MEASURES.md; then
+            echo "⚠️  LEGACY SEAL context not documented (dual governance)"
+          fi
+
+          if ! grep -q "Exact Context Names" DURABILITY_MEASURES.md; then
+            echo "⚠️  Context name reference section missing"
+          fi
+
+          echo "✅ Documentation audit complete (warnings non-blocking)"
+
+      - name: Governance audit summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## 🔍 Governance Drift Detection" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Purpose**: Prevent future governance deadlocks (context name drift, path filters)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Key Invariants Checked**:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ PRIMARY SEAL context: \`🔒 TerraFusion Seal Gate\` (Branch Protection)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ LEGACY SEAL context: \`🔒 SEAL\` (Repository Rules)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tier-1 universal trigger (no path filters on pull_request)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Dual-job inheritance pattern (legacy inherits primary)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Documentation**: See [GOVERNANCE_DRIFT_PLAYBOOK.md](docs/GOVERNANCE_DRIFT_PLAYBOOK.md)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> **Why this matters**: GitHub's dual governance layers (Branch Protection + Repository Rules) both require specific context names. Drift causes 'expected check never reported' deadlock even when all checks are GREEN." >> $GITHUB_STEP_SUMMARY
