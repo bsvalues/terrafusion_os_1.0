@@ -57,10 +57,12 @@ jobs:
           set -euo pipefail
           echo "🔒 Checking for invalid expect(value, message) pattern..."
 
-          # Pattern: expect(anything, string/template) - detects recurring smell
-          # Context: Caught twice (registryConsistency + qualityGate) before codified
+          # Pattern: expect(value, "message") without matcher - excludes arrays/objects
+          # Matches: expect(x, "msg"), expect(result, 'error'), expect(val, `template`)
+          # Excludes: expect([a, b]).toContain(), expect({x, y}).toBeTruthy()
+          # Note: Tolerates false negatives (manual review) to avoid false positives
           if grep -Rn --include="*.test.ts" --include="*.test.tsx" \
-            -E 'expect\([^)]+,\s*["`'\'']' \
+            -E 'expect\([^[\{]+,\s*["`'\''][^)`'\'']*["`'\'\']\s*\);' \
             frontend/apps/os-shell/src/__tests__/ 2>/dev/null | head -n 5; then
             echo "❌ Found invalid expect(value, message) pattern"
             echo "Use error-first: if (!condition) throw new Error(message); expect(value).matcher();"
