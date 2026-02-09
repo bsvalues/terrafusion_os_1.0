@@ -30,6 +30,7 @@ import {
     CONSTITUTIONAL_SUITES,
     getStandaloneSuites,
     getSuiteIntent,
+    getWorkbenchHrefWithContext,
     INTENT_LABELS,
     isWorkbenchSuite,
     type SuiteId,
