@@ -32,13 +32,20 @@ describe('suiteRegistry quality invariants', () => {
   describe('constitutional suites', () => {
     it('all constitutional suites have required fields', () => {
       for (const suite of CONSTITUTIONAL_SUITES) {
-        expect(suite.id, `Suite missing id`).toBeTruthy();
-        expect(suite.displayName, `Suite "${suite.id}" missing displayName`).toBeTruthy();
-        expect(suite.shortName, `Suite "${suite.id}" missing shortName`).toBeTruthy();
-        expect(suite.description, `Suite "${suite.id}" missing description`).toBeTruthy();
-        expect(suite.iconName, `Suite "${suite.id}" missing iconName`).toBeTruthy();
-        expect(suite.route, `Suite "${suite.id}" missing route`).toBeTruthy();
-        expect(suite.color, `Suite "${suite.id}" missing color`).toBeTruthy();
+        if (!suite.id) throw new Error(`Suite missing id`);
+        expect(suite.id).toBeTruthy();
+        if (!suite.displayName) throw new Error(`Suite "${suite.id}" missing displayName`);
+        expect(suite.displayName).toBeTruthy();
+        if (!suite.shortName) throw new Error(`Suite "${suite.id}" missing shortName`);
+        expect(suite.shortName).toBeTruthy();
+        if (!suite.description) throw new Error(`Suite "${suite.id}" missing description`);
+        expect(suite.description).toBeTruthy();
+        if (!suite.iconName) throw new Error(`Suite "${suite.id}" missing iconName`);
+        expect(suite.iconName).toBeTruthy();
+        if (!suite.route) throw new Error(`Suite "${suite.id}" missing route`);
+        expect(suite.route).toBeTruthy();
+        if (!suite.color) throw new Error(`Suite "${suite.id}" missing color`);
+        expect(suite.color).toBeTruthy();
         expect(['live', 'wip', 'planned']).toContain(suite.status);
       }
     });
@@ -51,10 +58,10 @@ describe('suiteRegistry quality invariants', () => {
         expect(suite.workbenchTab).toBe(true);
         expect(suite.workbenchTarget).toBeTruthy();
         expect(isValidWorkbenchTarget(suite.workbenchTarget)).toBe(true);
-        expect(
-          VALID_WORKBENCH_TAB_IDS,
-          `Suite "${suite.id}" has invalid tabId: ${suite.workbenchTarget.tabId}`
-        ).toContain(suite.workbenchTarget.tabId);
+        if (!VALID_WORKBENCH_TAB_IDS.includes(suite.workbenchTarget.tabId)) {
+          throw new Error(`Suite "${suite.id}" has invalid tabId: ${suite.workbenchTarget.tabId}`);
+        }
+        expect(VALID_WORKBENCH_TAB_IDS).toContain(suite.workbenchTarget.tabId);
       }
     });
   });
@@ -62,11 +69,16 @@ describe('suiteRegistry quality invariants', () => {
   describe('OS features', () => {
     it('all OS features have required fields', () => {
       for (const feature of OS_FEATURES) {
-        expect(feature.id, `Feature missing id`).toBeTruthy();
-        expect(feature.displayName, `Feature "${feature.id}" missing displayName`).toBeTruthy();
-        expect(feature.shortName, `Feature "${feature.id}" missing shortName`).toBeTruthy();
-        expect(feature.description, `Feature "${feature.id}" missing description`).toBeTruthy();
-        expect(feature.iconName, `Feature "${feature.id}" missing iconName`).toBeTruthy();
+        if (!feature.id) throw new Error(`Feature missing id`);
+        expect(feature.id).toBeTruthy();
+        if (!feature.displayName) throw new Error(`Feature "${feature.id}" missing displayName`);
+        expect(feature.displayName).toBeTruthy();
+        if (!feature.shortName) throw new Error(`Feature "${feature.id}" missing shortName`);
+        expect(feature.shortName).toBeTruthy();
+        if (!feature.description) throw new Error(`Feature "${feature.id}" missing description`);
+        expect(feature.description).toBeTruthy();
+        if (!feature.iconName) throw new Error(`Feature "${feature.id}" missing iconName`);
+        expect(feature.iconName).toBeTruthy();
         expect(['live', 'wip', 'planned']).toContain(feature.status);
       }
     });
@@ -75,10 +87,10 @@ describe('suiteRegistry quality invariants', () => {
       const liveWithRoute = OS_FEATURES.filter((f) => f.status === 'live' && f.route);
 
       for (const feature of liveWithRoute) {
-        expect(
-          feature.homeMeta,
-          `Feature "${feature.id}" live with route but no homeMeta`
-        ).toBeTruthy();
+        if (!feature.homeMeta) {
+          throw new Error(`Feature "${feature.id}" live with route but no homeMeta`);
+        }
+        expect(feature.homeMeta).toBeTruthy();
       }
     });
   });
@@ -103,15 +115,21 @@ describe('suiteRegistry quality invariants', () => {
       expect(qualified.length).toBeLessThanOrEqual(standalones.length);
 
       for (const suite of qualified) {
-        expect(suite.homeMeta.description, `Suite "${suite.id}" missing description`).toBeTruthy();
-        expect(
-          suite.homeMeta.primaryActions.length,
-          `Suite "${suite.id}" must have >= 1 primary action`
-        ).toBeGreaterThanOrEqual(1);
+        if (!suite.homeMeta.description) {
+          throw new Error(`Suite "${suite.id}" missing description`);
+        }
+        expect(suite.homeMeta.description).toBeTruthy();
+        if (suite.homeMeta.primaryActions.length < 1) {
+          throw new Error(`Suite "${suite.id}" must have >= 1 primary action`);
+        }
+        expect(suite.homeMeta.primaryActions.length).toBeGreaterThanOrEqual(1);
 
         // Each action should pass type guard
         for (const action of suite.homeMeta.primaryActions) {
-          expect(isValidPrimaryAction(action), `Suite "${suite.id}" has invalid action`).toBe(true);
+          if (!isValidPrimaryAction(action)) {
+            throw new Error(`Suite "${suite.id}" has invalid action`);
+          }
+          expect(isValidPrimaryAction(action)).toBe(true);
         }
       }
     });
@@ -122,10 +140,10 @@ describe('suiteRegistry quality invariants', () => {
       const qualified = getQualifiedStandaloneSuites();
 
       // This is the CI enforcement: standalone count === qualified count
-      expect(
-        qualified.length,
-        `${standalones.length - qualified.length} standalone suites fail quality gate`
-      ).toBe(standalones.length);
+      if (qualified.length !== standalones.length) {
+        throw new Error(`${standalones.length - qualified.length} standalone suites fail quality gate`);
+      }
+      expect(qualified.length).toBe(standalones.length);
     });
   });
 
@@ -147,9 +165,10 @@ describe('suiteRegistry quality invariants', () => {
       const featureIds = new Set(OS_FEATURES.map((f) => f.id));
 
       for (const id of featureIds) {
-        expect(suiteIds.has(id as any), `ID "${id}" exists in both suites and features`).toBe(
-          false
-        );
+        if (suiteIds.has(id as any)) {
+          throw new Error(`ID "${id}" exists in both suites and features`);
+        }
+        expect(suiteIds.has(id as any)).toBe(false);
       }
     });
   });
