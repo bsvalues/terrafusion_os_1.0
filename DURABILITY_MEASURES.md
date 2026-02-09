@@ -2,7 +2,15 @@
 
 **Purpose**: Prevent Tier-1 regression by codifying recurring patterns discovered during stabilization sprint
 
-**Status**: ✅ DEPLOYED (Commit 3c625d49c)
+**Status**: ✅ DEPLOYED (Commit 3c625d49c) | ✅ HARDENED (PR #262 - Dual governance lockdown)
+
+---
+
+## Quick Links
+
+- **[Governance Drift Playbook](docs/GOVERNANCE_DRIFT_PLAYBOOK.md)** - Operator guide for debugging context name mismatches and merge deadlocks
+- **[Governance Audit Workflow](.github/workflows/governance-audit.yml)** - Automated drift detection (runs on every PR + nightly)
+- **[Branch Protection Status](#1-branch-protection-rule--applied---2026-02-09)** - Current enforcement configuration (jump to section below)
 
 ---
 
@@ -181,6 +189,63 @@ git push origin main --no-verify
 ```
 
 **Rationale**: "Leaving direct-to-main bypass available is #1 way to accidentally regress Tier-1" (post-v1.0.0 durability lockdown)
+
+**Dual-Layer Governance Architecture**:
+
+GitHub enforces branch protection through **TWO parallel systems** that must both be satisfied:
+
+1. **Classic Branch Protection** (`/repos/.../branches/main/protection`)
+   - API-configured via: `gh api ... --method PUT`
+   - Required contexts: 5 specific names (see table above)
+   - Enforcement layer: Older GitHub governance system
+
+2. **GitHub Repository Rules** (`/repos/.../rulesets`)
+   - Configured via: GitHub UI or separate API endpoint
+   - Ruleset ID: 11126105 (TerraFusion OS main branch)
+   - Required context: `🔒 SEAL` (legacy context name from older configuration)
+   - Enforcement layer: Newer GitHub governance feature
+
+**Critical Discovery** (2026-02-09 PR #262):
+During governance rollout, we discovered that **both layers must be satisfied simultaneously**. Initial implementation aligned with Branch Protection (5 contexts GREEN) but merge was still BLOCKED because Repository Rules expected the legacy context name `🔒 SEAL`.
+
+**Solution Pattern** (Dual-Context Emission):
+```yaml
+# seal-gate-fast.yml emits BOTH contexts from single source of truth:
+
+seal:
+  name: 🔒 TerraFusion Seal Gate  # Branch Protection requirement
+  # ... actual gate logic (all checks) ...
+
+seal-legacy:
+  name: 🔒 SEAL  # Repository Rules requirement
+  needs: [seal]
+  if: always()
+  steps:
+    - run: |
+        # Inherit result from primary seal job (no duplicate logic)
+        if [ "${{ needs.seal.result }}" == "success" ]; then
+          exit 0
+        else
+          exit 1
+        fi
+```
+
+**Why This Matters**:
+- Single context change breaks governance (one layer satisfied, other blocked)
+- Symptoms: All checks GREEN, but merge shows "blocked by repository rules"
+- Detection: Automated via `.github/workflows/governance-audit.yml` (drift guard)
+- Remediation: See `docs/GOVERNANCE_DRIFT_PLAYBOOK.md` for troubleshooting
+
+**Drift Prevention**:
+- Governance audit workflow validates both context names on every PR
+- Pre-merge checks enforce: primary SEAL, legacy SEAL, Tier-1 universality
+- Documentation canonical reference: exact spelling, emojis, spacing
+
+**Related Commits** (PR #262):
+- `3fd979628` - SEAL context name alignment (primary)
+- `133eac499` - Legacy SEAL job addition (dual governance)
+- `186d20008` - Template syntax fix (inheritance)
+- `6a6439608` - Tier-1 universal trigger (remove path filters)
 
 ### 2. Pre-commit Hook (Tier-1 Smoke)
 
