@@ -804,3 +804,6 @@ For licensing inquiries: licensing@terrafusion.gov
 </div>
 
 <!-- drift-guard smoke test -->
+
+<!-- Smoke test: Governance hardening post-PR #263 merge verification -->
+

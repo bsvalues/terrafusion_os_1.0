@@ -3,16 +3,19 @@ import path from 'node:path';
 
 const REQUIRED_HEADER = '// GENERATED - DO NOT EDIT';
 const ROOT = process.cwd();
-const BAD_PATHS = [
-  'os-platform/core/pilot/pilot',
-  'os-platform/core/trace/trace',
-];
+const BAD_PATHS = ['os-platform/core/pilot/pilot', 'os-platform/core/trace/trace'];
 const ALLOWED_TOOLREGISTRY_JS = new Set([
   'os-platform/core/ToolRegistry.js',
   'os-platform/core/pilot/ToolRegistry.js',
 ]);
 const DISALLOWED_TOOLREGISTRY_EXTS = new Set(['.mjs', '.cjs', '.min.js']);
-const SKIP_DIRS = new Set(['node_modules', '.git', '.venv', '_archive', '_pre_restore_safety_20260108_144218']);
+const SKIP_DIRS = new Set([
+  'node_modules',
+  '.git',
+  '.venv',
+  '_archive',
+  '_pre_restore_safety_20260108_144218',
+]);
 
 let failed = false;
 
@@ -44,7 +47,10 @@ function walk(dir, enforceHeader) {
     const ext = path.extname(full);
 
     if (base.startsWith('ToolRegistry.')) {
-      if (!rel.startsWith('os-platform/core/')) {
+      // Allow ToolRegistry in governance surfaces: os-platform/core/ OR packages/os-core/
+      const inGovernanceSurface =
+        rel.startsWith('os-platform/core/') || rel.startsWith('packages/os-core/');
+      if (!inGovernanceSurface) {
         console.error(`ToolRegistry artifact outside governance surface: ${rel}`);
         failed = true;
       }

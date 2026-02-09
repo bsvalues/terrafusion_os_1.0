@@ -494,7 +494,7 @@ jobs:
         run: |
           # This job exists solely to emit the legacy "🔒 SEAL" context name
           # for Repository Rules compatibility (GitHub's newer governance layer)
-          # 
+          #
           # Branch Protection requires: "🔒 TerraFusion Seal Gate"
           # Repository Rules require: "🔒 SEAL" (legacy name)
 
