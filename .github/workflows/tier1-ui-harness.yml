@@ -51,6 +51,25 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Guard against expect(value, message) smell
+        id: expect-guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔒 Checking for invalid expect(value, message) pattern..."
+
+          # Pattern: expect(anything, string/template) - detects recurring smell
+          # Context: Caught twice (registryConsistency + qualityGate) before codified
+          if grep -Rn --include="*.test.ts" --include="*.test.tsx" \
+            -E 'expect\([^)]+,\s*["`'\'']' \
+            frontend/apps/os-shell/src/__tests__/ 2>/dev/null | head -n 5; then
+            echo "❌ Found invalid expect(value, message) pattern"
+            echo "Use error-first: if (!condition) throw new Error(message); expect(value).matcher();"
+            exit 1
+          fi
+
+          echo "✅ No invalid expect() patterns detected"
+
       - name: Run Tier-1 test suites
         id: tests
         shell: bash

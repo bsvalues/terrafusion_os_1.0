@@ -25,6 +25,17 @@ module.exports = {
     // Disable CSS-related errors for TypeScript files
     'css-syntax-error': 'off',
     'no-unknown-css-property': 'off',
+    // DURABILITY: Prevent recurring expect(value, message) smell
+    // Context: Observed in registryConsistency.test.ts + qualityGate.test.tsx
+    // Pattern: expect() takes at most 1 argument (value), message via throw
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector: 'CallExpression[callee.name="expect"][arguments.length>1]',
+        message:
+          'expect() takes at most one argument. Use error-first pattern: if (!condition) throw new Error(message); expect(value).matcher();',
+      },
+    ],
   },
   overrides: [
     {
