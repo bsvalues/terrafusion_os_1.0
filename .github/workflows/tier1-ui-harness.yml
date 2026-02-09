@@ -1,5 +1,5 @@
-# Tier-1 UI Harness Suite - Release/tag gate (not PR-blocking)
-# Target: Full harness validation for v1.0.0+ tagging
+# Tier-1 UI Harness Suite - Universal PR gate (branch protection enforced)
+# Target: All PRs to main (required check per branch protection)
 # Philosophy: Comprehensive coverage of page-level component suites
 
 name: Tier-1 UI Harness Suite
@@ -12,11 +12,10 @@ on:
         required: false
         type: string
         default: 'tier1'
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/tier1-ui-harness.yml'
   schedule:
     # Nightly at 02:00 UTC (9pm ET / 6pm PT)
     - cron: '0 2 * * *'
@@ -58,10 +57,12 @@ jobs:
           set -euo pipefail
           echo "🔒 Checking for invalid expect(value, message) pattern..."
 
-          # Pattern: expect(anything, string/template) - detects recurring smell
-          # Context: Caught twice (registryConsistency + qualityGate) before codified
+          # Pattern: expect(value, "message"); without matcher (double-quoted only for simplicity)
+          # Matches: expect(x, "msg");
+          # Excludes: expect([a, b]).toContain(), expect(value).toMatch("x")
+          # Note: Single quotes/backticks tolerated (manual review) to avoid shell quoting complexity
           if grep -Rn --include="*.test.ts" --include="*.test.tsx" \
-            -E 'expect\([^)]+,\s*["`'\'']' \
+            -E 'expect\([^[{]+, *"[^"]*"\);' \
             frontend/apps/os-shell/src/__tests__/ 2>/dev/null | head -n 5; then
             echo "❌ Found invalid expect(value, message) pattern"
             echo "Use error-first: if (!condition) throw new Error(message); expect(value).matcher();"

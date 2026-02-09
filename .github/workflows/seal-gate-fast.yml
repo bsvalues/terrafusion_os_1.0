@@ -381,7 +381,7 @@ jobs:
   # SEAL - Final gate (all fast checks must pass)
   # ═══════════════════════════════════════════════════════════════════════════
   seal:
-    name: 🔒 SEAL
+    name: 🔒 TerraFusion Seal Gate
     runs-on: ubuntu-latest
     timeout-minutes: 2
     if: always()
@@ -475,5 +475,33 @@ jobs:
           else
             echo "🚫 SEAL GATE FAILED - Fix issues before merging"
             echo "> ❌ **Fix issues before merging**" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Legacy SEAL context (Repository Rules compatibility)
+  # ═══════════════════════════════════════════════════════════════════════════
+  seal-legacy:
+    name: 🔒 SEAL
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    if: always()
+    needs: [seal]
+
+    steps:
+      - name: Emit legacy context
+        shell: bash
+        run: |
+          # This job exists solely to emit the legacy "🔒 SEAL" context name
+          # for Repository Rules compatibility (GitHub's newer governance layer)
+          # 
+          # Branch Protection requires: "🔒 TerraFusion Seal Gate"
+          # Repository Rules require: "🔒 SEAL" (legacy name)
+
+          if [ "${{ needs.seal.result }}" == "success" ]; then
+            echo "✅ Legacy SEAL context (inherited from TerraFusion Seal Gate)"
+            exit 0
+          else
+            echo "❌ Legacy SEAL context (inherited failure from TerraFusion Seal Gate)"
             exit 1
           fi
