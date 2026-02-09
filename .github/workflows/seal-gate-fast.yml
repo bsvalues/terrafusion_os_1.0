@@ -498,7 +498,7 @@ jobs:
           # Branch Protection requires: "🔒 TerraFusion Seal Gate"
           # Repository Rules require: "🔒 SEAL" (legacy name)
 
-          if [ "{{ needs.seal.result }}" == "success" ]; then
+          if [ "${{ needs.seal.result }}" == "success" ]; then
             echo "✅ Legacy SEAL context (inherited from TerraFusion Seal Gate)"
             exit 0
           else
