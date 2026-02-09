@@ -892,6 +892,10 @@
         },
         {
           "marker": "package.json:buildOrTest",
+          "foundAt": "frontend/apps/terraforge/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
           "foundAt": "frontend/electron/package.json"
         },
         {
@@ -905,6 +909,10 @@
         {
           "marker": "pnpm-lock.yaml",
           "foundAt": "frontend/pnpm-lock.yaml"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "frontend/apps/terraforge/vite.config.ts"
         },
         {
           "marker": "vite",
@@ -966,6 +974,36 @@
     }
   },
   {
+    "root": "native-shell",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 11,
+      "scoreLocal": 2,
+      "scoreTotal": 11,
+      "buildableLocal": true,
+      "markers": [
+        "dotnet"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "dotnet",
+          "foundAt": "native-shell/Terrafusion.Shell.csproj"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "kernel-gateway-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": true,
+      "touchedDev": true,
+      "pathFlags": []
+    }
+  },
+  {
     "root": "ops",
     "bucket": "CORE_OS_RUNTIME",
     "evidence": {
@@ -995,6 +1033,309 @@
         "os-shell-mount-ref"
       ],
       "touchedRelease": true,
+      "touchedDev": false,
+      "pathFlags": []
+    }
+  },
+  {
+    "root": "os-platform",
+    "bucket": "CORE_OS_RUNTIME",
+    "evidence": {
+      "score": 19,
+      "scoreLocal": 10,
+      "scoreTotal": 19,
+      "buildableLocal": true,
+      "markers": [
+        "Cargo.toml",
+        "docker",
+        "dotnet",
+        "package.json:buildOrTest",
+        "python",
+        "vite"
+      ],
+      "markerOrigins": [
+        {
+          "marker": "Cargo.toml",
+          "foundAt": "os-platform/specialized/web-audit-tracker/src-tauri/Cargo.toml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/ai-systems/supreme-commander/Dockerfile"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/docker-compose.production.yml"
+        },
+        {
+          "marker": "docker",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/Dockerfile"
+        },
+        {
+          "marker": "dotnet",
+          "foundAt": "os-platform/development/tools/IDEGateway/IDEGateway.csproj"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/ai-advanced/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/ai-agent-quantum-coordinator/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/ai-command-brain/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/ai-superintelligence-orchestrator-enhanced/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/ai-swarm/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/ai/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/compliance-automation-ai/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/consciousness-evolution-engine/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/consciousness-field/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/emergent-intelligence-evolution/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/ai-systems/spatiotemporal-intelligence/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/suite/claude-flow/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/ai-systems/supreme-commander/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/consciousness/service/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/test-hot-reload/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/testing-suite/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/TerraFusion-AICommandBrain/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/TerraFusion-PublicRecords/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/infrastructure/plugin-test-harness/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/infrastructure/plugins-beyond-plugins/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/infrastructure/plugins-beyond-plugins/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/performance/quantum-optimizer/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/performance/quantum-optimizer/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/autonomous-research-engine/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/autonomous-research-engine/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/biofield-integration/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/citizen-avatars/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/citizen-avatars/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/dimensional-folding/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/emergent-capability-detector/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/emergent-capability-detector/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/morphic-resonance/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/next-generation-security/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/next-generation-security/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/observability-quantum/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/operations-dashboard/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/operations-dashboard/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/paradigm-transcendence-engine/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/precrime-prevention/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/quantum-collapse/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/quantum-computing-integration/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/quantum-computing-integration/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/resilience-engineering-quantum/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/resilience-engineering-quantum/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/security-analytics-quantum/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/self-modifying-architecture/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/singularity-preparation-framework/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/singularity-preparation-framework/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/strategic-controllers-enhanced/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/unified-system/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/unified-system/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/web-audit-tracker/mcp-server/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "os-platform/specialized/web-audit-tracker/package.json"
+        },
+        {
+          "marker": "python",
+          "foundAt": "os-platform/ai-systems/ai-systems/ai/requirements.txt"
+        },
+        {
+          "marker": "python",
+          "foundAt": "os-platform/ai-systems/models/requirements.txt"
+        },
+        {
+          "marker": "python",
+          "foundAt": "os-platform/specialized/operations-dashboard/requirements.txt"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "os-platform/development/tools/TerraFusion-AICommandBrain/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "os-platform/development/tools/TerraFusion-PublicRecords/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "os-platform/development/tools/TerraFusionIDE/vite.config.ts"
+        },
+        {
+          "marker": "vite",
+          "foundAt": "os-platform/specialized/web-audit-tracker/vite.config.ts"
+        }
+      ],
+      "inherited": [
+        "pnpm-lock.yaml",
+        "workflow-ref"
+      ],
+      "wiring": [
+        "compose-ref",
+        "os-shell-mount-ref"
+      ],
+      "touchedRelease": false,
       "touchedDev": false,
       "pathFlags": []
     }
@@ -1475,6 +1816,22 @@
         {
           "marker": "Cargo.toml",
           "foundAt": "tools/tf-designctl-rust/Cargo.toml"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/mcp-tool-exec/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/pilot-api/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/registry/autonomy-viewer/package.json"
+        },
+        {
+          "marker": "package.json:buildOrTest",
+          "foundAt": "tools/registry/perf-skill-audit/package.json"
         },
         {
           "marker": "package.json:buildOrTest",
