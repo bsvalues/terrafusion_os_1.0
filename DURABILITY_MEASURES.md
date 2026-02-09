@@ -131,20 +131,56 @@ If failure takes >10 min to understand, STOP and classify:
 
 ## Optional Next Steps (Not Blocking)
 
-### 1. Re-enable Branch Protections (Recommended)
+### 1. Branch Protection Rule (✅ APPLIED - 2026-02-09)
 
-**Current State**: Bypassing `main` protection with `--no-verify`
+**Status**: ✅ **ENFORCED** - Cannot bypass with `--no-verify`
 
-**Recommended**:
-```bash
-# Via GitHub UI or API
-- Require PRs for main
-- Require Tier-0 SEAL + Tier-1 Harness status checks
-- Enforce for administrators: true
-- Allow force push: false
+**Configuration** (Retrieved from GitHub API):
+```json
+{
+  "enforce_admins": true,
+  "required_status_checks": {
+    "strict": true,
+    "contexts": [
+      "phase85-tools",
+      "phase86-toolrunner", 
+      "governed-spine",
+      "🔒 TerraFusion Seal Gate",
+      "🧪 Tier-1 UI Harness Validation"
+    ]
+  },
+  "required_pull_request_reviews": {
+    "dismiss_stale_reviews": true,
+    "required_approving_review_count": 0
+  },
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
 ```
 
-**Rationale**: Cost paid once (v1.0.0 stabilization), now lock it down to prevent drift
+**Enforcement Guarantees**:
+- ✅ `git push --no-verify main` → **REJECTED** by remote (admin bypass blocked)
+- ✅ SEAL check failure → **BLOCKS MERGE** (cannot bypass)
+- ✅ Tier-1 check failure → **BLOCKS MERGE** (cannot skip)
+- ✅ Outdated branch → **BLOCKS MERGE** (`strict: true`)
+
+**Exact Context Names** (Critical - Must Match GitHub):
+- SEAL: `"🔒 TerraFusion Seal Gate"` (with emoji, exact spelling)
+- Tier-1: `"🧪 Tier-1 UI Harness Validation"` (with emoji, exact spacing)
+
+**Verification Commands**:
+```bash
+# Check protection status (PowerShell)
+gh api /repos/bsvalues/terrafusion_os_1.0/branches/main/protection `
+  --jq '{enforce_admins: .enforce_admins.enabled, contexts: .required_status_checks.contexts}'
+
+# Test bypass prevention (should fail)
+git commit --allow-empty -m "test: verify protection"
+git push origin main --no-verify
+# Expected: "remote: error: GH006: Protected branch update failed"
+```
+
+**Rationale**: "Leaving direct-to-main bypass available is #1 way to accidentally regress Tier-1" (post-v1.0.0 durability lockdown)
 
 ### 2. Pre-commit Hook (Tier-1 Smoke)
 
