@@ -224,13 +224,14 @@ describe('Standalone Homes Navigation', () => {
       expect(cta).toBeInTheDocument();
     });
 
-    it('workbench_cta_hidden_when_no_parcel_context', async () => {
+    it('workbench_cta_shows_fallback_when_no_parcel_context', async () => {
       // No parcel context in location state
       render(<TestRouter initialRoute='/pilot' />);
 
-      // No parcel context = no CTA
-      const cta = screen.queryByRole('button', { name: /open.*workbench/i });
-      expect(cta).not.toBeInTheDocument();
+      // Fallback CTA prompts user to choose parcel (Slice 9)
+      const fallbackCta = screen.getByTestId('workbench-cta-choose');
+      expect(fallbackCta).toBeInTheDocument();
+      expect(fallbackCta).toHaveTextContent(/choose parcel to open in workbench/i);
     });
 
     it('workbench_cta_navigates_to_correct_parcel_route', async () => {

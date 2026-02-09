@@ -153,7 +153,7 @@ describe('Suite Tiles - Routing Contract', () => {
       // TerraTrace
       const traceButton = screen.getByRole('button', { name: /terratrace/i });
       await user.click(traceButton);
-      expect(mockNavigate).toHaveBeenCalledWith('/pilot/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/trace');
 
       mockNavigate.mockClear();
 
@@ -207,7 +207,7 @@ describe('Suite Tiles - Routing Contract', () => {
 
       const osEntrypoints = [
         { name: /pilot console/i, expectedRoute: '/pilot' },
-        { name: /terratrace/i, expectedRoute: '/pilot/dashboard' },
+        { name: /terratrace/i, expectedRoute: '/trace' },
         { name: /terraprime/i, expectedRoute: '/suites/terra-prime' },
       ];
 

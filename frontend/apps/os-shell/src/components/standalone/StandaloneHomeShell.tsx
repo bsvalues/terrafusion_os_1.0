@@ -293,7 +293,7 @@ function ModuleCard({ module }: { module: StandaloneHomeModule }) {
               {module.icon}
             </span>
           )}
-          <h3 className='standalone-shell__module-title'>{module.title}</h3>
+          <h2 className='standalone-shell__module-title'>{module.title}</h2>
         </div>
 
         {/* Module content (render function or placeholder) */}
