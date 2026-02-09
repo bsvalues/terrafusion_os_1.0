@@ -44,7 +44,9 @@ function walk(dir, enforceHeader) {
     const ext = path.extname(full);
 
     if (base.startsWith('ToolRegistry.')) {
-      if (!rel.startsWith('os-platform/core/')) {
+      // Allow ToolRegistry in governance surfaces: os-platform/core/ OR packages/os-core/
+      const inGovernanceSurface = rel.startsWith('os-platform/core/') || rel.startsWith('packages/os-core/');
+      if (!inGovernanceSurface) {
         console.error(`ToolRegistry artifact outside governance surface: ${rel}`);
         failed = true;
       }

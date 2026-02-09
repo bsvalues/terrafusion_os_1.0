@@ -50,7 +50,7 @@ jobs:
           pnpm exec wait-on http://localhost:4173 -t 60000
 
       - name: '?? Run Lighthouse CI'
-        run: pnpm exec lhci autorun
+        run: pnpm exec lhci autorun --collect.staticDistDir=native-shell/ui/dist
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
@@ -110,9 +110,9 @@ jobs:
       - name: '??? Build with bundle analysis'
         run: |
           pnpm -C frontend run build
-          # Generate bundle stats
-          du -h frontend/dist/*.js | sort -h > frontend/bundle-stats.txt
-          du -sh frontend/dist > frontend/dist-size.txt
+          # Generate bundle stats (frontend builds to ../native-shell/ui/dist)
+          du -h native-shell/ui/dist/assets/*.js 2>/dev/null | sort -h > frontend/bundle-stats.txt || echo "No JS files found" > frontend/bundle-stats.txt
+          du -sh native-shell/ui/dist > frontend/dist-size.txt
         env:
           NODE_ENV: production
 
@@ -130,7 +130,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
 
           # Check if bundle size exceeds budget (500KB)
-          TOTAL_SIZE=$(du -sk frontend/dist | cut -f1)
+          TOTAL_SIZE=$(du -sk native-shell/ui/dist | cut -f1)
           BUDGET_KB=512
 
           if [ "$TOTAL_SIZE" -gt "$BUDGET_KB" ]; then
