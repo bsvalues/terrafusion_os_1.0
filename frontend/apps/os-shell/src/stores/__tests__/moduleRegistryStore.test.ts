@@ -733,10 +733,10 @@ describe('Launcher Truth Contracts', () => {
       expect(pilot?.status).toBe('live');
     });
 
-    it('has_trace_as_wip_feature', () => {
+    it('has_trace_as_live_feature', () => {
       const trace = OS_FEATURES.find((f) => f.id === 'trace');
       expect(trace).toBeDefined();
-      expect(trace?.status).toBe('wip');
+      expect(trace?.status).toBe('live');
     });
   });
 

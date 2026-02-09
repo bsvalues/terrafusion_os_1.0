@@ -32,7 +32,7 @@ jobs:
               - 'pnpm-lock.yaml'
               - '.github/workflows/**'
 
-  typecheck-core:
+  governed-spine:
     needs: changes
     if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-latest
@@ -45,24 +45,8 @@ jobs:
           cache: 'pnpm'
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Typecheck (core boundary)
-        run: pnpm run type-check
-
-  phase83-tools:
-    needs: changes
-    if: needs.changes.outputs.core == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      - name: Install
-        run: pnpm install --frozen-lockfile
-      - name: Phase 8.3 tool gates
-        run: node --test os-platform/core/tests/phase83-tools.test.mjs
+      - name: Governed Spine (type-check + phase83-tools)
+        run: pnpm test:governed
 
   phase85-tools:
     needs: changes

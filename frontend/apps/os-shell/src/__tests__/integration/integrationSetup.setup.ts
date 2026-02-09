@@ -78,7 +78,7 @@ global.ResizeObserver = class ResizeObserver {
 //   console.warn = originalWarn;
 // });
 
-export {};
+export { };
 
 describe('integrationSetup.setup', () => {
   it('loads integration test setup', () => {

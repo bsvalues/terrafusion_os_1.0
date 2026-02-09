@@ -4,18 +4,18 @@ name: SBOM Generation & Vulnerability Scanning
 # Tools: Syft (SBOM generation), Grype (vulnerability scanning)
 # Compliance: Executive Order 14028, FedRAMP, vendor requirements
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# RELEASE ASSURANCE LANE - NOT A MERGE BLOCKER
+# ═══════════════════════════════════════════════════════════════════════════════
+# Runs on: main branch, tags, scheduled daily, manual trigger
+# Does NOT run on: pull_request (moved to release lane per Two-Lane CI Architecture)
+# See: .github/TWO_LANE_CI_ARCHITECTURE.md
+# ═══════════════════════════════════════════════════════════════════════════════
+
 on:
   push:
     branches: [main, release/**]
     tags: ['v*']
-    paths:
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'backend/**/*.csproj'
-      - 'Directory.Packages.props'
-      - '.github/workflows/sbom.yml'
-  pull_request:
-    branches: [main]
     paths:
       - 'package.json'
       - 'pnpm-lock.yaml'

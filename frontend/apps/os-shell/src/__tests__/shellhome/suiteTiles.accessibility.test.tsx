@@ -27,10 +27,22 @@ import { MemoryRouter } from 'react-router-dom';
 import { CONSTITUTIONAL_SUITES } from '../../config/suiteRegistry';
 import { ShellHome } from '../../shell/home/ShellHome';
 
-// Mock navigation
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+// Mock osActions
+jest.mock('../../services/osActions', () => ({
+  executeOsAction: jest.fn(),
+}));
+
+// Mock parcelContext
+jest.mock('../../context/parcelContext', () => ({
+  useParcelContext: jest.fn(() => null),
+  useParcelContextActions: jest.fn(() => ({
+    setContext: jest.fn(),
+    clearContext: jest.fn(),
+  })),
+  useParcelContextStore: jest.fn(() => ({
+    context: null,
+    recentParcels: [],
+  })),
 }));
 
 // Mock stores

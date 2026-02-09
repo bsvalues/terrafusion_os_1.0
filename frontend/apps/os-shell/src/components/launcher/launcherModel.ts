@@ -11,10 +11,14 @@ import { NavigateFunction } from 'react-router-dom';
 import {
     CONSTITUTIONAL_SUITES,
     getSuiteIntent,
+    getWorkbenchHrefWithContext,
     INTENT_LABELS,
+    isWorkbenchSuite,
     OS_FEATURES,
     type SuiteId,
 } from '../../config/suiteRegistry';
+import { getCurrentParcelId } from '../../context/parcelContext';
+import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
 // Types
@@ -67,23 +71,6 @@ export interface LauncherSection {
 // ============================================================================
 // Constants
 // ============================================================================
-
-/**
- * Demo parcel for Workbench routing.
- * In production, this would come from context (last selected parcel).
- */
-const DEMO_PARCEL_ID = '1234567890';
-
-/**
- * Tab mapping for suite → workbench tab.
- */
-const SUITE_TO_TAB: Record<string, string> = {
-  forge: 'forge',
-  atlas: 'atlas',
-  dais: 'dais',
-  dossier: 'dossier',
-  gpt: 'pilot', // TerraGPT uses Pilot tab
-};
 
 /**
  * Icon mapping for iconName → emoji.
@@ -140,12 +127,24 @@ export const SYSTEM_ACTIONS: LauncherItem[] = [
 /**
  * Get launcher items from the suite registry.
  * This adapts the constitutional registry to the launcher model.
+ * Uses context-aware workbench href generation (Slice 9).
  */
 export function getLauncherItems(): LauncherItem[] {
+  // Get current parcel context (may be null if no parcel selected)
+  const currentParcelId = getCurrentParcelId();
+
   const suiteItems: LauncherItem[] = CONSTITUTIONAL_SUITES.map((suite) => {
     const intent = getSuiteIntent(suite.id as SuiteId);
     const intentLabel = INTENT_LABELS[intent];
-    const tab = SUITE_TO_TAB[suite.id] || suite.id;
+
+    // Use context-aware href generator (falls back to parcel selection if no context)
+    let route: string;
+    if (isWorkbenchSuite(suite)) {
+      const hrefResult = getWorkbenchHrefWithContext(suite, currentParcelId);
+      route = hrefResult.href;
+    } else {
+      route = suite.route;
+    }
 
     return {
       id: suite.id,
@@ -153,7 +152,7 @@ export function getLauncherItems(): LauncherItem[] {
       description: suite.description,
       icon: ICON_MAP[suite.iconName] || '📦',
       intent,
-      route: intent === 'workbench' ? `/property/${DEMO_PARCEL_ID}/${tab}` : suite.route,
+      route,
       keywords: [
         suite.id,
         suite.shortName.toLowerCase(),
@@ -168,7 +167,8 @@ export function getLauncherItems(): LauncherItem[] {
   const osFeatureItems: LauncherItem[] = OS_FEATURES.filter((f) => f.route).map((feature) => ({
     id: feature.id,
     label: feature.displayName,
-    description: feature.description,
+    // Description truth: prefer homeMeta.description when available (Slice 13)
+    description: feature.homeMeta?.description ?? feature.description,
     icon: ICON_MAP[feature.iconName] || '📦',
     intent: 'standalone',
     route: feature.route!,
@@ -227,14 +227,38 @@ export function filterLauncherItems(items: LauncherItem[], query: string): Launc
 }
 
 /**
+ * Convert a LauncherItem to an OsAction for dispatch.
+ */
+export function launcherItemToOsAction(item: LauncherItem): OsAction {
+  return {
+    id: item.id,
+    label: item.label,
+    intent: item.intent,
+    href: item.route,
+  };
+}
+
+/**
  * Navigate to a launcher item.
- * Handles both route-based and action-based items.
+ * Routes through executeOsAction for consistent telemetry.
+ * Slice 16: Unified OS action dispatch.
  */
 export function navigateToLauncherItem(item: LauncherItem, navigate: NavigateFunction): void {
+  // Legacy action items still execute directly (for backward compat)
   if (item.action) {
     item.action();
-  } else if (item.route) {
-    navigate(item.route);
+    return;
+  }
+
+  // Route items go through OS action dispatcher for telemetry
+  if (item.route) {
+    const action = launcherItemToOsAction(item);
+    const context: OsActionContext = {
+      navigate,
+      suiteId: item.id,
+      surface: 'launcher',
+    };
+    executeOsAction(action, context);
   }
 }
 

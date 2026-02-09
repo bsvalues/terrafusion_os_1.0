@@ -8,17 +8,25 @@
  * @vitest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useStartMenuStore } from '../../../stores/startMenuStore';
 import { Taskbar } from '../Taskbar';
 
-// Extend vitest expect with jest-dom matchers
+// Test helper: Wrap components with Router context for useNavigate() support
+const renderTaskbar = () => {
+  return render(
+    <MemoryRouter initialEntries={['/']}>
+      <Taskbar />
+    </MemoryRouter>
+  );
+};
 
+// Extend vitest expect with jest-dom matchers
 
 // Clean up DOM after each test
 afterEach(() => {
@@ -42,28 +50,28 @@ beforeEach(() => {
 describe('Taskbar Component', () => {
   describe('Rendering', () => {
     it('renders taskbar at bottom of screen', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
       expect(taskbar).toBeInTheDocument();
     });
 
     it('has fixed position styling', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
       expect(taskbar).toHaveClass('fixed', 'bottom-0');
     });
 
     it('has correct height (48px)', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
       expect(taskbar).toHaveClass('h-12'); // h-12 = 48px
     });
 
     it('uses TerraFusion design tokens (glass effect)', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
       // Should have glass morphism classes
@@ -73,14 +81,14 @@ describe('Taskbar Component', () => {
 
   describe('Start Button', () => {
     it('renders start button with TerraFusion logo', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const startButton = screen.getByRole('button', { name: /start menu/i });
       expect(startButton).toBeInTheDocument();
     });
 
     it('toggles Start Menu when clicked', async () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const startButton = screen.getByRole('button', { name: /start menu/i });
 
@@ -98,14 +106,14 @@ describe('Taskbar Component', () => {
 
     it('shows visual indicator when Start Menu is open', () => {
       useStartMenuStore.setState({ isOpen: true });
-      render(<Taskbar />);
+      renderTaskbar();
 
       const startButton = screen.getByRole('button', { name: /start menu/i });
       expect(startButton).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('has proper focus styles for accessibility', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const startButton = screen.getByRole('button', { name: /start menu/i });
       startButton.focus();
@@ -117,14 +125,14 @@ describe('Taskbar Component', () => {
 
   describe('Running Apps Section', () => {
     it('renders running apps container', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const runningApps = screen.getByTestId('running-apps');
       expect(runningApps).toBeInTheDocument();
     });
 
     it('shows no apps when no windows are open', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const runningApps = screen.getByTestId('running-apps');
       const buttons = within(runningApps).queryAllByRole('button');
@@ -136,7 +144,7 @@ describe('Taskbar Component', () => {
       useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
       useDesktopStore.getState().openWindow('module-2', 'Module 2', 'TrendingUp');
 
-      render(<Taskbar />);
+      renderTaskbar();
 
       const runningApps = screen.getByTestId('running-apps');
       const buttons = within(runningApps).getAllByRole('button');
@@ -144,17 +152,21 @@ describe('Taskbar Component', () => {
     });
 
     it('displays window title on app button', () => {
-      useDesktopStore.getState().openWindow('government-edition', 'Government Edition', 'Building2');
+      useDesktopStore
+        .getState()
+        .openWindow('government-edition', 'Government Edition', 'Building2');
 
-      render(<Taskbar />);
+      renderTaskbar();
 
       expect(screen.getByText('Government Edition')).toBeInTheDocument();
     });
 
     it('displays window icon on app button', () => {
-      useDesktopStore.getState().openWindow('government-edition', 'Government Edition', 'Building2');
+      useDesktopStore
+        .getState()
+        .openWindow('government-edition', 'Government Edition', 'Building2');
 
-      render(<Taskbar />);
+      renderTaskbar();
 
       const runningApps = screen.getByTestId('running-apps');
       expect(runningApps.querySelector('svg')).toBeInTheDocument();
@@ -163,7 +175,7 @@ describe('Taskbar Component', () => {
     it('highlights active window button', () => {
       const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
 
-      render(<Taskbar />);
+      renderTaskbar();
 
       const activeButton = screen.getByRole('button', { name: /module 1/i });
       expect(activeButton).toHaveAttribute('aria-pressed', 'true');
@@ -173,7 +185,7 @@ describe('Taskbar Component', () => {
       const window1Id = useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
       const window2Id = useDesktopStore.getState().openWindow('module-2', 'Module 2', 'TrendingUp');
 
-      render(<Taskbar />);
+      renderTaskbar();
 
       // window2 is active
       expect(useDesktopStore.getState().activeWindowId).toBe(window2Id);
@@ -190,7 +202,7 @@ describe('Taskbar Component', () => {
       const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
       useDesktopStore.getState().minimizeWindow(windowId);
 
-      render(<Taskbar />);
+      renderTaskbar();
 
       const window = useDesktopStore.getState().windows.find((w) => w.id === windowId);
       expect(window?.state).toBe('minimized');
@@ -208,7 +220,7 @@ describe('Taskbar Component', () => {
       const windowId = useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
       useDesktopStore.getState().minimizeWindow(windowId);
 
-      render(<Taskbar />);
+      renderTaskbar();
 
       const module1Button = screen.getByRole('button', { name: /module 1/i });
       expect(module1Button).toHaveAttribute('data-minimized', 'true');
@@ -217,14 +229,14 @@ describe('Taskbar Component', () => {
 
   describe('System Tray', () => {
     it('renders system tray section', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const systemTray = screen.getByTestId('system-tray');
       expect(systemTray).toBeInTheDocument();
     });
 
     it('displays current time', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       // Should show time in HH:MM format
       const timeDisplay = screen.getByTestId('clock');
@@ -233,14 +245,14 @@ describe('Taskbar Component', () => {
     });
 
     it('displays AI agent status indicator', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const aiStatus = screen.getByTestId('ai-status-indicator');
       expect(aiStatus).toBeInTheDocument();
     });
 
     it('displays system health indicator', () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const healthIndicator = screen.getByTestId('system-health-indicator');
       expect(healthIndicator).toBeInTheDocument();
@@ -249,7 +261,7 @@ describe('Taskbar Component', () => {
 
   describe('Keyboard Accessibility', () => {
     it('is keyboard navigable', async () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       // Tab to start button
       await userEvent.tab();
@@ -257,7 +269,7 @@ describe('Taskbar Component', () => {
     });
 
     it('opens Start Menu with keyboard (Enter)', async () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const startButton = screen.getByRole('button', { name: /start menu/i });
       startButton.focus();
@@ -268,7 +280,7 @@ describe('Taskbar Component', () => {
     });
 
     it('opens Start Menu with keyboard (Space)', async () => {
-      render(<Taskbar />);
+      renderTaskbar();
 
       const startButton = screen.getByRole('button', { name: /start menu/i });
       startButton.focus();
@@ -283,9 +295,13 @@ describe('Taskbar Component', () => {
     it('truncates long window titles', () => {
       useDesktopStore
         .getState()
-        .openWindow('module-1', 'This Is A Very Long Module Title That Should Be Truncated', 'BarChart3');
+        .openWindow(
+          'module-1',
+          'This Is A Very Long Module Title That Should Be Truncated',
+          'BarChart3'
+        );
 
-      render(<Taskbar />);
+      renderTaskbar();
 
       const button = screen.getByRole('button', { name: /this is a very long/i });
       expect(button).toHaveClass('truncate');

@@ -7,12 +7,13 @@
  * Provides context-first navigation: search → select → workbench/suite.
  *
  * Phase 9 Update: Now uses suiteRegistry.ts as single source of truth.
+ * Slice 7 Update: OS entrypoints derived from registry (no hardcoding).
  *
  * Architecture:
  * - Global Search: Find parcels, cases, persons, documents
  * - Recent Work: Quick access to recent parcels/cases
  * - Suite Launcher: Forge, Atlas, Dais, Dossier, GPT (from registry)
- * - OS Entrypoints: Pilot, Trace, Settings
+ * - OS Entrypoints: Pilot, Trace, etc. (from registry)
  *
  * Success Criteria:
  * - `/` loads Shell Home reliably
@@ -23,14 +24,17 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  CONSTITUTIONAL_SUITES,
-  getSuiteIntent,
-  INTENT_LABELS,
-  type SuiteId,
+    CONSTITUTIONAL_SUITES,
+    getStandaloneSuites,
+    getSuiteIntent,
+    INTENT_LABELS,
+    isWorkbenchSuite,
+    type SuiteId,
 } from '../../config/suiteRegistry';
+import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { LiquidPanel, TactileButton } from '../../ui/materials';
@@ -62,12 +66,6 @@ interface RecentItem {
 // Suite Configuration - FROM CONSTITUTIONAL REGISTRY (Honest Routing)
 // ============================================================================
 
-/**
- * Demo parcel for Workbench routing.
- * Suites route to Workbench tabs (real MWUX) not WIP suite homes.
- */
-const DEMO_PARCEL_ID = '1234567890';
-
 // Map iconName to emoji (temporary until we wire Lucide icons)
 const ICON_MAP: Record<string, string> = {
   Hammer: '🔨',
@@ -88,41 +86,47 @@ const COLOR_MAP: Record<string, string> = {
   gpt: 'from-indigo-500 to-violet-600',
 };
 
-// Tab mapping for Workbench routes
-const SUITE_TO_TAB: Record<string, string> = {
-  forge: 'forge',
-  atlas: 'atlas',
-  dais: 'dais',
-  dossier: 'dossier',
-  gpt: 'pilot', // TerraGPT uses Pilot tab
-};
+/**
+ * Build suites array with context-aware routing (Slice 9).
+ * Uses parcel context for workbench suites, fallback route when absent.
+ */
+function buildSuites(parcelId: string | null): Suite[] {
+  return CONSTITUTIONAL_SUITES.map((suite) => {
+    let route: string;
+    if (isWorkbenchSuite(suite)) {
+      const hrefResult = getWorkbenchHrefWithContext(suite, parcelId);
+      route = hrefResult.href;
+    } else {
+      route = suite.route;
+    }
 
-const SUITES: Suite[] = CONSTITUTIONAL_SUITES.map((suite) => ({
-  id: suite.id,
-  name: suite.displayName,
-  description: suite.description,
-  icon: ICON_MAP[suite.iconName] || '📦',
-  // Route to Workbench tab (real MWUX) instead of WIP suite home
-  route: `/property/${DEMO_PARCEL_ID}/${SUITE_TO_TAB[suite.id] || ''}`,
-  color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
-  intent: getSuiteIntent(suite.id as SuiteId),
+    return {
+      id: suite.id,
+      name: suite.displayName,
+      description: suite.description,
+      icon: ICON_MAP[suite.iconName] || '📦',
+      route,
+      color: COLOR_MAP[suite.id] || 'from-slate-500 to-slate-600',
+      intent: getSuiteIntent(suite.id as SuiteId),
+    };
+  });
+}
+
+/**
+ * OS Entrypoints - Derived from registry (Slice 7: no hardcoding).
+ * Uses getStandaloneSuites() for registry parity with launcher.
+ */
+const OS_ENTRYPOINTS = getStandaloneSuites().map((feature) => ({
+  id: feature.id,
+  name: feature.homeMeta.title || feature.displayName,
+  icon: ICON_MAP[feature.iconName] || '📦',
+  route: feature.route,
+  description: feature.description,
 }));
 
-const OS_ENTRYPOINTS = [
-  {
-    id: 'pilot',
-    name: 'Pilot Console',
-    icon: '🎮',
-    route: '/pilot',
-    description: 'Tool execution & governance',
-  },
-  {
-    id: 'trace',
-    name: 'TerraTrace',
-    icon: '🔍',
-    route: '/pilot/dashboard',
-    description: 'Observability & debugging',
-  },
+// Add TerraPrime as a non-standalone system entrypoint
+// (It's a legacy surface, not a StandaloneHomeShell user)
+const LEGACY_ENTRYPOINTS = [
   {
     id: 'prime',
     name: 'TerraPrime',
@@ -131,6 +135,9 @@ const OS_ENTRYPOINTS = [
     description: 'Property viewer',
   },
 ];
+
+// Combined entrypoints (registry-driven + legacy)
+const ALL_ENTRYPOINTS = [...OS_ENTRYPOINTS, ...LEGACY_ENTRYPOINTS];
 
 // ============================================================================
 // Components
@@ -246,7 +253,7 @@ const SuiteCard: React.FC<{
  * OS Entrypoint - Utility links with TactileButton ghost variant
  */
 const OSEntrypoint: React.FC<{
-  item: (typeof OS_ENTRYPOINTS)[0];
+  item: (typeof ALL_ENTRYPOINTS)[0];
   onClick: () => void;
 }> = ({ item, onClick }) => (
   <TactileButton
@@ -304,6 +311,15 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
   const recentApps = useStartMenuStore((state) => state.recentApps);
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
 
+  // Get current parcel context (Slice 9: context-aware navigation)
+  const parcelContext = useParcelContext();
+
+  // Build suites with context-aware workbench routes
+  const SUITES = useMemo(
+    () => buildSuites(parcelContext?.parcelId ?? null),
+    [parcelContext?.parcelId]
+  );
+
   // Mock recent items (in production, this would come from a store)
   const recentItems: RecentItem[] = [
     {
@@ -342,25 +358,53 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
     [navigate]
   );
 
-  const handleSuiteLaunch = useCallback(
-    (suite: Suite) => {
-      navigate(suite.route);
-    },
+  // Build action context for shellhome surface (Slice 16)
+  const actionContext: OsActionContext = useMemo(
+    () => ({
+      navigate,
+      suiteId: 'shell',
+      surface: 'shellhome',
+    }),
     [navigate]
   );
 
-  const handleOSEntrypoint = useCallback(
-    (item: (typeof OS_ENTRYPOINTS)[0]) => {
-      navigate(item.route);
+  const handleSuiteLaunch = useCallback(
+    (suite: Suite) => {
+      const action: OsAction = {
+        id: suite.id,
+        label: suite.name,
+        intent: suite.intent,
+        href: suite.route,
+      };
+      executeOsAction(action, { ...actionContext, suiteId: suite.id });
     },
-    [navigate]
+    [actionContext]
+  );
+
+  const handleOSEntrypoint = useCallback(
+    (item: (typeof ALL_ENTRYPOINTS)[0]) => {
+      const action: OsAction = {
+        id: item.id,
+        label: item.label,
+        intent: item.intent,
+        href: item.route,
+      };
+      executeOsAction(action, { ...actionContext, suiteId: item.id });
+    },
+    [actionContext]
   );
 
   const handleRecentItem = useCallback(
     (item: RecentItem) => {
-      navigate(item.route);
+      const action: OsAction = {
+        id: item.id,
+        label: item.title,
+        intent: 'workbench',
+        href: item.route,
+      };
+      executeOsAction(action, actionContext);
     },
-    [navigate]
+    [actionContext]
   );
 
   return (
@@ -423,7 +467,7 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
               <span>⚙️</span> System
             </h2>
             <div className='space-y-2'>
-              {OS_ENTRYPOINTS.map((item) => (
+              {ALL_ENTRYPOINTS.map((item) => (
                 <OSEntrypoint key={item.id} item={item} onClick={() => handleOSEntrypoint(item)} />
               ))}
             </div>

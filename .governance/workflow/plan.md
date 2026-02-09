@@ -678,4 +678,449 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Risk register complete
 - [x] Git strategy defined
 - [x] Dependencies verified
+- [x] Ready for execution
+
+---
+
+# Slice 5: Launcher Polish (Pinned, Recents, Ranking)
+
+> **Entry:** Slice 4 proven no jitter with telemetry probes. Launcher is now the "one system" interaction hub.
+> **Strategy:** Pure UX lift with minimal platform risk. Add personalization layer (pinned, recents) and deterministic search ranking.
+
+---
+
+## Definition of Done
+
+> What MUST be true for this to be complete?
+
+- [ ] User can pin/unpin any launcher item (suite or system)
+- [ ] Pinned items appear in a **Pinned** section at the top
+- [ ] Pins persist across reloads (localStorage)
+- [ ] Activated launcher items are recorded as recents (bounded to 10)
+- [ ] Recents appear in a **Recent** section below Pinned
+- [ ] Recents dedupe by item id and update timestamp on re-activation
+- [ ] Search ranking is deterministic: prefix > word > substring > keywords
+- [ ] Empty query shows: Pinned → Recent → Suites → System
+- [ ] No regressions to focus trap, ESC close, keyboard navigation
+- [ ] No routing truth regressions
+- [ ] `pnpm type-check` passes
+- [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+
+---
+
+## Phases & Tasks
+
+### Phase 1: Test Harness (TDD)
+
+> Write tests first for pinned, recents, and ranking.
+
+#### Task 1.1: Pins Tests
+
+* **Description:** Write tests for pin/unpin behavior
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/launcher/launcher.pins.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] pin adds item to pinned section
+  - [ ] unpin removes item
+  - [ ] pins persist via storage adapter
+  - [ ] toggle behavior (pin if unpinned, unpin if pinned)
+  - [ ] pinned items stay at top when filtering
+* **Acceptance Criteria:**
+  - [ ] Tests written BEFORE implementation
+  - [ ] Tests fail initially (no pins logic yet)
+
+#### Task 1.2: Recents Tests
+
+* **Description:** Write tests for recents tracking
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/launcher/launcher.recents.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] activation writes recent
+  - [ ] recents dedupe and reorder
+  - [ ] recents capped at N (10)
+  - [ ] recents persist via storage adapter
+* **Acceptance Criteria:**
+  - [ ] Recents behavior fully specified
+  - [ ] MRU ordering verified
+
+#### Task 1.3: Ranking Tests
+
+* **Description:** Write tests for search ranking logic
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/launcher/launcher.ranking.test.ts` (NEW)
+* **Tests (TDD):**
+  - [ ] prefix match outranks substring
+  - [ ] word match outranks partial substring
+  - [ ] keywords contribute but rank lower than title
+  - [ ] pinned boost applied and deterministic
+  - [ ] empty query returns Pinned → Recent → Suites → System
+* **Acceptance Criteria:**
+  - [ ] Ranking is deterministic (same input = same output)
+  - [ ] Edge cases covered (empty query, no matches)
+
+---
+
+### Phase 2: Personalization Stores
+
+> Create stateful personalization layer.
+
+#### Task 2.1: Storage Adapter
+
+* **Description:** Create injectable localStorage wrapper
+* **Files:**
+  - `frontend/apps/os-shell/src/components/launcher/storageAdapter.ts` (NEW)
+* **Implementation:**
+  - `get<T>(key): T | null`, `set<T>(key, value): void`
+  - Prefix keys with `tf_launcher_`
+  - Handle JSON parse errors gracefully
+  - Injectable for tests (mock storage)
+* **Acceptance Criteria:**
+  - [ ] Works with localStorage
+  - [ ] Testable without global storage
+
+#### Task 2.2: PinsStore
+
+* **Description:** Create pinned items store
+* **Files:**
+  - `frontend/apps/os-shell/src/components/launcher/pinsStore.ts` (NEW)
+* **Implementation:**
+  - `getPinnedIds(): Set<string>`
+  - `togglePin(id: string): void`
+  - `isPinned(id: string): boolean`
+  - Uses storageAdapter for persistence
+* **Acceptance Criteria:**
+  - [ ] Pin state survives reload
+  - [ ] Zustand store for reactivity
+
+#### Task 2.3: RecentsStore
+
+* **Description:** Create recents tracking store
+* **Files:**
+  - `frontend/apps/os-shell/src/components/launcher/recentsStore.ts` (NEW)
+* **Implementation:**
+  - `record(id: string): void` - add/bump to front
+  - `getRecentIds(): string[]` - ordered list
+  - `clear(): void`
+  - Cap at 10 items
+* **Acceptance Criteria:**
+  - [ ] MRU ordering preserved
+  - [ ] Bounded size
+
+---
+
+### Phase 3: Ranking Engine
+
+> Deterministic search ranking.
+
+#### Task 3.1: Ranking Logic
+
+* **Description:** Create ranking function for launcher items
+* **Files:**
+  - `frontend/apps/os-shell/src/components/launcher/ranking.ts` (NEW)
+* **Implementation:**
+  - `rankItems(items, query, context): RankedItem[]`
+  - Context includes: pinnedSet, recentList
+  - Score calculation: prefix(100) > word(70) > substring(40) > keyword(20)
+  - Pinned boost: +50 if in pinnedSet
+  - Recent boost: +30 scaled by recency
+  - Stable sort by score descending, then alphabetically
+* **Acceptance Criteria:**
+  - [ ] Deterministic output
+  - [ ] Testable without UI
+
+---
+
+### Phase 4: Launcher Component Update
+
+> Wire personalization into Launcher UI.
+
+#### Task 4.1: Section Rendering
+
+* **Description:** Update Launcher to show Pinned/Recent sections
+* **Files:**
+  - `frontend/apps/os-shell/src/components/launcher/Launcher.tsx`
+* **Implementation:**
+  - Import pinsStore, recentsStore
+  - Build sections: Pinned → Recent → Suites → System
+  - Use ranking for filtered view
+  - Ensure correct data-testid for each section
+* **Acceptance Criteria:**
+  - [ ] Sections render in correct order
+  - [ ] Empty sections hidden
+
+#### Task 4.2: Pin Affordance
+
+* **Description:** Add pin/unpin button to launcher items
+* **Files:**
+  - `frontend/apps/os-shell/src/components/launcher/Launcher.tsx`
+* **Implementation:**
+  - Pin icon button (ghost variant)
+  - aria-label includes pin state
+  - Keyboard accessible (Tab to pin button)
+  - Visually subtle but discoverable
+* **Acceptance Criteria:**
+  - [ ] Pin button accessible
+  - [ ] State reflected immediately
+
+#### Task 4.3: Record Activation
+
+* **Description:** Record item activation to recents
+* **Files:**
+  - `frontend/apps/os-shell/src/components/launcher/Launcher.tsx`
+* **Implementation:**
+  - Call recentsStore.record(id) when item activated
+  - Before navigation/action execution
+* **Acceptance Criteria:**
+  - [ ] Recents updated on every activation
+
+---
+
+### Phase 5: Verification
+
+> Final verification before merge.
+
+#### Task 5.1: Run All Gates
+
+* **Description:** Execute full test suite + SEAL gates
+* **Acceptance Criteria:**
+  - [ ] New pins/recents/ranking tests pass
+  - [ ] Existing launcher tests (55) pass
+  - [ ] Compositor tests (33) pass
+  - [ ] `pnpm type-check` passes
+  - [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+
+---
+
+## Risk Register
+
+| ID | Risk | Severity | Likelihood | Mitigation | Rollback |
+|----|------|----------|------------|------------|----------|
+| R1 | localStorage not available | Low | Low | Try/catch wrapper | Graceful fallback to in-memory |
+| R2 | Pin button breaks focus order | Med | Low | Tab order test catches it | Remove button |
+| R3 | Ranking flaky | High | Low | Deterministic sort, no randomness | Revert to original filter |
+| R4 | Recents grow unbounded | Low | Low | Hard cap at 10 | Clear on overflow |
+
+---
+
+## Git Strategy
+
+1. `test(launcher): pin + recents persistence + ranking determinism`
+2. `feat(launcher): add pinned + recents sections`
+3. `feat(launcher): deterministic ranking + query scoring`
+4. `chore(launcher): a11y labels + storage adapter cleanup`
+
+---
+
+## Dependencies
+
+- [x] Slice 3 complete (Launcher base)
+- [x] Slice 4 complete (Compositor stability verified)
+- [x] launcherModel.ts with item IDs
+- [x] TactileButton primitive available
+
+---
+
+## Document Status (Slice 5)
+
+- [x] Definition of Done defined
+- [x] All phases defined
+- [x] All tasks have acceptance criteria
+- [x] Risk register complete
+- [x] Git strategy defined
+- [x] Dependencies verified
+
+---
+
+# Slice 6: Standalone Suite Homes Consistency
+
+> **Purpose:** Create consistent shell contract for standalone suite homes.
+> **Strategy:** OS-owned `StandaloneHomeShell` wrapper that suites plug into.
+
+---
+
+## Definition of Done (Slice 6)
+
+> What MUST be true for this to be complete?
+
+- [ ] Every standalone suite home renders a consistent shell contract
+  - Same header structure (title, intent badge "Standalone", optional subtitle)
+  - Same container rhythm (LiquidPanel when gated; clean fallback when not)
+  - Same primary actions pattern (Tactile buttons; keyboard reachable)
+- [ ] Navigation truth stays intact
+  - From ShellHome tile → Standalone home loads without redirect hacks
+  - From Launcher → Standalone home loads identically
+  - Standalone home includes clear "Open Workbench (current parcel)" CTA only when parcel context exists
+- [ ] A11y baseline
+  - h1 present, landmark regions sane, focus order stable, no hidden interactive decorations
+- [ ] No suite boundary violations
+  - OS shell owns chrome + layout; suites own their internal content
+- [ ] All tests pass
+- [ ] Build succeeds
+
+---
+
+## Phases & Tasks (Slice 6)
+
+### Phase 1: Test Harness (TDD)
+
+> Write tests first for standalone home shell contract.
+
+#### Task 1.1: Contract Tests
+
+* **Description:** Test that standalone routes render consistent ShellChromeContract
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/standalone/standaloneHomes.contract.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] each standalone suite route renders h1 title
+  - [ ] renders intent badge "Standalone"
+  - [ ] consistent container structure (header + content + actions)
+  - [ ] materialQualityGate on/off produces no layout shift
+* **Acceptance Criteria:**
+  - [ ] Tests written BEFORE implementation
+  - [ ] Tests fail initially
+
+#### Task 1.2: Navigation Tests
+
+* **Description:** Test navigation parity between ShellHome and Launcher
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/standalone/standaloneHomes.navigation.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] ShellHome → standalone routes match launcher routes
+  - [ ] back/forward preserves state (no full remount loops)
+  - [ ] standalone route -> workbench CTA works when parcel context exists
+* **Acceptance Criteria:**
+  - [ ] Navigation parity verified
+
+#### Task 1.3: Accessibility Tests
+
+* **Description:** Test a11y baseline for standalone homes
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/standalone/standaloneHomes.accessibility.test.tsx` (NEW)
+* **Tests (TDD):**
+  - [ ] landmarks present (banner, main)
+  - [ ] focus order stable
+  - [ ] no interactive elements in aria-hidden layers
+  - [ ] h1 is first heading
+* **Acceptance Criteria:**
+  - [ ] A11y baseline enforced
+
+---
+
+### Phase 2: Shell Contract
+
+> Define types and create StandaloneHomeShell component.
+
+#### Task 2.1: Contract Types
+
+* **Description:** Define type-safe contract interfaces for standalone home
+* **Files:**
+  - `frontend/apps/os-shell/src/components/standalone/standaloneHomeContracts.ts` (NEW)
+* **Implementation:**
+  - `StandaloneHomeMeta`: title, description, icon, primaryActions[]
+  - `StandaloneHomeAction`: id, label, intent, href | handler
+  - `StandaloneHomeProps`: meta + children (content slot)
+* **Acceptance Criteria:**
+  - [ ] Types defined
+  - [ ] Actions support both navigation and callbacks
+
+#### Task 2.2: StandaloneHomeShell Component
+
+* **Description:** Create shared shell wrapper using Liquid/Tactile primitives
+* **Files:**
+  - `frontend/apps/os-shell/src/components/standalone/StandaloneHomeShell.tsx` (NEW)
+* **Implementation:**
+  - Import LiquidPanel, TactileButton, useMaterialQuality
+  - Header: Icon + Title (h1) + "Standalone" badge + description
+  - Primary actions row (Tactile buttons)
+  - Content slot for suite modules
+  - Fallback path without glass effects
+* **Acceptance Criteria:**
+  - [ ] LiquidPanel + materialQualityGate enforced
+  - [ ] Consistent header structure
+  - [ ] Keyboard accessible
+
+---
+
+### Phase 3: Suite Migration
+
+> Migrate standalone suite routes to use shared shell.
+
+#### Task 3.1: PilotConsole Migration
+
+* **Description:** Refactor PilotConsole to use StandaloneHomeShell
+* **Files:**
+  - `frontend/apps/os-shell/src/pages/PilotConsole.tsx`
+* **Implementation:**
+  - Wrap internal content in StandaloneHomeShell
+  - Pass meta: { title: "TerraFusion Pilot Console", description: "...", icon: "🎮", primaryActions: [...] }
+  - Keep existing tool invocation UI as content slot
+* **Acceptance Criteria:**
+  - [ ] Same functionality, consistent chrome
+  - [ ] Tests pass
+
+#### Task 3.2: Extend suiteRegistry with homeMeta
+
+* **Description:** Add homeMeta to OS_FEATURES for standalone items
+* **Files:**
+  - `frontend/apps/os-shell/src/config/suiteRegistry.ts`
+* **Implementation:**
+  - Add `homeMeta?: StandaloneHomeMeta` to `OsFeatureDefinition`
+  - Define homeMeta for pilot: { title, description, icon, primaryActions }
+* **Acceptance Criteria:**
+  - [ ] Registry extended
+  - [ ] Type-safe
+
+---
+
+### Phase 4: Verification
+
+> Final verification before merge.
+
+#### Task 4.1: Run All Gates
+
+* **Description:** Execute full test suite + SEAL gates
+* **Acceptance Criteria:**
+  - [ ] New standalone contract tests pass
+  - [ ] Existing launcher tests pass
+  - [ ] `pnpm type-check` passes
+  - [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+
+---
+
+## Risk Register (Slice 6)
+
+| ID | Risk | Severity | Likelihood | Mitigation | Rollback |
+|----|------|----------|------------|------------|----------|
+| R1 | PilotConsole functionality breaks | High | Low | Keep internal UI unchanged, only wrap | Revert shell wrapper |
+| R2 | New component causes layout shift | Med | Low | materialQualityGate + tests | Remove LiquidPanel |
+| R3 | A11y regressions | Med | Low | axe tests | Fix violations |
+
+---
+
+## Git Strategy (Slice 6)
+
+1. `test(standalone): contract + navigation + a11y tests for standalone homes`
+2. `feat(standalone): add StandaloneHomeShell with Liquid/Tactile primitives`
+3. `feat(standalone): migrate PilotConsole to shared shell`
+4. `chore(standalone): extend suiteRegistry with homeMeta`
+
+---
+
+## Dependencies (Slice 6)
+
+- [x] Slice 5 complete (Launcher personalization)
+- [x] LiquidPanel + TactileButton primitives available
+- [x] materialQualityGate working
+- [x] OS_FEATURES in suiteRegistry
+
+---
+
+## Document Status (Slice 6)
+
+- [x] Definition of Done defined
+- [x] All phases defined
+- [x] All tasks have acceptance criteria
+- [x] Risk register complete
+- [x] Git strategy defined
+- [x] Dependencies verified
 - [ ] Ready for execution

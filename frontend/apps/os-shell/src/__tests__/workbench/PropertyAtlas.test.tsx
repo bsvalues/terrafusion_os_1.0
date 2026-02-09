@@ -73,7 +73,7 @@ describe('PropertyAtlas', () => {
 
       // Find and click a layer toggle
       const zoningLayer = screen.getByTestId('layer-toggle-zoning');
-      
+
       // Initially off (or check aria-pressed)
       expect(zoningLayer).toHaveAttribute('aria-pressed', 'false');
 
