@@ -34,6 +34,7 @@ import {
     isWorkbenchSuite,
     type SuiteId,
 } from '../../config/suiteRegistry';
+import { useParcelContext } from '../../context/parcelContext';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
