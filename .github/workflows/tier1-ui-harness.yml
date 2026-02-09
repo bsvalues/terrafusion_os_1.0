@@ -1,5 +1,5 @@
-# Tier-1 UI Harness Suite - Release/tag gate (not PR-blocking)
-# Target: Full harness validation for v1.0.0+ tagging
+# Tier-1 UI Harness Suite - Universal PR gate (branch protection enforced)
+# Target: All PRs to main (required check per branch protection)
 # Philosophy: Comprehensive coverage of page-level component suites
 
 name: Tier-1 UI Harness Suite
@@ -12,11 +12,10 @@ on:
         required: false
         type: string
         default: 'tier1'
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/tier1-ui-harness.yml'
   schedule:
     # Nightly at 02:00 UTC (9pm ET / 6pm PT)
     - cron: '0 2 * * *'
