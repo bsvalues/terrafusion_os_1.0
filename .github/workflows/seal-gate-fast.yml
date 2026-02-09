@@ -381,7 +381,7 @@ jobs:
   # SEAL - Final gate (all fast checks must pass)
   # ═══════════════════════════════════════════════════════════════════════════
   seal:
-    name: 🔒 SEAL
+    name: 🔒 TerraFusion Seal Gate
     runs-on: ubuntu-latest
     timeout-minutes: 2
     if: always()
