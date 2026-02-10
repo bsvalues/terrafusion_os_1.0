@@ -53,6 +53,7 @@
     ],
     "pushSignal": [
       "accreditation-compat.yml",
+      "benton-runner-smoke.yml",
       "build-validation.yml",
       "ci-cd-main.yml",
       "ci-verified.yml",
@@ -88,6 +89,31 @@
       "perf-skill-audit.yml"
     ],
     "reusable": ["dotnet-test.yml", "autonomy-casefile-publisher.yml"]
+  },
+
+  "runners": {
+    "pilot": {
+      "labels": ["self-hosted", "benton", "linux-x64"],
+      "scope": ["prGates"],
+      "variable": "BENTON_RUNNER",
+      "fallback": "ubuntu-latest",
+      "toolchain": {
+        "dotnet": "8.0.x",
+        "node": "20",
+        "pnpm": ">=9.0.0",
+        "git": ">=2.30.0"
+      },
+      "network": {
+        "outbound": [
+          "github.com:443",
+          "api.github.com:443",
+          "*.actions.githubusercontent.com:443",
+          "registry.npmjs.org:443",
+          "api.nuget.org:443"
+        ]
+      }
+    },
+    "default": "ubuntu-latest"
   },
 
   "deprecated": {

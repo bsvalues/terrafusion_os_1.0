@@ -33,7 +33,7 @@ env:
 jobs:
   tier1-harness:
     name: 🧪 Tier-1 UI Harness Validation
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     timeout-minutes: 15
 
     steps:
