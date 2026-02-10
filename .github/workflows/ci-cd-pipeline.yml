@@ -272,7 +272,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.build-frontend.outputs.artifact-name }}
-          path: frontend/dist/
+          path: native-shell/ui/dist/
 
       - name: Upload backend artifacts
         uses: actions/upload-artifact@v4
