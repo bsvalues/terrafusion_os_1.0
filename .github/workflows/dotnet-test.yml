@@ -196,27 +196,28 @@ jobs:
             exit 0
           fi
 
-          script=$'import os,sys,xml.etree.ElementTree as ET\\n'
-          script+=$'path=sys.argv[1]\\n'
-          script+=$'root=ET.parse(path).getroot()\\n'
-          script+=$'line_rate=root.attrib.get(\"line-rate\")\\n'
-          script+=$'lines_valid=root.attrib.get(\"lines-valid\")\\n'
-          script+=$'lines_covered=root.attrib.get(\"lines-covered\")\\n'
-          script+=$'file_count=sum(1 for _ in root.iter(\"class\"))\\n'
-          script+=$'percent=\"N/A\"\\n'
-          script+=$'if line_rate:\\n'
-          script+=$'    try:\\n'
-          script+=$'        percent=f\"{float(line_rate)*100:.2f}%\"\\n'
-          script+=$'    except Exception:\\n'
-          script+=$'        percent=\"N/A\"\\n'
-          script+=$'summary=os.environ.get(\"GITHUB_STEP_SUMMARY\")\\n'
-          script+=$'if summary:\\n'
-          script+=$'    with open(summary,\"a\",encoding=\"utf-8\") as f:\\n'
-          script+=$'        f.write(\"## Coverage Summary\\\\n\\\\n\")\\n'
-          script+=$'        f.write(\"| Metric | Value |\\\\n\")\\n'
-          script+=$'        f.write(\"| --- | --- |\\\\n\")\\n'
-          script+=$'        f.write(f\"| Line coverage | {percent} |\\\\n\")\\n'
-          script+=$'        f.write(f\"| Lines covered | {lines_covered or \\'N/A\\'} |\\\\n\")\\n'
-          script+=$'        f.write(f\"| Lines valid | {lines_valid or \\'N/A\\'} |\\\\n\")\\n'
-          script+=$'        f.write(f\"| Files | {file_count if file_count else \\'N/A\\'} |\\\\n\")\\n'
-          python -c "$script" "$file"
+          python3 - "$file" <<'PYEOF'
+          import os, sys, xml.etree.ElementTree as ET
+          path = sys.argv[1]
+          root = ET.parse(path).getroot()
+          line_rate = root.attrib.get("line-rate")
+          lines_valid = root.attrib.get("lines-valid")
+          lines_covered = root.attrib.get("lines-covered")
+          file_count = sum(1 for _ in root.iter("class"))
+          percent = "N/A"
+          if line_rate:
+              try:
+                  percent = f"{float(line_rate)*100:.2f}%"
+              except Exception:
+                  percent = "N/A"
+          summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary:
+              with open(summary, "a", encoding="utf-8") as f:
+                  f.write("## Coverage Summary\n\n")
+                  f.write("| Metric | Value |\n")
+                  f.write("| --- | --- |\n")
+                  f.write(f"| Line coverage | {percent} |\n")
+                  f.write(f"| Lines covered | {lines_covered or 'N/A'} |\n")
+                  f.write(f"| Lines valid | {lines_valid or 'N/A'} |\n")
+                  f.write(f"| Files | {file_count if file_count else 'N/A'} |\n")
+          PYEOF
