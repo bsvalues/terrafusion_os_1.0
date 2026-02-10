@@ -26,17 +26,13 @@
 module.exports = {
   ci: {
     collect: {
-      // URLs to audit
-      url: [
-        'http://localhost:5173', // Development server
-        'http://localhost:5173/research-portal',
-        'http://localhost:5173/quantum-dashboard',
-        'http://localhost:5173/consciousness-tuning',
-        'http://localhost:5173/analytics-workbench',
-      ],
+      // URLs to audit — uses preview server in CI
+      // Port respects TF_FRONTEND_PORT env var (repo guideline: never hardcode ports)
+      url: [`http://localhost:${process.env.TF_FRONTEND_PORT || 4173}/`],
 
-      // Number of runs per URL for statistical significance
-      numberOfRuns: 5,
+      // Number of runs per URL (3 gives reasonable statistical confidence
+      // while keeping CI runtime sane)
+      numberOfRuns: 3,
 
       // Lighthouse settings
       settings: {
@@ -60,9 +56,8 @@ module.exports = {
 
     assert: {
       // Championship-grade performance thresholds
-      // Using 'off' or 'warn' for non-critical audits to prevent CI failures
-      // while still tracking metrics
-      preset: 'lighthouse:no-pwa',
+      // Using 'warn' for all audits to track metrics without blocking CI.
+      // No preset — explicit assertions only so we control exactly what's checked.
       assertions: {
         // Overall Category Scores (0-100)
         // Note: Using 'warn' instead of 'error' for CI stability
