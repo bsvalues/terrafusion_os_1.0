@@ -42,7 +42,7 @@ COPY --from=builder /app /scan/
 RUN trivy fs --format json --output /scan/security-report.json /scan/
 
 # Nginx serving stage
-FROM nginx:1.25-alpine AS runtime
+FROM nginx:1.29.5-alpine AS runtime
 
 # Install security updates
 RUN apk upgrade --no-cache && \
