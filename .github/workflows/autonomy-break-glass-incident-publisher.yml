@@ -390,10 +390,10 @@ jobs:
             # Download existing manifest and compare SHA (if we have expected SHA)
             if [ -n "$EXPECTED_MANIFEST_SHA" ]; then
               echo "🔍 Verifying existing release assets match expected manifest SHA..."
-              
+
               # Check if manifest exists in release
               MANIFEST_EXISTS=$(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' | grep -c "manifest" || echo "0")
-              
+
               if [ "$MANIFEST_EXISTS" -gt 0 ]; then
                 echo "✅ Manifest asset exists in release - noop allowed"
                 echo "sha_match=true" >> $GITHUB_OUTPUT

@@ -129,11 +129,11 @@ jobs:
           ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
         run: |
           TEST_TARGET="${{ inputs.test_project || inputs.solution }}"
-          FILTER_ARG=""
+          ARGS=()
           if [ -n "${{ inputs.test_filter }}" ]; then
-            FILTER_ARG="--filter \"${{ inputs.test_filter }}\""
+            ARGS+=(--filter "${{ inputs.test_filter }}")
           fi
-          eval dotnet test "$TEST_TARGET" -c ${{ inputs.configuration }} -v:minimal /nologo $FILTER_ARG
+          dotnet test "$TEST_TARGET" -c "${{ inputs.configuration }}" -v:minimal /nologo "${ARGS[@]}"
 
       - name: Tests with coverage (Release)
         if: ${{ inputs.enable_coverage }}
@@ -141,11 +141,11 @@ jobs:
           ConnectionStrings__DefaultConnection: ${{ inputs.connection_string }}
         run: |
           TEST_TARGET="${{ inputs.test_project || inputs.solution }}"
-          FILTER_ARG=""
+          ARGS=()
           if [ -n "${{ inputs.test_filter }}" ]; then
-            FILTER_ARG="--filter \"${{ inputs.test_filter }}\""
+            ARGS+=(--filter "${{ inputs.test_filter }}")
           fi
-          eval dotnet test "$TEST_TARGET" -c ${{ inputs.configuration }} -v:minimal /nologo $FILTER_ARG \
+          dotnet test "$TEST_TARGET" -c "${{ inputs.configuration }}" -v:minimal /nologo "${ARGS[@]}" \
             --collect:"XPlat Code Coverage" \
             --logger "trx;LogFileName=test-results.trx" \
             --results-directory ./artifacts/test-results

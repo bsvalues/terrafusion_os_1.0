@@ -115,7 +115,7 @@ jobs:
           node -e "
             const fs = require('fs');
             const lock = JSON.parse(fs.readFileSync('ACCREDITATION_REFERENCE.lock.json', 'utf8'));
-            
+
             const required = [
               'lockVersion',
               'contract',
@@ -123,14 +123,14 @@ jobs:
               'upgradePolicy',
               'referencePacket'
             ];
-            
+
             for (const field of required) {
               if (!(field in lock)) {
                 console.error('Missing required field:', field);
                 process.exit(1);
               }
             }
-            
+
             console.log('Lock file schema valid');
             console.log('Schema version:', lock.contract.schemaVersion);
             console.log('Supported versions:', lock.contract.supportedVersions);
@@ -142,21 +142,21 @@ jobs:
           node -e "
             const fs = require('fs');
             const lock = JSON.parse(fs.readFileSync('ACCREDITATION_REFERENCE.lock.json', 'utf8'));
-            
+
             const expectedRules = {
               sortedKeys: true,
               normalizedPaths: true,
               lfLineEndings: true,
               sha256Hashing: true
             };
-            
+
             for (const [key, value] of Object.entries(expectedRules)) {
               if (lock.determinismRules[key] !== value) {
                 console.error('Determinism rule changed:', key, 'expected:', value, 'got:', lock.determinismRules[key]);
                 process.exit(1);
               }
             }
-            
+
             console.log('Determinism rules unchanged');
           "
         working-directory: tools/registry/autonomy-viewer

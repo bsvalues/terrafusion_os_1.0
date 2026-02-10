@@ -348,7 +348,7 @@ jobs:
             if [ -d "$chart" ]; then
               echo "Extracting images from: $chart"
               helm template "$chart" | grep "image:" | awk '{print $2}' | tr -d '"' | sort -u > images.txt
-              
+
               while IFS= read -r image; do
                 echo "Scanning image: $image"
                 trivy image "$image" \
@@ -371,7 +371,7 @@ jobs:
             echo "::group::Snyk IaC Scanning"
             npm install -g snyk
             snyk auth $SNYK_TOKEN
-            
+
             for chart in charts/*; do
               if [ -d "$chart" ]; then
                 echo "Snyk scan: $chart"
@@ -592,7 +592,7 @@ jobs:
           for chart in packaged-charts/*.tgz; do
             CHART_NAME=$(basename "$chart" .tgz | sed 's/-[0-9].*//')
             echo "Deploying: $CHART_NAME"
-            
+
             helm upgrade --install "$CHART_NAME" "$chart" \
               --namespace staging \
               --create-namespace \
@@ -632,7 +632,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-staging
     if: |
-      github.event_name == 'push' && 
+      github.event_name == 'push' &&
       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') &&
       !inputs.skip_tests
     timeout-minutes: 20
@@ -686,12 +686,12 @@ jobs:
             echo "Testing service: $svc"
             SVC_NAME=$(echo "$svc" | cut -d: -f1)
             PORT=$(echo "$svc" | cut -d: -f2)
-            
+
             # Port-forward and test
             kubectl port-forward -n staging "svc/$SVC_NAME" "$PORT:$PORT" &
             PF_PID=$!
             sleep 3
-            
+
             curl -f "http://localhost:$PORT/health" || echo "Warning: Health check failed for $SVC_NAME"
             kill $PF_PID 2>/dev/null || true
           done
@@ -805,7 +805,7 @@ jobs:
           for chart in packaged-charts/*.tgz; do
             CHART_NAME=$(basename "$chart" .tgz | sed 's/-[0-9].*//')
             echo "Deploying: $CHART_NAME to PRODUCTION"
-            
+
             helm upgrade --install "$CHART_NAME" "$chart" \
               --namespace production \
               --create-namespace \

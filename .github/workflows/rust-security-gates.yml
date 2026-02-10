@@ -1,13 +1,13 @@
-name: "TerraFusion Rust Security Gates"
+name: 'TerraFusion Rust Security Gates'
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'rust-performance-engine/**'
       - '.github/workflows/rust-security.yml'
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'rust-performance-engine/**'
 
@@ -17,7 +17,7 @@ env:
 
 jobs:
   security-audit:
-    name: "🔒 Security Audit & Compliance"
+    name: '🔒 Security Audit & Compliance'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -64,7 +64,7 @@ jobs:
           echo "✅ Unsafe analysis complete"
 
   performance-validation:
-    name: "⚡ Performance Validation"
+    name: '⚡ Performance Validation'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -97,7 +97,7 @@ jobs:
           echo "✅ Agent coordination performance validated"
 
   code-quality:
-    name: "📊 Code Quality & Standards"
+    name: '📊 Code Quality & Standards'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -139,7 +139,7 @@ jobs:
           echo "✅ All tests passed"
 
   ffi-safety-check:
-    name: "🔗 FFI Safety Validation"
+    name: '🔗 FFI Safety Validation'
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'ffi') || contains(github.event.pull_request.title, 'ffi')
     steps:
@@ -171,7 +171,7 @@ jobs:
           echo "✅ Miri validation passed"
 
   unsafe-code-gatekeeper:
-    name: "⚠️ Unsafe Code Gatekeeper"
+    name: '⚠️ Unsafe Code Gatekeeper'
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'unsafe') || contains(github.event.pull_request.title, 'unsafe')
     steps:
@@ -186,10 +186,10 @@ jobs:
         run: |
           echo "🚨 UNSAFE CODE DETECTED - Enhanced Review Required"
           echo "This commit contains unsafe code. Triggering enhanced review process."
-          
+
           # Find all unsafe blocks
           find . -name "*.rs" -exec grep -l "unsafe" {} \; > unsafe_files.txt
-          
+
           if [ -s unsafe_files.txt ]; then
             echo "Files containing unsafe code:"
             cat unsafe_files.txt
@@ -203,7 +203,7 @@ jobs:
           fi
 
   government-compliance:
-    name: "🏛️ Government Compliance Validation"
+    name: '🏛️ Government Compliance Validation'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -225,18 +225,18 @@ jobs:
         working-directory: rust-performance-engine
         run: |
           echo "🏛️ Validating FISMA compliance..."
-          
+
           # Check for cryptographic implementations
           if grep -r "ring::" crates/; then
             echo "✅ Using approved cryptographic library (ring)"
           fi
-          
+
           # Validate no banned dependencies
           if cargo tree | grep -E "(openssl|native-tls)"; then
             echo "❌ Banned cryptographic dependencies detected"
             exit 1
           fi
-          
+
           echo "✅ FISMA compliance validated"
 
       - name: Generate compliance report
@@ -253,7 +253,7 @@ jobs:
           find . -name "*.rs" -exec grep -c "unsafe" {} \; | awk -F: '$2>0 {total+=$2} END {print "Total unsafe blocks:", total+0}' >> compliance_report.md
 
   integration-tests:
-    name: "🔄 Integration Testing"
+    name: '🔄 Integration Testing'
     runs-on: ubuntu-latest
     services:
       postgres:
