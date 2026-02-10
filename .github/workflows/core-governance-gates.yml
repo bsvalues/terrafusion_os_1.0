@@ -35,7 +35,7 @@ jobs:
   governed-spine:
     needs: changes
     if: needs.changes.outputs.core == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -51,7 +51,7 @@ jobs:
   phase85-tools:
     needs: changes
     if: needs.changes.outputs.core == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -67,7 +67,7 @@ jobs:
   phase86-toolrunner:
     needs: changes
     if: needs.changes.outputs.core == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -83,7 +83,7 @@ jobs:
   check-generated-js:
     needs: changes
     if: needs.changes.outputs.core == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

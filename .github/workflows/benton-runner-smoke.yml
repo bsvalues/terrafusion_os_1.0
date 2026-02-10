@@ -1,0 +1,241 @@
+name: Benton Runner Smoke
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Validates that the Benton County self-hosted runner has the toolchain,
+# network access, and artifact pipeline required to execute PR gates.
+#
+# This workflow ONLY runs on the self-hosted runner. If the runner is offline,
+# the workflow simply queues indefinitely (no GitHub-hosted fallback).
+#
+# Gate: BENTON_RUNNER repo variable must be 'true' to trigger on push.
+#       Manual dispatch always runs (for initial runner provisioning).
+#
+# Success criteria (from pilot plan):
+#   ✅ RunnerLabels_Resolve  — job is picked up by a runner with expected labels
+#   ✅ ToolchainVersions_MatchPlatformJson — dotnet, node, pnpm, git versions match
+#   ✅ ArtifactRoundtrip      — upload + download artifact pipeline works
+#   ✅ NetworkConnectivity     — outbound HTTPS to GitHub, npm, NuGet registries
+# ═══════════════════════════════════════════════════════════════════════════════
+
+on:
+  workflow_dispatch: # Always available for manual provisioning checks
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: benton-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runner-smoke:
+    name: 🏛️ Benton Runner Smoke
+    # Only run on self-hosted runner. On manual dispatch always run;
+    # otherwise gate on the BENTON_RUNNER variable.
+    if: github.event_name == 'workflow_dispatch' || vars.BENTON_RUNNER == 'true'
+    runs-on: [self-hosted, benton, linux-x64]
+    timeout-minutes: 10
+
+    steps:
+      - name: Runner labels resolved
+        id: labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "✅ RunnerLabels_Resolve — job picked up by self-hosted runner"
+          echo "   Runner name: $RUNNER_NAME"
+          echo "   Runner OS:   $RUNNER_OS"
+          echo "   Runner arch: $RUNNER_ARCH"
+          echo "   Workspace:   $RUNNER_WORKSPACE"
+
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Toolchain — dotnet
+        id: dotnet
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking dotnet..."
+          if ! command -v dotnet &>/dev/null; then
+            echo "::error::dotnet SDK not found on runner"
+            exit 1
+          fi
+          DOTNET_VER=$(dotnet --version)
+          echo "  dotnet version: $DOTNET_VER"
+          # platform.json requires 8.0.x
+          if [[ "$DOTNET_VER" != 8.0.* ]]; then
+            echo "::error::dotnet version $DOTNET_VER does not match platform.json requirement 8.0.x"
+            exit 1
+          fi
+          echo "✅ dotnet 8.0.x matched"
+
+      - name: Toolchain — node
+        id: node
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking node..."
+          if ! command -v node &>/dev/null; then
+            echo "::error::Node.js not found on runner"
+            exit 1
+          fi
+          NODE_VER=$(node --version)
+          echo "  node version: $NODE_VER"
+          # platform.json requires node 20
+          if [[ "$NODE_VER" != v20.* ]]; then
+            echo "::error::node version $NODE_VER does not match platform.json requirement 20"
+            exit 1
+          fi
+          echo "✅ node 20 matched"
+
+      - name: Toolchain — pnpm
+        id: pnpm
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking pnpm..."
+          if ! command -v pnpm &>/dev/null; then
+            echo "::error::pnpm not found on runner"
+            exit 1
+          fi
+          PNPM_VER=$(pnpm --version)
+          echo "  pnpm version: $PNPM_VER"
+          # platform.json requires >=9.0.0
+          MAJOR=$(echo "$PNPM_VER" | cut -d. -f1)
+          if [ "$MAJOR" -lt 9 ]; then
+            echo "::error::pnpm version $PNPM_VER below required >=9.0.0"
+            exit 1
+          fi
+          echo "✅ pnpm >=9.0.0 matched"
+
+      - name: Toolchain — git
+        id: git-check
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking git..."
+          GIT_VER=$(git --version | awk '{print $3}')
+          echo "  git version: $GIT_VER"
+          # platform.json requires >=2.30.0
+          MAJOR=$(echo "$GIT_VER" | cut -d. -f1)
+          MINOR=$(echo "$GIT_VER" | cut -d. -f2)
+          if [ "$MAJOR" -lt 2 ] || { [ "$MAJOR" -eq 2 ] && [ "$MINOR" -lt 30 ]; }; then
+            echo "::error::git version $GIT_VER below required >=2.30.0"
+            exit 1
+          fi
+          echo "✅ git >=2.30.0 matched"
+
+      - name: Network — GitHub API
+        id: net-github
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Testing github.com:443..."
+          HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 https://api.github.com/zen || echo "000")
+          if [ "$HTTP_CODE" = "000" ]; then
+            echo "::error::Cannot reach api.github.com (firewall or DNS issue)"
+            exit 1
+          fi
+          echo "  api.github.com → HTTP $HTTP_CODE"
+          echo "✅ GitHub API reachable"
+
+      - name: Network — npm registry
+        id: net-npm
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Testing registry.npmjs.org:443..."
+          HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 https://registry.npmjs.org/-/ping || echo "000")
+          if [ "$HTTP_CODE" = "000" ]; then
+            echo "::error::Cannot reach registry.npmjs.org (firewall or DNS issue)"
+            exit 1
+          fi
+          echo "  registry.npmjs.org → HTTP $HTTP_CODE"
+          echo "✅ npm registry reachable"
+
+      - name: Network — NuGet registry
+        id: net-nuget
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Testing api.nuget.org:443..."
+          HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 https://api.nuget.org/v3/index.json || echo "000")
+          if [ "$HTTP_CODE" = "000" ]; then
+            echo "::error::Cannot reach api.nuget.org (firewall or DNS issue)"
+            exit 1
+          fi
+          echo "  api.nuget.org → HTTP $HTTP_CODE"
+          echo "✅ NuGet registry reachable"
+
+      - name: Artifact roundtrip — upload
+        id: artifact-write
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _smoke-artifact
+          echo '{"pilot":"benton","timestamp":"'"$(date -u +%FT%TZ)"'","runner":"'"$RUNNER_NAME"'"}' > _smoke-artifact/probe.json
+          sha256sum _smoke-artifact/probe.json | awk '{print $1}' > _smoke-artifact/probe.sha256
+          echo "  SHA256: $(cat _smoke-artifact/probe.sha256)"
+          echo "✅ Probe artifact written"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benton-smoke-probe-${{ github.run_id }}
+          path: |
+            _smoke-artifact/probe.json
+            _smoke-artifact/probe.sha256
+          retention-days: 1
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: benton-smoke-probe-${{ github.run_id }}
+          path: _smoke-download
+
+      - name: Artifact roundtrip — verify
+        id: artifact-verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f _smoke-download/probe.json ]; then
+            echo "::error::Artifact roundtrip failed — probe.json not found after download"
+            exit 1
+          fi
+          if [ ! -f _smoke-download/probe.sha256 ]; then
+            echo "::error::Artifact roundtrip failed — probe.sha256 not found after download"
+            exit 1
+          fi
+          EXPECTED=$(cat _smoke-download/probe.sha256)
+          ACTUAL=$(sha256sum _smoke-download/probe.json | awk '{print $1}')
+          echo "  Expected SHA256: $EXPECTED"
+          echo "  Actual SHA256:   $ACTUAL"
+          if [ "$EXPECTED" != "$ACTUAL" ]; then
+            echo "::error::Artifact roundtrip failed — SHA256 mismatch (data corruption)"
+            exit 1
+          fi
+          echo "Downloaded artifact contents:"
+          cat _smoke-download/probe.json
+          echo ""
+          echo "✅ ArtifactRoundtrip — upload + download + SHA256 verified"
+
+      - name: Smoke Summary
+        if: always()
+        shell: bash
+        run: |
+          icon() { if [ "$1" = "success" ]; then echo "✅"; else echo "❌"; fi; }
+          echo "## 🏛️ Benton Runner Smoke Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Runner:** \`$RUNNER_NAME\` (\`$RUNNER_OS\`/\`$RUNNER_ARCH\`)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Runner Labels Resolve | $(icon '${{ steps.labels.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| dotnet 8.0.x | $(icon '${{ steps.dotnet.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| node 20 | $(icon '${{ steps.node.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| pnpm >=9 | $(icon '${{ steps.pnpm.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| git >=2.30 | $(icon '${{ steps.git-check.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| GitHub API | $(icon '${{ steps.net-github.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| npm registry | $(icon '${{ steps.net-npm.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| NuGet registry | $(icon '${{ steps.net-nuget.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact Roundtrip | $(icon '${{ steps.artifact-verify.outcome }}') |" >> $GITHUB_STEP_SUMMARY

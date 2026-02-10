@@ -116,7 +116,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════
   frontend-fast:
     name: 🎨 Frontend Fast Gate
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     timeout-minutes: 8
     needs: classify
     if: needs.classify.outputs.skip_frontend != 'true' && needs.classify.outputs.docs_only != 'true'
@@ -203,7 +203,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════
   backend-fast:
     name: ⚙️ Backend Fast Gate
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     timeout-minutes: 8
     needs: classify
     if: needs.classify.outputs.skip_backend != 'true' && needs.classify.outputs.docs_only != 'true'
@@ -244,7 +244,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════
   governance-fast:
     name: 🔒 Governance Fast Gate
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     timeout-minutes: 5
     needs: classify
     if: needs.classify.outputs.docs_only != 'true'
