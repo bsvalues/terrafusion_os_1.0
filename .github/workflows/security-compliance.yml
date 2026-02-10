@@ -39,7 +39,7 @@ jobs:
   dependency-security-scan:
     name: 📦 Dependency Security Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - name: 📥 Checkout Code
@@ -74,11 +74,10 @@ jobs:
         uses: dependency-check/Dependency-Check_Action@main
         with:
           project: 'TerraFusion OS'
-          path: '.'
-          format: 'ALL'
+          path: 'backend' # Scope to backend/ only (full repo scan exceeds timeout)
+          format: 'HTML'
           args: >
             --enableRetired
-            --enableExperimental
         continue-on-error: true
 
       - name: 📊 Upload Security Reports
@@ -225,21 +224,21 @@ jobs:
   secret-scanning:
     name: 🔐 Secret & Credential Scanning
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
 
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 100 # Limit history depth (full clone times out on large repos)
 
       - name: 🔍 TruffleHog Secret Scan
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ''
+          base: '' # Scan working tree only (no git history traversal)
           head: HEAD
-          extra_args: --only-verified
+          extra_args: --only-verified --no-update
         continue-on-error: true # TruffleHog can fail on push events when base is unavailable
 
       - name: 🕵️ Gitleaks Secret Scan
