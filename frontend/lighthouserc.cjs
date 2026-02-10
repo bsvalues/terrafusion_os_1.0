@@ -26,8 +26,9 @@
 module.exports = {
   ci: {
     collect: {
-      // URLs to audit — uses preview server (port 4173) in CI
-      url: ['http://localhost:4173/'],
+      // URLs to audit — uses preview server in CI
+      // Port respects TF_FRONTEND_PORT env var (repo guideline: never hardcode ports)
+      url: [`http://localhost:${process.env.TF_FRONTEND_PORT || 4173}/`],
 
       // Number of runs per URL (3 gives reasonable statistical confidence
       // while keeping CI runtime sane)

@@ -17,8 +17,9 @@ concurrency:
 
 jobs:
   # ── Lighthouse Performance Audit ──────────────────────────────────
-  # Builds the frontend, starts a Vite preview server on port 4173,
-  # and runs Lighthouse CI against that server using lighthouserc.cjs.
+  # Builds the frontend, starts a Vite preview server on
+  # TF_FRONTEND_PORT (default 4173), and runs Lighthouse CI against
+  # that server using lighthouserc.cjs.
   lighthouse-audit:
     name: 'Lighthouse Performance Audit'
     runs-on: ubuntu-latest
@@ -57,12 +58,14 @@ jobs:
 
       - name: Start preview server
         run: |
-          pnpm -C frontend run preview &
-          pnpm exec wait-on http://localhost:4173 -t 60000
+          PREVIEW_PORT="${TF_FRONTEND_PORT:-4173}"
+          pnpm -C frontend run preview -- --port "$PREVIEW_PORT" --strict-port &
+          pnpm exec wait-on "http://localhost:${PREVIEW_PORT}" -t 60000
 
       - name: Run Lighthouse CI
         run: pnpm exec lhci autorun --config=frontend/lighthouserc.cjs
         env:
+          TF_FRONTEND_PORT: ${{ vars.TF_FRONTEND_PORT || '4173' }}
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
       - name: Upload Lighthouse results
@@ -125,8 +128,12 @@ jobs:
           # Generate bundle stats — JS only, excluding source maps
           find native-shell/ui/dist/assets -name '*.js' ! -name '*.map' \
             -exec du -h {} \; 2>/dev/null \
-            | sort -h > frontend/bundle-stats.txt \
-            || echo "No JS files found" > frontend/bundle-stats.txt
+            | sort -h > frontend/bundle-stats.txt
+
+          # find exits 0 even with no matches, so check file content
+          if [ ! -s frontend/bundle-stats.txt ]; then
+            echo "No JS files found" > frontend/bundle-stats.txt
+          fi
 
           du -sh native-shell/ui/dist > frontend/dist-size.txt
         env:
@@ -154,7 +161,7 @@ jobs:
 
           # Budget: measure JS-only size (no source maps, no CSS, no HTML)
           # Sum of all .js files (excluding .js.map) in KB
-          JS_SIZE_KB=$(find native-shell/ui/dist -name '*.js' ! -name '*.map' \
+          JS_SIZE_KB=$(find native-shell/ui/dist/assets -name '*.js' ! -name '*.map' \
             -exec du -sk {} + 2>/dev/null \
             | awk '{sum+=$1}END{print sum+0}')
           BUDGET_KB=2048
