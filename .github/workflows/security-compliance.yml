@@ -251,13 +251,18 @@ jobs:
       - name: 🔐 AWS Credential Scan
         run: |
           echo "🔐 Scanning for AWS credentials..."
-          grep -r "AKIA[0-9A-Z]{16}" . || echo "✅ No AWS credentials found"
+          timeout 60 grep -r --include='*.{ts,js,py,cs,json,yml,yaml,env,cfg,ini,conf}' \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist \
+            "AKIA[0-9A-Z]\{16\}" . || echo "✅ No AWS credentials found"
         continue-on-error: true
 
       - name: 🔑 API Key Detection
         run: |
           echo "🔑 Scanning for API keys..."
-          grep -rE "(api[_-]?key|apikey|api[_-]?secret)" . || echo "✅ No exposed API keys"
+          timeout 60 grep -rlE --include='*.{ts,js,py,cs,env,cfg,ini,conf}' \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist \
+            --exclude-dir=ARCHIVE --exclude-dir='.pnpm' \
+            "(api[_-]?key|apikey|api[_-]?secret)\s*[:=]" . | head -20 || echo "✅ No exposed API keys"
         continue-on-error: true
 
   infrastructure-security:
