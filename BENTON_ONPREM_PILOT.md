@@ -158,7 +158,30 @@ endpoints automatically.
 
 ---
 
-## 6. Runner Provisioning Checklist
+## 6. Runner Provisioning
+
+### One-command bootstrap (recommended)
+
+```bash
+# 1. Generate a registration token
+gh api repos/bsvalues/terrafusion_os_1.0/actions/runners/registration-token \
+  --method POST --jq '.token'
+
+# 2. Run the bootstrap script (installs toolchains, registers runner, starts service)
+sudo ./benton/bootstrap-runner.sh --token <TOKEN>
+```
+
+The script is **idempotent** — safe to re-run. It will:
+- Install/verify dotnet 8.0.x, node 20, pnpm >=9, git >=2.30
+- Test network connectivity to GitHub, npm, NuGet
+- Create a `tf-runner` service account
+- Download and register the GitHub Actions runner
+- Install and start a hardened systemd service (`tf-runner.service`)
+- Report Docker availability (informational, never blocks)
+
+Use `--dry-run` to preview without making changes. Use `--proxy <url>` for
+environments behind an HTTP proxy. See `./benton/bootstrap-runner.sh --help`
+for all options.
 
 ### Prerequisites
 
@@ -169,7 +192,9 @@ endpoints automatically.
 - [ ] Outbound HTTPS to hosts listed above
 - [ ] Docker is **NOT required** (all PR-gate jobs are pure compute)
 
-### Software installation
+### Manual installation (alternative)
+
+If the bootstrap script cannot be used, install manually:
 
 ```bash
 # .NET SDK 8.0.x
@@ -217,6 +242,16 @@ sudo ./svc.sh start
 #    → New variable: BENTON_RUNNER = true
 
 # 3. Open a test PR and verify all gates route to the runner
+```
+
+### Service management
+
+```bash
+systemctl status  tf-runner       # Check runner status
+systemctl restart tf-runner       # Restart after config change
+systemctl stop    tf-runner       # Stop runner
+journalctl -u tf-runner -f        # Tail logs
+journalctl -u tf-runner -n 50     # Last 50 log lines
 ```
 
 ---
@@ -288,3 +323,4 @@ _(To be updated after first runner execution)_
 | 2026-02-10 | Trivial jobs stay on ubuntu-latest | No value in routing status-check jobs |
 | 2026-02-10 | Zero secrets baseline | PR gates don't use secrets; document future strategy |
 | 2026-02-10 | No-Docker runner | All 8 routed jobs audited — zero Docker deps; `no-docker` label added; smoke checks Docker informally |
+| 2026-02-10 | Bootstrap script | One-command provisioning (`benton/bootstrap-runner.sh`); idempotent; installs toolchains, registers runner, starts systemd service |
