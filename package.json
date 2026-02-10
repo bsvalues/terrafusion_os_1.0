@@ -81,6 +81,7 @@
     "type-check": "tsc -p tsconfig.core.json",
     "typecheck:core": "tsc -p tsconfig.core.json",
     "test:governed": "pnpm run type-check && node --test os-platform/core/tests/phase83-tools.test.mjs",
+    "lint:platform": "node scripts/platform-lint.mjs",
     "doctor": "node scripts/doctor.mjs",
     "trace:query": "node scripts/trace-query.mjs",
     "support:bundle": "node scripts/support-bundle.mjs",

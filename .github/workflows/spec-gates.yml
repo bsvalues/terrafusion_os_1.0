@@ -7,12 +7,6 @@ on:
       - 'docs/architecture/specs/**'
       - 'policy/**'
       - '.github/workflows/spec-gates.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'docs/architecture/specs/**'
-      - 'policy/**'
-      - '.github/workflows/spec-gates.yml'
   workflow_dispatch:
 
 env:

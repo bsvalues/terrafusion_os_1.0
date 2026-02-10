@@ -9,26 +9,8 @@
 name: 📦 Deps Fast Lane
 
 on:
-  pull_request:
-    branches: [main, develop]
-    paths:
-      # NPM/PNPM
-      - '**/package.json'
-      - '**/pnpm-lock.yaml'
-      - '**/yarn.lock'
-      - '**/package-lock.json'
-      # .NET
-      - '**/*.csproj'
-      - '**/Directory.Packages.props'
-      - '**/NuGet.config'
-      # Docker
-      - '**/Dockerfile'
-      - '**/*.dockerfile'
-      # Python
-      - '**/requirements*.txt'
-      - '**/pyproject.toml'
-      - '**/Pipfile*'
-
+  push:
+    branches: [main]
 permissions:
   contents: read
 

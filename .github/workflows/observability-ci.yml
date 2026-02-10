@@ -36,16 +36,6 @@ on:
       - 'grafana/**'
       - '.github/workflows/observability-ci.yml'
 
-  pull_request:
-    branches:
-      - main
-      - develop
-    paths:
-      - 'dashboards/**'
-      - 'prometheus/**'
-      - 'alerting/**'
-      - 'grafana/**'
-
   workflow_dispatch:
     inputs:
       environment:

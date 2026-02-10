@@ -1,13 +1,6 @@
 name: ♿ Accessibility Audit (WCAG 2.1)
 
 on:
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'frontend/src/components/**'
-      - 'frontend/src/pages/**'
-      - 'tests/e2e/frontend/accessibility/**'
-      - '.github/workflows/accessibility-audit.yml'
   push:
     branches: [main]
   schedule:

@@ -7,12 +7,6 @@ on:
       - 'applications/terraforge-suite/**'
       - 'scripts/e2e-pipeline.ts'
       - '.github/workflows/terraforge-ci.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'applications/terraforge-suite/**'
-      - 'scripts/e2e-pipeline.ts'
-      - '.github/workflows/terraforge-ci.yml'
   schedule:
     # Nightly at 3 AM UTC - runs steel mode E2E
     - cron: '0 3 * * *'

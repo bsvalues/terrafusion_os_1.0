@@ -9,15 +9,6 @@ on:
       - 'Directory.Build.props'
       - 'Directory.Build.targets'
       - '.github/workflows/build-validation.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'backend/**'
-      - '*.sln'
-      - 'Directory.Build.props'
-      - 'Directory.Build.targets'
-      - '.github/workflows/build-validation.yml'
-
 jobs:
   validate-build:
     name: Validate Perfect Build

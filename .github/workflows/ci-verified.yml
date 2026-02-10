@@ -3,9 +3,6 @@ name: TerraFusion OS - Verified Build & Test
 on:
   push:
     branches: [main, develop, 'feature/**']
-  pull_request:
-    branches: [main, develop]
-
 env:
   DOTNET_VERSION: '8.0.x'
   NODE_VERSION: '20.x'

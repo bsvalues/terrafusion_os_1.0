@@ -37,16 +37,6 @@ on:
       - 'vulnerability-scanning/**'
       - '.github/workflows/security-compliance-ci.yml'
 
-  pull_request:
-    branches:
-      - main
-      - develop
-    paths:
-      - 'policies/**'
-      - 'compliance/**'
-      - 'security-baselines/**'
-      - 'poam/**'
-
   schedule:
     # Run daily security scans at 2 AM UTC
     - cron: '0 2 * * *'

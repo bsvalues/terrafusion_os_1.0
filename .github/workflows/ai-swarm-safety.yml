@@ -1,16 +1,8 @@
 name: AI Swarm Safety Gate
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, labeled, unlabeled]
-    paths:
-      - 'config/ai-*'
-      - 'backend/**/AI/**'
-      - 'backend/**/Agents/**'
-      - 'frontend/**/ai/**'
-      - 'frontend/**/agents/**'
-      - '.github/workflows/ai-swarm-safety.yml'
-
+  push:
+    branches: [main]
 jobs:
   check-ai-swarm-safety:
     name: Check AI-swarm safety

@@ -1,9 +1,6 @@
 name: Design Token CI
 
 on:
-  pull_request:
-    paths:
-      - 'design/tokens.json'
   push:
     branches:
       - main

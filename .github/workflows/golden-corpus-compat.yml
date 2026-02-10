@@ -1,11 +1,6 @@
 name: Golden Corpus Compatibility Gate
 
 on:
-  pull_request:
-    paths:
-      - 'tools/registry/autonomy-viewer/src/**'
-      - 'tools/registry/autonomy-viewer/test/**'
-      - 'golden/**'
   push:
     branches: [main]
     paths:

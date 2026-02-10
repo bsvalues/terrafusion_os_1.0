@@ -6,11 +6,6 @@ on:
     paths:
       - 'rust-performance-engine/**'
       - '.github/workflows/rust-security.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'rust-performance-engine/**'
-
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1

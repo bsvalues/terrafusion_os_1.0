@@ -6,11 +6,6 @@ on:
       - 'backend/**'
       - 'counties/benton/**'
       - '.github/workflows/benton.yml'
-  pull_request:
-    paths:
-      - 'backend/**'
-      - 'counties/benton/**'
-
 jobs:
   build-test:
     runs-on: ubuntu-latest

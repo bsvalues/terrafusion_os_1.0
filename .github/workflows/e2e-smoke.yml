@@ -1,17 +1,10 @@
 name: E2E Smoke - TerraFusion cOS
 
 on:
-  pull_request:
-    paths:
-      - 'frontend/**'
-      - 'backend/**'
-      - 'src/**'
-      - 'apps/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/e2e-smoke.yml'
   workflow_dispatch:
 
+  push:
+    branches: [main]
 jobs:
   smoke:
     runs-on: ubuntu-latest
@@ -29,7 +22,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: pnpm
           cache-dependency-path: |
             terrafusion-cos/frontend_engine/pnpm-lock.yaml

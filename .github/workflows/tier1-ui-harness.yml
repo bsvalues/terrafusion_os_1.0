@@ -5,6 +5,8 @@
 name: Tier-1 UI Harness Suite
 
 on:
+  pull_request:
+    branches: [main, develop]
   workflow_dispatch:
     inputs:
       test_filter:
@@ -12,8 +14,6 @@ on:
         required: false
         type: string
         default: 'tier1'
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
   schedule:

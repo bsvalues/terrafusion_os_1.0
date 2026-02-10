@@ -1,13 +1,6 @@
 name: 📸 Visual Regression Testing
 
 on:
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'frontend/src/components/**'
-      - 'frontend/src/styles/**'
-      - 'tests/e2e/frontend/visual/**'
-      - '.github/workflows/visual-regression.yml'
   push:
     branches: [main]
 

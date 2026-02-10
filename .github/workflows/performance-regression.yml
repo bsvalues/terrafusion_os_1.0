@@ -23,12 +23,6 @@
 name: Performance Regression Detection
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'frontend/**'
-      - 'package.json'
-      - 'vite.config.ts'
   push:
     branches: [main]
   workflow_dispatch:

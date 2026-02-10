@@ -375,7 +375,13 @@ jobs:
           test -f .snyk && echo "✅ .snyk exists" || echo "⚠️ .snyk missing (optional)"
           # Solution file (CRITICAL - fail if missing)
           test -f backend/TerraFusion.sln || { echo "::error::Missing backend/TerraFusion.sln"; exit 1; }
-          echo "✅ Solution exists"
+          # Platform contract (CRITICAL - single source of truth)
+          test -f platform.json || { echo "::error::Missing platform.json (platform contract)"; exit 1; }
+          echo "✅ Critical files verified"
+
+      - name: Platform contract lint
+        shell: bash
+        run: node scripts/platform-lint.mjs
 
   # ═══════════════════════════════════════════════════════════════════════════
   # SEAL - Final gate (all fast checks must pass)

@@ -1,13 +1,10 @@
 name: CI • Rust Verify
 
 on:
-  pull_request:
-    paths:
-      - 'terrafusion-cos/**'
-      - 'ops/**'
-      - 'Makefile'
   workflow_dispatch: {}
 
+  push:
+    branches: [main]
 permissions:
   contents: read
 

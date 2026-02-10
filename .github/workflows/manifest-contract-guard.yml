@@ -1,13 +1,6 @@
 name: manifest-contract-guard
 
 on:
-  pull_request:
-    paths:
-      - 'applications/**/terrafusion.app.json'
-      - 'tools/registry/terrafusion.app.schema.json'
-      - 'tools/dev/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
   push:
     branches:
       - main

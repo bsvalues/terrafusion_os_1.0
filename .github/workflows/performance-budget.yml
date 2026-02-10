@@ -1,11 +1,6 @@
 name: 'Performance Budget & Lighthouse'
 
 on:
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/performance-budget.yml'
   push:
     branches: [main]
   schedule:
