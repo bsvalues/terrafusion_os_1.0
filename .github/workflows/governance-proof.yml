@@ -1,17 +1,10 @@
 name: governance-proof
 
 on:
-  pull_request:
-    branches: [main, master]
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'src/**'
-      - 'policy/**'
-      - 'tools/**'
-      - '.github/workflows/governance-proof.yml'
   workflow_dispatch:
 
+  push:
+    branches: [main]
 permissions:
   contents: read
   actions: read

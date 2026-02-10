@@ -5,10 +5,6 @@ name: TerraFusion master CI/CD
       - main
       - develop
       - staging
-  pull_request:
-    branches:
-      - main
-      - develop
   schedule:
     - cron: 0 2 * * *
 env:

@@ -14,11 +14,6 @@ on:
       - 'backend/src/TerraFusion.Core/RAG/**'
       - '.github/workflows/gpt-rag.yml'
     branches: [main, develop, 'feature/**']
-  pull_request:
-    paths:
-      - 'backend/src/TerraFusion.AI/**'
-      - 'backend/src/TerraFusion.Core/GPT/**'
-      - 'backend/src/TerraFusion.Core/RAG/**'
   workflow_dispatch:
 
 env:

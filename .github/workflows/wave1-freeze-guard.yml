@@ -1,11 +1,8 @@
 name: Wave 1 Template Freeze
 
 on:
-  pull_request:
-    paths:
-      - 'docs/ops/WAVE_1_*.md'
-      - 'docs/ops/templates/WAVE_1_*.md'
-
+  push:
+    branches: [main]
 jobs:
   freeze-check:
     name: 🔒 Wave 1 Template Freeze Guard

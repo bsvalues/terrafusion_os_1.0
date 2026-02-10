@@ -19,12 +19,6 @@ on:
     paths:
       - 'tools/registry/autonomy-viewer/**'
       - '.github/workflows/county-kit-parity.yml'
-  pull_request:
-    branches: [main, master]
-    paths:
-      - 'tools/registry/autonomy-viewer/**'
-      - '.github/workflows/county-kit-parity.yml'
-
 jobs:
   parity-check:
     strategy:

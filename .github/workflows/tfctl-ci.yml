@@ -2,24 +2,18 @@ name: tfctl CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'tfctl.py'
       - 'tests/**'
       - '.github/workflows/tfctl-ci.yml'
-  pull_request:
-    paths:
-      - 'tfctl.py'
-      - 'tests/**'
-      - '.github/workflows/tfctl-ci.yml'
-
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python: [ '3.10', '3.11', '3.12' ]
+        python: ['3.10', '3.11', '3.12']
     env:
       TF_API_PORT: 0
     steps:

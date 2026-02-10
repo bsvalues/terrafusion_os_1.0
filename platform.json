@@ -1,0 +1,100 @@
+{
+  "$schema": "https://terrafusion.dev/platform-contract.schema.json",
+  "$comment": "Single source of truth. Every CI workflow, script, and config MUST consume from here—never hardcode.",
+
+  "sdk": {
+    "dotnet": "8.0.x",
+    "node": "20"
+  },
+
+  "paths": {
+    "backend": {
+      "root": "backend",
+      "solution": "backend/TerraFusion.sln",
+      "apiProject": "backend/src/TerraFusion.API",
+      "dockerfile": "backend/Dockerfile"
+    },
+    "frontend": {
+      "root": "frontend",
+      "buildOutput": "native-shell/ui/dist"
+    },
+    "osCore": {
+      "root": "os-platform/core",
+      "tests": "os-platform/core/tests"
+    }
+  },
+
+  "ports": {
+    "api": { "env": "TF_API_PORT", "default": 5046 },
+    "frontend": { "env": "TF_FRONTEND_PORT", "default": 3102 },
+    "shell": { "env": "TF_SHELL_PORT", "default": 3103 },
+    "desktop": { "env": "TF_DESKTOP_PORT", "default": 3104 },
+    "levy": { "env": "TF_LEVY_PORT", "default": 3202 },
+    "trends": { "env": "TF_TRENDS_PORT", "default": 3203 },
+    "consciousness": { "env": "TF_CONSCIOUSNESS_PORT", "default": 8080 },
+    "postgres": { "env": "TF_POSTGRES_PORT", "default": 5432 },
+    "redis": { "env": "TF_REDIS_PORT", "default": 6379 }
+  },
+
+  "ci": {
+    "prGates": [
+      "seal-gate-fast.yml",
+      "core-governance-gates.yml",
+      "tier1-ui-harness.yml"
+    ],
+    "eventReactive": [
+      "autonomy-break-glass-guard.yml",
+      "autonomy-break-glass-incident-publisher.yml",
+      "autonomy-evidence-publisher.yml",
+      "autonomy-incident-publisher.yml",
+      "autonomy-tpi-guard.yml",
+      "autonomy-incident-label-guard.yml",
+      "autonomy-incident-triage.yml"
+    ],
+    "pushSignal": [
+      "accreditation-compat.yml",
+      "build-validation.yml",
+      "ci-cd-main.yml",
+      "ci-verified.yml",
+      "ci.yml",
+      "code-intel.yml",
+      "county-kit-parity.yml",
+      "deployment.yml",
+      "frontend-ci-isolated.yml",
+      "gate-pipeline.yml",
+      "gpt-rag.yml",
+      "infrastructure-cicd.yml",
+      "release-validation.yml",
+      "sbom.yml",
+      "security-compliance-ci.yml",
+      "security-compliance.yml",
+      "slsa-provenance.yml",
+      "spec-gates.yml",
+      "terra-levy-tests.yml",
+      "terraforge-ci.yml",
+      "terrafusion-ci-cd-production.yml",
+      "terrafusion-gate-enforcement.yml",
+      "terrafusion-pipeline.yml",
+      "testing.yml",
+      "tfctl-ci.yml"
+    ],
+    "nightly": ["nightly.yml"],
+    "scheduled": ["accreditation-oracle-health.yml"],
+    "manual": [
+      "autonomy-pr-lane.yml",
+      "break-glass-drill.yml",
+      "external-verify.yml",
+      "oracle-health.yml",
+      "perf-skill-audit.yml"
+    ],
+    "reusable": ["dotnet-test.yml", "autonomy-casefile-publisher.yml"]
+  },
+
+  "deprecated": {
+    "outputDirs": ["frontend/dist", "dist/"],
+    "ports": {
+      "comment": "These raw numbers must never appear hardcoded in workflows or configs. Use env vars from ports section above.",
+      "values": [3000, 5000, 3002, 3004]
+    }
+  }
+}

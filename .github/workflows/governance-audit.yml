@@ -10,12 +10,6 @@ name: 🔍 Governance Drift Detection
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/**'
-      - 'DURABILITY_MEASURES.md'
-      - 'AGENTS.md'
   push:
     branches: [main]
     paths:

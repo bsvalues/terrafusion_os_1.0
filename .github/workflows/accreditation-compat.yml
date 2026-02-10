@@ -23,12 +23,6 @@ on:
       - 'tools/registry/autonomy-viewer/src/county-kit.ts'
       - 'tools/registry/autonomy-viewer/bin/accreditation-*.mjs'
       - 'tools/registry/autonomy-viewer/ACCREDITATION_REFERENCE.lock.json'
-  pull_request:
-    paths:
-      - 'tools/registry/autonomy-viewer/src/accreditation-*.ts'
-      - 'tools/registry/autonomy-viewer/src/county-kit.ts'
-      - 'tools/registry/autonomy-viewer/bin/accreditation-*.mjs'
-      - 'tools/registry/autonomy-viewer/ACCREDITATION_REFERENCE.lock.json'
   workflow_dispatch:
 
 defaults:

@@ -1,12 +1,7 @@
 name: Tag Lint
 on:
-  pull_request:
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'src/**'
-      - 'tools/**'
-      - '.github/workflows/tag-lint.yml'
+  push:
+    branches: [main]
 jobs:
   lint:
     runs-on: windows-latest

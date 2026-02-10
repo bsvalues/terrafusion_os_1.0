@@ -34,15 +34,6 @@ on:
       - 'kustomize/**'
       - '.github/workflows/kubernetes-infrastructure-ci.yml'
 
-  pull_request:
-    branches:
-      - main
-      - develop
-    paths:
-      - 'charts/**'
-      - 'manifests/**'
-      - 'kustomize/**'
-
   workflow_dispatch:
     inputs:
       environment:

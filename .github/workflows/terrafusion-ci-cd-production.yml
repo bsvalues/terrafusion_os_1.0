@@ -16,17 +16,6 @@ on:
       - 'pnpm-lock.yaml'
       - '*.sln'
       - '.github/workflows/terrafusion-ci-cd-production.yml'
-  pull_request:
-    branches: [main, production]
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'src/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '*.sln'
-      - '.github/workflows/terrafusion-ci-cd-production.yml'
   workflow_dispatch:
     inputs:
       deploy_environment:
@@ -47,7 +36,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   NODE_VERSION: '20'
-  DOTNET_VERSION: '8.0'
+  DOTNET_VERSION: '8.0.x'
   PYTHON_VERSION: '3.11'
 
 jobs:

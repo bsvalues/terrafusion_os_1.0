@@ -5,11 +5,6 @@ on:
     paths:
       - 'SDK/modules/terra-levy/**'
       - '.github/workflows/terra-levy-tests.yml'
-  pull_request:
-    paths:
-      - 'SDK/modules/terra-levy/**'
-      - '.github/workflows/terra-levy-tests.yml'
-
 jobs:
   test:
     runs-on: ubuntu-latest

@@ -9,14 +9,10 @@ name: 📄 Docs Fast Lane
 # ═══════════════════════════════════════════════════════════════════════════════
 
 on:
-  pull_request:
-    paths:
-      - 'docs/**'
-      - '**/*.md'
-      - '**/*.mdx'
-      - '.github/**/*.md'
   workflow_dispatch: {}
 
+  push:
+    branches: [main]
 concurrency:
   group: docs-fast-lane-${{ github.ref }}
   cancel-in-progress: true

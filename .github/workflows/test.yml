@@ -1,14 +1,6 @@
 name: 🧪 Test Suite - THE TERRAFUSION WAY
 
 on:
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'frontend/**'
-      - 'backend/**'
-      - 'tests/**'
-      - 'package.json'
-      - '.github/workflows/test.yml'
   push:
     branches: [main, develop]
 

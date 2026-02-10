@@ -12,12 +12,6 @@ on:
       - 'kubernetes/**/*.yml'
       - 'policies/**/*.rego'
       - '.github/workflows/opa-policy-tests.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'kubernetes/**/*.yaml'
-      - 'kubernetes/**/*.yml'
-      - 'policies/**/*.rego'
   workflow_dispatch:
 
 env:
