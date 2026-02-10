@@ -271,12 +271,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p artifacts
-          if [ ! -d frontend/dist ]; then
+          if [ ! -d native-shell/ui/dist ]; then
             echo "⚠️ Frontend build output missing, creating placeholder..."
-            mkdir -p frontend/dist
-            echo "Placeholder - build skipped" > frontend/dist/README.txt
+            mkdir -p native-shell/ui/dist
+            echo "Placeholder - build skipped" > native-shell/ui/dist/README.txt
           fi
-          tar -czf artifacts/frontend-dist.tar.gz -C frontend/dist .
+          tar -czf artifacts/frontend-dist.tar.gz -C native-shell/ui/dist .
 
       - name: Upload backend artifact
         uses: actions/upload-artifact@v4

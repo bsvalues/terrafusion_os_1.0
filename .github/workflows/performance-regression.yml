@@ -128,7 +128,7 @@ jobs:
       - name: Analyze PR bundle size
         id: pr-size
         run: |
-          BUNDLE_SIZE=$(du -sb dist/assets/*.js | awk '{s+=$1} END {print s}')
+          BUNDLE_SIZE=$(du -sb ../native-shell/ui/dist/assets/*.js | awk '{s+=$1} END {print s}')
           echo "PR_BUNDLE_SIZE=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
           echo "PR bundle size: $BUNDLE_SIZE bytes"
         working-directory: ./frontend
@@ -152,7 +152,7 @@ jobs:
       - name: Analyze main bundle size
         id: main-size
         run: |
-          BUNDLE_SIZE=$(du -sb dist/assets/*.js | awk '{s+=$1} END {print s}')
+          BUNDLE_SIZE=$(du -sb ../native-shell/ui/dist/assets/*.js | awk '{s+=$1} END {print s}')
           echo "MAIN_BUNDLE_SIZE=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
           echo "Main bundle size: $BUNDLE_SIZE bytes"
         working-directory: ./main-branch/frontend

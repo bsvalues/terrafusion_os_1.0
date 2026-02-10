@@ -152,7 +152,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
-          path: frontend/dist
+          path: native-shell/ui/dist
           retention-days: 30
 
   # Backend Testing and Build
@@ -294,7 +294,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
-          path: frontend/dist
+          path: native-shell/ui/dist
 
       - name: Download backend artifacts
         uses: actions/download-artifact@v4
@@ -375,7 +375,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
-          path: frontend/dist
+          path: native-shell/ui/dist
 
       - name: Download backend artifacts
         uses: actions/download-artifact@v4
