@@ -402,25 +402,28 @@ public sealed class GrafanaDashboardValidationPhase45Tests
 
     private static string GetRepoFilePath(string relativePath)
     {
-        // Try multiple paths to handle different test execution contexts
-        var possiblePaths = new[]
+        // Walk up from AppContext.BaseDirectory looking for .git to find repo root.
+        // This handles any test output depth (bin/Release/net8.0/ → repo root).
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null)
         {
-            relativePath,
-            Path.Combine(AppContext.BaseDirectory, "../../../../../", relativePath),
-            Path.Combine(Directory.GetCurrentDirectory(), "../../../../../", relativePath),
-            // Absolute path fallback
-            Path.Combine(@"c:\Dev\TerraFusionOS\terrafusion-os", relativePath)
-        };
-
-        foreach (var path in possiblePaths)
-        {
-            var normalized = Path.GetFullPath(path);
-            if (File.Exists(normalized))
-                return normalized;
+            var candidate = Path.GetFullPath(Path.Combine(dir.FullName, relativePath));
+            if (File.Exists(candidate) &&
+                (Directory.Exists(Path.Combine(dir.FullName, ".git")) ||
+                 File.Exists(Path.Combine(dir.FullName, ".git"))))
+            {
+                return candidate;
+            }
+            dir = dir.Parent;
         }
 
-        // Return absolute fallback even if it doesn't exist - tests will fail appropriately
-        return Path.Combine(@"c:\Dev\TerraFusionOS\terrafusion-os", relativePath);
+        // Fallback: try relative to CWD (works when dotnet test runs from repo root)
+        var cwdPath = Path.GetFullPath(relativePath);
+        if (File.Exists(cwdPath))
+            return cwdPath;
+
+        // Last resort: return CWD-relative path — tests will fail with a clear assertion message
+        return cwdPath;
     }
 
     private static string ReadRepoText(string relativePath)

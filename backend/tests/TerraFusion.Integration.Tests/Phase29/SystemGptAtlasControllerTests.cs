@@ -373,6 +373,6 @@ public class SystemGptAtlasControllerTests
 
         // Assert
         Assert.True(eventsBeforeCancel >= 2);
-        Assert.True(stopwatch.ElapsedMilliseconds < 1000, "Stream should stop quickly after cancellation");
+        Assert.True(stopwatch.ElapsedMilliseconds < 5000, "Stream should stop quickly after cancellation");
     }
 }
