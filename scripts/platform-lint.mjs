@@ -49,6 +49,35 @@ const deprecatedDirs = new Set(contract.deprecated?.outputDirs || []);
 const deprecatedPorts = new Set(contract.deprecated?.ports?.values || []);
 const canonicalDotnet = contract.sdk.dotnet;
 const canonicalNode = contract.sdk.node;
+const canonicalBuildOutput = contract.paths.frontend.buildOutput; // native-shell/ui/dist
+
+// ── DEPRECATED_OUTPUT_DIR false-positive exclusions ────────────────────────
+// Many workflows use "dist/" for tool-specific, backend, or Python outputs
+// that are NOT the frontend build directory. These patterns suppress those.
+function isDeprecatedDirFalsePositive(line, deprecatedDir) {
+  // 1. Line already uses the canonical path — already correct
+  if (line.includes(canonicalBuildOutput)) return true;
+
+  // 2. Tool-specific dist dirs (tools/registry/autonomy-viewer/dist/, etc.)
+  if (/tools\/.*\/dist/.test(line)) return true;
+
+  // 3. Module-specific dist dirs (modules/terra-agent/dist/, etc.)
+  if (/modules\/.*\/dist/.test(line)) return true;
+
+  // 4. Non-frontend dist subdirectories (accreditation, triage, backend, etc.)
+  if (/dist\/(accreditation|oracle|triage|cross-os|county-kit|backend)/.test(line)) return true;
+
+  // 5. For 'frontend/dist' pattern: only flag if it's a real directory reference,
+  //    not a filename like 'frontend/dist-size.txt' or 'frontend-dist.tar.gz'
+  if (deprecatedDir === 'frontend/dist') {
+    if (/frontend\/dist[^/\s'")\]>,]/.test(line)) return true;
+  }
+
+  // 6. Python packaging output (python -m build → dist/*.whl)
+  if (/python.*build|\.whl\b|sdist/.test(line)) return true;
+
+  return false;
+}
 
 // Workflow intent: only these should have pull_request triggers
 const prGateSet = new Set([...(contract.ci.prGates || []), ...(contract.ci.eventReactive || [])]);
@@ -68,14 +97,23 @@ for (const file of workflowFiles) {
     const line = lines[i];
     const lineNum = i + 1;
 
+    // ── Inline suppression: # platform-lint:ignore [RULE] ───────────────
+    // Authors can suppress specific rules on a line with an inline comment.
+    // Example: path: dist/  # platform-lint:ignore DEPRECATED_OUTPUT_DIR
+    const suppressMatch = line.match(/platform-lint:ignore\s+(\S+)/);
+    const suppressedRule = suppressMatch ? suppressMatch[1] : null;
+
     // ── Rule 1: Deprecated output dirs ──────────────────────────────────
     for (const dir of deprecatedDirs) {
       // Match the dir as a path reference, not in comments
       if (line.trimStart().startsWith('#')) continue;
+      if (suppressedRule === 'DEPRECATED_OUTPUT_DIR') continue;
       // Escape for regex (handle the slash)
       const escaped = dir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const rx = new RegExp(`(?:^|[\\s'"/])${escaped}`, 'i');
       if (rx.test(line)) {
+        // Skip known false positives (tool dirs, already-canonical, etc.)
+        if (isDeprecatedDirFalsePositive(line, dir)) continue;
         violation(
           file,
           lineNum,
@@ -86,7 +124,7 @@ for (const file of workflowFiles) {
     }
 
     // ── Rule 2: Hardcoded deprecated ports ──────────────────────────────
-    if (!line.trimStart().startsWith('#')) {
+    if (!line.trimStart().startsWith('#') && suppressedRule !== 'HARDCODED_PORT') {
       for (const port of deprecatedPorts) {
         // Match port in URL patterns like localhost:PORT or 127.0.0.1:PORT
         const portRx = new RegExp(`(?:localhost|127\\.0\\.0\\.1)[:.]${port}\\b`);
@@ -103,7 +141,7 @@ for (const file of workflowFiles) {
 
     // ── Rule 3: SDK version drift ───────────────────────────────────────
     // Check for dotnet-version that doesn't match contract
-    if (!line.trimStart().startsWith('#')) {
+    if (!line.trimStart().startsWith('#') && suppressedRule !== 'SDK_DRIFT') {
       const dotnetMatch = line.match(/dotnet[-_]version\s*[:=]\s*['"]?(\d+\.\S+?)['"]?\s*$/i);
       if (dotnetMatch) {
         const found = dotnetMatch[1];
