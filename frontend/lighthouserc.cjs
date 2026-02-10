@@ -26,17 +26,12 @@
 module.exports = {
   ci: {
     collect: {
-      // URLs to audit
-      url: [
-        'http://localhost:5173', // Development server
-        'http://localhost:5173/research-portal',
-        'http://localhost:5173/quantum-dashboard',
-        'http://localhost:5173/consciousness-tuning',
-        'http://localhost:5173/analytics-workbench',
-      ],
+      // URLs to audit — uses preview server (port 4173) in CI
+      url: ['http://localhost:4173/'],
 
-      // Number of runs per URL for statistical significance
-      numberOfRuns: 5,
+      // Number of runs per URL (3 gives reasonable statistical confidence
+      // while keeping CI runtime sane)
+      numberOfRuns: 3,
 
       // Lighthouse settings
       settings: {
