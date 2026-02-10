@@ -802,13 +802,13 @@ jobs:
         run: |
           echo "::group::Grafana Connectivity"
 
-          # Port-forward Grafana
-          kubectl port-forward -n ${{ env.MONITORING_NAMESPACE }} svc/grafana 3000:3000 &
+          # Port-forward Grafana (local port avoids deprecated 3000; remote 3000 is Grafana's default)
+          kubectl port-forward -n ${{ env.MONITORING_NAMESPACE }} svc/grafana 13000:3000 &
           PF_PID=$!
           sleep 5
 
           # Test Grafana API
-          curl -f http://localhost:3000/api/health || echo "::warning::Grafana health check failed"
+          curl -f http://localhost:13000/api/health || echo "::warning::Grafana health check failed"
 
           kill $PF_PID 2>/dev/null || true
 
