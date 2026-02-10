@@ -1,6 +1,6 @@
 # Benton County On-Prem Runner Pilot
 
-**Status:** Wiring complete — awaiting runner provisioning (Docker NOT required)  
+**Status:** Routing validation in progress — `BENTON_RUNNER=true` set  
 **PR:** (this PR)  
 **Scope:** PR gates only (smallest critical surface)
 
