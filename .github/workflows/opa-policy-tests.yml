@@ -28,7 +28,7 @@ jobs:
   opa-policy-validation:
     name: OPA Policy Validation
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -106,30 +106,30 @@ jobs:
           mkdir -p reports
           cat > reports/opa-policy-report.md << 'EOF'
           # OPA Policy Validation Report
-          
+
           **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           **Workflow:** ${{ github.workflow }}
           **Run:** ${{ github.run_number }}
-          
+
           ## Summary
-          
+
           - OPA Version: ${OPA_VERSION}
           - Conftest Version: ${CONFTEST_VERSION}
           - Branch: ${{ github.ref_name }}
           - Commit: ${{ github.sha }}
-          
+
           ## Policy Tests
-          
+
           ✅ Pod Security Policies
-          ✅ Network Security Policies  
+          ✅ Network Security Policies
           ✅ Resource Limit Policies
-          
+
           ## POA&M Status
-          
+
           **Finding #1:** OPA Policy Testing (LOW risk)
           **Status:** ✅ Remediated
           **Implementation:** GitHub Actions workflow for automated policy validation
-          
+
           EOF
 
       - name: Upload policy report
@@ -146,16 +146,16 @@ jobs:
         with:
           script: |
             const output = `### OPA Policy Validation Results
-            
+
             ✅ **All policies validated successfully**
-            
+
             - OPA Version: ${process.env.OPA_VERSION}
             - Conftest Version: ${process.env.CONFTEST_VERSION}
             - Policies checked: Pod Security, Network Security, Resource Limits
-            
+
             **POA&M Finding #1:** Remediated ✅
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -167,7 +167,7 @@ jobs:
     name: Security Scan (Trivy)
     runs-on: ubuntu-latest
     needs: opa-policy-validation
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

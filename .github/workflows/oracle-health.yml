@@ -120,11 +120,11 @@ jobs:
             NAME=$(echo "$artifact" | jq -r '.name')
             EXPECTED=$(echo "$artifact" | jq -r '.sha256')
             EXPECTED_BYTES=$(echo "$artifact" | jq -r '.bytes')
-            
+
             if [ -f "assets/$NAME" ]; then
               ACTUAL=$(sha256sum "assets/$NAME" | cut -d' ' -f1)
               ACTUAL_BYTES=$(stat -c%s "assets/$NAME")
-              
+
               if [ "$EXPECTED" = "$ACTUAL" ]; then
                 echo "✅ $NAME"
                 echo "   SHA256: $ACTUAL"
@@ -144,14 +144,14 @@ jobs:
               STATUS="missing"
               FAIL=$((FAIL + 1))
             fi
-            
+
             # Append to report
             if [ "$FIRST" = true ]; then
               FIRST=false
             else
               echo ',' >> oracle-health-report.json
             fi
-            
+
             cat >> oracle-health-report.json << EOF
             {
               "name": "$NAME",

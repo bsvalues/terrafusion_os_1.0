@@ -208,14 +208,14 @@ jobs:
             echo "❌ Ledger head not found"
           else
             echo "✅ Ledger head found"
-            
+
             # Verify ledger head has required fields
             if ! jq -e '.headLedgerSha256' ledger-head.json >/dev/null 2>&1; then
               ERROR_CODES="${ERROR_CODES}LEDGER_HEAD_INVALID,"
               RESULT="fail"
               echo "❌ Ledger head missing headLedgerSha256"
             fi
-            
+
             if ! jq -e '.repoIdentity' ledger-head.json >/dev/null 2>&1; then
               ERROR_CODES="${ERROR_CODES}LEDGER_HEAD_INVALID,"
               RESULT="fail"

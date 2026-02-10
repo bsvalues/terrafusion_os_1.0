@@ -15,7 +15,7 @@ jobs:
     name: Build .NET Backend
     uses: ./.github/workflows/dotnet-test.yml
     with:
-      dotnet_version: ${{ env.DOTNET_VERSION }}
+      dotnet_version: '8.0.x'
       configuration: Release
       solution: TerraFusion.sln
       connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
@@ -123,7 +123,7 @@ jobs:
       - name: Build container image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: backend
           file: backend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}

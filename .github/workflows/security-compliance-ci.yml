@@ -119,27 +119,27 @@ jobs:
             for control_file in compliance/nist-800-53/*.yml compliance/nist-800-53/*.yaml; do
               if [ -f "$control_file" ]; then
                 echo "Scanning: $control_file"
-                
+
                 # Validate control structure
                 yq e '.controls[]' "$control_file" | while read -r control; do
                   CONTROL_ID=$(echo "$control" | yq e '.id' -)
                   STATUS=$(echo "$control" | yq e '.status' -)
-                  
+
                   if [ "$STATUS" = "not_implemented" ]; then
                     echo "::warning::NIST Control $CONTROL_ID not implemented"
                   fi
                 done
               fi
             done
-            
+
             # Calculate NIST compliance percentage
             TOTAL_CONTROLS=$(find compliance/nist-800-53 -name "*.yml" -o -name "*.yaml" | xargs yq e '.controls | length' | awk '{s+=$1} END {print s}')
             IMPLEMENTED=$(find compliance/nist-800-53 -name "*.yml" -o -name "*.yaml" | xargs yq e '.controls[] | select(.status == "implemented") | .id' | wc -l)
-            
+
             if [ "$TOTAL_CONTROLS" -gt 0 ]; then
               COMPLIANCE_PCT=$(awk "BEGIN {printf \"%.1f\", ($IMPLEMENTED/$TOTAL_CONTROLS)*100}")
               echo "NIST 800-53 Compliance: $COMPLIANCE_PCT% ($IMPLEMENTED/$TOTAL_CONTROLS controls)"
-              
+
               if (( $(echo "$COMPLIANCE_PCT >= 90" | bc -l) )); then
                 echo "status=pass" >> $GITHUB_OUTPUT
               else
@@ -168,20 +168,20 @@ jobs:
             for req_file in compliance/pci-dss/*.yml compliance/pci-dss/*.yaml; do
               if [ -f "$req_file" ]; then
                 echo "Checking: $req_file"
-                
+
                 # Validate requirement structure
                 REQ_ID=$(yq e '.requirement.id' "$req_file" 2>/dev/null || echo "unknown")
                 STATUS=$(yq e '.requirement.status' "$req_file" 2>/dev/null || echo "unknown")
-                
+
                 echo "Requirement $REQ_ID: $STATUS"
-                
+
                 if [ "$STATUS" = "non_compliant" ]; then
                   echo "::error::PCI-DSS Requirement $REQ_ID is non-compliant"
                   exit 1
                 fi
               fi
             done
-            
+
             echo "status=pass" >> $GITHUB_OUTPUT
           else
             echo "::warning::No PCI-DSS compliance directory found"
@@ -200,10 +200,10 @@ jobs:
             for criteria_file in compliance/soc2/*.yml compliance/soc2/*.yaml; do
               if [ -f "$criteria_file" ]; then
                 echo "Validating: $criteria_file"
-                
+
                 # Check each trust service principle
                 PRINCIPLES=$(yq e '.trust_services.principles[]' "$criteria_file" 2>/dev/null)
-                
+
                 if [ -n "$PRINCIPLES" ]; then
                   echo "$PRINCIPLES" | while read principle; do
                     echo "Principle: $principle"
@@ -211,7 +211,7 @@ jobs:
                 fi
               fi
             done
-            
+
             echo "status=pass" >> $GITHUB_OUTPUT
           else
             echo "::warning::No SOC 2 compliance directory found"
@@ -358,10 +358,10 @@ jobs:
 
           if [ -n "$SNYK_TOKEN" ]; then
             snyk auth $SNYK_TOKEN
-            
+
             # Scan for code vulnerabilities
             snyk code test --json-file-output=snyk-code-report.json || echo "Snyk scan completed with findings"
-            
+
             # Parse results
             if [ -f "snyk-code-report.json" ]; then
               VULNERABILITIES=$(jq '.runs[0].results | length' snyk-code-report.json 2>/dev/null || echo 0)
@@ -487,7 +487,7 @@ jobs:
                 opa test "$policy" -v
               fi
             done
-            
+
             # Check policy syntax
             opa check policies/opa/
           else
@@ -518,7 +518,7 @@ jobs:
             wget https://github.com/kyverno/kyverno/releases/download/v${{ env.KYVERNO_VERSION }}/kyverno-cli_v${{ env.KYVERNO_VERSION }}_linux_x86_64.tar.gz
             tar -xzf kyverno-cli_*.tar.gz
             sudo mv kyverno /usr/local/bin/
-            
+
             # Validate Kyverno policies
             for policy in policies/kyverno/*.yaml; do
               if [ -f "$policy" ]; then
@@ -655,7 +655,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: sbom-generation
     if: |
-      github.event_name == 'push' && 
+      github.event_name == 'push' &&
       github.ref == 'refs/heads/main' &&
       !inputs.skip_penetration_testing
     timeout-minutes: 15
@@ -896,7 +896,7 @@ jobs:
             controls_validated: true
             sbom_generated: ${{ needs.sbom-generation.outputs.sbom-generated }}
           EOF
-            
+
             echo "POA&M updated with current security status"
           else
             echo "::warning::No POA&M directory found"

@@ -289,16 +289,16 @@ jobs:
           if [ -f "$CASEFILE_PATH" ]; then
             FINAL_PATH="${{ env.VIEWER_DIR }}/$CASEFILE_NAME"
             mv "$CASEFILE_PATH" "$FINAL_PATH"
-            
+
             # Recalculate SHA256 after rename (should be same)
             CASEFILE_SHA256=$(sha256sum "$FINAL_PATH" | cut -d' ' -f1)
-            
+
             echo "casefile_name=$CASEFILE_NAME" >> $GITHUB_OUTPUT
             echo "casefile_path=$FINAL_PATH" >> $GITHUB_OUTPUT
             echo "casefile_sha256=$CASEFILE_SHA256" >> $GITHUB_OUTPUT
             echo "manifest_sha256=$MANIFEST_SHA256" >> $GITHUB_OUTPUT
             echo "success=true" >> $GITHUB_OUTPUT
-            
+
             echo "✅ Casefile generated: $CASEFILE_NAME"
             echo "   SHA256: $CASEFILE_SHA256"
           else

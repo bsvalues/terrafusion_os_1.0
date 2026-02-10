@@ -192,7 +192,7 @@ export default defineConfig({
 
   webServer: [
     {
-      command: 'cd backend/Terrafusion.API && dotnet run --urls=http://127.0.0.1:5000',
+      command: 'cd backend/src/TerraFusion.API && dotnet run --urls=http://127.0.0.1:5000',
       port: 5000,
       reuseExistingServer: !process.env.CI,
       timeout: 120000

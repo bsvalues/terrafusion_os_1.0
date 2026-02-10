@@ -96,7 +96,7 @@ jobs:
     needs: validation
     uses: ./.github/workflows/dotnet-test.yml
     with:
-      dotnet_version: ${{ env.DOTNET_VERSION }}
+      dotnet_version: '8.0.x'
       configuration: Release
       solution: TerraFusion.sln
       connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
@@ -213,7 +213,7 @@ jobs:
       - name: 🔍 CodeQL Analysis
         uses: github/codeql-action/init@v3
         with:
-          languages: csharp, javascript, typescript
+          languages: csharp, javascript-typescript
           config-file: ./.github/codeql/codeql-config.yml
 
       - name: 🏗️ Build for Analysis

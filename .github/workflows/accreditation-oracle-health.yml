@@ -66,15 +66,15 @@ jobs:
           node -e "
             const fs = require('fs');
             const lock = JSON.parse(fs.readFileSync('ACCREDITATION_REFERENCE.lock.json', 'utf8'));
-            
+
             const required = ['lockVersion', 'contract', 'determinismRules', 'upgradePolicy', 'referencePacket'];
             const missing = required.filter(f => !(f in lock));
-            
+
             if (missing.length > 0) {
               console.error('::error::Missing required fields:', missing.join(', '));
               process.exit(1);
             }
-            
+
             console.log('✅ Lock file schema valid');
             console.log('   Schema version:', lock.contract.schemaVersion);
             console.log('   Supported versions:', lock.contract.supportedVersions.join(', '));
@@ -110,22 +110,22 @@ jobs:
             const fs = require('fs');
             const manifest = JSON.parse(fs.readFileSync('dist/oracle-health/manifest.json', 'utf8'));
             const lock = JSON.parse(fs.readFileSync('ACCREDITATION_REFERENCE.lock.json', 'utf8'));
-            
+
             // Verify determinism rules are still in effect
             if (manifest.\$schema !== lock.contract.manifestSchemaId) {
               console.error('::error::Manifest schema mismatch');
               process.exit(1);
             }
-            
+
             // Check all required files are present
             const presentPaths = manifest.files.map(f => f.path);
             const missingFiles = lock.referencePacket.expectedFileList.filter(f => !presentPaths.includes(f));
-            
+
             if (missingFiles.length > 0) {
               console.error('::error::Missing expected files:', missingFiles.join(', '));
               process.exit(1);
             }
-            
+
             console.log('✅ Determinism check passed');
             console.log('   Files verified:', manifest.fileCount);
             console.log('   Total bytes:', manifest.totalBytes);

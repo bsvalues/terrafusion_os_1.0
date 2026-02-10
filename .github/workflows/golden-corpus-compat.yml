@@ -50,15 +50,15 @@ jobs:
             import { CASEFILE_SCHEMA } from './src/casefile.js';
             import { SEALED_CASEFILE_SCHEMA } from './src/verify-casefile.js';
             import fs from 'fs';
-            
+
             const lock = JSON.parse(fs.readFileSync('../../../golden/GOLDEN_CORPUS.lock.json', 'utf-8'));
             const schemas = lock.contracts.schemaVersions;
-            
+
             const checks = [
               { name: 'casefile', expected: schemas.casefile, actual: CASEFILE_SCHEMA },
               { name: 'sealedCasefile', expected: schemas.sealedCasefile, actual: SEALED_CASEFILE_SCHEMA },
             ];
-            
+
             let failed = false;
             for (const check of checks) {
               if (check.expected !== check.actual) {
@@ -70,12 +70,12 @@ jobs:
                 console.log('✅ ' + check.name + ': ' + check.actual);
               }
             }
-            
+
             if (failed) {
               console.error('\\nSchema compatibility broken! Update golden/GOLDEN_CORPUS.lock.json with governance approval.');
               process.exit(1);
             }
-            
+
             console.log('\\n✅ All schemas compatible with golden corpus');
           "
 
