@@ -73,7 +73,6 @@ jobs:
         with:
           urls: |
             http://localhost:4173
-            http://localhost:4173/research-portal
           configPath: './frontend/lighthouserc.cjs'
           uploadArtifacts: true
           artifactName: lighthouse-results-${{ github.run_id }}

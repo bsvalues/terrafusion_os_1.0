@@ -83,7 +83,7 @@ jobs:
       - name: Build Docker images
         if: steps.docker_check.outputs.backend == 'true' && steps.docker_check.outputs.frontend == 'true'
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/api:${{ steps.version.outputs.version }} -f backend/Dockerfile .
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/api:${{ steps.version.outputs.version }} -f backend/Dockerfile backend
           docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ui:${{ steps.version.outputs.version }} -f frontend/Dockerfile .
 
       - name: Log in to Container Registry

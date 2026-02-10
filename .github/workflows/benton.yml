@@ -1,55 +1,55 @@
 name: benton-county
 on:
-    push:
-        branches: [main]
-        paths:
-            - "backend/**"
-            - "counties/benton/**"
-            - ".github/workflows/benton.yml"
-    pull_request:
-        paths:
-            - "backend/**"
-            - "counties/benton/**"
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'counties/benton/**'
+      - '.github/workflows/benton.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'counties/benton/**'
 
 jobs:
-    build-test:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Start stack (build)
-              working-directory: counties/benton
-              run: |
-                  cp .env.example .env
-                  docker compose -f docker-compose.county.yml up -d --build
+      - name: Start stack (build)
+        working-directory: counties/benton
+        run: |
+          cp .env.example .env
+          docker compose -f docker-compose.county.yml up -d --build
 
-            - name: Wait for API
-              run: |
-                  for i in {1..60}; do
-                    if curl -fsS http://localhost:5000/health; then exit 0; fi
-                    sleep 2
-                  done
-                  echo "API not ready"; docker compose -f counties/benton/docker-compose.county.yml logs api; exit 1
+      - name: Wait for API
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:5000/health; then exit 0; fi
+            sleep 2
+          done
+          echo "API not ready"; docker compose -f counties/benton/docker-compose.county.yml logs api; exit 1
 
-            - name: Smoke tests
-              run: make -C counties/benton test
+      - name: Smoke tests
+        run: make -C counties/benton test
 
-            - name: Build images (tagged)
-              if: github.ref == 'refs/heads/main'
-              run: |
-                  GIT_TAG=$(git rev-parse --short HEAD)
-                  docker build -t ghcr.io/${{ github.repository }}/tf-api:benton-${GIT_TAG} ./backend
-                  echo GIT_TAG=${GIT_TAG} >> $GITHUB_ENV
+      - name: Build images (tagged)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          GIT_TAG=$(git rev-parse --short HEAD)
+          docker build -t ghcr.io/${{ github.repository }}/tf-api:benton-${GIT_TAG} ./backend
+          echo GIT_TAG=${GIT_TAG} >> $GITHUB_ENV
 
-            - name: Login & push
-              if: github.ref == 'refs/heads/main'
-              uses: docker/login-action@v3
-              with:
-                  registry: ghcr.io
-                  username: ${{ github.repository_owner }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login & push
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Push images
-              if: github.ref == 'refs/heads/main'
-              run: |
-                  docker push ghcr.io/${{ github.repository }}/tf-api:benton-${GIT_TAG}
+      - name: Push images
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker push ghcr.io/${{ github.repository }}/tf-api:benton-${GIT_TAG}

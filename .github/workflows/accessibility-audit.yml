@@ -25,6 +25,13 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
+        include:
+          - browser: chromium
+            project: Desktop Chrome
+          - browser: firefox
+            project: Desktop Firefox
+          - browser: webkit
+            project: Desktop Safari
 
     steps:
       - name: 📥 Checkout code
@@ -67,7 +74,7 @@ jobs:
 
       - name: ♿ Run accessibility tests (axe-core)
         run: |
-          npx playwright test tests/e2e/frontend/accessibility --project=${{ matrix.browser }}
+          npx playwright test tests/e2e/frontend/accessibility --project="${{ matrix.project }}"
         env:
           CI: true
           PLAYWRIGHT_BASE_URL: http://localhost:4173
