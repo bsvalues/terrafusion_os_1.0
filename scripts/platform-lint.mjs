@@ -224,13 +224,12 @@ for (const [rule, items] of Object.entries(byRule)) {
 if (process.env.CI) {
   for (const v of violations) {
     const loc = v.line > 0 ? `,line=${v.line}` : '';
-    console.log(`::warning file=.github/workflows/${v.file}${loc}::${v.rule}: ${v.message}`);
+    console.log(`::error file=.github/workflows/${v.file}${loc}::${v.rule}: ${v.message}`);
   }
 }
 
-// Exit with warning (non-blocking) for now — upgrade to exit(1) once baseline is clean
-// TODO: Change to process.exit(1) after initial cleanup
-console.log(
-  '\n⚠️  Platform lint running in WARNING mode. Will become blocking after baseline cleanup.'
-);
-process.exit(0);
+// BLOCKING MODE — baseline is clean (82 → 0 as of PR #276).
+// Any new violation will fail CI and block merge.
+console.error('\n❌ Platform contract violations detected. Fix all violations before merging.');
+console.error('   To suppress a false positive, add: # platform-lint:ignore RULE_NAME\n');
+process.exit(1);
