@@ -253,10 +253,10 @@ jobs:
             READY=false
           fi
 
-          # The root playwright.config.ts requires a .NET backend (webServer).
-          # Until a CI-compatible perf config exists, skip benchmarks.
-          if ! command -v dotnet &>/dev/null; then
-            echo "::notice::.NET SDK not available — backend webServer cannot start, skipping benchmarks"
+          # The root playwright.config.ts requires a .NET backend project.
+          # It tries 'cd backend/Terrafusion.API' — check that exact path.
+          if [ ! -d "backend/Terrafusion.API" ]; then
+            echo "::notice::Backend project directory (backend/Terrafusion.API) not found — webServer cannot start, skipping benchmarks"
             READY=false
           fi
 

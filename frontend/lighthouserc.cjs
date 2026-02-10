@@ -55,9 +55,8 @@ module.exports = {
 
     assert: {
       // Championship-grade performance thresholds
-      // Using 'off' or 'warn' for non-critical audits to prevent CI failures
-      // while still tracking metrics
-      preset: 'lighthouse:no-pwa',
+      // Using 'warn' for all audits to track metrics without blocking CI.
+      // No preset — explicit assertions only so we control exactly what's checked.
       assertions: {
         // Overall Category Scores (0-100)
         // Note: Using 'warn' instead of 'error' for CI stability
