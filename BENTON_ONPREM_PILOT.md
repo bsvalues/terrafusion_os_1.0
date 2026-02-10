@@ -258,7 +258,7 @@ _(To be updated after first runner execution)_
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2025-08-27 | PR gates only | Smallest critical surface; prove before expanding |
-| 2025-08-27 | Repo variable kill switch | Instant rollback without code changes |
-| 2025-08-27 | Trivial jobs stay on ubuntu-latest | No value in routing status-check jobs |
-| 2025-08-27 | Zero secrets baseline | PR gates don't use secrets; document future strategy |
+| 2026-02-10 | PR gates only | Smallest critical surface; prove before expanding |
+| 2026-02-10 | Repo variable kill switch | Instant rollback without code changes |
+| 2026-02-10 | Trivial jobs stay on ubuntu-latest | No value in routing status-check jobs |
+| 2026-02-10 | Zero secrets baseline | PR gates don't use secrets; document future strategy |

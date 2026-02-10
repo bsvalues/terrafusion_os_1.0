@@ -7,7 +7,7 @@ name: Benton Runner Smoke
 # This workflow ONLY runs on the self-hosted runner. If the runner is offline,
 # the workflow simply queues indefinitely (no GitHub-hosted fallback).
 #
-# Gate: BENTON_RUNNER repo variable must be 'true' to trigger on PR/push.
+# Gate: BENTON_RUNNER repo variable must be 'true' to trigger on push.
 #       Manual dispatch always runs (for initial runner provisioning).
 #
 # Success criteria (from pilot plan):
@@ -40,6 +40,7 @@ jobs:
 
     steps:
       - name: Runner labels resolved
+        id: labels
         shell: bash
         run: |
           set -euo pipefail
@@ -52,6 +53,7 @@ jobs:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Toolchain — dotnet
+        id: dotnet
         shell: bash
         run: |
           set -euo pipefail
@@ -70,6 +72,7 @@ jobs:
           echo "✅ dotnet 8.0.x matched"
 
       - name: Toolchain — node
+        id: node
         shell: bash
         run: |
           set -euo pipefail
@@ -88,6 +91,7 @@ jobs:
           echo "✅ node 20 matched"
 
       - name: Toolchain — pnpm
+        id: pnpm
         shell: bash
         run: |
           set -euo pipefail
@@ -107,6 +111,7 @@ jobs:
           echo "✅ pnpm >=9.0.0 matched"
 
       - name: Toolchain — git
+        id: git-check
         shell: bash
         run: |
           set -euo pipefail
@@ -123,6 +128,7 @@ jobs:
           echo "✅ git >=2.30.0 matched"
 
       - name: Network — GitHub API
+        id: net-github
         shell: bash
         run: |
           set -euo pipefail
@@ -136,6 +142,7 @@ jobs:
           echo "✅ GitHub API reachable"
 
       - name: Network — npm registry
+        id: net-npm
         shell: bash
         run: |
           set -euo pipefail
@@ -149,6 +156,7 @@ jobs:
           echo "✅ npm registry reachable"
 
       - name: Network — NuGet registry
+        id: net-nuget
         shell: bash
         run: |
           set -euo pipefail
@@ -162,17 +170,22 @@ jobs:
           echo "✅ NuGet registry reachable"
 
       - name: Artifact roundtrip — upload
+        id: artifact-write
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p _smoke-artifact
           echo '{"pilot":"benton","timestamp":"'"$(date -u +%FT%TZ)"'","runner":"'"$RUNNER_NAME"'"}' > _smoke-artifact/probe.json
+          sha256sum _smoke-artifact/probe.json | awk '{print $1}' > _smoke-artifact/probe.sha256
+          echo "  SHA256: $(cat _smoke-artifact/probe.sha256)"
           echo "✅ Probe artifact written"
 
       - uses: actions/upload-artifact@v4
         with:
           name: benton-smoke-probe-${{ github.run_id }}
-          path: _smoke-artifact/probe.json
+          path: |
+            _smoke-artifact/probe.json
+            _smoke-artifact/probe.sha256
           retention-days: 1
 
       - uses: actions/download-artifact@v4
@@ -181,6 +194,7 @@ jobs:
           path: _smoke-download
 
       - name: Artifact roundtrip — verify
+        id: artifact-verify
         shell: bash
         run: |
           set -euo pipefail
@@ -188,27 +202,40 @@ jobs:
             echo "::error::Artifact roundtrip failed — probe.json not found after download"
             exit 1
           fi
+          if [ ! -f _smoke-download/probe.sha256 ]; then
+            echo "::error::Artifact roundtrip failed — probe.sha256 not found after download"
+            exit 1
+          fi
+          EXPECTED=$(cat _smoke-download/probe.sha256)
+          ACTUAL=$(sha256sum _smoke-download/probe.json | awk '{print $1}')
+          echo "  Expected SHA256: $EXPECTED"
+          echo "  Actual SHA256:   $ACTUAL"
+          if [ "$EXPECTED" != "$ACTUAL" ]; then
+            echo "::error::Artifact roundtrip failed — SHA256 mismatch (data corruption)"
+            exit 1
+          fi
           echo "Downloaded artifact contents:"
           cat _smoke-download/probe.json
           echo ""
-          echo "✅ ArtifactRoundtrip — upload + download pipeline works"
+          echo "✅ ArtifactRoundtrip — upload + download + SHA256 verified"
 
       - name: Smoke Summary
         if: always()
         shell: bash
         run: |
+          icon() { if [ "$1" = "success" ]; then echo "✅"; else echo "❌"; fi; }
           echo "## 🏛️ Benton Runner Smoke Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Runner:** \`$RUNNER_NAME\` (\`$RUNNER_OS\`/\`$RUNNER_ARCH\`)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Runner Labels Resolve | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| dotnet 8.0.x | $(dotnet --version 2>/dev/null && echo '✅' || echo '❌') |" >> $GITHUB_STEP_SUMMARY
-          echo "| node 20 | $(node --version 2>/dev/null && echo '✅' || echo '❌') |" >> $GITHUB_STEP_SUMMARY
-          echo "| pnpm >=9 | $(pnpm --version 2>/dev/null && echo '✅' || echo '❌') |" >> $GITHUB_STEP_SUMMARY
-          echo "| git >=2.30 | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| GitHub API | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| npm registry | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| NuGet registry | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| Artifact Roundtrip | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Runner Labels Resolve | $(icon '${{ steps.labels.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| dotnet 8.0.x | $(icon '${{ steps.dotnet.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| node 20 | $(icon '${{ steps.node.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| pnpm >=9 | $(icon '${{ steps.pnpm.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| git >=2.30 | $(icon '${{ steps.git-check.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| GitHub API | $(icon '${{ steps.net-github.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| npm registry | $(icon '${{ steps.net-npm.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| NuGet registry | $(icon '${{ steps.net-nuget.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact Roundtrip | $(icon '${{ steps.artifact-verify.outcome }}') |" >> $GITHUB_STEP_SUMMARY
