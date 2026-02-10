@@ -16,8 +16,8 @@ permissions:
 
 env:
   TF_ENV: ${{ github.event_name == 'pull_request' && 'dev' || 'stage' }}
-  BASE_URL: ${{ vars.BASE_URL || 'http://localhost:5000' }}
-  LOAD_TEST_URL: ${{ vars.LOAD_TEST_URL || vars.BASE_URL || 'http://localhost:5000' }}
+  BASE_URL: ${{ vars.BASE_URL || 'http://localhost:5046' }}
+  LOAD_TEST_URL: ${{ vars.LOAD_TEST_URL || vars.BASE_URL || 'http://localhost:5046' }}
   CLOUD_PROVIDER: ${{ vars.CLOUD_PROVIDER || 'none' }}
 
 jobs:

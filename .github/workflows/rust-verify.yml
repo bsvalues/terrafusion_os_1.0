@@ -96,7 +96,7 @@ jobs:
             docker compose -f ${COMPOSE_FILE} up -d backend || true
             sleep 6
             # Try health endpoint (adjust path if your backend differs)
-            if curl -fsS --max-time 5 http://localhost:5000/healthz > .ci_artifacts_local/smoke-curl.out 2>&1; then
+            if curl -fsS --max-time 5 http://localhost:${TF_API_PORT:-5046}/healthz > .ci_artifacts_local/smoke-curl.out 2>&1; then
               echo "smoke: OK" > .ci_artifacts_local/smoke-status.txt
             else
               echo "smoke: FAIL" > .ci_artifacts_local/smoke-status.txt

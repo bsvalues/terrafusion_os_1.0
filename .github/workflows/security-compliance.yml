@@ -398,7 +398,7 @@ jobs:
             -u root \
             zaproxy/zap-stable \
             zap-baseline.py \
-              -t "http://localhost:3000" \
+              -t "http://localhost:${TF_FRONTEND_PORT:-3102}" \
               -r reports/security/pentest/zap_baseline.html \
               -J reports/security/pentest/zap_baseline.json \
               -I \

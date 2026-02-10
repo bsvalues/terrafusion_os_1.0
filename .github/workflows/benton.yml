@@ -21,7 +21,7 @@ jobs:
       - name: Wait for API
         run: |
           for i in {1..60}; do
-            if curl -fsS http://localhost:5000/health; then exit 0; fi
+            if curl -fsS http://localhost:${TF_API_PORT:-5046}/health; then exit 0; fi
             sleep 2
           done
           echo "API not ready"; docker compose -f counties/benton/docker-compose.county.yml logs api; exit 1
