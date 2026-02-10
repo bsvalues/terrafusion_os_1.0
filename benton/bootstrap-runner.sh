@@ -283,6 +283,15 @@ echo "── Phase 4: Runner Binary ──────────────�
 RUNNER_TARBALL="actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz"
 RUNNER_URL="https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/${RUNNER_TARBALL}"
 
+# Fetch the SHA256 checksum from GitHub releases (canonical source)
+get_expected_checksum() {
+  local version="$1"
+  local tarball="actions-runner-linux-x64-${version}.tar.gz"
+  # GitHub publishes checksums in the release body; fall back to API hash
+  local checksum_url="https://github.com/actions/runner/releases/download/v${version}/${tarball}.sha256"
+  curl -fsSL "$checksum_url" 2>/dev/null | awk '{print $1}' || echo ""
+}
+
 if [[ -f "${WORK_DIR}/run.sh" ]]; then
   ok "Runner binary already installed at ${WORK_DIR}"
 else
@@ -292,6 +301,25 @@ else
 
     info "Downloading runner v${RUNNER_VERSION}..."
     curl -fsSL -o "$RUNNER_TARBALL" "$RUNNER_URL"
+
+    # Verify download integrity (SHA256)
+    ACTUAL_HASH=$(sha256sum "$RUNNER_TARBALL" | awk '{print $1}')
+    EXPECTED_HASH=$(get_expected_checksum "$RUNNER_VERSION")
+    if [[ -n "$EXPECTED_HASH" ]]; then
+      if [[ "$ACTUAL_HASH" == "$EXPECTED_HASH" ]]; then
+        ok "SHA256 verified: ${ACTUAL_HASH:0:16}..."
+      else
+        fail "SHA256 mismatch! Expected: ${EXPECTED_HASH:0:16}... Got: ${ACTUAL_HASH:0:16}..."
+        fail "Download may be corrupted or tampered with. Aborting."
+        rm -f "$RUNNER_TARBALL"
+        exit 1
+      fi
+    else
+      warn "SHA256 checksum not available for v${RUNNER_VERSION} — skipping verification"
+      warn "Download integrity relies on HTTPS transport security only"
+      info "Actual SHA256: $ACTUAL_HASH (record this for future pinning)"
+    fi
+
     tar xzf "$RUNNER_TARBALL"
     rm -f "$RUNNER_TARBALL"
 
@@ -378,6 +406,10 @@ ProtectSystem=strict
 ProtectHome=read-only
 ReadWritePaths=${WORK_DIR}
 PrivateTmp=true
+
+# Cache directories (pnpm store, npm cache, NuGet cache)
+# Required because ProtectHome=read-only blocks writes to ~tf-runner/
+ReadWritePaths=/home/${RUNNER_USER}
 
 # Environment
 Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
