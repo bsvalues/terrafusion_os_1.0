@@ -93,10 +93,14 @@
 
   "runners": {
     "pilot": {
-      "labels": ["self-hosted", "benton", "linux-x64"],
+      "labels": ["self-hosted", "benton", "linux-x64", "no-docker"],
       "scope": ["prGates"],
       "variable": "BENTON_RUNNER",
       "fallback": "ubuntu-latest",
+      "capabilities": {
+        "docker": false,
+        "comment": "All 8 routed PR-gate jobs are pure compute (lint/typecheck/unit-test/build). No Docker required. Container build/scan stays on ubuntu-latest."
+      },
       "toolchain": {
         "dotnet": "8.0.x",
         "node": "20",
