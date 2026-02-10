@@ -127,6 +127,28 @@ jobs:
           fi
           echo "✅ git >=2.30.0 matched"
 
+      - name: Capability — Docker (informational)
+        id: docker-check
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking Docker availability (informational — not required for PR gates)..."
+          if command -v docker &>/dev/null; then
+            DOCKER_VER=$(docker --version 2>/dev/null || echo "unknown")
+            echo "  docker: $DOCKER_VER"
+            # Check if Docker daemon is responsive
+            if docker info &>/dev/null 2>&1; then
+              echo "  daemon: responsive"
+              echo "✅ Docker available (not required — all 8 PR-gate jobs are pure compute)"
+            else
+              echo "  daemon: not responding (rootless? socket permission?)"
+              echo "⚠️ Docker CLI present but daemon not responding — OK for PR gates"
+            fi
+          else
+            echo "  docker: not installed"
+            echo "⚠️ Docker not available — OK for PR gates (all 8 routed jobs are pure compute)"
+          fi
+
       - name: Network — GitHub API
         id: net-github
         shell: bash
@@ -235,6 +257,7 @@ jobs:
           echo "| node 20 | $(icon '${{ steps.node.outcome }}') |" >> $GITHUB_STEP_SUMMARY
           echo "| pnpm >=9 | $(icon '${{ steps.pnpm.outcome }}') |" >> $GITHUB_STEP_SUMMARY
           echo "| git >=2.30 | $(icon '${{ steps.git-check.outcome }}') |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker (informational) | ${{ steps.docker-check.outcome == 'success' && '⚠️ See log' || '⚠️ See log' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| GitHub API | $(icon '${{ steps.net-github.outcome }}') |" >> $GITHUB_STEP_SUMMARY
           echo "| npm registry | $(icon '${{ steps.net-npm.outcome }}') |" >> $GITHUB_STEP_SUMMARY
           echo "| NuGet registry | $(icon '${{ steps.net-nuget.outcome }}') |" >> $GITHUB_STEP_SUMMARY
