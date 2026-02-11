@@ -4,7 +4,8 @@
 # ============================================================================
 # SPECLOCK: TerraFusion Pre-Push Quality Gate (pnpm-first, deterministic)
 # Contract: Must pass on clean machine with pnpm installed
-# Note: Lockfile truth is frontend/pnpm-lock.yaml (monorepo with npm root)
+# Note: Lockfile truth is ROOT pnpm-lock.yaml (workspace-aware builds)
+#       frontend/pnpm-lock.yaml was removed — do NOT recreate it.
 #
 # Environment Variables:
 #   TF_STRICT_PUSH=1  - Fail on ANY test/lint error (CI mode)
@@ -28,9 +29,9 @@ command -v pnpm >/dev/null 2>&1 || {
   exit 1
 }
 
-# Gate 1: Verify frontend lockfile exists (lockfile truth)
-if [ ! -f "frontend/pnpm-lock.yaml" ]; then
-  echo "❌ frontend/pnpm-lock.yaml not found. Repository may be corrupted."
+# Gate 1: Verify root lockfile exists (single source of truth)
+if [ ! -f "pnpm-lock.yaml" ]; then
+  echo "❌ pnpm-lock.yaml not found at repo root. Repository may be corrupted."
   exit 1
 fi
 
