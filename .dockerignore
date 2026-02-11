@@ -4,6 +4,17 @@
 .git
 .gitignore
 
+# Quarantine (huge, not needed in any image)
+QUARANTINE/
+
+# Heavy dirs not needed for frontend build
+backend/
+native-shell/
+os-platform/
+data/
+database/
+golden/
+
 # Documentation
 *.md
 docs/

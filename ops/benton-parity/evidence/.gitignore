@@ -1,0 +1,10 @@
+# Evidence output (generated at runtime, not committed)
+*.log
+*.json
+*.jsonl
+*.txt
+*.md
+!../README.md
+build-logs/
+runtime-logs/
+ci-logs/
