@@ -63,3 +63,6 @@ pwsh tools/dev/verify.ps1      # run all gates
 
 `QUARANTINE/` holds ~160 directories and ~750 files moved during the 2026-02-11 cleanup.
 Contents are preserved (not deleted) for archaeology. Safety tag: `pre-cleanup-20260211`.
+
+Anything resurrected from QUARANTINE must return under an allowed top-level subtree
+(`ops/`, `tools/`, `packages/`, `docs/`) via an intentional PR. No silent moves.
