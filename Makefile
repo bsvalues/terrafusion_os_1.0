@@ -98,10 +98,17 @@ governance: ## Run quarantine governance gates (guard + plan + tests)
 	@echo "════════════════════════════════════════════════════════════════"
 	@node scripts/repo-shape-guard.mjs
 	@node scripts/quarantine/plan.mjs --check
-	@node --test scripts/quarantine/__tests__/*.test.mjs os-platform/core/tests/phase83-tools.test.mjs
+	@echo ""
+	@echo "[suite] Quarantine toolchain (23 tests / 4 suites)"
+	@node --test scripts/quarantine/__tests__/*.test.mjs
+	@echo ""
+	@echo "[suite] Phase83 platform (32 tests / 11 suites)"
+	@node --test os-platform/core/tests/phase83-tools.test.mjs
+	@echo ""
+	@echo "[suite] Workflow path integrity (13 tests / 5 suites)"
 	@node --test scripts/governance/__tests__/workflow-paths.test.mjs
 	@echo ""
-	@echo "✅ All governance gates passed"
+	@echo "✅ All governance gates passed (68 tests / 20 suites)"
 
 db-migrate: ## Database migrations
 	psql "$$DB_OLTP_DSN" -f db/migrations/001_init_ontology.sql

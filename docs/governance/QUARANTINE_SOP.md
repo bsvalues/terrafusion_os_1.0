@@ -1,6 +1,6 @@
 # Quarantine Governance SOP
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Status:** Active (strict enforcement)  
 **Last Updated:** 2026-02-12
 
@@ -21,6 +21,9 @@ The quarantine system is a **permanent, Git-native control plane** that enforces
 | Planner | `scripts/quarantine/plan.mjs` | Deterministic move-plan computation |
 | Applier | `scripts/quarantine/apply.mjs` | Batch-safe `git mv` execution |
 | Tests | `scripts/quarantine/__tests__/*.test.mjs` | 23 quarantine tests, 4 suites (zero deps) |
+| Workflow Guard | `scripts/governance/__tests__/workflow-paths.test.mjs` | 13 workflow-path tests, 5 suites (zero deps) |
+| Phase83 Tests | `os-platform/core/tests/phase83-tools.test.mjs` | 32 platform tests, 11 suites (zero deps) |
+| **Total** | 3 test files | **68 tests / 20 suites** |
 
 ### Enforcement Variables (GitHub Actions)
 
@@ -63,7 +66,7 @@ Two root directories are **silently ignored** by the guard and planner (they exi
 
 ## Local Verification Commands
 
-Run all three gates before pushing:
+Run all five gates before pushing:
 
 ```bash
 # Option A: Make (Linux/macOS/WSL)
@@ -75,7 +78,9 @@ pwsh tools/dev/governance.ps1
 # Option C: Individual commands
 node scripts/repo-shape-guard.mjs           # Guard: root spine check
 node scripts/quarantine/plan.mjs --check    # Plan: no pending moves
-node --test scripts/quarantine/__tests__/*.test.mjs os-platform/core/tests/phase83-tools.test.mjs
+node --test scripts/quarantine/__tests__/*.test.mjs                     # Quarantine tests (23t/4s)
+node --test os-platform/core/tests/phase83-tools.test.mjs               # Phase83 tests (32t/11s)
+node --test scripts/governance/__tests__/workflow-paths.test.mjs        # Workflow paths (13t/5s)
 ```
 
 ---

@@ -383,11 +383,18 @@ jobs:
         shell: bash
         run: node scripts/platform-lint.mjs
 
-      - name: Quarantine toolchain tests
+      - name: Quarantine toolchain tests (23 tests / 4 suites)
+        id: quarantine-tests
         shell: bash
         run: node --test scripts/quarantine/__tests__/*.test.mjs
 
-      - name: Workflow path integrity
+      - name: Phase83 platform tests (32 tests / 11 suites)
+        id: phase83-tests
+        shell: bash
+        run: node --test os-platform/core/tests/phase83-tools.test.mjs
+
+      - name: Workflow path integrity (13 tests / 5 suites)
+        id: workflow-tests
         shell: bash
         run: node --test scripts/governance/__tests__/workflow-paths.test.mjs
 
@@ -425,8 +432,10 @@ jobs:
           echo "| Workspace Sanity | ${{ steps.shape-guard.outcome != '' && '✅' || '⏭️' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| AGENTS.md Compliance | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| Drift Guard | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| Quarantine Tests | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| Workflow Path Integrity | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Quarantine Tests (23t/4s) | ${{ steps.quarantine-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase83 Tests (32t/11s) | ${{ steps.phase83-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Workflow Paths (13t/5s) | ${{ steps.workflow-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total: 68 tests / 20 suites** | |" >> $GITHUB_STEP_SUMMARY
           echo "| Repo Shape Guard | ${{ steps.shape-guard.outcome == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Quarantine Plan | ${{ vars.QUARANTINE_STRICT == 'true' && '✅ (strict)' || '⏭️ (not strict)' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
