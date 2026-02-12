@@ -162,16 +162,109 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 
 ---
 
-## Current Inventory Snapshot (as of PR #303)
+## Current Inventory Snapshot
 
-| Metric | Count |
-|--------|-------|
-| Total workflow files | 77 |
-| With `push:` trigger | 43 |
-| With `schedule:` trigger | 18 |
-| `workflow_dispatch` only | 17 |
-| Required (branch protection) | 5 |
-| Silenced in PR #302 | 17 |
+> **Enforced by:** `scripts/governance/workflow-inventory.mjs --check`
+> Verify: `node scripts/governance/workflow-inventory.mjs --check`
+> Update: `node scripts/governance/workflow-inventory.mjs --write`
+
+<!-- INVENTORY-SNAPSHOT-BEGIN -->
+| Class | Count |
+|-------|-------|
+| REQUIRED | 3 |
+| PUSH-OPTIONAL | 38 |
+| SCHEDULED | 17 |
+| MANUAL | 17 |
+| DEPRECATED | 2 |
+| **Total** | 77 |
+
+**REQUIRED** (3):
+- `core-governance-gates.yml`
+- `seal-gate-fast.yml`
+- `tier1-ui-harness.yml`
+
+**PUSH-OPTIONAL** (38):
+- `accessibility.yml`
+- `accreditation-compat.yml`
+- `ai-swarm-safety.yml`
+- `atlas-validation.yml`
+- `autonomy-break-glass-guard.yml`
+- `autonomy-break-glass-incident-publisher.yml`
+- `autonomy-evidence-publisher.yml`
+- `autonomy-incident-label-guard.yml`
+- `autonomy-incident-publisher.yml`
+- `autonomy-tpi-guard.yml`
+- `benton-runner-smoke.yml`
+- `benton.yml`
+- `build-validation.yml`
+- `ci-cd-main.yml`
+- `ci-verified.yml`
+- `ci.yml`
+- `county-kit-parity.yml`
+- `deps-fast-lane.yml`
+- `designctl.yml`
+- `gate-pipeline.yml`
+- `golden-corpus-compat.yml`
+- `governance-proof.yml`
+- `gpt-rag.yml`
+- `kubernetes-infrastructure-ci.yml`
+- `markdown-lint.yml`
+- `observability-ci.yml`
+- `opa-policy-tests.yml`
+- `release-compliance.yml`
+- `release-validation.yml`
+- `rust-security-gates.yml`
+- `rust-verify.yml`
+- `slsa-provenance.yml`
+- `spec-gates.yml`
+- `terra-levy-tests.yml`
+- `terrafusion-ci-cd-production.yml`
+- `testing.yml`
+- `tfctl-ci.yml`
+- `yaml-sanity.yml`
+
+**SCHEDULED** (17):
+- `accessibility-audit.yml`
+- `accreditation-oracle-health.yml`
+- `autonomy-pr-lane.yml`
+- `break-glass-drill.yml`
+- `ci-cd-pipeline.yml`
+- `ci-cd.yml`
+- `external-verify.yml`
+- `governance-audit.yml`
+- `nightly.yml`
+- `oracle-health.yml`
+- `perf-skill-audit.yml`
+- `performance-budget.yml`
+- `sbom.yml`
+- `security-compliance-ci.yml`
+- `security-compliance.yml`
+- `security.yml`
+- `terraforge-ci.yml`
+
+**MANUAL** (17):
+- `autonomy-incident-triage.yml`
+- `baseline-guard.yml`
+- `code-intel.yml`
+- `deployment.yml`
+- `e2e-smoke.yml`
+- `frontend-ci-isolated.yml`
+- `grfe-ci.yaml`
+- `infrastructure-cicd.yml`
+- `manifest-contract-guard.yml`
+- `performance-regression.yml`
+- `scope-drift-guard.yml`
+- `tag-lint.yml`
+- `terrafusion-gate-enforcement.yml`
+- `terrafusion-pipeline.yml`
+- `test.yml`
+- `visual-regression.yml`
+- `wave1-freeze-guard.yml`
+
+**DEPRECATED** (2):
+- `autonomy-casefile-publisher.yml`
+- `dotnet-test.yml`
+<!-- INVENTORY-SNAPSHOT-END -->
 
 **Schedules preserved post-triage:**
 
@@ -183,10 +276,11 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 
 ---
 
+
 ## Verification Commands
 
 ```bash
-# Full governance suite (68 tests / 20 suites)
+# Full governance suite (91 tests / 25 suites)
 make governance
 # or
 pwsh tools/dev/governance.ps1
@@ -195,6 +289,11 @@ pwsh tools/dev/governance.ps1
 node --test scripts/quarantine/__tests__/*.test.mjs                     # Quarantine (23t/4s)
 node --test os-platform/core/tests/phase83-tools.test.mjs               # Phase83 (32t/11s)
 node --test scripts/governance/__tests__/workflow-paths.test.mjs        # Workflow paths (13t/5s)
+node --test scripts/governance/__tests__/workflow-inventory*.test.mjs   # Inventory (23t/5s)
+
+# Inventory snapshot check
+node scripts/governance/workflow-inventory.mjs --check
+node scripts/governance/workflow-inventory.mjs --write  # update if needed
 
 # Check which workflows fire on push
 gh run list --branch main --limit 20 --json name,event,conclusion \

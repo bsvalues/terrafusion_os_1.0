@@ -108,7 +108,13 @@ governance: ## Run quarantine governance gates (guard + plan + tests)
 	@echo "[suite] Workflow path integrity (13 tests / 5 suites)"
 	@node --test scripts/governance/__tests__/workflow-paths.test.mjs
 	@echo ""
-	@echo "✅ All governance gates passed (68 tests / 20 suites)"
+	@echo "[suite] Workflow inventory (23 tests / 5 suites)"
+	@node --test scripts/governance/__tests__/workflow-inventory.test.mjs scripts/governance/__tests__/workflow-inventory.integration.test.mjs
+	@echo ""
+	@echo "[check] Workflow inventory snapshot"
+	@node scripts/governance/workflow-inventory.mjs --check
+	@echo ""
+	@echo "✅ All governance gates passed (91 tests / 25 suites)"
 
 db-migrate: ## Database migrations
 	psql "$$DB_OLTP_DSN" -f db/migrations/001_init_ontology.sql

@@ -8,6 +8,8 @@
     3. Quarantine toolchain tests (23 tests / 4 suites)
     4. Phase83 platform tests (32 tests / 11 suites)
     5. Workflow path integrity (13 tests / 5 suites)
+    6. Workflow inventory tests (23 tests / 5 suites)
+    7. Workflow inventory snapshot check
 .EXAMPLE
   pwsh tools/dev/governance.ps1
 #>
@@ -41,8 +43,18 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 if ($LASTEXITCODE -ne 0) { Write-Error "Phase83 platform tests FAILED"; exit 1 }
 
 # Gate 5: Workflow path integrity (13 tests / 5 suites)
-Write-Host "`n[5/5] Workflow path integrity (13t/5s)..." -ForegroundColor Yellow
+Write-Host "`n[5/7] Workflow path integrity (13t/5s)..." -ForegroundColor Yellow
 node --test scripts/governance/__tests__/workflow-paths.test.mjs
 if ($LASTEXITCODE -ne 0) { Write-Error "Workflow path integrity FAILED"; exit 1 }
 
-Write-Host "`n✅ All governance gates passed (68 tests / 20 suites)" -ForegroundColor Green
+# Gate 6: Workflow inventory tests (23 tests / 5 suites)
+Write-Host "`n[6/7] Workflow inventory tests (23t/5s)..." -ForegroundColor Yellow
+node --test scripts/governance/__tests__/workflow-inventory.test.mjs scripts/governance/__tests__/workflow-inventory.integration.test.mjs
+if ($LASTEXITCODE -ne 0) { Write-Error "Workflow inventory tests FAILED"; exit 1 }
+
+# Gate 7: Workflow inventory snapshot check
+Write-Host "`n[7/7] Workflow inventory snapshot..." -ForegroundColor Yellow
+node scripts/governance/workflow-inventory.mjs --check
+if ($LASTEXITCODE -ne 0) { Write-Error "Workflow inventory snapshot FAILED"; exit 1 }
+
+Write-Host "`n✅ All governance gates passed (91 tests / 25 suites)" -ForegroundColor Green

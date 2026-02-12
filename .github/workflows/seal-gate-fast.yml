@@ -398,6 +398,16 @@ jobs:
         shell: bash
         run: node --test scripts/governance/__tests__/workflow-paths.test.mjs
 
+      - name: Workflow inventory tests (23 tests / 5 suites)
+        id: inventory-tests
+        shell: bash
+        run: node --test scripts/governance/__tests__/workflow-inventory.test.mjs scripts/governance/__tests__/workflow-inventory.integration.test.mjs
+
+      - name: Workflow inventory snapshot check
+        id: inventory-snapshot
+        shell: bash
+        run: node scripts/governance/workflow-inventory.mjs --check
+
       - name: Repo shape guard (root spine allowlist)
         id: shape-guard
         shell: bash
@@ -435,7 +445,9 @@ jobs:
           echo "| Quarantine Tests (23t/4s) | ${{ steps.quarantine-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Phase83 Tests (32t/11s) | ${{ steps.phase83-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Workflow Paths (13t/5s) | ${{ steps.workflow-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Total: 68 tests / 20 suites** | |" >> $GITHUB_STEP_SUMMARY
+          echo "| Inventory Tests (23t/5s) | ${{ steps.inventory-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Inventory Snapshot | ${{ steps.inventory-snapshot.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total: 91 tests / 25 suites** | |" >> $GITHUB_STEP_SUMMARY
           echo "| Repo Shape Guard | ${{ steps.shape-guard.outcome == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Quarantine Plan | ${{ vars.QUARANTINE_STRICT == 'true' && '✅ (strict)' || '⏭️ (not strict)' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
