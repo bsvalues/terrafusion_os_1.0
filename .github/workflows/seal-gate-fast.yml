@@ -387,6 +387,10 @@ jobs:
         shell: bash
         run: node --test scripts/quarantine/__tests__/*.test.mjs
 
+      - name: Workflow path integrity
+        shell: bash
+        run: node --test scripts/governance/__tests__/workflow-paths.test.mjs
+
       - name: Repo shape guard (root spine allowlist)
         id: shape-guard
         shell: bash
@@ -422,6 +426,7 @@ jobs:
           echo "| AGENTS.md Compliance | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| Drift Guard | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| Quarantine Tests | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Workflow Path Integrity | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| Repo Shape Guard | ${{ steps.shape-guard.outcome == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Quarantine Plan | ${{ vars.QUARANTINE_STRICT == 'true' && '✅ (strict)' || '⏭️ (not strict)' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

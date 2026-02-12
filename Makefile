@@ -99,6 +99,7 @@ governance: ## Run quarantine governance gates (guard + plan + tests)
 	@node scripts/repo-shape-guard.mjs
 	@node scripts/quarantine/plan.mjs --check
 	@node --test scripts/quarantine/__tests__/*.test.mjs os-platform/core/tests/phase83-tools.test.mjs
+	@node --test scripts/governance/__tests__/workflow-paths.test.mjs
 	@echo ""
 	@echo "✅ All governance gates passed"
 

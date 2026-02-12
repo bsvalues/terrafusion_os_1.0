@@ -1,12 +1,15 @@
 name: grfe-ci
 
+# DISABLED: monorepo-scaffolding/ was quarantined.
+# All jobs reference working-directory: monorepo-scaffolding which no longer exists.
+# Kept as workflow_dispatch for reference; re-enable when path is restored.
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest

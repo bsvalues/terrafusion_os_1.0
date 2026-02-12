@@ -1,10 +1,10 @@
 name: E2E Smoke - TerraFusion cOS
 
+# DISABLED: terrafusion-cos/ was quarantined (PR #291).
+# All jobs reference working-directory: terrafusion-cos/ which no longer exists.
+# Kept as workflow_dispatch for reference; re-enable when path is restored.
 on:
   workflow_dispatch:
-
-  push:
-    branches: [main]
 jobs:
   smoke:
     runs-on: ubuntu-latest
