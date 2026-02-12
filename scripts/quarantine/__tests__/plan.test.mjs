@@ -4,6 +4,7 @@
  * Run: node --test scripts/quarantine/__tests__/plan.test.mjs
  */
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { describe, it } from 'node:test';
@@ -132,5 +133,20 @@ describe('computePlan', () => {
     assert.ok(fromNames.includes('node_modules/'), 'tracked node_modules gets quarantined');
     assert.ok(fromNames.includes('intruder/'), 'intruder also quarantined');
     assert.equal(plan.length, 2);
+  });
+
+  it('json_mode_emits_valid_json_only', () => {
+    // Invoke plan.mjs --json as a subprocess and verify stdout is pure JSON
+    const planCli = join(__dirname, '..', 'plan.mjs');
+    const stdout = execFileSync(process.execPath, [planCli, '--json'], {
+      encoding: 'utf8',
+      cwd: join(__dirname, '..', '..', '..'),
+    });
+    // Must parse as valid JSON
+    const parsed = JSON.parse(stdout);
+    assert.ok(Array.isArray(parsed), 'output is a JSON array');
+    // No trailing text after JSON (the raw stdout trimmed should round-trip)
+    const roundTrip = JSON.stringify(parsed, null, 2) + '\n';
+    assert.equal(stdout, roundTrip, 'stdout contains only JSON, no banner text');
   });
 });
