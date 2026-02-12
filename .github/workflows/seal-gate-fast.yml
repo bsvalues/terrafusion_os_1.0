@@ -383,6 +383,33 @@ jobs:
         shell: bash
         run: node scripts/platform-lint.mjs
 
+      - name: Quarantine toolchain tests
+        shell: bash
+        run: node --test scripts/quarantine/__tests__/*.test.mjs
+
+      - name: Repo shape guard (root spine allowlist)
+        id: shape-guard
+        shell: bash
+        run: node scripts/repo-shape-guard.mjs
+        continue-on-error: true
+
+      - name: Repo shape guard enforcement
+        if: steps.shape-guard.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ vars.QUARANTINE_GUARD_STRICT }}" = "true" ]; then
+            echo "::error::Repo shape guard failed (QUARANTINE_GUARD_STRICT=true). Root spine must be clean."
+            exit 1
+          else
+            echo "::warning::Repo shape guard failed (quarantine in progress). Will become blocking when QUARANTINE_GUARD_STRICT=true."
+          fi
+
+      - name: Quarantine plan check (strict — gated)
+        if: vars.QUARANTINE_STRICT == 'true'
+        shell: bash
+        run: node scripts/quarantine/plan.mjs --check
+
   # ═══════════════════════════════════════════════════════════════════════════
   # SEAL - Final gate (all fast checks must pass)
   # ═══════════════════════════════════════════════════════════════════════════
