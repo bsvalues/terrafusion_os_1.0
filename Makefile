@@ -93,6 +93,9 @@ fix-wsl: ## Fix WSL path translation issues
 # ADDITIONAL TARGETS
 # ═══════════════════════════════════════════════════════════════════════════════
 
+inventory-write: ## Update workflow inventory snapshot after adding/removing workflows
+	@node scripts/governance/workflow-inventory.mjs --write
+
 governance: ## Run quarantine governance gates (guard + plan + tests)
 	@echo "🔒 Quarantine Governance Gates"
 	@echo "════════════════════════════════════════════════════════════════"

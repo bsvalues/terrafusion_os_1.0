@@ -16,6 +16,7 @@
 - [ ] `/health` responds locally or in CI
 - [ ] Tests pass: `make test` / `dotnet test` / `npm test`
 - [ ] No secrets committed
+- [ ] If `.github/workflows/` changed: ran `node scripts/governance/workflow-inventory.mjs --write` and committed snapshot
 
 ### Database (if applicable)
 
