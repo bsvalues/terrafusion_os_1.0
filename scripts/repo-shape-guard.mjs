@@ -1,83 +1,139 @@
 /**
- * Repo Shape Guard – Entropy Lock for TerraFusion OS
+ * Repo Shape Guard – Hard Allowlist Enforcement for TerraFusion OS
  *
- * Prevents directory sprawl by asserting the number of top-level
- * non-hidden directories stays within bounds. Run in CI (SEAL gate)
- * or locally via: node scripts/repo-shape-guard.mjs
+ * Enforces the root spine by checking tracked root entries against a
+ * hard allowlist (keep-list.json). Uses `git ls-tree` for git-aware truth
+ * instead of filesystem enumeration.
+ *
+ * Usage:
+ *   node scripts/repo-shape-guard.mjs           # enforce (warn on missing dirs)
+ *   node scripts/repo-shape-guard.mjs --strict   # also fail on missing dirs
+ *
+ * Policy:
+ *   violations (unknown root entries) → exit 1
+ *   missing keep-list files           → exit 1
+ *   missing keep-list dirs            → warn (exit 0), or exit 1 with --strict
  */
-import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = new URL('..', import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1');
+const __filename = fileURLToPath(import.meta.url);
+const ROOT = resolve(__filename, '../..');
 
-const IGNORED = new Set(['node_modules', 'QUARANTINE', '.git']);
+const IGNORED = new Set(['node_modules', 'QUARANTINE']);
+const HIDDEN_RE = /^\./;
 
-const dirs = readdirSync(ROOT)
-  .filter(name => {
-    if (name.startsWith('.') || IGNORED.has(name)) return false;
-    try {
-      return statSync(join(ROOT, name)).isDirectory();
-    } catch {
-      return false;
-    }
-  })
-  .sort();
+/**
+ * Core enforcement: check root entries against keep-list.
+ * @param {string[]} rootEntries  All root-level entry names from git ls-tree
+ * @param {{ dirs: string[], files: string[] }} keepList
+ * @returns {{ violations: string[], missingDirs: string[], missingFiles: string[] }}
+ */
+export function checkShape(rootEntries, keepList) {
+  const allowed = new Set([...keepList.dirs, ...keepList.files]);
+  const visible = rootEntries.filter(e => !HIDDEN_RE.test(e) && !IGNORED.has(e));
 
-const MAX_DIRS = 20; // Current: 16.  Headroom: 4.
-const MAX_ROOT_FILES = 40; // Current: 29.  Headroom: 11.
+  const violations = visible.filter(e => !allowed.has(e)).sort();
+  const entrySet = new Set(rootEntries);
+  const missingDirs = keepList.dirs.filter(d => !entrySet.has(d)).sort();
+  const missingFiles = keepList.files.filter(f => !entrySet.has(f)).sort();
 
-const files = readdirSync(ROOT).filter(name => {
+  return { violations, missingDirs, missingFiles };
+}
+
+/**
+ * SEAL allowlist regression check.
+ * @param {string} content  Contents of seal-gate-fast.yml
+ * @returns {string[]}  Missing required escaped patterns
+ */
+export function checkSealAllowlist(content) {
+  const REQUIRED = [
+    'frontend/Dockerfile',
+    'frontend/nginx\\.conf',
+    'frontend/pnpm-lock\\.yaml',
+    'frontend/\\.dockerignore',
+  ];
+  return REQUIRED.filter(p => !content.includes(p));
+}
+
+function main() {
+  const strict = process.argv.includes('--strict');
+  let exitCode = 0;
+
+  // Load keep-list
+  const keepListPath = join(ROOT, 'scripts', 'quarantine', 'keep-list.json');
+  const keepList = JSON.parse(readFileSync(keepListPath, 'utf8'));
+
+  // Get tracked root entries via git (null-byte separator avoids quoting)
+  let rootEntries;
   try {
-    return statSync(join(ROOT, name)).isFile();
+    const output = execSync('git ls-tree --name-only -z HEAD', {
+      encoding: 'utf8',
+      cwd: ROOT,
+    });
+    rootEntries = output.split('\0').filter(Boolean);
   } catch {
-    return false;
+    console.error('FATAL: not in a git repo or git not available.');
+    process.exit(2);
   }
-});
 
-// ── SEAL allowlist regression guard ─────────────────────────────────
-// These frontend/ paths are permitted by the SEAL legacy-frontend gate
-// (seal-gate-fast.yml). If someone removes them from the workflow's
-// grep -v allowlist, the Docker build PR gate will silently break.
-let exitCode = 0;
+  const { violations, missingDirs, missingFiles } = checkShape(rootEntries, keepList);
 
-const SEAL_ALLOWLIST = [
-  'frontend/Dockerfile',
-  'frontend/nginx\\.conf',
-  'frontend/pnpm-lock\\.yaml',
-  'frontend/\\.dockerignore',
-];
+  // Report summary
+  const allowedCount = keepList.dirs.length + keepList.files.length;
+  const visibleCount = rootEntries.filter(e => !HIDDEN_RE.test(e) && !IGNORED.has(e)).length;
+  console.log(`Root entries: ${visibleCount} visible (${rootEntries.length} total)`);
+  console.log(
+    `Keep-list: ${allowedCount} allowed (${keepList.dirs.length} dirs + ${keepList.files.length} files)`
+  );
 
-const sealGatePath = join(ROOT, '.github', 'workflows', 'seal-gate-fast.yml');
-try {
-  const sealGate = readFileSync(sealGatePath, 'utf8');
-  const missing = SEAL_ALLOWLIST.filter(p => !sealGate.includes(p));
-  if (missing.length) {
-    console.error(`\nSEAL ALLOWLIST REGRESSION: these paths are missing from seal-gate-fast.yml:`);
-    missing.forEach(p => console.error(`  ❌ ${p}`));
-    console.error('Re-add them to the legacy-frontend grep -v allowlist.');
+  if (violations.length) {
+    console.error(`\n❌ VIOLATIONS: ${violations.length} root entries not in keep-list:`);
+    violations.forEach(v => console.error(`  ⛔ ${v}`));
     exitCode = 1;
   }
-} catch {
-  // seal-gate-fast.yml not found — skip (non-fatal in local dev)
+
+  if (missingFiles.length) {
+    console.error(`\n❌ MISSING FILES: ${missingFiles.length} required root files absent:`);
+    missingFiles.forEach(f => console.error(`  ⚠️  ${f}`));
+    exitCode = 1;
+  }
+
+  if (missingDirs.length) {
+    const icon = strict ? '❌' : '⚠️';
+    const label = strict ? 'MISSING DIRS (strict — exit 1)' : 'MISSING DIRS (warn — non-fatal)';
+    console.warn(`\n${icon} ${label}: ${missingDirs.length} keep-list dirs absent:`);
+    missingDirs.forEach(d => console.warn(`  📁 ${d}`));
+    if (strict) exitCode = 1;
+  }
+
+  // ── SEAL allowlist regression guard ─────────────────────────────
+  const sealGatePath = join(ROOT, '.github', 'workflows', 'seal-gate-fast.yml');
+  try {
+    const sealGate = readFileSync(sealGatePath, 'utf8');
+    const missingSeal = checkSealAllowlist(sealGate);
+    if (missingSeal.length) {
+      console.error(`\n❌ SEAL ALLOWLIST REGRESSION: missing from seal-gate-fast.yml:`);
+      missingSeal.forEach(p => console.error(`  ❌ ${p}`));
+      console.error('Re-add them to the legacy-frontend grep -v allowlist.');
+      exitCode = 1;
+    }
+  } catch {
+    // seal-gate-fast.yml not found — skip in local dev
+  }
+
+  if (exitCode === 0) {
+    console.log('\n✅ Repo shape OK');
+  } else {
+    console.error(`\n💥 Repo shape FAILED (exit ${exitCode})`);
+  }
+
+  process.exit(exitCode);
 }
-// ────────────────────────────────────────────────────────────────────
 
-console.log(`Top-level directories: ${dirs.length} / ${MAX_DIRS} max`);
-dirs.forEach(d => console.log(`  ${d}`));
-
-console.log(`\nRoot files: ${files.length} / ${MAX_ROOT_FILES} max`);
-
-if (dirs.length > MAX_DIRS) {
-  console.error(`\nENTROPY VIOLATION: ${dirs.length} dirs exceed cap of ${MAX_DIRS}`);
-  exitCode = 1;
+// Run main when executed directly
+if (resolve(process.argv[1] || '') === __filename) {
+  main();
 }
-if (files.length > MAX_ROOT_FILES) {
-  console.error(`\nENTROPY VIOLATION: ${files.length} root files exceed cap of ${MAX_ROOT_FILES}`);
-  exitCode = 1;
-}
-
-if (exitCode === 0) {
-  console.log('\nRepo shape OK');
-}
-
-process.exit(exitCode);

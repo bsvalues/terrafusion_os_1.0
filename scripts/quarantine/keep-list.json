@@ -1,0 +1,49 @@
+{
+  "description": "Root spine allowlist. Non-hidden tracked root entries not in this list are quarantine candidates. Source of truth: REPO_MAP.md § Root Spine.",
+  "policy": {
+    "violations": "exit 1 — root entries not in this list",
+    "missingFiles": "exit 1 — required root files absent (indicates damage)",
+    "missingDirs": "warn (exit 0) during quarantine phase; flip to exit 1 post-quarantine via --strict"
+  },
+  "dirs": [
+    "backend",
+    "compose",
+    "config",
+    "data",
+    "database",
+    "docker",
+    "docs",
+    "frontend",
+    "golden",
+    "native-shell",
+    "ops",
+    "os-platform",
+    "packages",
+    "scripts",
+    "tests",
+    "tools"
+  ],
+  "files": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CODEOWNERS",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "Makefile",
+    "README.md",
+    "REPO_MAP.md",
+    "STANDARD.md",
+    "SUSTAINMENT.md",
+    "TerraFusion.sln",
+    "global.json",
+    "package.json",
+    "platform.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "renovate.json",
+    "tsconfig.core.json",
+    "tsconfig.eslint.json",
+    "tsconfig.json",
+    "vitest.config.ts"
+  ]
+}
