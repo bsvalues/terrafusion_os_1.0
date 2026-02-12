@@ -190,7 +190,7 @@ Copy/paste into PR description for Tier-1 UI features:
 | Audience | How to use |
 |----------|------------|
 | **PR Author** | Fill Section A + evidence lines before requesting review |
-| **Reviewer** | Walk sections B–H; record decision in Section I |
+| **Reviewer** | Walk sections B–H; record decision in Section I; see [TIER1_EVIDENCE_EXAMPLES.md](TIER1_EVIDENCE_EXAMPLES.md) for calibration |
 | **QA** | Verify "hard fail" conditions are not present |
 | **Claims Ledger (Wave 1)** | Each PASS PR becomes evidence for one or more CR-IDs |
 
