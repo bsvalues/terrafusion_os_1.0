@@ -1,6 +1,6 @@
 # Quarantine Governance SOP
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Status:** Active (strict enforcement)  
 **Last Updated:** 2026-02-12
 
@@ -160,6 +160,35 @@ The applier (`scripts/quarantine/apply.mjs`) executes batch `git mv` operations 
 | #295 | Artifacts batch-01 | 150 files | 303 → 153 |
 | #296 | Artifacts batch-02 | 150 files | 153 → 3 |
 | #297 | Artifacts final | 3 files | 3 → **0** |
+| #298 | Operational hardening | — | — |
+| #299 | SOP v1.1 polish | — | — |
+| #300 | CI regression fix + workflow-path guard | — | — |
+| #301 | Governance suite reporting (per-suite counts) | — | — |
+| #302 | CI noise triage: silence 17 non-required workflows | — | — |
+
+---
+
+## CI Noise Triage (PR #302)
+
+17 non-required workflows were failing on every push to `main`, generating email notification spam. **None** are required by branch protection.
+
+**Required checks (5 total — unaffected):**
+`🔒 TerraFusion Seal Gate`, `governed-spine`, `phase85-tools`, `phase86-toolrunner`, `🧪 Tier-1 UI Harness Validation`
+
+**Action taken:** Removed `push:` triggers from all 17; each retains `workflow_dispatch` and any pre-existing `schedule`.
+
+| Category | Workflows | Root Cause |
+|----------|-----------|------------|
+| Windows runner checkout | baseline-guard, tag-lint, code-intel | `actions/checkout@v4` exit code 1 |
+| Code bug | scope-drift-guard | `getTouchedRoots` crash in scope-classifier |
+| Config mismatch | manifest-contract-guard | pnpm version 9 vs packageManager |
+| Quarantined paths | infrastructure-cicd | `infrastructure/` quarantined |
+| Freeze guard | wave1-freeze-guard | Blocks unconditionally until freeze date |
+| Build failures | ci-verified, visual-regression, test, deployment, ci-cd-pipeline, security, performance-regression, terrafusion-gate-enforcement, terrafusion-pipeline, accessibility-audit | Various .NET/pnpm/Playwright failures |
+
+**Schedules preserved:** accessibility-audit (weekly), ci-cd-pipeline (nightly), security (daily).
+
+**Re-enabling:** To restore push triggers on a workflow, add `push: branches: [main]` back to its `on:` block and fix the underlying failure first.
 
 ---
 
