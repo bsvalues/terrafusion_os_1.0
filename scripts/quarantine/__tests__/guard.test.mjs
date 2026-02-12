@@ -24,7 +24,6 @@ describe('checkShape', () => {
       '.github',
       '.gitignore',
       '.husky', // hidden — auto-ignored
-      'node_modules', // ignored
       'QUARANTINE', // ignored
     ];
     const result = checkShape(rootEntries, keepList);
@@ -60,7 +59,7 @@ describe('checkShape', () => {
     assert.deepEqual(result.missingFiles, ['package.json']);
   });
 
-  it('ignores hidden entries, node_modules, and QUARANTINE', () => {
+  it('ignores hidden entries and QUARANTINE', () => {
     const rootEntries = [
       ...keepList.dirs,
       ...keepList.files,
@@ -68,12 +67,17 @@ describe('checkShape', () => {
       '.env',
       '.claude',
       'QUARANTINE',
-      'node_modules',
     ];
     const result = checkShape(rootEntries, keepList);
     assert.deepEqual(result.violations, []);
     assert.deepEqual(result.missingDirs, []);
     assert.deepEqual(result.missingFiles, []);
+  });
+
+  it('flags tracked node_modules as violation', () => {
+    const rootEntries = [...keepList.dirs, ...keepList.files, 'node_modules'];
+    const result = checkShape(rootEntries, keepList);
+    assert.ok(result.violations.includes('node_modules'), 'tracked node_modules is a violation');
   });
 });
 

@@ -57,13 +57,27 @@ function readPlan(planFile) {
 
   // Read from stdin (piped JSON) — cross-platform via fd 0
   if (!process.stdin.isTTY) {
+    let raw;
     try {
-      const raw = readFileSync(0, 'utf8').trim();
-      if (raw.length > 0) {
-        return JSON.parse(raw);
-      }
+      raw = readFileSync(0, 'utf8');
     } catch {
       // EOF, pipe closed, or no stdin
+      return null;
+    }
+
+    const trimmed = raw.trim();
+    if (trimmed.length === 0) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(trimmed);
+    } catch (err) {
+      console.error(
+        'FATAL: Failed to parse plan JSON from stdin: ' +
+          (err && err.message ? err.message : String(err))
+      );
+      process.exit(2);
     }
   }
 

@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = resolve(__filename, '../..');
 
-const IGNORED = new Set(['node_modules', 'QUARANTINE']);
+const IGNORED = new Set(['QUARANTINE']);
 const HIDDEN_RE = /^\./;
 
 /**
