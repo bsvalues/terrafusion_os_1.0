@@ -1,6 +1,6 @@
 # Quarantine Governance SOP
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Status:** Active (strict enforcement)  
 **Last Updated:** 2026-02-12
 
@@ -10,6 +10,8 @@
 
 The quarantine system is a **permanent, Git-native control plane** that enforces the root spine allowlist. It prevents root-level sprawl by requiring every root entry to be explicitly declared in a keep-list. Violations block merge via the SEAL gate.
 
+**Root entries are evaluated from Git tracked state** (`git ls-tree --name-only HEAD`), not the filesystem. Untracked files are invisible to the guard.
+
 ### Architecture
 
 | Component | File | Purpose |
@@ -18,13 +20,13 @@ The quarantine system is a **permanent, Git-native control plane** that enforces
 | Guard | `scripts/repo-shape-guard.mjs` | Hard allowlist enforcement via `git ls-tree` |
 | Planner | `scripts/quarantine/plan.mjs` | Deterministic move-plan computation |
 | Applier | `scripts/quarantine/apply.mjs` | Batch-safe `git mv` execution |
-| Tests | `scripts/quarantine/__tests__/*.test.mjs` | 23 unit tests (zero dependencies) |
+| Tests | `scripts/quarantine/__tests__/*.test.mjs` | 23 quarantine tests, 4 suites (zero deps) |
 
 ### Enforcement Variables (GitHub Actions)
 
 | Variable | Value | Effect |
 |----------|-------|--------|
-| `QUARANTINE_GUARD_STRICT` | `true` | Guard failures block merge |
+| `QUARANTINE_GUARD_STRICT` | `true` | Missing keep-list dirs are treated as failures (not warnings) |
 | `QUARANTINE_STRICT` | `true` | `plan --check` runs as required step |
 
 ---
@@ -42,11 +44,11 @@ The quarantine system is a **permanent, Git-native control plane** that enforces
 
 1. Move/delete the actual file or directory.
 2. Remove the entry from `scripts/quarantine/keep-list.json`.
-3. Note: missing **files** cause guard failure (exit 1). Missing **dirs** produce a warning unless `--strict` is passed.
+3. Note: missing **files** always cause guard failure (exit 1). Missing **dirs** fail when strict mode is enabled (`QUARANTINE_GUARD_STRICT=true` or `--strict`); otherwise they warn locally.
 
 ---
 
-## Ignored Directories
+## Ignored and Hidden Entries
 
 Two root directories are **silently ignored** by the guard and planner (they exist outside the application spine):
 
@@ -55,7 +57,7 @@ Two root directories are **silently ignored** by the guard and planner (they exi
 | `QUARANTINE/` | Holds quarantined files (3 buckets: `top-level-dirs/`, `root-md/`, `root-artifacts/`) |
 | `ARCHIVE/` | Reserved escape hatch for archived materials (per AGENTS.md policy) |
 
-Hidden entries (dotfiles/dotdirs like `.github/`, `.gitignore`) are also ignored — they are not part of the visible root spine.
+**Dot-prefixed entries** (e.g., `.github/`, `.gitignore`, `.vscode/`) are invisible to governance — they are filtered before the allowlist check and pass through silently. They are never violations, never counted as missing, and are not listed in the keep-list.
 
 ---
 
@@ -78,6 +80,23 @@ node --test scripts/quarantine/__tests__/*.test.mjs os-platform/core/tests/phase
 
 ---
 
+## Safe Quarantine Apply (Applier)
+
+The applier (`scripts/quarantine/apply.mjs`) executes batch `git mv` operations from a plan file. It is the **only sanctioned method** for moving entries into `QUARANTINE/`.
+
+**Do:**
+- Generate a plan first: `node scripts/quarantine/plan.mjs > plan.json`
+- Review the plan before applying: `cat plan.json`
+- Apply via the tool: `node scripts/quarantine/apply.mjs plan.json`
+- Verify post-apply: `node scripts/repo-shape-guard.mjs`
+
+**Don't:**
+- Never run `mv` or `git mv` manually for quarantine moves — the applier handles subdir routing, collision avoidance, and bucket assignment.
+- Never apply without verifying the plan output first.
+- Never skip the post-apply guard check.
+
+---
+
 ## Common Failure Scenarios
 
 ### Guard: "VIOLATIONS: N root entries not in keep-list"
@@ -96,7 +115,7 @@ node --test scripts/quarantine/__tests__/*.test.mjs os-platform/core/tests/phase
 
 ### Plan: "CHECK FAILED — N moves needed"
 
-**Cause:** Quarantinable entries exist at root. Shouldn't happen post-migration unless new files were added outside the keep-list.
+**Cause:** Quarantinable entries exist at root. This is a governance regression and must be resolved before merge.
 
 **Fix:** Run `node scripts/quarantine/plan.mjs` to see what needs moving, then either add to keep-list or run the applier.
 
@@ -104,7 +123,7 @@ node --test scripts/quarantine/__tests__/*.test.mjs os-platform/core/tests/phase
 
 **Cause:** The legacy frontend allowlist in `seal-gate-fast.yml` is missing required patterns.
 
-**Fix:** Re-add the missing patterns to the `grep -v` allowlist in the governance enforcement step.
+**Fix:** Locate the `checkSealAllowlist` function in `scripts/repo-shape-guard.mjs` and verify the patterns match those in `.github/workflows/seal-gate-fast.yml`.
 
 ---
 
