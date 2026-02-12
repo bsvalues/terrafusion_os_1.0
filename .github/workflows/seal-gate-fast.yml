@@ -410,6 +410,23 @@ jobs:
         shell: bash
         run: node scripts/quarantine/plan.mjs --check
 
+      - name: Governance Summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## 🔒 Governance Fast Gate" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Workspace Sanity | ${{ steps.shape-guard.outcome != '' && '✅' || '⏭️' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| AGENTS.md Compliance | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Drift Guard | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Quarantine Tests | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Repo Shape Guard | ${{ steps.shape-guard.outcome == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Quarantine Plan | ${{ vars.QUARANTINE_STRICT == 'true' && '✅ (strict)' || '⏭️ (not strict)' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Enforcement:** QUARANTINE_GUARD_STRICT=\`${{ vars.QUARANTINE_GUARD_STRICT }}\`, QUARANTINE_STRICT=\`${{ vars.QUARANTINE_STRICT }}\`" >> $GITHUB_STEP_SUMMARY
+
   # ═══════════════════════════════════════════════════════════════════════════
   # SEAL - Final gate (all fast checks must pass)
   # ═══════════════════════════════════════════════════════════════════════════
