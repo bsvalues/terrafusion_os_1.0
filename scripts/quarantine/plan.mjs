@@ -6,7 +6,6 @@
  *   node scripts/quarantine/plan.mjs               # dry-run (human-readable)
  *   node scripts/quarantine/plan.mjs --json         # dry-run (machine-readable)
  *   node scripts/quarantine/plan.mjs --check        # exit 1 if plan is non-empty
- *   node scripts/quarantine/plan.mjs --dry-run      # explicit dry-run (default)
  *
  * All modes are read-only. No mutations are performed.
  */

@@ -383,6 +383,10 @@ jobs:
         shell: bash
         run: node scripts/platform-lint.mjs
 
+      - name: Quarantine toolchain tests
+        shell: bash
+        run: node --test scripts/quarantine/__tests__/*.test.mjs
+
       - name: Repo shape guard (root spine allowlist)
         id: shape-guard
         shell: bash

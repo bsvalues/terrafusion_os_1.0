@@ -24,6 +24,17 @@ export function computeMovesToApply({ plan, batch, statusOutput }) {
     return { ok: false, error: 'No plan provided. Pipe planner output or use --plan <file>.' };
   }
 
+  // Validate entry shape — each entry must have string from/to
+  for (let i = 0; i < plan.length; i++) {
+    const entry = plan[i];
+    if (!entry || typeof entry.from !== 'string' || typeof entry.to !== 'string') {
+      return {
+        ok: false,
+        error: `Malformed plan entry at index ${i}: expected { from: string, to: string }.`,
+      };
+    }
+  }
+
   // Safety: refuse on dirty working tree
   if (statusOutput && statusOutput.trim().length > 0) {
     return {

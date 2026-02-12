@@ -107,7 +107,6 @@ describe('computePlan', () => {
       { name: '.env', type: 'blob' },
       { name: '.claude', type: 'tree' },
       { name: '.ralph', type: 'tree' },
-      { name: 'node_modules', type: 'tree' },
       { name: 'QUARANTINE', type: 'tree' },
       { name: 'intruder', type: 'tree' },
     ];
@@ -115,12 +114,23 @@ describe('computePlan', () => {
     const fromNames = plan.map(m => m.from);
     // Hidden entries excluded
     assert.ok(!fromNames.some(f => f.startsWith('.')), 'no hidden entries in plan');
-    // Ignored entries excluded
-    assert.ok(!fromNames.includes('node_modules/'), 'node_modules excluded');
+    // QUARANTINE excluded
     assert.ok(!fromNames.includes('QUARANTINE/'), 'QUARANTINE excluded');
     // Only the intruder remains
     assert.equal(plan.length, 1);
     assert.equal(plan[0].from, 'intruder/');
     assert.equal(plan[0].to, 'QUARANTINE/top-level-dirs/intruder/');
+  });
+
+  it('plan_quarantines_tracked_node_modules', () => {
+    const entries = [
+      { name: 'node_modules', type: 'tree' },
+      { name: 'intruder', type: 'tree' },
+    ];
+    const plan = computePlan({ entries, keepList });
+    const fromNames = plan.map(m => m.from);
+    assert.ok(fromNames.includes('node_modules/'), 'tracked node_modules gets quarantined');
+    assert.ok(fromNames.includes('intruder/'), 'intruder also quarantined');
+    assert.equal(plan.length, 2);
   });
 });

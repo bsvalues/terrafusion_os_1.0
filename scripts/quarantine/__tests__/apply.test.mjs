@@ -140,4 +140,20 @@ describe('computeMovesToApply', () => {
     // We treat ANY non-empty porcelain output as dirty
     assert.equal(result.ok, false, 'untracked files = dirty');
   });
+
+  it('rejects_malformed_plan_entries', () => {
+    const malformed = [
+      { from: 'good.md', to: 'QUARANTINE/root-md/good.md' },
+      { from: 123, to: 'QUARANTINE/root-artifacts/bad' },
+      { from: 'also-good.js', to: 'QUARANTINE/root-artifacts/also-good.js' },
+    ];
+    const result = computeMovesToApply({
+      plan: malformed,
+      batch: 10,
+      statusOutput: '',
+    });
+    assert.equal(result.ok, false, 'should reject malformed entries');
+    assert.match(result.error, /malformed/i, 'error mentions malformed');
+    assert.match(result.error, /1/, 'error mentions the index of the bad entry');
+  });
 });
