@@ -1,7 +1,8 @@
+# Push trigger disabled — non-required workflow, fails on main.
+# Re-enable when checkout/runner issues are resolved.
 name: Baseline Guard
 on:
-  push:
-    branches: [main]
+  workflow_dispatch: {}
 jobs:
   guard:
     runs-on: windows-latest

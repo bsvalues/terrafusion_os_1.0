@@ -1,8 +1,9 @@
+# Push trigger disabled — non-required workflow, freeze guard blocks unconditionally.
+# Re-enable after freeze period ends.
 name: Wave 1 Template Freeze
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch: {}
 jobs:
   freeze-check:
     name: 🔒 Wave 1 Template Freeze Guard

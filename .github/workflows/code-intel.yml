@@ -1,13 +1,7 @@
+# Push trigger disabled — non-required workflow, checkout fails on main.
+# Re-enable when runner issues are resolved.
 name: Code Intelligence
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'src/**'
-      - 'tools/**'
-      - '.github/workflows/code-intel.yml'
   workflow_dispatch: {}
 jobs:
   scan:

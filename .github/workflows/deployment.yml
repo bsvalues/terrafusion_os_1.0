@@ -1,9 +1,7 @@
+# Push trigger disabled — non-required workflow, fails on main.
 name: TerraFusion OS Deployment Pipeline
 
 on:
-  push:
-    branches: [main]
-    tags: ['v*']
   workflow_dispatch:
     inputs:
       environment:

@@ -1,11 +1,8 @@
+# Push trigger disabled — non-required workflow, infrastructure/ is quarantined.
 name: TerraFusion Infrastructure CI/CD
 
 on:
-  push:
-    branches: [main, master]
-    paths:
-      - 'infrastructure/**'
-      - '.github/workflows/**'
+  workflow_dispatch: {}
 env:
   TF_VERSION: '1.5.0'
   TF_VAR_region: 'us-east-1'

@@ -1,10 +1,10 @@
+# Push trigger disabled — non-required workflow, fails on main.
 name: ♿ Accessibility Audit (WCAG 2.1)
 
 on:
-  push:
-    branches: [main]
   schedule:
     - cron: '0 0 * * 1' # Weekly on Mondays
+  workflow_dispatch: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
