@@ -51,6 +51,7 @@ pwsh tools/dev/verify.ps1      # run all gates
 | `--frozen-lockfile --filter ./frontend...` | Deterministic install scoped to frontend workspace. CI-safe. |
 | `nginx.conf` → `conf.d/default.conf` | File contains a `server {}` block, not a full `nginx.conf`. Must go to `conf.d/`. |
 | `.dockerignore` excludes `QUARANTINE/`, `backend/`, etc. | Keeps build context < 300 KB. |
+| SEAL legacy-frontend allowlist | `frontend/Dockerfile`, `frontend/nginx.conf`, `frontend/pnpm-lock.yaml`, `frontend/.dockerignore` are explicitly permitted in the governance gate. All other `frontend/` files (outside `apps/os-shell/`) are blocked. Removing these from the allowlist re-breaks the pipeline. |
 
 ## Tags
 
