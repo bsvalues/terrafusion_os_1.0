@@ -83,7 +83,7 @@ function main() {
     } else {
       console.log('\n✅ CHECK PASSED: no quarantine moves needed.');
     }
-  } else {
+  } else if (!jsonMode) {
     if (plan.length === 0) {
       console.log('\n✅ Root is clean — nothing to quarantine.');
     } else {
