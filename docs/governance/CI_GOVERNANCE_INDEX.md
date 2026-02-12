@@ -26,6 +26,7 @@ This is the canonical starting point for anyone touching CI workflows.
 
 | Document | Purpose |
 |----------|---------|
+| [CI_WORKFLOW_LIFECYCLE_POLICY.md](CI_WORKFLOW_LIFECYCLE_POLICY.md) | Workflow classes, promotion/demotion rules, trigger scoping |
 | [SEAL_ONLY_REQUIRED_CHECK_POLICY.md](SEAL_ONLY_REQUIRED_CHECK_POLICY.md) | Policy rationale and configuration |
 | [AUTONOMY_V1_GOVERNANCE_CONTRACT.md](../../AUTONOMY_V1_GOVERNANCE_CONTRACT.md) | Autonomy v1 operational guarantees |
 | [🏆_PHASE_4D_DEPENDENCY_CONVERGENCE_ACHIEVEMENT_🏆.md](../../🏆_PHASE_4D_DEPENDENCY_CONVERGENCE_ACHIEVEMENT_🏆.md) | Achievement log with merge statistics |

@@ -197,6 +197,7 @@ The applier (`scripts/quarantine/apply.mjs`) executes batch `git mv` operations 
 | Document | Purpose |
 |----------|---------|
 | [CI_GOVERNANCE_INDEX.md](CI_GOVERNANCE_INDEX.md) | CI workflow reference |
+| [CI_WORKFLOW_LIFECYCLE_POLICY.md](CI_WORKFLOW_LIFECYCLE_POLICY.md) | Workflow classes, promotion/demotion, trigger scoping |
 | [SEAL_ONLY_REQUIRED_CHECK_POLICY.md](SEAL_ONLY_REQUIRED_CHECK_POLICY.md) | SEAL gate policy |
 | [AGENTS.md](../../AGENTS.md) | Core governance rules |
 | [keep-list.json](../../scripts/quarantine/keep-list.json) | Root spine allowlist |
