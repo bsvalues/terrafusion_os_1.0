@@ -4,7 +4,7 @@ SHELL := /bin/bash
 # TerraFusion OS 1.0 - Elite Government Operating System
 # One-Click Production Deployment with Factor 12 Sacred Mathematics
 
-.PHONY: help demo-benton stop logs clean status validate oneclick preflight security core swarm api package db-migrate ontology-validate actions-validate flows bundle
+.PHONY: help demo-benton stop logs clean status validate oneclick preflight security core swarm api package db-migrate ontology-validate actions-validate flows bundle governance
 
 help: ## Show this help message
 	@echo "TerraFusion OS 1.0 - Elite Government Operating System"
@@ -92,6 +92,15 @@ fix-wsl: ## Fix WSL path translation issues
 # ═══════════════════════════════════════════════════════════════════════════════
 # ADDITIONAL TARGETS
 # ═══════════════════════════════════════════════════════════════════════════════
+
+governance: ## Run quarantine governance gates (guard + plan + tests)
+	@echo "🔒 Quarantine Governance Gates"
+	@echo "════════════════════════════════════════════════════════════════"
+	@node scripts/repo-shape-guard.mjs
+	@node scripts/quarantine/plan.mjs --check
+	@node --test scripts/quarantine/__tests__/*.test.mjs os-platform/core/tests/phase83-tools.test.mjs
+	@echo ""
+	@echo "✅ All governance gates passed"
 
 db-migrate: ## Database migrations
 	psql "$$DB_OLTP_DSN" -f db/migrations/001_init_ontology.sql

@@ -10,7 +10,7 @@
  *   blob (other) → QUARANTINE/root-artifacts/<name>
  */
 
-const IGNORED = new Set(['QUARANTINE']);
+const IGNORED = new Set(['QUARANTINE', 'ARCHIVE']);
 const HIDDEN_RE = /^\./;
 
 /**
