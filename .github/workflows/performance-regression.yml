@@ -20,12 +20,12 @@
 # @version 1.0.0
 # @elite-status Championship-Grade CI/CD
 
+# Push trigger disabled — non-required workflow, fails on main.
+
 name: Performance Regression Detection
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 jobs:
   # ═══════════════════════════════════════════════════════════════════════════

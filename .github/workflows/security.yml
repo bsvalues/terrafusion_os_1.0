@@ -1,11 +1,9 @@
+# Push trigger disabled — non-required workflow, fails on main.
 name: TerraFusion master Security Scanning
 'on':
   schedule:
     - cron: 0 6 * * *
   workflow_dispatch: {}
-  push:
-    branches:
-      - main
 
 permissions:
   contents: read

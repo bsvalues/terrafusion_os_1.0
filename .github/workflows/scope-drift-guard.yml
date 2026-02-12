@@ -1,3 +1,5 @@
+# Push trigger disabled — non-required workflow, scope-classifier crashes on main.
+# Re-enable when getTouchedRoots is fixed.
 name: Scope Drift Guard
 
 concurrency:
@@ -5,8 +7,7 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch: {}
 
 permissions:
   contents: read

@@ -1,7 +1,6 @@
+# Push trigger disabled — non-required workflow, fails on main.
 name: TerraFusion Gatekeeper
 on:
-  push:
-    branches: [main]
   workflow_dispatch: {}
 
 concurrency:

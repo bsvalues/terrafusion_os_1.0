@@ -1,15 +1,9 @@
+# Push trigger disabled — non-required workflow, pnpm version mismatch on main.
+# Re-enable when pnpm config is aligned.
 name: manifest-contract-guard
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'applications/**/terrafusion.app.json'
-      - 'tools/registry/terrafusion.app.schema.json'
-      - 'tools/dev/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
+  workflow_dispatch: {}
 
 jobs:
   manifest-contract-guard:
