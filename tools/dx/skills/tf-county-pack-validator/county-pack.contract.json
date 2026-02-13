@@ -1,0 +1,304 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "County Pack Validation Contract",
+  "description": "Contract for tf-county-pack-validator skill validation results",
+  "type": "object",
+  "required": [
+    "skillName",
+    "contractVersion",
+    "status",
+    "countyId",
+    "countyName",
+    "validatedAt",
+    "violations",
+    "summary"
+  ],
+  "properties": {
+    "skillName": {
+      "type": "string",
+      "const": "tf-county-pack-validator",
+      "description": "Skill identifier"
+    },
+    "contractVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Contract schema version (semver)",
+      "example": "1.0.0"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN", "SKIP"],
+      "description": "Overall validation status"
+    },
+    "countyId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "County identifier (lowercase alphanumeric with hyphens)",
+      "example": "benton"
+    },
+    "countyName": {
+      "type": "string",
+      "description": "Full county name with state",
+      "example": "Benton County, WA"
+    },
+    "countyFips": {
+      "type": "string",
+      "pattern": "^\\d{5}$",
+      "description": "5-digit US county FIPS code",
+      "example": "53005"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "County Pack version (semver)",
+      "example": "1.0.0"
+    },
+    "validatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of validation"
+    },
+    "violations": {
+      "type": "array",
+      "description": "List of validation violations",
+      "items": {
+        "type": "object",
+        "required": ["code", "severity", "message"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^TF_COUNTY_\\d{3}_[A-Z_]+$",
+            "description": "Violation code identifier",
+            "enum": [
+              "TF_COUNTY_001_MISSING_MANIFEST",
+              "TF_COUNTY_002_INVALID_SCHEMA",
+              "TF_COUNTY_003_MISSING_INTEGRATION",
+              "TF_COUNTY_004_HARDCODED_SECRET",
+              "TF_COUNTY_005_INVALID_FIPS",
+              "TF_COUNTY_006_MISSING_DATABASE",
+              "TF_COUNTY_007_NO_SCHEMA_ISOLATION",
+              "TF_COUNTY_008_MISSING_REQUIRED_FILE"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["ERROR", "WARNING"],
+            "description": "Violation severity level"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable violation description"
+          },
+          "location": {
+            "type": "string",
+            "description": "File path and optional line number",
+            "example": "config/environment.json:15"
+          },
+          "field": {
+            "type": "string",
+            "description": "JSON path to violating field",
+            "example": "databases.postgres.password"
+          },
+          "suggestion": {
+            "type": "string",
+            "description": "Optional fix suggestion"
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["totalChecks", "passed", "errors", "warnings"],
+      "properties": {
+        "totalChecks": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of validation checks performed"
+        },
+        "passed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of checks that passed"
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of error-level violations"
+        },
+        "warnings": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of warning-level violations"
+        }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "description": "Detailed check results",
+      "properties": {
+        "manifestSchema": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "requiredFiles": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "security": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "integrations": {
+          "type": "string",
+          "enum": ["PASS", "FAIL", "WARN"]
+        },
+        "countyIsolation": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "fipsCode": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "databaseConfig": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "versionFormat": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        }
+      }
+    },
+    "packPath": {
+      "type": "string",
+      "description": "Absolute path to County Pack directory",
+      "example": "C:/Users/admin/terrafusion_os_1.0/tools/dx/county-packs/benton"
+    },
+    "features": {
+      "type": "array",
+      "description": "List of enabled features",
+      "items": {
+        "type": "string"
+      },
+      "example": ["property-assessment", "tax-levy", "parcel-management"]
+    },
+    "integrations": {
+      "type": "array",
+      "description": "Configured integrations",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Harris PACS"
+          },
+          "version": {
+            "type": "string",
+            "example": "9.0"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["CONFIGURED", "MISSING", "INCOMPLETE"]
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "skillName": "tf-county-pack-validator",
+      "contractVersion": "1.0.0",
+      "status": "PASS",
+      "countyId": "benton",
+      "countyName": "Benton County, WA",
+      "countyFips": "53005",
+      "version": "1.0.0",
+      "validatedAt": "2026-02-13T14:30:00Z",
+      "violations": [],
+      "summary": {
+        "totalChecks": 8,
+        "passed": 8,
+        "errors": 0,
+        "warnings": 0
+      },
+      "checks": {
+        "manifestSchema": "PASS",
+        "requiredFiles": "PASS",
+        "security": "PASS",
+        "integrations": "PASS",
+        "countyIsolation": "PASS",
+        "fipsCode": "PASS",
+        "databaseConfig": "PASS",
+        "versionFormat": "PASS"
+      },
+      "packPath": "C:/Users/admin/terrafusion_os_1.0/tools/dx/county-packs/benton",
+      "features": [
+        "property-assessment",
+        "tax-levy",
+        "parcel-management",
+        "harris-pacs-integration"
+      ],
+      "integrations": [
+        {
+          "name": "Harris PACS",
+          "version": "9.0",
+          "status": "CONFIGURED"
+        }
+      ]
+    },
+    {
+      "skillName": "tf-county-pack-validator",
+      "contractVersion": "1.0.0",
+      "status": "FAIL",
+      "countyId": "pierce",
+      "countyName": "Pierce County, WA",
+      "countyFips": "53053",
+      "version": "1.0.0",
+      "validatedAt": "2026-02-13T14:35:00Z",
+      "violations": [
+        {
+          "code": "TF_COUNTY_004_HARDCODED_SECRET",
+          "severity": "ERROR",
+          "message": "Hardcoded secret found in config/environment.json",
+          "location": "config/environment.json:15",
+          "field": "databases.postgres.password",
+          "suggestion": "Replace with ${POSTGRES_PASSWORD} environment variable"
+        },
+        {
+          "code": "TF_COUNTY_003_MISSING_INTEGRATION",
+          "severity": "WARNING",
+          "message": "Harris PACS integration enabled but endpoint not configured",
+          "location": "county-pack.json:45",
+          "field": "integrations.harrisPacs.endpoint",
+          "suggestion": "Set endpoint to ${HARRIS_PACS_URL}"
+        }
+      ],
+      "summary": {
+        "totalChecks": 8,
+        "passed": 6,
+        "errors": 1,
+        "warnings": 1
+      },
+      "checks": {
+        "manifestSchema": "PASS",
+        "requiredFiles": "PASS",
+        "security": "FAIL",
+        "integrations": "WARN",
+        "countyIsolation": "PASS",
+        "fipsCode": "PASS",
+        "databaseConfig": "PASS",
+        "versionFormat": "PASS"
+      },
+      "packPath": "C:/Users/admin/terrafusion_os_1.0/tools/dx/county-packs/pierce",
+      "features": ["property-assessment", "tax-levy"],
+      "integrations": [
+        {
+          "name": "Harris PACS",
+          "version": "9.0",
+          "status": "INCOMPLETE"
+        }
+      ]
+    }
+  ]
+}

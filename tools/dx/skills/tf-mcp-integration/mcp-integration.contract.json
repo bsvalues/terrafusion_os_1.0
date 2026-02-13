@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "tf-mcp-integration-contract",
+  "version": "1.0.0",
+  "name": "TerraFusion MCP Integration Contract",
+  "description": "Validation contract for MCP PostGIS server integration",
+  "violations": [
+    {
+      "code": "TF_MCP_001_SERVER_UNREACHABLE",
+      "severity": "critical",
+      "category": "connectivity",
+      "message": "MCP server is not responding or cannot be reached",
+      "resolution": "Check server process, network connectivity, and firewall settings",
+      "automation": {
+        "command": "ps aux | grep mcp-postgis-server && curl http://localhost:3100/health",
+        "expectedExitCode": 0
+      }
+    },
+    {
+      "code": "TF_MCP_002_INVALID_QUERY",
+      "severity": "high",
+      "category": "query",
+      "message": "PostGIS query failed or returned invalid results",
+      "resolution": "Validate database schema, check spatial indexes, verify PostGIS version",
+      "automation": {
+        "command": "psql -d terrafusion_os -c 'SELECT PostGIS_Version(); SELECT COUNT(*) FROM properties WHERE geometry IS NOT NULL;'",
+        "expectedExitCode": 0
+      },
+      "relatedCodes": [
+        "TF_MCP_004_MISSING_INDEX",
+        "TF_MCP_005_INVALID_GEOMETRY"
+      ]
+    },
+    {
+      "code": "TF_MCP_003_AUTH_FAILURE",
+      "severity": "critical",
+      "category": "security",
+      "message": "Database authentication failed",
+      "resolution": "Verify database credentials, user permissions, and connection limits",
+      "automation": {
+        "command": "psql -h ${DATABASE_HOST} -U ${DATABASE_USER} -d ${DATABASE_NAME} -c 'SELECT 1'",
+        "expectedExitCode": 0
+      }
+    },
+    {
+      "code": "TF_MCP_004_MISSING_INDEX",
+      "severity": "medium",
+      "category": "performance",
+      "message": "Required spatial index is missing",
+      "resolution": "CREATE INDEX idx_properties_geometry ON properties USING GIST(geometry)",
+      "automation": {
+        "command": "psql -d terrafusion_os -c \"SELECT COUNT(*) FROM pg_indexes WHERE tablename = 'properties' AND indexdef LIKE '%gist%'\"",
+        "expectedOutput": "1",
+        "autofix": "CREATE INDEX IF NOT EXISTS idx_properties_geometry ON properties USING GIST(geometry)"
+      }
+    },
+    {
+      "code": "TF_MCP_005_INVALID_GEOMETRY",
+      "severity": "medium",
+      "category": "data_quality",
+      "message": "Invalid or corrupt geometry data detected",
+      "resolution": "Run ST_MakeValid on affected geometries",
+      "automation": {
+        "command": "psql -d terrafusion_os -c 'SELECT COUNT(*) FROM properties WHERE NOT ST_IsValid(geometry)'",
+        "expectedOutput": "0",
+        "autofix": "UPDATE properties SET geometry = ST_MakeValid(geometry) WHERE NOT ST_IsValid(geometry)"
+      }
+    },
+    {
+      "code": "TF_MCP_006_QUERY_TIMEOUT",
+      "severity": "high",
+      "category": "performance",
+      "message": "Query exceeded timeout threshold",
+      "resolution": "Optimize query, increase timeout, or run ANALYZE on tables",
+      "automation": {
+        "command": "psql -d terrafusion_os -c 'ANALYZE properties'",
+        "expectedExitCode": 0
+      }
+    },
+    {
+      "code": "TF_MCP_007_RESULT_LIMIT_EXCEEDED",
+      "severity": "low",
+      "category": "usage",
+      "message": "Query returned more results than allowed limit",
+      "resolution": "Refine query parameters or increase MAX_QUERY_RESULTS",
+      "details": "Default limit is 1000 results per query"
+    },
+    {
+      "code": "TF_MCP_008_INVALID_INPUT",
+      "severity": "medium",
+      "category": "validation",
+      "message": "Tool input failed schema validation",
+      "resolution": "Verify input parameters match tool schema requirements",
+      "examples": [
+        "parcel_search requires either parcelId or address",
+        "nearest_parcels requires valid latitude/longitude coordinates",
+        "spatial_intersection requires valid GeoJSON Polygon"
+      ]
+    },
+    {
+      "code": "TF_MCP_009_POSTGIS_MISSING",
+      "severity": "critical",
+      "category": "configuration",
+      "message": "PostGIS extension is not installed or enabled",
+      "resolution": "CREATE EXTENSION IF NOT EXISTS postgis",
+      "automation": {
+        "command": "psql -d terrafusion_os -c 'SELECT PostGIS_Version()'",
+        "expectedExitCode": 0,
+        "autofix": "psql -d terrafusion_os -c 'CREATE EXTENSION IF NOT EXISTS postgis'"
+      }
+    },
+    {
+      "code": "TF_MCP_010_TOOL_NOT_REGISTERED",
+      "severity": "high",
+      "category": "configuration",
+      "message": "Expected MCP tool is not registered in server",
+      "resolution": "Verify server startup and tool registration code",
+      "requiredTools": [
+        "parcel_search",
+        "spatial_intersection",
+        "nearest_parcels"
+      ]
+    }
+  ],
+  "validations": [
+    {
+      "name": "server_health_check",
+      "description": "Verify MCP server is running and responsive",
+      "command": "curl -f http://localhost:${MCP_SERVER_PORT:-3100}/health || exit 1",
+      "expectedExitCode": 0,
+      "severity": "critical"
+    },
+    {
+      "name": "database_connection",
+      "description": "Verify PostgreSQL connection",
+      "command": "psql -h ${DATABASE_HOST} -U ${DATABASE_USER} -d ${DATABASE_NAME} -c 'SELECT 1'",
+      "expectedExitCode": 0,
+      "severity": "critical"
+    },
+    {
+      "name": "postgis_version",
+      "description": "Verify PostGIS extension is available",
+      "command": "psql -d terrafusion_os -t -c 'SELECT PostGIS_Version()'",
+      "expectedPattern": "^\\s*\\d+\\.\\d+",
+      "severity": "critical"
+    },
+    {
+      "name": "spatial_index_exists",
+      "description": "Verify spatial index on properties table",
+      "command": "psql -d terrafusion_os -t -c \"SELECT COUNT(*) FROM pg_indexes WHERE tablename = 'properties' AND indexdef LIKE '%gist%'\"",
+      "expectedOutput": "1",
+      "severity": "high"
+    },
+    {
+      "name": "tool_registration",
+      "description": "Verify all required tools are registered",
+      "expectedTools": [
+        "parcel_search",
+        "spatial_intersection",
+        "nearest_parcels"
+      ],
+      "severity": "high"
+    },
+    {
+      "name": "query_performance",
+      "description": "Benchmark query execution times",
+      "thresholds": {
+        "parcel_search_by_id": 200,
+        "parcel_search_by_address": 500,
+        "spatial_intersection": 2000,
+        "nearest_parcels": 1000
+      },
+      "unit": "milliseconds",
+      "severity": "medium"
+    }
+  ],
+  "metadata": {
+    "maintainer": "TerraFusion Infrastructure Team",
+    "documentation": "tools/dx/skills/tf-mcp-integration/SKILL.md",
+    "ciWorkflow": ".github/workflows/mcp-server-ci.yml",
+    "lastUpdated": "2026-02-13",
+    "supportedMCPVersion": "0.5.0",
+    "supportedPostGISVersion": "3.4.0+"
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.os/schemas/county-pack.json",
+  "title": "TerraFusion County Pack Manifest",
+  "description": "JSON Schema for county-pack.json files in TerraFusion County Packs (Phase 11 Standard)",
+  "type": "object",
+  "required": ["countyId", "countyName", "version", "features", "databases"],
+  "properties": {
+    "countyId": {
+      "type": "string",
+      "description": "Unique county identifier (lowercase, hyphenated)",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "minLength": 2,
+      "examples": ["benton", "king", "pierce"]
+    },
+    "countyName": {
+      "type": "string",
+      "description": "Official county name",
+      "minLength": 1,
+      "examples": ["Benton County", "King County", "Pierce County"]
+    },
+    "version": {
+      "type": "string",
+      "description": "County pack version (semantic versioning)",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+      "examples": ["1.0", "1.0.0", "2.1.0"]
+    },
+    "fipsCode": {
+      "type": "string",
+      "description": "5-digit FIPS code (format: SSCCC where SS=state, CCC=county)",
+      "pattern": "^\\d{5}$",
+      "examples": ["53005", "53033", "53053"]
+    },
+    "state": {
+      "type": "string",
+      "description": "Two-letter state code",
+      "enum": ["WA"],
+      "examples": ["WA"]
+    },
+    "timezone": {
+      "type": "string",
+      "description": "IANA timezone identifier",
+      "examples": ["America/Los_Angeles", "America/Chicago"]
+    },
+    "population": {
+      "type": "integer",
+      "description": "County population (for capacity planning)",
+      "minimum": 0
+    },
+    "features": {
+      "type": "array",
+      "description": "Enabled TerraFusion OS features",
+      "items": {
+        "type": "string",
+        "enum": [
+          "property-assessment",
+          "tax-calculation",
+          "harris-pacs-integration",
+          "gis-visualization",
+          "citizen-portal",
+          "payment-processing",
+          "document-management",
+          "mobile-app",
+          "ai-swarm",
+          "analytics-dashboard",
+          "audit-trail",
+          "multi-language"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "databases": {
+      "type": "object",
+      "description": "Database support configuration (at least one required)",
+      "properties": {
+        "postgres": {
+          "type": "boolean",
+          "description": "PostgreSQL support enabled"
+        },
+        "sqlite": {
+          "type": "boolean",
+          "description": "SQLite support enabled"
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["postgres"],
+          "properties": {
+            "postgres": {
+              "const": true
+            }
+          }
+        },
+        {
+          "required": ["sqlite"],
+          "properties": {
+            "sqlite": {
+              "const": true
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "integrations": {
+      "type": "object",
+      "description": "External system integration metadata",
+      "properties": {
+        "erpSystem": {
+          "type": "string",
+          "description": "Enterprise Resource Planning system",
+          "examples": ["Tyler Technologies Vision", "SAP", "Oracle ERP Cloud"]
+        },
+        "gisProvider": {
+          "type": "string",
+          "description": "GIS mapping provider",
+          "examples": ["Esri ArcGIS Enterprise", "MapBox", "OpenStreetMap"]
+        },
+        "pacsVersion": {
+          "type": "string",
+          "description": "Property Assessment Computer System version",
+          "examples": ["Harris PACS 9.0", "Harris PACS 10.0"]
+        },
+        "paymentGateway": {
+          "type": "string",
+          "description": "Payment processing gateway",
+          "examples": ["Stripe", "PayPal", "Authorize.Net"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "customizations": {
+      "type": "object",
+      "description": "County-specific customizations (validated metadata only)",
+      "properties": {
+        "branding": {
+          "type": "object",
+          "properties": {
+            "logo": {
+              "type": "string",
+              "description": "Path to county logo"
+            },
+            "primaryColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "secondaryColor": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            }
+          }
+        },
+        "contacts": {
+          "type": "object",
+          "properties": {
+            "treasurer": {
+              "type": "string",
+              "format": "email"
+            },
+            "assessor": {
+              "type": "string",
+              "format": "email"
+            },
+            "itDepartment": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "deployment": {
+      "type": "object",
+      "description": "Deployment configuration metadata",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "enum": ["development", "staging", "production"]
+        },
+        "parcelCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of property parcels in county"
+        },
+        "syncFrequency": {
+          "type": "string",
+          "pattern": "^\\d+[hmd]$",
+          "description": "Data sync frequency (e.g., 4h, 30m, 1d)",
+          "examples": ["4h", "30m", "1d"]
+        },
+        "backupRetention": {
+          "type": "string",
+          "pattern": "^\\d+[dmy]$",
+          "description": "Backup retention period (e.g., 90d, 6m, 1y)",
+          "examples": ["90d", "6m", "1y"]
+        },
+        "highAvailability": {
+          "type": "boolean",
+          "description": "Enable high availability configuration"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,389 @@
+name: MCP Server CI
+
+on:
+  pull_request:
+    paths:
+      - 'tools/mcp/postgis-server/**'
+      - 'tools/dx/skills/tf-mcp-integration/**'
+      - '.github/workflows/mcp-server-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'tools/mcp/postgis-server/**'
+      - 'tools/dx/skills/tf-mcp-integration/**'
+
+env:
+  NODE_VERSION: '18'
+  POSTGRES_VERSION: '15'
+
+jobs:
+  lint-and-typecheck:
+    name: Lint and Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        working-directory: tools/mcp/postgis-server
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        working-directory: tools/mcp/postgis-server
+        run: pnpm run lint
+
+      - name: Type check
+        working-directory: tools/mcp/postgis-server
+        run: pnpm run typecheck
+
+  build:
+    name: Build MCP Server
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        working-directory: tools/mcp/postgis-server
+        run: pnpm install --frozen-lockfile
+
+      - name: Build TypeScript
+        working-directory: tools/mcp/postgis-server
+        run: pnpm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-server-dist
+          path: tools/mcp/postgis-server/dist
+          retention-days: 7
+
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        working-directory: tools/mcp/postgis-server
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        working-directory: tools/mcp/postgis-server
+        run: pnpm test
+
+  test-integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: build
+
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_DB: terrafusion_os_test
+          POSTGRES_USER: terrafusion
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        working-directory: tools/mcp/postgis-server
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup test database schema
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: terrafusion_os_test
+          DATABASE_USER: terrafusion
+          DATABASE_PASSWORD: test_password
+        run: |
+          # Install PostgreSQL client
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+          # Create schema and test data
+          PGPASSWORD=test_password psql -h localhost -U terrafusion -d terrafusion_os_test <<EOF
+            -- Enable PostGIS
+            CREATE EXTENSION IF NOT EXISTS postgis;
+
+            -- Create properties table
+            CREATE TABLE IF NOT EXISTS properties (
+              id SERIAL PRIMARY KEY,
+              parcel_id VARCHAR(50) UNIQUE NOT NULL,
+              address TEXT NOT NULL,
+              county_id INTEGER NOT NULL,
+              assessed_value NUMERIC(12,2),
+              tax_levy NUMERIC(12,2),
+              geometry GEOMETRY(Polygon, 4326),
+              created_at TIMESTAMP DEFAULT NOW(),
+              updated_at TIMESTAMP DEFAULT NOW()
+            );
+
+            -- Create spatial index
+            CREATE INDEX IF NOT EXISTS idx_properties_geometry 
+            ON properties USING GIST(geometry);
+
+            -- Insert test parcels (Benton County sample data)
+            INSERT INTO properties (parcel_id, address, county_id, assessed_value, tax_levy, geometry) VALUES
+            ('123456789', '123 Main St, Richland, WA', 1, 350000, 3500, 
+             ST_GeomFromText('POLYGON((-119.2785 46.2855, -119.2775 46.2855, -119.2775 46.2845, -119.2785 46.2845, -119.2785 46.2855))', 4326)),
+            ('987654321', '456 Oak Ave, Kennewick, WA', 1, 425000, 4250,
+             ST_GeomFromText('POLYGON((-119.1374 46.2112, -119.1364 46.2112, -119.1364 46.2102, -119.1374 46.2102, -119.1374 46.2112))', 4326)),
+            ('555555555', '789 Pine St, Pasco, WA', 1, 290000, 2900,
+             ST_GeomFromText('POLYGON((-119.1006 46.2396, -119.0996 46.2396, -119.0996 46.2386, -119.1006 46.2386, -119.1006 46.2396))', 4326)),
+            ('111111111', '321 Elm Dr, West Richland, WA', 1, 510000, 5100,
+             ST_GeomFromText('POLYGON((-119.3617 46.3045, -119.3607 46.3045, -119.3607 46.3035, -119.3617 46.3035, -119.3617 46.3045))', 4326)),
+            ('999999999', '654 Cedar Ln, Benton City, WA', 1, 175000, 1750,
+             ST_GeomFromText('POLYGON((-119.4886 46.2634, -119.4876 46.2634, -119.4876 46.2624, -119.4886 46.2624, -119.4886 46.2634))', 4326));
+
+            -- Verify data
+            SELECT COUNT(*) as total_parcels FROM properties;
+            SELECT PostGIS_Version() as postgis_version;
+          EOF
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: mcp-server-dist
+          path: tools/mcp/postgis-server/dist
+
+      - name: Run integration tests
+        working-directory: tools/mcp/postgis-server
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: terrafusion_os_test
+          DATABASE_USER: terrafusion
+          DATABASE_PASSWORD: test_password
+          MAX_QUERY_RESULTS: 1000
+          QUERY_TIMEOUT_MS: 30000
+        run: pnpm run test:queries
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        working-directory: tools/mcp/postgis-server
+        run: pnpm install --frozen-lockfile
+
+      - name: Run npm audit
+        working-directory: tools/mcp/postgis-server
+        run: pnpm audit --audit-level=moderate
+
+      - name: Check for SQL injection vulnerabilities
+        working-directory: tools/mcp/postgis-server
+        run: |
+          # Scan for potential SQL injection patterns
+          echo "🔍 Scanning for SQL injection vulnerabilities..."
+
+          # Check for string concatenation in queries
+          if grep -r "query.*+.*\$" src/ | grep -v "node_modules" | grep -v "\.spec\." | grep -v "\.test\."; then
+            echo "❌ FAIL: Found potential SQL string concatenation"
+            exit 1
+          fi
+
+          # Check for template literals in SQL without proper escaping
+          if grep -r '\`SELECT.*\${' src/ | grep -v "node_modules" | grep -v "\.spec\." | grep -v "\.test\."; then
+            echo "❌ FAIL: Found potential unparameterized template literal in SQL"
+            exit 1
+          fi
+
+          echo "✅ PASS: No SQL injection vulnerabilities detected"
+
+      - name: Validate parameterized queries
+        working-directory: tools/mcp/postgis-server
+        run: |
+          echo "🔍 Validating parameterized query usage..."
+
+          # Ensure all queries use $1, $2, etc. placeholders
+          query_files=$(find src/queries -name "*.ts" -type f)
+
+          for file in $query_files; do
+            if grep -q "pool.query" "$file"; then
+              if ! grep -q '\$[0-9]' "$file"; then
+                echo "❌ FAIL: $file uses pool.query but no parameterized placeholders found"
+                exit 1
+              fi
+            fi
+          done
+
+          echo "✅ PASS: All queries properly parameterized"
+
+  validate-contract:
+    name: Validate MCP Contract
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Validate JSON schema
+        run: |
+          echo "🔍 Validating MCP integration contract..."
+
+          contract_file="tools/dx/skills/tf-mcp-integration/mcp-integration.contract.json"
+
+          # Validate JSON syntax
+          if ! jq empty "$contract_file" 2>/dev/null; then
+            echo "❌ FAIL: Invalid JSON syntax in contract file"
+            exit 1
+          fi
+
+          # Check required fields
+          for field in id version violations validations metadata; do
+            if ! jq -e ".$field" "$contract_file" >/dev/null 2>&1; then
+              echo "❌ FAIL: Missing required field: $field"
+              exit 1
+            fi
+          done
+
+          # Validate violation codes start with TF_MCP_
+          invalid_codes=$(jq -r '.violations[].code' "$contract_file" | grep -v '^TF_MCP_' || true)
+          if [ -n "$invalid_codes" ]; then
+            echo "❌ FAIL: Invalid violation codes found: $invalid_codes"
+            exit 1
+          fi
+
+          echo "✅ PASS: Contract validation successful"
+
+      - name: Check skill documentation
+        run: |
+          echo "🔍 Validating skill documentation..."
+
+          skill_file="tools/dx/skills/tf-mcp-integration/SKILL.md"
+
+          if [ ! -f "$skill_file" ]; then
+            echo "❌ FAIL: SKILL.md not found"
+            exit 1
+          fi
+
+          # Check for YAML frontmatter
+          if ! head -n 1 "$skill_file" | grep -q "^---$"; then
+            echo "❌ FAIL: Missing YAML frontmatter"
+            exit 1
+          fi
+
+          # Validate required frontmatter fields
+          for field in id name lane risk status; do
+            if ! grep -q "^$field:" "$skill_file"; then
+              echo "❌ FAIL: Missing frontmatter field: $field"
+              exit 1
+            fi
+          done
+
+          echo "✅ PASS: Skill documentation valid"
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs:
+      [lint-and-typecheck, build, test-unit, test-integration, security-scan, validate-contract]
+    if: always()
+
+    steps:
+      - name: Check CI status
+        run: |
+          echo "## MCP Server CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint & Type Check | ${{ needs.lint-and-typecheck.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ needs.test-unit.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration Tests | ${{ needs.test-integration.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Scan | ${{ needs.security-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Contract Validation | ${{ needs.validate-contract.result }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail if any check failed
+        if: |
+          needs.lint-and-typecheck.result == 'failure' ||
+          needs.build.result == 'failure' ||
+          needs.test-unit.result == 'failure' ||
+          needs.test-integration.result == 'failure' ||
+          needs.security-scan.result == 'failure' ||
+          needs.validate-contract.result == 'failure'
+        run: exit 1

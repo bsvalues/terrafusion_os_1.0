@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "lastUpdated": "2026-02-13T00:00:00Z",
+  "description": "TerraFusion OS Skills Registry - Canonical catalog of all Claude Skills integrated into development workflows",
+  "skills": [
+    {
+      "skillName": "tf-pr-evidence-pack",
+      "lane": "governance",
+      "riskLevel": "read",
+      "tdcCommand": "evidence build",
+      "contractPath": "tools/dx/skills/tf-pr-evidence-pack/evidence-pack.contract.json",
+      "contextPath": ".terrafusion/context/latest.json",
+      "owners": ["governance-lane"],
+      "triggers": [
+        "evidence pack",
+        "build evidence",
+        "aggregate audits",
+        "pr receipt",
+        "cryptographic integrity"
+      ],
+      "description": "Keystone aggregator for all lane audit contracts with SHA-256 integrity and CID receipts",
+      "status": "operational",
+      "addedAt": "2026-02-13",
+      "phase": 7
+    },
+    {
+      "skillName": "tf-ui-foundation",
+      "lane": "ui",
+      "riskLevel": "read",
+      "tdcCommand": "ui audit --tokens",
+      "contractPath": "tools/dx/skills/tf-ui-foundation/ui-token-compliance.contract.json",
+      "contextPath": ".terrafusion/context/latest.json",
+      "owners": ["ui-lane"],
+      "triggers": [
+        "ui tokens",
+        "color compliance",
+        "OKLCH audit",
+        "no hardcoded colors",
+        "design token governance"
+      ],
+      "description": "Enforces TerraFusion Quantum theme token usage - OKLCH-only, no hardcoded hex/rgb values",
+      "status": "operational",
+      "addedAt": "2026-02-13",
+      "phase": 7
+    },
+    {
+      "skillName": "tf-a11y-508-audit",
+      "lane": "ui",
+      "riskLevel": "read",
+      "tdcCommand": "ui audit --a11y",
+      "contractPath": "tools/dx/skills/tf-a11y-508-audit/ui-a11y-508.contract.json",
+      "contextPath": ".terrafusion/context/latest.json",
+      "owners": ["ui-lane", "compliance-lane"],
+      "triggers": [
+        "accessibility audit",
+        "WCAG 2.1 AA",
+        "Section 508",
+        "a11y compliance",
+        "keyboard navigation",
+        "screen reader",
+        "aria labels"
+      ],
+      "description": "Validates WCAG 2.1 AA + Section 508 compliance - accessible names, keyboard nav, forms, dialogs, tables",
+      "status": "operational",
+      "addedAt": "2026-02-13",
+      "phase": 7
+    },
+    {
+      "skillName": "tf-data-dense-layouts",
+      "lane": "ui",
+      "riskLevel": "read",
+      "tdcCommand": "ui audit --density",
+      "contractPath": "tools/dx/skills/tf-data-dense-layouts/ui-dense-layout.contract.json",
+      "contextPath": ".terrafusion/context/latest.json",
+      "owners": ["ui-lane"],
+      "triggers": [
+        "data density",
+        "virtualization",
+        "table performance",
+        "50000 properties",
+        "dense layout",
+        "progressive disclosure"
+      ],
+      "description": "Enforces virtualization for >100 rows, sticky headers, progressive disclosure, density toggles",
+      "status": "operational",
+      "addedAt": "2026-02-13",
+      "phase": 7
+    },
+    {
+      "skillName": "tf-sdui-components",
+      "lane": "dev",
+      "riskLevel": "read",
+      "tdcCommand": "ui audit --sdui",
+      "contractPath": "tools/dx/skills/tf-sdui-components/ui-sdui-components.contract.json",
+      "contextPath": ".terrafusion/context/latest.json",
+      "owners": ["dev-lane"],
+      "triggers": [
+        "sdui validation",
+        "schema-driven ui",
+        "county variants",
+        "dynamic forms",
+        "county schemas"
+      ],
+      "description": "Validates schema-driven UI components for county-specific variants - ensures UI components dynamically bind to county schemas",
+      "status": "operational",
+      "addedAt": "2026-02-13",
+      "phase": 10
+    },
+    {
+      "skillName": "tf-sdui-renderer",
+      "lane": "dev",
+      "riskLevel": "read",
+      "tdcCommand": "sdui validate",
+      "contractPath": "tools/dx/skills/tf-sdui-renderer/ui-sdui.contract.json",
+      "contextPath": ".terrafusion/context/latest.json",
+      "owners": ["dev-lane"],
+      "triggers": [
+        "sdui validate",
+        "sdui preview",
+        "schema validation",
+        "component contracts",
+        "type safety"
+      ],
+      "description": "Validates SDUI JSON schemas against component contracts for type safety - ensures county schemas match component props",
+      "status": "operational",
+      "addedAt": "2026-02-13",
+      "phase": 10
+    },
+    {
+      "skillName": "tf-mcp-integration",
+      "lane": "infrastructure",
+      "riskLevel": "read",
+      "tdcCommand": "mcp test",
+      "contractPath": "tools/dx/skills/tf-mcp-integration/mcp-integration.contract.json",
+      "contextPath": ".terrafusion/context/latest.json",
+      "owners": ["infrastructure-lane", "geo-lane"],
+      "triggers": [
+        "mcp test",
+        "postgis validation",
+        "spatial queries",
+        "claude integration",
+        "model context protocol"
+      ],
+      "description": "Validates MCP PostGIS server configuration and spatial query integration for Claude AI agents",
+      "status": "operational",
+      "addedAt": "2026-02-13",
+      "phase": 12
+    },
+    {
+      "skillName": "tf-county-pack-validator",
+      "lane": "governance",
+      "riskLevel": "read",
+      "tdcCommand": "county validate",
+      "contractPath": "tools/dx/skills/tf-county-pack-validator/county-pack.contract.json",
+      "contextPath": ".terrafusion/context/latest.json",
+      "owners": ["governance-lane", "deployment-lane"],
+      "triggers": [
+        "county pack",
+        "deployment validation",
+        "manifest check",
+        "county isolation",
+        "sovereign county"
+      ],
+      "description": "Validates County Pack structure, manifest schema, and deployment readiness - enforces Sovereign County Isolation",
+      "status": "operational",
+      "addedAt": "2026-02-13",
+      "phase": 11
+    }
+  ],
+  "lanes": {
+    "governance": {
+      "description": "Constitutional gates, evidence packs, DX Spine integrity, County Pack validation",
+      "skillCount": 2
+    },
+    "ui": {
+      "description": "Frontend components, accessibility, design tokens, data density",
+      "skillCount": 3
+    },
+    "security": {
+      "description": "AuthZ boundaries, PII guards, secure coding patterns",
+      "skillCount": 0,
+      "roadmap": "Phase 8"
+    },
+    "ops": {
+      "description": "Infrastructure as Code, Kubernetes, Terraform governance",
+      "skillCount": 0,
+      "roadmap": "Phase 9"
+    },
+    "data": {
+      "description": "Schema migrations, database safety, PostGIS spatial",
+      "skillCount": 0,
+      "roadmap": "Phase 9"
+    },
+    "geo": {
+      "description": "Spatial queries, PostGIS compliance, GIS operations",
+      "skillCount": 0,
+      "roadmap": "Phase 9"
+    },
+    "infrastructure": {
+      "description": "MCP servers, spatial integration, protocol compliance",
+      "skillCount": 1
+    },
+    "sdui": {
+      "description": "Server-driven UI, schema validation, county variants",
+      "skillCount": 2
+    },
+    "dev": {
+      "description": "Development tools, type safety, schema validation",
+      "skillCount": 2
+    }
+  },
+  "metadata": {
+    "totalSkills": 8,
+    "operationalSkills": 8,
+    "plannedSkills": 12,
+    "lanesCovered": 5
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/ui-a11y-508.contract.v1.json",
+  "title": "TerraFusion Accessibility Compliance Contract",
+  "description": "Validates WCAG 2.1 Level AA + Section 508 compliance",
+  "type": "object",
+  "properties": {
+    "contractVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "skillName": {
+      "type": "string",
+      "const": "tf-a11y-508-audit"
+    },
+    "lane": {
+      "type": "string",
+      "const": "ui"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN", "SKIP"]
+    },
+    "violationsCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "TF_A11Y_001_NO_ALT_TEXT",
+              "TF_A11Y_002_NO_LABEL",
+              "TF_A11Y_003_NO_ARIA_LABEL",
+              "TF_A11Y_004_CLICK_DIV",
+              "TF_A11Y_005_NO_ESC_HANDLER",
+              "TF_A11Y_006_NO_ARIA_INVALID",
+              "TF_A11Y_007_NO_ROLE_ALERT",
+              "TF_A11Y_008_NON_SEMANTIC_TABLE"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["error", "warning"]
+          },
+          "file": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "wcagCriterion": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "WCAG 2.1 success criterion (e.g., '1.1.1', '2.1.1')"
+          },
+          "section508": {
+            "type": "string",
+            "pattern": "^§1194\\.22\\([a-z]\\)$",
+            "description": "Section 508 requirement (e.g., '§1194.22(a)')"
+          },
+          "message": {
+            "type": "string"
+          },
+          "suggestion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "severity",
+          "file",
+          "line",
+          "wcagCriterion",
+          "message"
+        ]
+      }
+    },
+    "filesScanned": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "executedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "wcagLevel": {
+      "type": "string",
+      "const": "AA",
+      "description": "WCAG 2.1 Level AA is mandatory for government software"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "skillName",
+    "lane",
+    "status",
+    "violationsCount",
+    "violations",
+    "wcagLevel"
+  ],
+  "additionalProperties": false
+}

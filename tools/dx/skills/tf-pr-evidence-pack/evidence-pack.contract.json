@@ -1,0 +1,227 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/evidence-pack.contract.v1.json",
+  "title": "TerraFusion PR Evidence Pack Contract",
+  "description": "Keystone aggregator contract for all lane audit receipts with cryptographic integrity",
+  "type": "object",
+  "properties": {
+    "contractVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of this contract schema (must match skill version)"
+    },
+    "prNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "GitHub pull request number"
+    },
+    "branchRef": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Git branch name (e.g., 'feature/phase7-evidence-pack')"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when evidence pack was generated"
+    },
+    "overallStatus": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN", "SKIP"],
+      "description": "Strict rollup: ANY child FAIL → overall FAIL"
+    },
+    "lanesAudited": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["governance", "ui", "security", "ops", "data", "geo", "sdui"]
+      },
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "List of lanes that were audited (may be empty if no lane-specific contracts found)"
+    },
+    "contracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "skillName": {
+            "type": "string",
+            "description": "Name of the skill that generated this contract (e.g., 'tf-ui-foundation')"
+          },
+          "lane": {
+            "type": "string",
+            "enum": [
+              "governance",
+              "ui",
+              "security",
+              "ops",
+              "data",
+              "geo",
+              "sdui"
+            ],
+            "description": "Lane that owns this skill"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PASS", "FAIL", "WARN", "SKIP"],
+            "description": "Status of this specific skill audit"
+          },
+          "violationsCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of violations found by this skill (0 for PASS)"
+          },
+          "artifactPath": {
+            "type": "string",
+            "description": "Relative path to the contract artifact (from repo root)"
+          },
+          "hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$",
+            "description": "SHA-256 hash of the artifact file (format: 'sha256:hex')"
+          },
+          "cid": {
+            "type": "string",
+            "pattern": "^(Qm[1-9A-HJ-NP-Za-km-z]{44}|bafy[a-z0-9]{50,})$",
+            "description": "Optional IPFS CID (Content Identifier) for decentralized audit trail"
+          },
+          "executedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this skill was executed"
+          }
+        },
+        "required": [
+          "skillName",
+          "lane",
+          "status",
+          "violationsCount",
+          "artifactPath",
+          "hash"
+        ],
+        "additionalProperties": false
+      },
+      "description": "Array of all lane-specific contracts aggregated into this evidence pack"
+    },
+    "totalViolations": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sum of violationsCount across all contracts"
+    },
+    "contextHash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "SHA-256 hash of Context Pack (.terrafusion/context/latest.json) at build time"
+    },
+    "markdownSnippet": {
+      "type": "string",
+      "minLength": 1,
+      "description": "PR-ready markdown snippet for GitHub PR body injection"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "tdcVersion": {
+          "type": "string",
+          "description": "TDC CLI version used to generate this pack"
+        },
+        "nodeVersion": {
+          "type": "string",
+          "description": "Node.js version used during generation"
+        },
+        "ciEnvironment": {
+          "type": "string",
+          "enum": [
+            "github-actions",
+            "local",
+            "jenkins",
+            "gitlab-ci",
+            "circleci"
+          ],
+          "description": "CI environment where pack was generated"
+        },
+        "triggeredBy": {
+          "type": "string",
+          "description": "User or automation that triggered the build"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "contractVersion",
+    "prNumber",
+    "branchRef",
+    "generatedAt",
+    "overallStatus",
+    "lanesAudited",
+    "contracts",
+    "totalViolations",
+    "contextHash",
+    "markdownSnippet"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "rollupRules": {
+      "description": "Strict rollup logic enforced by Evidence Pack aggregator",
+      "rules": [
+        "IF any contract.status === 'FAIL' THEN overallStatus = 'FAIL'",
+        "ELSE IF any contract.status === 'WARN' THEN overallStatus = 'WARN'",
+        "ELSE IF all contracts.status === 'SKIP' THEN overallStatus = 'SKIP'",
+        "ELSE overallStatus = 'PASS'"
+      ]
+    },
+    "integrityValidation": {
+      "description": "Cryptographic integrity checks performed by 'tdc evidence validate'",
+      "checks": [
+        "Re-compute SHA-256 for each artifact in contracts[] array",
+        "Compare computed hash with stored hash (any mismatch = FAIL)",
+        "Re-compute Context Pack SHA-256 (.terrafusion/context/latest.json)",
+        "Compare computed contextHash with stored contextHash (mismatch = WARN)",
+        "Validate all artifact files exist at specified paths (missing = FAIL)",
+        "Validate JSON against this schema (invalid = FAIL)"
+      ]
+    }
+  },
+  "examples": [
+    {
+      "contractVersion": "1.0.0",
+      "prNumber": 314,
+      "branchRef": "feature/phase4-sprint1-storage",
+      "generatedAt": "2026-02-13T14:30:00Z",
+      "overallStatus": "PASS",
+      "lanesAudited": ["ui", "security"],
+      "contracts": [
+        {
+          "skillName": "tf-ui-foundation",
+          "lane": "ui",
+          "status": "PASS",
+          "violationsCount": 0,
+          "artifactPath": ".terrafusion/contracts/ui-token-compliance-20260213.json",
+          "hash": "sha256:abc1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
+          "cid": "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
+          "executedAt": "2026-02-13T14:29:45Z"
+        },
+        {
+          "skillName": "tf-authz-boundary-check",
+          "lane": "security",
+          "status": "PASS",
+          "violationsCount": 0,
+          "artifactPath": ".terrafusion/contracts/authz-boundary-20260213.json",
+          "hash": "sha256:def4567890abcdef1234567890abcdef1234567890abcdef1234567890abcd",
+          "executedAt": "2026-02-13T14:29:50Z"
+        }
+      ],
+      "totalViolations": 0,
+      "contextHash": "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcd",
+      "markdownSnippet": "## 🏛️ TerraFusion PR Evidence Pack\\n\\n**Overall Status:** ✅ PASS\\n**PR:** #314\\n**Branch:** `feature/phase4-sprint1-storage`\\n**Generated:** 2026-02-13T14:30:00Z\\n**Lanes Audited:** ui, security (2 lanes)\\n**Total Violations:** 0\\n\\n### Lane Results\\n\\n| Lane | Skill | Status | Violations |\\n|------|-------|--------|------------|\\n| ui | tf-ui-foundation | ✅ PASS | 0 |\\n| security | tf-authz-boundary-check | ✅ PASS | 0 |\\n\\n### Cryptographic Integrity\\n\\n- **Artifacts Hashed:** 2\\n- **Context Pack:** `sha256:1234...` ✅ Verified\\n\\n---\\n\\n**Government. Transcended. Receipted.** 🏛️",
+      "metadata": {
+        "tdcVersion": "1.0.0",
+        "nodeVersion": "20.10.0",
+        "ciEnvironment": "github-actions",
+        "triggeredBy": "github-actions[bot]"
+      }
+    }
+  ]
+}

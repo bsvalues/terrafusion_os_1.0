@@ -1,0 +1,299 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/ui-sdui.contract.v1.json",
+  "title": "TerraFusion SDUI Renderer Contract",
+  "description": "Validates SDUI JSON schemas against component contracts for type safety",
+  "type": "object",
+  "properties": {
+    "contractVersion": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Contract schema version"
+    },
+    "skillName": {
+      "type": "string",
+      "const": "tf-sdui-renderer",
+      "description": "Skill identifier"
+    },
+    "lane": {
+      "type": "string",
+      "const": "dev",
+      "description": "Development lane"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN", "SKIP"],
+      "description": "Overall validation status"
+    },
+    "schemaPath": {
+      "type": "string",
+      "description": "Relative path to SDUI schema file being validated"
+    },
+    "componentName": {
+      "type": "string",
+      "description": "Name of the component contract being validated against"
+    },
+    "countyId": {
+      "type": "string",
+      "description": "County identifier from schema (e.g., 'benton', 'king')"
+    },
+    "schemaType": {
+      "type": "string",
+      "description": "Type of schema being validated (e.g., 'parcel', 'assessment', 'property-grid')"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "description": "Schema version (semver format)"
+    },
+    "violationCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of validation violations found"
+    },
+    "violations": {
+      "type": "array",
+      "description": "Array of validation violations",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "TF_SDUI_001_UNKNOWN_PROP",
+              "TF_SDUI_002_MISSING_REQUIRED",
+              "TF_SDUI_003_TYPE_MISMATCH",
+              "TF_SDUI_004_INVALID_JSON",
+              "TF_SDUI_005_MISSING_METADATA"
+            ],
+            "description": "Violation code"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["error", "warning"],
+            "description": "Violation severity level"
+          },
+          "field": {
+            "type": "string",
+            "description": "Field name that caused the violation"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Line number in schema file"
+          },
+          "column": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Column number in schema file"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable violation message"
+          },
+          "expected": {
+            "type": "string",
+            "description": "Expected value or type from component contract"
+          },
+          "actual": {
+            "type": "string",
+            "description": "Actual value or type found in schema"
+          },
+          "suggestion": {
+            "type": "string",
+            "description": "Suggested fix for the violation"
+          }
+        },
+        "required": ["code", "severity", "field", "message"]
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Validation summary statistics",
+      "properties": {
+        "requiredPropsPresent": {
+          "type": "boolean",
+          "description": "Whether all required props from contract are present in schema"
+        },
+        "noUnknownProps": {
+          "type": "boolean",
+          "description": "Whether schema contains only props defined in contract"
+        },
+        "typesMatch": {
+          "type": "boolean",
+          "description": "Whether all schema types match contract types"
+        },
+        "totalFields": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of fields in schema"
+        },
+        "requiredFields": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of required fields validated"
+        },
+        "optionalFields": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of optional fields present"
+        },
+        "unknownFields": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of unknown fields not in contract"
+        },
+        "missingRequiredFields": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of required fields missing from schema"
+        },
+        "typeMismatches": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of type mismatches found"
+        }
+      },
+      "required": [
+        "requiredPropsPresent",
+        "noUnknownProps",
+        "typesMatch",
+        "totalFields",
+        "requiredFields",
+        "optionalFields"
+      ]
+    },
+    "contractHash": {
+      "type": "string",
+      "description": "SHA-256 hash of component contract used for validation"
+    },
+    "schemaHash": {
+      "type": "string",
+      "description": "SHA-256 hash of validated schema file"
+    },
+    "executedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of validation execution"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional validation metadata",
+      "properties": {
+        "contractVersion": {
+          "type": "string",
+          "description": "Component contract version"
+        },
+        "validationDuration": {
+          "type": "integer",
+          "description": "Validation duration in milliseconds"
+        },
+        "validatorVersion": {
+          "type": "string",
+          "description": "SDUI validator tool version"
+        }
+      }
+    }
+  },
+  "required": [
+    "contractVersion",
+    "skillName",
+    "lane",
+    "status",
+    "schemaPath",
+    "componentName",
+    "violationCount",
+    "violations",
+    "validation",
+    "executedAt"
+  ],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "contractVersion": "1.0.0",
+      "skillName": "tf-sdui-renderer",
+      "lane": "dev",
+      "status": "PASS",
+      "schemaPath": "schemas/benton-parcel.schema.json",
+      "componentName": "ParcelForm",
+      "countyId": "benton",
+      "schemaType": "parcel",
+      "schemaVersion": "2.1.0",
+      "violationCount": 0,
+      "violations": [],
+      "validation": {
+        "requiredPropsPresent": true,
+        "noUnknownProps": true,
+        "typesMatch": true,
+        "totalFields": 4,
+        "requiredFields": 3,
+        "optionalFields": 1,
+        "unknownFields": 0,
+        "missingRequiredFields": 0,
+        "typeMismatches": 0
+      },
+      "contractHash": "a1b2c3d4e5f6...",
+      "schemaHash": "f6e5d4c3b2a1...",
+      "executedAt": "2026-02-13T10:30:00Z",
+      "metadata": {
+        "contractVersion": "1.0.0",
+        "validationDuration": 42,
+        "validatorVersion": "1.0.0"
+      }
+    },
+    {
+      "contractVersion": "1.0.0",
+      "skillName": "tf-sdui-renderer",
+      "lane": "dev",
+      "status": "FAIL",
+      "schemaPath": "schemas/king-parcel.schema.json",
+      "componentName": "ParcelForm",
+      "countyId": "king",
+      "schemaType": "parcel",
+      "schemaVersion": "3.0.0",
+      "violationCount": 2,
+      "violations": [
+        {
+          "code": "TF_SDUI_001_UNKNOWN_PROP",
+          "severity": "error",
+          "field": "unknownField",
+          "line": 12,
+          "column": 5,
+          "message": "Property 'unknownField' not found in ParcelForm contract",
+          "expected": "parcelId, assessedValue, squareFootage, ownerName, legalDescription",
+          "actual": "unknownField",
+          "suggestion": "Remove 'unknownField' from schema or add to ParcelFormProps interface"
+        },
+        {
+          "code": "TF_SDUI_002_MISSING_REQUIRED",
+          "severity": "error",
+          "field": "assessedValue",
+          "line": 3,
+          "column": 3,
+          "message": "Required property 'assessedValue' missing from schema",
+          "expected": "assessedValue: number",
+          "actual": "undefined",
+          "suggestion": "Add { \"name\": \"assessedValue\", \"type\": \"number\", \"required\": true }"
+        }
+      ],
+      "validation": {
+        "requiredPropsPresent": false,
+        "noUnknownProps": false,
+        "typesMatch": true,
+        "totalFields": 4,
+        "requiredFields": 2,
+        "optionalFields": 1,
+        "unknownFields": 1,
+        "missingRequiredFields": 1,
+        "typeMismatches": 0
+      },
+      "contractHash": "a1b2c3d4e5f6...",
+      "schemaHash": "c3b2a1f6e5d4...",
+      "executedAt": "2026-02-13T10:32:00Z",
+      "metadata": {
+        "contractVersion": "1.0.0",
+        "validationDuration": 38,
+        "validatorVersion": "1.0.0"
+      }
+    }
+  ]
+}

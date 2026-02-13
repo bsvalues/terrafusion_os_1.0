@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/ui-token-compliance.contract.v1.json",
+  "title": "TerraFusion UI Token Compliance Contract",
+  "description": "Validates design token usage - OKLCH-ready CSS variables only",
+  "type": "object",
+  "properties": {
+    "contractVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "skillName": {
+      "type": "string",
+      "const": "tf-ui-foundation"
+    },
+    "lane": {
+      "type": "string",
+      "const": "ui"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN", "SKIP"]
+    },
+    "violationsCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "TF_UI_001_HARDCODED_HEX",
+              "TF_UI_002_HARDCODED_RGB",
+              "TF_UI_003_NON_THEME_CLASS"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["error", "warning"]
+          },
+          "file": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "column": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "message": {
+            "type": "string"
+          },
+          "suggestion": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "severity", "file", "line", "message"]
+      }
+    },
+    "filesScanned": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "executedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "skillName",
+    "lane",
+    "status",
+    "violationsCount",
+    "violations"
+  ],
+  "additionalProperties": false
+}

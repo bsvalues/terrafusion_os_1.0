@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/ui-dense-layout.contract.v1.json",
+  "title": "TerraFusion Data-Dense Layout Compliance Contract",
+  "description": "Validates virtualization and performance for 50,000+ row datasets",
+  "type": "object",
+  "properties": {
+    "contractVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "skillName": {
+      "type": "string",
+      "const": "tf-data-dense-layouts"
+    },
+    "lane": {
+      "type": "string",
+      "const": "ui"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN", "SKIP"]
+    },
+    "violationsCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "TF_DENSITY_001_NO_VIRTUALIZATION",
+              "TF_DENSITY_002_NO_STICKY_HEADER",
+              "TF_DENSITY_003_NO_PROGRESSIVE_DISCLOSURE",
+              "TF_DENSITY_004_NO_DENSITY_TOGGLE",
+              "TF_DENSITY_005_NO_PAGINATION",
+              "TF_DENSITY_006_SLOW_RENDER"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["error", "warning"]
+          },
+          "file": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "rowCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of rows detected in the table"
+          },
+          "message": {
+            "type": "string"
+          },
+          "suggestion": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "severity", "file", "line", "message"]
+      }
+    },
+    "performanceMetrics": {
+      "type": "object",
+      "properties": {
+        "initialRenderMs": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Time to first render in milliseconds (<200ms target)"
+        },
+        "memoryUsageMB": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Memory usage in megabytes (<50MB target)"
+        },
+        "maxRowsDetected": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Largest table row count found in scanned files"
+        }
+      },
+      "required": ["initialRenderMs", "memoryUsageMB", "maxRowsDetected"]
+    },
+    "filesScanned": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "executedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "skillName",
+    "lane",
+    "status",
+    "violationsCount",
+    "violations",
+    "performanceMetrics"
+  ],
+  "additionalProperties": false
+}

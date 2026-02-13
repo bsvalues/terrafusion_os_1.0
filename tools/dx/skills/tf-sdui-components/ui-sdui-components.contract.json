@@ -1,0 +1,187 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/schemas/ui-sdui-components.contract.v1.json",
+  "title": "TerraFusion SDUI Components Contract",
+  "description": "Validates schema-driven UI components for county-specific variants",
+  "type": "object",
+  "properties": {
+    "contractVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "skillName": {
+      "type": "string",
+      "const": "tf-sdui-components"
+    },
+    "lane": {
+      "type": "string",
+      "const": "dev"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN", "SKIP"]
+    },
+    "violationsCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "TF_SDUI_001_MISSING_SCHEMA",
+              "TF_SDUI_002_INVALID_BINDING",
+              "TF_SDUI_003_HARDCODED_COUNTY_DATA"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["error", "warning"]
+          },
+          "file": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "column": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "message": {
+            "type": "string"
+          },
+          "suggestion": {
+            "type": "string"
+          },
+          "countyId": {
+            "type": "string",
+            "description": "County identifier if violation is county-specific"
+          }
+        },
+        "required": ["code", "severity", "file", "line", "message"]
+      }
+    },
+    "countySchemas": {
+      "type": "array",
+      "description": "County schemas validated during audit",
+      "items": {
+        "type": "object",
+        "properties": {
+          "countyId": {
+            "type": "string",
+            "description": "County identifier (e.g., 'benton', 'king')"
+          },
+          "schemaType": {
+            "type": "string",
+            "description": "Schema type (e.g., 'parcel', 'assessment', 'property-grid')"
+          },
+          "version": {
+            "type": "string",
+            "description": "Schema version (semver format)"
+          },
+          "fieldsCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of fields in schema"
+          },
+          "validated": {
+            "type": "boolean",
+            "description": "Whether schema passed validation"
+          },
+          "validationErrors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["countyId", "schemaType", "version", "validated"]
+      }
+    },
+    "componentsAudited": {
+      "type": "array",
+      "description": "Components audited for SDUI compliance",
+      "items": {
+        "type": "object",
+        "properties": {
+          "componentPath": {
+            "type": "string",
+            "description": "Relative path to component file"
+          },
+          "componentName": {
+            "type": "string",
+            "description": "Component name"
+          },
+          "schemaBinding": {
+            "type": "string",
+            "enum": ["valid", "invalid", "missing", "partial"],
+            "description": "Schema binding status"
+          },
+          "countyAgnostic": {
+            "type": "boolean",
+            "description": "Whether component is county-agnostic (no hardcoded county logic)"
+          },
+          "schemaTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Schema types used by component"
+          },
+          "violationCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Violation codes found in component"
+          }
+        },
+        "required": ["componentPath", "schemaBinding", "countyAgnostic"]
+      }
+    },
+    "filesScanned": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total files scanned during audit"
+    },
+    "executedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of audit execution"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "countyCoverage": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of counties with schemas audited"
+        },
+        "schemaVersions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of schemaType to latest version"
+        }
+      }
+    }
+  },
+  "required": [
+    "contractVersion",
+    "skillName",
+    "lane",
+    "status",
+    "violationsCount",
+    "violations",
+    "countySchemas",
+    "componentsAudited"
+  ],
+  "additionalProperties": false
+}

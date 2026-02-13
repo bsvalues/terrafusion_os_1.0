@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Benton County Pack Manifest",
+  "description": "TerraFusion OS deployment configuration for Benton County, Washington",
+  "type": "object",
+  "countyId": "benton",
+  "countyFips": "53005",
+  "countyName": "Benton County, WA",
+  "version": "1.0.0",
+  "terrafusionVersion": "1.0.0",
+  "deployed": false,
+  "deployedAt": null,
+  "deployedBy": null,
+  "features": [
+    "property-assessment",
+    "tax-levy",
+    "parcel-management",
+    "harris-pacs-integration"
+  ],
+  "databases": {
+    "postgres": {
+      "enabled": true,
+      "host": "${POSTGRES_HOST}",
+      "port": "${POSTGRES_PORT}",
+      "database": "${POSTGRES_DB}",
+      "schema": "benton",
+      "user": "${POSTGRES_USER}",
+      "password": "${POSTGRES_PASSWORD}",
+      "sslMode": "require",
+      "maxConnections": 100
+    },
+    "redis": {
+      "enabled": true,
+      "host": "${REDIS_HOST}",
+      "port": "${REDIS_PORT}",
+      "keyspace": "tf:benton:",
+      "password": "${REDIS_PASSWORD}",
+      "db": 0
+    },
+    "sqlite": {
+      "enabled": false,
+      "path": null
+    }
+  },
+  "integrations": {
+    "harrisPacs": {
+      "enabled": true,
+      "version": "9.0",
+      "endpoint": "${HARRIS_PACS_URL}",
+      "apiKey": "${HARRIS_PACS_API_KEY}",
+      "timeout": 30000,
+      "syncInterval": 3600,
+      "features": {
+        "parcelSync": true,
+        "assessmentSync": true,
+        "ownershipSync": true
+      }
+    },
+    "tylerTechnologies": {
+      "enabled": false,
+      "product": null,
+      "endpoint": null
+    },
+    "aumentumSystems": {
+      "enabled": false,
+      "endpoint": null
+    }
+  },
+  "customizations": {
+    "theme": {
+      "primaryColor": "#1e40af",
+      "logo": "/assets/logos/benton-county.png"
+    },
+    "locale": {
+      "timezone": "America/Los_Angeles",
+      "currency": "USD",
+      "dateFormat": "MM/DD/YYYY"
+    },
+    "features": {
+      "advancedSearch": true,
+      "bulkOperations": true,
+      "reporting": true,
+      "apiAccess": true
+    }
+  },
+  "deployment": {
+    "strategy": "blue-green",
+    "healthCheck": {
+      "enabled": true,
+      "interval": 60,
+      "timeout": 10,
+      "endpoints": ["/health", "/health/db", "/health/redis"]
+    },
+    "rollback": {
+      "enabled": true,
+      "retainBackups": 5
+    },
+    "notifications": {
+      "email": "${DEPLOY_NOTIFICATION_EMAIL}",
+      "slack": "${DEPLOY_NOTIFICATION_SLACK_WEBHOOK}"
+    }
+  },
+  "compliance": {
+    "fismaLevel": "HIGH",
+    "auditLogging": true,
+    "dataRetention": {
+      "enabled": true,
+      "years": 7
+    },
+    "encryption": {
+      "atRest": true,
+      "inTransit": true
+    }
+  },
+  "contact": {
+    "county": {
+      "name": "Benton County Assessor's Office",
+      "phone": "(509) 736-3015",
+      "email": "assessor@co.benton.wa.us",
+      "website": "https://www.bentonassessor.com"
+    },
+    "technical": {
+      "name": "TerraFusion Support",
+      "email": "support@terrafusion.gov",
+      "phone": "1-888-TERRA-OS"
+    }
+  },
+  "data": {
+    "parcels": {
+      "count": 89247,
+      "lastUpdate": "2026-01-15"
+    },
+    "properties": {
+      "count": 89247,
+      "residential": 68500,
+      "commercial": 12400,
+      "industrial": 5200,
+      "agricultural": 3147
+    }
+  },
+  "notes": [
+    "Benton County is the reference implementation for TerraFusion County Packs",
+    "Harris PACS 9.0 integration is production-ready with 89,247 parcels synced",
+    "All environment variables must be set before deployment",
+    "See README.md for step-by-step deployment instructions"
+  ]
+}

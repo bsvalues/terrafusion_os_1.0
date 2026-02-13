@@ -1,0 +1,95 @@
+{
+  "$schema": "../../schema.json",
+  "environment": "production",
+  "database": {
+    "connectionString": "Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};SSL Mode=Require;",
+    "pooling": {
+      "minPoolSize": 10,
+      "maxPoolSize": 100,
+      "connectionTimeout": 30
+    },
+    "migrations": {
+      "autoApply": false,
+      "backupBeforeMigration": true
+    }
+  },
+  "redis": {
+    "connectionString": "${REDIS_HOST}:${REDIS_PORT},password=${REDIS_PASSWORD},ssl=True,abortConnect=False",
+    "keyPrefix": "tf:benton:",
+    "defaultExpiration": 3600
+  },
+  "api": {
+    "baseUrl": "${API_BASE_URL}",
+    "port": "${API_PORT}",
+    "enableSwagger": false,
+    "cors": {
+      "allowedOrigins": ["${FRONTEND_URL}"],
+      "allowedMethods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+      "allowCredentials": true
+    },
+    "rateLimit": {
+      "enabled": true,
+      "requestsPerMinute": 100,
+      "ipWhitelist": []
+    }
+  },
+  "authentication": {
+    "jwtSecret": "${JWT_SECRET}",
+    "jwtIssuer": "TerraFusion.Benton",
+    "jwtAudience": "TerraFusion.API",
+    "tokenExpiration": 3600,
+    "refreshTokenExpiration": 604800
+  },
+  "integrations": {
+    "harrisPacs": {
+      "baseUrl": "${HARRIS_PACS_URL}",
+      "apiKey": "${HARRIS_PACS_API_KEY}",
+      "timeout": 30000,
+      "retryAttempts": 3,
+      "syncSchedule": "0 2 * * *",
+      "endpoints": {
+        "parcels": "/api/v1/parcels",
+        "assessments": "/api/v1/assessments",
+        "owners": "/api/v1/owners"
+      }
+    }
+  },
+  "logging": {
+    "level": "${LOG_LEVEL:-Information}",
+    "providers": ["Console", "File", "ApplicationInsights"],
+    "fileLogging": {
+      "path": "./logs",
+      "rollingInterval": "Day",
+      "retainedFileCount": 30
+    },
+    "applicationInsights": {
+      "instrumentationKey": "${APPINSIGHTS_INSTRUMENTATION_KEY}",
+      "enableLiveMetrics": true
+    }
+  },
+  "security": {
+    "encryptionKey": "${ENCRYPTION_KEY}",
+    "enableAuditLogging": true,
+    "auditLogRetention": 2555,
+    "allowedIpRanges": [],
+    "enableSqlInjectionProtection": true,
+    "enableXssProtection": true
+  },
+  "performance": {
+    "enableCaching": true,
+    "cacheExpiration": 3600,
+    "enableCompression": true,
+    "enableResponseCaching": true
+  },
+  "monitoring": {
+    "healthCheckInterval": 60,
+    "enableDetailedErrors": false,
+    "enablePerformanceCounters": true
+  },
+  "deployment": {
+    "environment": "production",
+    "version": "1.0.0",
+    "deployedBy": null,
+    "deployedAt": null
+  }
+}
