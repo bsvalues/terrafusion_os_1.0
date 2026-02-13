@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "name": "mcp-postgis",
+  "description": "MCP PostGIS query tool contract with read-first safety and deterministic governance",
+  "tools": [
+    {
+      "name": "mcp-postgis-query",
+      "description": "Execute read-only PostGIS queries with strict governance",
+      "defaultRisk": "read",
+      "requiredFields": ["ownerLane", "county", "environment"],
+      "limits": {
+        "defaultRowLimit": 100,
+        "statementTimeoutMs": 30000,
+        "maxResultBytes": 10485760
+      }
+    }
+  ],
+  "riskLevels": {
+    "read": {
+      "description": "Read-only SELECT queries with parameterization required",
+      "allowedStatements": ["SELECT"],
+      "requiresSupervisorApproval": false,
+      "auditLevel": "standard"
+    },
+    "write": {
+      "description": "Write operations (INSERT/UPDATE/DELETE) - DISABLED by default",
+      "allowedStatements": ["INSERT", "UPDATE", "DELETE"],
+      "requiresSupervisorApproval": true,
+      "auditLevel": "elevated"
+    },
+    "ddl": {
+      "description": "DDL operations (CREATE/ALTER/DROP) - BLOCKED",
+      "allowedStatements": [],
+      "requiresSupervisorApproval": true,
+      "auditLevel": "critical"
+    }
+  },
+  "governanceRules": {
+    "parameterizationRequired": true,
+    "multiStatementBlocked": true,
+    "dangerousKeywordsBlocked": [
+      "COPY",
+      "pg_read_file",
+      "pg_ls_dir",
+      "pg_read_binary_file",
+      "lo_import",
+      "lo_export",
+      "EXECUTE"
+    ],
+    "queryNormalizationEnabled": true,
+    "piiRedactionEnabled": true
+  },
+  "traceRequirements": {
+    "emitOnExecution": true,
+    "sanitizePayloads": true,
+    "includeHashes": true,
+    "includeRawSQL": false,
+    "includeRawParams": false
+  },
+  "contractHash": "1daea598c6624aa6"
+}
