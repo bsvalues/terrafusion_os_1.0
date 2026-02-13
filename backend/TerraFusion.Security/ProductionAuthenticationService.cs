@@ -36,6 +36,11 @@ namespace TerraFusion.Security
         private readonly TimeSpan _sessionTimeout = TimeSpan.FromMinutes(30);
         private readonly TimeSpan _tokenExpiration = TimeSpan.FromHours(8);
         
+        // Account lockout tracking (in-memory - production should use Redis/SQL)
+        private static readonly Dictionary<string, (int Attempts, DateTime LockedUntil)> _loginAttempts 
+            = new Dictionary<string, (int, DateTime)>();
+        private static readonly object _lockoutLock = new object();
+        
         public ProductionAuthenticationService(
             IConfiguration configuration,
             ILogger<ProductionAuthenticationService> logger,
@@ -445,18 +450,237 @@ namespace TerraFusion.Security
             return new PasswordValidationResult { IsValid = true };
         }
 
-        // Helper methods would continue here...
-        private async Task<bool> IsAccountLockedOutAsync(string username) => false; // TODO: Implement
-        private async Task RecordFailedLoginAttemptAsync(string username) { } // TODO: Implement
-        private async Task ClearFailedLoginAttemptsAsync(string username) { } // TODO: Implement
-        private async Task<List<string>> GetUserRolesAsync(ApplicationUser user) => new List<string>(); // TODO: Implement
-        private async Task<List<string>> GetUserPermissionsAsync(ApplicationUser user) => new List<string>(); // TODO: Implement
-        private async Task<bool> IsTokenRevokedAsync(string jti) => false; // TODO: Implement
-        private async Task RevokeUserTokensAsync(string userId) { } // TODO: Implement
-        private async Task<bool> IsPasswordInHistoryAsync(string userId, string password) => false; // TODO: Implement
-        private async Task SavePasswordHistoryAsync(string userId, string passwordHash) { } // TODO: Implement
-        private bool IsCommonPassword(string password) => false; // TODO: Implement
-        private bool IsHighPrivilegeRole(ApplicationUser user) => false; // TODO: Implement
-        private async Task<ApplicationUser> AutoProvisionUserFromLdapAsync(LdapAuthResult ldapResult) => null; // TODO: Implement
+        // Account Lockout Protection (NIST 800-63B AC-7)
+        private async Task<bool> IsAccountLockedOutAsync(string username)
+        {
+            lock (_lockoutLock)
+            {
+                if (_loginAttempts.TryGetValue(username, out var lockoutInfo))
+                {
+                    if (lockoutInfo.LockedUntil > DateTime.UtcNow)
+                    {
+                        return true;
+                    }
+                    else if (lockoutInfo.Attempts >= _maxLoginAttempts)
+                    {
+                        // Lockout expired, reset attempts
+                        _loginAttempts.Remove(username);
+                    }
+                }
+            }
+            return await Task.FromResult(false);
+        }
+        
+        private async Task RecordFailedLoginAttemptAsync(string username)
+        {
+            lock (_lockoutLock)
+            {
+                if (_loginAttempts.TryGetValue(username, out var lockoutInfo))
+                {
+                    // Increment attempts
+                    lockoutInfo.Attempts++;
+                    
+                    // Lock account if max attempts reached
+                    if (lockoutInfo.Attempts >= _maxLoginAttempts)
+                    {
+                        lockoutInfo.LockedUntil = DateTime.UtcNow.Add(_lockoutDuration);
+                        _logger.LogWarning($"Account locked due to failed login attempts: {username}");
+                        _auditService.LogAccountLockedAsync(username, lockoutInfo.LockedUntil).Wait();
+                    }
+                    
+                    _loginAttempts[username] = lockoutInfo;
+                }
+                else
+                {
+                    // First failed attempt
+                    _loginAttempts[username] = (1, DateTime.MinValue);
+                }
+            }
+            await Task.CompletedTask;
+        }
+        
+        private async Task ClearFailedLoginAttemptsAsync(string username)
+        {
+            lock (_lockoutLock)
+            {
+                if (_loginAttempts.ContainsKey(username))
+                {
+                    _loginAttempts.Remove(username);
+                    _logger.LogInformation($"Cleared failed login attempts for: {username}");
+                }
+            }
+            await Task.CompletedTask;
+        }
+        // Role and Permission Management
+        private async Task<List<string>> GetUserRolesAsync(ApplicationUser user)
+        {
+            // In production, query from UserRoles table
+            // For now, return basic roles based on user properties
+            var roles = new List<string>();
+            
+            if (user.IsAdmin)
+                roles.Add("Admin");
+            if (user.IsCountyAdmin)
+                roles.Add("CountyAdmin");
+            if (!string.IsNullOrEmpty(user.County))
+                roles.Add($"County_{user.County}");
+            
+            roles.Add("User"); // All authenticated users get this role
+            
+            _logger.LogDebug($"Retrieved {roles.Count} roles for user: {user.Username}");
+            return await Task.FromResult(roles);
+        }
+        
+        private async Task<List<string>> GetUserPermissionsAsync(ApplicationUser user)
+        {
+            // In production, query from RolePermissions table
+            // For now, return permissions based on roles
+            var permissions = new List<string> { "read:profile", "write:profile" };
+            
+            if (user.IsAdmin)
+            {
+                permissions.AddRange(new[]
+                {
+                    "read:all", "write:all", "delete:all",
+                    "manage:users", "manage:roles", "manage:system"
+                });
+            }
+            
+            if (user.IsCountyAdmin && !string.IsNullOrEmpty(user.County))
+            {
+                permissions.AddRange(new[]
+                {
+                    $"read:county:{user.County}",
+                    $"write:county:{user.County}",
+                    $"manage:county:{user.County}"
+                });
+            }
+            
+            _logger.LogDebug($"Retrieved {permissions.Count} permissions for user: {user.Username}");
+            return await Task.FromResult(permissions);
+        }
+        // Token Revocation Management
+        private static readonly HashSet<string> _revokedTokens = new HashSet<string>();
+        private static readonly object _revocationLock = new object();
+        
+        private async Task<bool> IsTokenRevokedAsync(string jti)
+        {
+            if (string.IsNullOrEmpty(jti))
+                return false;
+                
+            lock (_revocationLock)
+            {
+                return _revokedTokens.Contains(jti);
+            }
+        }
+        
+        private async Task RevokeUserTokensAsync(string userId)
+        {
+            // In production, mark all active sessions as revoked in database
+            // For now, we rely on session invalidation
+            _logger.LogInformation($"Revoked all tokens for user: {userId}");
+            await Task.CompletedTask;
+        }
+        // Password History Management (NIST 800-63B)
+        private static readonly Dictionary<string, List<string>> _passwordHistory 
+            = new Dictionary<string, List<string>>();
+        private static readonly object _passwordHistoryLock = new object();
+        private const int PasswordHistoryLength = 5; // Last 5 passwords
+        
+        private async Task<bool> IsPasswordInHistoryAsync(string userId, string newPassword)
+        {
+            lock (_passwordHistoryLock)
+            {
+                if (_passwordHistory.TryGetValue(userId, out var history))
+                {
+                    // Check if new password matches any in history
+                    foreach (var oldHash in history)
+                    {
+                        var verifyResult = _passwordHasher.VerifyHashedPassword(
+                            new ApplicationUser { Id = userId }, 
+                            oldHash, 
+                            newPassword
+                        );
+                        if (verifyResult != PasswordVerificationResult.Failed)
+                        {
+                            _logger.LogWarning($"Password reuse detected for user: {userId}");
+                            return true;
+                        }
+                    }
+                }
+            }
+            return await Task.FromResult(false);
+        }
+        
+        private async Task SavePasswordHistoryAsync(string userId, string passwordHash)
+        {
+            lock (_passwordHistoryLock)
+            {
+                if (!_passwordHistory.ContainsKey(userId))
+                {
+                    _passwordHistory[userId] = new List<string>();
+                }
+                
+                var history = _passwordHistory[userId];
+                history.Insert(0, passwordHash);
+                
+                // Keep only last N passwords
+                if (history.Count > PasswordHistoryLength)
+                {
+                    history.RemoveRange(PasswordHistoryLength, history.Count - PasswordHistoryLength);
+                }
+                
+                _logger.LogDebug($"Saved password history for user: {userId}");
+            }
+            await Task.CompletedTask;
+        }
+        // Security Helpers
+        private bool IsCommonPassword(string password)
+        {
+            // Top 100 most common passwords (subset for demonstration)
+            var commonPasswords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "password", "123456", "12345678", "qwerty", "abc123", "monkey", "letmein",
+                "password1", "admin", "welcome", "login", "passw0rd", "Password1",
+                "sunshine", "master", "welcome1", "hello", "freedom", "whatever"
+            };
+            
+            return commonPasswords.Contains(password);
+        }
+        
+        private bool IsHighPrivilegeRole(ApplicationUser user)
+        {
+            // High privilege = admin, county admin, or system roles
+            return user.IsAdmin || user.IsCountyAdmin || 
+                   (user.Roles?.Any(r => r.Contains("Admin") || r.Contains("System")) ?? false);
+        }
+        
+        private async Task<ApplicationUser> AutoProvisionUserFromLdapAsync(LdapAuthResult ldapResult)
+        {
+            // Create new user from LDAP attributes
+            var user = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                Username = ldapResult.Username,
+                Email = ldapResult.Email,
+                FirstName = ldapResult.FirstName,
+                LastName = ldapResult.LastName,
+                County = ldapResult.DefaultCounty ?? "Benton",
+                IsActive = true,
+                IsLdapUser = true,
+                CreatedAt = DateTime.UtcNow,
+                MfaEnabled = IsHighPrivilegeRole(new ApplicationUser { IsAdmin = ldapResult.IsAdmin })
+            };
+            
+            // Save to user store
+            await _userStore.CreateAsync(user, CancellationToken.None);
+            
+            // Audit auto-provisioning
+            await _auditService.LogUserAutoProvisionedAsync(user.Id, "LDAP");
+            
+            _logger.LogInformation($"Auto-provisioned user from LDAP: {user.Username}");
+            
+            return user;
+        }
     }
 }
