@@ -83,6 +83,7 @@
     "typecheck:tdc": "cd tools/tdc/cli && npx tsc --noEmit",
     "test:governed": "pnpm run type-check && node --test os-platform/core/tests/phase83-tools.test.mjs",
     "test:phase10-sdui": "node --test os-platform/core/tests/phase10-sdui.parse.test.mjs os-platform/core/tests/phase10-sdui.policy.test.mjs",
+    "test:phase11-county": "node --test os-platform/core/tests/phase11-county-pack.test.mjs",
     "lint:platform": "node scripts/platform-lint.mjs",
     "doctor": "node scripts/doctor.mjs",
     "trace:query": "node scripts/trace-query.mjs",

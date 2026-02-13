@@ -104,6 +104,24 @@ jobs:
       - name: Phase 10 SDUI policy tests
         run: node --test os-platform/core/tests/phase10-sdui.policy.test.mjs
 
+  phase11-county:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Build TDC CLI
+        run: cd tools/tdc/cli && npx tsc
+      - name: Phase 11 County Pack tests
+        run: pnpm run test:phase11-county
+
   check-generated-js:
     needs: changes
     if: needs.changes.outputs.core == 'true'
