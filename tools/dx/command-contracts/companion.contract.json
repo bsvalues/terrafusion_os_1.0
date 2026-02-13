@@ -1,0 +1,199 @@
+{
+  "$schema": "../context-pack/contract-schema.json",
+  "command": "companion",
+  "description": "AI Workspace Companion with 15 specialized capabilities for TerraFusion development",
+  "aliases": {
+    "vscode": "TerraFusion: Companion",
+    "claude": "/companion",
+    "codex": "codex companion",
+    "tdc": "tdc companion"
+  },
+  "riskLevel": "read",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["status", "health", "capabilities", "generate", "review", "test", "refactor", "solve", "architect", "compliance", "context", "watch", "sync"],
+        "default": "status",
+        "description": "Action to perform"
+      },
+      "target": {
+        "type": "string",
+        "description": "Target file, description, or query for the action"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["status", "companion"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["success", "error", "pending"]
+      },
+      "companion": {
+        "type": "object",
+        "required": ["status", "capabilities", "sessionDuration"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive", "error"]
+          },
+          "capabilities": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer" },
+              "active": { "type": "integer" },
+              "aiPowered": { "type": "integer" }
+            }
+          },
+          "sessionDuration": {
+            "type": "string",
+            "description": "Human-readable session duration"
+          },
+          "lastAction": {
+            "type": "string"
+          }
+        }
+      },
+      "health": {
+        "type": "object",
+        "properties": {
+          "overall": { "type": "string", "enum": ["excellent", "good", "warning", "critical"] },
+          "services": { "type": "object" }
+        }
+      },
+      "result": {
+        "type": "object",
+        "description": "Action-specific result data"
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "input": { "action": "status" },
+    "output": {
+      "status": "success",
+      "companion": {
+        "status": "active",
+        "capabilities": {
+          "total": 15,
+          "active": 15,
+          "aiPowered": 7
+        },
+        "sessionDuration": "2h 34m",
+        "lastAction": "AI Code Review on compliance.service.ts"
+      },
+      "health": {
+        "overall": "excellent",
+        "services": {
+          "TerraFusion.API": { "port": 5000, "status": "up" },
+          "Frontend": { "port": 3000, "status": "up" },
+          "AISwarm": { "port": 3004, "status": "up" }
+        }
+      },
+      "context": {
+        "branch": "claude/feature-branch",
+        "lane": "dev",
+        "dirtyFiles": 2,
+        "criticalTodos": 0
+      }
+    }
+  },
+  "capabilities": [
+    {
+      "name": "Workspace Context Detection",
+      "category": "monitoring",
+      "priority": "high",
+      "aiPowered": false
+    },
+    {
+      "name": "Codebase Intelligence",
+      "category": "assistance",
+      "priority": "high",
+      "aiPowered": false
+    },
+    {
+      "name": "Development Task Assistance",
+      "category": "development",
+      "priority": "high",
+      "aiPowered": false
+    },
+    {
+      "name": "System Health Monitoring",
+      "category": "monitoring",
+      "priority": "high",
+      "aiPowered": false
+    },
+    {
+      "name": "Performance Optimization",
+      "category": "optimization",
+      "priority": "medium",
+      "aiPowered": false
+    },
+    {
+      "name": "Compliance Validation",
+      "category": "assistance",
+      "priority": "high",
+      "aiPowered": false
+    },
+    {
+      "name": "Testing Coordination",
+      "category": "development",
+      "priority": "medium",
+      "aiPowered": false
+    },
+    {
+      "name": "Documentation Assistant",
+      "category": "assistance",
+      "priority": "medium",
+      "aiPowered": false
+    },
+    {
+      "name": "AI Code Generation",
+      "category": "ai-tools",
+      "priority": "high",
+      "aiPowered": true
+    },
+    {
+      "name": "AI Code Review",
+      "category": "ai-tools",
+      "priority": "high",
+      "aiPowered": true
+    },
+    {
+      "name": "AI Testing Assistant",
+      "category": "ai-tools",
+      "priority": "medium",
+      "aiPowered": true
+    },
+    {
+      "name": "AI Refactoring",
+      "category": "ai-tools",
+      "priority": "medium",
+      "aiPowered": true
+    },
+    {
+      "name": "AI Problem Solver",
+      "category": "ai-tools",
+      "priority": "high",
+      "aiPowered": true
+    },
+    {
+      "name": "AI Architecture Advisor",
+      "category": "ai-tools",
+      "priority": "medium",
+      "aiPowered": true
+    },
+    {
+      "name": "AI Compliance Validator",
+      "category": "ai-tools",
+      "priority": "critical",
+      "aiPowered": true
+    }
+  ]
+}
