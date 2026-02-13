@@ -233,6 +233,23 @@ else
 // Detects discrepancies between Harris PACS and TerraFusion, auto-corrects data issues, maintains 99.9% accuracy
 builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyDataValidationService, TerraFusion.Core.Services.PropertyDataValidationService>();
 
+// ====================================================================
+// 🔐 Phase 4 Sprint 1: NIST 800-63B Storage Infrastructure
+// ====================================================================
+
+// Feature flags configuration (all OFF by default - Sprint 1 storage only)
+builder.Services.Configure<TerraFusion.Core.Configuration.FeatureFlagsOptions>(
+    builder.Configuration.GetSection("FeatureFlags"));
+
+// Redis lockout store (uses existing IDistributedCache from line 70-71)
+builder.Services.AddScoped<TerraFusion.Core.Security.Lockout.ILockoutStore, TerraFusion.Core.Security.Lockout.RedisLockoutStore>();
+
+// SQL password history store (uses TerraFusionDbContext)
+builder.Services.AddScoped<TerraFusion.Core.Security.PasswordHistory.IPasswordHistoryStore, TerraFusion.Data.Security.SqlPasswordHistoryStore>();
+
+// Note: Enforcement logic wired in Sprint 2 (flags OFF for Sprint 1)
+// ====================================================================
+
 // 📊 Register TerraFusion Elite Metrics Exporter - Championship-level observability for 7 AI services
 // Exports Prometheus metrics for: Consciousness (swarm), CostForge AI, TerraGaia, TerraFusionGPT, TerraLevy, TerraFlow, TerraSync, Harris PACS integration
 builder.Services.AddSingleton<TerraFusion.Core.Metrics.TerraFusionMetricsExporter>();
