@@ -1,0 +1,29 @@
+{
+  "toolId": "harris-pacs-connector",
+  "approvedBy": "coach@terrafusion.dev",
+  "approvalDate": "2026-02-13T04:25:32.669Z",
+  "riskLevel": "write-remote",
+  "scope": "development",
+  "expiresAt": "2026-05-14T04:25:32.670Z",
+  "justification": "Testing Benton County parcel sync for development environment validation",
+  "constraints": {
+    "maxRequestsPerHour": 100,
+    "allowedOperations": [],
+    "dataAccessRestrictions": [
+      "no-production-data"
+    ],
+    "auditLevel": "verbose"
+  },
+  "auditTrail": [
+    {
+      "timestamp": "2026-02-13T04:25:32.669Z",
+      "action": "created",
+      "actor": "coach@terrafusion.dev",
+      "reason": "Initial activation"
+    }
+  ],
+  "revoked": false,
+  "revokedAt": null,
+  "revokedBy": null,
+  "revokedReason": null
+}

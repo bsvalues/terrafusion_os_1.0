@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { AgentActivityProvider } from './providers/AgentActivityProvider';
+import { GovernanceProvider } from './providers/GovernanceProvider';
 import { PortalWebViewProvider } from './providers/PortalWebViewProvider';
 import { ServicesProvider } from './providers/ServicesProvider';
 import { WorkspaceExplorerProvider } from './providers/WorkspaceExplorerProvider';
@@ -13,11 +14,13 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('🏛️ TerraFusion OS Extension Activating...');
 
   // Initialize tree view providers
+  const governanceProvider = new GovernanceProvider();
   const workspaceProvider = new WorkspaceExplorerProvider();
   const servicesProvider = new ServicesProvider();
   const agentProvider = new AgentActivityProvider();
 
-  // Register tree views
+  // Register tree views (Governance first - DX Spine priority)
+  vscode.window.registerTreeDataProvider('terrafusion.governance', governanceProvider);
   vscode.window.registerTreeDataProvider('terrafusion.explorer', workspaceProvider);
   vscode.window.registerTreeDataProvider('terrafusion.services', servicesProvider);
   vscode.window.registerTreeDataProvider('terrafusion.agents', agentProvider);
@@ -97,6 +100,32 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('terrafusion.aiTrace', async () => {
       const terminal = vscode.window.createTerminal('TerraFusion AI Trace');
       terminal.sendText('tdc ai trace --follow');
+      terminal.show();
+    }),
+
+    // Governance commands (DX Spine integration)
+    vscode.commands.registerCommand('terrafusion.refreshGovernance', () => {
+      governanceProvider.refresh();
+      vscode.window.showInformationMessage('TerraFusion: Governance Panel refreshed');
+    }),
+
+    vscode.commands.registerCommand('terrafusion.regenerateContextPack', async () => {
+      const terminal = vscode.window.createTerminal('TerraFusion Context Pack');
+      terminal.sendText('node tools/dx/context-pack/generate.mjs --generator vscode');
+      terminal.show();
+      // Refresh after a short delay to pick up new context
+      setTimeout(() => governanceProvider.refresh(), 2000);
+    }),
+
+    vscode.commands.registerCommand('terrafusion.doctor', async () => {
+      const terminal = vscode.window.createTerminal('TerraFusion Doctor');
+      terminal.sendText('tdc doctor');
+      terminal.show();
+    }),
+
+    vscode.commands.registerCommand('terrafusion.compliance', async () => {
+      const terminal = vscode.window.createTerminal('TerraFusion Compliance');
+      terminal.sendText('tdc compliance');
       terminal.show();
     })
   );

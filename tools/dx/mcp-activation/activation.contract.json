@@ -1,0 +1,131 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "version": "1.0",
+  "command": "tdc mcp activate",
+  "description": "Activates MCP servers with security gating and approval workflow",
+  "ownerLane": "ops",
+  "riskLevel": "write-safe",
+  "requiresConfirmation": true,
+  "auditRequired": true,
+
+  "input": {
+    "type": "object",
+    "required": ["serverId"],
+    "properties": {
+      "serverId": {
+        "type": "string",
+        "description": "MCP server identifier to activate",
+        "enum": [
+          "document-server",
+          "harris-pacs-connector",
+          "revenue-discovery-tools",
+          "property-assessment-suite",
+          "compliance-monitoring-kit"
+        ]
+      },
+      "scope": {
+        "type": "string",
+        "description": "Activation scope (development, staging, production)",
+        "enum": ["development", "staging", "production"],
+        "default": "development"
+      },
+      "expiresInDays": {
+        "type": "number",
+        "description": "Number of days until activation expires (0 = no expiration)",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 365
+      },
+      "justification": {
+        "type": "string",
+        "description": "Reason for activating this MCP server",
+        "minLength": 10
+      },
+      "approvedBy": {
+        "type": "string",
+        "description": "Email or identifier of approving authority"
+      },
+      "skipApproval": {
+        "type": "boolean",
+        "description": "Skip approval for read-only servers (document-server, compliance-monitoring-kit)",
+        "default": false
+      }
+    }
+  },
+
+  "output": {
+    "type": "object",
+    "required": ["success", "serverId", "status", "auditId"],
+    "properties": {
+      "success": {
+        "type": "boolean",
+        "description": "Whether activation succeeded"
+      },
+      "serverId": {
+        "type": "string",
+        "description": "The activated MCP server ID"
+      },
+      "status": {
+        "type": "string",
+        "enum": ["active", "pending-approval", "rejected", "error"],
+        "description": "Current activation status"
+      },
+      "approvalArtifact": {
+        "type": "object",
+        "description": "Generated approval record (see approval-schema.json)",
+        "properties": {
+          "toolId": { "type": "string" },
+          "approvedBy": { "type": "string" },
+          "approvalDate": { "type": "string", "format": "date-time" },
+          "riskLevel": { "type": "string" },
+          "scope": { "type": "string" },
+          "expiresAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "auditId": {
+        "type": "string",
+        "description": "Audit trail record identifier"
+      },
+      "contextPackUpdated": {
+        "type": "boolean",
+        "description": "Whether Context Pack was updated"
+      },
+      "nextActions": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Recommended next steps"
+      },
+      "warnings": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Security warnings or notes"
+      }
+    }
+  },
+
+  "securityPolicy": {
+    "readOnlyServers": [
+      "document-server",
+      "compliance-monitoring-kit"
+    ],
+    "requiresExplicitApproval": [
+      "harris-pacs-connector",
+      "revenue-discovery-tools",
+      "property-assessment-suite"
+    ],
+    "productionActivationRequires": [
+      "approvedBy field",
+      "justification minimum 50 characters",
+      "security review within 30 days"
+    ]
+  },
+
+  "goldenSnapshot": {
+    "location": "tools/dx/command-contracts/mcp-activate.golden.json",
+    "ignoreFields": [
+      "approvalArtifact.approvalDate",
+      "auditId",
+      "output.timestamp"
+    ]
+  }
+}

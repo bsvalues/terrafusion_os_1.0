@@ -1,0 +1,158 @@
+{
+  "$schema": "../context-pack/contract-schema.json",
+  "command": "agent",
+  "description": "AI agent operations and swarm management",
+  "aliases": {
+    "vscode": "TerraFusion: Agent",
+    "claude": "/agent",
+    "codex": "codex agent",
+    "tdc": "tdc agent"
+  },
+  "riskLevel": "read",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": true,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["status", "list", "health", "briefing", "command"],
+        "default": "status",
+        "description": "Agent operation to perform"
+      },
+      "tier": {
+        "type": "string",
+        "enum": ["coordinator", "field-general", "micro", "all"],
+        "default": "all",
+        "description": "Agent tier to query"
+      },
+      "agentId": {
+        "type": "string",
+        "description": "Specific agent ID (optional)"
+      },
+      "verbose": {
+        "type": "boolean",
+        "default": false,
+        "description": "Show detailed agent information"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["status", "swarmHealth", "agents", "summary"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["operational", "degraded", "offline"]
+      },
+      "swarmHealth": {
+        "type": "object",
+        "required": ["overall", "coordinationLatency", "activeAgents"],
+        "properties": {
+          "overall": { "type": "string", "enum": ["healthy", "degraded", "unhealthy"] },
+          "coordinationLatency": { "type": "number", "description": "Latency in milliseconds" },
+          "activeAgents": { "type": "integer" },
+          "totalAgents": { "type": "integer" },
+          "utilizationPercent": { "type": "number" }
+        }
+      },
+      "agents": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "name", "tier", "status"],
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "tier": { "type": "string", "enum": ["coordinator", "field-general", "micro"] },
+            "status": { "type": "string", "enum": ["active", "idle", "busy", "offline"] },
+            "uptime": { "type": "integer", "description": "Uptime in seconds" },
+            "tasksCompleted": { "type": "integer" },
+            "currentTask": { "type": "string" },
+            "capabilities": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      },
+      "summary": {
+        "type": "object",
+        "properties": {
+          "coordinator": { "type": "integer" },
+          "fieldGeneral": { "type": "integer" },
+          "micro": { "type": "integer" },
+          "total": { "type": "integer" },
+          "active": { "type": "integer" },
+          "idle": { "type": "integer" },
+          "busy": { "type": "integer" },
+          "offline": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "status": "operational",
+    "swarmHealth": {
+      "overall": "healthy",
+      "coordinationLatency": 42.5,
+      "activeAgents": 1008,
+      "totalAgents": 1008,
+      "utilizationPercent": 78.3
+    },
+    "agents": [
+      {
+        "id": "coordinator-001",
+        "name": "Swarm Coordinator Alpha",
+        "tier": "coordinator",
+        "status": "active",
+        "uptime": 864000,
+        "tasksCompleted": 15234,
+        "currentTask": "Coordinating field operations",
+        "capabilities": ["orchestration", "resource-allocation", "health-monitoring"]
+      },
+      {
+        "id": "field-general-042",
+        "name": "Field General - Property Analysis",
+        "tier": "field-general",
+        "status": "busy",
+        "uptime": 863800,
+        "tasksCompleted": 8912,
+        "currentTask": "Managing property assessment agents",
+        "capabilities": ["property-analysis", "tax-calculation", "compliance-check"]
+      },
+      {
+        "id": "micro-789",
+        "name": "Micro Agent - Data Validator",
+        "tier": "micro",
+        "status": "idle",
+        "uptime": 862400,
+        "tasksCompleted": 42567,
+        "currentTask": null,
+        "capabilities": ["data-validation", "schema-check", "quality-assurance"]
+      },
+      {
+        "id": "micro-790",
+        "name": "Micro Agent - Report Generator",
+        "tier": "micro",
+        "status": "active",
+        "uptime": 862400,
+        "tasksCompleted": 38921,
+        "currentTask": "Generating compliance report",
+        "capabilities": ["report-generation", "pdf-export", "data-aggregation"]
+      }
+    ],
+    "summary": {
+      "coordinator": 3,
+      "fieldGeneral": 126,
+      "micro": 879,
+      "total": 1008,
+      "active": 789,
+      "idle": 187,
+      "busy": 32,
+      "offline": 0
+    }
+  }
+}

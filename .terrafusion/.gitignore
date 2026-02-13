@@ -1,0 +1,8 @@
+# TerraFusion Runtime Artifacts
+# Context Pack files are machine-generated and session-specific
+
+context/
+violations.log
+
+# Keep directory structure
+!.gitignore

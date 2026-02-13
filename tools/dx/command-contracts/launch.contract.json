@@ -1,0 +1,126 @@
+{
+  "$schema": "../context-pack/contract-schema.json",
+  "command": "launch",
+  "description": "Service launcher for TerraFusion OS microservices",
+  "aliases": {
+    "vscode": "TerraFusion: Launch",
+    "claude": "/launch",
+    "codex": "codex launch",
+    "tdc": "tdc launch"
+  },
+  "riskLevel": "write-safe",
+  "ownerLane": "ops",
+  "requiresConfirmation": true,
+  "auditRequired": true,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "services": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["kernel", "shell", "consciousness", "frontend", "all"]
+        },
+        "default": ["all"],
+        "description": "Services to launch"
+      },
+      "mode": {
+        "type": "string",
+        "enum": ["dev", "production"],
+        "default": "dev",
+        "description": "Launch mode"
+      },
+      "autostart": {
+        "type": "boolean",
+        "default": true,
+        "description": "Auto-start services marked with autostart=true"
+      },
+      "wait": {
+        "type": "boolean",
+        "default": true,
+        "description": "Wait for services to be ready"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["status", "services", "summary"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["running", "partial", "failed"]
+      },
+      "services": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "status", "port", "pid"],
+          "properties": {
+            "name": { "type": "string" },
+            "status": { "type": "string", "enum": ["running", "starting", "stopped", "failed"] },
+            "port": { "type": "integer" },
+            "pid": { "type": "integer" },
+            "healthCheck": { "type": "string", "enum": ["healthy", "unhealthy", "unknown"] },
+            "startTime": { "type": "string", "format": "date-time" },
+            "error": { "type": "string" }
+          }
+        }
+      },
+      "summary": {
+        "type": "object",
+        "properties": {
+          "running": { "type": "integer" },
+          "starting": { "type": "integer" },
+          "stopped": { "type": "integer" },
+          "failed": { "type": "integer" },
+          "total": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "status": "running",
+    "services": [
+      {
+        "name": "TerraFusion.API (Kernel)",
+        "status": "running",
+        "port": 5000,
+        "pid": 12345,
+        "healthCheck": "healthy",
+        "startTime": "2026-02-13T10:30:00Z"
+      },
+      {
+        "name": "TerraFusion.Gateway (Shell)",
+        "status": "running",
+        "port": 3002,
+        "pid": 12346,
+        "healthCheck": "healthy",
+        "startTime": "2026-02-13T10:30:02Z"
+      },
+      {
+        "name": "TerraFusion.Consciousness",
+        "status": "running",
+        "port": 3004,
+        "pid": 12347,
+        "healthCheck": "healthy",
+        "startTime": "2026-02-13T10:30:04Z"
+      },
+      {
+        "name": "Frontend (Vite)",
+        "status": "running",
+        "port": 3000,
+        "pid": 12348,
+        "healthCheck": "healthy",
+        "startTime": "2026-02-13T10:30:06Z"
+      }
+    ],
+    "summary": {
+      "running": 4,
+      "starting": 0,
+      "stopped": 0,
+      "failed": 0,
+      "total": 4
+    }
+  }
+}
