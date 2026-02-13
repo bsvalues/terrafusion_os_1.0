@@ -106,14 +106,27 @@
       "contract": "tools/dx/skills/tf-county-deployment/contract.json",
       "tags": ["county", "deployment", "onboarding", "pacs", "migration", "government"],
       "dependencies": []
+    },
+    {
+      "id": "tf-test-harness",
+      "name": "Test Orchestration Harness",
+      "version": "1.0.0",
+      "description": "Comprehensive testing architecture for TerraFusion OS orchestrating 716+ tests",
+      "ownerLane": "dev",
+      "riskLevel": "read",
+      "status": "active",
+      "path": "tools/dx/skills/tf-test-harness",
+      "contract": "tools/dx/skills/tf-test-harness/contract.json",
+      "tags": ["testing", "quality", "ci", "coverage", "orchestration", "government"],
+      "dependencies": []
     }
   ],
   "metadata": {
-    "totalSkills": 8,
-    "activeSkills": 8,
+    "totalSkills": 9,
+    "activeSkills": 9,
     "lanes": {
       "governance": 2,
-      "dev": 3,
+      "dev": 4,
       "security": 1,
       "data": 1,
       "ops": 1

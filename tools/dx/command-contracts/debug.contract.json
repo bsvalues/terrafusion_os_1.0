@@ -1,0 +1,53 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "command": "debug",
+  "description": "TerraFusion debugging utilities and diagnostics",
+  "aliases": {
+    "vscode": "TerraFusion: Debug",
+    "claude": "/debug",
+    "codex": "codex debug",
+    "tdc": "tdc debug"
+  },
+  "riskLevel": "read",
+  "ownerLane": "ops",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["health-check", "workspace-doctor"],
+        "default": "health-check",
+        "description": "Debug operation to perform"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["success", "failed", "warning"]
+      },
+      "action": {
+        "type": "string"
+      },
+      "output": {
+        "type": "string",
+        "description": "Output from the diagnostic script"
+      },
+      "errors": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "status": "success",
+    "action": "health-check",
+    "output": "✅ Backend services running\n✅ Database accessible\n✅ API responding",
+    "errors": []
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "../../schemas/skill-contract-v1.json",
+  "skill": "tf-test-harness",
+  "version": "1.0.0",
+  "description": "Test Orchestration Harness - comprehensive testing architecture for TerraFusion OS",
+  "ownerLane": "dev",
+  "riskLevel": "read",
+  "capabilities": [
+    "test-orchestration",
+    "coverage-reporting",
+    "compliance-tagging",
+    "self-healing-tests",
+    "evidence-pack-integration",
+    "government-test-requirements"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "scope": {
+        "type": "string",
+        "enum": ["all", "backend", "frontend", "e2e", "spine", "governance"],
+        "default": "all"
+      },
+      "filter": {
+        "type": "string",
+        "description": "Test name or tag filter"
+      },
+      "coverage": {
+        "type": "boolean",
+        "default": false,
+        "description": "Include coverage collection"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["total", "passed", "failed", "passRate"],
+    "properties": {
+      "total": { "type": "integer" },
+      "passed": { "type": "integer" },
+      "failed": { "type": "integer" },
+      "skipped": { "type": "integer" },
+      "passRate": { "type": "number" },
+      "duration": { "type": "number", "description": "Total duration in ms" },
+      "suites": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "total": { "type": "integer" },
+            "passed": { "type": "integer" },
+            "failed": { "type": "integer" }
+          }
+        }
+      },
+      "coverage": {
+        "type": "object",
+        "properties": {
+          "line": { "type": "number" },
+          "branch": { "type": "number" },
+          "function": { "type": "number" },
+          "meetsThreshold": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

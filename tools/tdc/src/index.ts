@@ -3,6 +3,7 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { aiCommand } from './commands/ai';
+import { auditCommand } from './commands/audit';
 import { complianceCommand } from './commands/compliance';
 import { countyCommand } from './commands/county';
 import { debugCommand } from './commands/debug';
@@ -38,6 +39,7 @@ program.addCommand(workspaceCommand);
 program.addCommand(debugCommand);
 program.addCommand(doctorCommand);
 program.addCommand(aiCommand);
+program.addCommand(auditCommand);
 program.addCommand(complianceCommand);
 program.addCommand(countyCommand);
 program.addCommand(evidenceCommand);

@@ -1,0 +1,106 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "command": "status",
+  "description": "Check TerraFusion OS system status and health",
+  "aliases": {
+    "vscode": "TerraFusion: System Status",
+    "claude": "/status",
+    "codex": "codex status",
+    "tdc": "tdc status"
+  },
+  "riskLevel": "read",
+  "ownerLane": "ops",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "json": {
+        "type": "boolean",
+        "default": false,
+        "description": "Output as JSON"
+      },
+      "verbose": {
+        "type": "boolean",
+        "default": false,
+        "description": "Detailed health information"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["timestamp", "services", "overall"],
+    "properties": {
+      "timestamp": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "services": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "url", "status"],
+          "properties": {
+            "name": { "type": "string" },
+            "url": { "type": "string" },
+            "status": {
+              "type": "string",
+              "enum": ["healthy", "unhealthy", "unknown"]
+            },
+            "responseTime": {
+              "type": "integer",
+              "description": "Response time in milliseconds"
+            },
+            "error": {
+              "type": "string",
+              "description": "Error message if unhealthy"
+            }
+          }
+        }
+      },
+      "overall": {
+        "type": "string",
+        "enum": ["healthy", "degraded", "down"]
+      },
+      "healthyCount": {
+        "type": "integer"
+      },
+      "totalCount": {
+        "type": "integer"
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "timestamp": "2026-02-13T12:00:00Z",
+    "services": [
+      {
+        "name": "API (Kernel)",
+        "url": "http://localhost:5000/health",
+        "status": "healthy",
+        "responseTime": 45
+      },
+      {
+        "name": "Gateway (Shell)",
+        "url": "http://localhost:3002/health",
+        "status": "healthy",
+        "responseTime": 32
+      },
+      {
+        "name": "Consciousness",
+        "url": "http://localhost:3004/health",
+        "status": "healthy",
+        "responseTime": 51
+      },
+      {
+        "name": "Frontend",
+        "url": "http://localhost:3000",
+        "status": "healthy",
+        "responseTime": 28
+      }
+    ],
+    "overall": "healthy",
+    "healthyCount": 4,
+    "totalCount": 4
+  }
+}

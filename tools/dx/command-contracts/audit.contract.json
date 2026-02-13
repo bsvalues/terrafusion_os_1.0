@@ -1,0 +1,123 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "command": "audit",
+  "description": "Governance audit trail browsing and analysis",
+  "aliases": {
+    "vscode": "TerraFusion: Audit Trail",
+    "claude": "/audit",
+    "codex": "codex audit",
+    "tdc": "tdc audit"
+  },
+  "riskLevel": "read",
+  "ownerLane": "governance",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["tail", "stats"],
+        "default": "tail",
+        "description": "Audit trail operation"
+      },
+      "lines": {
+        "type": "integer",
+        "default": 10,
+        "description": "Number of entries to show (tail action)"
+      },
+      "event": {
+        "type": "string",
+        "description": "Filter by event type"
+      },
+      "actor": {
+        "type": "string",
+        "description": "Filter by actor"
+      },
+      "json": {
+        "type": "boolean",
+        "default": false,
+        "description": "Output as JSON"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "entries": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "auditId": { "type": "string" },
+            "timestamp": { "type": "string" },
+            "event": { "type": "string" },
+            "actor": { "type": "string" },
+            "serverId": { "type": "string" },
+            "scope": { "type": "string" },
+            "riskLevel": {
+              "type": "string",
+              "enum": ["read", "write-safe", "write-local", "write-remote", "write-production", "destructive"]
+            },
+            "approvalArtifact": { "type": "string" }
+          }
+        }
+      },
+      "totalEntries": { "type": "integer" },
+      "dateRange": {
+        "type": "object",
+        "properties": {
+          "first": { "type": "string" },
+          "last": { "type": "string" }
+        }
+      },
+      "stats": {
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" }
+          },
+          "actors": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" }
+          },
+          "riskLevels": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" }
+          }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "entries": [
+      {
+        "auditId": "audit-001",
+        "timestamp": "2026-02-13T10:00:00Z",
+        "event": "mcp-server-activated",
+        "actor": "coach@terrafusion.dev",
+        "serverId": "filesystem",
+        "scope": "workspace",
+        "riskLevel": "write-remote",
+        "approvalArtifact": null
+      },
+      {
+        "auditId": "audit-002",
+        "timestamp": "2026-02-13T10:05:00Z",
+        "event": "security-posture-check",
+        "actor": "system",
+        "serverId": null,
+        "scope": "global",
+        "riskLevel": "read",
+        "approvalArtifact": null
+      }
+    ],
+    "totalEntries": 2,
+    "dateRange": {
+      "first": "2026-02-13T10:00:00Z",
+      "last": "2026-02-13T10:05:00Z"
+    }
+  }
+}

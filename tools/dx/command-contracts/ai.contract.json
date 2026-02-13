@@ -1,0 +1,85 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "command": "ai",
+  "description": "AI companion management and activation",
+  "aliases": {
+    "vscode": "TerraFusion: AI Companions",
+    "claude": "/ai",
+    "codex": "codex ai",
+    "tdc": "tdc ai"
+  },
+  "riskLevel": "read",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["status", "activate"],
+        "default": "status",
+        "description": "AI companion operation"
+      },
+      "companion": {
+        "type": "string",
+        "enum": ["navigator", "surgeon", "scribe", "supreme-commander"],
+        "description": "AI companion to activate"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "companions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "status": {
+              "type": "string",
+              "enum": ["active", "standby"]
+            }
+          }
+        }
+      },
+      "activated": {
+        "type": ["string", "null"],
+        "description": "Name of activated companion (if activate action)"
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "companions": [
+      {
+        "id": "navigator",
+        "name": "TerraFusion Navigator",
+        "description": "Workspace discovery and codebase exploration",
+        "status": "active"
+      },
+      {
+        "id": "surgeon",
+        "name": "TerraFusion Surgeon",
+        "description": "Precision code editing and refactoring",
+        "status": "active"
+      },
+      {
+        "id": "scribe",
+        "name": "TerraFusion Scribe",
+        "description": "Documentation generation and maintenance",
+        "status": "active"
+      },
+      {
+        "id": "supreme-commander",
+        "name": "Supreme Commander Claude",
+        "description": "50,000+ AI agent swarm orchestration",
+        "status": "standby"
+      }
+    ],
+    "activated": null
+  }
+}

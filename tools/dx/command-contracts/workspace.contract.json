@@ -1,0 +1,111 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "command": "workspace",
+  "description": "Manage VS Code workspaces for TerraFusion development",
+  "aliases": {
+    "vscode": "TerraFusion: Workspace Manager",
+    "claude": "/workspace",
+    "codex": "codex workspace",
+    "tdc": "tdc workspace"
+  },
+  "riskLevel": "write-safe",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["list", "open"],
+        "default": "list",
+        "description": "Workspace operation"
+      },
+      "workspace": {
+        "type": "string",
+        "enum": [
+          "master",
+          "backend",
+          "frontend",
+          "sdk",
+          "terrabuild-modernization",
+          "government-edition",
+          "consciousness",
+          "security"
+        ],
+        "description": "Workspace name to open"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "workspaces": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "path": { "type": "string" }
+          }
+        }
+      },
+      "opened": {
+        "type": ["string", "null"],
+        "description": "Name of opened workspace (if open action)"
+      },
+      "status": {
+        "type": "string",
+        "enum": ["success", "failed"]
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "workspaces": [
+      {
+        "name": "master",
+        "description": "Complete TerraFusion OS (all folders)",
+        "path": "workspaces/master.code-workspace"
+      },
+      {
+        "name": "backend",
+        "description": ".NET 8 microservices development",
+        "path": "workspaces/backend.code-workspace"
+      },
+      {
+        "name": "frontend",
+        "description": "React 18 + Quantum UI development",
+        "path": "workspaces/frontend.code-workspace"
+      },
+      {
+        "name": "sdk",
+        "description": "Module and plugin development",
+        "path": "workspaces/sdk.code-workspace"
+      },
+      {
+        "name": "terrabuild-modernization",
+        "description": "Property assessment system",
+        "path": "workspaces/terrabuild-modernization.code-workspace"
+      },
+      {
+        "name": "government-edition",
+        "description": "Government application suite",
+        "path": "workspaces/government-edition.code-workspace"
+      },
+      {
+        "name": "consciousness",
+        "description": "AI agent swarm coordination",
+        "path": "workspaces/consciousness.code-workspace"
+      },
+      {
+        "name": "security",
+        "description": "FISMA-High security focus",
+        "path": "workspaces/security.code-workspace"
+      }
+    ],
+    "opened": null,
+    "status": "success"
+  }
+}
