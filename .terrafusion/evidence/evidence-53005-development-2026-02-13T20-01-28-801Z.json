@@ -1,0 +1,23 @@
+{
+  "id": "evidence-53005-development-2026-02-13T20-01-28-801Z",
+  "type": "county-deployment",
+  "packName": "benton-pack-v1.0",
+  "countyName": "Benton County",
+  "fipsCode": "53005",
+  "environment": "development",
+  "createdAt": "2026-02-13T20:01:28.802Z",
+  "artifacts": {
+    "deploymentManifest": ".terrafusion\\manifests\\county-deploy-53005-development-2026-02-13T20-01-28-801Z.json",
+    "mergedConfig": ".terrafusion\\manifests\\county-merged-53005-development-2026-02-13T20-01-28-801Z.json",
+    "schema": "schemas\\properties.sql",
+    "seedData": "seeds\\sample-parcels.json"
+  },
+  "checksums": {
+    "baseConfig": "3b34bf4270940f2d60d5cd89f749c48f5c237828169463f84be4b2c2186151cc",
+    "environmentOverride": "2b3f9a3c0acbd4a80de08f17ff1e95e26afd23f596f01545cb792a2ec8de706e",
+    "mergedConfig": "b764852ebfc8508999f79a0596e44b3fe34b190612d72d830979c85939401721",
+    "schema": "d780741c20dc0555daceed80f9254e2829b0552e9a2bbd01e3a87cae2bb48f7f",
+    "seedData": "0e685a60324c2c83582805fd618f8a4c523b24e17eb10a3384885384d8930449"
+  },
+  "status": "dry-run"
+}

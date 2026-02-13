@@ -1,0 +1,67 @@
+[
+  {
+    "parcel_number": "1-2345-678",
+    "address": "1234 Legacy Blvd, Richland, WA 99352",
+    "owner_name": "Sample Residential LLC",
+    "assessed_value": 385000.0,
+    "land_value": 125000.0,
+    "improvement_value": 260000.0,
+    "land_use": "Single Family Residential",
+    "square_footage": 2150,
+    "year_built": 2018,
+    "latitude": 46.2856,
+    "longitude": -119.2844
+  },
+  {
+    "parcel_number": "2-6789-012",
+    "address": "5678 Commerce Way, Kennewick, WA 99336",
+    "owner_name": "TerraFusion Commercial Properties Inc",
+    "assessed_value": 1250000.0,
+    "land_value": 450000.0,
+    "improvement_value": 800000.0,
+    "land_use": "Commercial Retail",
+    "square_footage": 8500,
+    "year_built": 2015,
+    "latitude": 46.2112,
+    "longitude": -119.1372
+  },
+  {
+    "parcel_number": "3-4567-890",
+    "address": "23450 Rural Route 12, Rural Benton County, WA 99349",
+    "owner_name": "Harvest Valley Farms LLC",
+    "assessed_value": 215000.0,
+    "land_value": 195000.0,
+    "improvement_value": 20000.0,
+    "land_use": "Agricultural",
+    "square_footage": null,
+    "year_built": 1975,
+    "latitude": 46.4523,
+    "longitude": -119.5678
+  },
+  {
+    "parcel_number": "4-8901-234",
+    "address": "3456 Sunset Ridge, West Richland, WA 99353",
+    "owner_name": "Mountain View Apartments LLC",
+    "assessed_value": 520000.0,
+    "land_value": 180000.0,
+    "improvement_value": 340000.0,
+    "land_use": "Multi-Family Residential",
+    "square_footage": 6400,
+    "year_built": 2010,
+    "latitude": 46.3045,
+    "longitude": -119.3613
+  },
+  {
+    "parcel_number": "5-5678-901",
+    "address": "7890 Industrial Park Dr, Richland, WA 99354",
+    "owner_name": "Columbia Basin Manufacturing Corp",
+    "assessed_value": 875000.0,
+    "land_value": 275000.0,
+    "improvement_value": 600000.0,
+    "land_use": "Industrial/Manufacturing",
+    "square_footage": 12000,
+    "year_built": 2012,
+    "latitude": 46.2789,
+    "longitude": -119.2456
+  }
+]

@@ -75,24 +75,12 @@ const DANGEROUS_KEYWORDS = [
 /**
  * DDL keywords (schema modification)
  */
-const DDL_KEYWORDS = [
-  'CREATE',
-  'ALTER',
-  'DROP',
-  'TRUNCATE',
-  'GRANT',
-  'REVOKE',
-];
+const DDL_KEYWORDS = ['CREATE', 'ALTER', 'DROP', 'TRUNCATE', 'GRANT', 'REVOKE'];
 
 /**
  * Write keywords (data modification)
  */
-const WRITE_KEYWORDS = [
-  'INSERT',
-  'UPDATE',
-  'DELETE',
-  'MERGE',
-];
+const WRITE_KEYWORDS = ['INSERT', 'UPDATE', 'DELETE', 'MERGE'];
 
 /**
  * Normalize query for deterministic hashing
@@ -124,11 +112,11 @@ function detectStatementType(normalized: string): 'select' | 'write' | 'ddl' | '
     return 'select';
   }
 
-  if (WRITE_KEYWORDS.some((kw) => upper.includes(kw))) {
+  if (WRITE_KEYWORDS.some(kw => upper.includes(kw))) {
     return 'write';
   }
 
-  if (DDL_KEYWORDS.some((kw) => upper.includes(kw))) {
+  if (DDL_KEYWORDS.some(kw => upper.includes(kw))) {
     return 'ddl';
   }
 
@@ -257,9 +245,10 @@ export async function validateQuery(
 
   // 6. Enforce row limit
   const existingLimit = extractRowLimit(sql);
-  const effectiveRowLimit = existingLimit && existingLimit <= DEFAULT_LIMITS.rowLimit
-    ? existingLimit
-    : DEFAULT_LIMITS.rowLimit;
+  const effectiveRowLimit =
+    existingLimit && existingLimit <= DEFAULT_LIMITS.rowLimit
+      ? existingLimit
+      : DEFAULT_LIMITS.rowLimit;
   const limitEnforced = !existingLimit; // True if we had to inject LIMIT
 
   // Success: Valid query

@@ -12,10 +12,10 @@
  * TDD Note: These tests will FAIL until postgis-policy.ts is implemented.
  */
 
-import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { dirname, join } from 'node:path';
+import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -46,7 +46,7 @@ try {
 }
 
 describe('Phase 12A - MCP PostGIS Policy (Read-Only Enforcement)', () => {
-  test('rejects INSERT in read mode', async (t) => {
+  test('rejects INSERT in read mode', async t => {
     const fixture = loadFixture('invalid-insert.json');
 
     try {
@@ -57,7 +57,7 @@ describe('Phase 12A - MCP PostGIS Policy (Read-Only Enforcement)', () => {
     }
   });
 
-  test('blocks multi-statement queries (semicolon injection)', async (t) => {
+  test('blocks multi-statement queries (semicolon injection)', async t => {
     const fixture = loadFixture('invalid-multi-statement.json');
 
     try {
@@ -68,7 +68,7 @@ describe('Phase 12A - MCP PostGIS Policy (Read-Only Enforcement)', () => {
     }
   });
 
-  test('rejects DDL operations (CREATE TABLE)', async (t) => {
+  test('rejects DDL operations (CREATE TABLE)', async t => {
     const fixture = loadFixture('invalid-ddl.json');
 
     try {
@@ -79,7 +79,7 @@ describe('Phase 12A - MCP PostGIS Policy (Read-Only Enforcement)', () => {
     }
   });
 
-  test('rejects dangerous keywords (COPY, pg_read_file)', async (t) => {
+  test('rejects dangerous keywords (COPY, pg_read_file)', async t => {
     const fixture = loadFixture('invalid-dangerous-keyword.json');
 
     try {
@@ -92,7 +92,7 @@ describe('Phase 12A - MCP PostGIS Policy (Read-Only Enforcement)', () => {
 });
 
 describe('Phase 12A - MCP PostGIS Policy (Parameterization)', () => {
-  test('requires parameterized inputs (no string literals in WHERE)', async (t) => {
+  test('requires parameterized inputs (no string literals in WHERE)', async t => {
     const fixture = loadFixture('invalid-missing-params.json');
 
     try {
@@ -103,7 +103,7 @@ describe('Phase 12A - MCP PostGIS Policy (Parameterization)', () => {
     }
   });
 
-  test('allows valid parameterized SELECT with $1, $2 placeholders', async (t) => {
+  test('allows valid parameterized SELECT with $1, $2 placeholders', async t => {
     const fixture = loadFixture('valid-select-with-where.json');
 
     const result = await validateQuery(fixture.query, fixture.params, fixture.mode);
@@ -113,7 +113,7 @@ describe('Phase 12A - MCP PostGIS Policy (Parameterization)', () => {
 });
 
 describe('Phase 12A - MCP PostGIS Policy (Query Normalization)', () => {
-  test('normalizes queries for deterministic hashing', async (t) => {
+  test('normalizes queries for deterministic hashing', async t => {
     const fixture = loadFixture('valid-simple-select.json');
 
     const normalized = normalizeQuery(fixture.query);
@@ -122,7 +122,7 @@ describe('Phase 12A - MCP PostGIS Policy (Query Normalization)', () => {
     assert.strictEqual(normalized, fixture.expectedNormalized);
   });
 
-  test('normalization is idempotent (double normalization = same result)', async (t) => {
+  test('normalization is idempotent (double normalization = same result)', async t => {
     const fixture = loadFixture('valid-select-join.json');
 
     const normalized1 = normalizeQuery(fixture.query);
@@ -133,7 +133,7 @@ describe('Phase 12A - MCP PostGIS Policy (Query Normalization)', () => {
 });
 
 describe('Phase 12A - MCP PostGIS Policy (Limits Enforcement)', () => {
-  test('enforces default row limit if not specified', async (t) => {
+  test('enforces default row limit if not specified', async t => {
     const query = 'SELECT * FROM properties WHERE county_id = $1';
     const params = ['53005'];
 
@@ -144,7 +144,7 @@ describe('Phase 12A - MCP PostGIS Policy (Limits Enforcement)', () => {
     assert.ok(result.effectiveRowLimit > 0);
   });
 
-  test('respects explicit LIMIT if lower than default', async (t) => {
+  test('respects explicit LIMIT if lower than default', async t => {
     const fixture = loadFixture('valid-select-with-limit.json');
 
     const result = await validateQuery(fixture.query, fixture.params, fixture.mode);
@@ -155,7 +155,7 @@ describe('Phase 12A - MCP PostGIS Policy (Limits Enforcement)', () => {
 });
 
 describe('Phase 12A - MCP PostGIS Policy (Trace PII Redaction)', () => {
-  test('redacts sensitive fields in trace payload', async (t) => {
+  test('redacts sensitive fields in trace payload', async t => {
     const fixture = loadFixture('valid-simple-select.json');
 
     const result = await validateQuery(fixture.query, fixture.params, fixture.mode);
@@ -170,7 +170,7 @@ describe('Phase 12A - MCP PostGIS Policy (Trace PII Redaction)', () => {
 });
 
 describe('Phase 12A - MCP PostGIS Policy Regression Guards', () => {
-  test('postgis-policy.ts compiles without TypeScript errors', async (t) => {
+  test('postgis-policy.ts compiles without TypeScript errors', async t => {
     const { execSync } = await import('node:child_process');
 
     try {
@@ -188,7 +188,7 @@ describe('Phase 12A - MCP PostGIS Policy Regression Guards', () => {
     }
   });
 
-  test('postgis-policy.ts exports required functions', async (t) => {
+  test('postgis-policy.ts exports required functions', async t => {
     try {
       const policyModule = await import('../../../os-platform/core/pilot/mcp/postgis-policy.mjs');
 

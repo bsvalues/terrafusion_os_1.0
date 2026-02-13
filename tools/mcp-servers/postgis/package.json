@@ -1,0 +1,49 @@
+{
+  "name": "@terrafusion/mcp-postgis-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for TerraFusion PostGIS geospatial queries",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "tf-mcp-postgis": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "clean": "rimraf dist",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest"
+  },
+  "keywords": [
+    "mcp",
+    "postgis",
+    "geospatial",
+    "terrafusion",
+    "model-context-protocol"
+  ],
+  "author": "TerraFusion OS Team",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "pg": "^8.11.3",
+    "geojson": "^0.5.0",
+    "dotenv": "^16.4.5",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/pg": "^8.10.9",
+    "@types/geojson": "^7946.0.13",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

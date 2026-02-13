@@ -1,0 +1,40 @@
+{
+  "countyName": "Benton County",
+  "fipsCode": "53005",
+  "state": "WA",
+  "timezone": "America/Los_Angeles",
+  "population": 206873,
+  "features": [
+    "property-assessment",
+    "tax-calculation",
+    "harris-pacs-integration",
+    "gis-visualization",
+    "citizen-portal",
+    "payment-processing"
+  ],
+  "integrations": {
+    "erpSystem": "Tyler Technologies Vision",
+    "gisProvider": "Esri ArcGIS Enterprise",
+    "pacsVersion": "Harris PACS 9.0 (Dev Instance)",
+    "paymentGateway": "Stripe Test Mode"
+  },
+  "customFields": {
+    "countyWebsite": "https://www.bentoncountywa.gov",
+    "treasurerEmail": "treasurer@co.benton.wa.us",
+    "assessorEmail": "assessor@co.benton.wa.us",
+    "itDepartmentEmail": "it@co.benton.wa.us",
+    "emergencyContact": "+1-509-736-3000",
+    "officeAddress": "620 Market St, Prosser, WA 99350",
+    "businessHours": "Monday-Friday 8:00 AM - 5:00 PM PST",
+    "debugMode": true,
+    "logLevel": "verbose",
+    "devServer": "https://dev.benton.terrafusion.local"
+  },
+  "deployment": {
+    "environment": "development",
+    "parcelCount": 100,
+    "syncFrequency": "1h",
+    "backupRetention": "7d",
+    "highAvailability": false
+  }
+}

@@ -10,17 +10,26 @@
  * TDD Note: These tests will FAIL until mcp-postgis.contract.json is created.
  */
 
-import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { describe, test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const contractPath = join(__dirname, '..', '..', '..', 'tools', 'registry', 'contracts', 'mcp-postgis.contract.json');
+const contractPath = join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'tools',
+  'registry',
+  'contracts',
+  'mcp-postgis.contract.json'
+);
 
 // Helper: Load contract
 function loadContract() {
@@ -39,37 +48,37 @@ function calculateContractHash(contract) {
 }
 
 describe('Phase 12A - MCP PostGIS Contract (Tool Allowlist)', () => {
-  test('contract declares mcp-postgis-query tool', async (t) => {
+  test('contract declares mcp-postgis-query tool', async t => {
     const contract = loadContract();
 
     assert.ok(contract.tools);
     assert.ok(Array.isArray(contract.tools));
 
-    const postgisQuery = contract.tools.find((tool) => tool.name === 'mcp-postgis-query');
+    const postgisQuery = contract.tools.find(tool => tool.name === 'mcp-postgis-query');
     assert.ok(postgisQuery, 'mcp-postgis-query tool not found in contract');
   });
 
-  test('mcp-postgis-query declares read risk as default', async (t) => {
+  test('mcp-postgis-query declares read risk as default', async t => {
     const contract = loadContract();
 
-    const postgisQuery = contract.tools.find((tool) => tool.name === 'mcp-postgis-query');
+    const postgisQuery = contract.tools.find(tool => tool.name === 'mcp-postgis-query');
 
     assert.strictEqual(postgisQuery.defaultRisk, 'read');
   });
 
-  test('mcp-postgis-query requires ownerLane field', async (t) => {
+  test('mcp-postgis-query requires ownerLane field', async t => {
     const contract = loadContract();
 
-    const postgisQuery = contract.tools.find((tool) => tool.name === 'mcp-postgis-query');
+    const postgisQuery = contract.tools.find(tool => tool.name === 'mcp-postgis-query');
 
     assert.ok(postgisQuery.requiredFields);
     assert.ok(postgisQuery.requiredFields.includes('ownerLane'));
   });
 
-  test('mcp-postgis-query requires county and environment context', async (t) => {
+  test('mcp-postgis-query requires county and environment context', async t => {
     const contract = loadContract();
 
-    const postgisQuery = contract.tools.find((tool) => tool.name === 'mcp-postgis-query');
+    const postgisQuery = contract.tools.find(tool => tool.name === 'mcp-postgis-query');
 
     assert.ok(postgisQuery.requiredFields.includes('county'));
     assert.ok(postgisQuery.requiredFields.includes('environment'));
@@ -77,7 +86,7 @@ describe('Phase 12A - MCP PostGIS Contract (Tool Allowlist)', () => {
 });
 
 describe('Phase 12A - MCP PostGIS Contract (Risk Levels)', () => {
-  test('contract defines risk levels (read, write, ddl)', async (t) => {
+  test('contract defines risk levels (read, write, ddl)', async t => {
     const contract = loadContract();
 
     assert.ok(contract.riskLevels);
@@ -86,7 +95,7 @@ describe('Phase 12A - MCP PostGIS Contract (Risk Levels)', () => {
     assert.ok(contract.riskLevels.ddl);
   });
 
-  test('read risk allows SELECT only', async (t) => {
+  test('read risk allows SELECT only', async t => {
     const contract = loadContract();
 
     const readRisk = contract.riskLevels.read;
@@ -98,7 +107,7 @@ describe('Phase 12A - MCP PostGIS Contract (Risk Levels)', () => {
     assert.ok(!readRisk.allowedStatements.includes('DELETE'));
   });
 
-  test('write risk requires supervisor approval', async (t) => {
+  test('write risk requires supervisor approval', async t => {
     const contract = loadContract();
 
     const writeRisk = contract.riskLevels.write;
@@ -108,34 +117,34 @@ describe('Phase 12A - MCP PostGIS Contract (Risk Levels)', () => {
 });
 
 describe('Phase 12A - MCP PostGIS Contract (Limits)', () => {
-  test('contract declares default row limit', async (t) => {
+  test('contract declares default row limit', async t => {
     const contract = loadContract();
 
-    const postgisQuery = contract.tools.find((tool) => tool.name === 'mcp-postgis-query');
+    const postgisQuery = contract.tools.find(tool => tool.name === 'mcp-postgis-query');
 
     assert.ok(postgisQuery.limits);
     assert.ok(postgisQuery.limits.defaultRowLimit > 0);
   });
 
-  test('contract declares statement timeout', async (t) => {
+  test('contract declares statement timeout', async t => {
     const contract = loadContract();
 
-    const postgisQuery = contract.tools.find((tool) => tool.name === 'mcp-postgis-query');
+    const postgisQuery = contract.tools.find(tool => tool.name === 'mcp-postgis-query');
 
     assert.ok(postgisQuery.limits.statementTimeoutMs > 0);
   });
 
-  test('contract declares max result bytes', async (t) => {
+  test('contract declares max result bytes', async t => {
     const contract = loadContract();
 
-    const postgisQuery = contract.tools.find((tool) => tool.name === 'mcp-postgis-query');
+    const postgisQuery = contract.tools.find(tool => tool.name === 'mcp-postgis-query');
 
     assert.ok(postgisQuery.limits.maxResultBytes > 0);
   });
 });
 
 describe('Phase 12A - MCP PostGIS Contract (Drift Detection)', () => {
-  test('contract hash matches expected manifest hash', async (t) => {
+  test('contract hash matches expected manifest hash', async t => {
     const contract = loadContract();
 
     const currentHash = calculateContractHash(contract);
@@ -153,7 +162,7 @@ describe('Phase 12A - MCP PostGIS Contract (Drift Detection)', () => {
     }
   });
 
-  test('contract version is declared', async (t) => {
+  test('contract version is declared', async t => {
     const contract = loadContract();
 
     assert.ok(contract.version);
@@ -162,7 +171,7 @@ describe('Phase 12A - MCP PostGIS Contract (Drift Detection)', () => {
 });
 
 describe('Phase 12A - MCP PostGIS Contract Regression Guards', () => {
-  test('contract is valid JSON', async (t) => {
+  test('contract is valid JSON', async t => {
     try {
       loadContract();
     } catch (err) {
@@ -170,7 +179,7 @@ describe('Phase 12A - MCP PostGIS Contract Regression Guards', () => {
     }
   });
 
-  test('contract has no hardcoded connection strings', async (t) => {
+  test('contract has no hardcoded connection strings', async t => {
     const contract = loadContract();
 
     const contractString = JSON.stringify(contract);

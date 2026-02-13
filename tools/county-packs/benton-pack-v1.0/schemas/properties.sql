@@ -1,0 +1,78 @@
+-- ============================================================================
+-- Benton County Property Schema (STUB)
+-- TerraFusion OS County Pack v1.0
+-- ============================================================================
+--
+-- This is a STUB schema for demonstration purposes only.
+-- Production deployment uses TerraFusion.Data Entity Framework Core models.
+--
+-- DO NOT run this SQL directly in production.
+-- Use Entity Framework migrations: dotnet ef database update
+--
+-- ============================================================================
+
+-- Properties Table
+-- Stores property parcel data for Benton County (FIPS 53005)
+-- Production: 89,247 parcels
+
+-- CREATE TABLE IF NOT EXISTS Properties (
+--     id INTEGER PRIMARY KEY AUTOINCREMENT,
+--     county_id INTEGER NOT NULL,
+--     parcel_number VARCHAR(50) NOT NULL,
+--     address TEXT NOT NULL,
+--     owner_name TEXT,
+--     assessed_value DECIMAL(15, 2),
+--     land_value DECIMAL(15, 2),
+--     improvement_value DECIMAL(15, 2),
+--     land_use VARCHAR(100),
+--     square_footage INTEGER,
+--     year_built INTEGER,
+--     
+--     -- Geospatial data
+--     latitude DECIMAL(10, 7),
+--     longitude DECIMAL(11, 7),
+--     
+--     -- Audit fields (FISMA-HIGH compliance)
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     created_by VARCHAR(100),
+--     updated_by VARCHAR(100),
+--     
+--     -- County isolation (Sovereign County Model)
+--     FOREIGN KEY (county_id) REFERENCES Counties(id) ON DELETE CASCADE,
+--     UNIQUE(county_id, parcel_number)
+-- );
+
+-- Indexes for efficient lookups
+-- CREATE INDEX idx_properties_county ON Properties(county_id);
+-- CREATE INDEX idx_properties_parcel ON Properties(parcel_number);
+-- CREATE INDEX idx_properties_address ON Properties(address);
+
+-- ============================================================================
+-- Schema Notes:
+-- ============================================================================
+--
+-- 1. County Isolation:
+--    All property records MUST have a valid county_id foreign key.
+--    This enforces the Sovereign County Model (data isolation).
+--
+-- 2. Audit Fields:
+--    created_at, updated_at, created_by, updated_by are required for
+--    FISMA-HIGH compliance. These are auto-populated by EF Core interceptors.
+--
+-- 3. Parcel Number Format:
+--    Benton County uses format: {Area}-{Block}-{Lot}
+--    Example: 1-2345-678
+--
+-- 4. Assessed Value:
+--    Total assessed value = land_value + improvement_value
+--    Values in USD with 2 decimal precision.
+--
+-- 5. Geospatial Data:
+--    latitude/longitude enable GIS visualization features.
+--    Benton County bounds: ~46.06°N to 46.55°N, -119.87°W to -118.95°W
+--
+-- ============================================================================
+-- Production Schema Source:
+-- backend/TerraFusion.Data/Entities/Property.cs (Entity Framework Core model)
+-- ============================================================================

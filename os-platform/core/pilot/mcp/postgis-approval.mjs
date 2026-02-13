@@ -58,14 +58,14 @@ export async function buildApprovalArtifact(request) {
         scope: {
             county: request.county,
             environment: request.environment,
-            operationId: request.operationId
+            operationId: request.operationId,
         },
         bindings: {
             paramsHash: request.paramsHash,
             dsnHash: request.dsnHash,
             toolContractHash: request.contractHash,
-            manifestHash: request.manifestHash
-        }
+            manifestHash: request.manifestHash,
+        },
     };
     return approval;
 }
@@ -167,6 +167,6 @@ export async function validateApprovalFull(approval, manifest, currentTime) {
     }
     return {
         valid: errors.length === 0,
-        errors
+        errors,
     };
 }

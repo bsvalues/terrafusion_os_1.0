@@ -1,0 +1,17 @@
+{
+  "skillName": "tf-sdui-renderer",
+  "timestamp": "2026-02-13T19:16:49.506Z",
+  "componentType": "PropertyCard",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "schema": {
+    "componentType": "PropertyCard",
+    "props": {
+      "parcelId": "TEST-001",
+      "address": "123 Test Street",
+      "assessedValue": 250000,
+      "countyFips": "53005"
+    }
+  }
+}
