@@ -197,6 +197,10 @@ A **visible** receipt in the UI that includes (minimum):
 
 Pick **one merged Tier-1 PR** and retro-score it with this sheet. The outcome becomes the "gold exemplar" everyone can reference. Repeat for each evidence type until reviewers reach consistent rulings without discussion.
 
+### Gold Exemplar
+
+**[GOLD_EXEMPLAR_SCORECARD.md](GOLD_EXEMPLAR_SCORECARD.md)** — PR #258 (Control Plane v1.0.0) retro-scored against sections A–F. Use this as the canonical "what a scored PR looks like" reference. Future Tier-1 PRs must meet or exceed this baseline.
+
 ---
 
 **Government. Transcended. Calibrated.**
