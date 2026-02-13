@@ -1358,6 +1358,31 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("NotificationPreferences", (string)null);
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.PasswordHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAt")
+                        .HasDatabaseName("IX_PasswordHistory_UserId_CreatedAt");
+
+                    b.ToTable("PasswordHistories");
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.PerformanceMetric", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2923,6 +2948,17 @@ namespace TerraFusion.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.PasswordHistory", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.GovernmentUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.Project", b =>
