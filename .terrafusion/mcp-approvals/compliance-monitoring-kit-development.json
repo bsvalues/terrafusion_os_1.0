@@ -1,11 +1,11 @@
 {
-  "toolId": "document-server",
+  "toolId": "compliance-monitoring-kit",
   "approvedBy": "auto-approved",
-  "approvalDate": "2026-02-13T04:25:13.850Z",
+  "approvalDate": "2026-02-13T04:28:31.845Z",
   "riskLevel": "read",
   "scope": "development",
   "expiresAt": null,
-  "justification": "Read-only document access for development workflows",
+  "justification": "Read-only compliance monitoring tools",
   "constraints": {
     "maxRequestsPerHour": 1000,
     "allowedOperations": [],
@@ -16,7 +16,7 @@
   },
   "auditTrail": [
     {
-      "timestamp": "2026-02-13T04:25:13.850Z",
+      "timestamp": "2026-02-13T04:28:31.845Z",
       "action": "created",
       "actor": "system",
       "reason": "Initial activation"
