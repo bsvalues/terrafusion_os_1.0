@@ -7,9 +7,9 @@
  */
 
 import React, { Suspense, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { SDUI_COMPONENTS } from './components';
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -63,42 +63,32 @@ export interface SDUIAction {
 
 type ComponentRenderer = React.FC<{ component: SDUIComponent }>;
 
+/**
+ * Placeholder component for unknown component types
+ * Helps with debugging and development
+ */
+const PlaceholderComponent: ComponentRenderer = ({ component }) => (
+  <Card className="bg-slate-800/50 border-dashed border-slate-600">
+    <CardContent className="p-8 text-center">
+      <p className="text-slate-500 text-sm">Component: {component.component}</p>
+      <p className="text-slate-600 text-xs mt-1">Props: {JSON.stringify(component.props)}</p>
+    </CardContent>
+  </Card>
+);
+
+/**
+ * Component registry mapping component types to renderers
+ * Uses government-grade components from components.tsx
+ */
 const componentRegistry: Record<string, ComponentRenderer> = {
-  'kpi-card': ({ component }) => (
-    <Card className="bg-slate-800 border-cyan-500/20">
-      <CardContent className="p-4">
-        <p className="text-sm text-slate-400">{component.props.title as string}</p>
-        <p className="text-2xl font-bold text-white mt-1">{component.props.value as string ?? '—'}</p>
-        {component.props.trend && (
-          <p className={`text-sm mt-1 ${(component.props.trend as string)?.startsWith('+') ? 'text-emerald-400' : 'text-red-400'}`}>
-            {component.props.trend as string}
-          </p>
-        )}
-      </CardContent>
-    </Card>
-  ),
+  // Import all components from the SDUI_COMPONENTS registry
+  ...Object.entries(SDUI_COMPONENTS).reduce((acc, [key, Component]) => {
+    acc[key] = ({ component }) => <Component props={component.props} />;
+    return acc;
+  }, {} as Record<string, ComponentRenderer>),
 
-  'alert-banner': ({ component }) => (
-    <Alert variant={component.props.severity === 'error' ? 'destructive' : 'default'}>
-      <AlertDescription>{component.props.message as string}</AlertDescription>
-    </Alert>
-  ),
-
-  'compliance-badge': ({ component }) => (
-    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-cyan-500/20">
-      <span className={`w-2 h-2 rounded-full ${component.props.status === 'pass' ? 'bg-emerald-400' : 'bg-red-400'}`} />
-      <span className="text-sm text-white">{component.props.standard as string}</span>
-    </div>
-  ),
-
-  'placeholder': ({ component }) => (
-    <Card className="bg-slate-800/50 border-dashed border-slate-600">
-      <CardContent className="p-8 text-center">
-        <p className="text-slate-500 text-sm">Component: {component.component}</p>
-        <p className="text-slate-600 text-xs mt-1">Props: {JSON.stringify(component.props)}</p>
-      </CardContent>
-    </Card>
-  ),
+  // Fallback placeholder for unknown component types
+  'placeholder': PlaceholderComponent,
 };
 
 // ── Section Renderers ─────────────────────────────────────────────────

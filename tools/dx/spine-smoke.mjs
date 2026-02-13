@@ -489,6 +489,266 @@ async function main() {
   );
 
   // ============================================================================
+  // 8. PHASE 13-15 ARTIFACTS
+  // ============================================================================
+  test.section('8. Phase 13-15 Artifacts');
+
+  // SDUI Components
+  test.fileExists(
+    'frontend/apps/os-shell/src/components/sdui/renderer.tsx',
+    'SDUI renderer component'
+  );
+
+  test.fileExists(
+    'frontend/apps/os-shell/src/components/sdui/index.ts',
+    'SDUI index'
+  );
+
+  // TDC audit command
+  test.fileExists(
+    'tools/tdc/src/commands/audit.ts',
+    'TDC audit command'
+  );
+
+  // tf-test-harness skill files
+  test.fileExists(
+    'tools/dx/skills/tf-test-harness/SKILL.md',
+    'tf-test-harness SKILL.md'
+  );
+
+  test.fileExists(
+    'tools/dx/skills/tf-test-harness/contract.json',
+    'tf-test-harness contract.json'
+  );
+
+  if (test.isValidJSON(
+    'tools/dx/skills/tf-test-harness/contract.json',
+    'tf-test-harness contract'
+  )) {
+    test.hasRequiredFields(
+      'tools/dx/skills/tf-test-harness/contract.json',
+      ['id', 'name', 'version', 'activation'],
+      'tf-test-harness contract'
+    );
+  }
+
+  // Claude slash commands
+  const slashCommandsDir = path.resolve(ROOT, '.claude/commands');
+  if (fs.existsSync(slashCommandsDir)) {
+    const requiredSlashCommands = ['doctor', 'evidence', 'posture', 'compliance', 'skills', 'context'];
+    test.info(`Checking for ${requiredSlashCommands.length} required Claude slash commands...`);
+
+    for (const cmdName of requiredSlashCommands) {
+      const cmdPath = `${cmdName}.md`;
+      const fullPath = path.join(slashCommandsDir, cmdPath);
+      if (fs.existsSync(fullPath)) {
+        test.pass(`Claude slash command exists: /${cmdName}`);
+      } else {
+        test.fail(`Missing Claude slash command: /${cmdName}`);
+      }
+    }
+  } else {
+    test.fail('.claude/commands directory not found');
+  }
+
+  // Phase 13-15 command contracts
+  const phase1315Contracts = ['ai', 'audit', 'debug', 'status', 'workspace'];
+  test.info(`Checking for ${phase1315Contracts.length} Phase 13-15 command contracts...`);
+
+  for (const contractName of phase1315Contracts) {
+    const contractPath = `tools/dx/command-contracts/${contractName}.contract.json`;
+    if (test.fileExists(contractPath, `${contractName} command contract`)) {
+      if (test.isValidJSON(contractPath, `${contractName} command contract`)) {
+        test.hasRequiredFields(
+          contractPath,
+          ['command', 'aliases', 'riskLevel', 'ownerLane'],
+          `${contractName} command contract`
+        );
+      }
+    }
+  }
+
+  // ============================================================================
+  // 9. PHASE 16-17 ARTIFACTS
+  // ============================================================================
+  test.section('9. Phase 16-17 Artifacts');
+
+  // TDC commands
+  test.fileExists(
+    'tools/tdc/src/commands/test.ts',
+    'TDC test command'
+  );
+
+  test.fileExists(
+    'tools/tdc/src/commands/deploy.ts',
+    'TDC deploy command'
+  );
+
+  test.fileExists(
+    'tools/tdc/src/commands/transparency.ts',
+    'TDC transparency command'
+  );
+
+  // SDUI components file
+  test.fileExists(
+    'frontend/apps/os-shell/src/components/sdui/components.tsx',
+    'SDUI components file'
+  );
+
+  // Phase 16-17 command contracts
+  const phase1617Contracts = ['test', 'deploy', 'transparency'];
+  test.info(`Checking for ${phase1617Contracts.length} Phase 16-17 command contracts...`);
+
+  for (const contractName of phase1617Contracts) {
+    const contractPath = `tools/dx/command-contracts/${contractName}.contract.json`;
+    if (test.fileExists(contractPath, `${contractName} command contract`)) {
+      if (test.isValidJSON(contractPath, `${contractName} command contract`)) {
+        test.hasRequiredFields(
+          contractPath,
+          ['command', 'aliases', 'riskLevel', 'ownerLane'],
+          `${contractName} command contract`
+        );
+
+        // Check all 4 aliases exist
+        try {
+          const content = JSON.parse(
+            fs.readFileSync(path.resolve(ROOT, contractPath), 'utf8')
+          );
+          const requiredAliases = ['vscode', 'claude', 'codex', 'tdc'];
+          const hasAllAliases = requiredAliases.every(
+            alias => content.aliases && content.aliases[alias]
+          );
+
+          if (hasAllAliases) {
+            test.pass(`${contractName} contract has all 4 aliases`);
+          } else {
+            const missing = requiredAliases.filter(
+              alias => !content.aliases || !content.aliases[alias]
+            );
+            test.fail(`${contractName} contract missing aliases: ${missing.join(', ')}`);
+          }
+        } catch (error) {
+          test.fail(`${contractName} contract alias validation failed`, error.message);
+        }
+      }
+    }
+  }
+
+  // ============================================================================
+  // 10. CROSS-CUTTING VALIDATION
+  // ============================================================================
+  test.section('10. Cross-Cutting Validation');
+
+  // Validate all TDC commands have matching command contracts
+  const tdcIndexPath = path.resolve(ROOT, 'tools/tdc/src/index.ts');
+  if (fs.existsSync(tdcIndexPath)) {
+    test.pass('TDC index.ts exists');
+
+    try {
+      const tdcIndex = fs.readFileSync(tdcIndexPath, 'utf8');
+      const tdcCommands = [
+        'ai', 'audit', 'debug', 'deploy', 'status',
+        'test', 'transparency', 'workspace'
+      ];
+
+      test.info(`Validating ${tdcCommands.length} TDC commands have contracts...`);
+
+      for (const cmd of tdcCommands) {
+        const contractPath = path.resolve(ROOT, `tools/dx/command-contracts/${cmd}.contract.json`);
+        if (fs.existsSync(contractPath)) {
+          test.pass(`TDC command '${cmd}' has matching contract`);
+        } else {
+          test.fail(`TDC command '${cmd}' missing contract`);
+        }
+      }
+    } catch (error) {
+      test.fail('TDC command-contract validation failed', error.message);
+    }
+  } else {
+    test.warn('TDC index.ts not found - skipping TDC command validation');
+  }
+
+  // Validate all skills in registry have SKILL.md and contract.json
+  const registryPath = path.resolve(ROOT, 'tools/dx/skills/registry.json');
+  if (fs.existsSync(registryPath)) {
+    try {
+      const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+      test.info(`Validating ${registry.skills.length} skills have required files...`);
+
+      for (const skill of registry.skills) {
+        const skillPath = path.resolve(ROOT, skill.path);
+        const skillName = skill.id;
+
+        // SKILL.md
+        const skillMd = path.join(skillPath, 'SKILL.md');
+        if (fs.existsSync(skillMd)) {
+          test.pass(`Skill '${skillName}' has SKILL.md`);
+        } else {
+          test.fail(`Skill '${skillName}' missing SKILL.md`);
+        }
+
+        // contract.json
+        const contractPath = path.resolve(ROOT, skill.contract);
+        if (fs.existsSync(contractPath)) {
+          test.pass(`Skill '${skillName}' has contract.json`);
+        } else {
+          test.fail(`Skill '${skillName}' missing contract.json`);
+        }
+      }
+    } catch (error) {
+      test.fail('Skills registry validation failed', error.message);
+    }
+  }
+
+  // Validate context pack schema includes posture property
+  const schemaPath = path.resolve(ROOT, 'tools/dx/context-pack/schema.json');
+  if (fs.existsSync(schemaPath)) {
+    try {
+      const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
+      if (schema.properties && schema.properties.posture) {
+        test.pass('Context pack schema includes posture property');
+      } else {
+        test.fail('Context pack schema missing posture property');
+      }
+    } catch (error) {
+      test.fail('Context pack schema posture validation failed', error.message);
+    }
+  }
+
+  // Total command count validation
+  const contractsDirPath = path.resolve(ROOT, 'tools/dx/command-contracts');
+  if (fs.existsSync(contractsDirPath)) {
+    const allContracts = fs.readdirSync(contractsDirPath)
+      .filter(f => f.endsWith('.contract.json'));
+
+    const expectedCommandCount = 16;
+    test.info(`Found ${allContracts.length} total command contracts`);
+
+    if (allContracts.length >= expectedCommandCount) {
+      test.pass(`Command contract count meets target (${allContracts.length} >= ${expectedCommandCount})`);
+    } else {
+      test.warn(`Command contract count below target (${allContracts.length} < ${expectedCommandCount})`);
+    }
+  }
+
+  // Total skill count validation
+  if (fs.existsSync(registryPath)) {
+    try {
+      const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+      const expectedSkillCount = 9;
+      test.info(`Found ${registry.skills.length} total registered skills`);
+
+      if (registry.skills.length >= expectedSkillCount) {
+        test.pass(`Skill count meets target (${registry.skills.length} >= ${expectedSkillCount})`);
+      } else {
+        test.warn(`Skill count below target (${registry.skills.length} < ${expectedSkillCount})`);
+      }
+    } catch (error) {
+      test.fail('Skills count validation failed', error.message);
+    }
+  }
+
+  // ============================================================================
   // SUMMARY
   // ============================================================================
   console.log(`\n${COLORS.BOLD}${COLORS.CYAN}${'='.repeat(40)}${COLORS.RESET}`);

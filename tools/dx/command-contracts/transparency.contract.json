@@ -1,0 +1,186 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "command": "transparency",
+  "description": "Government transparency reporting - public metrics, audit summaries, accountability",
+  "aliases": {
+    "vscode": "TerraFusion: Transparency Report",
+    "claude": "/transparency",
+    "codex": "tdc transparency",
+    "tdc": "tdc transparency"
+  },
+  "riskLevel": "read",
+  "ownerLane": "governance",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "subcommand": {
+        "type": "string",
+        "enum": ["report", "metrics", "audit"],
+        "description": "Transparency operation to perform"
+      },
+      "format": {
+        "type": "string",
+        "enum": ["text", "json", "markdown"],
+        "default": "text",
+        "description": "Output format for report"
+      },
+      "period": {
+        "type": "string",
+        "enum": ["daily", "weekly", "monthly"],
+        "default": "daily",
+        "description": "Report time period"
+      },
+      "days": {
+        "type": "number",
+        "default": 30,
+        "description": "Number of days for audit summary"
+      },
+      "json": {
+        "type": "boolean",
+        "default": false,
+        "description": "Output as JSON"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "report": {
+        "type": "object",
+        "properties": {
+          "generatedAt": { "type": "string" },
+          "period": { "type": "string" },
+          "systemUptime": { "type": "string" },
+          "apiMetrics": {
+            "type": "object",
+            "properties": {
+              "totalRequests": { "type": "integer" },
+              "successRate": { "type": "number" },
+              "averageLatency": { "type": "number" }
+            }
+          },
+          "dataAccess": {
+            "type": "object",
+            "properties": {
+              "totalAccesses": { "type": "integer" },
+              "byType": {
+                "type": "object",
+                "additionalProperties": { "type": "integer" }
+              }
+            }
+          },
+          "compliance": {
+            "type": "object",
+            "properties": {
+              "status": { "type": "string" },
+              "score": { "type": "number" },
+              "lastAudit": { "type": "string" }
+            }
+          },
+          "citizenServices": {
+            "type": "object",
+            "properties": {
+              "activeCounties": { "type": "integer" },
+              "propertiesServed": { "type": "integer" },
+              "averageUptime": { "type": "number" }
+            }
+          }
+        }
+      },
+      "metrics": {
+        "type": "object",
+        "properties": {
+          "apiAvailability": { "type": "number" },
+          "averageResponseTime": { "type": "number" },
+          "totalRequests": { "type": "integer" },
+          "activeCounties": { "type": "integer" },
+          "complianceScore": { "type": "number" },
+          "lastAuditDate": { "type": "string" },
+          "uptime": { "type": "string" }
+        }
+      },
+      "auditSummary": {
+        "type": "object",
+        "properties": {
+          "totalEvents": { "type": "integer" },
+          "byCategory": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" }
+          },
+          "topResources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "resource": { "type": "string" },
+                "count": { "type": "integer" }
+              }
+            }
+          },
+          "dateRange": {
+            "type": "object",
+            "properties": {
+              "start": { "type": "string" },
+              "end": { "type": "string" }
+            }
+          }
+        }
+      },
+      "generatedAt": { "type": "string" }
+    }
+  },
+  "goldenSnapshot": {
+    "version": "1.0.0",
+    "hash": "transparency-contract-v1",
+    "exampleReport": {
+      "generatedAt": "2026-02-13T10:00:00Z",
+      "period": "daily",
+      "systemUptime": "99.87%",
+      "apiMetrics": {
+        "totalRequests": 45821,
+        "successRate": 99.92,
+        "averageLatency": 124
+      },
+      "compliance": {
+        "status": "FISMA-HIGH Compliant",
+        "score": 98.5,
+        "lastAudit": "2026-02-10"
+      },
+      "citizenServices": {
+        "activeCounties": 39,
+        "propertiesServed": 89247,
+        "averageUptime": 99.87
+      }
+    },
+    "exampleMetrics": {
+      "apiAvailability": 99.87,
+      "averageResponseTime": 124,
+      "totalRequests": 1847293,
+      "activeCounties": 39,
+      "complianceScore": 98.5,
+      "lastAuditDate": "2026-02-10",
+      "uptime": "99d 14h 23m"
+    },
+    "exampleAuditSummary": {
+      "totalEvents": 18423,
+      "byCategory": {
+        "Data Access": 8942,
+        "System Modification": 4231,
+        "User Authentication": 3847,
+        "System Events": 1403
+      },
+      "topResources": [
+        { "resource": "Property Database", "count": 8942 },
+        { "resource": "Assessment Records", "count": 2341 },
+        { "resource": "Tax Information", "count": 1564 }
+      ],
+      "dateRange": {
+        "start": "2026-01-14",
+        "end": "2026-02-13"
+      }
+    }
+  }
+}

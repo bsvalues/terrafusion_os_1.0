@@ -1,0 +1,188 @@
+{
+  "$schema": "../schemas/command-contract-v1.json",
+  "command": "test",
+  "description": "Test orchestration - run and monitor 716+ tests across 5 tiers",
+  "aliases": {
+    "vscode": "TerraFusion: Run Tests",
+    "claude": "/test",
+    "codex": "tdc test",
+    "tdc": "tdc test"
+  },
+  "riskLevel": "read",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "subcommand": {
+        "type": "string",
+        "enum": ["run", "status", "coverage"],
+        "description": "Test operation to perform"
+      },
+      "tier": {
+        "type": "string",
+        "enum": ["spine", "unit", "integration", "e2e", "compliance", "all"],
+        "default": "all",
+        "description": "Test tier to execute or report on"
+      },
+      "verbose": {
+        "type": "boolean",
+        "default": false,
+        "description": "Enable verbose output with detailed test results"
+      },
+      "json": {
+        "type": "boolean",
+        "default": false,
+        "description": "Output results as structured JSON"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["tiers", "totalTests", "passed", "failed", "skipped", "healthScore"],
+    "properties": {
+      "generatedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "tiers": {
+        "type": "object",
+        "description": "Test results broken down by tier",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "total": { "type": "number" },
+            "passed": { "type": "number" },
+            "failed": { "type": "number" },
+            "skipped": { "type": "number" },
+            "runner": { "type": "string" },
+            "command": { "type": "string" }
+          }
+        }
+      },
+      "totalTests": {
+        "type": "number",
+        "description": "Total number of tests across all tiers"
+      },
+      "passed": {
+        "type": "number",
+        "description": "Total number of passed tests"
+      },
+      "failed": {
+        "type": "number",
+        "description": "Total number of failed tests"
+      },
+      "skipped": {
+        "type": "number",
+        "description": "Total number of skipped tests"
+      },
+      "healthScore": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100,
+        "description": "Overall test health score (percentage)"
+      },
+      "status": {
+        "type": "string",
+        "enum": ["excellent", "good", "warning", "critical"],
+        "description": "Overall test health status"
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "version": "1.0.0",
+    "hash": "test-contract-v1",
+    "generatedAt": "2026-02-13T00:00:00.000Z",
+    "tiers": {
+      "spine": {
+        "name": "spine",
+        "total": 101,
+        "passed": 101,
+        "failed": 0,
+        "skipped": 0,
+        "runner": "node"
+      },
+      "unit": {
+        "name": "unit",
+        "total": 250,
+        "passed": 235,
+        "failed": 5,
+        "skipped": 10,
+        "runner": "dotnet"
+      },
+      "integration": {
+        "name": "integration",
+        "total": 180,
+        "passed": 170,
+        "failed": 3,
+        "skipped": 7,
+        "runner": "dotnet"
+      },
+      "e2e": {
+        "name": "e2e",
+        "total": 85,
+        "passed": 80,
+        "failed": 2,
+        "skipped": 3,
+        "runner": "npm"
+      },
+      "compliance": {
+        "name": "compliance",
+        "total": 100,
+        "passed": 92,
+        "failed": 3,
+        "skipped": 5,
+        "runner": "npm"
+      }
+    },
+    "totalTests": 716,
+    "passed": 678,
+    "failed": 13,
+    "skipped": 25,
+    "healthScore": 94.7,
+    "status": "excellent"
+  },
+  "examples": [
+    {
+      "description": "Run all tests across all tiers",
+      "command": "tdc test run",
+      "expectedBehavior": "Executes spine, unit, integration, e2e, and compliance tests"
+    },
+    {
+      "description": "Run only spine tier tests",
+      "command": "tdc test run --tier spine",
+      "expectedBehavior": "Executes only the 101 DX Spine smoke tests"
+    },
+    {
+      "description": "Show test health dashboard",
+      "command": "tdc test status",
+      "expectedBehavior": "Displays tier-by-tier breakdown with health score"
+    },
+    {
+      "description": "Show coverage summary",
+      "command": "tdc test coverage",
+      "expectedBehavior": "Displays line/branch/function/statement coverage percentages"
+    },
+    {
+      "description": "Run tests with JSON output",
+      "command": "tdc test run --tier unit --json",
+      "expectedBehavior": "Executes unit tests and outputs structured JSON results"
+    }
+  ],
+  "metadata": {
+    "tier": "dev",
+    "category": "testing",
+    "maturity": "stable",
+    "documentation": "tools/dx/skills/tf-test-harness/README.md",
+    "relatedCommands": ["tdc doctor", "tdc posture", "tdc evidence"],
+    "testLocations": [
+      "os-platform/development/testing-suite/",
+      "backend/TerraFusion.API.Tests/",
+      "frontend/tests/",
+      "tools/dx/spine-smoke.mjs"
+    ]
+  }
+}

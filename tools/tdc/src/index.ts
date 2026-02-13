@@ -7,6 +7,7 @@ import { auditCommand } from './commands/audit';
 import { complianceCommand } from './commands/compliance';
 import { countyCommand } from './commands/county';
 import { debugCommand } from './commands/debug';
+import { deployCommand } from './commands/deploy';
 import { doctorCommand } from './commands/doctor';
 import { evidenceCommand } from './commands/evidence';
 import { launchCommand } from './commands/launch-backend';
@@ -14,6 +15,8 @@ import { mcpCommand } from './commands/mcp';
 import { postureCommand } from './commands/posture';
 import { skillCommand } from './commands/skill';
 import { statusCommand } from './commands/status';
+import { testCommand } from './commands/test';
+import { transparencyCommand } from './commands/transparency';
 import { workspaceCommand } from './commands/workspace';
 
 const program = new Command();
@@ -46,6 +49,9 @@ program.addCommand(evidenceCommand);
 program.addCommand(mcpCommand);
 program.addCommand(postureCommand);
 program.addCommand(skillCommand);
+program.addCommand(testCommand);
+program.addCommand(transparencyCommand);
+program.addCommand(deployCommand);
 
 // Default action - show help
 program.action(() => {

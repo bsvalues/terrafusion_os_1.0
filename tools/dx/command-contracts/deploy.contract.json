@@ -1,0 +1,146 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "command": "deploy",
+  "description": "County deployment management - status, preflight, and validation",
+  "aliases": {
+    "vscode": "TerraFusion: Deploy County",
+    "claude": "/deploy",
+    "codex": "tdc deploy",
+    "tdc": "tdc deploy"
+  },
+  "riskLevel": "write-safe",
+  "ownerLane": "ops",
+  "requiresConfirmation": false,
+  "auditRequired": true,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "subcommand": {
+        "type": "string",
+        "enum": ["status", "preflight", "validate"],
+        "description": "Deployment operation to perform"
+      },
+      "county": {
+        "type": "string",
+        "description": "County identifier (e.g., benton, clark, spokane, king)"
+      },
+      "verbose": {
+        "type": "boolean",
+        "default": false,
+        "description": "Show detailed output"
+      },
+      "json": {
+        "type": "boolean",
+        "default": false,
+        "description": "Output as JSON"
+      }
+    },
+    "required": ["subcommand"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "counties": {
+        "type": "array",
+        "description": "List of county deployments",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "status": { "type": "string", "enum": ["active", "pending", "inactive", "planned"] },
+            "version": { "type": "string" },
+            "lastDeployed": { "type": ["string", "null"], "format": "date-time" },
+            "parcelCount": { "type": "integer" },
+            "pacs": { "type": "string" }
+          }
+        }
+      },
+      "readinessScore": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100,
+        "description": "Preflight readiness score (0-100%)"
+      },
+      "checks": {
+        "type": "array",
+        "description": "Preflight check results",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "status": { "type": "string", "enum": ["pass", "fail", "warning"] },
+            "message": { "type": "string" }
+          }
+        }
+      },
+      "results": {
+        "type": "array",
+        "description": "Validation results",
+        "items": {
+          "type": "object",
+          "properties": {
+            "check": { "type": "string" },
+            "status": { "type": "string", "enum": ["pass", "fail", "warning"] },
+            "message": { "type": "string" },
+            "details": { "type": "string" }
+          }
+        }
+      },
+      "status": {
+        "type": "string",
+        "description": "Overall operation status"
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "version": "1.0.0",
+    "hash": "deploy-contract-v1",
+    "example": {
+      "status": {
+        "counties": [
+          {
+            "id": "benton",
+            "name": "Benton County",
+            "status": "active",
+            "version": "1.0.0",
+            "lastDeployed": "2025-10-15T14:30:00Z",
+            "parcelCount": 89247,
+            "pacs": "Harris 9.0"
+          },
+          {
+            "id": "clark",
+            "name": "Clark County",
+            "status": "pending",
+            "version": "1.0.0-rc.1",
+            "lastDeployed": null,
+            "parcelCount": 180000,
+            "pacs": "Tyler Vision"
+          }
+        ]
+      },
+      "preflight": {
+        "county": "clark",
+        "checks": [
+          { "name": "Database Connectivity", "status": "pass", "message": "PostgreSQL connection available" },
+          { "name": "PACS Integration", "status": "pass", "message": "PACS integration module present" },
+          { "name": "Data Migration Readiness", "status": "pass", "message": "EF Core migrations available" },
+          { "name": "Compliance Verification", "status": "pass", "message": "FISMA-HIGH security controls present" },
+          { "name": "Schema Isolation", "status": "warning", "message": "County-specific configuration not found" }
+        ],
+        "readinessScore": 80
+      },
+      "validate": {
+        "county": "benton",
+        "results": [
+          { "check": "Data Integrity", "status": "pass", "message": "Data layer operational", "details": "All entity configurations validated" },
+          { "check": "API Endpoints", "status": "pass", "message": "API kernel operational on port 5000", "details": "All REST endpoints responding" },
+          { "check": "Authentication", "status": "pass", "message": "JWT authentication configured", "details": "Token validation operational" },
+          { "check": "Compliance Controls", "status": "pass", "message": "FISMA-HIGH controls active", "details": "Audit logging and sovereign county isolation enabled" },
+          { "check": "Performance Benchmarks", "status": "pass", "message": "Performance within acceptable thresholds", "details": "LCP <2500ms, TBT <200ms, 91.9% test pass rate" }
+        ]
+      }
+    }
+  }
+}

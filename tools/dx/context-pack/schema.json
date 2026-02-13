@@ -149,6 +149,46 @@
         "latencyMs": { "type": ["number", "null"] },
         "receiptPresent": { "type": "boolean" }
       }
+    },
+    "posture": {
+      "type": ["object", "null"],
+      "description": "Governance posture scores from all lanes",
+      "properties": {
+        "overallScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Weighted overall posture score (0-100)"
+        },
+        "grade": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D", "F"],
+          "description": "Letter grade based on overall score"
+        },
+        "lanes": {
+          "type": "object",
+          "description": "Per-lane posture scores",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["score", "status", "signalCount"],
+            "properties": {
+              "score": { "type": "number" },
+              "status": { "type": "string", "enum": ["pass", "warn", "fail", "unknown"] },
+              "signalCount": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When posture was calculated"
+        },
+        "signalCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of signals collected"
+        }
+      }
     }
   },
   "definitions": {

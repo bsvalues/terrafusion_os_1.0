@@ -28,6 +28,19 @@ try {
   // Drift detection not available
 }
 
+// Import posture bus (optional - don't fail if not available)
+let collectDefaultSignals = null;
+let calculatePosture = null;
+let savePosture = null;
+try {
+  const postureModule = await import('../posture-bus/bus.mjs');
+  collectDefaultSignals = postureModule.collectDefaultSignals;
+  calculatePosture = postureModule.calculatePosture;
+  savePosture = postureModule.savePosture;
+} catch {
+  // Posture bus not available
+}
+
 // Configuration
 const DEFAULT_OUTPUT = '.terrafusion/context';
 const CONTEXT_FILE = 'latest.json';
@@ -260,6 +273,30 @@ async function generateContextPack(generator = 'tdc') {
     }
   } catch { /* non-fatal */ }
 
+  // Collect and calculate governance posture
+  let postureData = null;
+  if (collectDefaultSignals && calculatePosture && savePosture) {
+    try {
+      const signals = await collectDefaultSignals();
+      const posture = calculatePosture(signals);
+      await savePosture(posture);
+
+      // Extract grade from score
+      const grade = posture.overallScore >= 90 ? 'A' :
+                    posture.overallScore >= 80 ? 'B' :
+                    posture.overallScore >= 70 ? 'C' :
+                    posture.overallScore >= 60 ? 'D' : 'F';
+
+      postureData = {
+        overallScore: posture.overallScore,
+        grade,
+        lanes: posture.lanes,
+        timestamp: posture.generatedAt,
+        signalCount: posture.signals.length
+      };
+    } catch { /* non-fatal */ }
+  }
+
   const contextPack = {
     version: '1.0',
     generated: new Date().toISOString(),
@@ -295,7 +332,9 @@ async function generateContextPack(generator = 'tdc') {
 
     skills,
 
-    evidencePack: evidencePackData
+    evidencePack: evidencePackData,
+
+    posture: postureData
   };
 
   return contextPack;
@@ -363,6 +402,38 @@ ${laneBreakdown}
 `;
   }
 
+  // Posture section
+  let postureSection = '';
+  if (pack.posture) {
+    const gradeEmoji = {
+      'A': '🟢',
+      'B': '🟡',
+      'C': '🟠',
+      'D': '🔴',
+      'F': '⛔'
+    }[pack.posture.grade] || '⚪';
+
+    const laneDetails = Object.entries(pack.posture.lanes)
+      .map(([lane, data]) => {
+        const statusEmoji = data.status === 'pass' ? '✅' : data.status === 'warn' ? '⚠️' : data.status === 'fail' ? '❌' : '⚪';
+        return `- ${lane}: ${data.score.toFixed(1)} ${statusEmoji} (${data.signalCount} signals)`;
+      })
+      .join('\n');
+
+    postureSection = `
+## Governance Posture ${gradeEmoji}
+
+| Metric | Value |
+|--------|-------|
+| Overall Score | ${pack.posture.overallScore.toFixed(1)}/100 |
+| Grade | ${pack.posture.grade} |
+| Signals Collected | ${pack.posture.signalCount} |
+
+**Lane Scores:**
+${laneDetails}
+`;
+  }
+
   return `# TerraFusion Context Pack
 
 **Generated:** ${pack.generated}
@@ -383,7 +454,7 @@ ${laneBreakdown}
 
 ### Services
 ${servicesList}
-${contractDriftSection}${skillsSection}
+${contractDriftSection}${skillsSection}${postureSection}
 ## Focus
 
 | Field | Value |
