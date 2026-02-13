@@ -17,6 +17,7 @@ import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import TerrafusionAIService, { AIRequest, AIResponse } from './TerrafusionAIService';
+import ContextPackIntegration from './context-pack-integration';
 
 const execAsync = promisify(exec);
 
@@ -105,12 +106,25 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   private sessionStartTime: Date;
   private workspaceWatcher: fs.FSWatcher | null = null;
   private aiService: TerrafusionAIService;
+  private contextPack: ContextPackIntegration;
 
   constructor() {
     super();
     this.sessionStartTime = new Date();
     this.capabilities = new Map();
     this.aiService = new TerrafusionAIService();
+
+    // DX Spine Integration: Wire to Context Pack
+    const workspaceRoot = this.findWorkspaceRoot(process.cwd());
+    this.contextPack = new ContextPackIntegration(workspaceRoot);
+    this.contextPack.load();
+    this.contextPack.watch();
+
+    // Forward Context Pack events
+    this.contextPack.on('changed', (pack) => {
+      this.emit('context-pack-changed', pack);
+    });
+
     this.initializeCapabilities();
   }
 
@@ -340,7 +354,21 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         context: this.context,
         capabilities: Array.from(this.capabilities.values())
       });
-      
+
+      // DX Spine: Update Context Pack with Companion state
+      const activeCapabilities = Array.from(this.capabilities.values()).filter(c => c.isActive);
+      const aiPoweredCapabilities = activeCapabilities.filter(c => c.aiPowered);
+      this.contextPack.updateCompanionState({
+        status: 'active',
+        capabilities: {
+          total: this.capabilities.size,
+          active: activeCapabilities.length,
+          aiPowered: aiPoweredCapabilities.length
+        },
+        lastAction: 'Agent activated',
+        sessionDuration: Math.floor((Date.now() - this.sessionStartTime.getTime()) / 1000)
+      });
+
       console.log('✅ Workspace Companion Agent ACTIVATED');
       console.log(`📊 Active Capabilities: ${Array.from(this.capabilities.values()).filter(c => c.isActive).length}`);
       console.log(`🏛️ Project: ${this.context.projectName}`);
@@ -896,6 +924,42 @@ export class WorkspaceCompanionAgent extends EventEmitter {
   }
 
   /**
+   * Get DX Spine integrated status (reads from Context Pack)
+   */
+  public getContextPackStatus(): {
+    companion: { status: string; capabilities: { total: number; active: number; aiPowered: number }; sessionDuration: number };
+    health: string;
+    nextActions: string[];
+    criticalTodos: number;
+  } {
+    const pack = this.contextPack.get();
+    const activeCapabilities = Array.from(this.capabilities.values()).filter(c => c.isActive);
+    const aiPoweredCapabilities = activeCapabilities.filter(c => c.aiPowered);
+
+    return {
+      companion: {
+        status: this.isActive ? 'active' : 'inactive',
+        capabilities: {
+          total: this.capabilities.size,
+          active: activeCapabilities.length,
+          aiPowered: aiPoweredCapabilities.length
+        },
+        sessionDuration: Math.floor((Date.now() - this.sessionStartTime.getTime()) / 1000)
+      },
+      health: pack?.health?.overallHealth || 'unknown',
+      nextActions: pack?.nextActions || [],
+      criticalTodos: pack?.todos?.critical?.length || 0
+    };
+  }
+
+  /**
+   * Get the Context Pack integration instance
+   */
+  public getContextPack(): ContextPackIntegration {
+    return this.contextPack;
+  }
+
+  /**
    * Perform health check
    */
   public async performHealthCheck(): Promise<SystemHealth> {
@@ -969,7 +1033,20 @@ export class WorkspaceCompanionAgent extends EventEmitter {
         timestamp: new Date(),
         sessionDuration: Date.now() - this.sessionStartTime.getTime()
       });
-      
+
+      // DX Spine: Update Context Pack with inactive state
+      this.contextPack.updateCompanionState({
+        status: 'inactive',
+        capabilities: {
+          total: this.capabilities.size,
+          active: 0,
+          aiPowered: 0
+        },
+        lastAction: 'Agent deactivated',
+        sessionDuration: Math.floor((Date.now() - this.sessionStartTime.getTime()) / 1000)
+      });
+      this.contextPack.unwatch();
+
       console.log('✅ Workspace Companion Agent deactivated');
       console.log(`⏱️ Session duration: ${Math.round((Date.now() - this.sessionStartTime.getTime()) / 1000)}s`);
       
