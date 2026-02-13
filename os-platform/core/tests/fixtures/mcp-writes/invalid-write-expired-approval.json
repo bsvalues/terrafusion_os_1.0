@@ -1,0 +1,38 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/mcp-write-fixture.v1.json",
+  "description": "Invalid: Write with expired approval artifact",
+  "county": "benton",
+  "countyId": "wa-benton-053",
+  "environment": "staging",
+  "writeOperation": {
+    "operationId": "update_property_assessment",
+    "template": "UPDATE properties SET assessed_value = $1 WHERE parcel_id = $2",
+    "params": [400000, "12-345-678"],
+    "paramsHash": "i9j0k1l2m3n4o5p6",
+    "ownerLane": "benton-assessor",
+    "reason": "Write with expired approval"
+  },
+  "approvalArtifact": {
+    "approvalId": "appr-2026-02-12-999",
+    "approvedBy": "supervisor@benton.gov",
+    "approvedAt": "2026-02-12T08:00:00Z",
+    "expiresAt": "2026-02-12T18:00:00Z",
+    "reason": "Expired approval (yesterday)",
+    "scope": {
+      "county": "benton",
+      "environment": "staging",
+      "operationId": "update_property_assessment"
+    },
+    "bindings": {
+      "paramsHash": "i9j0k1l2m3n4o5p6",
+      "dsnHash": "b2c3d4e5f6g7h8i9",
+      "toolContractHash": "1daea598c6624aa6",
+      "manifestHash": "j0k1l2m3n4o5p6q7"
+    }
+  },
+  "expectedError": "Approval artifact expired at 2026-02-12T18:00:00Z",
+  "metadata": {
+    "purpose": "Test fixture for expired approval rejection",
+    "shouldFail": true
+  }
+}

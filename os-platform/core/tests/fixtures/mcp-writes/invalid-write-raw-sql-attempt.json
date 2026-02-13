@@ -1,0 +1,22 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/mcp-write-fixture.v1.json",
+  "description": "Invalid: Attempt to execute raw SQL write (no template)",
+  "county": "benton",
+  "countyId": "wa-benton-053",
+  "environment": "staging",
+  "writeOperation": {
+    "operationId": null,
+    "template": null,
+    "rawSQL": "UPDATE properties SET assessed_value = 999999 WHERE owner_name = 'Target'",
+    "params": [],
+    "paramsHash": "q7r8s9t0u1v2w3x4",
+    "ownerLane": "benton-assessor",
+    "reason": "Attempt to bypass template system"
+  },
+  "approvalArtifact": null,
+  "expectedError": "Raw SQL writes are forbidden: all writes must use allowlisted operation templates",
+  "metadata": {
+    "purpose": "Test fixture for raw SQL write rejection",
+    "shouldFail": true
+  }
+}

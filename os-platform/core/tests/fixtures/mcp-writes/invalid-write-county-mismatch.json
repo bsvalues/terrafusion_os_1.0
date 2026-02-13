@@ -1,0 +1,38 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/mcp-write-fixture.v1.json",
+  "description": "Invalid: Write with county mismatch (cross-county violation)",
+  "county": "benton",
+  "countyId": "wa-benton-053",
+  "environment": "staging",
+  "writeOperation": {
+    "operationId": "update_property_assessment",
+    "template": "UPDATE properties SET assessed_value = $1 WHERE parcel_id = $2",
+    "params": [400000, "12-345-678"],
+    "paramsHash": "m3n4o5p6q7r8s9t0",
+    "ownerLane": "benton-assessor",
+    "reason": "Write to Benton with Yakima approval"
+  },
+  "approvalArtifact": {
+    "approvalId": "appr-2026-02-13-005",
+    "approvedBy": "supervisor@yakima.gov",
+    "approvedAt": "2026-02-13T14:00:00Z",
+    "expiresAt": "2026-02-13T22:00:00Z",
+    "reason": "Approval for Yakima (wrong county)",
+    "scope": {
+      "county": "yakima",
+      "environment": "staging",
+      "operationId": "update_property_assessment"
+    },
+    "bindings": {
+      "paramsHash": "m3n4o5p6q7r8s9t0",
+      "dsnHash": "b2c3d4e5f6g7h8i9",
+      "toolContractHash": "1daea598c6624aa6",
+      "manifestHash": "n4o5p6q7r8s9t0u1"
+    }
+  },
+  "expectedError": "County mismatch: approval scope county (yakima) does not match write manifest county (benton)",
+  "metadata": {
+    "purpose": "Test fixture for cross-county write prevention",
+    "shouldFail": true
+  }
+}

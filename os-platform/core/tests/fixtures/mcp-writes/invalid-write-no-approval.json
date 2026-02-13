@@ -1,0 +1,21 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/mcp-write-fixture.v1.json",
+  "description": "Invalid: Write operation without approval artifact",
+  "county": "benton",
+  "countyId": "wa-benton-053",
+  "environment": "staging",
+  "writeOperation": {
+    "operationId": "update_property_assessment",
+    "template": "UPDATE properties SET assessed_value = $1 WHERE parcel_id = $2",
+    "params": [400000, "12-345-678"],
+    "paramsHash": "h8i9j0k1l2m3n4o5",
+    "ownerLane": "benton-assessor",
+    "reason": "Unauthorized write attempt"
+  },
+  "approvalArtifact": null,
+  "expectedError": "Write operation requires supervisor approval artifact",
+  "metadata": {
+    "purpose": "Test fixture for write without approval rejection",
+    "shouldFail": true
+  }
+}

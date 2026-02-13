@@ -1,0 +1,39 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/mcp-write-fixture.v1.json",
+  "description": "Valid: Delete obsolete tax record with supervisor approval",
+  "county": "benton",
+  "countyId": "wa-benton-053",
+  "environment": "staging",
+  "writeOperation": {
+    "operationId": "delete_obsolete_tax_record",
+    "template": "DELETE FROM tax_records WHERE parcel_id = $1 AND tax_year < $2 AND county_id = $3",
+    "params": ["88-888-888", 2020, "wa-benton-053"],
+    "paramsHash": "f6g7h8i9j0k1l2m3",
+    "ownerLane": "benton-assessor",
+    "reason": "Cleanup of pre-2020 records per retention policy"
+  },
+  "approvalArtifact": {
+    "approvalId": "appr-2026-02-13-003",
+    "approvedBy": "supervisor@benton.gov",
+    "approvedAt": "2026-02-13T12:00:00Z",
+    "expiresAt": "2026-02-13T20:00:00Z",
+    "reason": "Records retention cleanup - approved by county auditor",
+    "scope": {
+      "county": "benton",
+      "environment": "staging",
+      "operationId": "delete_obsolete_tax_record"
+    },
+    "bindings": {
+      "paramsHash": "f6g7h8i9j0k1l2m3",
+      "dsnHash": "b2c3d4e5f6g7h8i9",
+      "toolContractHash": "1daea598c6624aa6",
+      "manifestHash": "g7h8i9j0k1l2m3n4"
+    },
+    "signature": "sig_placeholder_for_future_cryptographic_verification"
+  },
+  "expectedResult": {
+    "success": true,
+    "rowsAffected": 3,
+    "receiptHash": "expected_receipt_hash"
+  }
+}

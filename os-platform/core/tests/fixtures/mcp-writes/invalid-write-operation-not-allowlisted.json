@@ -1,0 +1,38 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/mcp-write-fixture.v1.json",
+  "description": "Invalid: Write operation not in contract allowlist",
+  "county": "benton",
+  "countyId": "wa-benton-053",
+  "environment": "staging",
+  "writeOperation": {
+    "operationId": "unauthorized_bulk_delete",
+    "template": "DELETE FROM properties WHERE county_id = $1",
+    "params": ["wa-benton-053"],
+    "paramsHash": "o5p6q7r8s9t0u1v2",
+    "ownerLane": "benton-assessor",
+    "reason": "Attempt to use non-allowlisted operation"
+  },
+  "approvalArtifact": {
+    "approvalId": "appr-2026-02-13-006",
+    "approvedBy": "supervisor@benton.gov",
+    "approvedAt": "2026-02-13T15:00:00Z",
+    "expiresAt": "2026-02-13T23:00:00Z",
+    "reason": "Approval for non-existent operation",
+    "scope": {
+      "county": "benton",
+      "environment": "staging",
+      "operationId": "unauthorized_bulk_delete"
+    },
+    "bindings": {
+      "paramsHash": "o5p6q7r8s9t0u1v2",
+      "dsnHash": "b2c3d4e5f6g7h8i9",
+      "toolContractHash": "1daea598c6624aa6",
+      "manifestHash": "p6q7r8s9t0u1v2w3"
+    }
+  },
+  "expectedError": "Operation 'unauthorized_bulk_delete' not found in contract allowlist",
+  "metadata": {
+    "purpose": "Test fixture for operation allowlist enforcement",
+    "shouldFail": true
+  }
+}
