@@ -37,6 +37,12 @@
     "views": {
       "terrafusion": [
         {
+          "id": "terrafusion.governance",
+          "name": "Governance",
+          "icon": "resources/governance-icon.svg",
+          "contextualTitle": "Tier-1 Governance & Evidence"
+        },
+        {
           "id": "terrafusion.explorer",
           "name": "Workspaces",
           "icon": "resources/terrafusion-icon.svg",
@@ -57,6 +63,30 @@
       ]
     },
     "commands": [
+      {
+        "command": "terrafusion.refreshGovernance",
+        "title": "Refresh Governance Panel",
+        "category": "TerraFusion",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "terrafusion.regenerateContextPack",
+        "title": "Regenerate Context Pack",
+        "category": "TerraFusion",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "terrafusion.doctor",
+        "title": "Doctor",
+        "category": "TerraFusion",
+        "icon": "$(stethoscope)"
+      },
+      {
+        "command": "terrafusion.compliance",
+        "title": "Compliance Check",
+        "category": "TerraFusion",
+        "icon": "$(shield)"
+      },
       {
         "command": "terrafusion.openPortal",
         "title": "Open Portal UI",
@@ -109,6 +139,16 @@
     "menus": {
       "view/title": [
         {
+          "command": "terrafusion.refreshGovernance",
+          "when": "view == terrafusion.governance",
+          "group": "navigation"
+        },
+        {
+          "command": "terrafusion.regenerateContextPack",
+          "when": "view == terrafusion.governance",
+          "group": "navigation"
+        },
+        {
           "command": "terrafusion.refreshWorkspaces",
           "when": "view == terrafusion.explorer",
           "group": "navigation"
@@ -120,6 +160,15 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "terrafusion.doctor"
+        },
+        {
+          "command": "terrafusion.compliance"
+        },
+        {
+          "command": "terrafusion.regenerateContextPack"
+        },
         {
           "command": "terrafusion.openPortal"
         },
