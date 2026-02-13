@@ -236,6 +236,8 @@ The following PRs were retro-scored against the same A–F rubric to validate sc
 
 **Convergence:** 6/6 sections converge across all three PRs. Same evidence → same score. Write-path distinction correctly differentiates Section D.
 
+**Next step:** With convergence proven, the [Forward Standard (DoD v1.1)](TIER1_UI_UX_DOD_CHECKLIST.md#forward-standard-v11) raises the bar — new Tier-1 PRs must target PASS (not PASS WITH NOTES) on all applicable sections.
+
 ---
 
 **Government. Transcended. Exemplified.**

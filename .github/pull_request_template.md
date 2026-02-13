@@ -62,6 +62,23 @@ make test
 **Screenshots/URLs:**
 <!-- If UI changes -->
 
+## 📋 Tier-1 UI/UX Evidence (if applicable)
+
+<!--
+  Complete this section for any PR that changes Tier-1 UI/UX behavior.
+  Delete this section if this PR does not touch Tier-1 UI.
+  See: docs/governance/TIER1_UI_UX_DOD_CHECKLIST.md
+-->
+
+- [ ] **This PR changes Tier-1 UI/UX behavior**
+- **Flow tested:** `<scene> → <action> → <result>`
+- **CID(s):** `<paste a real CID from your test run>`
+- **Trace evidence:** `<screenshot or trace link showing CID>`
+- **Latency:** `<action> took <N>ms`
+- **Error evidence:** `<error state screenshot or "no console errors">`
+- **Receipt evidence (if write/commit):** `<screenshot + payload>`
+- **UI screenshot/gif:** `<at least one state transition>`
+
 ## 🔒 Security & Risk
 
 **Security Considerations:**

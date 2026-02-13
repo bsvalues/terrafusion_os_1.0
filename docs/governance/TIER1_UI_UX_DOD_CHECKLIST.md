@@ -1,10 +1,11 @@
 # Tier-1 UI/UX Definition-of-Done Checklist
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Status:** Active  
 **Created:** 2026-02-12  
+**Updated:** 2026-02-12 (v1.1 — forward standard)  
 **Scope:** Every PR that changes Tier-1 UI/UX behavior  
-**Related:** [CLAIMS_LEDGER.md](CLAIMS_LEDGER.md) (Wave 0 addendum)
+**Related:** [CLAIMS_LEDGER.md](CLAIMS_LEDGER.md) (Wave 0 addendum) · [GOLD_EXEMPLAR_SCORECARD.md](GOLD_EXEMPLAR_SCORECARD.md) (convergence proof)
 
 ---
 
@@ -193,6 +194,49 @@ Copy/paste into PR description for Tier-1 UI features:
 | **Reviewer** | Walk sections B–H; record decision in Section I; see [TIER1_EVIDENCE_EXAMPLES.md](TIER1_EVIDENCE_EXAMPLES.md) for calibration; compare against [gold exemplar PR #258](GOLD_EXEMPLAR_SCORECARD.md) |
 | **QA** | Verify "hard fail" conditions are not present |
 | **Claims Ledger (Wave 1)** | Each PASS PR becomes evidence for one or more CR-IDs |
+
+---
+
+## Forward Standard (v1.1)
+
+> **Effective:** All Tier-1 PRs created after 2026-02-12 (DoD v1.0 publication date).  
+> **Rationale:** Convergence scoring (PRs #258, #247, #246) proved the rubric is stable. All gaps in the baseline era were **presentation gaps** — the infrastructure exists but PRs didn't show concrete evidence. The forward standard closes these gaps by requiring specific artifacts.
+
+### Evidence Baseline: PASS (not PASS WITH NOTES)
+
+Pre-DoD PRs were scored PASS WITH NOTES because the checklist didn't exist yet. That grace period is over. New Tier-1 PRs must target **PASS** on every applicable section:
+
+| Section | Pre-DoD (baseline) | Post-DoD (forward standard) |
+|---------|-------------------|----------------------------|
+| **A** CID | "CIDs exist" in code ✓ | **One concrete CID value** pasted in PR body + where it appears in UI |
+| **B** Trace | Trace infra present ✓ | **Trace screenshot or link** searchable by that CID |
+| **C** Metrics | Metrics fields wired ✓ | **One latency number** for the critical operation (e.g., "Click X → result in 45ms") |
+| **D** Receipt | N/A for read-only ✓ | **Mandatory PASS** if any write/commit exists — receipt UI + sample payload |
+| **E** Defend | Story clear ✓ | At least one **CID → trace → receipt chain** demonstrated (not just claimed) |
+| **F** UI Integrity | Real state in code ✓ | At least one **screenshot or gif** showing a state transition |
+
+### Hard Rules (no exceptions after this date)
+
+1. **Receipt for write paths** — Any PR shipping a write/commit/publish/certify/export/lock action must include receipt evidence (screenshot + payload). FAIL if missing.
+2. **Concrete CID** — At least one CID value from a real invocation, with proof it appears in both UI and trace/log. "We emit CIDs" without a value is FAIL.
+3. **Trace per flow** — At least one trace screenshot or exported span showing CID + action + result. FAIL if missing for the tested flow.
+4. **One latency measurement** — At least one "action X took Y ms" from a real flow. "Feels fast" is FAIL.
+
+### Reviewer Decision Matrix (updated)
+
+| Evidence quality | Pre-DoD PR | Post-DoD PR |
+|-----------------|------------|-------------|
+| Infrastructure present, no concrete evidence in PR body | PASS WITH NOTES | **FAIL** |
+| Concrete evidence present but incomplete (e.g., CID shown but no trace link) | PASS WITH NOTES | **PASS WITH NOTES** |
+| Concrete evidence present and complete | PASS | **PASS** |
+
+### Scene-First Enforcement (next phase)
+
+Once the first canonical scene ships with Find → Decide → Act → Defend completeness, that scene becomes the **enforcement exemplar** — all future scene PRs must match its evidence depth. Scene selection criteria:
+
+- Must include a write/commit moment (forces receipt evidence)
+- Must have a 3-click path (forces CID + trace + metrics)
+- Must be a real county workflow (not synthetic)
 
 ---
 
