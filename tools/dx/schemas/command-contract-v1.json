@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "title": "TerraFusion Command Contract",
+  "description": "Contract definition for a DX Spine command with four-way parity",
+  "type": "object",
+  "required": ["command", "description", "riskLevel", "ownerLane"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "command": { "type": "string" },
+    "description": { "type": "string" },
+    "aliases": {
+      "type": "object",
+      "properties": {
+        "vscode": { "type": "string" },
+        "claude": { "type": "string" },
+        "codex": { "type": "string" },
+        "tdc": { "type": "string" }
+      },
+      "description": "Four-way command parity aliases"
+    },
+    "riskLevel": {
+      "type": "string",
+      "enum": ["read", "write-safe", "write-local", "write-remote", "write-production", "destructive"]
+    },
+    "ownerLane": {
+      "type": "string",
+      "enum": ["dev", "governance", "ops", "security", "data"]
+    },
+    "requiresConfirmation": { "type": "boolean", "default": false },
+    "auditRequired": { "type": "boolean", "default": false },
+    "emitsContextPack": { "type": "boolean", "default": false },
+    "inputSchema": {
+      "type": "object",
+      "description": "JSON Schema for command inputs"
+    },
+    "outputSchema": {
+      "type": "object",
+      "description": "JSON Schema for command outputs"
+    },
+    "goldenSnapshot": {
+      "type": "object",
+      "description": "Expected output for parity testing"
+    }
+  }
+}

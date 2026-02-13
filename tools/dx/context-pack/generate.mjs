@@ -11,9 +11,11 @@
  */
 
 import { execSync } from 'child_process';
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, promises as fsPromises } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+
+const { readFile } = fsPromises;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -217,13 +219,46 @@ function determineNextActions(health, todos, gitInfo, contractDrift = null) {
 /**
  * Generate the Context Pack
  */
-function generateContextPack(generator = 'tdc') {
+async function generateContextPack(generator = 'tdc') {
   const repoRoot = findRepoRoot();
   const gitInfo = getGitInfo(repoRoot);
   const health = getHealthStatus();
   const todos = scanTodos(repoRoot);
   const contractDrift = getContractDrift();
   const nextActions = determineNextActions(health, todos, gitInfo, contractDrift);
+
+  // Add skills registry status
+  const skillsRegistryPath = join(repoRoot, 'tools', 'dx', 'skills', 'registry.json');
+  let skills = { registered: 0, active: 0, skills: [] };
+  try {
+    if (existsSync(skillsRegistryPath)) {
+      const registry = JSON.parse(await readFile(skillsRegistryPath, 'utf8'));
+      skills = {
+        registered: registry.metadata.totalSkills,
+        active: registry.metadata.activeSkills,
+        skills: registry.skills.map(s => ({
+          id: s.id,
+          lane: s.ownerLane,
+          status: s.status,
+        })),
+      };
+    }
+  } catch { /* non-fatal */ }
+
+  // Update evidence pack from latest receipt
+  const receiptPath = join(repoRoot, '.terrafusion', 'evidence', 'latest-receipt.json');
+  let evidencePackData = { cid: null, traceUrl: null, latencyMs: null, receiptPresent: false };
+  try {
+    if (existsSync(receiptPath)) {
+      const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
+      evidencePackData = {
+        cid: receipt.cid || null,
+        traceUrl: null,
+        latencyMs: null,
+        receiptPresent: true,
+      };
+    }
+  } catch { /* non-fatal */ }
 
   const contextPack = {
     version: '1.0',
@@ -258,12 +293,9 @@ function generateContextPack(generator = 'tdc') {
     todos,
     nextActions,
 
-    evidencePack: {
-      cid: null,
-      traceUrl: null,
-      latencyMs: null,
-      receiptPresent: false
-    }
+    skills,
+
+    evidencePack: evidencePackData
   };
 
   return contextPack;
@@ -307,6 +339,30 @@ ${pack.contractDrift.drifted.length > 0 ? `**Drifted:** ${pack.contractDrift.dri
 `;
   }
 
+  // Skills registry section
+  let skillsSection = '';
+  if (pack.skills && pack.skills.registered > 0) {
+    const skillsByLane = pack.skills.skills.reduce((acc, skill) => {
+      acc[skill.lane] = (acc[skill.lane] || 0) + 1;
+      return acc;
+    }, {});
+    const laneBreakdown = Object.entries(skillsByLane)
+      .map(([lane, count]) => `- ${lane}: ${count}`)
+      .join('\n');
+
+    skillsSection = `
+## Skills Registry 📚
+
+| Metric | Count |
+|--------|-------|
+| Registered | ${pack.skills.registered} |
+| Active | ${pack.skills.active} |
+
+**By Lane:**
+${laneBreakdown}
+`;
+  }
+
   return `# TerraFusion Context Pack
 
 **Generated:** ${pack.generated}
@@ -327,7 +383,7 @@ ${pack.contractDrift.drifted.length > 0 ? `**Drifted:** ${pack.contractDrift.dri
 
 ### Services
 ${servicesList}
-${contractDriftSection}
+${contractDriftSection}${skillsSection}
 ## Focus
 
 | Field | Value |
@@ -376,7 +432,7 @@ function writeContextPack(pack, outputDir) {
 /**
  * Main entry point
  */
-function main() {
+async function main() {
   const args = process.argv.slice(2);
 
   // Parse arguments
@@ -399,7 +455,7 @@ function main() {
 
   // Generate and write
   console.log('🔄 Generating Context Pack...');
-  const pack = generateContextPack(generator);
+  const pack = await generateContextPack(generator);
   const { jsonPath, mdPath } = writeContextPack(pack, fullOutputDir);
 
   console.log(`✅ Context Pack written:`);

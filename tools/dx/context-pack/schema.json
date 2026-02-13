@@ -123,6 +123,24 @@
       "maxItems": 5,
       "description": "Top 5 deterministic next actions"
     },
+    "skills": {
+      "type": "object",
+      "properties": {
+        "registered": { "type": "integer" },
+        "active": { "type": "integer" },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "lane": { "type": "string" },
+              "status": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
     "evidencePack": {
       "type": "object",
       "properties": {

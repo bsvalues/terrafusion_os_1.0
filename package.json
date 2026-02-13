@@ -116,6 +116,7 @@
     "test:ci:e2e": "playwright test tests/e2e --reporter=list",
     "test:ci:all": "npm run test:ci:unit && npm run test:ci:integration && npm run test:ci:e2e",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
+    "test:dx-spine": "node tools/dx/spine-smoke.mjs && node tools/dx/contract-drift.mjs",
     "test:verbose": "vitest run --reporter=verbose",
     "validate:ai-models": "node scripts/validate-ai-models.mjs",
     "backend:start:test": "cd backend && ASPNETCORE_ENVIRONMENT=Test dotnet run --project Terrafusion.API --urls=http://localhost:5000",

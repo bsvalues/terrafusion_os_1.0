@@ -1,0 +1,178 @@
+name: dx-spine-tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: dx-spine-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      dx-spine: ${{ steps.filter.outputs.dx-spine }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            dx-spine:
+              - 'tools/dx/**'
+              - 'tools/tdc/**'
+              - '.terrafusion/**'
+              - 'tools/ai-workspace-companion/**'
+              - 'tools/vscode-extension/**'
+              - '.github/workflows/dx-spine-tests.yml'
+
+  spine-smoke-tests:
+    needs: changes
+    if: needs.changes.outputs.dx-spine == 'true'
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run DX Spine Smoke Tests
+        run: node tools/dx/spine-smoke.mjs
+
+  security-validation:
+    needs: changes
+    if: needs.changes.outputs.dx-spine == 'true'
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run Security Validation Tests
+        run: node tools/dx/security-validation.test.mjs
+
+  contract-drift-detection:
+    needs: changes
+    if: needs.changes.outputs.dx-spine == 'true'
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check Contract Drift
+        run: node tools/dx/contract-drift.mjs
+
+  skills-registry-validation:
+    needs: changes
+    if: needs.changes.outputs.dx-spine == 'true'
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Validate Skills Registry
+        run: |
+          echo "Validating skills registry..."
+
+          # Check registry exists
+          if [ ! -f "tools/dx/skills/registry.json" ]; then
+            echo "::error::Skills registry not found"
+            exit 1
+          fi
+
+          # Validate JSON structure
+          node -e "
+            const fs = require('fs');
+            const registry = JSON.parse(fs.readFileSync('tools/dx/skills/registry.json', 'utf8'));
+
+            // Validate required top-level fields
+            if (!registry.version || !registry.skills || !Array.isArray(registry.skills)) {
+              console.error('Invalid registry structure');
+              process.exit(1);
+            }
+
+            let valid = true;
+
+            // Validate each skill
+            for (const skill of registry.skills) {
+              // Check required fields
+              const requiredFields = ['id', 'name', 'version', 'ownerLane', 'riskLevel', 'status', 'path', 'contract'];
+              for (const field of requiredFields) {
+                if (!skill[field]) {
+                  console.error('Missing field ' + field + ' for skill: ' + (skill.id || 'unknown'));
+                  valid = false;
+                }
+              }
+
+              // Check skill directory exists
+              const skillDir = skill.path;
+              if (!fs.existsSync(skillDir)) {
+                console.error('Skill directory not found: ' + skillDir);
+                valid = false;
+              }
+
+              // Check SKILL.md exists
+              const skillMd = skillDir + '/SKILL.md';
+              if (!fs.existsSync(skillMd)) {
+                console.error('Missing SKILL.md for: ' + skill.id);
+                valid = false;
+              }
+
+              // Check contract exists
+              const contractJson = skill.contract;
+              if (!fs.existsSync(contractJson)) {
+                console.error('Missing contract for: ' + skill.id);
+                valid = false;
+              } else {
+                // Validate contract is valid JSON
+                try {
+                  JSON.parse(fs.readFileSync(contractJson, 'utf8'));
+                } catch (e) {
+                  console.error('Invalid JSON in contract for: ' + skill.id);
+                  valid = false;
+                }
+              }
+            }
+
+            if (!valid) {
+              process.exit(1);
+            }
+
+            console.log('✅ All ' + registry.skills.length + ' skills validated successfully');
+          "
+
+  dx-spine-gate:
+    needs: [spine-smoke-tests, security-validation, contract-drift-detection, skills-registry-validation]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "✅ DX Spine Tests PASSED"
+          echo "All DX Spine governance gates completed successfully"
+
+  no-dx-changes:
+    needs: changes
+    if: needs.changes.outputs.dx-spine != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "No DX Spine changes detected — tests skipped."

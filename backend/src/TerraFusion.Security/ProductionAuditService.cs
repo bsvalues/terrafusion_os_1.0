@@ -515,7 +515,49 @@ namespace TerraFusion.Security
         
         private string BuildWhereClause(AuditLogQuery query)
         {
-            return "1=1"; // TODO: Build dynamic WHERE clause
+            var conditions = new List<string> { "1=1" };
+
+            if (query.StartDate.HasValue)
+            {
+                conditions.Add("timestamp >= @StartDate");
+            }
+
+            if (query.EndDate.HasValue)
+            {
+                conditions.Add("timestamp <= @EndDate");
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.EventType))
+            {
+                conditions.Add("event_type = @EventType");
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.EventCategory))
+            {
+                conditions.Add("event_category = @EventCategory");
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.UserId))
+            {
+                conditions.Add("user_id = @UserId");
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.IpAddress))
+            {
+                conditions.Add("ip_address = @IpAddress");
+            }
+
+            if (query.Severity.HasValue)
+            {
+                conditions.Add("severity = @Severity");
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.ResourceType))
+            {
+                conditions.Add("resource_type = @ResourceType");
+            }
+
+            return string.Join(" AND ", conditions);
         }
         
         private async Task TriggerSecurityAlertAsync(SecurityViolationEvent violation)
@@ -530,7 +572,23 @@ namespace TerraFusion.Security
         
         private string CalculateArchiveHash(IEnumerable<AuditEvent> logs)
         {
-            return "hash"; // TODO: Calculate archive hash
+            if (!logs.Any())
+            {
+                return string.Empty;
+            }
+
+            // Create a composite hash of all event hashes in the archive
+            // This allows verification that the archive hasn't been tampered with
+            var orderedLogs = logs.OrderBy(l => l.Timestamp).ToList();
+            var combinedData = string.Join("|", orderedLogs.Select(log =>
+                $"{log.Id}:{log.Hash}:{log.Timestamp:O}"
+            ));
+
+            // Add metadata to the hash for additional integrity
+            var archiveMetadata = $"COUNT:{orderedLogs.Count}|START:{orderedLogs.First().Timestamp:O}|END:{orderedLogs.Last().Timestamp:O}";
+            var fullData = $"{archiveMetadata}|{combinedData}";
+
+            return _hashingService.ComputeSha256(fullData);
         }
     }
 }

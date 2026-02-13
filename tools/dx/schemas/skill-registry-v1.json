@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.dev/schemas/skill-registry-v1.json",
+  "title": "TerraFusion Skills Registry",
+  "description": "Central registry of governed capability modules for the DX Spine",
+  "type": "object",
+  "required": ["version", "description", "skills", "metadata"],
+  "properties": {
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "version", "description", "ownerLane", "riskLevel", "status", "path", "contract"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^tf-[a-z0-9-]+$" },
+          "name": { "type": "string" },
+          "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+          "description": { "type": "string" },
+          "ownerLane": { "type": "string", "enum": ["dev", "governance", "ops", "security", "data"] },
+          "riskLevel": { "type": "string", "enum": ["read", "write-safe", "write-local", "write-remote", "write-production", "destructive"] },
+          "status": { "type": "string", "enum": ["active", "draft", "deprecated", "archived"] },
+          "path": { "type": "string" },
+          "contract": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "dependencies": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["totalSkills", "activeSkills", "lastUpdated"],
+      "properties": {
+        "totalSkills": { "type": "integer" },
+        "activeSkills": { "type": "integer" },
+        "lanes": { "type": "object", "additionalProperties": { "type": "integer" } },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
