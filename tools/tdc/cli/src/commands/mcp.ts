@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import { spawn } from 'child_process';
 import { Command } from 'commander';
 import fs from 'fs';
-import fetch from 'node-fetch';
+// import fetch from 'node-fetch'; // Node 18+ has built-in fetch
 import path from 'path';
 
 const MCP_SERVER_DIR = path.join(process.cwd(), 'tools', 'mcp', 'postgis-server');
@@ -433,9 +433,7 @@ async function getServerStatus(): Promise<McpStatus> {
   let healthy = false;
 
   try {
-    const response = await fetch(`http://localhost:${port}/health`, {
-      timeout: 2000,
-    });
+    const response = await fetch(`http://localhost:${port}/health`);
     healthy = response.ok;
   } catch {
     // Health check failed
@@ -469,9 +467,7 @@ async function waitForServerReady(port: number, timeout: number): Promise<void> 
 
   while (Date.now() - startTime < timeout) {
     try {
-      const response = await fetch(`http://localhost:${port}/health`, {
-        timeout: 1000,
-      });
+      const response = await fetch(`http://localhost:${port}/health`);
 
       if (response.ok) {
         return;
