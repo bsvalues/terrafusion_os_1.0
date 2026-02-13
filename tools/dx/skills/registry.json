@@ -67,15 +67,56 @@
       "contract": "tools/dx/skills/tf-security-posture/contract.json",
       "tags": ["security", "fisma", "nist", "compliance", "posture", "government"],
       "dependencies": []
+    },
+    {
+      "id": "tf-mcp-postgis",
+      "name": "PostGIS MCP Server",
+      "version": "1.0.0",
+      "description": "PostGIS MCP Server - spatial queries for county property data",
+      "ownerLane": "data",
+      "riskLevel": "write-remote",
+      "status": "active",
+      "path": "tools/dx/skills/tf-mcp-postgis",
+      "contract": "tools/dx/skills/tf-mcp-postgis/contract.json",
+      "tags": ["mcp", "postgis", "gis", "spatial", "parcel", "mapping", "data", "government"],
+      "dependencies": []
+    },
+    {
+      "id": "tf-sdui-engine",
+      "name": "Server-Driven UI Engine",
+      "version": "1.0.0",
+      "description": "Server-Driven UI Engine - declarative layout system for county-customizable government interfaces",
+      "ownerLane": "dev",
+      "riskLevel": "read",
+      "status": "active",
+      "path": "tools/dx/skills/tf-sdui-engine",
+      "contract": "tools/dx/skills/tf-sdui-engine/contract.json",
+      "tags": ["sdui", "ui", "layout", "county-customization", "government"],
+      "dependencies": ["tf-ui-foundation"]
+    },
+    {
+      "id": "tf-county-deployment",
+      "name": "County Deployment Manager",
+      "version": "1.0.0",
+      "description": "County Deployment Templates - standardized onboarding for Washington State counties",
+      "ownerLane": "ops",
+      "riskLevel": "write-safe",
+      "status": "active",
+      "path": "tools/dx/skills/tf-county-deployment",
+      "contract": "tools/dx/skills/tf-county-deployment/contract.json",
+      "tags": ["county", "deployment", "onboarding", "pacs", "migration", "government"],
+      "dependencies": []
     }
   ],
   "metadata": {
-    "totalSkills": 5,
-    "activeSkills": 5,
+    "totalSkills": 8,
+    "activeSkills": 8,
     "lanes": {
       "governance": 2,
-      "dev": 2,
-      "security": 1
+      "dev": 3,
+      "security": 1,
+      "data": 1,
+      "ops": 1
     },
     "lastUpdated": "2026-02-13T00:00:00Z"
   }

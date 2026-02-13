@@ -207,6 +207,17 @@ async function main() {
 
     test.info(`Found ${contracts.length} command contracts`);
 
+    // Verify critical Phase 10-12 contracts exist
+    const criticalContracts = ['county', 'mcp', 'skill', 'posture', 'evidence'];
+    for (const contractName of criticalContracts) {
+      const contractFile = `${contractName}.contract.json`;
+      if (contracts.includes(contractFile)) {
+        test.pass(`Critical contract exists: ${contractName}`);
+      } else {
+        test.fail(`Missing critical contract: ${contractName}`);
+      }
+    }
+
     for (const contract of contracts) {
       const contractPath = `tools/dx/command-contracts/${contract}`;
       const contractName = contract.replace('.contract.json', '');
@@ -345,6 +356,17 @@ async function main() {
 
         test.info(`Found ${registry.skills.length} registered skills`);
 
+        // Verify Phase 10-12 skills exist in registry
+        const phase1012Skills = ['tf-sdui-engine', 'tf-county-deployment', 'tf-mcp-postgis'];
+        const registrySkillIds = registry.skills.map(s => s.id);
+        for (const skillId of phase1012Skills) {
+          if (registrySkillIds.includes(skillId)) {
+            test.pass(`Phase 10-12 skill registered: ${skillId}`);
+          } else {
+            test.warn(`Phase 10-12 skill not yet registered: ${skillId}`);
+          }
+        }
+
         for (const skill of registry.skills) {
           const skillPath = path.resolve(ROOT, skill.path);
           const skillName = skill.id;
@@ -379,7 +401,7 @@ async function main() {
   }
 
   // ============================================================================
-  // 6. POSTURE BUS TESTS (Phase 7/8)
+  // 6. POSTURE BUS TESTS (Phase 7/8 + Phase 10-12)
   // ============================================================================
   test.section('6. Posture Bus Tests');
 
@@ -389,15 +411,32 @@ async function main() {
   );
 
   // Verify evidence and posture contracts exist (Phase 7/8 critical contracts)
-  test.fileExists(
+  if (test.fileExists(
     'tools/dx/command-contracts/evidence.contract.json',
     'Evidence contract'
-  );
+  )) {
+    test.isValidJSON(
+      'tools/dx/command-contracts/evidence.contract.json',
+      'Evidence contract'
+    );
+  }
 
-  test.fileExists(
+  if (test.fileExists(
     'tools/dx/command-contracts/posture.contract.json',
     'Posture contract'
-  );
+  )) {
+    if (test.isValidJSON(
+      'tools/dx/command-contracts/posture.contract.json',
+      'Posture contract'
+    )) {
+      // Validate posture contract has required fields
+      test.hasRequiredFields(
+        'tools/dx/command-contracts/posture.contract.json',
+        ['command', 'aliases', 'riskLevel', 'ownerLane', 'outputSchema'],
+        'Posture contract'
+      );
+    }
+  }
 
   // ============================================================================
   // 7. VS CODE EXTENSION TESTS

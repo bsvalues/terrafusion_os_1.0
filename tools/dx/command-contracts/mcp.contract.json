@@ -1,0 +1,91 @@
+{
+  "$schema": "../schemas/command-contract-v1.json",
+  "command": "mcp",
+  "description": "MCP server management and activation status",
+  "aliases": {
+    "vscode": "TerraFusion: MCP",
+    "claude": "/mcp",
+    "codex": "codex mcp",
+    "tdc": "tdc mcp"
+  },
+  "riskLevel": "read",
+  "ownerLane": "ops",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["list", "status", "activate"],
+        "default": "list",
+        "description": "MCP server operation"
+      },
+      "serverId": {
+        "type": "string",
+        "description": "Specific MCP server ID"
+      },
+      "format": {
+        "type": "string",
+        "enum": ["json", "table", "summary"],
+        "default": "table"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["servers", "activeCount", "totalCount"],
+    "properties": {
+      "servers": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "risk": { "type": "string", "enum": ["read", "write-safe", "write-remote", "system"] },
+            "activated": { "type": "boolean" },
+            "status": { "type": "string", "enum": ["active", "inactive", "error"] },
+            "lastActivated": { "type": ["string", "null"], "format": "date-time" }
+          }
+        }
+      },
+      "activeCount": { "type": "integer" },
+      "totalCount": { "type": "integer" },
+      "summary": {
+        "type": "object",
+        "properties": {
+          "byRisk": {
+            "type": "object",
+            "properties": {
+              "read": { "type": "integer" },
+              "writeSafe": { "type": "integer" },
+              "writeRemote": { "type": "integer" },
+              "system": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "servers": [
+      { "id": "document-server", "name": "Document Server", "risk": "read", "activated": true, "status": "active" },
+      { "id": "harris-pacs-connector", "name": "Harris PACS Connector", "risk": "write-remote", "activated": true, "status": "active" },
+      { "id": "postgis-server", "name": "PostGIS Spatial Server", "risk": "read", "activated": true, "status": "active" },
+      { "id": "compliance-audit", "name": "Compliance Audit", "risk": "read", "activated": false, "status": "inactive" },
+      { "id": "county-sync", "name": "County Data Sync", "risk": "write-remote", "activated": false, "status": "inactive" }
+    ],
+    "activeCount": 3,
+    "totalCount": 5,
+    "summary": {
+      "byRisk": {
+        "read": 2,
+        "writeSafe": 0,
+        "writeRemote": 2,
+        "system": 1
+      }
+    }
+  }
+}

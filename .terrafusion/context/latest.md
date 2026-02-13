@@ -1,6 +1,6 @@
 # TerraFusion Context Pack
 
-**Generated:** 2026-02-13T17:33:56.240Z
+**Generated:** 2026-02-13T17:46:53.038Z
 **Generator:** tdc
 
 ## Repository
@@ -9,8 +9,8 @@
 |-------|-------|
 | Root | `/home/user/terrafusion_os_1.0` |
 | Branch | `claude/find-todos-01Qg77veio7wJN9wAgs96TyF` |
-| Last Commit | `1363a003` |
-| Dirty Files | 11 |
+| Last Commit | `7678b89a` |
+| Dirty Files | 14 |
 
 ## Health 🔴
 
@@ -27,8 +27,8 @@
 
 | Metric | Count |
 |--------|-------|
-| Contracts Checked | 10 |
-| Valid | 10 |
+| Contracts Checked | 13 |
+| Valid | 13 |
 | Drifted | 0 |
 | Unknown | 0 |
 
@@ -38,13 +38,15 @@
 
 | Metric | Count |
 |--------|-------|
-| Registered | 5 |
-| Active | 5 |
+| Registered | 8 |
+| Active | 8 |
 
 **By Lane:**
 - governance: 2
-- dev: 2
+- dev: 3
 - security: 1
+- data: 1
+- ops: 1
 
 ## Focus
 
@@ -65,7 +67,7 @@
 
 1. Start backend services: tdc launch:backend
 2. Start API server: cd backend && dotnet run --project TerraFusion.API
-3. Review 11 uncommitted changes
+3. Review 14 uncommitted changes
 4. Address 5 CRITICAL security TODOs
 5. Run /doctor for full workspace health check
 

@@ -1,0 +1,54 @@
+{
+  "$schema": "../schemas/command-contract-v1.json",
+  "command": "county",
+  "description": "County deployment management and status",
+  "aliases": {
+    "vscode": "TerraFusion: County",
+    "claude": "/county",
+    "codex": "codex county",
+    "tdc": "tdc county"
+  },
+  "riskLevel": "read",
+  "ownerLane": "ops",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["status", "info", "init", "validate"],
+        "default": "status"
+      },
+      "countyId": {
+        "type": "string",
+        "description": "County identifier"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "counties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "parcels": { "type": "integer" },
+            "pacs": { "type": "string" },
+            "status": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "counties": [
+      { "id": "benton", "name": "Benton County", "parcels": 89247, "pacs": "Harris 9.0", "status": "production" },
+      { "id": "clark", "name": "Clark County", "parcels": 180000, "pacs": "Tyler Vision", "status": "planned" }
+    ]
+  }
+}

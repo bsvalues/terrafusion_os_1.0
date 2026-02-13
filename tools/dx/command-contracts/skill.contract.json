@@ -1,0 +1,101 @@
+{
+  "$schema": "../schemas/command-contract-v1.json",
+  "command": "skill",
+  "description": "Skills registry browsing and validation",
+  "aliases": {
+    "vscode": "TerraFusion: Skills",
+    "claude": "/skill",
+    "codex": "codex skill",
+    "tdc": "tdc skill"
+  },
+  "riskLevel": "read",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": false,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["list", "info", "validate", "search"],
+        "default": "list",
+        "description": "Skill operation"
+      },
+      "skillId": {
+        "type": "string",
+        "description": "Specific skill identifier"
+      },
+      "lane": {
+        "type": "string",
+        "enum": ["dev", "governance", "ops", "security", "data"],
+        "description": "Filter by owner lane"
+      },
+      "tag": {
+        "type": "string",
+        "description": "Filter by tag"
+      },
+      "format": {
+        "type": "string",
+        "enum": ["json", "table", "summary"],
+        "default": "table"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["skills", "totalSkills", "activeSkills"],
+    "properties": {
+      "skills": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "version": { "type": "string" },
+            "lane": { "type": "string" },
+            "status": { "type": "string", "enum": ["active", "deprecated", "experimental"] },
+            "riskLevel": { "type": "string" },
+            "tags": { "type": "array", "items": { "type": "string" } },
+            "dependencies": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      },
+      "totalSkills": { "type": "integer" },
+      "activeSkills": { "type": "integer" },
+      "byLane": {
+        "type": "object",
+        "additionalProperties": { "type": "integer" }
+      },
+      "byRisk": {
+        "type": "object",
+        "additionalProperties": { "type": "integer" }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "skills": [
+      { "id": "tf-pr-evidence-pack", "name": "PR Evidence Pack Builder", "version": "1.0.0", "lane": "governance", "status": "active", "riskLevel": "write-safe" },
+      { "id": "tf-ui-foundation", "name": "Government UI Foundation", "version": "1.0.0", "lane": "dev", "status": "active", "riskLevel": "read" },
+      { "id": "tf-a11y-508-audit", "name": "Section 508 Accessibility Audit", "version": "1.0.0", "lane": "governance", "status": "active", "riskLevel": "read" },
+      { "id": "tf-data-dense-layouts", "name": "Data-Dense Government Layouts", "version": "1.0.0", "lane": "dev", "status": "active", "riskLevel": "read" },
+      { "id": "tf-security-posture", "name": "Security Posture Tracker", "version": "1.0.0", "lane": "security", "status": "active", "riskLevel": "read" },
+      { "id": "tf-sdui-engine", "name": "Server-Driven UI Engine", "version": "1.0.0", "lane": "dev", "status": "active", "riskLevel": "read" },
+      { "id": "tf-county-deployment", "name": "County Deployment Manager", "version": "1.0.0", "lane": "ops", "status": "active", "riskLevel": "write-safe" },
+      { "id": "tf-mcp-postgis", "name": "PostGIS MCP Integration", "version": "1.0.0", "lane": "ops", "status": "active", "riskLevel": "read" }
+    ],
+    "totalSkills": 8,
+    "activeSkills": 8,
+    "byLane": {
+      "governance": 2,
+      "dev": 3,
+      "security": 1,
+      "ops": 2
+    },
+    "byRisk": {
+      "read": 6,
+      "writeSafe": 2
+    }
+  }
+}

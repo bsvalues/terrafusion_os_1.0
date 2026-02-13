@@ -1,0 +1,54 @@
+{
+  "$schema": "../../schemas/skill-contract-v1.json",
+  "skill": "tf-county-deployment",
+  "version": "1.0.0",
+  "description": "County Deployment Templates - standardized onboarding for Washington State counties",
+  "ownerLane": "ops",
+  "riskLevel": "write-safe",
+  "capabilities": [
+    "county-config-generation",
+    "pacs-integration-setup",
+    "data-migration-planning",
+    "sdui-customization",
+    "deployment-validation",
+    "onboarding-workflow"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "required": ["countyId"],
+    "properties": {
+      "countyId": {
+        "type": "string",
+        "pattern": "^[a-z]+$",
+        "description": "County identifier (lowercase)"
+      },
+      "pacsVendor": {
+        "type": "string",
+        "enum": ["harris", "tyler-vision", "aumentum", "custom"],
+        "description": "PACS vendor"
+      },
+      "action": {
+        "type": "string",
+        "enum": ["init", "validate", "status", "migrate"],
+        "default": "status"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "countyId": { "type": "string" },
+      "status": { "type": "string", "enum": ["deployed", "configured", "pending", "error"] },
+      "parcels": { "type": "integer" },
+      "pacsIntegration": { "type": "string", "enum": ["full", "partial", "none"] },
+      "compliance": {
+        "type": "object",
+        "properties": {
+          "fismaHigh": { "type": "boolean" },
+          "dataIsolation": { "type": "boolean" },
+          "auditActive": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

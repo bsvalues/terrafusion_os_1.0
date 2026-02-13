@@ -1,0 +1,59 @@
+{
+  "$schema": "../../schemas/skill-contract-v1.json",
+  "skill": "tf-mcp-postgis",
+  "version": "1.0.0",
+  "description": "PostGIS MCP Server - spatial queries for county property data",
+  "ownerLane": "data",
+  "riskLevel": "write-remote",
+  "capabilities": [
+    "parcel-boundary-queries",
+    "spatial-analysis",
+    "proximity-search",
+    "geojson-export",
+    "assessment-overlays",
+    "county-schema-isolation"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "tool": {
+        "type": "string",
+        "enum": ["parcel_query", "spatial_analysis", "proximity_search"],
+        "description": "MCP tool to invoke"
+      },
+      "county": {
+        "type": "string",
+        "description": "County schema to query"
+      },
+      "params": {
+        "type": "object",
+        "description": "Tool-specific parameters"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "type": { "type": "string", "const": "FeatureCollection" },
+      "features": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "const": "Feature" },
+            "geometry": { "type": "object" },
+            "properties": { "type": "object" }
+          }
+        }
+      },
+      "metadata": {
+        "type": "object",
+        "properties": {
+          "county": { "type": "string" },
+          "resultCount": { "type": "integer" },
+          "queryTimeMs": { "type": "number" }
+        }
+      }
+    }
+  }
+}

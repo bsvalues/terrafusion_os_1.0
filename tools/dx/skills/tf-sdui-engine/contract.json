@@ -1,0 +1,65 @@
+{
+  "$schema": "../../schemas/skill-contract-v1.json",
+  "skill": "tf-sdui-engine",
+  "version": "1.0.0",
+  "description": "Server-Driven UI Engine - declarative layout system for county-customizable government interfaces",
+  "ownerLane": "dev",
+  "riskLevel": "read",
+  "capabilities": [
+    "sdui-layout-generation",
+    "component-registry",
+    "county-customization",
+    "role-based-visibility",
+    "data-source-binding",
+    "action-definition"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "pageType": {
+        "type": "string",
+        "enum": ["dashboard", "detail", "form", "list", "report", "portal"],
+        "description": "Type of page to generate layout for"
+      },
+      "county": {
+        "type": "string",
+        "description": "County identifier for customization"
+      },
+      "role": {
+        "type": "string",
+        "enum": ["SystemAdmin", "Assessor", "PropertyAnalyst", "CitizenServices", "FinanceManager"],
+        "description": "User role for visibility filtering"
+      },
+      "components": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Specific components to include"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["version", "page", "sections"],
+    "properties": {
+      "version": { "type": "string", "const": "1.0" },
+      "page": { "type": "string" },
+      "title": { "type": "string" },
+      "county": { "type": "string" },
+      "role": { "type": "string" },
+      "sections": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "type", "children"],
+          "properties": {
+            "id": { "type": "string" },
+            "type": { "type": "string", "enum": ["grid", "stack", "tabs", "accordion", "split"] },
+            "columns": { "type": "integer" },
+            "children": { "type": "array" }
+          }
+        }
+      },
+      "actions": { "type": "array" }
+    }
+  }
+}

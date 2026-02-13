@@ -1,23 +1,26 @@
 {
   "version": "1.0",
-  "generated": "2026-02-13T17:33:56.240Z",
+  "generated": "2026-02-13T17:46:53.038Z",
   "generator": "tdc",
   "repo": {
     "root": "/home/user/terrafusion_os_1.0",
     "branch": "claude/find-todos-01Qg77veio7wJN9wAgs96TyF",
-    "lastCommit": "1363a003180b823092e53108fe6338205b378bde",
+    "lastCommit": "7678b89afe548105d6553520c820c52ac5a697d3",
     "dirtyFiles": [
-      "gitignore",
-      ".terrafusion/.gitignore",
+      "terrafusion/context/latest.json",
+      ".terrafusion/context/latest.md",
       "tools/dx/skills/registry.json",
       "tools/dx/spine-smoke.mjs",
       "tools/tdc/src/index.ts",
-      ".terrafusion/context/",
-      "tools/dx/command-contracts/posture.contract.json",
-      "tools/dx/posture-bus/",
-      "tools/dx/skills/tf-security-posture/",
-      "tools/tdc/src/commands/doctor.ts",
-      "tools/tdc/src/commands/posture.ts"
+      "tools/dx/command-contracts/county.contract.json",
+      "tools/dx/command-contracts/mcp.contract.json",
+      "tools/dx/command-contracts/skill.contract.json",
+      "tools/dx/skills/tf-county-deployment/",
+      "tools/dx/skills/tf-mcp-postgis/",
+      "tools/dx/skills/tf-sdui-engine/",
+      "tools/tdc/src/commands/compliance.ts",
+      "tools/tdc/src/commands/county.ts",
+      "tools/tdc/src/commands/mcp.ts"
     ]
   },
   "focus": {
@@ -64,16 +67,19 @@
       "companion",
       "compliance",
       "context",
+      "county",
       "doctor",
       "drift",
       "evidence",
       "launch",
+      "mcp",
       "portal",
-      "posture"
+      "posture",
+      "skill"
     ],
     "drifted": [],
     "unknown": [],
-    "timestamp": "2026-02-13T17:33:56.235Z"
+    "timestamp": "2026-02-13T17:46:53.032Z"
   },
   "todos": {
     "critical": [
@@ -136,13 +142,13 @@
   "nextActions": [
     "Start backend services: tdc launch:backend",
     "Start API server: cd backend && dotnet run --project TerraFusion.API",
-    "Review 11 uncommitted changes",
+    "Review 14 uncommitted changes",
     "Address 5 CRITICAL security TODOs",
     "Run /doctor for full workspace health check"
   ],
   "skills": {
-    "registered": 5,
-    "active": 5,
+    "registered": 8,
+    "active": 8,
     "skills": [
       {
         "id": "tf-pr-evidence-pack",
@@ -167,6 +173,21 @@
       {
         "id": "tf-security-posture",
         "lane": "security",
+        "status": "active"
+      },
+      {
+        "id": "tf-mcp-postgis",
+        "lane": "data",
+        "status": "active"
+      },
+      {
+        "id": "tf-sdui-engine",
+        "lane": "dev",
+        "status": "active"
+      },
+      {
+        "id": "tf-county-deployment",
+        "lane": "ops",
         "status": "active"
       }
     ]
