@@ -1,0 +1,9 @@
+{
+  "componentType": "PropertyCard",
+  "props": {
+    "parcelId": "TEST-001",
+    "address": "123 Government Plaza",
+    "assessedValue": 250000,
+    "countyFips": "53005"
+  }
+}

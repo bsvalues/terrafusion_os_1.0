@@ -1,0 +1,6 @@
+{
+  "componentType": "Text",
+  "props": {
+    "content": "Hello TerraFusion"
+  }
+}

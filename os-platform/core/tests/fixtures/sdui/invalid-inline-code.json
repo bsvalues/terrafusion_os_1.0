@@ -1,0 +1,8 @@
+{
+  "componentType": "Button",
+  "props": {
+    "label": "Dangerous Button",
+    "onClick": "alert('XSS')",
+    "onEvent": "fetch('/evil')"
+  }
+}

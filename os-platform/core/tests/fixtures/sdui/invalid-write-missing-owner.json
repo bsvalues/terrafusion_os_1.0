@@ -1,0 +1,11 @@
+{
+  "componentType": "Button",
+  "props": {
+    "label": "Unsafe Write",
+    "action": {
+      "tool": "property.delete",
+      "args": { "parcelId": "TEST-001" },
+      "risk": "write"
+    }
+  }
+}

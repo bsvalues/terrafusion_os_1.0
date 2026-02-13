@@ -1,0 +1,6 @@
+{
+  "componentType": "MaliciousScript",
+  "props": {
+    "code": "rm -rf /"
+  }
+}

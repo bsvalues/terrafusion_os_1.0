@@ -1,0 +1,11 @@
+{
+  "componentType": "Table",
+  "props": {
+    "columns": [
+      { "key": "parcelId", "label": "Parcel ID" },
+      { "key": "owner", "label": "Owner" },
+      { "key": "value", "label": "Assessed Value" }
+    ],
+    "data": [{ "parcelId": "001", "owner": "Test County", "value": 100000 }]
+  }
+}

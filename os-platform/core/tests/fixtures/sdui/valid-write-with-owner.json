@@ -1,0 +1,15 @@
+{
+  "componentType": "Button",
+  "props": {
+    "label": "Update Assessment",
+    "action": {
+      "tool": "property.updateAssessment",
+      "args": {
+        "parcelId": "TEST-001",
+        "newValue": 275000
+      },
+      "risk": "write",
+      "ownerLane": "governance"
+    }
+  }
+}

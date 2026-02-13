@@ -1,0 +1,13 @@
+{
+  "componentType": "Button",
+  "props": {
+    "label": "Query Property",
+    "action": {
+      "tool": "property.query",
+      "args": {
+        "parcelId": "TEST-001"
+      },
+      "risk": "read"
+    }
+  }
+}
