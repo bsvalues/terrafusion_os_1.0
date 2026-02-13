@@ -224,4 +224,20 @@ The one FAIL (receipt) is **instructive, not punitive** — it shows exactly wha
 
 ---
 
+## Convergence Scorecards
+
+The following PRs were retro-scored against the same A–F rubric to validate scoring stability:
+
+| PR | Scorecard | Result | Write Path? |
+|----|-----------|--------|-------------|
+| [#258](https://github.com/bsvalues/terrafusion_os_1.0/pull/258) | **This document** (exemplar) | 5× PASS WITH NOTES · 1× FAIL | Yes (Policy Import) |
+| [#247](https://github.com/bsvalues/terrafusion_os_1.0/pull/247) | [GOLD_SCORECARD_PR_247.md](GOLD_SCORECARD_PR_247.md) | 5× PASS WITH NOTES · 1× N/A | No (read-only) |
+| [#246](https://github.com/bsvalues/terrafusion_os_1.0/pull/246) | [GOLD_SCORECARD_PR_246.md](GOLD_SCORECARD_PR_246.md) | 5× PASS WITH NOTES · 1× N/A | No (read-only) |
+
+**Convergence:** 6/6 sections converge across all three PRs. Same evidence → same score. Write-path distinction correctly differentiates Section D.
+
+**Next step:** With convergence proven, the [Forward Standard (DoD v1.1)](TIER1_UI_UX_DOD_CHECKLIST.md#forward-standard-v11) raises the bar — new Tier-1 PRs must target PASS (not PASS WITH NOTES) on all applicable sections.
+
+---
+
 **Government. Transcended. Exemplified.**

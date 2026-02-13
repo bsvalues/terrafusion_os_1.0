@@ -201,6 +201,19 @@ Pick **one merged Tier-1 PR** and retro-score it with this sheet. The outcome be
 
 **[GOLD_EXEMPLAR_SCORECARD.md](GOLD_EXEMPLAR_SCORECARD.md)** — PR #258 (Control Plane v1.0.0) retro-scored against sections A–F. Use this as the canonical "what a scored PR looks like" reference. Future Tier-1 PRs must meet or exceed this baseline.
 
+### Convergence Validation
+
+Two additional PRs scored against the same rubric to prove stability:
+
+- **[GOLD_SCORECARD_PR_247.md](GOLD_SCORECARD_PR_247.md)** — PR #247 (PropertyDais, read-only tool) · 5× PASS WITH NOTES · 1× N/A
+- **[GOLD_SCORECARD_PR_246.md](GOLD_SCORECARD_PR_246.md)** — PR #246 (PropertyForge, read-only tool) · 5× PASS WITH NOTES · 1× N/A
+
+All three scorecards converge: 6/6 sections produce expected outcomes. Disputes collapse to mechanical rule lookup.
+
+### Forward Standard
+
+With convergence proven, the [Forward Standard (DoD v1.1)](TIER1_UI_UX_DOD_CHECKLIST.md#forward-standard-v11) defines the new PASS baseline. Post-DoD Tier-1 PRs that provide only infrastructure evidence (without concrete CID, trace screenshot, or latency number) are scored **FAIL**, not PASS WITH NOTES.
+
 ---
 
 **Government. Transcended. Calibrated.**
