@@ -66,7 +66,102 @@ interface ValidationContract {
   };
 }
 
+interface DeploymentManifest {
+  packName: string;
+  packVersion: string;
+  countyName: string;
+  fipsCode: string;
+  environment: string;
+  deployedAt: string;
+  deployedBy: string;
+  mode: 'dry-run' | 'execute';
+  baseConfig: string; // SHA256 of base county.json
+  environmentOverride?: string; // SHA256 of county.<env>.json
+  mergedConfig: string; // SHA256 of final merged config
+  schemaChecksum: string; // SHA256 of properties.sql
+  seedDataChecksum: string; // SHA256 of sample-parcels.json
+  evidencePackId?: string; // Reference to auto-attached evidence
+  artifacts: Array<{
+    path: string;
+    checksum: string;
+    size: number;
+  }>;
+}
+
 const COUNTY_PACKS_DIR = path.join(process.cwd(), 'tools', 'county-packs');
+
+/**
+ * Deep merge two objects (environment override takes precedence)
+ */
+function deepMerge(base: any, override: any): any {
+  const result = { ...base };
+  for (const key in override) {
+    if (override[key] && typeof override[key] === 'object' && !Array.isArray(override[key])) {
+      result[key] = deepMerge(base[key] || {}, override[key]);
+    } else {
+      result[key] = override[key];
+    }
+  }
+  return result;
+}
+
+/**
+ * Calculate SHA256 checksum of file
+ */
+function calculateChecksum(filePath: string): string {
+  if (!fs.existsSync(filePath)) {
+    return '';
+  }
+  const data = fs.readFileSync(filePath, 'utf-8');
+  return crypto.createHash('sha256').update(data).digest('hex');
+}
+
+/**
+ * Load county configuration with environment-specific overrides
+ */
+function loadCountyConfig(
+  packPath: string,
+  environment: string
+): {
+  config: CountyConfig;
+  baseChecksum: string;
+  overrideChecksum?: string;
+  mergedChecksum: string;
+} {
+  // Load base configuration
+  let baseConfigPath = path.join(packPath, 'config', 'county.json');
+  if (!fs.existsSync(baseConfigPath)) {
+    baseConfigPath = path.join(packPath, 'county-pack.json');
+  }
+
+  if (!fs.existsSync(baseConfigPath)) {
+    throw new Error('County configuration not found (expected config/county.json)');
+  }
+
+  const baseData = fs.readFileSync(baseConfigPath, 'utf-8');
+  const baseConfig: CountyConfig = JSON.parse(baseData);
+  const baseChecksum = crypto.createHash('sha256').update(baseData).digest('hex');
+
+  // Try to load environment-specific override
+  const overrideConfigPath = path.join(packPath, 'config', `county.${environment}.json`);
+  let overrideChecksum: string | undefined;
+  let config = baseConfig;
+
+  if (fs.existsSync(overrideConfigPath)) {
+    const overrideData = fs.readFileSync(overrideConfigPath, 'utf-8');
+    const overrideConfig: Partial<CountyConfig> = JSON.parse(overrideData);
+    overrideChecksum = crypto.createHash('sha256').update(overrideData).digest('hex');
+
+    // Deep merge (override takes precedence)
+    config = deepMerge(baseConfig, overrideConfig);
+  }
+
+  // Calculate merged config checksum
+  const mergedData = JSON.stringify(config, null, 2);
+  const mergedChecksum = crypto.createHash('sha256').update(mergedData).digest('hex');
+
+  return { config, baseChecksum, overrideChecksum, mergedChecksum };
+}
 
 /**
  * Register county command and subcommands
@@ -707,6 +802,7 @@ async function deployCountyPack(
 ): Promise<void> {
   const isDryRun = !options.execute;
   const modeLabel = isDryRun ? 'DRY-RUN' : 'EXECUTE';
+  const startTime = Date.now();
 
   console.log(chalk.bold(`\n⚡ County Pack Deployment (${modeLabel})\n`));
 
@@ -715,32 +811,29 @@ async function deployCountyPack(
     process.exit(1);
   }
 
-  // Try multiple config locations
-  let configPath = path.join(packPath, 'county-pack.json');
-  if (!fs.existsSync(configPath)) {
-    configPath = path.join(packPath, 'config', 'county.json');
-  }
-
-  if (!fs.existsSync(configPath)) {
-    console.error(chalk.red('✗ County configuration not found'));
-    process.exit(1);
-  }
-
-  let config: CountyConfig;
+  // Load configuration with environment overrides
+  let configResult: ReturnType<typeof loadCountyConfig>;
   try {
-    const configData = fs.readFileSync(configPath, 'utf-8');
-    config = JSON.parse(configData);
+    configResult = loadCountyConfig(packPath, options.env);
   } catch (error) {
-    console.error(chalk.red('✗ Failed to parse county configuration'));
+    console.error(chalk.red('✗ Failed to load county configuration:'), error);
     process.exit(1);
   }
 
+  const { config, baseChecksum, overrideChecksum, mergedChecksum } = configResult;
   const packName = path.basename(packPath);
+  const packVersion = packName.match(/-v(.+)$/)?.[1] || '1.0.0';
+
   console.log(`${chalk.gray('Pack:')} ${chalk.cyan(packName)}`);
   console.log(
     `${chalk.gray('County:')} ${config.countyName} ${chalk.gray(`(FIPS ${config.fipsCode})`)}`
   );
   console.log(`${chalk.gray('Environment:')} ${options.env}`);
+  if (overrideChecksum) {
+    console.log(chalk.green(`  → Environment override applied: county.${options.env}.json`));
+  } else {
+    console.log(chalk.yellow(`  → No environment override (using base config)`));
+  }
   console.log(
     `${chalk.gray('Mode:')} ${isDryRun ? chalk.yellow('DRY-RUN (no changes will be made)') : chalk.green('EXECUTE (changes will be applied)')}\n`
   );
@@ -750,6 +843,28 @@ async function deployCountyPack(
       chalk.yellow('⚠️  EXECUTE mode - Changes will be applied to', options.env, 'environment')
     );
     console.log(chalk.yellow('⚠️  Ensure you have proper authorization and backups\n'));
+  }
+
+  // Calculate artifact checksums
+  const schemaPath = path.join(packPath, 'schemas', 'properties.sql');
+  const seedsPath = path.join(packPath, 'seeds', 'sample-parcels.json');
+  const schemaChecksum = calculateChecksum(schemaPath);
+  const seedDataChecksum = calculateChecksum(seedsPath);
+
+  const artifacts: DeploymentManifest['artifacts'] = [];
+  if (fs.existsSync(schemaPath)) {
+    artifacts.push({
+      path: path.relative(packPath, schemaPath),
+      checksum: schemaChecksum,
+      size: fs.statSync(schemaPath).size,
+    });
+  }
+  if (fs.existsSync(seedsPath)) {
+    artifacts.push({
+      path: path.relative(packPath, seedsPath),
+      checksum: seedDataChecksum,
+      size: fs.statSync(seedsPath).size,
+    });
   }
 
   console.log(chalk.blue('[1/5] Validating environment...'));
@@ -772,7 +887,6 @@ async function deployCountyPack(
   }
 
   console.log(chalk.blue('\n[3/5] Deploying database schema...'));
-  const schemaPath = path.join(packPath, 'schemas', 'properties.sql');
   if (fs.existsSync(schemaPath)) {
     if (isDryRun) {
       console.log(chalk.yellow('  → Would execute: CREATE TABLE Properties...'));
@@ -787,7 +901,6 @@ async function deployCountyPack(
   }
 
   console.log(chalk.blue('\n[4/5] Loading seed data...'));
-  const seedsPath = path.join(packPath, 'seeds', 'sample-parcels.json');
   if (fs.existsSync(seedsPath)) {
     const seedsData = fs.readFileSync(seedsPath, 'utf-8');
     const parcels = JSON.parse(seedsData);
@@ -802,14 +915,88 @@ async function deployCountyPack(
     );
   }
 
-  console.log(chalk.blue('\n[5/5] Verifying deployment...'));
-  if (isDryRun) {
-    console.log(chalk.green('✓ Deployment verification complete (dry-run)'));
-  } else {
-    console.log(chalk.yellow('  → Querying deployed county records...'));
-    console.log(chalk.yellow('  → Validating Sovereign County isolation...'));
-    console.log(chalk.green('✓ Deployment verification complete'));
+  console.log(chalk.blue('\n[5/5] Generating deployment artifacts...'));
+
+  // Create deployment manifest
+  const manifest: DeploymentManifest = {
+    packName,
+    packVersion,
+    countyName: config.countyName,
+    fipsCode: config.fipsCode,
+    environment: options.env,
+    deployedAt: new Date().toISOString(),
+    deployedBy: process.env.USER || process.env.USERNAME || 'unknown',
+    mode: isDryRun ? 'dry-run' : 'execute',
+    baseConfig: baseChecksum,
+    environmentOverride: overrideChecksum,
+    mergedConfig: mergedChecksum,
+    schemaChecksum,
+    seedDataChecksum,
+    artifacts,
+  };
+
+  // Write deployment manifest
+  const manifestsDir = path.join(process.cwd(), '.terrafusion', 'manifests');
+  if (!fs.existsSync(manifestsDir)) {
+    fs.mkdirSync(manifestsDir, { recursive: true });
   }
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('.')[0];
+  const manifestFileName = `county-deploy-${config.fipsCode}-${options.env}-${timestamp}.json`;
+  const manifestPath = path.join(manifestsDir, manifestFileName);
+
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
+  console.log(
+    chalk.green('✓'),
+    `Deployment manifest: ${path.relative(process.cwd(), manifestPath)}`
+  );
+
+  // Write merged configuration (for audit trail)
+  const mergedConfigPath = path.join(
+    manifestsDir,
+    `county-merged-${config.fipsCode}-${options.env}-${timestamp}.json`
+  );
+  fs.writeFileSync(mergedConfigPath, JSON.stringify(config, null, 2), 'utf-8');
+  console.log(chalk.green('✓'), `Merged config: ${path.relative(process.cwd(), mergedConfigPath)}`);
+
+  // Auto-attach evidence pack
+  const evidenceDir = path.join(process.cwd(), '.terrafusion', 'evidence');
+  if (!fs.existsSync(evidenceDir)) {
+    fs.mkdirSync(evidenceDir, { recursive: true });
+  }
+
+  const evidencePackId = `evidence-${config.fipsCode}-${options.env}-${timestamp}`;
+  const evidencePack = {
+    id: evidencePackId,
+    type: 'county-deployment',
+    packName,
+    countyName: config.countyName,
+    fipsCode: config.fipsCode,
+    environment: options.env,
+    createdAt: new Date().toISOString(),
+    artifacts: {
+      deploymentManifest: path.relative(process.cwd(), manifestPath),
+      mergedConfig: path.relative(process.cwd(), mergedConfigPath),
+      schema: schemaChecksum ? path.relative(packPath, schemaPath) : null,
+      seedData: seedDataChecksum ? path.relative(packPath, seedsPath) : null,
+    },
+    checksums: {
+      baseConfig: baseChecksum,
+      environmentOverride: overrideChecksum || null,
+      mergedConfig: mergedChecksum,
+      schema: schemaChecksum,
+      seedData: seedDataChecksum,
+    },
+    status: isDryRun ? 'dry-run' : 'deployed',
+  };
+
+  const evidencePath = path.join(evidenceDir, `${evidencePackId}.json`);
+  fs.writeFileSync(evidencePath, JSON.stringify(evidencePack, null, 2), 'utf-8');
+  console.log(chalk.green('✓'), `Evidence pack: ${path.relative(process.cwd(), evidencePath)}`);
+
+  // Update manifest with evidence pack reference
+  manifest.evidencePackId = evidencePackId;
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
 
   console.log('');
   console.log(chalk.green('╔════════════════════════════════════════════════╗'));
@@ -827,12 +1014,35 @@ async function deployCountyPack(
   console.log(
     `  Status: ${isDryRun ? chalk.yellow('DRY RUN (no changes made)') : chalk.green('DEPLOYED')}`
   );
+  console.log(`  Execution Time: ${Date.now() - startTime}ms`);
+  console.log('');
+
+  console.log('Deployment Artifacts:');
+  console.log(`  Manifest: ${chalk.cyan(path.relative(process.cwd(), manifestPath))}`);
+  console.log(`  Merged Config: ${chalk.cyan(path.relative(process.cwd(), mergedConfigPath))}`);
+  console.log(`  Evidence Pack: ${chalk.cyan(path.relative(process.cwd(), evidencePath))}`);
+  console.log('');
+
+  console.log('Checksums:');
+  console.log(`  Base Config:    ${baseChecksum.substring(0, 16)}...`);
+  if (overrideChecksum) {
+    console.log(`  Override Config: ${overrideChecksum.substring(0, 16)}...`);
+  }
+  console.log(`  Merged Config:  ${mergedChecksum.substring(0, 16)}...`);
+  if (schemaChecksum) {
+    console.log(`  Schema:         ${schemaChecksum.substring(0, 16)}...`);
+  }
+  if (seedDataChecksum) {
+    console.log(`  Seed Data:      ${seedDataChecksum.substring(0, 16)}...`);
+  }
   console.log('');
 
   if (isDryRun) {
     console.log('Next Steps:');
-    console.log('  1. Review deployment plan above');
-    console.log(`  2. Run actual deployment: tdc county deploy ${packPath} --execute`);
+    console.log('  1. Review deployment manifest above');
+    console.log(
+      `  2. Run actual deployment: tdc county deploy ${packPath} --env ${options.env} --execute`
+    );
     console.log(`  3. Or use pack scripts: cd ${packPath} && ./scripts/deploy.sh`);
     console.log('');
   } else {
