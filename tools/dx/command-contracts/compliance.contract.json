@@ -1,0 +1,123 @@
+{
+  "$schema": "../context-pack/contract-schema.json",
+  "command": "compliance",
+  "description": "FISMA-HIGH compliance validation and security posture check",
+  "aliases": {
+    "vscode": "TerraFusion: Compliance",
+    "claude": "/compliance",
+    "codex": "codex compliance",
+    "tdc": "tdc compliance"
+  },
+  "riskLevel": "read",
+  "ownerLane": "governance",
+  "requiresConfirmation": false,
+  "auditRequired": true,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "framework": {
+        "type": "string",
+        "enum": ["fisma", "nist-800-53", "wcag", "all"],
+        "default": "all",
+        "description": "Compliance framework to check"
+      },
+      "verbose": {
+        "type": "boolean",
+        "default": false,
+        "description": "Show detailed compliance report"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["status", "frameworks", "summary", "complianceScore"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["compliant", "partial", "non-compliant"]
+      },
+      "frameworks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "status", "score", "controls"],
+          "properties": {
+            "name": { "type": "string" },
+            "status": { "type": "string", "enum": ["compliant", "partial", "non-compliant"] },
+            "score": { "type": "number", "minimum": 0, "maximum": 100 },
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "status": { "type": "string" },
+                  "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] }
+                }
+              }
+            }
+          }
+        }
+      },
+      "summary": {
+        "type": "object",
+        "properties": {
+          "totalControls": { "type": "integer" },
+          "compliant": { "type": "integer" },
+          "partial": { "type": "integer" },
+          "nonCompliant": { "type": "integer" }
+        }
+      },
+      "complianceScore": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "status": "compliant",
+    "frameworks": [
+      {
+        "name": "FISMA-HIGH",
+        "status": "compliant",
+        "score": 98.5,
+        "controls": [
+          { "id": "AC-2", "name": "Account Management", "status": "compliant", "severity": "high" },
+          { "id": "AU-2", "name": "Audit Events", "status": "compliant", "severity": "high" },
+          { "id": "IA-2", "name": "Identification and Authentication", "status": "compliant", "severity": "critical" },
+          { "id": "SC-7", "name": "Boundary Protection", "status": "compliant", "severity": "high" }
+        ]
+      },
+      {
+        "name": "NIST-800-53",
+        "status": "compliant",
+        "score": 97.2,
+        "controls": [
+          { "id": "AC-1", "name": "Access Control Policy", "status": "compliant", "severity": "medium" },
+          { "id": "CM-2", "name": "Baseline Configuration", "status": "compliant", "severity": "medium" },
+          { "id": "SI-2", "name": "Flaw Remediation", "status": "compliant", "severity": "high" }
+        ]
+      },
+      {
+        "name": "WCAG-2.1-AA",
+        "status": "compliant",
+        "score": 100.0,
+        "controls": [
+          { "id": "1.1.1", "name": "Non-text Content", "status": "compliant", "severity": "medium" },
+          { "id": "2.1.1", "name": "Keyboard", "status": "compliant", "severity": "high" },
+          { "id": "3.1.1", "name": "Language of Page", "status": "compliant", "severity": "low" }
+        ]
+      }
+    ],
+    "summary": {
+      "totalControls": 10,
+      "compliant": 10,
+      "partial": 0,
+      "nonCompliant": 0
+    },
+    "complianceScore": 98.6
+  }
+}
