@@ -177,6 +177,30 @@ jobs:
       - name: Phase 12C Supervised Writes
         run: pnpm run test:phase12c-writes
 
+  phase12d-e2e:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Compile mock-pg-pool.ts to .mjs
+        run: npx tsc os-platform/core/tests/mocks/mock-pg-pool.ts --module ESNext --target ES2022 --moduleResolution node --skipLibCheck --types node && mv os-platform/core/tests/mocks/mock-pg-pool.js os-platform/core/tests/mocks/mock-pg-pool.mjs
+      - name: Compile postgis-policy.ts to .mjs
+        run: npx tsc os-platform/core/pilot/mcp/postgis-policy.ts --module ESNext --target ES2022 --moduleResolution node --skipLibCheck --types node && mv os-platform/core/pilot/mcp/postgis-policy.js os-platform/core/pilot/mcp/postgis-policy.mjs
+      - name: Compile postgis-writes.ts to .mjs
+        run: npx tsc os-platform/core/pilot/mcp/postgis-writes.ts --module ESNext --target ES2022 --moduleResolution node --skipLibCheck --types node && mv os-platform/core/pilot/mcp/postgis-writes.js os-platform/core/pilot/mcp/postgis-writes.mjs
+      - name: Compile postgis-approval.ts to .mjs
+        run: npx tsc os-platform/core/pilot/mcp/postgis-approval.ts --module ESNext --target ES2022 --moduleResolution node --skipLibCheck --types node && mv os-platform/core/pilot/mcp/postgis-approval.js os-platform/core/pilot/mcp/postgis-approval.mjs
+      - name: Phase 12D E2E Integration
+        run: pnpm run test:phase12d-e2e
+
   check-generated-js:
     needs: changes
     if: needs.changes.outputs.core == 'true'
