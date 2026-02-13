@@ -1,0 +1,90 @@
+{
+  "scenario": "read-write-flow-valid",
+  "description": "Full MCP flow: read property → approve write → execute write → verify evidence",
+  "county": "benton",
+  "environment": "staging",
+
+  "step1_read": {
+    "operationId": "query_property_by_parcel",
+    "query": "SELECT parcel_id, assessed_value, tax_year, owner_name FROM properties WHERE parcel_id = $1 AND county_id = $2",
+    "params": ["12-345-678", "wa-benton-053"],
+    "expectedRowCount": 1,
+    "expectedColumns": [
+      "parcel_id",
+      "assessed_value",
+      "tax_year",
+      "owner_name"
+    ],
+    "mockResult": [
+      {
+        "parcel_id": "12-345-678",
+        "county_id": "wa-benton-053",
+        "assessed_value": 300000,
+        "tax_year": 2025,
+        "owner_name": "John Doe"
+      }
+    ]
+  },
+
+  "step2_approve_write": {
+    "approvedBy": "supervisor@benton.gov",
+    "approvedAt": "2026-02-13T10:00:00Z",
+    "expiresAt": "2026-02-13T18:00:00Z",
+    "reason": "Annual assessment update based on recent appraisal",
+    "operationId": "update_property_assessment",
+    "params": [
+      350000,
+      2026,
+      "supervisor@benton.gov",
+      "12-345-678",
+      "wa-benton-053"
+    ]
+  },
+
+  "step3_execute_write": {
+    "operationId": "update_property_assessment",
+    "template": "UPDATE properties SET assessed_value = $1, tax_year = $2, updated_at = NOW(), updated_by = $3 WHERE parcel_id = $4 AND county_id = $5",
+    "params": [
+      350000,
+      2026,
+      "supervisor@benton.gov",
+      "12-345-678",
+      "wa-benton-053"
+    ],
+    "expectedRowsAffected": 1
+  },
+
+  "step4_verify_evidence": {
+    "expectedArtifacts": [
+      "write.manifest.json",
+      "approval.artifact.json",
+      "write.receipt.json"
+    ],
+    "expectedLinks": [
+      "manifest.approvalId === approval.approvalId",
+      "approval.bindings.manifestHash === manifest.manifestHash",
+      "receipt.manifestHash === manifest.manifestHash",
+      "receipt.approvalId === approval.approvalId"
+    ]
+  },
+
+  "step5_verify_read": {
+    "operationId": "query_property_by_parcel",
+    "query": "SELECT parcel_id, assessed_value, tax_year FROM properties WHERE parcel_id = $1 AND county_id = $2",
+    "params": ["12-345-678", "wa-benton-053"],
+    "expectedResult": [
+      {
+        "parcel_id": "12-345-678",
+        "assessed_value": 350000,
+        "tax_year": 2026
+      }
+    ]
+  },
+
+  "governance": {
+    "countyIsolation": "absolute",
+    "approvalRequired": true,
+    "evidenceRequired": true,
+    "auditTrail": "complete"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "scenario": "evidence-trail-complete",
+  "description": "Full evidence trail with bidirectional linking across read → write → receipt",
+  "county": "benton",
+  "environment": "staging",
+
+  "initial_read": {
+    "operationId": "query_property_by_parcel",
+    "query": "SELECT parcel_id, assessed_value, tax_year FROM properties WHERE parcel_id = $1 AND county_id = $2",
+    "params": ["12-345-678", "wa-benton-053"],
+    "traceEnabled": true,
+    "expectedTrace": {
+      "eventType": "tool_invoked",
+      "toolId": "mcp-postgis-query",
+      "risk": "read"
+    }
+  },
+
+  "write_with_approval": {
+    "operationId": "update_property_assessment",
+    "params": [
+      350000,
+      2026,
+      "supervisor@benton.gov",
+      "12-345-678",
+      "wa-benton-053"
+    ],
+    "ownerLane": "benton-assessor",
+    "reason": "Annual assessment update based on recent appraisal",
+    "approval": {
+      "approvedBy": "supervisor@benton.gov",
+      "approvedAt": "2026-02-13T10:00:00Z",
+      "expiresAt": "2026-02-13T18:00:00Z",
+      "reason": "Annual assessment update"
+    },
+    "traceEnabled": true,
+    "expectedTrace": {
+      "eventType": "tool_invoked",
+      "toolId": "mcp-postgis-write",
+      "risk": "write",
+      "approvalArtifact": "present"
+    }
+  },
+
+  "evidence_pack": {
+    "artifacts": [
+      {
+        "type": "write.manifest.json",
+        "requiredFields": [
+          "manifestId",
+          "operationId",
+          "county",
+          "environment",
+          "params",
+          "paramsHash",
+          "ownerLane",
+          "reason",
+          "approvalId",
+          "manifestHash",
+          "createdAt"
+        ]
+      },
+      {
+        "type": "approval.artifact.json",
+        "requiredFields": [
+          "approvalId",
+          "approvedBy",
+          "approvedAt",
+          "expiresAt",
+          "reason",
+          "scope",
+          "bindings"
+        ]
+      },
+      {
+        "type": "write.receipt.json",
+        "requiredFields": [
+          "receiptId",
+          "manifestHash",
+          "approvalId",
+          "rowsAffected",
+          "executedAt",
+          "executedBy",
+          "receiptHash"
+        ]
+      }
+    ],
+    "bidirectionalLinks": [
+      {
+        "link": "manifest → approval",
+        "check": "manifest.approvalId === approval.approvalId"
+      },
+      {
+        "link": "approval → manifest",
+        "check": "approval.bindings.manifestHash === manifest.manifestHash"
+      },
+      {
+        "link": "receipt → manifest",
+        "check": "receipt.manifestHash === manifest.manifestHash"
+      },
+      {
+        "link": "receipt → approval",
+        "check": "receipt.approvalId === approval.approvalId"
+      }
+    ]
+  },
+
+  "governance": {
+    "evidenceImmutability": "enforced",
+    "bidirectionalLinking": "required",
+    "hashIntegrity": "verified",
+    "auditTrail": "complete"
+  }
+}

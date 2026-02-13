@@ -1,0 +1,54 @@
+{
+  "scenario": "cross-county-isolation",
+  "description": "Benton supervisor cannot write to Yakima county data",
+  "bentonCounty": "benton",
+  "yakimaCounty": "yakima",
+  "environment": "staging",
+
+  "benton_read": {
+    "operationId": "query_property_by_parcel",
+    "query": "SELECT parcel_id, assessed_value FROM properties WHERE parcel_id = $1 AND county_id = $2",
+    "params": ["12-345-678", "wa-benton-053"],
+    "expectedRowCount": 1,
+    "mockResult": [
+      {
+        "parcel_id": "12-345-678",
+        "county_id": "wa-benton-053",
+        "assessed_value": 300000
+      }
+    ]
+  },
+
+  "benton_approval": {
+    "approvedBy": "supervisor@benton.gov",
+    "approvedAt": "2026-02-13T10:00:00Z",
+    "expiresAt": "2026-02-13T18:00:00Z",
+    "reason": "Benton county assessment update",
+    "scope": {
+      "county": "benton",
+      "environment": "staging",
+      "operationId": "update_property_assessment"
+    }
+  },
+
+  "yakima_write_attempt": {
+    "operationId": "update_property_assessment",
+    "params": [
+      350000,
+      2026,
+      "supervisor@benton.gov",
+      "99-888-777",
+      "wa-yakima-077"
+    ],
+    "county": "yakima",
+    "approvalCounty": "benton",
+    "expectedError": "County mismatch: approval scope county (benton) does not match write manifest county (yakima)",
+    "mustReject": true
+  },
+
+  "governance": {
+    "crossCountyWrites": "FORBIDDEN",
+    "countyIsolation": "absolute",
+    "approvalScopeBinding": "strict"
+  }
+}
