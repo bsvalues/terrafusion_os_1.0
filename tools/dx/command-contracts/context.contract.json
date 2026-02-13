@@ -1,0 +1,144 @@
+{
+  "$schema": "../context-pack/contract-schema.json",
+  "command": "context",
+  "description": "Context Pack operations for AI-assisted development",
+  "aliases": {
+    "vscode": "TerraFusion: Context",
+    "claude": "/context",
+    "codex": "codex context",
+    "tdc": "tdc context"
+  },
+  "riskLevel": "read",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["view", "regenerate", "validate", "list"],
+        "default": "view",
+        "description": "Context Pack operation"
+      },
+      "scope": {
+        "type": "string",
+        "enum": ["backend", "frontend", "os-platform", "all"],
+        "default": "all",
+        "description": "Scope of context generation"
+      },
+      "format": {
+        "type": "string",
+        "enum": ["json", "markdown", "xml"],
+        "default": "json",
+        "description": "Output format"
+      },
+      "includeTests": {
+        "type": "boolean",
+        "default": true,
+        "description": "Include test context"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["status", "contextPacks", "metadata"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["success", "partial", "error"]
+      },
+      "contextPacks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "path", "size", "lastUpdated"],
+          "properties": {
+            "name": { "type": "string" },
+            "path": { "type": "string" },
+            "size": { "type": "integer" },
+            "lastUpdated": { "type": "string", "format": "date-time" },
+            "status": { "type": "string", "enum": ["valid", "stale", "invalid"] },
+            "scope": { "type": "string" },
+            "sections": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "lineCount": { "type": "integer" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "metadata": {
+        "type": "object",
+        "properties": {
+          "totalPacks": { "type": "integer" },
+          "totalSize": { "type": "integer" },
+          "valid": { "type": "integer" },
+          "stale": { "type": "integer" },
+          "invalid": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "status": "success",
+    "contextPacks": [
+      {
+        "name": "backend-context",
+        "path": "backend/.context/backend-context.md",
+        "size": 45678,
+        "lastUpdated": "2026-02-13T09:15:00Z",
+        "status": "valid",
+        "scope": "backend",
+        "sections": [
+          { "name": "Architecture Overview", "lineCount": 125 },
+          { "name": "Service Layer", "lineCount": 340 },
+          { "name": "Data Layer", "lineCount": 287 },
+          { "name": "API Endpoints", "lineCount": 512 },
+          { "name": "Authentication", "lineCount": 98 }
+        ]
+      },
+      {
+        "name": "frontend-context",
+        "path": "frontend/.context/frontend-context.md",
+        "size": 38912,
+        "lastUpdated": "2026-02-13T09:15:00Z",
+        "status": "valid",
+        "scope": "frontend",
+        "sections": [
+          { "name": "Component Architecture", "lineCount": 215 },
+          { "name": "State Management", "lineCount": 178 },
+          { "name": "Routing", "lineCount": 89 },
+          { "name": "UI Components", "lineCount": 423 },
+          { "name": "Hooks & Utilities", "lineCount": 156 }
+        ]
+      },
+      {
+        "name": "os-platform-context",
+        "path": "os-platform/.context/os-platform-context.md",
+        "size": 52341,
+        "lastUpdated": "2026-02-13T09:15:00Z",
+        "status": "valid",
+        "scope": "os-platform",
+        "sections": [
+          { "name": "AI Swarm Architecture", "lineCount": 289 },
+          { "name": "Testing Suite", "lineCount": 445 },
+          { "name": "Agent Coordination", "lineCount": 198 }
+        ]
+      }
+    ],
+    "metadata": {
+      "totalPacks": 3,
+      "totalSize": 136931,
+      "valid": 3,
+      "stale": 0,
+      "invalid": 0
+    }
+  }
+}

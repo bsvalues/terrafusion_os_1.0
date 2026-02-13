@@ -1,0 +1,29 @@
+{
+  "toolId": "document-server",
+  "approvedBy": "auto-approved",
+  "approvalDate": "2026-02-13T02:18:12.980Z",
+  "riskLevel": "read",
+  "scope": "development",
+  "expiresAt": null,
+  "justification": "Read-only document access for development workflows",
+  "constraints": {
+    "maxRequestsPerHour": 1000,
+    "allowedOperations": [],
+    "dataAccessRestrictions": [
+      "no-production-data"
+    ],
+    "auditLevel": "minimal"
+  },
+  "auditTrail": [
+    {
+      "timestamp": "2026-02-13T02:18:12.980Z",
+      "action": "created",
+      "actor": "system",
+      "reason": "Initial activation"
+    }
+  ],
+  "revoked": false,
+  "revokedAt": null,
+  "revokedBy": null,
+  "revokedReason": null
+}

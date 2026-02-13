@@ -1,0 +1,206 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.dev/schemas/mcp-approval-v1.json",
+  "title": "MCP Tool Approval Artifact",
+  "description": "Schema for MCP server activation approval records (DX Spine §7.2)",
+  "version": "1.0",
+
+  "type": "object",
+  "required": [
+    "toolId",
+    "approvedBy",
+    "approvalDate",
+    "riskLevel",
+    "scope"
+  ],
+
+  "properties": {
+    "toolId": {
+      "type": "string",
+      "description": "MCP server identifier being approved",
+      "enum": [
+        "document-server",
+        "harris-pacs-connector",
+        "revenue-discovery-tools",
+        "property-assessment-suite",
+        "compliance-monitoring-kit"
+      ]
+    },
+
+    "approvedBy": {
+      "type": "string",
+      "description": "Email or identifier of approving authority (Cloud Coach, Security Lead, etc.)",
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$|^[A-Z][a-zA-Z\\s]+$",
+      "examples": [
+        "coach@terrafusion.dev",
+        "Cloud Coach",
+        "Security Lead"
+      ]
+    },
+
+    "approvalDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when approval was granted"
+    },
+
+    "riskLevel": {
+      "type": "string",
+      "enum": ["read", "write-local", "write-remote", "write-production", "destructive"],
+      "description": "Risk level per DX Spine Charter §4.2"
+    },
+
+    "scope": {
+      "type": "string",
+      "enum": ["development", "staging", "production"],
+      "description": "Environment scope for this activation"
+    },
+
+    "expiresAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when approval expires (null = no expiration)"
+    },
+
+    "justification": {
+      "type": "string",
+      "description": "Business justification for activating this MCP server",
+      "minLength": 10,
+      "maxLength": 500
+    },
+
+    "constraints": {
+      "type": "object",
+      "description": "Operational constraints on this activation",
+      "properties": {
+        "maxRequestsPerHour": {
+          "type": "integer",
+          "description": "Rate limit for MCP tool invocations",
+          "minimum": 0
+        },
+        "allowedOperations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Whitelist of allowed MCP tool operations"
+        },
+        "dataAccessRestrictions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Data access constraints (e.g., 'no-production-parcels', 'read-only')"
+        },
+        "auditLevel": {
+          "type": "string",
+          "enum": ["minimal", "standard", "verbose"],
+          "description": "Level of audit logging for this server",
+          "default": "standard"
+        }
+      }
+    },
+
+    "securityReview": {
+      "type": "object",
+      "description": "Security review metadata (required for production scope)",
+      "properties": {
+        "reviewedBy": {
+          "type": "string",
+          "description": "Security reviewer identifier"
+        },
+        "reviewDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date of security review"
+        },
+        "findings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Security findings or notes"
+        },
+        "approved": {
+          "type": "boolean",
+          "description": "Security approval status"
+        }
+      }
+    },
+
+    "auditTrail": {
+      "type": "array",
+      "description": "Change history for this approval artifact",
+      "items": {
+        "type": "object",
+        "required": ["timestamp", "action", "actor"],
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["created", "modified", "revoked", "renewed", "expired"]
+          },
+          "actor": {
+            "type": "string",
+            "description": "Who performed this action"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for the action"
+          }
+        }
+      }
+    },
+
+    "revoked": {
+      "type": "boolean",
+      "description": "Whether this approval has been revoked",
+      "default": false
+    },
+
+    "revokedAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When approval was revoked"
+    },
+
+    "revokedBy": {
+      "type": ["string", "null"],
+      "description": "Who revoked the approval"
+    },
+
+    "revokedReason": {
+      "type": ["string", "null"],
+      "description": "Why approval was revoked"
+    }
+  },
+
+  "examples": [
+    {
+      "toolId": "harris-pacs-connector",
+      "approvedBy": "coach@terrafusion.dev",
+      "approvalDate": "2026-02-13T10:00:00Z",
+      "riskLevel": "write-remote",
+      "scope": "development",
+      "expiresAt": "2026-08-13T10:00:00Z",
+      "justification": "Required for Benton County parcel sync testing in development environment",
+      "constraints": {
+        "maxRequestsPerHour": 100,
+        "allowedOperations": ["read-parcel", "sync-metadata"],
+        "dataAccessRestrictions": ["no-production-parcels"],
+        "auditLevel": "verbose"
+      },
+      "revoked": false
+    },
+    {
+      "toolId": "document-server",
+      "approvedBy": "Cloud Coach",
+      "approvalDate": "2026-02-13T09:00:00Z",
+      "riskLevel": "read",
+      "scope": "production",
+      "expiresAt": null,
+      "justification": "Read-only document access for development workflows",
+      "constraints": {
+        "auditLevel": "minimal"
+      },
+      "revoked": false
+    }
+  ]
+}
