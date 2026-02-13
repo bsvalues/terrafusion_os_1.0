@@ -1,0 +1,19 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/routing-fixture.v1.json",
+  "description": "Invalid: Requesting staging but DSN points to production (env violation)",
+  "county": "benton",
+  "countyId": "wa-benton-053",
+  "environment": "staging",
+  "dataSource": {
+    "type": "postgresql",
+    "host": "prod-db-primary.benton.terrafusion.gov",
+    "port": 5432,
+    "database": "terrafusion_benton_prod",
+    "schema": "public"
+  },
+  "expectedError": "Environment mismatch: requested staging but DSN resolved to production",
+  "metadata": {
+    "purpose": "Test fixture for environment isolation violation",
+    "shouldFail": true
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/routing-fixture.v1.json",
+  "description": "Yakima County development environment routing configuration",
+  "county": "yakima",
+  "countyId": "wa-yakima-077",
+  "environment": "development",
+  "dataSource": {
+    "type": "postgresql",
+    "host": "localhost",
+    "port": 5433,
+    "database": "terrafusion_yakima_dev",
+    "schema": "public",
+    "connectionPool": {
+      "min": 2,
+      "max": 10
+    }
+  },
+  "policy": {
+    "allowedRisks": ["read"],
+    "requireApprovalFor": [],
+    "auditLevel": "standard"
+  },
+  "expectedDSNHash": "d4e5f6g7h8i9j0k1",
+  "metadata": {
+    "createdAt": "2026-02-13T00:00:00Z",
+    "purpose": "Test fixture for Yakima County dev routing",
+    "governanceLevel": "development"
+  }
+}

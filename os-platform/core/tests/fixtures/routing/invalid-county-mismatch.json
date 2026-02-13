@@ -1,0 +1,19 @@
+{
+  "$schema": "https://terrafusion.gov/schemas/routing-fixture.v1.json",
+  "description": "Invalid: Requesting Benton but DSN points to Yakima (cross-county violation)",
+  "county": "benton",
+  "countyId": "wa-benton-053",
+  "environment": "development",
+  "dataSource": {
+    "type": "postgresql",
+    "host": "localhost",
+    "port": 5433,
+    "database": "terrafusion_yakima_dev",
+    "schema": "public"
+  },
+  "expectedError": "County mismatch: requested benton but DSN resolved to yakima",
+  "metadata": {
+    "purpose": "Test fixture for cross-county isolation violation",
+    "shouldFail": true
+  }
+}
