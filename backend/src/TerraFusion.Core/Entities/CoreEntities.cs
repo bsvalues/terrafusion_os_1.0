@@ -52,6 +52,32 @@ public class GovernmentUser
     public string? Permissions { get; set; } // JSON string
 }
 
+public class PasswordHistory
+{
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Foreign key to GovernmentUser
+    /// </summary>
+    public Guid UserId { get; set; }
+    
+    /// <summary>
+    /// Hashed password (PBKDF2/Argon2 format)
+    /// Phase 4 Sprint 1: Storage only, no enforcement
+    /// </summary>
+    public required string PasswordHash { get; set; }
+    
+    /// <summary>
+    /// When this password was set
+    /// </summary>
+    public DateTime CreatedAt { get; set; }
+    
+    /// <summary>
+    /// Navigation property (optional)
+    /// </summary>
+    public GovernmentUser? User { get; set; }
+}
+
 public class AuditLog
 {
     public Guid Id { get; set; }
