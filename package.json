@@ -86,6 +86,7 @@
     "test:phase11-county": "node --test os-platform/core/tests/phase11-county-pack.test.mjs",
     "test:phase12-mcp": "node --test os-platform/core/tests/phase12-mcp.postgis.policy.test.mjs os-platform/core/tests/phase12-mcp.postgis.contract.test.mjs",
     "test:phase12b-routing": "node --test os-platform/core/tests/phase12b-routing.test.mjs",
+    "test:phase12c-writes": "node --test os-platform/core/tests/phase12c-writes.policy.test.mjs os-platform/core/tests/phase12c-writes.contract.test.mjs os-platform/core/tests/phase12c-writes.evidence.test.mjs",
     "lint:platform": "node scripts/platform-lint.mjs",
     "doctor": "node scripts/doctor.mjs",
     "trace:query": "node scripts/trace-query.mjs",
