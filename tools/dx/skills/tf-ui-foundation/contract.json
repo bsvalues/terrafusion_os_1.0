@@ -1,0 +1,37 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/skill-contract-v1.json",
+  "skill": "tf-ui-foundation",
+  "version": "1.0.0",
+  "description": "Government UI Foundation - TerraFusion design system patterns",
+  "ownerLane": "dev",
+  "riskLevel": "read",
+  "capabilities": [
+    "component-patterns",
+    "design-tokens",
+    "form-patterns",
+    "table-patterns",
+    "accessibility-guidance"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "component": {
+        "type": "string",
+        "description": "Component type to generate guidance for"
+      },
+      "variant": {
+        "type": "string",
+        "enum": ["default", "government", "data-dense", "citizen-facing"],
+        "default": "default"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "code": { "type": "string", "description": "TSX component code" },
+      "tokens": { "type": "object", "description": "Design tokens used" },
+      "a11y": { "type": "object", "description": "Accessibility requirements" }
+    }
+  }
+}

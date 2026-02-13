@@ -1,0 +1,68 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/skill-registry-v1.json",
+  "version": "1.0",
+  "description": "TerraFusion Skills Registry - Governed capability modules for DX Spine",
+  "skills": [
+    {
+      "id": "tf-pr-evidence-pack",
+      "name": "PR Evidence Pack Builder",
+      "version": "1.0.0",
+      "description": "Deterministic PR evidence bundle aggregating all lane audit results",
+      "ownerLane": "governance",
+      "riskLevel": "write-safe",
+      "status": "active",
+      "path": "tools/dx/skills/tf-pr-evidence-pack",
+      "contract": "tools/dx/skills/tf-pr-evidence-pack/contract.json",
+      "tags": ["evidence", "pr", "governance", "seal-gate"],
+      "dependencies": []
+    },
+    {
+      "id": "tf-ui-foundation",
+      "name": "Government UI Foundation",
+      "version": "1.0.0",
+      "description": "TerraFusion government-grade UI component patterns with WCAG 2.1 AA compliance",
+      "ownerLane": "dev",
+      "riskLevel": "read",
+      "status": "active",
+      "path": "tools/dx/skills/tf-ui-foundation",
+      "contract": "tools/dx/skills/tf-ui-foundation/contract.json",
+      "tags": ["ui", "components", "wcag", "government"],
+      "dependencies": []
+    },
+    {
+      "id": "tf-a11y-508-audit",
+      "name": "Section 508 Accessibility Audit",
+      "version": "1.0.0",
+      "description": "Automated WCAG 2.1 AA and Section 508 compliance auditing for government interfaces",
+      "ownerLane": "governance",
+      "riskLevel": "read",
+      "status": "active",
+      "path": "tools/dx/skills/tf-a11y-508-audit",
+      "contract": "tools/dx/skills/tf-a11y-508-audit/contract.json",
+      "tags": ["accessibility", "508", "wcag", "audit", "compliance"],
+      "dependencies": ["tf-ui-foundation"]
+    },
+    {
+      "id": "tf-data-dense-layouts",
+      "name": "Data-Dense Government Layouts",
+      "version": "1.0.0",
+      "description": "High-density data layouts for property assessment, tax records, and government dashboards",
+      "ownerLane": "dev",
+      "riskLevel": "read",
+      "status": "active",
+      "path": "tools/dx/skills/tf-data-dense-layouts",
+      "contract": "tools/dx/skills/tf-data-dense-layouts/contract.json",
+      "tags": ["layouts", "data-dense", "tables", "dashboards", "government"],
+      "dependencies": ["tf-ui-foundation"]
+    }
+  ],
+  "metadata": {
+    "totalSkills": 4,
+    "activeSkills": 4,
+    "lanes": {
+      "governance": 2,
+      "dev": 2
+    },
+    "lastUpdated": "2026-02-13T00:00:00Z"
+  }
+}

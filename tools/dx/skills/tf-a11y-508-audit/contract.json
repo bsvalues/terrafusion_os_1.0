@@ -1,0 +1,65 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/skill-contract-v1.json",
+  "skill": "tf-a11y-508-audit",
+  "version": "1.0.0",
+  "description": "Section 508 Accessibility Audit - WCAG 2.1 AA compliance for government interfaces",
+  "ownerLane": "governance",
+  "riskLevel": "read",
+  "capabilities": [
+    "wcag-audit",
+    "section-508-check",
+    "contrast-ratio",
+    "keyboard-navigation",
+    "screen-reader-compatibility",
+    "remediation-guidance"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "scope": {
+        "type": "string",
+        "enum": ["frontend", "component", "page"],
+        "default": "frontend"
+      },
+      "component": {
+        "type": "string",
+        "description": "Specific component to audit (when scope=component)"
+      },
+      "standard": {
+        "type": "string",
+        "enum": ["wcag21-aa", "wcag21-aaa", "section508"],
+        "default": "wcag21-aa"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["violations", "warnings", "passes", "summary"],
+    "properties": {
+      "violations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "rule": { "type": "string" },
+            "impact": { "type": "string", "enum": ["critical", "serious", "moderate", "minor"] },
+            "description": { "type": "string" },
+            "element": { "type": "string" },
+            "remediation": { "type": "string" }
+          }
+        }
+      },
+      "warnings": { "type": "array" },
+      "passes": { "type": "integer" },
+      "summary": {
+        "type": "object",
+        "properties": {
+          "wcag21AA": { "type": "boolean" },
+          "section508": { "type": "boolean" },
+          "totalViolations": { "type": "integer" },
+          "totalWarnings": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

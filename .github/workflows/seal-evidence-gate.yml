@@ -1,0 +1,184 @@
+name: seal-evidence-gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+concurrency:
+  group: seal-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      needs-evidence: ${{ steps.filter.outputs.needs-evidence }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            needs-evidence:
+              - 'backend/**'
+              - 'frontend/**'
+              - 'os-platform/**'
+              - 'tools/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+
+  evidence-pack:
+    needs: changes
+    if: needs.changes.outputs.needs-evidence == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Evidence Pack
+        run: node tools/dx/skills/tf-pr-evidence-pack/src/evidence-pack-builder.mjs --ci
+        env:
+          CI: true
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Validate Evidence Pack
+        run: |
+          if [ ! -f ".terrafusion/evidence/latest-pack.json" ]; then
+            echo "::error::Evidence pack not generated"
+            exit 1
+          fi
+          if [ ! -f ".terrafusion/evidence/latest-receipt.json" ]; then
+            echo "::error::Evidence receipt not generated"
+            exit 1
+          fi
+          echo "Evidence pack validated successfully"
+
+      - name: Upload Evidence Pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-pack-${{ github.sha }}
+          path: |
+            .terrafusion/evidence/latest-pack.json
+            .terrafusion/evidence/latest-receipt.json
+          retention-days: 90
+
+  contract-drift:
+    needs: changes
+    if: needs.changes.outputs.needs-evidence == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check Contract Drift
+        run: node tools/dx/contract-drift.mjs
+
+  skills-validation:
+    needs: changes
+    if: needs.changes.outputs.needs-evidence == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Skills Registry
+        run: |
+          echo "Validating skills registry..."
+
+          # Check registry exists
+          if [ ! -f "tools/dx/skills/registry.json" ]; then
+            echo "::error::Skills registry not found"
+            exit 1
+          fi
+
+          # Validate each registered skill has required files
+          node -e "
+            const fs = require('fs');
+            const registry = JSON.parse(fs.readFileSync('tools/dx/skills/registry.json', 'utf8'));
+            let valid = true;
+            for (const skill of registry.skills) {
+              const skillDir = skill.path;
+              const skillMd = skillDir + '/SKILL.md';
+              const contractJson = skill.contract;
+
+              if (!fs.existsSync(skillMd)) {
+                console.error('Missing SKILL.md for: ' + skill.id);
+                valid = false;
+              }
+              if (!fs.existsSync(contractJson)) {
+                console.error('Missing contract for: ' + skill.id);
+                valid = false;
+              }
+            }
+
+            if (!valid) process.exit(1);
+            console.log('All ' + registry.skills.length + ' skills validated');
+          "
+
+  seal-gate:
+    needs: [evidence-pack, contract-drift, skills-validation]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Evidence Pack
+        uses: actions/download-artifact@v4
+        with:
+          name: evidence-pack-${{ github.sha }}
+          path: .terrafusion/evidence/
+
+      - name: SEAL Gate Verdict
+        run: |
+          echo "🏛️ TerraFusion SEAL Gate"
+          echo "========================"
+
+          PACK=".terrafusion/evidence/latest-pack.json"
+          RECEIPT=".terrafusion/evidence/latest-receipt.json"
+
+          if [ ! -f "$PACK" ] || [ ! -f "$RECEIPT" ]; then
+            echo "::error::Evidence pack or receipt missing"
+            exit 1
+          fi
+
+          VERDICT=$(node -e "
+            const pack = JSON.parse(require('fs').readFileSync('$PACK', 'utf8'));
+            const receipt = JSON.parse(require('fs').readFileSync('$RECEIPT', 'utf8'));
+            console.log(receipt.verdict);
+          ")
+
+          echo "Verdict: $VERDICT"
+
+          if [ "$VERDICT" != "pass" ]; then
+            echo "::error::SEAL Gate FAILED - Evidence pack verdict: $VERDICT"
+            exit 1
+          fi
+
+          echo "✅ SEAL Gate PASSED"
+
+  no-evidence-needed:
+    needs: changes
+    if: needs.changes.outputs.needs-evidence != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "No evidence-bearing changes detected — SEAL gate skipped."

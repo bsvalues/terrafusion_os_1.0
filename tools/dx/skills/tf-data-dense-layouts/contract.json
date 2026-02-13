@@ -1,0 +1,56 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/skill-contract-v1.json",
+  "skill": "tf-data-dense-layouts",
+  "version": "1.0.0",
+  "description": "Data-Dense Government Layouts - high-density data views for county assessors",
+  "ownerLane": "dev",
+  "riskLevel": "read",
+  "capabilities": [
+    "virtualized-tables",
+    "dashboard-layouts",
+    "kpi-cards",
+    "property-assessment-views",
+    "bulk-operation-patterns",
+    "print-layouts"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "layoutType": {
+        "type": "string",
+        "enum": ["table", "dashboard", "detail", "comparison", "print"],
+        "default": "table"
+      },
+      "dataType": {
+        "type": "string",
+        "enum": ["property", "assessment", "tax-levy", "appeal", "audit"],
+        "default": "property"
+      },
+      "recordCount": {
+        "type": "integer",
+        "description": "Expected number of records (for virtualization config)"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "layout": { "type": "string", "description": "TSX layout code" },
+      "virtualization": {
+        "type": "object",
+        "properties": {
+          "required": { "type": "boolean" },
+          "estimateSize": { "type": "integer" },
+          "overscan": { "type": "integer" }
+        }
+      },
+      "performance": {
+        "type": "object",
+        "properties": {
+          "targetLCP": { "type": "integer" },
+          "lazyComponents": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

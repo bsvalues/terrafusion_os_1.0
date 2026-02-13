@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import { aiCommand } from './commands/ai';
 import { debugCommand } from './commands/debug';
+import { evidenceCommand } from './commands/evidence';
 import { launchCommand } from './commands/launch-backend';
 import { statusCommand } from './commands/status';
 import { workspaceCommand } from './commands/workspace';
@@ -30,6 +31,7 @@ program.addCommand(launchCommand);
 program.addCommand(workspaceCommand);
 program.addCommand(debugCommand);
 program.addCommand(aiCommand);
+program.addCommand(evidenceCommand);
 
 // Default action - show help
 program.action(() => {

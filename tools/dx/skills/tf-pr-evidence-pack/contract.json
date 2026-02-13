@@ -1,0 +1,258 @@
+{
+  "$schema": "https://terrafusion.dev/schemas/command-contract-v1.json",
+  "command": "evidence",
+  "description": "PR Evidence Pack Builder - deterministic evidence bundles for SEAL gate",
+  "aliases": {
+    "vscode": "TerraFusion: Evidence Pack",
+    "claude": "/evidence",
+    "codex": "codex evidence",
+    "tdc": "tdc evidence"
+  },
+  "riskLevel": "write-safe",
+  "ownerLane": "governance",
+  "requiresConfirmation": false,
+  "auditRequired": true,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["build", "validate", "show", "publish"],
+        "default": "build",
+        "description": "Evidence Pack operation"
+      },
+      "lanes": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["dev", "governance", "ops", "security", "data"]
+        },
+        "default": ["dev", "governance", "security"],
+        "description": "Lanes to include in evidence collection"
+      },
+      "pr": {
+        "type": ["integer", "null"],
+        "description": "PR number (auto-detected from branch if null)"
+      },
+      "includeAccessibility": {
+        "type": "boolean",
+        "default": true,
+        "description": "Include WCAG/508 accessibility audit"
+      },
+      "format": {
+        "type": "string",
+        "enum": ["json", "markdown", "summary"],
+        "default": "json",
+        "description": "Output format"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["status", "evidencePack", "receipt"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["pass", "fail", "partial", "error"]
+      },
+      "evidencePack": {
+        "type": "object",
+        "required": ["cid", "generatedAt", "artifacts", "summary"],
+        "properties": {
+          "cid": {
+            "type": "string",
+            "description": "Content Identifier for the evidence pack"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "generator": {
+            "type": "string",
+            "enum": ["tdc", "ci", "manual"]
+          },
+          "branch": {
+            "type": "string"
+          },
+          "pr": {
+            "type": ["integer", "null"]
+          },
+          "artifacts": {
+            "type": "object",
+            "properties": {
+              "testResults": {
+                "type": "object",
+                "properties": {
+                  "total": { "type": "integer" },
+                  "passed": { "type": "integer" },
+                  "failed": { "type": "integer" },
+                  "skipped": { "type": "integer" },
+                  "passRate": { "type": "number" }
+                }
+              },
+              "coverage": {
+                "type": "object",
+                "properties": {
+                  "line": { "type": "number" },
+                  "branch": { "type": "number" },
+                  "function": { "type": "number" },
+                  "statement": { "type": "number" },
+                  "meetsThreshold": { "type": "boolean" }
+                }
+              },
+              "lint": {
+                "type": "object",
+                "properties": {
+                  "errors": { "type": "integer" },
+                  "warnings": { "type": "integer" },
+                  "clean": { "type": "boolean" }
+                }
+              },
+              "compliance": {
+                "type": "object",
+                "properties": {
+                  "fismaHigh": { "type": "boolean" },
+                  "nist80053": { "type": "boolean" },
+                  "violations": { "type": "integer" },
+                  "controlsCovered": { "type": "integer" },
+                  "controlsTotal": { "type": "integer" }
+                }
+              },
+              "accessibility": {
+                "type": "object",
+                "properties": {
+                  "wcag21AA": { "type": "boolean" },
+                  "section508": { "type": "boolean" },
+                  "violations": { "type": "integer" },
+                  "warnings": { "type": "integer" }
+                }
+              },
+              "security": {
+                "type": "object",
+                "properties": {
+                  "vulnerabilities": {
+                    "type": "object",
+                    "properties": {
+                      "critical": { "type": "integer" },
+                      "high": { "type": "integer" },
+                      "medium": { "type": "integer" },
+                      "low": { "type": "integer" }
+                    }
+                  },
+                  "dependencyAudit": { "type": "boolean" },
+                  "sastClean": { "type": "boolean" }
+                }
+              },
+              "contractDrift": {
+                "type": "object",
+                "properties": {
+                  "totalContracts": { "type": "integer" },
+                  "driftedContracts": { "type": "integer" },
+                  "zeroDrift": { "type": "boolean" }
+                }
+              }
+            }
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "totalChecks": { "type": "integer" },
+              "passed": { "type": "integer" },
+              "failed": { "type": "integer" },
+              "verdict": { "type": "string", "enum": ["pass", "fail"] }
+            }
+          }
+        }
+      },
+      "receipt": {
+        "type": "object",
+        "required": ["version", "cid", "generatedAt", "integrityHash", "verdict"],
+        "properties": {
+          "version": { "type": "string", "const": "1.0" },
+          "cid": { "type": "string" },
+          "generatedAt": { "type": "string", "format": "date-time" },
+          "generator": { "type": "string" },
+          "integrityHash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "verdict": { "type": "string", "enum": ["pass", "fail"] }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "status": "pass",
+    "evidencePack": {
+      "cid": "bafybeig-example-cid-placeholder",
+      "generatedAt": "2026-02-13T12:00:00Z",
+      "generator": "tdc",
+      "branch": "feature/phase-7-evidence-pack",
+      "pr": 315,
+      "artifacts": {
+        "testResults": {
+          "total": 716,
+          "passed": 658,
+          "failed": 0,
+          "skipped": 58,
+          "passRate": 91.9
+        },
+        "coverage": {
+          "line": 97.2,
+          "branch": 94.1,
+          "function": 98.5,
+          "statement": 97.0,
+          "meetsThreshold": true
+        },
+        "lint": {
+          "errors": 0,
+          "warnings": 3,
+          "clean": true
+        },
+        "compliance": {
+          "fismaHigh": true,
+          "nist80053": true,
+          "violations": 0,
+          "controlsCovered": 247,
+          "controlsTotal": 247
+        },
+        "accessibility": {
+          "wcag21AA": true,
+          "section508": true,
+          "violations": 0,
+          "warnings": 2
+        },
+        "security": {
+          "vulnerabilities": {
+            "critical": 0,
+            "high": 0,
+            "medium": 0,
+            "low": 1
+          },
+          "dependencyAudit": true,
+          "sastClean": true
+        },
+        "contractDrift": {
+          "totalContracts": 9,
+          "driftedContracts": 0,
+          "zeroDrift": true
+        }
+      },
+      "summary": {
+        "totalChecks": 7,
+        "passed": 7,
+        "failed": 0,
+        "verdict": "pass"
+      }
+    },
+    "receipt": {
+      "version": "1.0",
+      "cid": "bafybeig-example-cid-placeholder",
+      "generatedAt": "2026-02-13T12:00:00Z",
+      "generator": "tdc",
+      "integrityHash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verdict": "pass"
+    }
+  }
+}
