@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "mcp-postgis",
-  "description": "MCP PostGIS query tool contract with read-first safety and deterministic governance",
+  "description": "MCP PostGIS query tool contract with read-first safety and supervised write operations",
   "tools": [
     {
       "name": "mcp-postgis-query",
@@ -24,7 +24,7 @@
       "auditLevel": "standard"
     },
     "write": {
-      "description": "Write operations (INSERT/UPDATE/DELETE) - DISABLED by default",
+      "description": "Write operations (INSERT/UPDATE/DELETE) - DISABLED by default, requires approval artifact",
       "allowedStatements": ["INSERT", "UPDATE", "DELETE"],
       "requiresSupervisorApproval": true,
       "auditLevel": "elevated"
@@ -35,6 +35,112 @@
       "requiresSupervisorApproval": true,
       "auditLevel": "critical"
     }
+  },
+  "writeOperations": [
+    {
+      "operationId": "update_property_assessment",
+      "template": "UPDATE properties SET assessed_value = $1, tax_year = $2, updated_at = NOW(), updated_by = $3 WHERE parcel_id = $4 AND county_id = $5",
+      "paramsSchema": {
+        "type": "array",
+        "items": [
+          {
+            "type": "number",
+            "description": "assessed_value"
+          },
+          {
+            "type": "number",
+            "description": "tax_year"
+          },
+          {
+            "type": "string",
+            "description": "updated_by"
+          },
+          {
+            "type": "string",
+            "description": "parcel_id"
+          },
+          {
+            "type": "string",
+            "description": "county_id"
+          }
+        ]
+      },
+      "risk": "write",
+      "ownerLane": "assessor",
+      "allowedEnvs": ["staging", "production"]
+    },
+    {
+      "operationId": "insert_new_parcel",
+      "template": "INSERT INTO properties (parcel_id, county_id, owner_name, assessed_value, tax_year, created_at, created_by) VALUES ($1, $2, $3, $4, $5, NOW(), $6)",
+      "paramsSchema": {
+        "type": "array",
+        "items": [
+          {
+            "type": "string",
+            "description": "parcel_id"
+          },
+          {
+            "type": "string",
+            "description": "county_id"
+          },
+          {
+            "type": "string",
+            "description": "owner_name"
+          },
+          {
+            "type": "number",
+            "description": "assessed_value"
+          },
+          {
+            "type": "number",
+            "description": "tax_year"
+          },
+          {
+            "type": "string",
+            "description": "created_by"
+          }
+        ]
+      },
+      "risk": "write",
+      "ownerLane": "assessor",
+      "allowedEnvs": ["staging", "production"]
+    },
+    {
+      "operationId": "delete_obsolete_tax_record",
+      "template": "DELETE FROM tax_records WHERE parcel_id = $1 AND tax_year < $2 AND county_id = $3",
+      "paramsSchema": {
+        "type": "array",
+        "items": [
+          {
+            "type": "string",
+            "description": "parcel_id"
+          },
+          {
+            "type": "number",
+            "description": "tax_year"
+          },
+          {
+            "type": "string",
+            "description": "county_id"
+          }
+        ]
+      },
+      "risk": "write",
+      "ownerLane": "assessor",
+      "allowedEnvs": ["staging"]
+    }
+  ],
+  "approvalRequirements": {
+    "requiredFields": [
+      "approvalId",
+      "approvedBy",
+      "approvedAt",
+      "expiresAt",
+      "reason",
+      "scope",
+      "bindings"
+    ],
+    "maxExpiryHours": 24
   },
   "governanceRules": {
     "parameterizationRequired": true,
@@ -49,14 +155,16 @@
       "EXECUTE"
     ],
     "queryNormalizationEnabled": true,
-    "piiRedactionEnabled": true
+    "piiRedactionEnabled": true,
+    "rawSQLWritesForbidden": true
   },
   "traceRequirements": {
     "emitOnExecution": true,
     "sanitizePayloads": true,
     "includeHashes": true,
     "includeRawSQL": false,
-    "includeRawParams": false
+    "includeRawParams": false,
+    "includeApprovalArtifact": true
   },
-  "contractHash": "1daea598c6624aa6"
+  "contractHash": "12267a5467c2a024"
 }
