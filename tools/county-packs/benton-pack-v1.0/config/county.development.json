@@ -1,0 +1,22 @@
+{
+  "countyName": "Benton County",
+  "fipsCode": "53005",
+  "state": "WA",
+  "timezone": "America/Los_Angeles",
+  "deployment": {
+    "environment": "development",
+    "parcelCount": 100,
+    "syncFrequency": "1h",
+    "backupRetention": "7d",
+    "highAvailability": false
+  },
+  "integrations": {
+    "pacsVersion": "Harris PACS 9.0 (Dev Instance)",
+    "paymentGateway": "Stripe Test Mode"
+  },
+  "customFields": {
+    "debugMode": true,
+    "logLevel": "verbose",
+    "devServer": "https://dev.benton.terrafusion.local"
+  }
+}
