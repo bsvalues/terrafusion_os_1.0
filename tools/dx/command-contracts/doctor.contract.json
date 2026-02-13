@@ -1,0 +1,69 @@
+{
+  "$schema": "../context-pack/contract-schema.json",
+  "command": "doctor",
+  "description": "Workspace health check",
+  "aliases": {
+    "vscode": "TerraFusion: Doctor",
+    "claude": "/doctor",
+    "codex": "codex doctor",
+    "tdc": "tdc doctor"
+  },
+  "riskLevel": "read",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "verbose": {
+        "type": "boolean",
+        "default": false,
+        "description": "Show detailed output"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["status", "checks", "summary"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["pass", "warn", "fail"]
+      },
+      "checks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "status", "message"],
+          "properties": {
+            "name": { "type": "string" },
+            "status": { "type": "string", "enum": ["pass", "warn", "fail"] },
+            "message": { "type": "string" },
+            "details": { "type": "string" }
+          }
+        }
+      },
+      "summary": {
+        "type": "object",
+        "properties": {
+          "passed": { "type": "integer" },
+          "warned": { "type": "integer" },
+          "failed": { "type": "integer" },
+          "total": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "status": "pass",
+    "checks": [
+      { "name": "node-version", "status": "pass", "message": "Node.js v20.x detected" },
+      { "name": "pnpm-available", "status": "pass", "message": "pnpm available" },
+      { "name": "git-status", "status": "pass", "message": "Git repository detected" },
+      { "name": "backend-exists", "status": "pass", "message": "Backend directory exists" },
+      { "name": "frontend-exists", "status": "pass", "message": "Frontend directory exists" }
+    ],
+    "summary": { "passed": 5, "warned": 0, "failed": 0, "total": 5 }
+  }
+}

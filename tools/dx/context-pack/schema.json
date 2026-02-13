@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.dev/schemas/context-pack-v1.json",
+  "title": "TerraFusion Context Pack",
+  "description": "The atomic unit of memory for TerraFusion DX Spine",
+  "type": "object",
+  "required": ["version", "generated", "generator", "repo", "focus", "health", "governance", "nextActions"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Context Pack schema version"
+    },
+    "generated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when this pack was generated"
+    },
+    "generator": {
+      "type": "string",
+      "enum": ["tdc", "companion", "manual", "vscode", "claude", "codex"],
+      "description": "What tool generated this context pack"
+    },
+    "repo": {
+      "type": "object",
+      "required": ["root", "branch", "lastCommit", "dirtyFiles"],
+      "properties": {
+        "root": {
+          "type": "string",
+          "description": "Absolute path to repository root"
+        },
+        "branch": {
+          "type": "string",
+          "description": "Current git branch"
+        },
+        "lastCommit": {
+          "type": "string",
+          "description": "SHA of the last commit"
+        },
+        "dirtyFiles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of modified/untracked files"
+        }
+      }
+    },
+    "focus": {
+      "type": "object",
+      "required": ["lane"],
+      "properties": {
+        "scene": {
+          "type": ["string", "null"],
+          "description": "Current scene name or null"
+        },
+        "lane": {
+          "type": "string",
+          "enum": ["dev", "governance", "ops", "security", "data"],
+          "description": "Current working lane"
+        },
+        "pr": {
+          "type": ["integer", "null"],
+          "description": "Current PR number or null"
+        },
+        "intent": {
+          "type": ["string", "null"],
+          "description": "What the developer is trying to accomplish"
+        }
+      }
+    },
+    "health": {
+      "type": "object",
+      "required": ["services", "overallHealth"],
+      "properties": {
+        "services": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["port", "status"],
+            "properties": {
+              "port": { "type": "integer" },
+              "status": { "type": "string", "enum": ["up", "down", "unknown"] }
+            }
+          }
+        },
+        "overallHealth": {
+          "type": "string",
+          "enum": ["excellent", "good", "warning", "critical"]
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": ["tier1EvidenceStatus", "dodVersion"],
+      "properties": {
+        "tier1EvidenceStatus": {
+          "type": "string",
+          "enum": ["complete", "incomplete", "not-applicable"]
+        },
+        "dodVersion": {
+          "type": "string"
+        },
+        "sceneEnforcementActive": {
+          "type": "boolean"
+        },
+        "missingEvidence": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["CID", "trace", "latency", "receipt"] }
+        }
+      }
+    },
+    "todos": {
+      "type": "object",
+      "properties": {
+        "critical": { "$ref": "#/definitions/todoList" },
+        "high": { "$ref": "#/definitions/todoList" },
+        "medium": { "$ref": "#/definitions/todoList" },
+        "low": { "$ref": "#/definitions/todoList" }
+      }
+    },
+    "nextActions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 5,
+      "description": "Top 5 deterministic next actions"
+    },
+    "evidencePack": {
+      "type": "object",
+      "properties": {
+        "cid": { "type": ["string", "null"] },
+        "traceUrl": { "type": ["string", "null"] },
+        "latencyMs": { "type": ["number", "null"] },
+        "receiptPresent": { "type": "boolean" }
+      }
+    }
+  },
+  "definitions": {
+    "todoList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "line", "text"],
+        "properties": {
+          "file": { "type": "string" },
+          "line": { "type": "integer" },
+          "text": { "type": "string" }
+        }
+      }
+    }
+  }
+}
