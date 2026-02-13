@@ -1,0 +1,27 @@
+{
+  "toolId": "document-server",
+  "approvedBy": "security@terrafusion.dev",
+  "approvalDate": "2026-02-13T04:26:29.885Z",
+  "riskLevel": "read",
+  "scope": "production",
+  "expiresAt": "2026-08-12T04:26:29.886Z",
+  "justification": "Production document server access required for government compliance documentation workflows and FISMA audit trail requirements",
+  "constraints": {
+    "maxRequestsPerHour": 1000,
+    "allowedOperations": [],
+    "dataAccessRestrictions": [],
+    "auditLevel": "minimal"
+  },
+  "auditTrail": [
+    {
+      "timestamp": "2026-02-13T04:26:29.885Z",
+      "action": "created",
+      "actor": "security@terrafusion.dev",
+      "reason": "Initial activation"
+    }
+  ],
+  "revoked": false,
+  "revokedAt": null,
+  "revokedBy": null,
+  "revokedReason": null
+}
