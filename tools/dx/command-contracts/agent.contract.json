@@ -70,7 +70,7 @@
             "status": { "type": "string", "enum": ["active", "idle", "busy", "offline"] },
             "uptime": { "type": "integer", "description": "Uptime in seconds" },
             "tasksCompleted": { "type": "integer" },
-            "currentTask": { "type": "string" },
+            "currentTask": { "type": ["string", "null"] },
             "capabilities": {
               "type": "array",
               "items": { "type": "string" }

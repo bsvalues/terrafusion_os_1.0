@@ -17,6 +17,15 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// Import drift detection (optional - don't fail if not available)
+let detectDrift = null;
+try {
+  const driftModule = await import('../contract-drift.mjs');
+  detectDrift = driftModule.detectDrift;
+} catch {
+  // Drift detection not available
+}
+
 // Configuration
 const DEFAULT_OUTPUT = '.terrafusion/context';
 const CONTEXT_FILE = 'latest.json';
@@ -133,10 +142,47 @@ function scanTodos(repoRoot) {
 }
 
 /**
+ * Get contract drift status
+ */
+function getContractDrift() {
+  if (!detectDrift) {
+    return {
+      available: false,
+      checked: [],
+      drifted: [],
+      unknown: [],
+      timestamp: null
+    };
+  }
+
+  try {
+    const { results } = detectDrift(false);
+    return {
+      available: true,
+      ...results
+    };
+  } catch (error) {
+    return {
+      available: false,
+      error: error.message,
+      checked: [],
+      drifted: [],
+      unknown: [],
+      timestamp: null
+    };
+  }
+}
+
+/**
  * Determine next actions based on state
  */
-function determineNextActions(health, todos, gitInfo) {
+function determineNextActions(health, todos, gitInfo, contractDrift = null) {
   const actions = [];
+
+  // Contract drift-based actions (highest priority)
+  if (contractDrift && contractDrift.drifted && contractDrift.drifted.length > 0) {
+    actions.push(`Fix ${contractDrift.drifted.length} drifted contract(s): ${contractDrift.drifted.join(', ')}`);
+  }
 
   // Health-based actions
   if (health.overallHealth === 'critical') {
@@ -176,7 +222,8 @@ function generateContextPack(generator = 'tdc') {
   const gitInfo = getGitInfo(repoRoot);
   const health = getHealthStatus();
   const todos = scanTodos(repoRoot);
-  const nextActions = determineNextActions(health, todos, gitInfo);
+  const contractDrift = getContractDrift();
+  const nextActions = determineNextActions(health, todos, gitInfo, contractDrift);
 
   const contextPack = {
     version: '1.0',
@@ -205,6 +252,8 @@ function generateContextPack(generator = 'tdc') {
       sceneEnforcementActive: false,
       missingEvidence: []
     },
+
+    contractDrift,
 
     todos,
     nextActions,
@@ -240,6 +289,24 @@ function generateMarkdownSummary(pack) {
 
   const nextActionsList = pack.nextActions.map((a, i) => `${i + 1}. ${a}`).join('\n');
 
+  // Contract drift section
+  let contractDriftSection = '';
+  if (pack.contractDrift && pack.contractDrift.available) {
+    const driftEmoji = pack.contractDrift.drifted.length === 0 ? '✅' : '⚠️';
+    contractDriftSection = `
+## Contract Drift ${driftEmoji}
+
+| Metric | Count |
+|--------|-------|
+| Contracts Checked | ${pack.contractDrift.checked.length} |
+| Valid | ${pack.contractDrift.checked.length - pack.contractDrift.drifted.length - pack.contractDrift.unknown.length} |
+| Drifted | ${pack.contractDrift.drifted.length} |
+| Unknown | ${pack.contractDrift.unknown.length} |
+
+${pack.contractDrift.drifted.length > 0 ? `**Drifted:** ${pack.contractDrift.drifted.join(', ')}` : '**Status:** All contracts valid'}
+`;
+  }
+
   return `# TerraFusion Context Pack
 
 **Generated:** ${pack.generated}
@@ -260,7 +327,7 @@ function generateMarkdownSummary(pack) {
 
 ### Services
 ${servicesList}
-
+${contractDriftSection}
 ## Focus
 
 | Field | Value |

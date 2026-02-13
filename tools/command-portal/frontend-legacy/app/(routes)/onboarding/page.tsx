@@ -1,0 +1,1 @@
+export default function Page(){ return <h1>Onboarding Hub — tours, quick starts, role guides</h1>; }

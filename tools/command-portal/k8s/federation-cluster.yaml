@@ -1,0 +1,429 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-federation-config
+  namespace: terrafusion-system
+data:
+  federation.yaml: |
+    federation:
+      cluster_id: "terrafusion-pilot"
+      protocol_version: "1.0"
+      
+      # Pilot Counties Configuration
+      counties:
+        - name: "benton"
+          display_name: "Benton County"
+          endpoints:
+            - "https://benton.terrafusionmarket.com/api/federation"
+            - "wss://benton.terrafusionmarket.com/ws/federation"
+          public_key: "benton_federation_public_key_base64"
+          capabilities:
+            - "records_sharing"
+            - "citizen_services"
+            - "emergency_coordination"
+          trust_level: "verified"
+          
+        - name: "franklin"
+          display_name: "Franklin County" 
+          endpoints:
+            - "https://franklin.terrafusionmarket.com/api/federation"
+            - "wss://franklin.terrafusionmarket.com/ws/federation"
+          public_key: "franklin_federation_public_key_base64"
+          capabilities:
+            - "records_sharing"
+            - "cross_county_permits"
+            - "emergency_coordination"
+          trust_level: "verified"
+          
+        - name: "yakima"
+          display_name: "Yakima County"
+          endpoints:
+            - "https://yakima.terrafusionmarket.com/api/federation"
+            - "wss://yakima.terrafusionmarket.com/ws/federation"
+          public_key: "yakima_federation_public_key_base64"
+          capabilities:
+            - "records_sharing"
+            - "agricultural_coordination"
+            - "water_rights_sharing"
+            - "emergency_coordination"
+          trust_level: "verified"
+
+      # Federation Rules
+      federation_rules:
+        message_routing:
+          default_strategy: "nearest_first"
+          fallback_strategy: "flood_fill"
+          max_hops: 3
+          ttl_seconds: 300
+          
+        data_sharing:
+          public_records: "enabled"
+          citizen_services: "enabled"
+          emergency_data: "priority"
+          sensitive_data: "authorized_only"
+          
+        security:
+          require_signature: true
+          encrypt_in_transit: true
+          audit_all_requests: true
+          rate_limit_per_county: 1000  # requests per hour
+          
+        compliance:
+          retain_audit_logs: true
+          retention_days: 2555  # 7 years
+          foia_compliance: true
+          cross_county_agreements: true
+
+      # Health Check Configuration
+      health_checks:
+        interval_seconds: 30
+        timeout_seconds: 10
+        failure_threshold: 3
+        success_threshold: 2
+        
+      # Metrics Collection
+      metrics:
+        enabled: true
+        export_interval_seconds: 60
+        prometheus_endpoint: "/metrics"
+        labels:
+          cluster: "terrafusion-pilot"
+          region: "washington-state"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-federation-relay
+  namespace: terrafusion-system
+  labels:
+    app: federation-relay
+    component: networking
+spec:
+  replicas: 3 # High availability across counties
+  selector:
+    matchLabels:
+      app: federation-relay
+  template:
+    metadata:
+      labels:
+        app: federation-relay
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9090'
+    spec:
+      serviceAccountName: terrafusion-federation
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+        - name: federation-relay
+          image: terrafusion/federation-relay:v1.0.0
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: websocket
+              containerPort: 8081
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+            - name: federation
+              containerPort: 8082
+              protocol: TCP
+          env:
+            - name: COUNTY_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['county.terrafusionmarket.com/name']
+            - name: CLUSTER_ID
+              value: 'terrafusion-pilot'
+            - name: LOG_LEVEL
+              value: 'info'
+            - name: RUST_LOG
+              value: 'federation_relay=info,hyper=warn'
+          volumeMounts:
+            - name: config
+              mountPath: /etc/terrafusion
+              readOnly: true
+            - name: tls-certs
+              mountPath: /etc/ssl/terrafusion
+              readOnly: true
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: config
+          configMap:
+            name: terrafusion-federation-config
+        - name: tls-certs
+          secret:
+            secretName: terrafusion-federation-tls
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-federation-relay
+  namespace: terrafusion-system
+  labels:
+    app: federation-relay
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: 'nlb'
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: 'arn:aws:acm:us-west-2:account:certificate/cert-id'
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 443
+      targetPort: 8080
+      protocol: TCP
+    - name: websocket
+      port: 8081
+      targetPort: 8081
+      protocol: TCP
+    - name: federation
+      port: 8082
+      targetPort: 8082
+      protocol: TCP
+  selector:
+    app: federation-relay
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: terrafusion-federation-network-policy
+  namespace: terrafusion-system
+spec:
+  podSelector:
+    matchLabels:
+      app: federation-relay
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: terrafusion-system
+        - podSelector:
+            matchLabels:
+              component: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8081
+        - protocol: TCP
+          port: 8082
+    # External county federation traffic
+    - from: []
+      ports:
+        - protocol: TCP
+          port: 8082
+  egress:
+    # Allow federation traffic to other counties
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 8082
+    # DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: terrafusion-federation
+  namespace: terrafusion-system
+  annotations:
+    eks.amazonaws.com/role-arn: 'arn:aws:iam::account:role/TerraFusionFederationRole'
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: terrafusion-federation
+rules:
+  - apiGroups: ['']
+    resources: ['configmaps', 'secrets']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['']
+    resources: ['events']
+    verbs: ['create']
+  - apiGroups: ['metrics.k8s.io']
+    resources: ['pods', 'nodes']
+    verbs: ['get', 'list']
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: terrafusion-federation
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: terrafusion-federation
+subjects:
+  - kind: ServiceAccount
+    name: terrafusion-federation
+    namespace: terrafusion-system
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: terrafusion-federation-metrics
+  namespace: terrafusion-system
+  labels:
+    app: federation-relay
+spec:
+  selector:
+    matchLabels:
+      app: federation-relay
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+      honorLabels: true
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-federation-tls
+  namespace: terrafusion-system
+type: kubernetes.io/tls
+data:
+  # TLS certificates for secure federation communication
+  # In production, these would be managed by cert-manager
+  tls.crt: LS0tLS1CRUdJTi... # Base64 encoded certificate
+  tls.key: LS0tLS1CRUdJTi... # Base64 encoded private key
+  ca.crt: LS0tLS1CRUdJTi... # Base64 encoded CA certificate
+
+---
+# Grafana Dashboard ConfigMap for Federation Monitoring
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-federation-dashboard
+  namespace: terrafusion-system
+  labels:
+    grafana_dashboard: '1'
+data:
+  federation-monitoring.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "TerraFusion Federation Cluster",
+        "tags": ["terrafusion", "federation", "government"],
+        "timezone": "UTC",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Federation Health Overview",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "sum(up{job=\"terrafusion-federation-relay\"})",
+                "legendFormat": "Active Relays"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {"mode": "palette-classic"},
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": 0},
+                    {"color": "yellow", "value": 2},
+                    {"color": "green", "value": 3}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Cross-County Message Flow",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(federation_messages_total[5m])",
+                "legendFormat": "Messages/sec - {{county}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Federation Latency (P95)",
+            "type": "graph", 
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(federation_request_duration_seconds_bucket[5m]))",
+                "legendFormat": "P95 Latency - {{county}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "County Connectivity Matrix",
+            "type": "heatmap",
+            "targets": [
+              {
+                "expr": "federation_county_connectivity",
+                "legendFormat": "{{source_county}} -> {{target_county}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+          },
+          {
+            "id": 5,
+            "title": "Security Events",
+            "type": "logs",
+            "targets": [
+              {
+                "expr": "{job=\"terrafusion-federation-relay\"} |= \"SECURITY\"",
+                "legendFormat": ""
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+          }
+        ],
+        "time": {"from": "now-1h", "to": "now"},
+        "refresh": "30s"
+      }
+    }

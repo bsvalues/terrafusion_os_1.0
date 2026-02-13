@@ -1,0 +1,1 @@
+export default function Page(){ return <h1>Approvals & Checks (contract, SBOM, perf, a11y)</h1>; }

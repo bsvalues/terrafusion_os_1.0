@@ -1,0 +1,42 @@
+{
+  "$schema": "../registry/terrafusion.app.schema.json",
+  "id": "command-portal",
+  "displayName": "TerraFusion Command Portal",
+  "description": "Unified Developer & Government Workspace Platform with Context Pack Integration",
+  "iconName": "Terminal",
+  "category": "developer-tools",
+  "tier": 2,
+  "status": "active",
+  "pinned": true,
+  "autostart": false,
+  "version": "1.0.0",
+  "intent": "development",
+  "runnable": true,
+  "runtime": "concurrent",
+  "start": {
+    "cmd": "concurrently",
+    "args": [
+      "\"cd backend && cargo run\"",
+      "\"cd apps/terrafusion-web && npm run dev\""
+    ],
+    "cwd": "tools/command-portal"
+  },
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5177/"
+  },
+  "endpoints": {
+    "frontend": "http://localhost:5177",
+    "backend": "http://localhost:8787",
+    "contextPack": "http://localhost:8787/api/context/pack",
+    "health": "http://localhost:8787/api/context/health",
+    "todos": "http://localhost:8787/api/context/todos",
+    "nextActions": "http://localhost:8787/api/context/next-actions"
+  },
+  "tags": ["portal", "developer", "workspace", "context-pack"],
+  "permissions": ["filesystem", "network", "exec"],
+  "dependencies": {
+    "services": ["context-pack"],
+    "tools": ["cargo", "node", "npm"]
+  }
+}

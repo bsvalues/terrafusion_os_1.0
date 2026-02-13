@@ -1,0 +1,184 @@
+# TerraFusion Alert Rules
+# Government-Grade System Monitoring & Alerting
+
+groups:
+  - name: terrafusion-system-alerts
+    rules:
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: 'High CPU usage detected on {{ $labels.instance }}'
+          description: 'CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}'
+          runbook_url: 'https://docs.terrafusionmarket.com/runbooks/high-cpu'
+
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: 'High memory usage detected on {{ $labels.instance }}'
+          description: 'Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}'
+
+      # Disk Space Critical
+      - alert: DiskSpaceCritical
+        expr: 100 - ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes) > 90
+        for: 1m
+        labels:
+          severity: critical
+          component: storage
+        annotations:
+          summary: 'Disk space critically low on {{ $labels.instance }}'
+          description: 'Disk usage is above 90% on {{ $labels.instance }} at {{ $labels.mountpoint }}'
+
+  - name: terrafusion-application-alerts
+    rules:
+      # API Response Time
+      - alert: HighAPIResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: 'High API response time detected'
+          description: '95th percentile API response time is above 2 seconds for more than 2 minutes'
+
+      # API Error Rate
+      - alert: HighAPIErrorRate
+        expr: rate(http_requests_total{job="terrafusion-api",status=~"5.."}[5m]) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: 'High API error rate detected'
+          description: 'API error rate is above 10% for more than 1 minute'
+
+      # Application Down
+      - alert: TerraFusionAPIDown
+        expr: up{job="terrafusion-api"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: 'TerraFusion API is down'
+          description: 'TerraFusion API has been down for more than 30 seconds'
+
+      # Frontend Down
+      - alert: TerraFusionWebDown
+        expr: up{job="terrafusion-web"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: frontend
+        annotations:
+          summary: 'TerraFusion Web application is down'
+          description: 'TerraFusion Web application has been down for more than 1 minute'
+
+  - name: terrafusion-federation-alerts
+    rules:
+      # Federation Connectivity
+      - alert: FederationConnectivityLoss
+        expr: up{job=~".*-county"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: federation
+        annotations:
+          summary: 'Federation connectivity lost to {{ $labels.job }}'
+          description: 'Lost connectivity to {{ $labels.job }} for more than 2 minutes'
+
+      # High Federation Latency
+      - alert: HighFederationLatency
+        expr: histogram_quantile(0.95, rate(federation_request_duration_seconds_bucket[5m])) > 5
+        for: 3m
+        labels:
+          severity: warning
+          component: federation
+        annotations:
+          summary: 'High federation latency detected'
+          description: '95th percentile federation request latency is above 5 seconds'
+
+  - name: terrafusion-emergency-alerts
+    rules:
+      # Emergency Services Availability
+      - alert: EmergencyServiceDown
+        expr: up{job="emergency-services"} == 0
+        for: 10s
+        labels:
+          severity: critical
+          component: emergency
+          priority: p0
+        annotations:
+          summary: 'CRITICAL: Emergency service is down'
+          description: 'Emergency service {{ $labels.instance }} is unreachable'
+          escalation: 'immediate'
+
+      # Emergency Response Time
+      - alert: EmergencyResponseTimeHigh
+        expr: histogram_quantile(0.90, rate(emergency_request_duration_seconds_bucket[1m])) > 1
+        for: 30s
+        labels:
+          severity: critical
+          component: emergency
+          priority: p0
+        annotations:
+          summary: 'CRITICAL: Emergency response time degraded'
+          description: 'Emergency response time is above 1 second for 90th percentile'
+
+  - name: terrafusion-security-alerts
+    rules:
+      # Failed Authentication Attempts
+      - alert: HighFailedAuthAttempts
+        expr: rate(auth_failed_attempts_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: 'High failed authentication attempts detected'
+          description: 'Failed authentication rate is above 10 per minute'
+
+      # Suspicious Activity
+      - alert: SuspiciousActivity
+        expr: rate(security_suspicious_activity_total[5m]) > 0
+        for: 0s
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: 'Suspicious activity detected'
+          description: 'Security monitoring has detected suspicious activity'
+
+  - name: terrafusion-compliance-alerts
+    rules:
+      # Audit Log Failures
+      - alert: AuditLogFailures
+        expr: rate(audit_log_write_failures_total[5m]) > 0
+        for: 0s
+        labels:
+          severity: critical
+          component: compliance
+        annotations:
+          summary: 'CRITICAL: Audit log write failures'
+          description: 'Audit logging is failing - compliance requirement violation'
+
+      # Data Retention Policy Violation
+      - alert: DataRetentionViolation
+        expr: data_retention_age_days > 2555 # 7 years
+        for: 0s
+        labels:
+          severity: critical
+          component: compliance
+        annotations:
+          summary: 'CRITICAL: Data retention policy violation'
+          description: 'Data older than 7 years detected - compliance violation'

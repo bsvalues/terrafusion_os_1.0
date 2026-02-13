@@ -1,0 +1,338 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>TerraFusion Load Test Report</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; }
+          .header { background: #2563eb; color: white; padding: 20px; border-radius: 8px; }
+          .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+          .metric-card { background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #2563eb; }
+          .pass { border-left-color: #10b981; }
+          .fail { border-left-color: #ef4444; }
+          .value { font-size: 24px; font-weight: bold; color: #1f2937; }
+          .label { color: #6b7280; margin-bottom: 8px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>🏛️ TerraFusion Government Services Load Test Report</h1>
+          <p>Generated: 2025-10-16T15:59:34.121Z</p>
+        </div>
+        
+        <div class="metrics">
+          <div class="metric-card fail">
+            <div class="label">Citizen Service Response Time (P95)</div>
+            <div class="value">0ms</div>
+          </div>
+          
+          <div class="metric-card fail">
+            <div class="label">Permit Application Success Rate</div>
+            <div class="value">0%</div>
+          </div>
+          
+          <div class="metric-card fail">
+            <div class="label">Emergency Response Time (P95)</div>
+            <div class="value">0ms</div>
+          </div>
+          
+          <div class="metric-card fail">
+            <div class="label">Federation Latency (P95)</div>
+            <div class="value">0ms</div>
+          </div>
+        </div>
+        
+        <h2>📈 Detailed Metrics</h2>
+        <pre>{
+  "http_req_receiving": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+      "max": 0,
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0
+    }
+  },
+  "data_received": {
+    "type": "counter",
+    "contains": "data",
+    "values": {
+      "count": 0,
+      "rate": 0
+    }
+  },
+  "emergency_response_time": {
+    "values": {
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0,
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0
+    },
+    "thresholds": {
+      "p(95)<150": {
+        "ok": true
+      }
+    },
+    "type": "trend",
+    "contains": "default"
+  },
+  "federation_latency": {
+    "thresholds": {
+      "p(95)<300": {
+        "ok": true
+      }
+    },
+    "type": "trend",
+    "contains": "default",
+    "values": {
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0,
+      "p(90)": 0,
+      "p(95)": 0
+    }
+  },
+  "data_sent": {
+    "type": "counter",
+    "contains": "data",
+    "values": {
+      "count": 0,
+      "rate": 0
+    }
+  },
+  "http_req_duration": {
+    "thresholds": {
+      "p(95)<500": {
+        "ok": true
+      }
+    },
+    "type": "trend",
+    "contains": "time",
+    "values": {
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0,
+      "p(90)": 0
+    }
+  },
+  "http_reqs": {
+    "type": "counter",
+    "contains": "default",
+    "values": {
+      "count": 1,
+      "rate": 5.7332146924817735
+    }
+  },
+  "http_req_tls_handshaking": {
+    "contains": "time",
+    "values": {
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0
+    },
+    "type": "trend"
+  },
+  "http_req_duration{service:permits}": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0
+    },
+    "thresholds": {
+      "p(95)<1000": {
+        "ok": true
+      }
+    }
+  },
+  "http_req_failed{service:emergency_response}": {
+    "type": "rate",
+    "contains": "default",
+    "values": {
+      "rate": 0,
+      "passes": 0,
+      "fails": 0
+    },
+    "thresholds": {
+      "rate<0.001": {
+        "ok": true
+      }
+    }
+  },
+  "http_req_failed": {
+    "type": "rate",
+    "contains": "default",
+    "values": {
+      "rate": 1,
+      "passes": 1,
+      "fails": 0
+    },
+    "thresholds": {
+      "rate<0.01": {
+        "ok": false
+      }
+    }
+  },
+  "citizen_service_response_time": {
+    "values": {
+      "min": 0,
+      "med": 0,
+      "max": 0,
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0
+    },
+    "thresholds": {
+      "p(95)<400": {
+        "ok": true
+      }
+    },
+    "type": "trend",
+    "contains": "default"
+  },
+  "http_req_blocked": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+      "med": 0,
+      "max": 0,
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0
+    }
+  },
+  "permit_application_success_rate": {
+    "type": "rate",
+    "contains": "default",
+    "values": {
+      "passes": 0,
+      "fails": 0,
+      "rate": 0
+    },
+    "thresholds": {
+      "rate>0.98": {
+        "ok": true
+      }
+    }
+  },
+  "http_req_connecting": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0
+    }
+  },
+  "compliance_check_duration": {
+    "type": "trend",
+    "contains": "default",
+    "values": {
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0
+    },
+    "thresholds": {
+      "p(95)<100": {
+        "ok": true
+      }
+    }
+  },
+  "http_req_duration{service:citizen_portal}": {
+    "contains": "time",
+    "values": {
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0,
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0
+    },
+    "thresholds": {
+      "p(95)<300": {
+        "ok": true
+      }
+    },
+    "type": "trend"
+  },
+  "http_req_duration{service:emergency_response}": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0,
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0
+    },
+    "thresholds": {
+      "p(95)<200": {
+        "ok": true
+      }
+    }
+  },
+  "http_req_waiting": {
+    "contains": "time",
+    "values": {
+      "p(90)": 0,
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0
+    },
+    "type": "trend"
+  },
+  "http_req_sending": {
+    "type": "trend",
+    "contains": "time",
+    "values": {
+      "p(95)": 0,
+      "p(99)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0,
+      "p(90)": 0
+    }
+  }
+}</pre>
+      </body>
+    </html>
+  

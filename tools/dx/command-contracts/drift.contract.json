@@ -1,0 +1,97 @@
+{
+  "$schema": "../context-pack/contract-schema.json",
+  "command": "drift",
+  "description": "Contract drift detector - validates command implementations against golden snapshots",
+  "aliases": {
+    "vscode": "TerraFusion: Contract Drift",
+    "claude": "/drift",
+    "codex": "codex drift",
+    "tdc": "tdc drift"
+  },
+  "riskLevel": "read",
+  "ownerLane": "dev",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "verbose": {
+        "type": "boolean",
+        "default": false,
+        "description": "Show detailed drift analysis including valid contracts"
+      },
+      "format": {
+        "type": "string",
+        "enum": ["json", "markdown", "console"],
+        "default": "console",
+        "description": "Output format"
+      },
+      "output": {
+        "type": "string",
+        "description": "Optional output file path"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["checked", "drifted", "unknown", "timestamp"],
+    "properties": {
+      "checked": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "List of contract commands that were checked"
+      },
+      "drifted": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "List of contract commands with drift detected"
+      },
+      "unknown": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "List of contracts with unknown status (missing schema or snapshot)"
+      },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "description": "When the drift detection was run"
+      },
+      "summary": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer" },
+          "valid": { "type": "integer" },
+          "drifted": { "type": "integer" },
+          "unknown": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "checked": ["doctor", "compliance", "launch", "context", "agent", "companion", "drift"],
+    "drifted": [],
+    "unknown": [],
+    "timestamp": "2026-02-13T10:30:00Z",
+    "summary": {
+      "total": 7,
+      "valid": 7,
+      "drifted": 0,
+      "unknown": 0
+    }
+  },
+  "implementation": {
+    "file": "tools/dx/contract-drift.mjs",
+    "entryPoint": "main",
+    "exports": ["detectDrift", "detectContractDrift", "generateDriftReport", "loadContracts"]
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "author": "TerraFusion DX Team",
+    "created": "2026-02-13",
+    "category": "governance",
+    "tags": ["contract", "validation", "governance", "quality", "drift-detection"],
+    "dependencies": [],
+    "sideEffects": "none"
+  }
+}

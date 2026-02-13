@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "TerraFusion Developer Console - Workspace orchestration system",
+  "type": "module",
+  "bin": {
+    "tdc": "./index.mjs"
+  },
   "workspaces": [
     "cli",
     "packages/*"
@@ -11,7 +15,8 @@
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",
     "clean": "npm run clean --workspaces",
-    "tdc": "node cli/dist/index.js",
+    "tdc": "node index.mjs",
+    "tdc:legacy": "node cli/dist/index.js",
     "dev:cli": "npm run dev --workspace=@terrafusion/tdc-cli",
     "dev:engine": "npm run dev --workspace=@terrafusion/transparency-engine"
   },

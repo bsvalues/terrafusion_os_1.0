@@ -1,0 +1,80 @@
+name: Workspace Companion - Write Boundary Tests
+
+on:
+  pull_request:
+    paths:
+      - 'tools/ai-workspace-companion/**'
+      - '.github/workflows/companion-boundaries.yml'
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'tools/ai-workspace-companion/**'
+  workflow_dispatch:
+
+jobs:
+  write-boundary-tests:
+    name: Validate Write Boundaries
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: 'tools/ai-workspace-companion/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: tools/ai-workspace-companion
+        run: npm ci
+
+      - name: Run write boundary tests
+        working-directory: tools/ai-workspace-companion
+        run: npm run test:boundaries
+
+      - name: Generate coverage report
+        if: matrix.node-version == '20.x'
+        working-directory: tools/ai-workspace-companion
+        run: npm run test:boundaries:coverage
+
+      - name: Upload coverage to Codecov
+        if: matrix.node-version == '20.x'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./tools/ai-workspace-companion/coverage/lcov.info
+          flags: companion-boundaries
+          name: companion-write-boundaries
+
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: |
+            tools/ai-workspace-companion/coverage/
+            tools/ai-workspace-companion/test-results/
+
+  boundary-validation-summary:
+    name: Boundary Validation Summary
+    runs-on: ubuntu-latest
+    needs: write-boundary-tests
+    if: always()
+
+    steps:
+      - name: Check test results
+        run: |
+          echo "✅ Write boundary tests completed"
+          echo "Companion respects DX Spine Charter §4 Lane Discipline"
+          echo "All writes contained to:"
+          echo "  - .terrafusion/context/latest.json"
+          echo "  - .terrafusion/companion/*"

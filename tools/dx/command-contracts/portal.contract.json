@@ -1,0 +1,135 @@
+{
+  "$schema": "../context-pack/contract-schema.json",
+  "command": "portal",
+  "description": "TerraFusion Command Portal - Unified Developer & Government Workspace Platform",
+  "aliases": {
+    "vscode": "TerraFusion: Portal",
+    "claude": "/portal",
+    "codex": "codex portal",
+    "tdc": "tdc portal"
+  },
+  "riskLevel": "read",
+  "ownerLane": "ops",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["start", "stop", "status", "restart"],
+        "default": "status",
+        "description": "Portal action to perform"
+      },
+      "port": {
+        "type": "integer",
+        "default": 5174,
+        "description": "Port to run the portal on"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["status", "endpoints"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["running", "stopped", "starting", "error"]
+      },
+      "endpoints": {
+        "type": "object",
+        "properties": {
+          "frontend": {
+            "type": "string",
+            "description": "Frontend URL"
+          },
+          "backend": {
+            "type": "string",
+            "description": "Backend API URL"
+          },
+          "contextPack": {
+            "type": "string",
+            "description": "Context Pack API endpoint"
+          },
+          "health": {
+            "type": "string",
+            "description": "Health check endpoint"
+          },
+          "todos": {
+            "type": "string",
+            "description": "Todos endpoint"
+          },
+          "nextActions": {
+            "type": "string",
+            "description": "Next actions endpoint"
+          }
+        }
+      },
+      "pid": {
+        "type": "integer",
+        "description": "Process ID of running portal"
+      },
+      "contextPack": {
+        "type": "object",
+        "description": "Current context pack data",
+        "properties": {
+          "health": {
+            "type": "object",
+            "properties": {
+              "overallHealth": { "type": "string" },
+              "services": { "type": "object" }
+            }
+          },
+          "todos": {
+            "type": "object",
+            "properties": {
+              "critical": { "type": "array" },
+              "high": { "type": "array" },
+              "medium": { "type": "array" },
+              "low": { "type": "array" }
+            }
+          },
+          "nextActions": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "goldenSnapshot": {
+    "status": "running",
+    "endpoints": {
+      "frontend": "http://localhost:5177",
+      "backend": "http://localhost:8787",
+      "contextPack": "http://localhost:8787/api/context/pack",
+      "health": "http://localhost:8787/api/context/health",
+      "todos": "http://localhost:8787/api/context/todos",
+      "nextActions": "http://localhost:8787/api/context/next-actions"
+    },
+    "pid": 45678,
+    "contextPack": {
+      "health": {
+        "overallHealth": "healthy",
+        "services": {
+          "api": { "port": 5000, "status": "up" },
+          "gateway": { "port": 3002, "status": "up" },
+          "consciousness": { "port": 3004, "status": "up" },
+          "portal": { "port": 5174, "status": "up" }
+        }
+      },
+      "todos": {
+        "critical": [],
+        "high": [],
+        "medium": [],
+        "low": []
+      },
+      "nextActions": [
+        "All services running",
+        "No critical TODOs",
+        "System healthy"
+      ]
+    }
+  }
+}

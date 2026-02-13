@@ -1,0 +1,135 @@
+# TerraFusion Prometheus Configuration
+# Government-Grade Metrics Collection
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'terrafusion-pilot'
+    environment: 'production'
+    region: 'washington-state'
+
+rule_files:
+  - 'alert_rules.yml'
+  - 'recording_rules.yml'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+scrape_configs:
+  # Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+    metrics_path: /metrics
+
+  # TerraFusion API Backend
+  - job_name: 'terrafusion-api'
+    static_configs:
+      - targets: ['host.docker.internal:8787']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scrape_timeout: 5s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '(.+)'
+        replacement: 'terrafusion-api'
+
+  # TerraFusion Frontend
+  - job_name: 'terrafusion-web'
+    static_configs:
+      - targets: ['host.docker.internal:3000']
+    scrape_interval: 15s
+    metrics_path: /api/metrics
+    scrape_timeout: 5s
+
+  # System Metrics - Node Exporter
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 10s
+
+  # Container Metrics - cAdvisor
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+
+  # Federation Relay Monitoring
+  - job_name: 'federation-relay'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - terrafusion-system
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        action: keep
+        regex: federation-relay
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        target_label: __address__
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+
+  # County Endpoints Monitoring
+  - job_name: 'benton-county'
+    static_configs:
+      - targets: ['benton.terrafusionmarket.com:443']
+    scrape_interval: 30s
+    metrics_path: /api/health/metrics
+    scheme: https
+    basic_auth:
+      username: 'federation-monitor'
+      password: 'secure-monitor-token'
+
+  - job_name: 'franklin-county'
+    static_configs:
+      - targets: ['franklin.terrafusionmarket.com:443']
+    scrape_interval: 30s
+    metrics_path: /api/health/metrics
+    scheme: https
+    basic_auth:
+      username: 'federation-monitor'
+      password: 'secure-monitor-token'
+
+  - job_name: 'yakima-county'
+    static_configs:
+      - targets: ['yakima.terrafusionmarket.com:443']
+    scrape_interval: 30s
+    metrics_path: /api/health/metrics
+    scheme: https
+    basic_auth:
+      username: 'federation-monitor'
+      password: 'secure-monitor-token'
+
+  # Emergency Services Monitoring
+  - job_name: 'emergency-services'
+    static_configs:
+      - targets:
+          - 'emergency.benton.gov:443'
+          - 'emergency.franklin.gov:443'
+          - 'emergency.yakima.gov:443'
+    scrape_interval: 10s # More frequent for emergency services
+    metrics_path: /health/metrics
+    scheme: https
+
+  # Database Monitoring (if externalized)
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+
+  # Redis Monitoring (if used for caching)
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s

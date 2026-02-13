@@ -1,0 +1,138 @@
+{
+  "brand": {
+    "name": "Terrafusion OS",
+    "essence": "Government. Transcended.",
+    "tagline": "Government. Transcended.",
+    "slogan": "Turn Complexity into Clarity.",
+    "motto": "We do it right the first time.",
+    "promise": "Every user, every action, every day: simplicity, mastery, and confidence—delivered without compromise.",
+
+    "colors": {
+      "primary": "#0099ff",
+      "primaryDark": "#0077cc",
+      "accent": "#00ffaa",
+      "accentDark": "#00cc88",
+      "transcend": "#00ffee",
+      "dark": "#0b1020",
+      "darkLighter": "#1a1f3a",
+      "light": "#ffffff",
+      "gray": "#888888",
+      "grayLight": "#cccccc",
+      "error": "#ff3333",
+      "success": "#00ff88",
+      "warning": "#ffaa00",
+      "clarity": "#e0f7ff"
+    },
+
+    "microcopy": {
+      "confirmation": [
+        "Transcendence complete.",
+        "Your path is clear.",
+        "All systems: Ready.",
+        "Clarity achieved.",
+        "Excellence delivered."
+      ],
+      "loading": [
+        "Preparing transcendence…",
+        "Advancing county intelligence…",
+        "Orchestrating clarity…",
+        "Elevating government operations…",
+        "Transforming complexity…"
+      ],
+      "error": [
+        "Let's clear the path—together.",
+        "We anticipate, we adapt, we solve.",
+        "Support is standing by your side.",
+        "This isn't a setback, it's a setup for clarity.",
+        "We're here to help you transcend this."
+      ],
+      "emptyState": [
+        "A blank page for transformation.",
+        "Begin your next chapter.",
+        "The future starts here.",
+        "Your canvas for clarity.",
+        "Ready for transcendence."
+      ],
+      "success": [
+        "Transcendence complete.",
+        "Your county just got smarter.",
+        "Clarity achieved.",
+        "Another step toward excellence.",
+        "Progress feels inevitable."
+      ],
+      "welcome": [
+        "Welcome to the future.",
+        "Government. Transcended.",
+        "Your journey to clarity begins.",
+        "Excellence starts now.",
+        "Transform your county today."
+      ]
+    },
+
+    "ai_copilot": {
+      "personality": "Professional yet approachable, confident yet supportive",
+      "tone": "Clear, encouraging, solution-focused",
+      "behavior": {
+        "emotionAdaptation": true,
+        "continuousOptimization": true,
+        "predictiveEmpathy": true
+      },
+      "personas": {
+        "frustrated": {
+          "tone": "Patient and encouraging",
+          "approach": "Proactive help with gentle guidance"
+        },
+        "explorer": {
+          "tone": "Excited and informative",
+          "approach": "Hints about advanced features, celebrating discoveries"
+        },
+        "skeptic": {
+          "tone": "Confident and factual",
+          "approach": "Stats, proof, and confident support"
+        },
+        "expert": {
+          "tone": "Concise and technical",
+          "approach": "Direct answers with advanced options"
+        }
+      }
+    },
+
+    "ui_patterns": {
+      "animations": {
+        "transcendPulse": "Gentle glow effect for important elements",
+        "clarityFade": "Smooth transitions between states",
+        "intelligenceRipple": "Ripple effect on user actions"
+      },
+      "iconography": {
+        "style": "Modern, clean, purposeful",
+        "primaryIcons": {
+          "transcend": "↗️",
+          "clarity": "💎",
+          "intelligence": "🧠",
+          "success": "✨",
+          "transform": "🔄"
+        }
+      },
+      "typography": {
+        "headings": "Bold, confident, clear",
+        "body": "Clean, readable, professional",
+        "emphasis": "Subtle, purposeful, elegant"
+      }
+    },
+
+    "deployment": {
+      "homepage": "Tagline and slogan above the fold",
+      "appShell": "Brand essence in loading states",
+      "confirmations": "Use transcendence microcopy",
+      "errors": "Supportive, solution-focused messaging",
+      "onboarding": "Welcome messages that inspire confidence",
+      "notifications": "Dynamic copy based on user context"
+    },
+
+    "vision": {
+      "oneSentence": "When counties use Terrafusion, government transcends—complexity becomes clarity, users become champions, and progress feels inevitable.",
+      "elevator": "Terrafusion transforms how counties operate by turning overwhelming complexity into crystal clarity, making every user feel like an expert from day one.",
+      "manifesto": "We believe government can transcend its limitations. We believe complexity can become clarity. We believe every county employee can feel confident, capable, and connected to their mission. This is why we built Terrafusion—to make government work the way it should: efficiently, transparently, brilliantly."
+    }
+  }
+}

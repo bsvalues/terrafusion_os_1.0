@@ -1,0 +1,220 @@
+use axum::{
+    extract::State,
+    http::StatusCode,
+    Json,
+    response::IntoResponse,
+};
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::sync::RwLock;
+use tokio::time::{interval, Duration};
+use tracing::{error, info, warn};
+
+/// Context Pack data structure matching .terrafusion/context/latest.json
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ContextPack {
+    pub version: String,
+    pub generated: String,
+    pub generator: String,
+    pub repo: RepoInfo,
+    pub focus: FocusInfo,
+    pub health: HealthInfo,
+    pub governance: GovernanceInfo,
+    pub todos: TodosInfo,
+    pub next_actions: Vec<String>,
+    pub evidence_pack: EvidencePack,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RepoInfo {
+    pub root: String,
+    pub branch: String,
+    pub last_commit: String,
+    pub dirty_files: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FocusInfo {
+    pub scene: Option<String>,
+    pub lane: String,
+    pub pr: Option<String>,
+    pub intent: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HealthInfo {
+    pub services: std::collections::HashMap<String, ServiceHealth>,
+    pub overall_health: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ServiceHealth {
+    pub port: u16,
+    pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GovernanceInfo {
+    pub tier1_evidence_status: String,
+    pub dod_version: String,
+    pub scene_enforcement_active: bool,
+    pub missing_evidence: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TodosInfo {
+    pub critical: Vec<TodoItem>,
+    pub high: Vec<TodoItem>,
+    pub medium: Vec<TodoItem>,
+    pub low: Vec<TodoItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TodoItem {
+    pub file: String,
+    pub line: u32,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EvidencePack {
+    pub cid: Option<String>,
+    pub trace_url: Option<String>,
+    pub latency_ms: Option<u32>,
+    pub receipt_present: bool,
+}
+
+/// Context Pack Reader Service
+pub struct ContextPackReader {
+    context_pack: Arc<RwLock<Option<ContextPack>>>,
+    repo_root: String,
+}
+
+impl ContextPackReader {
+    pub fn new(repo_root: String) -> Self {
+        Self {
+            context_pack: Arc::new(RwLock::new(None)),
+            repo_root,
+        }
+    }
+
+    /// Start background task to read context pack every 5 seconds
+    pub fn start_background_reader(self: Arc<Self>) {
+        tokio::spawn(async move {
+            let mut interval = interval(Duration::from_secs(5));
+            info!("📦 Context Pack Reader started - polling every 5 seconds");
+
+            loop {
+                interval.tick().await;
+                if let Err(e) = self.read_context_pack().await {
+                    warn!("Failed to read context pack: {}", e);
+                }
+            }
+        });
+    }
+
+    /// Read the context pack from disk
+    async fn read_context_pack(&self) -> Result<(), String> {
+        let context_path = PathBuf::from(&self.repo_root)
+            .join(".terrafusion")
+            .join("context")
+            .join("latest.json");
+
+        match tokio::fs::read_to_string(&context_path).await {
+            Ok(content) => {
+                match serde_json::from_str::<ContextPack>(&content) {
+                    Ok(pack) => {
+                        let mut context = self.context_pack.write().await;
+                        *context = Some(pack);
+                        Ok(())
+                    }
+                    Err(e) => {
+                        error!("Failed to parse context pack: {}", e);
+                        Err(format!("Parse error: {}", e))
+                    }
+                }
+            }
+            Err(e) => {
+                warn!("Context pack not found at {:?}: {}", context_path, e);
+                Err(format!("Read error: {}", e))
+            }
+        }
+    }
+
+    /// Get the current context pack
+    pub async fn get_context_pack(&self) -> Option<ContextPack> {
+        self.context_pack.read().await.clone()
+    }
+}
+
+/// HTTP handler to get the full context pack
+pub async fn get_context_handler(
+    State(reader): State<Arc<ContextPackReader>>,
+) -> impl IntoResponse {
+    match reader.get_context_pack().await {
+        Some(pack) => (StatusCode::OK, Json(pack)).into_response(),
+        None => (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(serde_json::json!({
+                "error": "Context pack not available",
+                "message": "Waiting for context pack to be generated by tdc"
+            }))
+        ).into_response(),
+    }
+}
+
+/// HTTP handler to get just health data
+pub async fn get_health_handler(
+    State(reader): State<Arc<ContextPackReader>>,
+) -> impl IntoResponse {
+    match reader.get_context_pack().await {
+        Some(pack) => (StatusCode::OK, Json(pack.health)).into_response(),
+        None => (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(serde_json::json!({
+                "error": "Health data not available"
+            }))
+        ).into_response(),
+    }
+}
+
+/// HTTP handler to get just todos
+pub async fn get_todos_handler(
+    State(reader): State<Arc<ContextPackReader>>,
+) -> impl IntoResponse {
+    match reader.get_context_pack().await {
+        Some(pack) => (StatusCode::OK, Json(pack.todos)).into_response(),
+        None => (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(serde_json::json!({
+                "error": "Todos not available"
+            }))
+        ).into_response(),
+    }
+}
+
+/// HTTP handler to get next actions
+pub async fn get_next_actions_handler(
+    State(reader): State<Arc<ContextPackReader>>,
+) -> impl IntoResponse {
+    match reader.get_context_pack().await {
+        Some(pack) => (
+            StatusCode::OK,
+            Json(serde_json::json!({
+                "nextActions": pack.next_actions
+            }))
+        ).into_response(),
+        None => (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(serde_json::json!({
+                "error": "Next actions not available"
+            }))
+        ).into_response(),
+    }
+}

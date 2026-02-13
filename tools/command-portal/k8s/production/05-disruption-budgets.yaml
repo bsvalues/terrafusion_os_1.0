@@ -1,0 +1,59 @@
+# Pod Disruption Budgets for Production Resilience
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-frontend-pdb
+  namespace: terrafusion-production
+  labels:
+    app: terrafusion-frontend
+    component: frontend
+spec:
+  minAvailable: 2 # Keep at least 2 pods running during disruptions
+  selector:
+    matchLabels:
+      app: terrafusion-frontend
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-backend-pdb
+  namespace: terrafusion-production
+  labels:
+    app: terrafusion-backend
+    component: backend
+spec:
+  minAvailable: 2 # Keep at least 2 pods running during disruptions
+  selector:
+    matchLabels:
+      app: terrafusion-backend
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-postgres-pdb
+  namespace: terrafusion-production
+  labels:
+    app: terrafusion-postgres
+    component: database
+spec:
+  minAvailable: 1 # Keep at least 1 database pod running
+  selector:
+    matchLabels:
+      app: terrafusion-postgres
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-redis-pdb
+  namespace: terrafusion-production
+  labels:
+    app: terrafusion-redis
+    component: cache
+spec:
+  minAvailable: 2 # Keep at least 2 cache pods running
+  selector:
+    matchLabels:
+      app: terrafusion-redis

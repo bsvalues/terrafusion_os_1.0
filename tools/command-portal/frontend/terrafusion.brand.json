@@ -1,0 +1,100 @@
+{
+  "brand": "TerraFusion",
+  "tagline": "Infrastructure Intelligence, Infinite Scale",
+  "subtagline": "Government. Simplified.",
+  "motto": "Tactical Municipal Excellence",
+  "vision": "Government. Transcended.",
+  "mission": "Invent the future of government infrastructure through relentless automation, design elegance, and championship-level operational excellence.",
+  "core_principles": [
+    "Autonomous self-healing systems",
+    "Infinite horizontal scalability",
+    "Zero-downtime deployments",
+    "Immutable infrastructure (everything in Git, cattle not pets)",
+    "Forensically auditable operations",
+    "Security and zero-trust by design",
+    "Quantum-ready, encrypted by default",
+    "Elegant simplicity at every level",
+    "Automate everything—human intervention = failure",
+    "Telemetry and observability at every layer"
+  ],
+  "audience_segments": {
+    "executives": {
+      "key_message": "Own total visibility, agility, and trust. With TerraFusion, lead your county into a future where government infrastructure never fails and always innovates."
+    },
+    "it_ops": {
+      "key_message": "Every deploy is as precise as a Tesla assembly robot. Pipelines self-test, auto-heal, and ship code at the speed of progress. Security, reliability, and automation are default—not afterthoughts."
+    },
+    "county_staff": {
+      "key_message": "Experience workflows as effortless as iPhone UX and as dependable as Autopilot. TerraFusion turns complexity into clarity, so you can focus on serving the community."
+    },
+    "citizens": {
+      "key_message": "Enjoy government services that are faster, simpler, and always available—your county’s digital infrastructure is now as advanced as any Fortune 500."
+    }
+  },
+  "devops_manifesto": "If something is important enough, even if the odds are against you, you should still do it. We build government infrastructure like Tesla builds cars and SpaceX launches rockets: self-healing, zero-downtime, auditable, and ready for infinite scale.",
+  "iac_example": {
+    "philosophy": "Everything is code: versioned, reproducible, and automated.",
+    "tools": ["Terraform", "Ansible", "Helm"],
+    "standards": [
+      "Immutable deployments",
+      "GitOps for all infrastructure changes",
+      "Secrets managed outside of code"
+    ]
+  },
+  "cicd_pipeline": {
+    "tools": [
+      "GitHub Actions",
+      "Snyk",
+      "SonarQube",
+      "OWASP ZAP",
+      "Playwright",
+      "K6"
+    ],
+    "requirements": [
+      "100% unit test coverage",
+      "Fail fast on security or quality gates",
+      "Rolling and canary deployments",
+      "Autonomous rollback on failure"
+    ]
+  },
+  "container_architecture": {
+    "strategy": "Non-root, minimal, multi-stage Docker builds",
+    "healthchecks": "Every container exposes a /health endpoint; readiness/liveness probes on K8s",
+    "resource_limits": "CPU/memory precisely defined, with autoscaling enabled"
+  },
+  "kubernetes": {
+    "deployment": "Multi-AZ, anti-affinity, rolling updates, strict RBAC, Istio mTLS, automated scaling",
+    "monitoring": "Prometheus and Grafana for full telemetry; every metric matters"
+  },
+  "security": {
+    "model": "Zero-trust, mTLS everywhere, network micro-segmentation, Vault-integrated secrets, mandatory audit logging",
+    "testing": "Automated SAST, DAST, dependency scanning, quarterly pen tests"
+  },
+  "database": {
+    "technology": "PostgreSQL 15+ with PostGIS",
+    "ha": "Multi-AZ with daily encrypted backups, point-in-time restore, automated failover",
+    "compliance": "Audit trails on all DML, role-based access control, retention policies"
+  },
+  "observability": {
+    "tools": ["Prometheus", "Grafana", "ELK or Loki"],
+    "kpis": {
+      "availability": "99.99%",
+      "latency": "p95 <200ms",
+      "permit_processing_time": "<2min",
+      "error_rate": "<0.1%"
+    },
+    "alerting": "Critical alerts escalate to ops with PagerDuty or equivalent"
+  },
+  "deployment_strategy": "Progressive (canary) with auto-analysis, instant rollback, traffic splitting (Argo Rollouts or equivalent)",
+  "quality_standards": [
+    "No compromises: four nines uptime, championship test coverage, measured business outcomes",
+    "Every deployment is observable, reversible, and forensically logged"
+  ],
+  "sample_microcopy": {
+    "login_banner": "Welcome to Government. Transcended.",
+    "dashboard": "Infrastructure Intelligence, Infinite Scale",
+    "success": "Success! Government. Simplified.",
+    "error": "Something went wrong—autonomous recovery is in progress."
+  },
+  "contact": "devops@terrafusion.ai"
+}

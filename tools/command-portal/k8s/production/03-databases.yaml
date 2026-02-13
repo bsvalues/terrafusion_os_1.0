@@ -1,0 +1,567 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql-primary
+  namespace: terrafusion-production
+  labels:
+    app: postgresql
+    component: database
+    role: primary
+    environment: production
+  annotations:
+    description: 'PostgreSQL Primary Database for TerraFusion'
+spec:
+  serviceName: postgresql-primary-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+      role: primary
+  template:
+    metadata:
+      labels:
+        app: postgresql
+        component: database
+        role: primary
+        environment: production
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9187'
+    spec:
+      serviceAccountName: terrafusion-service-account
+
+      # Security context for government compliance
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999 # postgres user
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+
+      containers:
+        - name: postgresql
+          image: postgres:15-alpine
+          imagePullPolicy: IfNotPresent
+
+          # Security context for container
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 999
+            runAsGroup: 999
+            readOnlyRootFilesystem: false # PostgreSQL needs to write to disk
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - DAC_OVERRIDE
+                - FOWNER
+                - SETGID
+                - SETUID
+
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-database-secret
+                  key: database
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-database-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-database-secret
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_INITDB_ARGS
+              value: '--encoding=UTF8 --locale=C'
+
+          # Resource requests and limits
+          resources:
+            requests:
+              cpu: '2' # 2 CPU cores
+              memory: '4Gi' # 4GB RAM
+            limits:
+              cpu: '8' # 8 CPU cores max
+              memory: '16Gi' # 16GB RAM max
+
+          # Health checks
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+
+          # Volume mounts
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data
+            - name: postgresql-config
+              mountPath: /etc/postgresql/postgresql.conf
+              subPath: postgresql.conf
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+
+        # PostgreSQL exporter for monitoring
+        - name: postgres-exporter
+          image: prometheuscommunity/postgres-exporter:latest
+          imagePullPolicy: IfNotPresent
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          ports:
+            - name: metrics
+              containerPort: 9187
+              protocol: TCP
+
+          env:
+            - name: DATA_SOURCE_NAME
+              value: 'postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:5432/$(POSTGRES_DB)?sslmode=disable'
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-database-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-database-secret
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-database-secret
+                  key: database
+
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '128Mi'
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
+
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+
+      volumes:
+        - name: postgresql-config
+          configMap:
+            name: postgresql-config
+        - name: tmp-volume
+          emptyDir:
+            sizeLimit: 1Gi
+
+      # Termination settings
+      terminationGracePeriodSeconds: 60
+
+  # Volume claim templates
+  volumeClaimTemplates:
+    - metadata:
+        name: postgresql-data
+        labels:
+          app: postgresql
+          component: database
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: 'fast-ssd' # High-performance storage class
+        resources:
+          requests:
+            storage: 100Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-primary-service
+  namespace: terrafusion-production
+  labels:
+    app: postgresql
+    component: database
+    role: primary
+    environment: production
+  annotations:
+    service.description: 'PostgreSQL Primary Database Service'
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9187'
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+    - name: metrics
+      port: 9187
+      targetPort: 9187
+      protocol: TCP
+  selector:
+    app: postgresql
+    role: primary
+  clusterIP: None # Headless service for StatefulSet
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-config
+  namespace: terrafusion-production
+  labels:
+    app: postgresql
+    component: database
+    environment: production
+data:
+  postgresql.conf: |
+    # PostgreSQL Configuration for Government Production
+
+    # Connection Settings
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 200
+
+    # Memory Settings (optimized for 16GB limit)
+    shared_buffers = 4GB
+    effective_cache_size = 12GB
+    work_mem = 64MB
+    maintenance_work_mem = 512MB
+
+    # WAL Settings for high availability
+    wal_level = replica
+    max_wal_senders = 3
+    max_replication_slots = 3
+    wal_keep_size = 1GB
+
+    # Logging (government compliance)
+    logging_collector = on
+    log_directory = 'pg_log'
+    log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
+    log_statement = 'all'
+    log_min_duration_statement = 1000
+    log_connections = on
+    log_disconnections = on
+    log_lock_waits = on
+    log_checkpoints = on
+
+    # Security settings
+    ssl = on
+    ssl_cert_file = '/etc/ssl/certs/server.crt'
+    ssl_key_file = '/etc/ssl/private/server.key'
+    ssl_protocols = 'TLSv1.2,TLSv1.3'
+
+    # Performance tuning
+    checkpoint_completion_target = 0.9
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+
+    # Autovacuum (government data management)
+    autovacuum = on
+    autovacuum_max_workers = 3
+    autovacuum_vacuum_scale_factor = 0.1
+    autovacuum_analyze_scale_factor = 0.05
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cluster
+  namespace: terrafusion-production
+  labels:
+    app: redis
+    component: cache
+    environment: production
+  annotations:
+    description: 'Redis Cache Cluster for TerraFusion'
+spec:
+  replicas: 3 # Redis cluster with 3 nodes
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        component: cache
+        environment: production
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9121'
+    spec:
+      serviceAccountName: terrafusion-service-account
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999 # redis user
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+
+      # Anti-affinity to spread Redis nodes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - redis
+                topologyKey: kubernetes.io/hostname
+
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 999
+            runAsGroup: 999
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          command:
+            - redis-server
+            - /etc/redis/redis.conf
+
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-redis-secret
+                  key: password
+
+          resources:
+            requests:
+              cpu: '500m'
+              memory: '1Gi'
+            limits:
+              cpu: '2'
+              memory: '4Gi'
+
+          # Health checks
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - --raw
+                - incr
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          volumeMounts:
+            - name: redis-config
+              mountPath: /etc/redis/redis.conf
+              subPath: redis.conf
+              readOnly: true
+            - name: redis-data
+              mountPath: /data
+            - name: tmp-volume
+              mountPath: /tmp
+
+        # Redis exporter for monitoring
+        - name: redis-exporter
+          image: oliver006/redis_exporter:latest
+          imagePullPolicy: IfNotPresent
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          ports:
+            - name: metrics
+              containerPort: 9121
+              protocol: TCP
+
+          env:
+            - name: REDIS_ADDR
+              value: 'redis://localhost:6379'
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-redis-secret
+                  key: password
+
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '128Mi'
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
+
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+        - name: redis-data
+          emptyDir:
+            sizeLimit: 10Gi
+        - name: tmp-volume
+          emptyDir:
+            sizeLimit: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: terrafusion-production
+  labels:
+    app: redis
+    component: cache
+    environment: production
+  annotations:
+    service.description: 'Redis Cache Service'
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9121'
+spec:
+  type: ClusterIP
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+      protocol: TCP
+    - name: metrics
+      port: 9121
+      targetPort: 9121
+      protocol: TCP
+  selector:
+    app: redis
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: terrafusion-production
+  labels:
+    app: redis
+    component: cache
+    environment: production
+data:
+  redis.conf: |
+    # Redis Configuration for Government Production
+
+    # Network settings
+    bind 0.0.0.0
+    port 6379
+    timeout 300
+    tcp-keepalive 60
+
+    # Security settings
+    requirepass ${REDIS_PASSWORD}
+    protected-mode yes
+
+    # Memory management
+    maxmemory 3gb
+    maxmemory-policy allkeys-lru
+
+    # Persistence (for government data retention)
+    save 900 1
+    save 300 10
+    save 60 10000
+    rdbcompression yes
+    rdbchecksum yes
+
+    # Logging
+    loglevel notice
+    logfile /data/redis.log
+
+    # Performance tuning
+    tcp-backlog 511
+    databases 16
+
+    # Append only file (AOF) for durability
+    appendonly yes
+    appendfsync everysec
+    no-appendfsync-on-rewrite no
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+
+    # Slow log for monitoring
+    slowlog-log-slower-than 10000
+    slowlog-max-len 128
+
+    # Client output buffer limits
+    client-output-buffer-limit normal 0 0 0
+    client-output-buffer-limit replica 256mb 64mb 60
+    client-output-buffer-limit pubsub 32mb 8mb 60
