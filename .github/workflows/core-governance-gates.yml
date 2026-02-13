@@ -139,7 +139,23 @@ jobs:
         run: npx tsc os-platform/core/pilot/mcp/postgis-policy.ts --module ESNext --target ES2022 --moduleResolution node --skipLibCheck --types node && mv os-platform/core/pilot/mcp/postgis-policy.js os-platform/core/pilot/mcp/postgis-policy.mjs
       - name: Phase 12A MCP PostGIS tests
         run: pnpm run test:phase12-mcp
-
+  phase12b-routing:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Compile postgis-routing.ts to .mjs
+        run: npx tsc os-platform/core/pilot/mcp/postgis-routing.ts --module ESNext --target ES2022 --moduleResolution node --skipLibCheck --types node && mv os-platform/core/pilot/mcp/postgis-routing.js os-platform/core/pilot/mcp/postgis-routing.mjs
+      - name: Phase 12B Multi-County Routing
+        run: pnpm run test:phase12b-routing
   check-generated-js:
     needs: changes
     if: needs.changes.outputs.core == 'true'
