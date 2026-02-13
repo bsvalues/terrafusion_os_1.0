@@ -1,0 +1,9 @@
+{
+  "description": "Valid: SELECT with explicit row limit enforcement",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "SELECT ST_AsGeoJSON(geom) as geometry, parcel_id FROM parcels WHERE county_id = $1 LIMIT 50",
+  "params": ["53005"],
+  "expectedRisk": "read",
+  "expectedNormalized": "select st_asgeojson(geom) as geometry, parcel_id from parcels where county_id = $1 limit 50"
+}

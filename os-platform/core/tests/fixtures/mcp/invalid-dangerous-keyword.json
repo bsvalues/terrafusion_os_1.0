@@ -1,0 +1,9 @@
+{
+  "description": "Invalid: Dangerous keyword (COPY or pg_read_file bypass filesystem)",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "COPY properties TO '/tmp/data.csv' DELIMITER ','",
+  "params": [],
+  "expectedRejection": "Dangerous keyword (COPY) not allowed",
+  "expectedRisk": "filesystem-access"
+}

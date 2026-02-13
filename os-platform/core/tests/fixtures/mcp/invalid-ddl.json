@@ -1,0 +1,9 @@
+{
+  "description": "Invalid: DDL operation (CREATE TABLE not allowed)",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "CREATE TABLE test_table (id SERIAL PRIMARY KEY, name TEXT)",
+  "params": [],
+  "expectedRejection": "DDL operation (CREATE) not allowed",
+  "expectedRisk": "ddl"
+}

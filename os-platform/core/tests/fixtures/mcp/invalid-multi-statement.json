@@ -1,0 +1,9 @@
+{
+  "description": "Invalid: Multiple statements with semicolon (SQL injection risk)",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "SELECT * FROM properties WHERE county_id = $1; DROP TABLE properties;",
+  "params": ["53005"],
+  "expectedRejection": "Multiple statements not allowed (semicolon detected)",
+  "expectedRisk": "injection"
+}

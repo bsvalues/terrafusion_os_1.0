@@ -1,0 +1,9 @@
+{
+  "description": "Valid: SELECT with aggregate functions (COUNT, SUM)",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "SELECT county_id, COUNT(*) as parcel_count, SUM(assessed_value) as total_value FROM properties WHERE county_id = $1 GROUP BY county_id",
+  "params": ["53005"],
+  "expectedRisk": "read",
+  "expectedNormalized": "select county_id, count(*) as parcel_count, sum(assessed_value) as total_value from properties where county_id = $1 group by county_id"
+}

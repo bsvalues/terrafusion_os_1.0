@@ -1,0 +1,9 @@
+{
+  "description": "Valid: SELECT with JOIN (read-only multi-table)",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "SELECT p.parcel_id, p.owner_name, a.assessed_value FROM properties p JOIN assessments a ON p.parcel_id = a.parcel_id WHERE p.county_id = $1 LIMIT 100",
+  "params": ["53005"],
+  "expectedRisk": "read",
+  "expectedNormalized": "select p.parcel_id, p.owner_name, a.assessed_value from properties p join assessments a on p.parcel_id = a.parcel_id where p.county_id = $1 limit 100"
+}

@@ -1,0 +1,9 @@
+{
+  "description": "Invalid: Missing parameterization (SQL injection risk via string concat)",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "SELECT * FROM properties WHERE owner_name = 'John Doe' OR '1'='1'",
+  "params": [],
+  "expectedRejection": "Query must use parameterized inputs (no string literals in WHERE clause)",
+  "expectedRisk": "injection"
+}

@@ -1,0 +1,9 @@
+{
+  "description": "Invalid: INSERT statement (write operation not allowed in read mode)",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "INSERT INTO properties (parcel_id, county_id, owner_name) VALUES ($1, $2, $3)",
+  "params": ["12345", "53005", "John Doe"],
+  "expectedRejection": "Write operation (INSERT) not allowed in read mode",
+  "expectedRisk": "write"
+}

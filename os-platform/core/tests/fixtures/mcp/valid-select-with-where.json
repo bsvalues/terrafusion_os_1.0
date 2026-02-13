@@ -1,0 +1,9 @@
+{
+  "description": "Valid: SELECT with WHERE clause and multiple parameters",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "SELECT parcel_id, assessed_value, tax_year FROM assessments WHERE county_id = $1 AND tax_year >= $2 AND assessed_value > $3 LIMIT 100",
+  "params": ["53005", "2023", "100000"],
+  "expectedRisk": "read",
+  "expectedNormalized": "select parcel_id, assessed_value, tax_year from assessments where county_id = $1 and tax_year >= $2 and assessed_value > $3 limit 100"
+}

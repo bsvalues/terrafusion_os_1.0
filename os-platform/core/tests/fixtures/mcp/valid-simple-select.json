@@ -1,0 +1,9 @@
+{
+  "description": "Valid: Basic SELECT query with parameterized county filter",
+  "tool": "mcp-postgis-query",
+  "mode": "read",
+  "query": "SELECT parcel_id, owner_name, assessed_value FROM properties WHERE county_id = $1 LIMIT 100",
+  "params": ["53005"],
+  "expectedRisk": "read",
+  "expectedNormalized": "select parcel_id, owner_name, assessed_value from properties where county_id = $1 limit 100"
+}
