@@ -265,6 +265,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Orphan C# source scan (build graph integrity)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔍 Scanning for orphaned .cs files..."
+          node tools/dx/orphan-cs-scan.mjs
+          echo "✅ Build graph integrity verified"
+
       - name: Workspace sanity (no quarantined packages)
         shell: bash
         run: |
