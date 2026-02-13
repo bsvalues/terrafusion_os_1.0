@@ -4,8 +4,10 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import { aiCommand } from './commands/ai';
 import { debugCommand } from './commands/debug';
+import { doctorCommand } from './commands/doctor';
 import { evidenceCommand } from './commands/evidence';
 import { launchCommand } from './commands/launch-backend';
+import { postureCommand } from './commands/posture';
 import { skillCommand } from './commands/skill';
 import { statusCommand } from './commands/status';
 import { workspaceCommand } from './commands/workspace';
@@ -31,8 +33,10 @@ program.addCommand(statusCommand);
 program.addCommand(launchCommand);
 program.addCommand(workspaceCommand);
 program.addCommand(debugCommand);
+program.addCommand(doctorCommand);
 program.addCommand(aiCommand);
 program.addCommand(evidenceCommand);
+program.addCommand(postureCommand);
 program.addCommand(skillCommand);
 
 // Default action - show help

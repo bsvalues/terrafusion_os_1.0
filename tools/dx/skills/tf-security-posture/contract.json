@@ -1,0 +1,57 @@
+{
+  "$schema": "../../schemas/skill-contract-v1.json",
+  "skill": "tf-security-posture",
+  "version": "1.0.0",
+  "description": "Security Posture Tracker - FISMA-HIGH compliance gap analysis and remediation",
+  "ownerLane": "security",
+  "riskLevel": "read",
+  "capabilities": [
+    "fisma-control-tracking",
+    "nist-800-53-coverage",
+    "gap-analysis",
+    "remediation-priority",
+    "compliance-scoring",
+    "vulnerability-assessment"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "scope": {
+        "type": "string",
+        "enum": ["full", "authentication", "authorization", "audit", "encryption", "network"],
+        "default": "full"
+      },
+      "standard": {
+        "type": "string",
+        "enum": ["fisma-high", "nist-800-53", "fedramp", "soc2"],
+        "default": "fisma-high"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["score", "controlsCovered", "controlsTotal", "gaps"],
+    "properties": {
+      "score": { "type": "number", "minimum": 0, "maximum": 100 },
+      "controlsCovered": { "type": "integer" },
+      "controlsTotal": { "type": "integer" },
+      "gaps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "controlFamily": { "type": "string" },
+            "controlId": { "type": "string" },
+            "description": { "type": "string" },
+            "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+            "remediation": { "type": "string" },
+            "estimatedEffort": { "type": "string" }
+          }
+        }
+      },
+      "implementedFamilies": { "type": "array", "items": { "type": "string" } },
+      "partialFamilies": { "type": "array", "items": { "type": "string" } },
+      "missingFamilies": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+}

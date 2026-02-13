@@ -54,14 +54,28 @@
       "contract": "tools/dx/skills/tf-data-dense-layouts/contract.json",
       "tags": ["layouts", "data-dense", "tables", "dashboards", "government"],
       "dependencies": ["tf-ui-foundation"]
+    },
+    {
+      "id": "tf-security-posture",
+      "name": "Security Posture Tracker",
+      "version": "1.0.0",
+      "description": "FISMA-HIGH compliance gap analysis and remediation tracking",
+      "ownerLane": "security",
+      "riskLevel": "read",
+      "status": "active",
+      "path": "tools/dx/skills/tf-security-posture",
+      "contract": "tools/dx/skills/tf-security-posture/contract.json",
+      "tags": ["security", "fisma", "nist", "compliance", "posture", "government"],
+      "dependencies": []
     }
   ],
   "metadata": {
-    "totalSkills": 4,
-    "activeSkills": 4,
+    "totalSkills": 5,
+    "activeSkills": 5,
     "lanes": {
       "governance": 2,
-      "dev": 2
+      "dev": 2,
+      "security": 1
     },
     "lastUpdated": "2026-02-13T00:00:00Z"
   }

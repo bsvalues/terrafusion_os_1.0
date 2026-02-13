@@ -1,8 +1,14 @@
 # TerraFusion Runtime Artifacts
-# Context Pack files are machine-generated and session-specific
 
-context/
+# Ephemeral artifacts (rebuilt per-PR or on-demand)
+evidence/
+posture/
 violations.log
+
+# Tracked artifacts (part of governance and AI memory)
+# context/ - Context pack is part of AI memory (TRACKED)
+# audit.log - Immutable audit trail (TRACKED)
+# mcp-approvals/ - Approval artifacts are governance records (TRACKED)
 
 # Keep directory structure
 !.gitignore

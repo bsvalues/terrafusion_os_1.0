@@ -1,0 +1,180 @@
+{
+  "version": "1.0",
+  "generated": "2026-02-13T17:33:56.240Z",
+  "generator": "tdc",
+  "repo": {
+    "root": "/home/user/terrafusion_os_1.0",
+    "branch": "claude/find-todos-01Qg77veio7wJN9wAgs96TyF",
+    "lastCommit": "1363a003180b823092e53108fe6338205b378bde",
+    "dirtyFiles": [
+      "gitignore",
+      ".terrafusion/.gitignore",
+      "tools/dx/skills/registry.json",
+      "tools/dx/spine-smoke.mjs",
+      "tools/tdc/src/index.ts",
+      ".terrafusion/context/",
+      "tools/dx/command-contracts/posture.contract.json",
+      "tools/dx/posture-bus/",
+      "tools/dx/skills/tf-security-posture/",
+      "tools/tdc/src/commands/doctor.ts",
+      "tools/tdc/src/commands/posture.ts"
+    ]
+  },
+  "focus": {
+    "scene": null,
+    "lane": "dev",
+    "pr": null,
+    "intent": null
+  },
+  "health": {
+    "services": {
+      "api": {
+        "port": 5000,
+        "status": "down"
+      },
+      "gateway": {
+        "port": 3002,
+        "status": "down"
+      },
+      "consciousness": {
+        "port": 3004,
+        "status": "down"
+      },
+      "portal": {
+        "port": 5174,
+        "status": "down"
+      },
+      "transparency": {
+        "port": 8788,
+        "status": "down"
+      }
+    },
+    "overallHealth": "critical"
+  },
+  "governance": {
+    "tier1EvidenceStatus": "not-applicable",
+    "dodVersion": "1.0",
+    "sceneEnforcementActive": false,
+    "missingEvidence": []
+  },
+  "contractDrift": {
+    "available": true,
+    "checked": [
+      "agent",
+      "companion",
+      "compliance",
+      "context",
+      "doctor",
+      "drift",
+      "evidence",
+      "launch",
+      "portal",
+      "posture"
+    ],
+    "drifted": [],
+    "unknown": [],
+    "timestamp": "2026-02-13T17:33:56.235Z"
+  },
+  "todos": {
+    "critical": [
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/TerraFusion.Security/ProductionAuditService.cs",
+        "line": 516,
+        "text": "return \"1=1\"; // TODO: Build dynamic WHERE clause"
+      },
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/TerraFusion.Security/ProductionAuditService.cs",
+        "line": 526,
+        "text": "return \"archive://location\"; // TODO: Implement archive storage"
+      },
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/TerraFusion.Security/ProductionAuditService.cs",
+        "line": 531,
+        "text": "return \"hash\"; // TODO: Calculate archive hash"
+      },
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/TerraFusion.Security/ProductionAuthenticationService.cs",
+        "line": 596,
+        "text": "// TODO: Implement database query when PasswordHistory DbSet is added to context"
+      },
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/TerraFusion.Security/ProductionAuthenticationService.cs",
+        "line": 618,
+        "text": "// TODO: Implement database insert when PasswordHistory DbSet is added"
+      }
+    ],
+    "high": [
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/TerraFusion.Gateway/Program.cs",
+        "line": 95,
+        "text": "// TODO: Implement these services"
+      },
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/src/TerraFusion.AI/Services/GPTBudgetAlertService.cs",
+        "line": 41,
+        "text": "// TODO: Inject email service when available"
+      },
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/src/TerraFusion.AI/Services/GPTBudgetAlertService.cs",
+        "line": 276,
+        "text": "// TODO: Send email using email service"
+      },
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/src/TerraFusion.Consciousness/Program.cs",
+        "line": 209,
+        "text": "// TODO: Add quantum orchestrator once service registration is complete"
+      },
+      {
+        "file": "/home/user/terrafusion_os_1.0/backend/src/TerraFusion.Core/Services/PropertyValuationAIEnhancementService.cs",
+        "line": 411,
+        "text": "// TODO: Integrate with TerraFusion.Consciousness service (port 3004) when available"
+      }
+    ],
+    "medium": [],
+    "low": []
+  },
+  "nextActions": [
+    "Start backend services: tdc launch:backend",
+    "Start API server: cd backend && dotnet run --project TerraFusion.API",
+    "Review 11 uncommitted changes",
+    "Address 5 CRITICAL security TODOs",
+    "Run /doctor for full workspace health check"
+  ],
+  "skills": {
+    "registered": 5,
+    "active": 5,
+    "skills": [
+      {
+        "id": "tf-pr-evidence-pack",
+        "lane": "governance",
+        "status": "active"
+      },
+      {
+        "id": "tf-ui-foundation",
+        "lane": "dev",
+        "status": "active"
+      },
+      {
+        "id": "tf-a11y-508-audit",
+        "lane": "governance",
+        "status": "active"
+      },
+      {
+        "id": "tf-data-dense-layouts",
+        "lane": "dev",
+        "status": "active"
+      },
+      {
+        "id": "tf-security-posture",
+        "lane": "security",
+        "status": "active"
+      }
+    ]
+  },
+  "evidencePack": {
+    "cid": null,
+    "traceUrl": null,
+    "latencyMs": null,
+    "receiptPresent": false
+  }
+}

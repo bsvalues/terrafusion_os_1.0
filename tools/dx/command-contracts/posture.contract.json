@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/command-contract-v1.json",
+  "command": "posture",
+  "description": "Governance posture tracking across all lanes",
+  "aliases": {
+    "vscode": "TerraFusion: Posture",
+    "claude": "/posture",
+    "codex": "codex posture",
+    "tdc": "tdc posture"
+  },
+  "riskLevel": "read",
+  "ownerLane": "governance",
+  "requiresConfirmation": false,
+  "auditRequired": false,
+  "emitsContextPack": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "enum": ["check", "report", "history"],
+        "default": "check"
+      },
+      "lane": {
+        "type": "string",
+        "enum": ["dev", "governance", "ops", "security", "data"],
+        "description": "Filter by specific lane"
+      },
+      "format": {
+        "type": "string",
+        "enum": ["json", "markdown", "summary"],
+        "default": "summary"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["overallScore", "overallStatus", "lanes"],
+    "properties": {
+      "overallScore": { "type": "number", "minimum": 0, "maximum": 100 },
+      "overallStatus": { "type": "string", "enum": ["excellent", "good", "warning", "critical"] },
+      "lanes": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "score": { "type": "number" },
+            "status": { "type": "string" },
+            "signalCount": { "type": "integer" }
+          }
+        }
+      },
+      "signals": { "type": "array" }
+    }
+  },
+  "goldenSnapshot": {
+    "overallScore": 78.5,
+    "overallStatus": "good",
+    "lanes": {
+      "dev": { "score": 77.5, "status": "pass", "signalCount": 2 },
+      "governance": { "score": 81.7, "status": "pass", "signalCount": 3 },
+      "security": { "score": 82.5, "status": "pass", "signalCount": 2 },
+      "ops": { "score": 80.0, "status": "pass", "signalCount": 1 },
+      "data": { "score": 80.0, "status": "pass", "signalCount": 1 }
+    }
+  }
+}

@@ -324,9 +324,85 @@ async function main() {
   }
 
   // ============================================================================
-  // 5. VS CODE EXTENSION TESTS
+  // 5. SKILLS INFRASTRUCTURE TESTS (Phase 7/8)
   // ============================================================================
-  test.section('5. VS Code Extension Tests');
+  test.section('5. Skills Infrastructure Tests');
+
+  // Skills registry
+  if (test.fileExists('tools/dx/skills/registry.json', 'Skills registry')) {
+    if (test.isValidJSON('tools/dx/skills/registry.json', 'Skills registry')) {
+      test.hasRequiredFields(
+        'tools/dx/skills/registry.json',
+        ['version', 'skills', 'metadata'],
+        'Skills registry'
+      );
+
+      // Validate each skill has required files
+      try {
+        const registry = JSON.parse(
+          fs.readFileSync(path.resolve(ROOT, 'tools/dx/skills/registry.json'), 'utf8')
+        );
+
+        test.info(`Found ${registry.skills.length} registered skills`);
+
+        for (const skill of registry.skills) {
+          const skillPath = path.resolve(ROOT, skill.path);
+          const skillName = skill.id;
+
+          // Check SKILL.md exists
+          const skillMd = path.join(skillPath, 'SKILL.md');
+          if (fs.existsSync(skillMd)) {
+            test.pass(`Skill: ${skillName} has SKILL.md`);
+          } else {
+            test.warn(`Skill: ${skillName} missing SKILL.md`);
+          }
+
+          // Check contract.json exists
+          const contractPath = path.resolve(ROOT, skill.contract);
+          if (fs.existsSync(contractPath)) {
+            test.pass(`Skill: ${skillName} has contract.json`);
+            // Validate contract JSON
+            try {
+              JSON.parse(fs.readFileSync(contractPath, 'utf8'));
+              test.pass(`Skill: ${skillName} contract is valid JSON`);
+            } catch (error) {
+              test.fail(`Skill: ${skillName} contract has invalid JSON`, error.message);
+            }
+          } else {
+            test.fail(`Skill: ${skillName} missing contract.json`);
+          }
+        }
+      } catch (error) {
+        test.fail('Skills registry validation failed', error.message);
+      }
+    }
+  }
+
+  // ============================================================================
+  // 6. POSTURE BUS TESTS (Phase 7/8)
+  // ============================================================================
+  test.section('6. Posture Bus Tests');
+
+  test.fileExists(
+    'tools/dx/posture-bus/bus.mjs',
+    'Posture Bus script'
+  );
+
+  // Verify evidence and posture contracts exist (Phase 7/8 critical contracts)
+  test.fileExists(
+    'tools/dx/command-contracts/evidence.contract.json',
+    'Evidence contract'
+  );
+
+  test.fileExists(
+    'tools/dx/command-contracts/posture.contract.json',
+    'Posture contract'
+  );
+
+  // ============================================================================
+  // 7. VS CODE EXTENSION TESTS
+  // ============================================================================
+  test.section('7. VS Code Extension Tests');
 
   test.fileExists(
     'tools/vscode-extension/src/providers/GovernanceProvider.ts',

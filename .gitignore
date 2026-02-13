@@ -545,3 +545,7 @@ TODO_INTEL.json
 # Force include autonomy-viewer CLI tools (not compiled binaries)
 !tools/registry/autonomy-viewer/bin/
 tools/registry/autonomy-viewer/bin/*.mjs
+
+# TerraFusion ephemeral artifacts
+.terrafusion/evidence/
+.terrafusion/posture/
