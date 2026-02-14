@@ -201,11 +201,16 @@ public class QuantumResistantEncryptionService : IEncryptionService, IQuantumRes
 {
     private readonly ILogger<QuantumResistantEncryptionService> _logger;
     private readonly ISecurityAuditService _auditService;
+    private readonly IKeyRingProvider _keyRing;
 
-    public QuantumResistantEncryptionService(ILogger<QuantumResistantEncryptionService> logger, ISecurityAuditService auditService)
+    public QuantumResistantEncryptionService(
+        ILogger<QuantumResistantEncryptionService> logger,
+        ISecurityAuditService auditService,
+        IKeyRingProvider keyRing)
     {
         _logger = logger;
         _auditService = auditService;
+        _keyRing = keyRing;
     }
 
     public async Task<EncryptedData> EncryptAsync(byte[] data, EncryptionContext context)
@@ -369,17 +374,20 @@ public class QuantumResistantEncryptionService : IEncryptionService, IQuantumRes
     {
         if (string.IsNullOrEmpty(data)) return Task.FromResult(data ?? string.Empty);
 
-        using var aes = System.Security.Cryptography.Aes.Create();
-        aes.KeySize = 256;
-        aes.GenerateKey();
-        aes.GenerateIV();
+        var activeKey = _keyRing.ActiveKey;
 
-        using var encryptor = aes.CreateEncryptor();
+        // AES-256-GCM: authenticated encryption (AEAD)
         var plainBytes = System.Text.Encoding.UTF8.GetBytes(data);
-        var cipherBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+        var nonce = new byte[System.Security.Cryptography.AesGcm.NonceByteSizes.MaxSize]; // 12 bytes
+        System.Security.Cryptography.RandomNumberGenerator.Fill(nonce);
+        var cipherBytes = new byte[plainBytes.Length];
+        var tag = new byte[System.Security.Cryptography.AesGcm.TagByteSizes.MaxSize]; // 16 bytes
 
-        // Format: IV(base64):Key(base64):Cipher(base64)
-        var result = $"{Convert.ToBase64String(aes.IV)}:{Convert.ToBase64String(aes.Key)}:{Convert.ToBase64String(cipherBytes)}";
+        using var aesGcm = new System.Security.Cryptography.AesGcm(activeKey.DerivedKey, tag.Length);
+        aesGcm.Encrypt(nonce, plainBytes, cipherBytes, tag);
+
+        // Format: keyId:nonce(base64):tag(base64):cipher(base64)
+        var result = $"{activeKey.KeyId}:{Convert.ToBase64String(nonce)}:{Convert.ToBase64String(tag)}:{Convert.ToBase64String(cipherBytes)}";
         return Task.FromResult(result);
     }
 
@@ -388,18 +396,48 @@ public class QuantumResistantEncryptionService : IEncryptionService, IQuantumRes
         if (string.IsNullOrEmpty(data)) return Task.FromResult(data ?? string.Empty);
 
         var parts = data.Split(':');
-        if (parts.Length != 3)
-            return Task.FromResult(data); // Not encrypted, return as-is
 
-        using var aes = System.Security.Cryptography.Aes.Create();
-        aes.KeySize = 256;
-        aes.IV = Convert.FromBase64String(parts[0]);
-        aes.Key = Convert.FromBase64String(parts[1]);
+        // New format (4 parts): keyId:nonce:tag:cipher
+        if (parts.Length == 4)
+        {
+            var keyId = parts[0];
+            var keyEntry = _keyRing.GetKey(keyId);
+            if (keyEntry is null)
+                throw new System.Security.Cryptography.CryptographicException($"Unknown encryption key ID: {keyId}");
 
-        using var decryptor = aes.CreateDecryptor();
-        var cipherBytes = Convert.FromBase64String(parts[2]);
-        var plainBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
-        return Task.FromResult(System.Text.Encoding.UTF8.GetString(plainBytes));
+            var nonce = Convert.FromBase64String(parts[1]);
+            var tag = Convert.FromBase64String(parts[2]);
+            var cipherBytes = Convert.FromBase64String(parts[3]);
+            var plainBytes = new byte[cipherBytes.Length];
+
+            using var aesGcm = new System.Security.Cryptography.AesGcm(keyEntry.DerivedKey, tag.Length);
+            aesGcm.Decrypt(nonce, cipherBytes, tag, plainBytes);
+            return Task.FromResult(System.Text.Encoding.UTF8.GetString(plainBytes));
+        }
+
+        // Legacy format (3 parts): nonce:tag:cipher — try active key
+        if (parts.Length == 3)
+        {
+            try
+            {
+                var nonce = Convert.FromBase64String(parts[0]);
+                var tag = Convert.FromBase64String(parts[1]);
+                var cipherBytes = Convert.FromBase64String(parts[2]);
+                var plainBytes = new byte[cipherBytes.Length];
+
+                using var aesGcm = new System.Security.Cryptography.AesGcm(_keyRing.ActiveKey.DerivedKey, tag.Length);
+                aesGcm.Decrypt(nonce, cipherBytes, tag, plainBytes);
+                return Task.FromResult(System.Text.Encoding.UTF8.GetString(plainBytes));
+            }
+            catch (System.Security.Cryptography.CryptographicException)
+            {
+                // Tampered or not encrypted with current key — return as-is
+                return Task.FromResult(data);
+            }
+        }
+
+        // Not encrypted, return as-is
+        return Task.FromResult(data);
     }
 }
 

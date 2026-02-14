@@ -38,6 +38,9 @@ public sealed class SecurityModuleWiringTests
                 ["Security:Jwt:Issuer"] = "TerraFusion-Test",
                 ["Security:Jwt:Audiences:0"] = "TerraFusion-Test-Audience",
                 ["Security:Encryption:QuantumResistant"] = "true",
+                ["Security:Encryption:Keys:0:KeyId"] = "test-key-1",
+                ["Security:Encryption:Keys:0:Material"] = "dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcyE=",
+                ["Security:Encryption:Keys:0:Active"] = "true",
                 ["Security:MFA:Required"] = "false",
                 ["Security:Compliance:RequiredStandards:0"] = "FISMA-HIGH",
             })

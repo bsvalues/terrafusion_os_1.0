@@ -36,6 +36,9 @@ public static class SecurityModule
 
         logger.LogInformation("🔒 Initializing TerraFusion Government-Grade Security Suite...");
 
+        // Ensure IConfiguration is available for services that need key derivation
+        services.AddSingleton<IConfiguration>(configuration);
+
         // Core security configuration
         services.Configure<SecurityConfiguration>(configuration.GetSection("Security"));
 
@@ -78,6 +81,7 @@ public static class SecurityModule
     /// </summary>
     private static IServiceCollection AddSecurityServices(this IServiceCollection services)
     {
+        services.AddSingleton<IKeyRingProvider, KeyRingProvider>();
         services.AddScoped<ITokenValidationService, TokenValidationService>();
         services.AddScoped<IQuantumResistantEncryptionService, QuantumResistantEncryptionService>();
         services.AddScoped<IMultiFactorAuthService, MultiFactorAuthService>();
@@ -364,6 +368,17 @@ public class EncryptionConfiguration
     public string Algorithm { get; set; } = "KYBER-768";
     public int KeySize { get; set; } = 768;
     public TimeSpan KeyRotationInterval { get; set; } = TimeSpan.FromDays(90);
+    /// <summary>Ordered key ring. The entry with Active=true is used for encryption; all are available for decryption.</summary>
+    public EncryptionKeyEntry[] Keys { get; set; } = Array.Empty<EncryptionKeyEntry>();
+}
+
+/// <summary>One entry in the encryption key ring (config-driven).</summary>
+public class EncryptionKeyEntry
+{
+    public string KeyId { get; set; } = string.Empty;
+    /// <summary>Base64-encoded 32-byte key material (or a high-entropy passphrase). NEVER use the JWT secret.</summary>
+    public string Material { get; set; } = string.Empty;
+    public bool Active { get; set; }
 }
 
 public class MFAConfiguration

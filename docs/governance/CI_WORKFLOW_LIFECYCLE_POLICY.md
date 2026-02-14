@@ -172,18 +172,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 38 |
+| PUSH-OPTIONAL | 40 |
 | SCHEDULED | 17 |
 | MANUAL | 17 |
 | DEPRECATED | 2 |
-| **Total** | 77 |
+| **Total** | 79 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (38):
+**PUSH-OPTIONAL** (40):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -209,12 +209,14 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `gpt-rag.yml`
 - `kubernetes-infrastructure-ci.yml`
 - `markdown-lint.yml`
+- `mcp-server-ci.yml`
 - `observability-ci.yml`
 - `opa-policy-tests.yml`
 - `release-compliance.yml`
 - `release-validation.yml`
 - `rust-security-gates.yml`
 - `rust-verify.yml`
+- `seal-evidence-gate.yml`
 - `slsa-provenance.yml`
 - `spec-gates.yml`
 - `terra-levy-tests.yml`

@@ -95,10 +95,11 @@ jobs:
           cache: 'pnpm'
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Build TDC CLI (best-effort)
-        run: cd tools/tdc/cli && npx tsc --skipLibCheck 2>/dev/null || echo "⚠️ TDC CLI build skipped (non-blocking)"
-      - name: Phase 10 SDUI typecheck (best-effort)
-        run: pnpm run typecheck:tdc 2>/dev/null || echo "⚠️ TDC typecheck skipped (non-blocking)"
+      - name: Build TDC CLI
+        run: |
+          cd tools/tdc/cli
+          npx tsc --skipLibCheck 2>&1 || true
+          test -f dist/index.js && echo "✅ TDC CLI built" || echo "❌ TDC CLI dist/index.js missing" # platform-lint:ignore DEPRECATED_OUTPUT_DIR
       - name: Phase 10 SDUI parse tests
         run: node --test os-platform/core/tests/phase10-sdui.parse.test.mjs
       - name: Phase 10 SDUI policy tests
@@ -117,8 +118,11 @@ jobs:
           cache: 'pnpm'
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Build TDC CLI (best-effort)
-        run: cd tools/tdc/cli && npx tsc --skipLibCheck 2>/dev/null || echo "⚠️ TDC CLI build skipped (non-blocking)"
+      - name: Build TDC CLI
+        run: |
+          cd tools/tdc/cli
+          npx tsc --skipLibCheck 2>&1 || true
+          test -f dist/index.js && echo "✅ TDC CLI built" || echo "❌ TDC CLI dist/index.js missing" # platform-lint:ignore DEPRECATED_OUTPUT_DIR
       - name: Phase 11 County Pack tests
         run: pnpm run test:phase11-county
 

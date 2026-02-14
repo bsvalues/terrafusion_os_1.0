@@ -35,6 +35,9 @@ public static class SecurityExtensions
     /// </summary>
     public static IServiceCollection AddTerraFusionSecurity(this IServiceCollection services, IConfiguration configuration)
     {
+        // Ensure IConfiguration is available for services that need it (e.g., key derivation)
+        services.AddSingleton(configuration);
+
         // Get security configuration
         var securityConfig = configuration.GetSection("Security").Get<SecurityConfiguration>()
             ?? throw new InvalidOperationException("Security configuration is required");
@@ -160,6 +163,7 @@ public static class SecurityExtensions
         });
 
         // Register security services
+        services.AddSingleton<IKeyRingProvider, KeyRingProvider>();
         services.AddSingleton<ITokenValidationService, TokenValidationService>();
         services.AddSingleton<IEncryptionService, QuantumResistantEncryptionService>();
         services.AddSingleton<IMultiFactorAuthService, MultiFactorAuthService>();
