@@ -3,14 +3,14 @@ name: MCP Server CI
 on:
   pull_request:
     paths:
-      - 'tools/mcp/postgis-server/**'
+      - 'tools/mcp-servers/postgis/**'
       - 'tools/dx/skills/tf-mcp-integration/**'
       - '.github/workflows/mcp-server-ci.yml'
   push:
     branches:
       - main
     paths:
-      - 'tools/mcp/postgis-server/**'
+      - 'tools/mcp-servers/postgis/**'
       - 'tools/dx/skills/tf-mcp-integration/**'
 
 env:
@@ -26,28 +26,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install dependencies
-        working-directory: tools/mcp/postgis-server
-        run: pnpm install --frozen-lockfile
+        working-directory: tools/mcp-servers/postgis
+        run: npm install
 
       - name: Run ESLint
-        working-directory: tools/mcp/postgis-server
-        run: pnpm run lint
+        working-directory: tools/mcp-servers/postgis
+        run: npm run lint
 
       - name: Type check
-        working-directory: tools/mcp/postgis-server
-        run: pnpm run typecheck
+        working-directory: tools/mcp-servers/postgis
+        run: npm run typecheck
 
   build:
     name: Build MCP Server
@@ -58,30 +52,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install dependencies
-        working-directory: tools/mcp/postgis-server
-        run: pnpm install --frozen-lockfile
+        working-directory: tools/mcp-servers/postgis
+        run: npm install
 
       - name: Build TypeScript
-        working-directory: tools/mcp/postgis-server
-        run: pnpm run build
+        working-directory: tools/mcp-servers/postgis
+        run: npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: mcp-server-dist
-          path: tools/mcp/postgis-server/dist
+          path: tools/mcp-servers/postgis/dist
           retention-days: 7
 
   test-unit:
@@ -93,24 +81,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install dependencies
-        working-directory: tools/mcp/postgis-server
-        run: pnpm install --frozen-lockfile
+        working-directory: tools/mcp-servers/postgis
+        run: npm install
 
       - name: Run unit tests
-        working-directory: tools/mcp/postgis-server
-        run: pnpm test
+        working-directory: tools/mcp-servers/postgis
+        run: npm test
 
   test-integration:
     name: Integration Tests
@@ -136,20 +118,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install dependencies
-        working-directory: tools/mcp/postgis-server
-        run: pnpm install --frozen-lockfile
+        working-directory: tools/mcp-servers/postgis
+        run: npm install
 
       - name: Setup test database schema
         env:
@@ -207,10 +183,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: mcp-server-dist
-          path: tools/mcp/postgis-server/dist
+          path: tools/mcp-servers/postgis/dist
 
       - name: Run integration tests
-        working-directory: tools/mcp/postgis-server
+        working-directory: tools/mcp-servers/postgis
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
@@ -219,7 +195,7 @@ jobs:
           DATABASE_PASSWORD: test_password
           MAX_QUERY_RESULTS: 1000
           QUERY_TIMEOUT_MS: 30000
-        run: pnpm run test:queries
+        run: npm run test:queries
 
   security-scan:
     name: Security Scan
@@ -230,27 +206,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install dependencies
-        working-directory: tools/mcp/postgis-server
-        run: pnpm install --frozen-lockfile
+        working-directory: tools/mcp-servers/postgis
+        run: npm install
 
       - name: Run npm audit
-        working-directory: tools/mcp/postgis-server
-        run: pnpm audit --audit-level=moderate
+        working-directory: tools/mcp-servers/postgis
+        run: npm audit --audit-level=moderate
 
       - name: Check for SQL injection vulnerabilities
-        working-directory: tools/mcp/postgis-server
+        working-directory: tools/mcp-servers/postgis
         run: |
           # Scan for potential SQL injection patterns
           echo "🔍 Scanning for SQL injection vulnerabilities..."
@@ -270,7 +240,7 @@ jobs:
           echo "✅ PASS: No SQL injection vulnerabilities detected"
 
       - name: Validate parameterized queries
-        working-directory: tools/mcp/postgis-server
+        working-directory: tools/mcp-servers/postgis
         run: |
           echo "🔍 Validating parameterized query usage..."
 
