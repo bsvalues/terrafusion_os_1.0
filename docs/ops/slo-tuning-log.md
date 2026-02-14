@@ -18,15 +18,36 @@
 
 ## SLO Burn Tracking (Daily)
 
-**Target:** < 25% error budget burn over first 7 days
+**Target:** < 25% error budget burn over first 7 days  
+**Start Date:** 2026-02-15 00:00 UTC (Day 1 post-cutover)
 
-| Date | SLO-001 (API Avail) | SLO-002 (P95 Lat) | SLO-003 (P99 Lat) | SLO-004 (Error Rate) | Notes |
-|------|-------------------|------------------|------------------|---------------------|-------|
-| YYYY-MM-DD | XX.X% | XX.X% | XX.X% | XX.X% | |
-| YYYY-MM-DD | XX.X% | XX.X% | XX.X% | XX.X% | |
-| YYYY-MM-DD | XX.X% | XX.X% | XX.X% | XX.X% | |
+### Week 1: Days 1-7 (2026-02-15 to 2026-02-21)
 
-**7-Day Average Burn:** ___% (Target: < 25%)
+| Date | SLO-001 (API Avail) | SLO-002 (P95 Lat) | SLO-003 (P99 Lat) | SLO-004 (Error Rate) | Notes | Evidence |
+|------|-------------------|------------------|------------------|---------------------|-------|----------|
+| 2026-02-15 | Pending | Pending | Pending | Pending | Day 1 post-cutover — 24h observation window | TBD |
+| 2026-02-16 | | | | | Day 2 | |
+| 2026-02-17 | | | | | Day 3 | |
+| 2026-02-18 | | | | | Day 4 | |
+| 2026-02-19 | | | | | Day 5 | |
+| 2026-02-20 | | | | | Day 6 | |
+| 2026-02-21 | | | | | Day 7 | |
+
+**7-Day Average Burn:** Pending (Target: < 25%)  
+**Compliance Status:** ⏳ In Progress
+
+### Daily Entry Protocol
+
+**Each day requires:**
+1. **Burn %** for each SLO (from dashboard rolling window)
+2. **Notes** capturing:
+   - Key deploys/rollouts during window
+   - Incidents or anomalies
+   - SLO violations (if any)
+3. **Evidence pointer** (screenshot, export, dashboard permalink)
+
+**Pass Condition:**  
+After 7 consecutive days, 7-day average burn < 25% with all evidence attached.
 
 ---
 
