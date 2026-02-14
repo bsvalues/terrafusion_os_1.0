@@ -1,3 +1,4 @@
+#nullable disable
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -493,7 +494,7 @@ namespace TerraFusion.Security
             return _hashingService.ComputeSha256(data);
         }
 
-        public async Task LogAuthenticationSuccessAsync(string username, string? ipAddress)
+        public async Task LogAuthenticationSuccessAsync(string username, string ipAddress)
         {
             await LogAuditEventAsync(new AuditEvent
             {
@@ -503,7 +504,7 @@ namespace TerraFusion.Security
             });
         }
 
-        public async Task LogAuthenticationFailureAsync(string username, string? ipAddress, string reason)
+        public async Task LogAuthenticationFailureAsync(string username, string ipAddress, string reason)
         {
             await LogAuditEventAsync(new AuditEvent
             {

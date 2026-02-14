@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>TerraFusion.Security</RootNamespace>
+    <!-- Suppress stub-implementation noise until Agents 2-5 fill in real logic -->
+    <NoWarn>$(NoWarn);CS1998;CS0414;CS0219</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
