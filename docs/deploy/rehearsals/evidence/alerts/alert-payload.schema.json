@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Alert Payload Schema",
+  "description": "Paging alert evidence payload for FP audit",
+  "type": "object",
+  "required": [
+    "alert_id",
+    "timestamp",
+    "alert_name",
+    "severity",
+    "labels",
+    "annotations"
+  ],
+  "properties": {
+    "alert_id": {
+      "type": "string",
+      "pattern": "^[0-9]{3}$",
+      "description": "Sequential alert ID (001-100)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Alert fire timestamp (UTC)"
+    },
+    "alert_name": {
+      "type": "string",
+      "description": "Alert rule name (e.g., TerraFusionAPIDown)"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "warning", "info"],
+      "description": "Alert severity level"
+    },
+    "labels": {
+      "type": "object",
+      "description": "Alert labels (service, environment, etc.)"
+    },
+    "annotations": {
+      "type": "object",
+      "required": ["summary", "description"],
+      "properties": {
+        "summary": { "type": "string" },
+        "description": { "type": "string" },
+        "runbook_url": { "type": "string", "format": "uri" }
+      }
+    },
+    "state": {
+      "type": "string",
+      "enum": ["firing", "resolved"],
+      "description": "Alert state at capture time"
+    },
+    "acknowledged_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time alert was acknowledged by on-call"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time alert resolved (if applicable)"
+    }
+  }
+}

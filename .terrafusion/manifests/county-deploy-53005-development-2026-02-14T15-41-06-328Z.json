@@ -1,0 +1,28 @@
+{
+  "packName": "benton-pack-v1.0",
+  "packVersion": "1.0",
+  "countyName": "Benton County",
+  "fipsCode": "53005",
+  "environment": "development",
+  "deployedAt": "2026-02-14T15:41:06.327Z",
+  "deployedBy": "bsval",
+  "mode": "dry-run",
+  "baseConfig": "8a737758cf9f5b4150cef012674a52fbfe1218e626036307e9b19521e4a1a8e6",
+  "environmentOverride": "2b3f9a3c0acbd4a80de08f17ff1e95e26afd23f596f01545cb792a2ec8de706e",
+  "mergedConfig": "b764852ebfc8508999f79a0596e44b3fe34b190612d72d830979c85939401721",
+  "schemaChecksum": "d780741c20dc0555daceed80f9254e2829b0552e9a2bbd01e3a87cae2bb48f7f",
+  "seedDataChecksum": "6c70d27006ec0be3717aed2d1521d03110ecc27df61efd6706f89e64b2ca39ea",
+  "artifacts": [
+    {
+      "path": "schemas\\properties.sql",
+      "checksum": "d780741c20dc0555daceed80f9254e2829b0552e9a2bbd01e3a87cae2bb48f7f",
+      "size": 3103
+    },
+    {
+      "path": "seeds\\sample-parcels.json",
+      "checksum": "6c70d27006ec0be3717aed2d1521d03110ecc27df61efd6706f89e64b2ca39ea",
+      "size": 1980
+    }
+  ],
+  "evidencePackId": "evidence-53005-development-2026-02-14T15-41-06-328Z"
+}

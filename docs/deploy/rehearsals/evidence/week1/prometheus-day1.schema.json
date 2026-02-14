@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Prometheus SLO Burn Export Schema",
+  "description": "Daily Prometheus metrics export for SLO burn tracking",
+  "type": "object",
+  "required": ["timestamp", "window", "slos"],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Export timestamp (UTC)"
+    },
+    "window": {
+      "type": "string",
+      "description": "Time window for metrics (e.g., '24h', '7d')"
+    },
+    "slos": {
+      "type": "object",
+      "required": [
+        "api_availability",
+        "p95_latency",
+        "p99_latency",
+        "error_rate"
+      ],
+      "properties": {
+        "api_availability": {
+          "type": "object",
+          "required": ["target", "actual", "burn_rate"],
+          "properties": {
+            "target": {
+              "type": "number",
+              "description": "Target uptime (e.g., 0.995)"
+            },
+            "actual": { "type": "number", "description": "Actual uptime" },
+            "burn_rate": {
+              "type": "number",
+              "description": "Error budget burn % for window"
+            }
+          }
+        },
+        "p95_latency": {
+          "type": "object",
+          "required": ["target_ms", "actual_ms", "burn_rate"],
+          "properties": {
+            "target_ms": { "type": "number" },
+            "actual_ms": { "type": "number" },
+            "burn_rate": { "type": "number" }
+          }
+        },
+        "p99_latency": {
+          "type": "object",
+          "required": ["target_ms", "actual_ms", "burn_rate"],
+          "properties": {
+            "target_ms": { "type": "number" },
+            "actual_ms": { "type": "number" },
+            "burn_rate": { "type": "number" }
+          }
+        },
+        "error_rate": {
+          "type": "object",
+          "required": ["target", "actual", "burn_rate"],
+          "properties": {
+            "target": { "type": "number" },
+            "actual": { "type": "number" },
+            "burn_rate": { "type": "number" }
+          }
+        }
+      }
+    },
+    "incidents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "string", "format": "date-time" },
+          "type": { "type": "string" },
+          "duration_min": { "type": "number" }
+        }
+      }
+    }
+  }
+}

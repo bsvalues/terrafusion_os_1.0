@@ -1,0 +1,106 @@
+{
+  "contractVersion": "1.0.0",
+  "phase": 7,
+  "phaseTitle": "Production Cutover Safety",
+  "generatedAt": "2026-02-14T23:43:27.431Z",
+  "overallStatus": "PASS",
+  "gates": [
+    {
+      "id": "6.1",
+      "name": "Config Schema",
+      "status": "PASS",
+      "scriptPath": "tools/gates/config-schema-gate.mjs",
+      "hash": "sha256:48e2a2536b96194bb0e58c211383e486471e984ae771c7e71937fb628389e5e1"
+    },
+    {
+      "id": "6.2",
+      "name": "Deploy Manifest",
+      "status": "PASS",
+      "scriptPath": "tools/gates/deploy-manifest-validate.mjs",
+      "hash": "sha256:c87a8e727d2b5f9f70c34c2cb88e84bf40e823f06d224f3314018d7daf7367a0"
+    },
+    {
+      "id": "6.3",
+      "name": "Write-Lane RBAC",
+      "status": "PASS",
+      "scriptPath": "tools/gates/write-lane-rbac-gate.mjs",
+      "hash": "sha256:37abae5eea539bb575353da24b162d5288a321c598cf7c5aa1f219153d6747fd"
+    },
+    {
+      "id": "6.4",
+      "name": "Deploy Smoke",
+      "status": "PASS",
+      "scriptPath": "tools/gates/deploy-smoke-gate.mjs",
+      "hash": "sha256:0ba5814dc5eec1952546531b3d171944d151255934495b89fd69c40579585416"
+    },
+    {
+      "id": "5.2",
+      "name": "Threat Model",
+      "status": "VERIFIED",
+      "scriptPath": "tools/gates/threatmodel-gate.mjs",
+      "hash": "sha256:a1db320182a3b53feeb76d43c6316e066fc3f01575002a0c49010709e6254b22"
+    },
+    {
+      "id": "5.3",
+      "name": "Runbooks",
+      "status": "VERIFIED",
+      "scriptPath": "tools/gates/runbooks-gate.mjs",
+      "hash": "sha256:e2d1447156c775c9d547572d051ed6490f63ecea9686566b157d1ecb02583f52"
+    },
+    {
+      "id": "5.4a",
+      "name": "Query Budget",
+      "status": "VERIFIED",
+      "scriptPath": "tools/gates/query-budget-gate.mjs",
+      "hash": "sha256:277bafb558ab7eab5bd9112a2bd83a07e727a9e38d86f550dd043d96cb5f1fd3"
+    },
+    {
+      "id": "5.4b",
+      "name": "Perf Gate",
+      "status": "VERIFIED",
+      "scriptPath": "tools/gates/perf-gate.mjs",
+      "hash": "sha256:1f967e731dbd56a80f327257f1d5bdb2e6d1f408ef43f25edd32578847c1bbc3"
+    },
+    {
+      "id": "7.3",
+      "name": "SLO",
+      "status": "PASS",
+      "scriptPath": "tools/gates/slo-gate.mjs",
+      "hash": "sha256:c599882ba81d76265521d6434b616405cccde98f400c7414dc295c0c2e19b425"
+    },
+    {
+      "id": "7.4",
+      "name": "DR",
+      "status": "PASS",
+      "scriptPath": "tools/gates/dr-gate.mjs",
+      "hash": "sha256:8a005f8422a6ac15b409381ec16be711501f2c1fa1df99bd4f869adc343807f0"
+    },
+    {
+      "id": "7.5",
+      "name": "Cutover",
+      "status": "PASS",
+      "scriptPath": "tools/gates/cutover-gate.mjs",
+      "hash": "sha256:041f8a646ed391ece093bda232380e29b1fb00df35ac682723fb37b632b888be"
+    },
+    {
+      "id": "7.6",
+      "name": "Trace Coverage",
+      "status": "PASS",
+      "scriptPath": "tools/gates/trace-coverage-gate.mjs",
+      "hash": "sha256:b1bc45bdda81cb1c054bb71934ac90b5b1a6da74abd2d62354f429966866b030"
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "phase6Executed": 4,
+    "phase7Executed": 4,
+    "priorVerified": 4
+  },
+  "metadata": {
+    "nodeVersion": "v24.6.0",
+    "ciEnvironment": "local",
+    "triggeredBy": "local-dev"
+  }
+}
