@@ -39,6 +39,7 @@
   "ci": {
     "prGates": [
       "seal-gate-fast.yml",
+      "seal-evidence-gate.yml",
       "core-governance-gates.yml",
       "tier1-ui-harness.yml"
     ],

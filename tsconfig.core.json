@@ -14,7 +14,7 @@
     "strict": false,
     "noImplicitAny": false,
     "jsx": "react-jsx",
-    "types": []
+    "types": ["node"]
   },
   "include": [
     "os-platform/core/pilot/**/*.ts",
