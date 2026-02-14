@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace TerraFusion.Security
         private readonly string _connectionString;
         private readonly IEncryptionService _encryptionService;
         private readonly IHashingService _hashingService;
-        
+
         public ProductionAuditService(
             IConfiguration configuration,
             ILogger<ProductionAuditService> logger,
@@ -50,18 +51,18 @@ namespace TerraFusion.Security
                 auditEvent.Id = Guid.NewGuid();
                 auditEvent.Timestamp = DateTime.UtcNow;
                 auditEvent.ServerHostname = Environment.MachineName;
-                
+
                 // Calculate hash for tamper detection
                 auditEvent.Hash = CalculateEventHash(auditEvent);
-                
+
                 // Encrypt sensitive data if configured
                 if (_configuration.GetValue<bool>("Audit:EncryptSensitiveData"))
                 {
                     auditEvent.Data = await _encryptionService.EncryptAsync(auditEvent.Data);
                 }
-                
+
                 using var connection = new NpgsqlConnection(_connectionString);
-                
+
                 const string sql = @"
                     INSERT INTO audit_log (
                         id, event_type, event_category, severity, user_id, username,
@@ -76,31 +77,31 @@ namespace TerraFusion.Security
                         @CorrelationId, @ParentEventId, @DurationMs, @Timestamp,
                         @ServerHostname, @Hash, @IsEncrypted, @RetentionDays
                     )";
-                
+
                 await connection.ExecuteAsync(sql, auditEvent);
-                
+
                 // Also log critical events to separate compliance table
                 if (IsComplianceEvent(auditEvent))
                 {
                     await LogComplianceEventAsync(connection, auditEvent);
                 }
-                
+
                 // Send to SIEM if configured
                 if (_configuration.GetValue<bool>("Audit:SendToSiem"))
                 {
                     await SendToSiemAsync(auditEvent);
                 }
-                
+
                 return auditEvent.Id;
             }
             catch (Exception ex)
             {
                 // Audit logging must never fail silently
                 _logger.LogCritical(ex, "Failed to write audit log");
-                
+
                 // Write to fallback file system
                 await WriteFallbackAuditLogAsync(auditEvent);
-                
+
                 throw new AuditException("Audit logging failed", ex);
             }
         }
@@ -224,7 +225,7 @@ namespace TerraFusion.Security
                     riskScore = violation.RiskScore
                 })
             });
-            
+
             // Trigger security alert
             await TriggerSecurityAlertAsync(violation);
         }
@@ -235,19 +236,19 @@ namespace TerraFusion.Security
         public async Task<AuditLogQueryResult> QueryAuditLogsAsync(AuditLogQuery query)
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            
+
             var whereClause = BuildWhereClause(query);
             var orderBy = query.SortBy ?? "timestamp";
             var sortDirection = query.SortDescending ? "DESC" : "ASC";
-            
+
             // Count total records
             var countSql = $@"
                 SELECT COUNT(*) 
                 FROM audit_log 
                 WHERE {whereClause}";
-            
+
             var totalCount = await connection.ExecuteScalarAsync<long>(countSql, query);
-            
+
             // Get paginated results
             var dataSql = $@"
                 SELECT 
@@ -260,11 +261,11 @@ namespace TerraFusion.Security
                 WHERE {whereClause}
                 ORDER BY {orderBy} {sortDirection}
                 LIMIT @PageSize OFFSET @Offset";
-            
+
             query.Offset = (query.Page - 1) * query.PageSize;
-            
+
             var logs = await connection.QueryAsync<AuditEvent>(dataSql, query);
-            
+
             // Decrypt data if needed
             if (_configuration.GetValue<bool>("Audit:EncryptSensitiveData"))
             {
@@ -276,7 +277,7 @@ namespace TerraFusion.Security
                     }
                 }
             }
-            
+
             return new AuditLogQueryResult
             {
                 Logs = logs.ToList(),
@@ -293,7 +294,7 @@ namespace TerraFusion.Security
         public async Task<ComplianceReport> GenerateComplianceReportAsync(DateTime startDate, DateTime endDate)
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            
+
             var report = new ComplianceReport
             {
                 StartDate = startDate,
@@ -301,7 +302,7 @@ namespace TerraFusion.Security
                 GeneratedAt = DateTime.UtcNow,
                 GeneratedBy = "System"
             };
-            
+
             // Authentication statistics
             report.AuthenticationStats = await connection.QuerySingleAsync<AuthenticationStats>(@"
                 SELECT 
@@ -315,7 +316,7 @@ namespace TerraFusion.Security
                 WHERE timestamp BETWEEN @StartDate AND @EndDate
                     AND event_category = 'Security'",
                 new { StartDate = startDate, EndDate = endDate });
-            
+
             // Data access patterns
             report.DataAccessPatterns = await connection.QueryAsync<DataAccessPattern>(@"
                 SELECT 
@@ -330,7 +331,7 @@ namespace TerraFusion.Security
                 GROUP BY resource_type, action
                 ORDER BY AccessCount DESC",
                 new { StartDate = startDate, EndDate = endDate });
-            
+
             // Security violations
             report.SecurityViolations = await connection.QueryAsync<SecurityViolation>(@"
                 SELECT 
@@ -344,7 +345,7 @@ namespace TerraFusion.Security
                 GROUP BY event_type
                 ORDER BY Count DESC",
                 new { StartDate = startDate, EndDate = endDate });
-            
+
             // User activity summary
             report.UserActivitySummary = await connection.QueryAsync<UserActivity>(@"
                 SELECT 
@@ -360,7 +361,7 @@ namespace TerraFusion.Security
                 ORDER BY TotalActions DESC
                 LIMIT 100",
                 new { StartDate = startDate, EndDate = endDate });
-            
+
             return report;
         }
 
@@ -370,13 +371,13 @@ namespace TerraFusion.Security
         public async Task<AuditIntegrityCheckResult> VerifyAuditIntegrityAsync(DateTime startDate, DateTime endDate)
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            
+
             var logs = await connection.QueryAsync<AuditEvent>(@"
                 SELECT * FROM audit_log
                 WHERE timestamp BETWEEN @StartDate AND @EndDate
                 ORDER BY timestamp",
                 new { StartDate = startDate, EndDate = endDate });
-            
+
             var result = new AuditIntegrityCheckResult
             {
                 TotalRecords = logs.Count(),
@@ -384,7 +385,7 @@ namespace TerraFusion.Security
                 TamperedRecords = new List<Guid>(),
                 MissingRecords = new List<DateTimeRange>()
             };
-            
+
             foreach (var log in logs)
             {
                 // Verify hash
@@ -399,7 +400,7 @@ namespace TerraFusion.Security
                     _logger.LogCritical($"Tampered audit record detected: {log.Id}");
                 }
             }
-            
+
             // Check for time gaps that might indicate deleted records
             var previousTimestamp = startDate;
             foreach (var log in logs.OrderBy(l => l.Timestamp))
@@ -415,10 +416,10 @@ namespace TerraFusion.Security
                 }
                 previousTimestamp = log.Timestamp;
             }
-            
+
             result.IntegrityScore = (double)result.ValidRecords / result.TotalRecords * 100;
             result.IsValid = result.TamperedRecords.Count == 0 && result.MissingRecords.Count == 0;
-            
+
             return result;
         }
 
@@ -429,11 +430,11 @@ namespace TerraFusion.Security
         {
             using var connection = new NpgsqlConnection(_connectionString);
             using var transaction = connection.BeginTransaction();
-            
+
             try
             {
                 var cutoffDate = DateTime.UtcNow.AddDays(-retentionDays);
-                
+
                 // First, export to archive storage
                 var logsToArchive = await connection.QueryAsync<AuditEvent>(@"
                     SELECT * FROM audit_log
@@ -441,10 +442,10 @@ namespace TerraFusion.Security
                     AND (retention_days IS NULL OR timestamp < NOW() - INTERVAL '1 day' * retention_days)",
                     new { CutoffDate = cutoffDate },
                     transaction);
-                
+
                 // Write to archive (could be S3, Azure Blob, etc.)
                 var archiveLocation = await WriteToArchiveStorageAsync(logsToArchive);
-                
+
                 // Record archive operation
                 await connection.ExecuteAsync(@"
                     INSERT INTO audit_archive_log (archived_at, record_count, date_range_start, date_range_end, archive_location, hash)
@@ -459,7 +460,7 @@ namespace TerraFusion.Security
                         Hash = CalculateArchiveHash(logsToArchive)
                     },
                     transaction);
-                
+
                 // Delete archived records (keep compliance-required ones)
                 var deletedCount = await connection.ExecuteAsync(@"
                     DELETE FROM audit_log
@@ -468,9 +469,9 @@ namespace TerraFusion.Security
                     AND event_category NOT IN ('Compliance', 'Legal')",
                     new { CutoffDate = cutoffDate },
                     transaction);
-                
+
                 await transaction.CommitAsync();
-                
+
                 return new ArchiveResult
                 {
                     Success = true,
@@ -498,9 +499,14 @@ namespace TerraFusion.Security
         {
             await LogAuditEventAsync(new AuditEvent
             {
-                EventType = "LOGIN_SUCCESS", EventCategory = "Security",
-                Severity = AuditSeverity.Information, Username = username, IpAddress = ipAddress,
-                Action = "LOGIN", Outcome = "SUCCESS", ResourceType = "Authentication"
+                EventType = "LOGIN_SUCCESS",
+                EventCategory = "Security",
+                Severity = AuditSeverity.Information,
+                Username = username,
+                IpAddress = ipAddress,
+                Action = "LOGIN",
+                Outcome = "SUCCESS",
+                ResourceType = "Authentication"
             });
         }
 
@@ -508,9 +514,15 @@ namespace TerraFusion.Security
         {
             await LogAuditEventAsync(new AuditEvent
             {
-                EventType = "LOGIN_FAILURE", EventCategory = "Security",
-                Severity = AuditSeverity.Warning, Username = username, IpAddress = ipAddress,
-                Action = "LOGIN", Outcome = "FAILURE", ErrorMessage = reason, ResourceType = "Authentication"
+                EventType = "LOGIN_FAILURE",
+                EventCategory = "Security",
+                Severity = AuditSeverity.Warning,
+                Username = username,
+                IpAddress = ipAddress,
+                Action = "LOGIN",
+                Outcome = "FAILURE",
+                ErrorMessage = reason,
+                ResourceType = "Authentication"
             });
         }
 
@@ -518,9 +530,14 @@ namespace TerraFusion.Security
         {
             await LogAuditEventAsync(new AuditEvent
             {
-                EventType = "AUTH_ERROR", EventCategory = "Security",
-                Severity = AuditSeverity.Warning, Username = username,
-                Action = "AUTHENTICATION", Outcome = "ERROR", ErrorMessage = message, ResourceType = "Authentication"
+                EventType = "AUTH_ERROR",
+                EventCategory = "Security",
+                Severity = AuditSeverity.Warning,
+                Username = username,
+                Action = "AUTHENTICATION",
+                Outcome = "ERROR",
+                ErrorMessage = message,
+                ResourceType = "Authentication"
             });
         }
 
@@ -528,9 +545,14 @@ namespace TerraFusion.Security
         {
             await LogAuditEventAsync(new AuditEvent
             {
-                EventType = "TOKEN_REFRESH", EventCategory = "Security",
-                Severity = AuditSeverity.Information, UserId = userId, SessionId = sessionId,
-                Action = "TOKEN_REFRESH", Outcome = "SUCCESS", ResourceType = "Authentication"
+                EventType = "TOKEN_REFRESH",
+                EventCategory = "Security",
+                Severity = AuditSeverity.Information,
+                UserId = userId,
+                SessionId = sessionId,
+                Action = "TOKEN_REFRESH",
+                Outcome = "SUCCESS",
+                ResourceType = "Authentication"
             });
         }
 
@@ -538,9 +560,14 @@ namespace TerraFusion.Security
         {
             await LogAuditEventAsync(new AuditEvent
             {
-                EventType = "LOGOUT", EventCategory = "Security",
-                Severity = AuditSeverity.Information, UserId = userId, SessionId = sessionId,
-                Action = "LOGOUT", Outcome = "SUCCESS", ResourceType = "Authentication"
+                EventType = "LOGOUT",
+                EventCategory = "Security",
+                Severity = AuditSeverity.Information,
+                UserId = userId,
+                SessionId = sessionId,
+                Action = "LOGOUT",
+                Outcome = "SUCCESS",
+                ResourceType = "Authentication"
             });
         }
 
@@ -548,9 +575,13 @@ namespace TerraFusion.Security
         {
             await LogAuditEventAsync(new AuditEvent
             {
-                EventType = "PASSWORD_CHANGE", EventCategory = "Security",
-                Severity = AuditSeverity.Information, UserId = userId,
-                Action = "PASSWORD_CHANGE", Outcome = "SUCCESS", ResourceType = "Authentication"
+                EventType = "PASSWORD_CHANGE",
+                EventCategory = "Security",
+                Severity = AuditSeverity.Information,
+                UserId = userId,
+                Action = "PASSWORD_CHANGE",
+                Outcome = "SUCCESS",
+                ResourceType = "Authentication"
             });
         }
 
@@ -558,9 +589,14 @@ namespace TerraFusion.Security
         {
             await LogAuditEventAsync(new AuditEvent
             {
-                EventType = "PASSWORD_CHANGE_FAILED", EventCategory = "Security",
-                Severity = AuditSeverity.Warning, UserId = userId,
-                Action = "PASSWORD_CHANGE", Outcome = "FAILURE", ErrorMessage = reason, ResourceType = "Authentication"
+                EventType = "PASSWORD_CHANGE_FAILED",
+                EventCategory = "Security",
+                Severity = AuditSeverity.Warning,
+                UserId = userId,
+                Action = "PASSWORD_CHANGE",
+                Outcome = "FAILURE",
+                ErrorMessage = reason,
+                ResourceType = "Authentication"
             });
         }
 
@@ -568,51 +604,86 @@ namespace TerraFusion.Security
         {
             await LogAuditEventAsync(new AuditEvent
             {
-                EventType = eventType, EventCategory = "Security",
-                Severity = AuditSeverity.Information, UserId = userId,
-                Action = eventType, Data = details, ResourceType = "Security"
+                EventType = eventType,
+                EventCategory = "Security",
+                Severity = AuditSeverity.Information,
+                UserId = userId,
+                Action = eventType,
+                Data = details,
+                ResourceType = "Security"
             });
         }
-        
+
         private bool IsComplianceEvent(AuditEvent auditEvent)
         {
             var complianceEvents = new[] { "LOGIN_SUCCESS", "DATA_ACCESS", "CONFIG_CHANGE", "SECURITY_VIOLATION" };
             return complianceEvents.Contains(auditEvent.EventType);
         }
-        
+
         private async Task LogComplianceEventAsync(IDbConnection connection, AuditEvent auditEvent)
         {
             // Additional compliance-specific logging
         }
-        
+
         private async Task SendToSiemAsync(AuditEvent auditEvent)
         {
             // Send to SIEM system (Splunk, ELK, etc.)
         }
-        
+
         private async Task WriteFallbackAuditLogAsync(AuditEvent auditEvent)
         {
             // Write to local file system as fallback
         }
-        
+
         private string BuildWhereClause(AuditLogQuery query)
         {
-            return "1=1"; // TODO: Build dynamic WHERE clause
+            var clauses = new List<string> { "1=1" };
+
+            if (!string.IsNullOrEmpty(query.EventType))
+                clauses.Add("event_type = @EventType");
+            if (!string.IsNullOrEmpty(query.EventCategory))
+                clauses.Add("event_category = @EventCategory");
+            if (!string.IsNullOrEmpty(query.UserId))
+                clauses.Add("user_id = @UserId");
+            if (!string.IsNullOrEmpty(query.County))
+                clauses.Add("county = @County");
+            if (query.MinSeverity.HasValue)
+                clauses.Add("severity >= @MinSeverity");
+            if (query.StartDate.HasValue)
+                clauses.Add("timestamp >= @StartDate");
+            if (query.EndDate.HasValue)
+                clauses.Add("timestamp <= @EndDate");
+
+            return string.Join(" AND ", clauses);
         }
-        
+
         private async Task TriggerSecurityAlertAsync(SecurityViolationEvent violation)
         {
             // Send security alerts
         }
-        
+
         private async Task<string> WriteToArchiveStorageAsync(IEnumerable<AuditEvent> logs)
         {
-            return "archive://location"; // TODO: Implement archive storage
+            var archiveDir = _configuration["Audit:ArchivePath"] ?? Path.Combine(AppContext.BaseDirectory, "audit-archives");
+            Directory.CreateDirectory(archiveDir);
+
+            var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
+            var archivePath = Path.Combine(archiveDir, $"audit-archive-{timestamp}.json");
+
+            var json = JsonSerializer.Serialize(logs, new JsonSerializerOptions { WriteIndented = false });
+            await File.WriteAllTextAsync(archivePath, json);
+
+            _logger.LogInformation("Audit archive written: {ArchivePath}, records: {Count}", archivePath, logs.Count());
+            return archivePath;
         }
-        
+
         private string CalculateArchiveHash(IEnumerable<AuditEvent> logs)
         {
-            return "hash"; // TODO: Calculate archive hash
+            // SHA-256 chain hash over all event hashes for tamper detection
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            var combined = string.Join("|", logs.Select(l => l.Hash ?? l.Id.ToString()));
+            var hashBytes = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(combined));
+            return Convert.ToHexString(hashBytes);
         }
     }
 }

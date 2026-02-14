@@ -368,15 +368,38 @@ public class QuantumResistantEncryptionService : IEncryptionService, IQuantumRes
     public Task<string> EncryptAsync(string data)
     {
         if (string.IsNullOrEmpty(data)) return Task.FromResult(data ?? string.Empty);
-        var bytes = System.Text.Encoding.UTF8.GetBytes(data);
-        return Task.FromResult(Convert.ToBase64String(bytes)); // TODO: real cipher
+
+        using var aes = System.Security.Cryptography.Aes.Create();
+        aes.KeySize = 256;
+        aes.GenerateKey();
+        aes.GenerateIV();
+
+        using var encryptor = aes.CreateEncryptor();
+        var plainBytes = System.Text.Encoding.UTF8.GetBytes(data);
+        var cipherBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+
+        // Format: IV(base64):Key(base64):Cipher(base64)
+        var result = $"{Convert.ToBase64String(aes.IV)}:{Convert.ToBase64String(aes.Key)}:{Convert.ToBase64String(cipherBytes)}";
+        return Task.FromResult(result);
     }
 
     public Task<string> DecryptAsync(string data)
     {
         if (string.IsNullOrEmpty(data)) return Task.FromResult(data ?? string.Empty);
-        var bytes = Convert.FromBase64String(data);
-        return Task.FromResult(System.Text.Encoding.UTF8.GetString(bytes)); // TODO: real cipher
+
+        var parts = data.Split(':');
+        if (parts.Length != 3)
+            return Task.FromResult(data); // Not encrypted, return as-is
+
+        using var aes = System.Security.Cryptography.Aes.Create();
+        aes.KeySize = 256;
+        aes.IV = Convert.FromBase64String(parts[0]);
+        aes.Key = Convert.FromBase64String(parts[1]);
+
+        using var decryptor = aes.CreateDecryptor();
+        var cipherBytes = Convert.FromBase64String(parts[2]);
+        var plainBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
+        return Task.FromResult(System.Text.Encoding.UTF8.GetString(plainBytes));
     }
 }
 

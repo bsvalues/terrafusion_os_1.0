@@ -78,6 +78,13 @@ public class SecurityViolationEvent
 
 public class AuditLogQuery
 {
+    public string? EventType { get; set; }
+    public string? EventCategory { get; set; }
+    public string? UserId { get; set; }
+    public string? County { get; set; }
+    public AuditSeverity? MinSeverity { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public string? SortBy { get; set; }
     public bool SortDescending { get; set; }
     public int Page { get; set; } = 1;

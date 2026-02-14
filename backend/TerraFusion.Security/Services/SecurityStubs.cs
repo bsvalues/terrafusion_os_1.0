@@ -7,8 +7,36 @@ public interface ISecurityPolicyEngine
 
 public class ZeroTrustSecurityPolicyEngine : ISecurityPolicyEngine
 {
+    // Resource → required role mappings for zero-trust enforcement
+    private static readonly Dictionary<string, string[]> _resourceRoles = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["security"] = new[] { "SystemAdmin", "SecurityAdmin", "SecurityOfficer" },
+        ["property"] = new[] { "SystemAdmin", "Assessor", "PropertyAnalyst" },
+        ["finance"] = new[] { "SystemAdmin", "FinanceManager", "BudgetAnalyst" },
+        ["emergency"] = new[] { "SystemAdmin", "EmergencyManager", "FirstResponder" },
+        ["citizen"] = new[] { "SystemAdmin", "ServiceManager", "CustomerService" },
+        ["audit"] = new[] { "SystemAdmin", "SecurityAdmin" },
+    };
+
     public Task<bool> EvaluatePolicyAsync(string resource, string action, ClaimsPrincipal user)
-        => Task.FromResult(true); // TODO: Implement zero-trust policy evaluation
+    {
+        if (user?.Identity?.IsAuthenticated != true)
+            return Task.FromResult(false);
+
+        // SystemAdmin bypasses resource-level checks
+        if (user.IsInRole("SystemAdmin"))
+            return Task.FromResult(true);
+
+        // Match resource to required roles
+        var resourceKey = _resourceRoles.Keys
+            .FirstOrDefault(k => resource.Contains(k, StringComparison.OrdinalIgnoreCase));
+
+        if (resourceKey == null)
+            return Task.FromResult(false); // Unknown resource → deny by default (zero-trust)
+
+        var allowed = _resourceRoles[resourceKey].Any(role => user.IsInRole(role));
+        return Task.FromResult(allowed);
+    }
 }
 
 public interface ISecurityHeadersService

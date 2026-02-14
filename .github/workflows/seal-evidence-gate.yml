@@ -91,14 +91,10 @@ jobs:
         id: build
         continue-on-error: true
         run: |
-          if [ -f tools/tdc/cli/dist/index.js ]; then # platform-lint:ignore DEPRECATED_OUTPUT_DIR
-            cd tools/tdc/cli
-            node dist/index.js evidence build \
-              --pr=${{ github.event.pull_request.number }} \
-              --branch=${{ github.head_ref }}
-
-            # Export overall status for next step
-            OVERALL_STATUS=$(jq -r '.overallStatus' ../../../.terrafusion/contracts/evidence-pack-latest.json 2>/dev/null || echo "SKIP")
+          TDC="tools/tdc/cli/dist/index.js" # platform-lint:ignore DEPRECATED_OUTPUT_DIR
+          if [ -f "$TDC" ]; then
+            node "$TDC" evidence build --pr=${{ github.event.pull_request.number }} --branch=${{ github.head_ref }}
+            OVERALL_STATUS=$(jq -r '.overallStatus' .terrafusion/contracts/evidence-pack-latest.json 2>/dev/null || echo "SKIP")
             echo "status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
           else
             echo "⚠️ TDC CLI not available — evidence pack build skipped"
@@ -109,9 +105,9 @@ jobs:
         id: validate
         continue-on-error: true
         run: |
-          if [ -f tools/tdc/cli/dist/index.js ]; then # platform-lint:ignore DEPRECATED_OUTPUT_DIR
-            cd tools/tdc/cli
-            node dist/index.js evidence validate
+          TDC="tools/tdc/cli/dist/index.js" # platform-lint:ignore DEPRECATED_OUTPUT_DIR
+          if [ -f "$TDC" ]; then
+            node "$TDC" evidence validate
           else
             echo "⚠️ TDC CLI not available — evidence validation skipped"
           fi
@@ -120,9 +116,9 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          if [ -f tools/tdc/cli/dist/index.js ]; then # platform-lint:ignore DEPRECATED_OUTPUT_DIR
-            cd tools/tdc/cli
-            node dist/index.js evidence show --format=summary
+          TDC="tools/tdc/cli/dist/index.js" # platform-lint:ignore DEPRECATED_OUTPUT_DIR
+          if [ -f "$TDC" ]; then
+            node "$TDC" evidence show --format=summary
           else
             echo "⚠️ TDC CLI not built — skipping evidence summary display"
             echo "Evidence contracts available at .terrafusion/contracts/"
