@@ -105,8 +105,8 @@ public static class SecurityExtensions
                 OnChallenge = context =>
                 {
                     // Custom challenge response for government systems
-                    context.Response.Headers.Add("X-Government-Auth-Required", "true");
-                    context.Response.Headers.Add("X-Compliance-Level", "FISMA-HIGH");
+                    context.Response.Headers["X-Government-Auth-Required"] = "true";
+                    context.Response.Headers["X-Compliance-Level"] = "FISMA-HIGH";
                     return Task.CompletedTask;
                 }
             };
