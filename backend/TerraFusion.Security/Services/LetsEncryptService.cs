@@ -2,6 +2,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Security.Interfaces;
+using TerraFusion.Security.Services;
 
 namespace TerraFusion.Security.Services
 {
@@ -14,6 +15,7 @@ namespace TerraFusion.Security.Services
         private readonly ILogger<LetsEncryptService> _logger;
         private readonly IConfiguration _configuration;
         private readonly ISecretsService _secretsService;
+        private readonly ISecurityAuditService _auditService;
         private readonly string _certificatePath;
         private readonly string _privateKeyPath;
         private readonly string _accountEmail;
@@ -22,12 +24,14 @@ namespace TerraFusion.Security.Services
         public LetsEncryptService(
             ILogger<LetsEncryptService> logger,
             IConfiguration configuration,
-            ISecretsService secretsService)
+            ISecretsService secretsService,
+            ISecurityAuditService auditService)
         {
             _logger = logger;
             _configuration = configuration;
             _secretsService = secretsService;
-            
+            _auditService = auditService;
+
             _certificatePath = _configuration["LetsEncrypt:CertificatePath"] ?? "/etc/letsencrypt/live/terrafusion.local/fullchain.pem";
             _privateKeyPath = _configuration["LetsEncrypt:PrivateKeyPath"] ?? "/etc/letsencrypt/live/terrafusion.local/privkey.pem";
             _accountEmail = _configuration["LetsEncrypt:AccountEmail"] ?? Environment.GetEnvironmentVariable("LETSENCRYPT_EMAIL") ?? "";
@@ -46,10 +50,10 @@ namespace TerraFusion.Security.Services
 
                 var certificate = new X509Certificate2(_certificatePath);
                 var now = DateTime.UtcNow;
-                
+
                 if (now < certificate.NotBefore || now > certificate.NotAfter)
                 {
-                    _logger.LogWarning("Certificate is not valid at current time. Valid from {NotBefore} to {NotAfter}", 
+                    _logger.LogWarning("Certificate is not valid at current time. Valid from {NotBefore} to {NotAfter}",
                         certificate.NotBefore, certificate.NotAfter);
                     return false;
                 }
@@ -86,10 +90,14 @@ namespace TerraFusion.Security.Services
                 // In production, this would use certbot or similar ACME client
                 // For now, we'll simulate the process
                 var success = await SimulateCertificateRequestAsync();
-                
+
                 if (success)
                 {
                     _logger.LogInformation("Successfully requested new certificate for {DomainName}", _domainName);
+                    await _auditService.LogSecurityEventAsync(
+                        "CertificateRequested",
+                        new { DomainName = _domainName, Email = _accountEmail, Timestamp = DateTime.UtcNow }
+                    );
                     return true;
                 }
                 else
@@ -114,9 +122,9 @@ namespace TerraFusion.Security.Services
                 // Check if renewal is needed
                 if (await IsCertificateValidAsync())
                 {
-                    var certificate = new X509Certificate2(_certificatePath);
-                    var daysUntilExpiry = (certificate.NotAfter - DateTime.UtcNow).TotalDays;
-                    
+                    var cert = new X509Certificate2(_certificatePath);
+                    var daysUntilExpiry = (cert.NotAfter - DateTime.UtcNow).TotalDays;
+
                     if (daysUntilExpiry > 30)
                     {
                         _logger.LogInformation("Certificate renewal not needed. Expires in {DaysUntilExpiry} days", daysUntilExpiry);
@@ -126,10 +134,15 @@ namespace TerraFusion.Security.Services
 
                 // Perform renewal
                 var success = await SimulateCertificateRenewalAsync();
-                
+
                 if (success)
                 {
                     _logger.LogInformation("Successfully renewed certificate for {DomainName}", _domainName);
+                    var renewedCert = File.Exists(_certificatePath) ? new X509Certificate2(_certificatePath) : null;
+                    await _auditService.LogSecurityEventAsync(
+                        "CertificateRenewed",
+                        new { DomainName = _domainName, ExpiryDate = renewedCert?.NotAfter ?? DateTime.UtcNow, Timestamp = DateTime.UtcNow }
+                    );
                     return true;
                 }
                 else
@@ -156,9 +169,9 @@ namespace TerraFusion.Security.Services
                 }
 
                 var certificate = new X509Certificate2(_certificatePath);
-                _logger.LogDebug("Retrieved certificate: {Subject}, expires {NotAfter}", 
+                _logger.LogDebug("Retrieved certificate: {Subject}, expires {NotAfter}",
                     certificate.Subject, certificate.NotAfter);
-                
+
                 return certificate;
             }
             catch (Exception ex)
@@ -177,10 +190,14 @@ namespace TerraFusion.Security.Services
                 // In production, this would write to secure locations
                 // For now, we'll simulate the installation
                 var success = await SimulateCertificateInstallationAsync(certificateData, privateKeyData);
-                
+
                 if (success)
                 {
                     _logger.LogInformation("Successfully installed new certificate for {DomainName}", _domainName);
+                    await _auditService.LogSecurityEventAsync(
+                        "CertificateInstalled",
+                        new { DomainName = _domainName, CertificateLength = certificateData.Length, Timestamp = DateTime.UtcNow }
+                    );
                     return true;
                 }
                 else
