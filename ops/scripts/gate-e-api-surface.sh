@@ -56,6 +56,16 @@ log ""
 
 require_cmd curl
 
+# -----------------------------------------------------------------------------
+# Skip live checks if running in CI without a backend
+# -----------------------------------------------------------------------------
+if [[ "${SKIP_LIVE_CHECKS:-false}" == "true" ]]; then
+  log "INFO: SKIP_LIVE_CHECKS=true — skipping live endpoint verification."
+  log "INFO: This is expected in CI where the backend is not running."
+  log "✅ Gate E: PASSED (live checks skipped)"
+  exit 0
+fi
+
 if command -v jq >/dev/null 2>&1; then
   HAS_JQ=1
   log "INFO: jq found - will use it for JSON assertions."
