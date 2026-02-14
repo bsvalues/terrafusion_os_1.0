@@ -27,5 +27,11 @@ namespace TerraFusion.Security.Models
         public List<string> Roles { get; set; } = new();
         
         public List<string> Permissions { get; set; } = new();
+        
+        public string? PasswordHash { get; set; }
+        
+        public bool MfaEnabled { get; set; }
+        
+        public DateTime? PasswordChangedAt { get; set; }
     }
 }

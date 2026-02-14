@@ -112,7 +112,7 @@ public class SecurityController : ControllerBase
             var response = new SecurityEventsResponse
             {
                 Events = events,
-                TotalCount = totalCount,
+                TotalCount = (int)totalCount,
                 Page = page,
                 PageSize = pageSize,
                 TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)

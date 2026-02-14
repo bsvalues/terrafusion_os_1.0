@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Dapper;
 using Npgsql;
+using TerraFusion.Security.Interfaces;
+using TerraFusion.Security.Models;
+using TerraFusion.Security.Services;
 
 namespace TerraFusion.Security
 {
@@ -488,6 +491,86 @@ namespace TerraFusion.Security
         {
             var data = $"{auditEvent.EventType}|{auditEvent.UserId}|{auditEvent.Timestamp:O}|{auditEvent.Data}";
             return _hashingService.ComputeSha256(data);
+        }
+
+        public async Task LogAuthenticationSuccessAsync(string username, string? ipAddress)
+        {
+            await LogAuditEventAsync(new AuditEvent
+            {
+                EventType = "LOGIN_SUCCESS", EventCategory = "Security",
+                Severity = AuditSeverity.Information, Username = username, IpAddress = ipAddress,
+                Action = "LOGIN", Outcome = "SUCCESS", ResourceType = "Authentication"
+            });
+        }
+
+        public async Task LogAuthenticationFailureAsync(string username, string? ipAddress, string reason)
+        {
+            await LogAuditEventAsync(new AuditEvent
+            {
+                EventType = "LOGIN_FAILURE", EventCategory = "Security",
+                Severity = AuditSeverity.Warning, Username = username, IpAddress = ipAddress,
+                Action = "LOGIN", Outcome = "FAILURE", ErrorMessage = reason, ResourceType = "Authentication"
+            });
+        }
+
+        public async Task LogAuthenticationErrorAsync(string username, string message)
+        {
+            await LogAuditEventAsync(new AuditEvent
+            {
+                EventType = "AUTH_ERROR", EventCategory = "Security",
+                Severity = AuditSeverity.Warning, Username = username,
+                Action = "AUTHENTICATION", Outcome = "ERROR", ErrorMessage = message, ResourceType = "Authentication"
+            });
+        }
+
+        public async Task LogTokenRefreshAsync(string userId, string sessionId)
+        {
+            await LogAuditEventAsync(new AuditEvent
+            {
+                EventType = "TOKEN_REFRESH", EventCategory = "Security",
+                Severity = AuditSeverity.Information, UserId = userId, SessionId = sessionId,
+                Action = "TOKEN_REFRESH", Outcome = "SUCCESS", ResourceType = "Authentication"
+            });
+        }
+
+        public async Task LogLogoutAsync(string userId, string sessionId)
+        {
+            await LogAuditEventAsync(new AuditEvent
+            {
+                EventType = "LOGOUT", EventCategory = "Security",
+                Severity = AuditSeverity.Information, UserId = userId, SessionId = sessionId,
+                Action = "LOGOUT", Outcome = "SUCCESS", ResourceType = "Authentication"
+            });
+        }
+
+        public async Task LogPasswordChangeAsync(string userId)
+        {
+            await LogAuditEventAsync(new AuditEvent
+            {
+                EventType = "PASSWORD_CHANGE", EventCategory = "Security",
+                Severity = AuditSeverity.Information, UserId = userId,
+                Action = "PASSWORD_CHANGE", Outcome = "SUCCESS", ResourceType = "Authentication"
+            });
+        }
+
+        public async Task LogFailedPasswordChangeAsync(string userId, string reason)
+        {
+            await LogAuditEventAsync(new AuditEvent
+            {
+                EventType = "PASSWORD_CHANGE_FAILED", EventCategory = "Security",
+                Severity = AuditSeverity.Warning, UserId = userId,
+                Action = "PASSWORD_CHANGE", Outcome = "FAILURE", ErrorMessage = reason, ResourceType = "Authentication"
+            });
+        }
+
+        public async Task LogSecurityEventAsync(string eventType, string userId, string details)
+        {
+            await LogAuditEventAsync(new AuditEvent
+            {
+                EventType = eventType, EventCategory = "Security",
+                Severity = AuditSeverity.Information, UserId = userId,
+                Action = eventType, Data = details, ResourceType = "Security"
+            });
         }
         
         private bool IsComplianceEvent(AuditEvent auditEvent)

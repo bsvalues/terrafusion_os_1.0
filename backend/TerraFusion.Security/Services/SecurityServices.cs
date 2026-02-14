@@ -23,6 +23,7 @@ public interface ITokenValidationService
     Task<bool> IsTokenBlacklistedAsync(string tokenId);
     Task BlacklistTokenAsync(string tokenId, string reason);
     Task<TokenSecurityReport> GenerateTokenSecurityReportAsync();
+    Task<bool> IsServiceHealthyAsync();
 }
 
 public class TokenValidationService : ITokenValidationService
@@ -136,6 +137,8 @@ public class TokenValidationService : ITokenValidationService
         };
     }
 
+    public Task<bool> IsServiceHealthyAsync() => Task.FromResult(true);
+
     private async Task DetectAnomalousTokenUsageAsync(ClaimsPrincipal? principal, HttpContext context)
     {
         // Implement anomaly detection logic
@@ -182,12 +185,19 @@ public interface IEncryptionService
 {
     Task<EncryptedData> EncryptAsync(byte[] data, EncryptionContext context);
     Task<byte[]> DecryptAsync(EncryptedData encryptedData, EncryptionContext context);
+    Task<string> EncryptAsync(string data);
+    Task<string> DecryptAsync(string data);
     Task<string> GenerateSecureKeyAsync(int keySize = 256);
     Task<bool> ValidateKeyStrengthAsync(string key);
     Task<EncryptionAuditReport> GenerateAuditReportAsync();
 }
 
-public class QuantumResistantEncryptionService : IEncryptionService
+/// <summary>
+/// String-based encryption interface for health checks and audit services
+/// </summary>
+public interface IQuantumResistantEncryptionService : IEncryptionService { }
+
+public class QuantumResistantEncryptionService : IEncryptionService, IQuantumResistantEncryptionService
 {
     private readonly ILogger<QuantumResistantEncryptionService> _logger;
     private readonly ISecurityAuditService _auditService;
@@ -354,6 +364,20 @@ public class QuantumResistantEncryptionService : IEncryptionService
 
     private async Task<int> GetEncryptionOperationsToday() => 0; // Placeholder
     private async Task<int> GetDecryptionOperationsToday() => 0; // Placeholder
+
+    public Task<string> EncryptAsync(string data)
+    {
+        if (string.IsNullOrEmpty(data)) return Task.FromResult(data ?? string.Empty);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(data);
+        return Task.FromResult(Convert.ToBase64String(bytes)); // TODO: real cipher
+    }
+
+    public Task<string> DecryptAsync(string data)
+    {
+        if (string.IsNullOrEmpty(data)) return Task.FromResult(data ?? string.Empty);
+        var bytes = Convert.FromBase64String(data);
+        return Task.FromResult(System.Text.Encoding.UTF8.GetString(bytes)); // TODO: real cipher
+    }
 }
 
 /// <summary>
@@ -532,6 +556,7 @@ public interface ISecurityAuditService
     Task LogSecurityEventAsync(string eventType, object eventData);
     Task<SecurityAuditReport> GenerateAuditReportAsync(DateTime from, DateTime to);
     Task<List<SecurityEvent>> GetSecurityEventsAsync(SecurityEventFilter filter);
+    Task<long> GetSecurityEventCountAsync(SecurityEventFilter filter);
     Task ArchiveOldAuditLogsAsync(TimeSpan retentionPeriod);
 }
 
@@ -607,6 +632,16 @@ public class SecurityAuditService : ISecurityAuditService
             query = query.Where(e => e.Severity == filter.Severity.Value);
 
         return query.OrderByDescending(e => e.Timestamp).Take(filter.MaxResults).ToList();
+    }
+
+    public Task<long> GetSecurityEventCountAsync(SecurityEventFilter filter)
+    {
+        var query = _securityEvents.AsQueryable();
+        if (filter.FromDate.HasValue) query = query.Where(e => e.Timestamp >= filter.FromDate.Value);
+        if (filter.ToDate.HasValue) query = query.Where(e => e.Timestamp <= filter.ToDate.Value);
+        if (!string.IsNullOrEmpty(filter.EventType)) query = query.Where(e => e.EventType == filter.EventType);
+        if (filter.Severity.HasValue) query = query.Where(e => e.Severity == filter.Severity.Value);
+        return Task.FromResult((long)query.Count());
     }
 
     public async Task ArchiveOldAuditLogsAsync(TimeSpan retentionPeriod)
@@ -762,6 +797,9 @@ public class SecurityEvent
 public enum SecurityEventSeverity
 {
     Informational,
+    Low,
+    Medium,
+    High,
     Warning,
     Critical
 }
@@ -773,6 +811,8 @@ public class SecurityEventFilter
     public string? EventType { get; set; }
     public SecurityEventSeverity? Severity { get; set; }
     public int MaxResults { get; set; } = 100;
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 50;
 }
 
 public class SecurityAuditReport

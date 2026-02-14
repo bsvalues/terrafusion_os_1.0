@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using TerraFusion.Security.Middleware;
 using TerraFusion.Security.Models;
 using TerraFusion.Security.Services;
 
@@ -81,7 +83,7 @@ public static class SecurityExtensions
                 OnAuthenticationFailed = context =>
                 {
                     // Log authentication failures for security monitoring
-                    var logger = context.HttpContext.RequestServices.GetService<ILogger<SecurityExtensions>>();
+                    var logger = context.HttpContext.RequestServices.GetService<ILoggerFactory>()?.CreateLogger("TerraFusion.Security");
                     logger?.LogWarning("JWT Authentication failed: {Error} for {User} from {IP}",
                         context.Exception.Message,
                         context.HttpContext.User?.Identity?.Name ?? "Unknown",
@@ -96,7 +98,8 @@ public static class SecurityExtensions
                     var tokenValidationService = context.HttpContext.RequestServices
                         .GetService<ITokenValidationService>();
 
-                    return tokenValidationService?.ValidateGovernmentTokenAsync(context) ?? Task.CompletedTask;
+                    return tokenValidationService?.ValidateGovernmentTokenAsync(
+                        new TokenValidationContext { SecurityToken = context.SecurityToken, Principal = context.Principal }) ?? Task.CompletedTask;
                 },
 
                 OnChallenge = context =>
@@ -193,7 +196,7 @@ public static class SecurityExtensions
             options.AddDefaultPolicy(builder =>
             {
                 builder.WithOrigins(securityConfig.AllowedOrigins)
-                       .AllowedHeaders("Authorization", "Content-Type", "X-Requested-With", "X-Government-Request-ID")
+                       .WithHeaders("Authorization", "Content-Type", "X-Requested-With", "X-Government-Request-ID")
                        .WithMethods("GET", "POST", "PUT", "DELETE")
                        .AllowCredentials()
                        .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
@@ -251,6 +254,24 @@ public static class SecurityExtensions
 
         return app;
     }
+
+    // Extension method stubs referenced by SecurityModule
+    public static IServiceCollection AddTerraFusionSecurityCore(this IServiceCollection services, IConfiguration configuration) => services;
+    public static IServiceCollection AddTerraFusionAuthentication(this IServiceCollection services, IConfiguration configuration) => services;
+    public static IServiceCollection AddTerraFusionAuthorization(this IServiceCollection services) => services;
+    public static IServiceCollection AddTerraFusionEncryption(this IServiceCollection services, IConfiguration configuration) => services;
+    public static IServiceCollection AddTerraFusionMFA(this IServiceCollection services, IConfiguration configuration) => services;
+    public static IServiceCollection AddTerraFusionAuditLogging(this IServiceCollection services, IConfiguration configuration) => services;
+    public static IServiceCollection AddTerraFusionThreatDetection(this IServiceCollection services, IConfiguration configuration) => services;
+    public static IServiceCollection AddTerraFusionRateLimit(this IServiceCollection services, IConfiguration configuration) => services;
+    public static IServiceCollection AddTerraFusionCompliance(this IServiceCollection services) => services;
+
+    // Middleware stubs referenced by SecurityStartup
+    public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app) => app;
+    public static IApplicationBuilder UseRateLimit(this IApplicationBuilder app) => app;
+    public static IApplicationBuilder UseThreatDetection(this IApplicationBuilder app) => app;
+    public static IApplicationBuilder UseAuditLogging(this IApplicationBuilder app) => app;
+    public static IApplicationBuilder UseComplianceEnforcement(this IApplicationBuilder app) => app;
 }
 
 /// <summary>

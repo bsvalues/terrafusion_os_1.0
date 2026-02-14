@@ -4,6 +4,11 @@ namespace TerraFusion.Security.Models
     {
         public bool Success { get; set; }
         public string? ErrorMessage { get; set; }
+        public string? Error
+        {
+            get => ErrorMessage;
+            set => ErrorMessage = value;
+        }
         
         public static PasswordChangeResult SuccessResult()
         {
@@ -20,6 +25,11 @@ namespace TerraFusion.Security.Models
     {
         public bool IsValid { get; set; }
         public List<string> Errors { get; set; } = new();
+        public string? Error
+        {
+            get => Errors.Count > 0 ? string.Join("; ", Errors) : null;
+            set { if (value != null) { Errors.Clear(); Errors.Add(value); } }
+        }
         
         public static PasswordValidationResult ValidResult()
         {
@@ -29,23 +39,6 @@ namespace TerraFusion.Security.Models
         public static PasswordValidationResult InvalidResult(List<string> errors)
         {
             return new PasswordValidationResult { IsValid = false, Errors = errors };
-        }
-    }
-    
-    public class LdapAuthResult
-    {
-        public bool Success { get; set; }
-        public string? ErrorMessage { get; set; }
-        public ApplicationUser? User { get; set; }
-        
-        public static LdapAuthResult SuccessResult(ApplicationUser user)
-        {
-            return new LdapAuthResult { Success = true, User = user };
-        }
-        
-        public static LdapAuthResult FailureResult(string errorMessage)
-        {
-            return new LdapAuthResult { Success = false, ErrorMessage = errorMessage };
         }
     }
 }

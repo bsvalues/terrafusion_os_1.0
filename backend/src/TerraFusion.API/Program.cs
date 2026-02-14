@@ -9,6 +9,7 @@ using TerraFusion.API.Security;
 using TerraFusion.API.Middleware;
 using static TerraFusion.API.Security.EliteSecurityHardening;
 using TerraFusion.API.Extensions;
+using TerraFusion.Security;
 using Microsoft.Extensions.FileProviders;
 using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
@@ -588,6 +589,9 @@ builder.Services.AddSignalR(options =>
 
 // Register Quantum Metrics Background Service for real-time broadcasting
 builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
+
+// 🔒 TerraFusion Security Module (Phase 4 Agent 1)
+builder.Services.AddTerraFusionSecurity(builder.Configuration, builder.Environment);
 
 // Configure CORS properly
 builder.Services.AddCors(options =>

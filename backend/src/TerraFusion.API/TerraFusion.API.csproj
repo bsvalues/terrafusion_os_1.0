@@ -57,6 +57,7 @@
     <ProjectReference Include="..\TerraFusion.CostForge\TerraFusion.CostForge.csproj" />
     <ProjectReference Include="..\TerraFusion.Consciousness\TerraFusion.Consciousness.csproj" />
     <ProjectReference Include="..\TerraFusion.Sync\TerraFusion.Sync.csproj" />
+    <ProjectReference Include="..\..\TerraFusion.Security\TerraFusion.Security.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -960,7 +960,7 @@ public class ComplianceMonitoringService : BackgroundService
 
     private async Task GenerateComplianceReportAsync()
     {
-        var report = new ComplianceReport
+        var report = new MonitoringComplianceReport
         {
             ReportId = Guid.NewGuid().ToString(),
             GeneratedAt = DateTime.UtcNow,
@@ -1127,7 +1127,7 @@ public enum ActionStatus
     Failed
 }
 
-public class ComplianceReport
+public class MonitoringComplianceReport
 {
     public string ReportId { get; set; } = string.Empty;
     public DateTime GeneratedAt { get; set; }

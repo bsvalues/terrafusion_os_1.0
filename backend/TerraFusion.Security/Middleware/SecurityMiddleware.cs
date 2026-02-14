@@ -262,7 +262,7 @@ public class ThreatDetectionMiddleware
                 if (IsPrivateIP(headerValue) && !IsPrivateIP(context.Connection.RemoteIpAddress?.ToString()))
                 {
                     threats.Add("Suspicious IP forwarding detected");
-                    threatLevel = Math.Max(threatLevel, ThreatLevel.Medium);
+                    threatLevel = (ThreatLevel)Math.Max((int)threatLevel, (int)ThreatLevel.Medium);
                 }
             }
         }
