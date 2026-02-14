@@ -29,6 +29,7 @@ Anything outside this scope requires explicit authorization.
 ## REQUIRED GATES (MUST PASS)
 - `pnpm run type-check` (core boundary)
 - `node --test os-platform/core/tests/phase83-tools.test.mjs`
+- Phase 7 Production Readiness Gates (see release-evidence-latest.json for full status)
 
 ## BRANCH PROTECTION (CONSTITUTIONAL GATES)
 

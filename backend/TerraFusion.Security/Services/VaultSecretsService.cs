@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Security.Interfaces;
+using TerraFusion.Security.Services;
 
 namespace TerraFusion.Security.Services
 {
@@ -14,6 +15,7 @@ namespace TerraFusion.Security.Services
         private readonly ILogger<VaultSecretsService> _logger;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
+        private readonly ISecurityAuditService _auditService;
         private readonly string _vaultUrl;
         private readonly string _vaultToken;
         private readonly string _vaultMountPath;
@@ -21,16 +23,18 @@ namespace TerraFusion.Security.Services
         public VaultSecretsService(
             ILogger<VaultSecretsService> logger,
             IConfiguration configuration,
-            HttpClient httpClient)
+            HttpClient httpClient,
+            ISecurityAuditService auditService)
         {
             _logger = logger;
             _configuration = configuration;
             _httpClient = httpClient;
-            
+            _auditService = auditService;
+
             _vaultUrl = _configuration["Vault:Url"] ?? "http://localhost:8200";
             _vaultToken = _configuration["Vault:Token"] ?? Environment.GetEnvironmentVariable("VAULT_TOKEN") ?? "";
             _vaultMountPath = _configuration["Vault:MountPath"] ?? "secret";
-            
+
             if (string.IsNullOrEmpty(_vaultToken))
             {
                 _logger.LogWarning("VAULT_TOKEN environment variable not set - using development mode");
@@ -94,11 +98,39 @@ namespace TerraFusion.Security.Services
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully stored Vault entry at path: {VaultPath}", secretPath);
+
+                await _auditService.LogSecurityEventAsync(
+                    "VaultSecretSet",
+                    new
+                    {
+                        SecretPath = secretPath,
+                        ValueLength = value.Length,
+                        VaultUrl = _vaultUrl,
+                        MountPath = _vaultMountPath,
+                        Timestamp = DateTime.UtcNow,
+                        Outcome = "Success"
+                    }
+                );
+
                 return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to store Vault entry at path: {VaultPath}", secretPath);
+
+                await _auditService.LogSecurityEventAsync(
+                    "VaultSecretSetFailed",
+                    new
+                    {
+                        SecretPath = secretPath,
+                        VaultUrl = _vaultUrl,
+                        ErrorType = ex.GetType().Name,
+                        ErrorMessage = ex.Message,
+                        Timestamp = DateTime.UtcNow,
+                        Outcome = "Failed"
+                    }
+                );
+
                 return false;
             }
         }
@@ -120,11 +152,38 @@ namespace TerraFusion.Security.Services
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully removed Vault entry at path: {VaultPath}", secretPath);
+
+                await _auditService.LogSecurityEventAsync(
+                    "VaultSecretDeleted",
+                    new
+                    {
+                        SecretPath = secretPath,
+                        VaultUrl = _vaultUrl,
+                        MountPath = _vaultMountPath,
+                        Timestamp = DateTime.UtcNow,
+                        Outcome = "Success"
+                    }
+                );
+
                 return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to remove Vault entry at path: {VaultPath}", secretPath);
+
+                await _auditService.LogSecurityEventAsync(
+                    "VaultSecretDeleteFailed",
+                    new
+                    {
+                        SecretPath = secretPath,
+                        VaultUrl = _vaultUrl,
+                        ErrorType = ex.GetType().Name,
+                        ErrorMessage = ex.Message,
+                        Timestamp = DateTime.UtcNow,
+                        Outcome = "Failed"
+                    }
+                );
+
                 return false;
             }
         }
