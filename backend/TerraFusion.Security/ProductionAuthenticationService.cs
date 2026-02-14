@@ -400,7 +400,7 @@ namespace TerraFusion.Security
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Password change failed for user: {userId}");
+                _logger.LogError(ex, "Credential update failed for user: {UserId}", userId);
                 return new PasswordChangeResult { Success = false, Error = "Password change failed" };
             }
         }

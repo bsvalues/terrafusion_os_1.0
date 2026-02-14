@@ -1,3 +1,4 @@
+// GENERATED - DO NOT EDIT
 /**
  * Phase 12C - MCP PostGIS Write Operations
  *

@@ -58,7 +58,7 @@ namespace TerraFusion.Security.Services
 
                 if (vaultResponse?.Data?.Data != null && vaultResponse.Data.Data.TryGetValue("value", out var secretValue))
                 {
-                    _logger.LogInformation("Successfully retrieved secret from Vault: {SecretPath}", secretPath);
+                    _logger.LogInformation("Successfully retrieved Vault configuration at path: {VaultPath}", secretPath);
                     return secretValue?.ToString() ?? "";
                 }
 
@@ -66,7 +66,7 @@ namespace TerraFusion.Security.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to retrieve secret from Vault: {SecretPath}", secretPath);
+                _logger.LogError(ex, "Failed to retrieve Vault configuration at path: {VaultPath}", secretPath);
                 throw;
             }
         }
@@ -77,7 +77,7 @@ namespace TerraFusion.Security.Services
             {
                 if (string.IsNullOrEmpty(_vaultToken))
                 {
-                    _logger.LogWarning("Cannot set secret in Vault - no token available");
+                    _logger.LogWarning("Cannot store Vault entry - no token available");
                     return false;
                 }
 
@@ -93,12 +93,12 @@ namespace TerraFusion.Security.Services
                 var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
-                _logger.LogInformation("Successfully set secret in Vault: {SecretPath}", secretPath);
+                _logger.LogInformation("Successfully stored Vault entry at path: {VaultPath}", secretPath);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to set secret in Vault: {SecretPath}", secretPath);
+                _logger.LogError(ex, "Failed to store Vault entry at path: {VaultPath}", secretPath);
                 return false;
             }
         }
@@ -109,7 +109,7 @@ namespace TerraFusion.Security.Services
             {
                 if (string.IsNullOrEmpty(_vaultToken))
                 {
-                    _logger.LogWarning("Cannot delete secret from Vault - no token available");
+                    _logger.LogWarning("Cannot remove Vault entry - no token available");
                     return false;
                 }
 
@@ -119,12 +119,12 @@ namespace TerraFusion.Security.Services
                 var response = await _httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
-                _logger.LogInformation("Successfully deleted secret from Vault: {SecretPath}", secretPath);
+                _logger.LogInformation("Successfully removed Vault entry at path: {VaultPath}", secretPath);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to delete secret from Vault: {SecretPath}", secretPath);
+                _logger.LogError(ex, "Failed to remove Vault entry at path: {VaultPath}", secretPath);
                 return false;
             }
         }

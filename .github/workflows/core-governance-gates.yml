@@ -95,6 +95,8 @@ jobs:
           cache: 'pnpm'
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Install TDC CLI dependencies
+        run: cd tools/tdc/cli && npm install --ignore-scripts
       - name: Build TDC CLI
         run: cd tools/tdc/cli && npx tsc
       - name: Phase 10 SDUI typecheck
@@ -117,6 +119,8 @@ jobs:
           cache: 'pnpm'
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Install TDC CLI dependencies
+        run: cd tools/tdc/cli && npm install --ignore-scripts
       - name: Build TDC CLI
         run: cd tools/tdc/cli && npx tsc
       - name: Phase 11 County Pack tests

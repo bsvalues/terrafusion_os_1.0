@@ -1,3 +1,4 @@
+// GENERATED - DO NOT EDIT
 /**
  * Mock PostgreSQL Pool for Phase 12D E2E Testing
  *

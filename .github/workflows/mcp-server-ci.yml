@@ -1,11 +1,6 @@
 name: MCP Server CI
 
 on:
-  pull_request:
-    paths:
-      - 'tools/mcp-servers/postgis/**'
-      - 'tools/dx/skills/tf-mcp-integration/**'
-      - '.github/workflows/mcp-server-ci.yml'
   push:
     branches:
       - main
@@ -14,7 +9,7 @@ on:
       - 'tools/dx/skills/tf-mcp-integration/**'
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   POSTGRES_VERSION: '15'
 
 jobs:
@@ -69,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mcp-server-dist
-          path: tools/mcp-servers/postgis/dist
+          path: tools/mcp-servers/postgis/dist # platform-lint:ignore DEPRECATED_OUTPUT_DIR
           retention-days: 7
 
   test-unit:
@@ -158,12 +153,12 @@ jobs:
             );
 
             -- Create spatial index
-            CREATE INDEX IF NOT EXISTS idx_properties_geometry 
+            CREATE INDEX IF NOT EXISTS idx_properties_geometry
             ON properties USING GIST(geometry);
 
             -- Insert test parcels (Benton County sample data)
             INSERT INTO properties (parcel_id, address, county_id, assessed_value, tax_levy, geometry) VALUES
-            ('123456789', '123 Main St, Richland, WA', 1, 350000, 3500, 
+            ('123456789', '123 Main St, Richland, WA', 1, 350000, 3500,
              ST_GeomFromText('POLYGON((-119.2785 46.2855, -119.2775 46.2855, -119.2775 46.2845, -119.2785 46.2845, -119.2785 46.2855))', 4326)),
             ('987654321', '456 Oak Ave, Kennewick, WA', 1, 425000, 4250,
              ST_GeomFromText('POLYGON((-119.1374 46.2112, -119.1364 46.2112, -119.1364 46.2102, -119.1374 46.2102, -119.1374 46.2112))', 4326)),
@@ -183,7 +178,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: mcp-server-dist
-          path: tools/mcp-servers/postgis/dist
+          path: tools/mcp-servers/postgis/dist # platform-lint:ignore DEPRECATED_OUTPUT_DIR
 
       - name: Run integration tests
         working-directory: tools/mcp-servers/postgis

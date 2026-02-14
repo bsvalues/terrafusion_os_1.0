@@ -5,7 +5,25 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>TerraFusion.Security</RootNamespace>
-    <!-- Suppress stub-implementation noise until Agents 2-5 fill in real logic -->
+    <!--
+      TEMPORARY WARNING SUPPRESSIONS (Phase 4 Agent 1 — BUILD & WIRE)
+      ================================================================
+      Suppressed IDs:
+        CS1998 — async methods without await (stub methods return synchronously)
+        CS0414 — assigned-but-unused fields (stub placeholders)
+        CS0219 — assigned-but-unused variables (stub placeholders)
+      Why:
+        All services in this module are stub implementations wired for
+        compilation and DI resolution. Real logic arrives in Agents 2-5.
+      Removal condition:
+        Remove each suppression as the corresponding Agent implements real logic:
+        - Agent 2 (AUTH TODO CLOSER): CS1998 in auth/session/mfa services
+        - Agent 3 (FISMA CONTROL CLOSER): CS1998 in audit/compliance services
+        - Agent 5 (EVIDENCE PACK): CS0414/CS0219 in monitoring stubs
+        After all agents complete, this entire NoWarn block should be deleted.
+      See also: #nullable disable in ProductionAuditService.cs and
+        ProductionAuthenticationService.cs (same removal condition).
+    -->
     <NoWarn>$(NoWarn);CS1998;CS0414;CS0219</NoWarn>
   </PropertyGroup>
 
