@@ -915,7 +915,8 @@ public class AutonomousAgentService : IAutonomousAgentService
             AgentTaskType.Test => await GenerateTestsTaskAsync(task),
             AgentTaskType.Document => await GenerateDocumentationTaskAsync(task),
             AgentTaskType.Optimize => await OptimizeCodeTaskAsync(task),
-            _ => throw new NotImplementedException()
+            // Phase 8: Graceful fallback for unknown task types instead of runtime crash
+            _ => new AgentTaskResult { Summary = $"Task type '{task.Type}' is not yet supported" }
         };
     }
 

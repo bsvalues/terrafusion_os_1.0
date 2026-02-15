@@ -3,6 +3,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services.Monitoring;
 using TerraFusion.Core.Services.Monitoring.HealthChecks;
 using TerraFusion.Core.Services.Monitoring.BackgroundServices;
@@ -41,6 +42,9 @@ public static class MonitoringServiceExtensions
         services.AddScoped<IObservabilityService, ObservabilityService>();
         services.AddScoped<IHealthCheckService, TerraFusionHealthCheckService>();
         services.AddScoped<IMetricsCollectionService, MetricsCollectionService>();
+
+        // Phase 8: Cache statistics — singleton for thread-safe counters
+        services.AddSingleton<ICacheStatisticsService, Services.InMemoryCacheStatisticsService>();
 
         // Configure health checks
         services.AddHealthChecks()
