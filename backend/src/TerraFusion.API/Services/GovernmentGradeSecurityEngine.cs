@@ -1072,8 +1072,8 @@ public class GovernmentGradeSecurityEngine : BackgroundService, IGovernmentGrade
             RotationIntervalHours = 24,
             FallbackToClassicalEncryption = true
         };
-    }    // Phase 9: Replaced sync-over-async (.GetAwaiter().GetResult()) with
-    // Task.Run + async lambda to avoid thread-pool deadlocks under load.
+    }    // Phase 9: Replaced sync-over-async with Task.Run + async lambda
+    // to avoid thread-pool deadlocks under load.
     private void ExecuteComplianceMonitoring(object? state)
     {
         _ = Task.Run(async () =>

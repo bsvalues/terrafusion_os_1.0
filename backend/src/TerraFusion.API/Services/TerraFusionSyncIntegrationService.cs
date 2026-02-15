@@ -511,9 +511,17 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
             }
         };
 
+        // Phase 10: Fire-and-forget async init to avoid sync-over-async deadlocks
         foreach (var system in defaultSystems)
         {
-            RegisterLegacySystemAsync(system).GetAwaiter().GetResult();
+            _ = Task.Run(async () =>
+            {
+                try { await RegisterLegacySystemAsync(system); }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Failed to register legacy system {SystemId}", system.SystemId);
+                }
+            });
         }
     }
 
@@ -538,9 +546,17 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
             }
         };
 
+        // Phase 10: Fire-and-forget async init to avoid sync-over-async deadlocks
         foreach (var county in defaultCounties)
         {
-            ConfigureCountyAsync(county).GetAwaiter().GetResult();
+            _ = Task.Run(async () =>
+            {
+                try { await ConfigureCountyAsync(county); }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Failed to configure county {CountyName}", county.CountyName);
+                }
+            });
         }
     }
 }

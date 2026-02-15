@@ -1522,7 +1522,17 @@ namespace TerraFusion.API.Services
           if (finalLogs.Count > 0)
           {
             _logger.LogInformation("🚀 Processing {Count} final audit logs during shutdown", finalLogs.Count);
-            WriteBatchAuditLogs(finalLogs).GetAwaiter().GetResult();
+            // Phase 10: Use Task.Run to avoid sync-over-async deadlock during disposal.
+            // Disposal path cannot use await, so fire-and-forget with timeout is safest.
+            try
+            {
+              Task.Run(async () => await WriteBatchAuditLogs(finalLogs))
+                  .Wait(TimeSpan.FromSeconds(10));
+            }
+            catch (Exception ex)
+            {
+              _logger.LogWarning(ex, "Failed to flush {Count} audit logs during shutdown", finalLogs.Count);
+            }
           }
 
           // Dispose TIER 3 resources
