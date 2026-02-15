@@ -139,7 +139,7 @@ namespace TerraFusion.API.Services
                     ValidateAudience = true,
                     ValidAudience = _audience,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1) // Allow 1 minute clock skew
+                    ClockSkew = TimeSpan.Zero
                 };
 
                 var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);

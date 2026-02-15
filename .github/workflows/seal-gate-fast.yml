@@ -246,7 +246,12 @@ jobs:
           dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
             -c Release \
             --no-build \
-            --filter "FullyQualifiedName~SecurityTodoGateTests|FullyQualifiedName~AuthenticationRateLimitTests|FullyQualifiedName~AuditCorrelationTests|FullyQualifiedName~JwtTokenServiceSecurityTests" \
+            --filter "FullyQualifiedName~SecurityTodoGateTests|FullyQualifiedName~JwtTokenServiceSecurityTests" \
+            -v:minimal
+          dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj \
+            -c Release \
+            --no-build \
+            --filter "FullyQualifiedName~AuthenticationRateLimitTests|FullyQualifiedName~AuditCorrelationTests" \
             -v:minimal
 
   # ═══════════════════════════════════════════════════════════════════════════
