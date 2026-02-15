@@ -143,6 +143,14 @@ jobs:
             echo "⚠️ No performance plan (may be empty run)"
           fi
 
+      - name: Ensure apply proofs artifact exists
+        run: |
+          mkdir -p "${{ env.OUT_DIR }}"
+          if [ ! -f "${{ env.OUT_DIR }}/apply-proofs.json" ]; then
+            echo "[]" > "${{ env.OUT_DIR }}/apply-proofs.json"
+            echo "ℹ️ Created fallback apply-proofs.json for deterministic bundling"
+          fi
+
       - name: Generate CIO Dashboard
         run: |
           echo "📊 Generating County CIO Dashboard..."
