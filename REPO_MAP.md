@@ -12,6 +12,7 @@
 | `docker/` | Additional Dockerfiles |
 | `docs/` | Specs, governance locks, architecture docs |
 | `frontend/` | React 18 + Vite (OS Shell) |
+| `grafana/` | Grafana dashboards, provisioning, and observability assets |
 | `golden/` | Golden corpus reference data |
 | `native-shell/` | Electron / WPF desktop shell + frontend build output |
 | `ops/` | Operations: prod compose, proxy config, dev tooling |
@@ -23,8 +24,8 @@
 
 ## Entropy Cap
 
-- **Max top-level dirs**: 20 (current: 16)
-- **Max root files**: 40 (current: 29)
+- **Max top-level dirs**: 20 (current: 17)
+- **Max root files**: 40 (current: 30)
 - **Guard**: `node scripts/repo-shape-guard.mjs`
 
 New top-level directories require justification and updating the guard caps.
