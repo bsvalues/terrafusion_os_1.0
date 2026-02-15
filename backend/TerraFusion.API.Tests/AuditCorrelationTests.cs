@@ -58,6 +58,54 @@ public sealed class AuditCorrelationTests
         doc.RootElement.GetProperty("Details").GetString().Should().Contain("successful");
     }
 
+    [Fact]
+    public async Task AuthorizationDenied_EmitsAudit_WithCorrelationId()
+    {
+        var (auditLogger, provider, correlationId) = BuildAuditLogger();
+
+        await auditLogger.LogAuthorizationAsync("user-authz-denied", "api/secure-resource", granted: false);
+
+        using var scope = provider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<TerraFusionDbContext>();
+        var log = await db.AuditLogs
+            .OrderByDescending(x => x.Timestamp)
+            .FirstOrDefaultAsync(x => x.UserId == "user-authz-denied");
+
+        log.Should().NotBeNull();
+        log!.Type.Should().StartWith("Authorization:");
+        log.CorrelationId.Should().Be(correlationId);
+
+        using var doc = JsonDocument.Parse(log.Data);
+        doc.RootElement.GetProperty("Details").GetString().Should().Contain("denied");
+    }
+
+    [Fact]
+    public async Task ConfigurationChange_EmitsAudit_WithCorrelationId()
+    {
+        var (auditLogger, provider, correlationId) = BuildAuditLogger();
+
+        await auditLogger.LogConfigurationChangeAsync(
+            setting: "Privileges:RoleAssignment",
+            oldValue: "Assessor",
+            newValue: "CountyAdmin",
+            userId: "user-config-change");
+
+        using var scope = provider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<TerraFusionDbContext>();
+        var log = await db.AuditLogs
+            .OrderByDescending(x => x.Timestamp)
+            .FirstOrDefaultAsync(x => x.UserId == "user-config-change");
+
+        log.Should().NotBeNull();
+        log!.Type.Should().StartWith("ConfigurationChange:");
+        log.CorrelationId.Should().Be(correlationId);
+
+        using var doc = JsonDocument.Parse(log.Data);
+        doc.RootElement.GetProperty("Details").GetString().Should().Contain("Configuration changed");
+        doc.RootElement.GetProperty("OldValue").GetString().Should().Be("Assessor");
+        doc.RootElement.GetProperty("NewValue").GetString().Should().Be("CountyAdmin");
+    }
+
     private static (AuditLogger AuditLogger, ServiceProvider Provider, string CorrelationId) BuildAuditLogger()
     {
         var correlationId = $"corr-{Guid.NewGuid():N}";

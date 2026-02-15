@@ -52,18 +52,24 @@ public sealed class AuthenticationRateLimitTests : IClassFixture<ApiWebAppFactor
 
         using var client = configuredFactory.CreateClient();
 
-        var request = new LoginRequest
+        var baselineResponse = await client.PostAsJsonAsync("/api/auth/login", new LoginRequest
         {
-            // Intentionally invalid format to keep execution on model validation path
-            // and avoid auth service dependencies masking rate-limit behavior.
-            Email = "invalid-email",
-            Password = "TestPassword123!"
-        };
+            Email = "baseline@gov.",
+            Password = "BaselinePassword123!"
+        });
+
+        baselineResponse.StatusCode.Should().Be(HttpStatusCode.OK,
+            "normal auth traffic should preserve expected login semantics");
 
         var statuses = new List<HttpStatusCode>();
 
         for (var i = 0; i < 40; i++)
         {
+            var request = new LoginRequest
+            {
+                Email = $"burst-{i}@gov.",
+                Password = "BurstPassword123!"
+            };
             var response = await client.PostAsJsonAsync("/api/auth/login", request);
             statuses.Add(response.StatusCode);
         }
@@ -76,5 +82,27 @@ public sealed class AuthenticationRateLimitTests : IClassFixture<ApiWebAppFactor
 
         statuses.Should().Contain(HttpStatusCode.TooManyRequests,
             "auth login endpoint must enforce burst throttling and return HTTP 429");
+
+        statuses.Should().Contain(HttpStatusCode.OK,
+            "rate limiting should throttle bursts without breaking normal successful auth outcomes");
+    }
+
+    [Fact]
+    public async Task NonAuthEndpoint_Burst_DoesNotReturn429()
+    {
+        using var client = _factory.CreateClient();
+
+        var statuses = new List<HttpStatusCode>();
+        for (var i = 0; i < 40; i++)
+        {
+            var response = await client.GetAsync("/healthz");
+            statuses.Add(response.StatusCode);
+        }
+
+        statuses.Should().NotContain(HttpStatusCode.NotFound,
+            "health endpoint must exist and remain routable during throttling validation");
+
+        statuses.Should().NotContain(HttpStatusCode.TooManyRequests,
+            "ApiPolicy is scoped to auth endpoints and must not throttle non-auth health probes");
     }
 }
