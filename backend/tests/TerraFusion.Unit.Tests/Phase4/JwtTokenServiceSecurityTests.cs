@@ -142,4 +142,30 @@ public sealed class JwtTokenServiceSecurityTests
         // Strict validation target for Phase 4: recently expired tokens are rejected.
         result.Should().BeNull();
     }
+
+    [Fact]
+    public void ValidateToken_NotBeforeInFuture_ReturnsInvalid()
+    {
+        var sut = CreateSut();
+        var token = BuildToken(
+            issuer: ExpectedIssuer,
+            audience: ExpectedAudience,
+            signingSecret: ValidSecret,
+            expiresUtc: DateTime.UtcNow.AddMinutes(10),
+            notBeforeUtc: DateTime.UtcNow.AddMinutes(2));
+
+        var result = sut.ValidateToken(token);
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public void ValidateToken_MalformedToken_ReturnsInvalid()
+    {
+        var sut = CreateSut();
+
+        var result = sut.ValidateToken("not-a-jwt");
+
+        result.Should().BeNull();
+    }
 }
