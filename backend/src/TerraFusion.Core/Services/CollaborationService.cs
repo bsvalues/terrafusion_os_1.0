@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Text.Json;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
@@ -15,6 +16,10 @@ namespace TerraFusion.Core.Services
         private readonly ITerraFusionDbContext _context;
         private readonly ILogger<CollaborationService> _logger;
         private readonly IPermissionService _permissionService;
+
+        // Phase 6: In-memory session store (thread-safe, matches CollaborationHub pattern)
+        private static readonly ConcurrentDictionary<string, CollaborationSessionDto> _sessions = new();
+        private static readonly ConcurrentDictionary<string, List<ChatMessageDto>> _sessionMessages = new();
 
         public CollaborationService(
             ITerraFusionDbContext context,
@@ -1393,47 +1398,149 @@ namespace TerraFusion.Core.Services
 
         #endregion
 
-        #region Session Management - Placeholder implementations
+        #region Session Management - Phase 6: In-memory ConcurrentDictionary implementation
 
         public async Task<CollaborationSessionDto> StartSessionAsync(CreateSessionDto createSessionDto, string hostId)
         {
-            // Placeholder implementation - would integrate with SignalR for real-time functionality
-            throw new NotImplementedException("Session management requires SignalR integration");
+            var sessionId = Guid.NewGuid().ToString("N")[..12];
+            var session = new CollaborationSessionDto
+            {
+                Id = sessionId,
+                ProjectId = createSessionDto.ProjectId,
+                Type = createSessionDto.Type,
+                StartTime = DateTime.UtcNow,
+                Status = SessionStatus.Active,
+                Participants = new List<SessionParticipantDto>
+                {
+                    new SessionParticipantDto
+                    {
+                        User = new CollaborationUserDto { Id = hostId, UserId = hostId, Name = hostId },
+                        JoinTime = DateTime.UtcNow,
+                        Role = SessionRole.Host,
+                        IsPresenting = false,
+                        IsMuted = false,
+                        HasVideo = false
+                    }
+                },
+                Chat = new List<ChatMessageDto>(),
+                Recordings = new List<SessionRecordingDto>()
+            };
+
+            _sessions[sessionId] = session;
+            _sessionMessages[sessionId] = new List<ChatMessageDto>();
+            _logger.LogInformation("Session {SessionId} started for project {ProjectId} by host {HostId}",
+                sessionId, createSessionDto.ProjectId, hostId);
+            return session;
         }
 
         public async Task<CollaborationSessionDto?> GetSessionAsync(string sessionId)
         {
-            throw new NotImplementedException("Session management requires SignalR integration");
+            _sessions.TryGetValue(sessionId, out var session);
+            return session;
         }
 
         public async Task<List<CollaborationSessionDto>> GetProjectSessionsAsync(string projectId)
         {
-            throw new NotImplementedException("Session management requires SignalR integration");
+            return _sessions.Values
+                .Where(s => s.ProjectId == projectId)
+                .OrderByDescending(s => s.StartTime)
+                .ToList();
         }
 
         public async Task<bool> EndSessionAsync(string sessionId)
         {
-            throw new NotImplementedException("Session management requires SignalR integration");
+            if (!_sessions.TryGetValue(sessionId, out var session))
+                return false;
+
+            session.Status = SessionStatus.Ended;
+            session.EndTime = DateTime.UtcNow;
+            _logger.LogInformation("Session {SessionId} ended", sessionId);
+            return true;
         }
 
         public async Task<bool> JoinSessionAsync(string sessionId, string userId, SessionRole role)
         {
-            throw new NotImplementedException("Session management requires SignalR integration");
+            if (!_sessions.TryGetValue(sessionId, out var session))
+                return false;
+
+            if (session.Status != SessionStatus.Active)
+                return false;
+
+            // Prevent duplicate joins
+            if (session.Participants.Any(p => p.User.UserId == userId && p.LeaveTime == null))
+                return true;
+
+            session.Participants.Add(new SessionParticipantDto
+            {
+                User = new CollaborationUserDto { Id = userId, UserId = userId, Name = userId },
+                JoinTime = DateTime.UtcNow,
+                Role = role,
+                IsPresenting = false,
+                IsMuted = false,
+                HasVideo = false
+            });
+
+            _logger.LogInformation("User {UserId} joined session {SessionId} as {Role}",
+                userId, sessionId, role);
+            return true;
         }
 
         public async Task<bool> LeaveSessionAsync(string sessionId, string userId)
         {
-            throw new NotImplementedException("Session management requires SignalR integration");
+            if (!_sessions.TryGetValue(sessionId, out var session))
+                return false;
+
+            var participant = session.Participants
+                .FirstOrDefault(p => p.User.UserId == userId && p.LeaveTime == null);
+
+            if (participant == null)
+                return false;
+
+            participant.LeaveTime = DateTime.UtcNow;
+            _logger.LogInformation("User {UserId} left session {SessionId}", userId, sessionId);
+            return true;
         }
 
         public async Task<List<ChatMessageDto>> GetSessionMessagesAsync(string sessionId)
         {
-            throw new NotImplementedException("Session management requires SignalR integration");
+            if (_sessionMessages.TryGetValue(sessionId, out var messages))
+                return messages.ToList();
+
+            return new List<ChatMessageDto>();
         }
 
         public async Task<ChatMessageDto> SendSessionMessageAsync(SendMessageDto sendMessageDto, string senderId)
         {
-            throw new NotImplementedException("Session management requires SignalR integration");
+            var message = new ChatMessageDto
+            {
+                Id = Guid.NewGuid().ToString("N")[..12],
+                SessionId = sendMessageDto.SessionId,
+                User = new CollaborationUserDto { Id = senderId, UserId = senderId, Name = senderId },
+                Content = sendMessageDto.Content,
+                Type = sendMessageDto.Type,
+                Timestamp = DateTime.UtcNow,
+                Mentions = sendMessageDto.Mentions ?? new List<string>(),
+                Reactions = new List<MessageReactionDto>(),
+                Attachments = new List<MessageAttachmentDto>()
+            };
+
+            _sessionMessages.AddOrUpdate(
+                sendMessageDto.SessionId,
+                new List<ChatMessageDto> { message },
+                (_, existing) => { existing.Add(message); return existing; });
+
+            _logger.LogInformation("Message {MessageId} sent in session {SessionId} by {SenderId}",
+                message.Id, sendMessageDto.SessionId, senderId);
+            return message;
+        }
+
+        /// <summary>
+        /// Clears all in-memory session data. Used for testing only.
+        /// </summary>
+        public static void ClearAllSessions()
+        {
+            _sessions.Clear();
+            _sessionMessages.Clear();
         }
 
         #endregion

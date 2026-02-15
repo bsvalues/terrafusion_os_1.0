@@ -38,7 +38,7 @@ RUN npx vite build --outDir /app/dist
 RUN test -f /app/dist/index.html || (echo 'ERROR: /app/dist/index.html missing after build' && exit 1)
 
 # Stage 2: Runtime (nginx)
-FROM nginx:alpine AS production
+FROM nginx:1.27-alpine AS production
 WORKDIR /usr/share/nginx/html
 
 # Remove default nginx content
