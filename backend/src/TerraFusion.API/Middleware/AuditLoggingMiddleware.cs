@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using TerraFusion.Abstractions.Interfaces;
 
 namespace TerraFusion.API.Middleware
@@ -120,8 +121,13 @@ namespace TerraFusion.API.Middleware
                     new Exception(details),
                     context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
             }
-            catch
+            catch (Exception ex)
             {
+                // Phase 9: FISMA-HIGH requires audit failures are never silently discarded.
+                // Use a static logger since middleware doesn't have constructor-injected ILogger.
+                var logger = context.RequestServices.GetService<ILogger<AuditLoggingMiddleware>>();
+                logger?.LogWarning(ex, "Audit log error-detail write failed for {Method} {Path}",
+                    context.Request.Method, context.Request.Path);
             }
         }
     }

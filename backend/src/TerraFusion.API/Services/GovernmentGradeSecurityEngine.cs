@@ -1072,59 +1072,72 @@ public class GovernmentGradeSecurityEngine : BackgroundService, IGovernmentGrade
             RotationIntervalHours = 24,
             FallbackToClassicalEncryption = true
         };
-    }    // Missing execution methods
+    }    // Phase 9: Replaced sync-over-async (.GetAwaiter().GetResult()) with
+    // Task.Run + async lambda to avoid thread-pool deadlocks under load.
     private void ExecuteComplianceMonitoring(object? state)
     {
-        try
+        _ = Task.Run(async () =>
         {
-            var complianceResult = ValidateFISMAHighComplianceAsync().GetAwaiter().GetResult();
-            dynamic complianceDyn = complianceResult;
-            bool isCompliant = (bool)(complianceDyn.IsCompliant ?? true);
-            _logger.LogInformation("🔍 Compliance monitoring executed: {IsCompliant}", isCompliant);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Error during compliance monitoring execution");
-        }
+            try
+            {
+                var complianceResult = await ValidateFISMAHighComplianceAsync();
+                dynamic complianceDyn = complianceResult;
+                bool isCompliant = (bool)(complianceDyn.IsCompliant ?? true);
+                _logger.LogInformation("🔍 Compliance monitoring executed: {IsCompliant}", isCompliant);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Error during compliance monitoring execution");
+            }
+        });
     }
 
     private void ExecuteThreatAnalysis(object? state)
     {
-        try
+        _ = Task.Run(async () =>
         {
-            var threatResult = AnalyzeSecurityThreatsAsync().GetAwaiter().GetResult();
-            _logger.LogInformation("🛡️ Threat analysis executed: {ThreatLevel}", threatResult.ThreatLevel);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Error during threat analysis execution");
-        }
+            try
+            {
+                var threatResult = await AnalyzeSecurityThreatsAsync();
+                _logger.LogInformation("🛡️ Threat analysis executed: {ThreatLevel}", threatResult.ThreatLevel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Error during threat analysis execution");
+            }
+        });
     }
 
     private void ExecuteSecurityAssessment(object? state)
     {
-        try
+        _ = Task.Run(async () =>
         {
-            var assessmentResult = PerformComprehensiveSecurityAssessmentAsync().GetAwaiter().GetResult();
-            _logger.LogInformation("🔒 Security assessment executed: Score {Score}", assessmentResult.OverallSecurityScore);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Error during security assessment execution");
-        }
+            try
+            {
+                var assessmentResult = await PerformComprehensiveSecurityAssessmentAsync();
+                _logger.LogInformation("🔒 Security assessment executed: Score {Score}", assessmentResult.OverallSecurityScore);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Error during security assessment execution");
+            }
+        });
     }
 
     private void ExecuteAuditReporting(object? state)
     {
-        try
+        _ = Task.Run(async () =>
         {
-            var reportResult = GenerateComplianceReportAsync().GetAwaiter().GetResult();
-            _logger.LogInformation("📊 Audit reporting executed: Success={ReportSuccess}, Score={ComplianceScore}", reportResult.Success, reportResult.OverallComplianceScore);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Error during audit reporting execution");
-        }
+            try
+            {
+                var reportResult = await GenerateComplianceReportAsync();
+                _logger.LogInformation("📊 Audit reporting executed: Success={ReportSuccess}, Score={ComplianceScore}", reportResult.Success, reportResult.OverallComplianceScore);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Error during audit reporting execution");
+            }
+        });
     }
 
     // Additional helper methods implementation

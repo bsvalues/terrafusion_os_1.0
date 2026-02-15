@@ -18,10 +18,18 @@ namespace TerraFusion.API.Security
 
     public class JwtAuthService : IJwtAuthService
     {
+        /// <summary>
+        /// Sentinel prefix used to detect when no JwtSettings:SecretKey is configured.
+        /// Phase 9: Fixed — previously GenerateDefaultKey() used Guid.NewGuid() making
+        /// the equality check always false (warning never fired).
+        /// </summary>
+        private const string DefaultKeyPrefix = "TerraFusion-Default-Key-CHANGE-IN-PRODUCTION-";
+
         private readonly IConfiguration _configuration;
         private readonly string _issuer;
         private readonly string _audience;
         private readonly string _secretKey;
+        private readonly bool _usingDefaultKey;
         private readonly int _expirationMinutes;
 
         public JwtAuthService(IConfiguration configuration)
@@ -29,18 +37,22 @@ namespace TerraFusion.API.Security
             _configuration = configuration;
             _issuer = _configuration["JwtSettings:Issuer"] ?? "TerraFusion";
             _audience = _configuration["JwtSettings:Audience"] ?? "TerraFusionAPI";
-            _secretKey = _configuration["JwtSettings:SecretKey"] ?? GenerateDefaultKey();
+
+            var configuredKey = _configuration["JwtSettings:SecretKey"];
+            _usingDefaultKey = string.IsNullOrEmpty(configuredKey);
+            _secretKey = configuredKey ?? GenerateDefaultKey();
             _expirationMinutes = int.Parse(_configuration["JwtSettings:ExpirationMinutes"] ?? "60");
 
-            if (_secretKey == GenerateDefaultKey())
+            if (_usingDefaultKey)
             {
-                Console.WriteLine("⚠️  WARNING: Using default JWT key. Set JwtSettings:SecretKey in appsettings.json for production!");
+                Console.WriteLine("⚠️  WARNING: No JwtSettings:SecretKey configured — using a random default key. " +
+                    "Tokens will NOT survive app restarts. Set JwtSettings:SecretKey in appsettings.json for production!");
             }
         }
 
-        private string GenerateDefaultKey()
+        private static string GenerateDefaultKey()
         {
-            return "TerraFusion-Default-Key-CHANGE-IN-PRODUCTION-" + Guid.NewGuid().ToString();
+            return DefaultKeyPrefix + Guid.NewGuid().ToString();
         }
 
         public string GenerateToken(string userId, string email, IEnumerable<string> roles)
