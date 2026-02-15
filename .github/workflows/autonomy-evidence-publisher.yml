@@ -277,7 +277,7 @@ jobs:
 
           # Phase 4N20: Include SHA for identity pinning
           npx tsx tools/registry/autonomy-viewer/src/evidence-index.ts \
-            --out ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
+            --out ${{ env.VIEWER_DIR }} \
             --artifacts ${{ env.OUT_DIR }} \
             --bundle "${{ steps.bundle.outputs.bundle_name }}" \
             --manifest-sha "${{ steps.bundle.outputs.manifest_sha }}" \
