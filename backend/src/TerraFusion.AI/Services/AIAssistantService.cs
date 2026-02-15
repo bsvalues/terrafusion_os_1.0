@@ -150,9 +150,22 @@ namespace TerraFusion.AI.Services
         public async Task<PropertyAnalysisResult> AnalyzePropertyAsync(string parcelId, string countyId)
         {
             await Task.CompletedTask;
-            await Task.CompletedTask;
-            // TODO: Fix type conversions - parcelId to decimal, comparables to dynamic
-            throw new NotImplementedException("AnalyzePropertyAsync requires type conversion fixes for parcelId and comparables parameters");
+            // Phase 8: Return degraded result instead of crashing at runtime.
+            // TODO: Fix type conversions — parcelId to decimal, comparables to dynamic
+            _logger.LogWarning("AnalyzePropertyAsync({ParcelId}, {CountyId}) — returning stub result; type conversion not yet implemented", parcelId, countyId);
+            return new PropertyAnalysisResult
+            {
+                ParcelId = parcelId,
+                CountyId = countyId,
+                ValuationConfidence = 0,
+                MarketTrend = "unavailable",
+                ComplianceStatus = "pending",
+                AIRecommendations = new List<string> { "AI property analysis not yet available — type conversion pending" },
+                ComparablesCount = 0,
+                AccuracyScore = 0,
+                QuantumOptimized = false,
+                AnalysisTimestamp = DateTime.UtcNow
+            };
 
             // _logger.LogInformation("AI analyzing property {ParcelId} for {CountyId}", parcelId, countyId);
             //

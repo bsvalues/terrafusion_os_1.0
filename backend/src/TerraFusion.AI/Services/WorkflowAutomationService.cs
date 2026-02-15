@@ -356,7 +356,8 @@ namespace TerraFusion.AI.Services
                     "DataIsolationHandler" => await ValidateDataIsolationAsync(countyId),
                     "AuditTrailHandler" => await ReviewAuditTrailsAsync(countyId),
                     "ComplianceReportHandler" => await GenerateComplianceReportAsync(countyId),
-                    _ => throw new NotImplementedException($"Handler {step.Handler} not implemented")
+                    // Phase 8: Log unknown handler instead of crashing the workflow pipeline
+                    _ => new { Status = "skipped", Reason = $"Handler '{step.Handler}' is not yet implemented" }
                 };
 
                 var stepEnd = DateTime.UtcNow;
