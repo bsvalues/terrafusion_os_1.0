@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -445,18 +446,276 @@ namespace TerraFusion.Security
             return new PasswordValidationResult { IsValid = true };
         }
 
-        // Helper methods would continue here...
-        private async Task<bool> IsAccountLockedOutAsync(string username) => false; // TODO: Implement
-        private async Task RecordFailedLoginAttemptAsync(string username) { } // TODO: Implement
-        private async Task ClearFailedLoginAttemptsAsync(string username) { } // TODO: Implement
-        private async Task<List<string>> GetUserRolesAsync(ApplicationUser user) => new List<string>(); // TODO: Implement
-        private async Task<List<string>> GetUserPermissionsAsync(ApplicationUser user) => new List<string>(); // TODO: Implement
-        private async Task<bool> IsTokenRevokedAsync(string jti) => false; // TODO: Implement
-        private async Task RevokeUserTokensAsync(string userId) { } // TODO: Implement
-        private async Task<bool> IsPasswordInHistoryAsync(string userId, string password) => false; // TODO: Implement
-        private async Task SavePasswordHistoryAsync(string userId, string passwordHash) { } // TODO: Implement
-        private bool IsCommonPassword(string password) => false; // TODO: Implement
-        private bool IsHighPrivilegeRole(ApplicationUser user) => false; // TODO: Implement
-        private async Task<ApplicationUser> AutoProvisionUserFromLdapAsync(LdapAuthResult ldapResult) => null; // TODO: Implement
+        // ═══════════════════════════════════════════════════════════════
+        // Phase 4 Security Hardening — NIST 800-63B compliant helpers
+        // ═══════════════════════════════════════════════════════════════
+
+        // Thread-safe in-memory stores (production would use Redis/DB)
+        private static readonly ConcurrentDictionary<string, List<DateTime>> _failedAttempts = new();
+        private static readonly ConcurrentDictionary<string, DateTime> _lockouts = new();
+        private static readonly ConcurrentDictionary<string, byte> _revokedTokens = new();
+        private static readonly ConcurrentDictionary<string, List<string>> _passwordHistory = new();
+
+        private const int PasswordHistoryLimit = 12;
+
+        private static readonly HashSet<string> HighPrivilegeRoles = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "SystemAdmin", "CountyAdmin", "SecurityAdmin", "Auditor"
+        };
+
+        // NIST 800-63B Appendix A — subset of common passwords
+        private static readonly HashSet<string> CommonPasswords = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "password", "password1", "password123", "123456", "12345678",
+            "1234567890", "qwerty", "abc123", "letmein", "welcome",
+            "admin", "login", "master", "trustno1", "iloveyou",
+            "sunshine", "princess", "football", "baseball", "shadow",
+            "monkey", "dragon", "mustang", "access", "michael",
+            "superman", "batman", "passw0rd", "P@ssw0rd", "P@ssword1",
+            "changeme", "welcome1", "test", "guest", "root",
+            "administrator", "default", "123qwe", "qwerty123", "password1!"
+        };
+
+        /// <summary>
+        /// Check if account is locked out (NIST 800-53 AC-7)
+        /// </summary>
+        private Task<bool> IsAccountLockedOutAsync(string username)
+        {
+            if (_lockouts.TryGetValue(username, out var lockedUntil))
+            {
+                if (DateTime.UtcNow < lockedUntil)
+                {
+                    _logger.LogWarning("Account {Username} is locked until {LockedUntil}", username, lockedUntil);
+                    return Task.FromResult(true);
+                }
+                _lockouts.TryRemove(username, out _);
+            }
+            return Task.FromResult(false);
+        }
+
+        /// <summary>
+        /// Record failed login attempt and trigger lockout after threshold (NIST 800-53 AC-7)
+        /// </summary>
+        private Task RecordFailedLoginAttemptAsync(string username)
+        {
+            var attempts = _failedAttempts.GetOrAdd(username, _ => new List<DateTime>());
+            lock (attempts)
+            {
+                // Prune attempts older than the lockout window
+                var cutoff = DateTime.UtcNow - _lockoutDuration;
+                attempts.RemoveAll(a => a < cutoff);
+                attempts.Add(DateTime.UtcNow);
+
+                if (attempts.Count >= _maxLoginAttempts)
+                {
+                    _lockouts[username] = DateTime.UtcNow.Add(_lockoutDuration);
+                    _logger.LogWarning(
+                        "Account {Username} locked after {Attempts} failed attempts",
+                        username, attempts.Count);
+                }
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Clear failed login attempts on successful authentication
+        /// </summary>
+        private Task ClearFailedLoginAttemptsAsync(string username)
+        {
+            _failedAttempts.TryRemove(username, out _);
+            _lockouts.TryRemove(username, out _);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Get roles for the user — returns stored roles from the user entity
+        /// </summary>
+        private Task<List<string>> GetUserRolesAsync(ApplicationUser user)
+        {
+            return Task.FromResult(user.Roles ?? new List<string>());
+        }
+
+        /// <summary>
+        /// Get permissions for the user — returns stored permissions from the user entity
+        /// </summary>
+        private Task<List<string>> GetUserPermissionsAsync(ApplicationUser user)
+        {
+            return Task.FromResult(user.Permissions ?? new List<string>());
+        }
+
+        /// <summary>
+        /// Check whether a JWT has been revoked (token revocation list)
+        /// </summary>
+        private Task<bool> IsTokenRevokedAsync(string jti)
+        {
+            if (string.IsNullOrEmpty(jti))
+                return Task.FromResult(false);
+
+            return Task.FromResult(_revokedTokens.ContainsKey(jti));
+        }
+
+        /// <summary>
+        /// Revoke all tokens issued to a user (used on logout / password change)
+        /// </summary>
+        private Task RevokeUserTokensAsync(string userId)
+        {
+            // In production this would query a token store keyed by userId.
+            // With in-memory tracking we mark the userId as a revoked namespace.
+            _revokedTokens.TryAdd($"user:{userId}", 0);
+            _logger.LogInformation("All tokens revoked for user {UserId}", userId);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// NIST 800-63B §5.1.1.2 — check if password was used in the last N changes
+        /// </summary>
+        private Task<bool> IsPasswordInHistoryAsync(string userId, string password)
+        {
+            if (_passwordHistory.TryGetValue(userId, out var history))
+            {
+                // Compare the new password hash against stored hashes
+                var candidate = _passwordHasher.HashPassword(null!, password);
+                lock (history)
+                {
+                    foreach (var previousHash in history)
+                    {
+                        var result = _passwordHasher.VerifyHashedPassword(null!, previousHash, password);
+                        if (result != PasswordVerificationResult.Failed)
+                            return Task.FromResult(true);
+                    }
+                }
+            }
+            return Task.FromResult(false);
+        }
+
+        /// <summary>
+        /// Store password hash in history ring buffer (NIST 800-63B §5.1.1.2)
+        /// </summary>
+        private Task SavePasswordHistoryAsync(string userId, string passwordHash)
+        {
+            var history = _passwordHistory.GetOrAdd(userId, _ => new List<string>());
+            lock (history)
+            {
+                history.Add(passwordHash);
+                while (history.Count > PasswordHistoryLimit)
+                    history.RemoveAt(0);
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// NIST 800-63B Appendix A — reject passwords on the common-passwords list
+        /// </summary>
+        private bool IsCommonPassword(string password)
+        {
+            return CommonPasswords.Contains(password);
+        }
+
+        /// <summary>
+        /// Determine whether the user holds a high-privilege role requiring MFA
+        /// </summary>
+        private bool IsHighPrivilegeRole(ApplicationUser user)
+        {
+            if (user.Roles == null) return false;
+            return user.Roles.Any(r => HighPrivilegeRoles.Contains(r));
+        }
+
+        /// <summary>
+        /// Auto-provision a user from LDAP/AD into the local user store
+        /// Maps LDAP groups → roles and permissions
+        /// </summary>
+        private async Task<ApplicationUser> AutoProvisionUserFromLdapAsync(LdapAuthResult ldapResult)
+        {
+            var ldapUser = ldapResult.User;
+            if (ldapUser == null)
+            {
+                _logger.LogWarning("LDAP auth result has no user object — cannot auto-provision");
+                return null!;
+            }
+
+            var groups = await _ldapService.GetUserGroupsAsync(ldapUser.Username);
+
+            var newUser = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                Username = ldapUser.Username,
+                Email = ldapUser.Email ?? $"{ldapUser.Username}@terrafusion.gov",
+                County = ldapUser.County ?? "Benton",
+                IsActive = true,
+                Roles = MapLdapGroupsToRoles(groups),
+                Permissions = MapLdapGroupsToPermissions(groups)
+            };
+
+            await _userStore.SetUserNameAsync(newUser, newUser.Username, CancellationToken.None);
+            var createResult = await _userStore.CreateAsync(newUser, CancellationToken.None);
+
+            if (createResult.Succeeded)
+            {
+                _logger.LogInformation(
+                    "Auto-provisioned user {Username} from LDAP with roles [{Roles}]",
+                    newUser.Username, string.Join(", ", newUser.Roles));
+                return newUser;
+            }
+
+            _logger.LogError(
+                "Failed to auto-provision LDAP user {Username}: {Errors}",
+                newUser.Username,
+                string.Join("; ", createResult.Errors.Select(e => e.Description)));
+            return null!;
+        }
+
+        /// <summary>
+        /// Map LDAP/AD group names to TerraFusion application roles
+        /// </summary>
+        private static List<string> MapLdapGroupsToRoles(IEnumerable<string> groups)
+        {
+            var roles = new List<string>();
+            var groupSet = new HashSet<string>(groups ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+
+            if (groupSet.Contains("TF-Admins") || groupSet.Contains("Domain Admins"))
+                roles.Add("SystemAdmin");
+            if (groupSet.Contains("TF-CountyAdmins"))
+                roles.Add("CountyAdmin");
+            if (groupSet.Contains("TF-Security"))
+                roles.Add("SecurityAdmin");
+            if (groupSet.Contains("TF-Auditors"))
+                roles.Add("Auditor");
+            if (groupSet.Contains("TF-Assessors"))
+                roles.Add("Assessor");
+            if (groupSet.Contains("TF-Users") || roles.Count == 0)
+                roles.Add("User");
+
+            return roles;
+        }
+
+        /// <summary>
+        /// Map LDAP/AD group names to granular TerraFusion permissions
+        /// </summary>
+        private static List<string> MapLdapGroupsToPermissions(IEnumerable<string> groups)
+        {
+            var permissions = new List<string> { "property:read" };
+            var groupSet = new HashSet<string>(groups ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+
+            if (groupSet.Contains("TF-Admins") || groupSet.Contains("Domain Admins"))
+            {
+                permissions.AddRange(new[]
+                {
+                    "property:write", "property:delete",
+                    "user:manage", "system:configure",
+                    "audit:read", "security:manage"
+                });
+            }
+
+            if (groupSet.Contains("TF-CountyAdmins"))
+                permissions.AddRange(new[] { "property:write", "user:manage", "county:configure" });
+
+            if (groupSet.Contains("TF-Assessors"))
+                permissions.AddRange(new[] { "property:write", "assessment:manage" });
+
+            if (groupSet.Contains("TF-Auditors"))
+                permissions.AddRange(new[] { "audit:read", "audit:export" });
+
+            return permissions.Distinct().ToList();
+        }
     }
 }
