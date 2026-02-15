@@ -25,7 +25,7 @@ public sealed class CIComplianceTests
     }
 
     [Fact]
-    public void SealGateWorkflow_EscapeHatchDate_IsFuture()
+    public void SealGateWorkflow_AllEscapeHatchDates_AreFuture()
     {
         // Arrange
         var workflowPath = Path.Combine(RepoRoot, ".github", "workflows", "seal-gate-fast.yml");
@@ -33,16 +33,19 @@ public sealed class CIComplianceTests
 
         var content = File.ReadAllText(workflowPath);
 
-        // Act — extract the cutoff date from the YAML
-        var match = Regex.Match(content, @"cutoff=""(\d{4}-\d{2}-\d{2})""");
-        match.Success.Should().BeTrue("workflow must contain a cutoff date");
+        // Act — extract ALL cutoff dates from the YAML
+        var matches = Regex.Matches(content, @"cutoff=""(\d{4}-\d{2}-\d{2})""");
+        matches.Count.Should().BeGreaterThan(0, "workflow must contain at least one escape hatch cutoff date");
 
-        var cutoff = DateOnly.Parse(match.Groups[1].Value);
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        // Assert
-        cutoff.Should().BeAfter(today,
-            "lint escape hatch cutoff must be in the future to avoid blocking CI");
+        // Assert — every cutoff date must be in the future
+        foreach (Match match in matches)
+        {
+            var cutoff = DateOnly.Parse(match.Groups[1].Value);
+            cutoff.Should().BeAfter(today,
+                $"escape hatch cutoff {cutoff} must be in the future to avoid blocking CI");
+        }
     }
 
     [Fact]
