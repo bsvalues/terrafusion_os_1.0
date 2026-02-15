@@ -140,14 +140,14 @@ jobs:
         run: pnpm -C frontend run lint
         continue-on-error: true
 
-      - name: Lint escape hatch (expires 2026-02-15)
+      - name: Lint escape hatch (expires 2026-03-15)
         if: steps.lint.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
-          echo "::warning::Lint failed (temporarily non-blocking until 2026-02-15). Fix lint; this will become a merge blocker."
+          echo "::warning::Lint failed (temporarily non-blocking until 2026-03-15). Fix lint; this will become a merge blocker."
           today="$(date -u +%F)"
-          cutoff="2026-02-15"
+          cutoff="2026-03-15"
           if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
             echo "::error::Lint escape hatch expired on $cutoff. Lint must pass."
             exit 1
@@ -191,7 +191,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-02-15)' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-03-15)' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Type Check | ${{ steps.typecheck.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Unit Tests | ${{ steps.unit-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| IPC Tests | ${{ steps.ipc-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

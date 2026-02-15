@@ -5,8 +5,9 @@ module.exports = {
     es2020: true,
     node: true,
   },
-  extends: ['eslint:recommended'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   ignorePatterns: ['dist', '.eslintrc.js', 'node_modules', 'components-enhanced', '**/*.test.*'],
+  plugins: ['@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
@@ -17,6 +18,13 @@ module.exports = {
   },
   rules: {
     'no-unused-vars': 'off', // Disabled for TypeScript (handled in upper workspace)
+    '@typescript-eslint/no-unused-vars': 'off', // Matches no-unused-vars
+    '@typescript-eslint/no-explicit-any': 'off', // Directive recognition only
+    '@typescript-eslint/no-var-requires': 'off', // Legacy requires in codebase
+    '@typescript-eslint/ban-ts-comment': 'off', // Legacy @ts-ignore usage
+    '@typescript-eslint/ban-types': 'off', // Legacy Function type usage
+    '@typescript-eslint/triple-slash-reference': 'off', // Vite env type refs
+    '@typescript-eslint/no-namespace': 'off', // Legacy namespace usage
     'prefer-const': 'warn',
     'no-console': 'off', // Temporarily disabled for cleanup
     'no-undef': 'off', // TypeScript handles this
