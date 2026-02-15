@@ -17,9 +17,10 @@ $ErrorActionPreference = "Stop"
 # ===== Configuration =====
 
 $REPO_ROOT = Split-Path -Parent $PSScriptRoot
-$COMPOSE_FILE = Join-Path $REPO_ROOT "docker-compose.yml"
+$COMPOSE_FILE = Join-Path $REPO_ROOT "compose\docker-compose.yml"
+$COMPOSE_FILE_MONITORING = Join-Path $REPO_ROOT "compose\docker-compose.monitoring.yml"
 
-$SERVICES = @("grafana", "prometheus", "terrafusion-api")
+$SERVICES = @("grafana", "prometheus", "backend")
 
 # ===== Helper Functions =====
 
@@ -79,10 +80,16 @@ try {
     exit 1
 }
 
-# Check if docker-compose file exists
+# Check if docker-compose files exist
 if (-not (Test-Path $COMPOSE_FILE)) {
     Write-Failure "docker-compose.yml not found at $COMPOSE_FILE"
     Write-Host "`nAction required: Ensure you're running from repository root"
+    exit 1
+}
+
+if (-not (Test-Path $COMPOSE_FILE_MONITORING)) {
+    Write-Failure "docker-compose.monitoring.yml not found at $COMPOSE_FILE_MONITORING"
+    Write-Host "`nAction required: Ensure monitoring compose file exists"
     exit 1
 }
 
@@ -108,15 +115,12 @@ if ($runningServices.Count -eq $SERVICES.Count -and -not $Force) {
 } elseif ($Force -and $runningServices.Count -gt 0) {
     Write-Step "Force restart requested, stopping services..."
     
-    Push-Location $REPO_ROOT
     try {
-        docker-compose stop $SERVICES -t 10 2>&1 | Out-Null
+        docker-compose -f $COMPOSE_FILE -f $COMPOSE_FILE_MONITORING stop $SERVICES -t 10 2>&1 | Out-Null
         Write-Success "Services stopped"
     } catch {
         Write-Failure "Failed to stop services: $_"
         exit 1
-    } finally {
-        Pop-Location
     }
     
     $stoppedServices = $SERVICES
@@ -128,9 +132,8 @@ if ($runningServices.Count -eq $SERVICES.Count -and -not $Force) {
 if ($stoppedServices.Count -gt 0) {
     Write-Step "Starting services: $($stoppedServices -join ', ')..."
     
-    Push-Location $REPO_ROOT
     try {
-        docker-compose up -d $stoppedServices 2>&1 | Out-Null
+        docker-compose -f $COMPOSE_FILE -f $COMPOSE_FILE_MONITORING up -d $stoppedServices 2>&1 | Out-Null
         
         if ($LASTEXITCODE -eq 0) {
             Write-Success "Services started (waiting ${WaitSeconds}s for ready state...)"
@@ -141,8 +144,6 @@ if ($stoppedServices.Count -gt 0) {
     } catch {
         Write-Failure "Error starting services: $_"
         exit 1
-    } finally {
-        Pop-Location
     }
     
     # Wait for services to be ready
@@ -189,7 +190,7 @@ if ($allHealthy) {
     Write-Host "⚠️  Some services are not healthy" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "Troubleshooting:"
-    Write-Host "  1. Check Docker logs: docker-compose logs grafana prometheus terrafusion-api"
+    Write-Host "  1. Check Docker logs: docker-compose -f compose\docker-compose.yml -f compose\docker-compose.monitoring.yml logs grafana prometheus backend"
     Write-Host "  2. Wait longer (services may still be initializing)"
     Write-Host "  3. Restart services: .\scripts\start-day1-services.ps1 -Force"
     Write-Host ""
