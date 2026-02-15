@@ -221,10 +221,34 @@ namespace TerraFusion.API.Services
                 }),
                 UserId = userId,
                 UserEmail = user?.Identity?.Name,
+                CorrelationId = GetCorrelationId(httpContext),
                 Timestamp = DateTime.UtcNow,
                 IpAddress = GetClientIpAddress(httpContext ?? new DefaultHttpContext()),
                 UserAgent = httpContext?.Request.Headers["User-Agent"].ToString()
             };
+        }
+
+        private static string GetCorrelationId(HttpContext? httpContext)
+        {
+            if (httpContext == null)
+            {
+                return $"corr-{Guid.NewGuid():N}";
+            }
+
+            if (httpContext.Request?.Headers != null &&
+                httpContext.Request.Headers.TryGetValue("X-Correlation-ID", out var values) &&
+                values.Count > 0 &&
+                !string.IsNullOrWhiteSpace(values[0]))
+            {
+                return values[0]!;
+            }
+
+            if (!string.IsNullOrWhiteSpace(httpContext.TraceIdentifier))
+            {
+                return httpContext.TraceIdentifier;
+            }
+
+            return $"corr-{Guid.NewGuid():N}";
         }
 
         private async System.Threading.Tasks.Task LogToDatabaseAsync(AuditLog auditLog)

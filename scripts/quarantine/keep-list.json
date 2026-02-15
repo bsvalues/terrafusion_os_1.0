@@ -19,6 +19,7 @@
     "ops",
     "os-platform",
     "packages",
+    "grafana",
     "scripts",
     "tests",
     "tools"
@@ -32,6 +33,7 @@
     "Makefile",
     "README.md",
     "REPO_MAP.md",
+    "SEALED.md",
     "STANDARD.md",
     "SUSTAINMENT.md",
     "TerraFusion.sln",

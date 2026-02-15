@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -511,9 +514,45 @@ namespace TerraFusion.Security
             // Write to local file system as fallback
         }
         
+        /// <summary>
+        /// Build parameterised WHERE clause for audit log queries (FISMA AU-6)
+        /// </summary>
         private string BuildWhereClause(AuditLogQuery query)
         {
-            return "1=1"; // TODO: Build dynamic WHERE clause
+            var clauses = new List<string> { "1=1" };
+
+            if (!string.IsNullOrWhiteSpace(query.EventType))
+                clauses.Add("event_type = @EventType");
+            if (!string.IsNullOrWhiteSpace(query.EventCategory))
+                clauses.Add("event_category = @EventCategory");
+            if (!string.IsNullOrWhiteSpace(query.UserId))
+                clauses.Add("user_id = @UserId");
+            if (!string.IsNullOrWhiteSpace(query.Username))
+                clauses.Add("username = @Username");
+            if (!string.IsNullOrWhiteSpace(query.IpAddress))
+                clauses.Add("ip_address = @IpAddress");
+            if (!string.IsNullOrWhiteSpace(query.SessionId))
+                clauses.Add("session_id = @SessionId");
+            if (!string.IsNullOrWhiteSpace(query.County))
+                clauses.Add("county = @County");
+            if (!string.IsNullOrWhiteSpace(query.ResourceType))
+                clauses.Add("resource_type = @ResourceType");
+            if (!string.IsNullOrWhiteSpace(query.ResourceId))
+                clauses.Add("resource_id = @ResourceId");
+            if (!string.IsNullOrWhiteSpace(query.Action))
+                clauses.Add("action = @Action");
+            if (!string.IsNullOrWhiteSpace(query.Outcome))
+                clauses.Add("outcome = @Outcome");
+            if (!string.IsNullOrWhiteSpace(query.CorrelationId))
+                clauses.Add("correlation_id = @CorrelationId");
+            if (query.StartDate.HasValue)
+                clauses.Add("timestamp >= @StartDate");
+            if (query.EndDate.HasValue)
+                clauses.Add("timestamp <= @EndDate");
+            if (query.MinSeverity.HasValue)
+                clauses.Add("severity >= @MinSeverity");
+
+            return string.Join(" AND ", clauses);
         }
         
         private async Task TriggerSecurityAlertAsync(SecurityViolationEvent violation)
@@ -521,14 +560,58 @@ namespace TerraFusion.Security
             // Send security alerts
         }
         
+        /// <summary>
+        /// Write audit logs to date-partitioned archive storage (FISMA AU-9, AU-11)
+        /// Uses atomic write (tmp → rename) to prevent partial archives
+        /// </summary>
         private async Task<string> WriteToArchiveStorageAsync(IEnumerable<AuditEvent> logs)
         {
-            return "archive://location"; // TODO: Implement archive storage
+            var archiveRoot = _configuration["AuditArchive:BasePath"] ?? "audit-archives";
+            var partition = DateTime.UtcNow.ToString("yyyy/MM/dd");
+            var archiveDir = Path.Combine(archiveRoot, partition);
+            Directory.CreateDirectory(archiveDir);
+
+            var archiveId = $"archive-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}";
+            var targetPath = Path.Combine(archiveDir, $"{archiveId}.json");
+            var tmpPath = targetPath + ".tmp";
+
+            var payload = new
+            {
+                ArchiveId = archiveId,
+                CreatedAt = DateTime.UtcNow,
+                RecordCount = logs.Count(),
+                IntegrityHash = CalculateArchiveHash(logs),
+                Records = logs
+            };
+
+            var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = false });
+            await File.WriteAllTextAsync(tmpPath, json);
+            File.Move(tmpPath, targetPath);
+
+            _logger.LogInformation(
+                "Archived {Count} audit records to {Path}",
+                logs.Count(), targetPath);
+
+            return $"archive://{partition}/{archiveId}";
         }
         
+        /// <summary>
+        /// Merkle-style chain hash over ordered audit records for tamper detection
+        /// Each record's hash includes the previous hash, forming an immutable chain
+        /// </summary>
         private string CalculateArchiveHash(IEnumerable<AuditEvent> logs)
         {
-            return "hash"; // TODO: Calculate archive hash
+            using var sha = SHA256.Create();
+            var previousHash = "GENESIS";
+
+            foreach (var log in logs.OrderBy(l => l.Timestamp))
+            {
+                var record = $"{previousHash}|{log.EventType}|{log.UserId}|{log.Timestamp:O}|{log.Data}";
+                var hashBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(record));
+                previousHash = Convert.ToHexString(hashBytes);
+            }
+
+            return previousHash;
         }
     }
 }
