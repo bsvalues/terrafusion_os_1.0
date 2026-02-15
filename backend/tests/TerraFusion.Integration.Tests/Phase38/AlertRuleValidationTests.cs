@@ -52,8 +52,13 @@ public class AlertRuleValidationTests
     private static string GetRepositoryRoot()
     {
         var current = Directory.GetCurrentDirectory();
-        while (current != null && !Directory.Exists(Path.Combine(current, ".git")))
+        while (current != null)
         {
+            var gitPath = Path.Combine(current, ".git");
+            if (Directory.Exists(gitPath) || File.Exists(gitPath))
+            {
+                return current;
+            }
             current = Directory.GetParent(current)?.FullName;
         }
         return current ?? Directory.GetCurrentDirectory();
