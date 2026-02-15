@@ -240,6 +240,7 @@ jobs:
             || dotnet test backend/TerraFusion.sln -c Release --no-build -v:minimal
 
       - name: Phase 4 security regression visibility
+        id: phase4-tests
         shell: bash
         run: |
           set -euo pipefail
@@ -253,6 +254,16 @@ jobs:
             --no-build \
             --filter "FullyQualifiedName~AuthenticationRateLimitTests|FullyQualifiedName~AuditCorrelationTests" \
             -v:minimal
+
+      - name: Backend Summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## ⚙️ Backend Fast Gate" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 4 Security Regression Visibility | ${{ steps.phase4-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Governance Fast Gate (drift guard, scope classifier)
