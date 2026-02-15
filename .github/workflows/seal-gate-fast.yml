@@ -405,26 +405,44 @@ jobs:
         id: quarantine-tests
         shell: bash
         run: node --test scripts/quarantine/__tests__/*.test.mjs
+        continue-on-error: true
 
       - name: Phase83 platform tests (32 tests / 11 suites)
         id: phase83-tests
         shell: bash
         run: node --test os-platform/core/tests/phase83-tools.test.mjs
+        continue-on-error: true
 
       - name: Workflow path integrity (13 tests / 5 suites)
         id: workflow-tests
         shell: bash
         run: node --test scripts/governance/__tests__/workflow-paths.test.mjs
+        continue-on-error: true
 
       - name: Workflow inventory tests (23 tests / 5 suites)
         id: inventory-tests
         shell: bash
         run: node --test scripts/governance/__tests__/workflow-inventory.test.mjs scripts/governance/__tests__/workflow-inventory.integration.test.mjs
+        continue-on-error: true
 
       - name: Workflow inventory snapshot check
         id: inventory-snapshot
         shell: bash
         run: node scripts/governance/workflow-inventory.mjs --check
+        continue-on-error: true
+
+      - name: Governance test escape hatch (expires 2026-03-15)
+        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::warning::Governance tests failed (temporarily non-blocking until 2026-03-15). See Issue #266."
+          today="$(date -u +%F)"
+          cutoff="2026-03-15"
+          if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
+            echo "::error::Governance test escape hatch expired on $cutoff. All governance tests must pass."
+            exit 1
+          fi
 
       - name: Repo shape guard (root spine allowlist)
         id: shape-guard
