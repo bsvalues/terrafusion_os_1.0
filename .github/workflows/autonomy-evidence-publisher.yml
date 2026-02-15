@@ -151,6 +151,13 @@ jobs:
             echo "ℹ️ Created fallback apply-proofs.json for deterministic bundling"
           fi
 
+      - name: Ensure governance contract file exists
+        run: |
+          if [ ! -f "AUTONOMY_V1_GOVERNANCE_CONTRACT.md" ] && [ -f "QUARANTINE/root-md/AUTONOMY_V1_GOVERNANCE_CONTRACT.md" ]; then
+            cp "QUARANTINE/root-md/AUTONOMY_V1_GOVERNANCE_CONTRACT.md" "AUTONOMY_V1_GOVERNANCE_CONTRACT.md"
+            echo "ℹ️ Restored AUTONOMY_V1_GOVERNANCE_CONTRACT.md from QUARANTINE/root-md"
+          fi
+
       - name: Generate CIO Dashboard
         run: |
           echo "📊 Generating County CIO Dashboard..."
