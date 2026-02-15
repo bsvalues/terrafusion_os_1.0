@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Security;
+using TerraFusion.API.Security.Interfaces;
+using TerraFusion.API.Security.Services;
 using TerraFusion.API.Services;
 
 namespace TerraFusion.API.Security
@@ -93,6 +95,19 @@ namespace TerraFusion.API.Security
         private static string GenerateDefaultKey()
         {
             return "TerraFusion-Default-Key-CHANGE-IN-PRODUCTION-2025-" + Guid.NewGuid().ToString().Substring(0, 8);
+        }
+
+        /// <summary>
+        /// Registers MFA, Session Management, and LDAP security services.
+        /// Phase 5: Security Service Runtime Completeness.
+        /// </summary>
+        public static IServiceCollection AddTerraFusionSecurityServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton<IMfaService, InMemoryMfaService>();
+            services.AddSingleton<ISessionManager, InMemorySessionManager>();
+            services.AddSingleton<ILdapService, DevelopmentLdapService>();
+
+            return services;
         }
     }
 

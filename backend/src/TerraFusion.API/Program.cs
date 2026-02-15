@@ -137,6 +137,7 @@ builder.Services.AddSignalR();
 // Register authentication services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTerraFusionAuthentication(builder.Configuration);
+builder.Services.AddTerraFusionSecurityServices(builder.Configuration);
 
 // 🎯 SERVICE REGISTRY & DISCOVERY - No more hardcoded ports!
 builder.Services.AddSingleton<ServiceRegistry>();
