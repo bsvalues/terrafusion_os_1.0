@@ -67,9 +67,9 @@ jobs:
           LABELS="${{ join(github.event.pull_request.labels.*.name, ',') }}"
           echo "PR Labels: $LABELS"
 
-          # Generate release tag (monthly rollup format)
+          # Generate release tag (slash-free monthly rollup format)
           YEAR_MONTH=$(date +%Y-%m)
-          RELEASE_TAG="autonomy-evidence/${YEAR_MONTH}"
+          RELEASE_TAG="autonomy-evidence-${YEAR_MONTH}"
           RUN_ID="${{ github.run_id }}"
 
           echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
