@@ -22,6 +22,10 @@ module.exports = {
     'no-undef': 'off', // TypeScript handles this
     'no-redeclare': 'off', // TypeScript handles this
     'no-empty': 'warn',
+    // Security rules (Phase 7 — government compliance essentials)
+    'no-eval': 'error',
+    'no-implied-eval': 'error',
+    'no-new-func': 'error',
     // Disable CSS-related errors for TypeScript files
     'css-syntax-error': 'off',
     'no-unknown-css-property': 'off',
