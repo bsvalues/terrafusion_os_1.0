@@ -161,8 +161,7 @@ jobs:
           BUNDLE_NAME="autonomy-evidence-${{ needs.gate.outputs.run_id }}"
 
           npx tsx tools/registry/autonomy-viewer/src/bundle.ts \
-            --in ${{ env.OUT_DIR }} \
-            --in ${{ env.VIEWER_DIR }} \
+            --in ${{ github.workspace }} \
             --out ${{ env.VIEWER_DIR }} \
             --name "$BUNDLE_NAME" \
             --run-id "${{ needs.gate.outputs.run_id }}" \
