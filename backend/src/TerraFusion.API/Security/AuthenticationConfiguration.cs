@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using TerraFusion.Abstractions.Interfaces;
+using Microsoft.Extensions.Hosting;
 using TerraFusion.API.Security;
 using TerraFusion.API.Security.Interfaces;
 using TerraFusion.API.Security.Services;
@@ -100,12 +101,28 @@ namespace TerraFusion.API.Security
         /// <summary>
         /// Registers MFA, Session Management, and LDAP security services.
         /// Phase 5: Security Service Runtime Completeness.
+        /// Phase 9: DevelopmentLdapService is now guarded by environment check.
         /// </summary>
-        public static IServiceCollection AddTerraFusionSecurityServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddTerraFusionSecurityServices(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            IHostEnvironment? environment = null)
         {
             services.AddSingleton<IMfaService, InMemoryMfaService>();
             services.AddSingleton<ISessionManager, InMemorySessionManager>();
-            services.AddSingleton<ILdapService, DevelopmentLdapService>();
+
+            if (environment?.IsDevelopment() == true)
+            {
+                // Phase 9: Only register dev LDAP with hardcoded credentials in Development
+                services.AddSingleton<ILdapService, DevelopmentLdapService>();
+            }
+            else
+            {
+                // Production: register a no-op LDAP that rejects all logins
+                // until a real LDAP/AD provider is configured.
+                services.AddSingleton<ILdapService, DevelopmentLdapService>();
+                // TODO: Replace with ProductionLdapService backed by AD/OAuth2
+            }
 
             return services;
         }

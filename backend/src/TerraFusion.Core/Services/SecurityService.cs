@@ -156,26 +156,16 @@ namespace TerraFusion.Core.Services
                 // 2. Government authentication systems
                 // 3. Multi-factor authentication
                 
-                // For now, simulate authentication with hash validation
-                var passwordHash = HashPassword(password);
-                
-                // Demo validation - replace with real authentication
-                var isValid = await Task.Run(() =>
-                {
-                    // Simulate authentication delay
-                    Task.Delay(100).Wait();
-                    
-                    // For demo: accept specific test accounts
-                    var testAccounts = new Dictionary<string, string>
-                    {
-                        { "admin@terrafusionmarket.com", HashPassword("Admin123!@#") },
-                        { "assessor@benton.county.gov", HashPassword("Assessor123!") },
-                        { "auditor@washington.state.gov", HashPassword("Auditor123!") }
-                    };
-                    
-                    return testAccounts.ContainsKey(email.ToLower()) && 
-                           testAccounts[email.ToLower()] == passwordHash;
-                });
+                // Phase 9: Hardcoded credentials removed (security risk).
+                // Authentication must be delegated to an external identity provider
+                // (Active Directory / LDAP / OAuth2) in production.
+                // This stub rejects all credentials and logs the attempt.
+                _logger.LogWarning(
+                    "ValidateUserCredentialsAsync called for {Email} — no identity provider configured. " +
+                    "Wire up ILdapService or an OAuth2 provider for real authentication.",
+                    email);
+
+                var isValid = false;
 
                 if (!isValid)
                 {
