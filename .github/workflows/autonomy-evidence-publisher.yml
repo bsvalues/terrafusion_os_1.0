@@ -173,7 +173,7 @@ jobs:
         id: bundle
         run: |
           echo "📦 Generating Evidence Bundle..."
-          BUNDLE_NAME="autonomy-evidence-${{ needs.gate.outputs.run_id }}"
+          BUNDLE_NAME="autonomy-evidence-${{ needs.gate.outputs.run_id }}.zip"
 
           npx tsx tools/registry/autonomy-viewer/src/bundle.ts \
             --in ${{ github.workspace }} \
@@ -183,15 +183,17 @@ jobs:
             --emit-manifest \
             --verbose
 
+          MANIFEST_PATH="${{ env.VIEWER_DIR }}/${BUNDLE_NAME}.manifest.json"
+
           # Capture manifest SHA256
-          if [ -f "${{ env.VIEWER_DIR }}/MANIFEST.json" ]; then
-            MANIFEST_SHA=$(sha256sum ${{ env.VIEWER_DIR }}/MANIFEST.json | cut -d' ' -f1)
+          if [ -f "$MANIFEST_PATH" ]; then
+            MANIFEST_SHA=$(sha256sum "$MANIFEST_PATH" | cut -d' ' -f1)
             echo "manifest_sha=$MANIFEST_SHA" >> $GITHUB_OUTPUT
-            echo "bundle_name=${BUNDLE_NAME}.zip" >> $GITHUB_OUTPUT
-            echo "bundle_path=${{ env.VIEWER_DIR }}/${BUNDLE_NAME}.zip" >> $GITHUB_OUTPUT
-            echo "✅ Bundle generated: ${BUNDLE_NAME}.zip"
+            echo "bundle_name=${BUNDLE_NAME}" >> $GITHUB_OUTPUT
+            echo "bundle_path=${{ env.VIEWER_DIR }}/${BUNDLE_NAME}" >> $GITHUB_OUTPUT
+            echo "✅ Bundle generated: ${BUNDLE_NAME}"
           else
-            echo "::error::MANIFEST.json not found"
+            echo "::error::Bundle manifest not found at $MANIFEST_PATH"
             exit 1
           fi
 
