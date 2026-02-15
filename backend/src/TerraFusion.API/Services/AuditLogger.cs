@@ -154,6 +154,7 @@ namespace TerraFusion.API.Services
             var details = $"Configuration changed: {setting}";
             await LogEventAsync("ConfigurationChange", "System", details,
                 userId: userId,
+                setting: setting,
                 oldValue: oldValue,
                 newValue: newValue);
         }
@@ -169,6 +170,7 @@ namespace TerraFusion.API.Services
             double? duration = null,
             string? resourceType = null,
             string? resourceId = null,
+            string? setting = null,
             string? oldValue = null,
             string? newValue = null)
         {
@@ -185,6 +187,7 @@ namespace TerraFusion.API.Services
                 ErrorMessage = errorMessage,
                 ResponseCode = responseCode,
                 Duration = duration,
+                Setting = setting,
                 OldValue = oldValue,
                 NewValue = newValue,
                 ResourceType = resourceType ?? eventCategory,
