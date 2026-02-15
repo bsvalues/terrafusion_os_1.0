@@ -239,6 +239,16 @@ jobs:
             -v:minimal \
             || dotnet test backend/TerraFusion.sln -c Release --no-build -v:minimal
 
+      - name: Phase 4 security regression visibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
+            -c Release \
+            --no-build \
+            --filter "FullyQualifiedName~SecurityTodoGateTests|FullyQualifiedName~AuthenticationRateLimitTests|FullyQualifiedName~AuditCorrelationTests|FullyQualifiedName~JwtTokenServiceSecurityTests" \
+            -v:minimal
+
   # ═══════════════════════════════════════════════════════════════════════════
   # Governance Fast Gate (drift guard, scope classifier)
   # ═══════════════════════════════════════════════════════════════════════════
