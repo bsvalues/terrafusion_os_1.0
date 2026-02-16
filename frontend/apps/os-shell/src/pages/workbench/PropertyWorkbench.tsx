@@ -302,7 +302,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
   if (!parcelId) {
     return (
-      <div className='flex items-center justify-center min-h-screen bg-slate-900'>
+      <div className='flex items-center justify-center min-h-screen bg-slate-900' data-testid='workbench-no-parcel'>
         <div className='text-center p-8'>
           <h2 className='text-2xl font-bold text-white mb-2'>No Parcel Selected</h2>
           <p className='text-white/60 mb-4'>Search for a parcel to view the Property Workbench.</p>
