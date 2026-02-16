@@ -37,6 +37,17 @@ namespace TerraFusion.Core.Services
         private const string BLACKLIST_PREFIX = "blacklist:";
         private const int REFRESH_TOKEN_LENGTH = 64;
 
+        /// <summary>
+        /// Mask email for safe logging (PII contract — Phase 13).
+        /// </summary>
+        private static string MaskEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email)) return "[empty]";
+            var at = email.IndexOf('@');
+            if (at <= 0) return "***";
+            return string.Concat(email[0], "***", email.Substring(at));
+        }
+
         public AuthenticationService(
             IJwtTokenService jwtTokenService,
             IDistributedCache cache,
@@ -73,7 +84,7 @@ namespace TerraFusion.Core.Services
 
                 var token = _jwtTokenService.GenerateAccessToken(userId, email, roles.ToArray(), customClaims);
                 
-                _logger.LogInformation("Generated JWT token for user {UserId} with email {Email}", userId, email);
+                _logger.LogInformation("Generated JWT token for user {UserId} with email {EmailMasked}", userId, MaskEmail(email));
                 
                 return await Task.FromResult(token);
             }

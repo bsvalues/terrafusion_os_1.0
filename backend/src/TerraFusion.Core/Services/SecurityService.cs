@@ -41,6 +41,18 @@ namespace TerraFusion.Core.Services
         private const string FAILED_ATTEMPTS_PREFIX = "failed_attempts:";
         private const string ACCOUNT_LOCK_PREFIX = "account_lock:";
 
+        /// <summary>
+        /// Mask an email address for safe logging (PII contract — Phase 13).
+        /// Example: "user@county.gov" → "u***@county.gov"
+        /// </summary>
+        private static string MaskEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email)) return "[empty]";
+            var at = email.IndexOf('@');
+            if (at <= 0) return "***";
+            return string.Concat(email[0], "***", email.Substring(at));
+        }
+
         // Valid government domains
         private readonly HashSet<string> _governmentDomains = new()
         {
@@ -87,11 +99,11 @@ namespace TerraFusion.Core.Services
                     
                     if (!string.IsNullOrEmpty(isWhitelisted))
                     {
-                        _logger.LogInformation("Whitelisted user {Email} validated", email);
+                        _logger.LogInformation("Whitelisted user {EmailMasked} validated", MaskEmail(email));
                         return true;
                     }
 
-                    _logger.LogWarning("Non-government email attempted: {Email}", email);
+                    _logger.LogWarning("Non-government email attempted: {EmailMasked}", MaskEmail(email));
                     return false;
                 }
 
@@ -99,7 +111,7 @@ namespace TerraFusion.Core.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error validating government user {Email}", email);
+                _logger.LogError(ex, "Error validating government user {EmailMasked}", MaskEmail(email));
                 return false;
             }
         }
@@ -161,9 +173,9 @@ namespace TerraFusion.Core.Services
                 // (Active Directory / LDAP / OAuth2) in production.
                 // This stub rejects all credentials and logs the attempt.
                 _logger.LogWarning(
-                    "ValidateUserCredentialsAsync called for {Email} — no identity provider configured. " +
+                    "ValidateUserCredentialsAsync called for {EmailMasked} — no identity provider configured. " +
                     "Wire up ILdapService or an OAuth2 provider for real authentication.",
-                    email);
+                    MaskEmail(email));
 
                 var isValid = false;
 
@@ -178,7 +190,7 @@ namespace TerraFusion.Core.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error validating credentials for {Email}", email);
+                _logger.LogError(ex, "Error validating credentials for {EmailMasked}", MaskEmail(email));
                 return false;
             }
         }
@@ -234,7 +246,7 @@ namespace TerraFusion.Core.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting roles for {Email}", email);
+                _logger.LogError(ex, "Error getting roles for {EmailMasked}", MaskEmail(email));
                 return new[] { "GovernmentUser" };
             }
         }
@@ -253,7 +265,7 @@ namespace TerraFusion.Core.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error checking account lock for {Email}", email);
+                _logger.LogError(ex, "Error checking account lock for {EmailMasked}", MaskEmail(email));
                 return false;
             }
         }
@@ -288,7 +300,7 @@ namespace TerraFusion.Core.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error recording failed login for {Email}", email);
+                _logger.LogError(ex, "Error recording failed login for {EmailMasked}", MaskEmail(email));
             }
         }
 
@@ -302,11 +314,11 @@ namespace TerraFusion.Core.Services
                 var attemptsKey = $"{FAILED_ATTEMPTS_PREFIX}{email}";
                 await _cache.RemoveAsync(attemptsKey);
                 
-                _logger.LogInformation("Reset failed login attempts for {Email}", email);
+                _logger.LogInformation("Reset failed login attempts for {EmailMasked}", MaskEmail(email));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error resetting failed attempts for {Email}", email);
+                _logger.LogError(ex, "Error resetting failed attempts for {EmailMasked}", MaskEmail(email));
             }
         }
 
@@ -324,7 +336,7 @@ namespace TerraFusion.Core.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting failed attempts for {Email}", email);
+                _logger.LogError(ex, "Error getting failed attempts for {EmailMasked}", MaskEmail(email));
                 return 0;
             }
         }
@@ -353,11 +365,11 @@ namespace TerraFusion.Core.Services
                 
                 await LogSecurityEventAsync("ACCOUNT_LOCKED", $"Account {email} locked for {duration.TotalMinutes} minutes", reason);
                 
-                _logger.LogWarning("Account {Email} locked. Reason: {Reason}", email, reason);
+                _logger.LogWarning("Account {EmailMasked} locked. Reason: {Reason}", MaskEmail(email), reason);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error locking account {Email}", email);
+                _logger.LogError(ex, "Error locking account {EmailMasked}", MaskEmail(email));
             }
         }
 
@@ -375,11 +387,11 @@ namespace TerraFusion.Core.Services
                 
                 await LogSecurityEventAsync("ACCOUNT_UNLOCKED", $"Account {email} unlocked");
                 
-                _logger.LogInformation("Account {Email} unlocked", email);
+                _logger.LogInformation("Account {EmailMasked} unlocked", MaskEmail(email));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error unlocking account {Email}", email);
+                _logger.LogError(ex, "Error unlocking account {EmailMasked}", MaskEmail(email));
             }
         }
 
