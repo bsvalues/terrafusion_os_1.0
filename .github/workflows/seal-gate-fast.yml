@@ -86,10 +86,19 @@ jobs:
           echo "$CHANGED"
 
           # Classify
+          # Treat SEAL backend-gate wiring changes as backend-impacting so security
+          # regression checks cannot be skipped by workflow-only diffs.
+          HAS_SEAL_BACKEND_WIRING=$(echo "$CHANGED" | grep -E '^\.github/workflows/seal-gate-fast\.yml$' | head -1 || true)
           HAS_BACKEND=$(echo "$CHANGED" | grep -E '^backend/' | head -1 || true)
+          if [ -n "$HAS_SEAL_BACKEND_WIRING" ]; then
+            HAS_BACKEND="$HAS_SEAL_BACKEND_WIRING"
+          fi
           HAS_FRONTEND=$(echo "$CHANGED" | grep -E '^(src/|frontend/|package\.json|pnpm-lock\.yaml)' | head -1 || true)
           # NON_DOC: anything that isn't docs, markdown, config, or meta files
           NON_DOC=$(echo "$CHANGED" | grep -Ev '^(docs/|.*\.md$|README(\..*)?$|\.github/|\.editorconfig$|\.gitignore$|LICENSE$)' | head -1 || true)
+          if [ -n "$HAS_SEAL_BACKEND_WIRING" ]; then
+            NON_DOC="$HAS_SEAL_BACKEND_WIRING"
+          fi
 
           # Set outputs
           if [ -z "$HAS_BACKEND" ]; then
