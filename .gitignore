@@ -434,6 +434,8 @@ data/redis*/
 *.crt
 ca_private.key
 *password*
+!**/Services/*Password*.cs
+!**/Services/*PasswordHistory*.cs
 *secret*
 *.keystore
 
