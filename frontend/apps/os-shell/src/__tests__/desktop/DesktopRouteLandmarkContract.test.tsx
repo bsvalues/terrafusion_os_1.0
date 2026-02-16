@@ -155,29 +155,28 @@ describe('Phase 25 contract: desktop routes render stable content landmarks', ()
     }
   });
 
-  it.each(testableIcons)(
-    '$name ($id) at $route has a content landmark',
-    async (icon) => {
-      memoryRouterEntries = [icon.route];
+  it.each(testableIcons)('$name ($id) at $route has a content landmark', async (icon) => {
+    memoryRouterEntries = [icon.route];
 
-      render(<Router />);
+    render(<Router />);
 
-      // Wait for Suspense to resolve (same as Phase 24).
-      await waitFor(
-        () => {
-          expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
+    // Wait for Suspense to resolve (same as Phase 24).
+    await waitFor(
+      () => {
+        expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
-      // Let async effects settle.
-      await new Promise((resolve) => setTimeout(resolve, 50));
+    // Phase 24 crash guard (redundant but cheap).
+    expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
 
-      // Phase 24 crash guard (redundant but cheap).
-      expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
-
-      // Phase 25 landmark assertion.
-      assertLandmark(icon.route);
-    }
-  );
+    // Phase 25 landmark assertion — use waitFor to handle lazy tab rendering under load.
+    await waitFor(
+      () => {
+        assertLandmark(icon.route);
+      },
+      { timeout: 5000 }
+    );
+  });
 });
