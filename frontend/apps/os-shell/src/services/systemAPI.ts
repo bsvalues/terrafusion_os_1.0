@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
 const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000/api';
 
@@ -10,7 +11,7 @@ const api = axios.create({
 
 // Add auth token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

@@ -27,14 +27,15 @@
  * @elite-status Championship-Grade State Management
  */
 
+import { clearToken } from '@/auth/authStorage';
 import React, {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
+    createContext,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
 } from 'react';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -148,7 +149,7 @@ export const ResearchSessionProvider: React.FC<{ children: ReactNode }> = ({ chi
   const logout = useCallback(() => {
     setSession(null);
     localStorage.removeItem('terrafusion_research_session');
-    localStorage.removeItem('authToken');
+    clearToken();
     console.log('🚪 Research session terminated');
   }, []);
 

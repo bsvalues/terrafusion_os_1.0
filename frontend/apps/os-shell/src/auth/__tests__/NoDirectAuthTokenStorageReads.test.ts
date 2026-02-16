@@ -63,13 +63,11 @@ describe('NoDirectAuthTokenStorageReads', () => {
       }
     }
 
-    expect(violations).toEqual(
-      expect.objectContaining({ length: 0 }),
-    );
+    expect(violations).toEqual(expect.objectContaining({ length: 0 }));
     if (violations.length > 0) {
       // Belt-and-suspenders: surface details when the expect above fails
       throw new Error(
-        `Found ${violations.length} direct localStorage authToken access(es) outside authStorage.ts:\n${violations.join('\n')}\n\nMigrate to: import { getToken, setToken, clearToken } from '@/auth/authStorage';`,
+        `Found ${violations.length} direct localStorage authToken access(es) outside authStorage.ts:\n${violations.join('\n')}\n\nMigrate to: import { getToken, setToken, clearToken } from '@/auth/authStorage';`
       );
     }
   });

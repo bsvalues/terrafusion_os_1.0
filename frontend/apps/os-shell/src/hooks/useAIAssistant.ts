@@ -7,6 +7,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { getToken } from '../auth/authStorage';
 
 interface AIMessage {
   id: string;
@@ -92,7 +93,7 @@ export const useAIAssistant = ({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            Authorization: `Bearer ${getToken()}`,
           },
           body: JSON.stringify({
             countyId,
@@ -143,7 +144,7 @@ export const useAIAssistant = ({
     try {
       const response = await fetch(`${apiBaseUrl}/AIAssistant/recommendations/${countyId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
 
@@ -166,7 +167,7 @@ export const useAIAssistant = ({
           {
             method: 'POST',
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+              Authorization: `Bearer ${getToken()}`,
             },
           }
         );
@@ -188,7 +189,7 @@ export const useAIAssistant = ({
     try {
       const response = await fetch(`${apiBaseUrl}/AIAssistant/swarm-status/${countyId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
 

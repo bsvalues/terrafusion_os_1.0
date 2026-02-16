@@ -1,3 +1,4 @@
+import { getToken } from '../auth/authStorage';
 import { getViteEnv } from '../env/getViteEnv';
 
 /**
@@ -262,7 +263,7 @@ async function apiClient<T>(
     const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
     // Add authentication token if available
-    const token = localStorage.getItem('authToken');
+    const token = getToken();
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       'X-Request-ID': requestId,
