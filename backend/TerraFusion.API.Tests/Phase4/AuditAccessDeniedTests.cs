@@ -41,6 +41,8 @@ public sealed class AuditAccessDeniedTests
         var auditLogger = new Mock<IAuditLogger>(MockBehavior.Strict);
         auditLogger.Setup(x => x.LogApiCallAsync(It.IsAny<string>(), "/api/secure-resource", 403, It.IsAny<double>(), "user-denied"))
             .Returns(Task.CompletedTask);
+        auditLogger.Setup(x => x.LogAuthorizationAsync("user-denied", "/api/secure-resource", false))
+            .Returns(Task.CompletedTask);
         auditLogger.Setup(x => x.LogErrorAsync(It.IsAny<string>(), It.IsAny<Exception>(), "user-denied"))
             .Callback<string, Exception, string?>((_, ex, _) => capturedErrorMessage = ex.Message)
             .Returns(Task.CompletedTask);
