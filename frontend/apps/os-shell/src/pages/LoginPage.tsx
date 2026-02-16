@@ -1,11 +1,27 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/auth/useAuth';
 
 /**
  * LoginPage — Auth redirect target.
  * When a 401 response triggers a redirect to /login, this page
  * provides a minimal sign-in surface instead of a blank page.
+ *
+ * Phase 18: Uses auth boundary. On submit, calls login() with a
+ * placeholder token and navigates to /. Real JWT exchange will
+ * be wired in a future phase.
  */
 const LoginPage: React.FC = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Placeholder — real auth flow (JWT exchange) will be wired in a future phase
+    login('TERRAFUSION_SESSION_TOKEN');
+    navigate('/');
+  };
+
   return (
     <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
       <div className='w-full max-w-md p-8 rounded-2xl bg-gray-800/80 border border-cyan-500/30 shadow-lg'>
@@ -13,13 +29,7 @@ const LoginPage: React.FC = () => {
         <p className='text-gray-400 text-sm text-center mb-6'>
           Your session has expired. Please sign in to continue.
         </p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            // Placeholder — real auth flow will be wired in a future phase
-            window.location.href = '/';
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <label className='block text-gray-300 text-sm mb-1' htmlFor='username'>
             Username
           </label>
