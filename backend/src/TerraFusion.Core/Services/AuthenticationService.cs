@@ -35,6 +35,7 @@ namespace TerraFusion.Core.Services
 
         private const string REFRESH_TOKEN_PREFIX = "refresh_token:";
         private const string BLACKLIST_PREFIX = "blacklist:";
+        private const string BLACKLIST_INDEX_KEY = "blacklist:index";
         private const int REFRESH_TOKEN_LENGTH = 64;
 
         public AuthenticationService(
@@ -344,6 +345,7 @@ namespace TerraFusion.Core.Services
                     };
                     
                     await _cache.SetStringAsync(blacklistKey, blacklistPayload, options);
+                    await TrackBlacklistedTokenAsync(jti, expiresAt);
                     
                     _logger.LogInformation("Blacklisted token with JTI {Jti}", jti);
                 }
@@ -351,6 +353,53 @@ namespace TerraFusion.Core.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error blacklisting token");
+            }
+        }
+
+        /// <summary>
+        /// Remove expired blacklist entries from the cache and blacklist index.
+        /// </summary>
+        public async Task<int> CleanupExpiredBlacklistedTokensAsync(DateTime utcNow, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var now = utcNow.Kind == DateTimeKind.Utc ? utcNow : utcNow.ToUniversalTime();
+                var index = await GetBlacklistIndexAsync(cancellationToken);
+                if (index.Count == 0)
+                {
+                    return 0;
+                }
+
+                var expiredJtis = index
+                    .Where(kv => kv.Value <= now)
+                    .Select(kv => kv.Key)
+                    .ToList();
+
+                if (expiredJtis.Count == 0)
+                {
+                    return 0;
+                }
+
+                foreach (var jti in expiredJtis)
+                {
+                    var blacklistKey = $"{BLACKLIST_PREFIX}{jti}";
+                    await _cache.RemoveAsync(blacklistKey, cancellationToken);
+                    index.Remove(jti);
+                }
+
+                await SaveBlacklistIndexAsync(index, cancellationToken);
+
+                _logger.LogInformation(
+                    "Revocation cleanup removed {RemovedCount} expired blacklist entries (remaining: {RemainingCount})",
+                    expiredJtis.Count,
+                    index.Count);
+
+                return expiredJtis.Count;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error cleaning up expired blacklist entries");
+                return 0;
             }
         }
 
@@ -366,6 +415,40 @@ namespace TerraFusion.Core.Services
                 .TrimEnd('=')
                 .Replace('+', '-')
                 .Replace('/', '_');
+        }
+
+        private async Task TrackBlacklistedTokenAsync(string jti, DateTime expiresAt, CancellationToken cancellationToken = default)
+        {
+            var index = await GetBlacklistIndexAsync(cancellationToken);
+            index[jti] = expiresAt.Kind == DateTimeKind.Utc ? expiresAt : expiresAt.ToUniversalTime();
+            await SaveBlacklistIndexAsync(index, cancellationToken);
+        }
+
+        private async Task<Dictionary<string, DateTime>> GetBlacklistIndexAsync(CancellationToken cancellationToken = default)
+        {
+            var indexJson = await _cache.GetStringAsync(BLACKLIST_INDEX_KEY, cancellationToken);
+            if (string.IsNullOrWhiteSpace(indexJson))
+            {
+                return new Dictionary<string, DateTime>(StringComparer.Ordinal);
+            }
+
+            try
+            {
+                return JsonSerializer.Deserialize<Dictionary<string, DateTime>>(indexJson)
+                       ?? new Dictionary<string, DateTime>(StringComparer.Ordinal);
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogWarning(ex, "Invalid blacklist index payload; resetting index");
+                return new Dictionary<string, DateTime>(StringComparer.Ordinal);
+            }
+        }
+
+        private Task SaveBlacklistIndexAsync(
+            Dictionary<string, DateTime> index,
+            CancellationToken cancellationToken = default)
+        {
+            return _cache.SetStringAsync(BLACKLIST_INDEX_KEY, JsonSerializer.Serialize(index), cancellationToken);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading;
 
 namespace TerraFusion.Core.Services
 {
@@ -68,5 +69,13 @@ namespace TerraFusion.Core.Services
         /// <param name="token">Token to blacklist</param>
         /// <param name="expiresAt">When the token naturally expires</param>
         Task BlacklistTokenAsync(string token, DateTime expiresAt);
+
+        /// <summary>
+        /// Remove expired token blacklist entries.
+        /// </summary>
+        /// <param name="utcNow">Current UTC timestamp used as cleanup cutoff.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Number of entries removed.</returns>
+        Task<int> CleanupExpiredBlacklistedTokensAsync(DateTime utcNow, CancellationToken cancellationToken = default);
     }
 }
