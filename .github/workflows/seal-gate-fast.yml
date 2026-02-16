@@ -248,20 +248,48 @@ jobs:
             -v:minimal \
             || dotnet test backend/TerraFusion.sln -c Release --no-build -v:minimal
 
-      - name: Phase 4 security regression visibility
-        id: phase4-tests
+      - name: 'Phase 4: Security TODO Gate'
+        id: phase4-security-todo
         shell: bash
         run: |
           set -euo pipefail
           dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
             -c Release \
             --no-build \
-            --filter "FullyQualifiedName~SecurityTodoGateTests|FullyQualifiedName~JwtTokenServiceSecurityTests" \
+            --filter "FullyQualifiedName~SecurityTodoGateTests" \
             -v:minimal
+
+      - name: 'Phase 4: JWT Edge Security'
+        id: phase4-jwt-edge
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
+            -c Release \
+            --no-build \
+            --filter "FullyQualifiedName~JwtTokenServiceSecurityTests" \
+            -v:minimal
+
+      - name: 'Phase 4: Audit Correlation'
+        id: phase4-audit-correlation
+        shell: bash
+        run: |
+          set -euo pipefail
           dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj \
             -c Release \
             --no-build \
-            --filter "FullyQualifiedName~AuthenticationRateLimitTests|FullyQualifiedName~AuditCorrelationTests" \
+            --filter "FullyQualifiedName~AuditCorrelationTests" \
+            -v:minimal
+
+      - name: 'Phase 4: Auth Rate Limit'
+        id: phase4-auth-rate-limit
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj \
+            -c Release \
+            --no-build \
+            --filter "FullyQualifiedName~AuthenticationRateLimitTests" \
             -v:minimal
 
       - name: Backend Summary
@@ -272,7 +300,10 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Phase 4 Security Regression Visibility | ${{ steps.phase4-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 4: Security TODO Gate | ${{ steps.phase4-security-todo.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 4: JWT Edge Security | ${{ steps.phase4-jwt-edge.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 4: Audit Correlation | ${{ steps.phase4-audit-correlation.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 4: Auth Rate Limit | ${{ steps.phase4-auth-rate-limit.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Governance Fast Gate (drift guard, scope classifier)
