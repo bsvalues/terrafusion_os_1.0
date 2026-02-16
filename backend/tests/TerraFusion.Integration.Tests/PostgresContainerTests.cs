@@ -1,16 +1,21 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
-using Testcontainers.PostgreSql;
+using Docker.DotNet;
 using Npgsql;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace TerraFusion.Integration.Tests;
 
 public class PostgresContainerTests
 {
-    [Fact]
+    [DockerRequiredFact]
+    [Trait("Category", "Infra")]
+    [Trait("Feature", "Testcontainers")]
     public async Task CanStartPostgresContainer_AndConnect()
     {
-        var postgresContainer = new PostgreSqlBuilder()
+        await using var postgresContainer = new PostgreSqlBuilder()
             .WithImage("postgres:15-alpine")
             .WithDatabase("testdb")
             .WithUsername("postgres")
@@ -26,7 +31,43 @@ public class PostgresContainerTests
         using var cmd = new NpgsqlCommand("SELECT 1", conn);
         var result = await cmd.ExecuteScalarAsync();
         Assert.Equal(1, result);
+    }
 
-        await postgresContainer.StopAsync();
+    private sealed class DockerRequiredFactAttribute : FactAttribute
+    {
+        public DockerRequiredFactAttribute()
+        {
+            if (!DockerEnvironment.IsAvailable)
+            {
+                Skip = "Docker/Testcontainers unavailable; infra tests require Docker.";
+            }
+        }
+    }
+
+    private static class DockerEnvironment
+    {
+        private static readonly Lazy<bool> Availability = new(CheckAvailability);
+
+        public static bool IsAvailable => Availability.Value;
+
+        private static bool CheckAvailability()
+        {
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                var dockerHost = Environment.GetEnvironmentVariable("DOCKER_HOST");
+                var config = string.IsNullOrWhiteSpace(dockerHost)
+                    ? new DockerClientConfiguration()
+                    : new DockerClientConfiguration(new Uri(dockerHost));
+
+                using var client = config.CreateClient();
+                client.System.PingAsync(cts.Token).GetAwaiter().GetResult();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

@@ -259,9 +259,46 @@ namespace TerraFusion.Core.Services
                 }
                 
                 var blacklistKey = $"{BLACKLIST_PREFIX}{jti}";
-                var isBlacklisted = await _cache.GetStringAsync(blacklistKey);
-                
-                return !string.IsNullOrEmpty(isBlacklisted);
+                var persistedValue = await _cache.GetStringAsync(blacklistKey);
+
+                if (string.IsNullOrWhiteSpace(persistedValue))
+                {
+                    return false;
+                }
+
+                // Backward compatibility: legacy blacklist marker.
+                if (persistedValue.Trim() == "1")
+                {
+                    return true;
+                }
+
+                // Current format: structured metadata payload.
+                try
+                {
+                    using var json = JsonDocument.Parse(persistedValue);
+                    if (!json.RootElement.TryGetProperty("jti", out var persistedJtiElement))
+                    {
+                        _logger.LogWarning("Blacklist record missing jti metadata for key {BlacklistKey}", blacklistKey);
+                        return true; // fail closed
+                    }
+
+                    var persistedJti = persistedJtiElement.GetString();
+                    if (!string.Equals(persistedJti, jti, StringComparison.Ordinal))
+                    {
+                        _logger.LogWarning(
+                            "Blacklist record JTI mismatch for key {BlacklistKey}. Expected {ExpectedJti}, got {PersistedJti}",
+                            blacklistKey,
+                            jti,
+                            persistedJti);
+                    }
+
+                    return true;
+                }
+                catch (JsonException ex)
+                {
+                    _logger.LogWarning(ex, "Malformed blacklist payload for key {BlacklistKey}", blacklistKey);
+                    return true; // fail closed
+                }
             }
             catch (Exception ex)
             {
@@ -293,12 +330,20 @@ namespace TerraFusion.Core.Services
                 
                 if (ttl.TotalSeconds > 0)
                 {
+                    var blacklistPayload = JsonSerializer.Serialize(new Dictionary<string, object?>
+                    {
+                        ["version"] = 1,
+                        ["jti"] = jti,
+                        ["revokedAt"] = DateTimeOffset.UtcNow,
+                        ["expiresAt"] = expiresAt
+                    });
+
                     var options = new DistributedCacheEntryOptions
                     {
                         AbsoluteExpirationRelativeToNow = ttl
                     };
                     
-                    await _cache.SetStringAsync(blacklistKey, "1", options);
+                    await _cache.SetStringAsync(blacklistKey, blacklistPayload, options);
                     
                     _logger.LogInformation("Blacklisted token with JTI {Jti}", jti);
                 }

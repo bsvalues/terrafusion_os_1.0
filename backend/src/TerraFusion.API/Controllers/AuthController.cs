@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.IdentityModel.Tokens.Jwt;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 
@@ -138,6 +139,43 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("revoke")]
+    [AllowAnonymous]
+    public async Task<IActionResult> RevokeToken([FromBody] RefreshTokenRequest request)
+    {
+        try
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Token))
+            {
+                return BadRequest(new { message = "Token is required" });
+            }
+
+            if (!TryParseRevocationMetadata(request.Token, out var jti, out var expiresAtUtc))
+            {
+                return BadRequest(new { message = "Token must be a valid JWT containing jti and exp claims" });
+            }
+
+            await _authService.BlacklistTokenAsync(request.Token, expiresAtUtc);
+            try
+            {
+                await _securityService.LogSecurityEventAsync(
+                    "TOKEN_REVOKED",
+                    $"Token revoked for JTI: {jti} (expires: {expiresAtUtc:O})");
+            }
+            catch (Exception logEx)
+            {
+                _logger.LogWarning(logEx, "Security event logging failed during token revoke for JTI {Jti}", jti);
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during token revocation");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
     [HttpGet("profile")]
     [Authorize]
     public async Task<IActionResult> GetProfile()
@@ -191,5 +229,42 @@ public class AuthController : ControllerBase
             roles.Add("CountyAuditor");
         
         return roles;
+    }
+
+    private static bool TryParseRevocationMetadata(string token, out string jti, out DateTime expiresAtUtc)
+    {
+        jti = string.Empty;
+        expiresAtUtc = DateTime.MinValue;
+
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(token))
+            {
+                return false;
+            }
+
+            var jwt = handler.ReadJwtToken(token);
+            jti = jwt.Claims.FirstOrDefault(c => c.Type == "jti")?.Value ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(jti))
+            {
+                return false;
+            }
+
+            if (jwt.ValidTo == DateTime.MinValue)
+            {
+                return false;
+            }
+
+            expiresAtUtc = jwt.ValidTo.Kind == DateTimeKind.Unspecified
+                ? DateTime.SpecifyKind(jwt.ValidTo, DateTimeKind.Utc)
+                : jwt.ValidTo.ToUniversalTime();
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
