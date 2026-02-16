@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
@@ -29,6 +30,7 @@ namespace TerraFusion.Consciousness.CoPilot;
 /// </summary>
 [ApiController]
 [Route("api/copilot")]
+[Authorize(Policy = "OSCoreAccess")]
 public class CoPilotController : ControllerBase
 {
     private readonly ICoPilotService _copilotService;
