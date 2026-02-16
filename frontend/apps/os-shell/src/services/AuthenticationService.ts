@@ -30,6 +30,7 @@
  */
 
 import CryptoJS from 'crypto-js';
+import { getViteEnv } from '../env/getViteEnv';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS - Authentication DTOs
@@ -128,13 +129,12 @@ const ELITE_INSTITUTIONS = [
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export class AuthenticationService {
-  private static readonly API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+  private static readonly API_BASE_URL = getViteEnv().VITE_API_BASE_URL || 'http://localhost:5000';
   private static readonly TOKEN_STORAGE_KEY = 'terrafusion_auth_token';
   private static readonly REFRESH_TOKEN_KEY = 'terrafusion_refresh_token';
   private static readonly USER_PROFILE_KEY = 'terrafusion_user_profile';
   private static readonly ENCRYPTION_KEY =
-    process.env.REACT_APP_ENCRYPTION_KEY || 'terrafusion-quantum-security-2024';
+    getViteEnv().VITE_ENCRYPTION_KEY || 'terrafusion-quantum-security-2024';
   private static readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
   private static sessionTimeoutId: NodeJS.Timeout | null = null;

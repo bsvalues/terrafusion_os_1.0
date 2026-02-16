@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { getViteEnv } from '../../../env/getViteEnv';
 
 // Types for Jupyter Lab integration
 interface JupyterKernel {
@@ -74,7 +75,7 @@ export const useJupyterLab = (userId: string, department: string) => {
 
       // In production, this would connect to actual Jupyter Lab server
       // Using Jupyter's REST API and WebSocket connections
-      const jupyterUrl = process.env.REACT_APP_JUPYTER_URL || 'http://localhost:8888';
+      const jupyterUrl = getViteEnv().VITE_JUPYTER_URL || 'http://localhost:8888';
 
       // Simulate connection process
       await new Promise((resolve) => setTimeout(resolve, 2000));

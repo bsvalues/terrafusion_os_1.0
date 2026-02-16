@@ -1,3 +1,5 @@
+import { getViteEnv } from '../env/getViteEnv';
+
 /**
  * researchServices.ts
  *
@@ -211,7 +213,7 @@ export interface IAAOComplianceResponse {
 // API CLIENT CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = getViteEnv().VITE_API_BASE_URL || 'http://localhost:5000';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 2000, 4000]; // Exponential backoff: 1s, 2s, 4s
