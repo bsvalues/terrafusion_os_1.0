@@ -59,6 +59,14 @@ namespace TerraFusion.API.Middleware
                     stopwatch.ElapsedMilliseconds,
                     userId);
 
+                if (context.Response.StatusCode == StatusCodes.Status403Forbidden)
+                {
+                    await auditLogger.LogAuthorizationAsync(
+                        userId ?? "anonymous",
+                        context.Request.Path.ToString(),
+                        granted: false);
+                }
+
                 if (context.Response.StatusCode >= 400)
                 {
                     // Ensure we can read again inside error logging
