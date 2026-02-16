@@ -40,16 +40,10 @@ public static class IncidentServiceExtensions
             .GetSection(IncidentExplanationConfiguration.SectionName)
             .Get<IncidentExplanationConfiguration>();
 
-        if (explanationConfig?.EnableGlobally == true)
-        {
-            // TODO: Phase 39 implementation - register SystemGptIncidentExplanationService
-            // services.AddScoped<IIncidentExplanationService, SystemGptIncidentExplanationService>();
-        }
-        else
-        {
-            // Default to no-op explanation service
-            services.AddSingleton<IIncidentExplanationService, NullIncidentExplanationService>();
-        }
+        // GPT-backed explanation service will replace NullIncidentExplanationService
+        // when SystemGptIncidentExplanationService is implemented. Until then,
+        // both branches register the safe no-op to prevent missing-service exceptions.
+        services.AddSingleton<IIncidentExplanationService, NullIncidentExplanationService>();
 
         return services;
     }
@@ -80,11 +74,8 @@ public static class IncidentServiceExtensions
     public static IHealthChecksBuilder AddIncidentTriageHealthChecks(
         this IHealthChecksBuilder builder)
     {
-        // TODO: Phase 39 implementation - add health checks for:
-        // - Triage engine responsiveness
-        // - LLM explanation service availability (if enabled)
-        // - Recommendation template loading
-
+        // Health checks will be added when concrete triage monitoring
+        // services (engine responsiveness, LLM availability) are wired.
         return builder;
     }
 }

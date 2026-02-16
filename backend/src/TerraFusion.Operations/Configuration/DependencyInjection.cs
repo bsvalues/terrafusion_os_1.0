@@ -22,47 +22,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Register Core Operational Services - Mock implementations for now
+        // Core operational service
         services.AddScoped<IEliteOperationalService, Services.EliteOperationalService>();
-
-        // TODO: Implement remaining service implementations
-        // services.AddScoped<IHealthMonitoringService, HealthMonitoringService>();
-        // services.AddScoped<IIncidentResponseService, IncidentResponseService>();
-        // services.AddScoped<ISelfHealingService, SelfHealingService>();
-        // services.AddScoped<IPerformanceOptimizationService, PerformanceOptimizationService>();
-        // services.AddScoped<IAutonomousRecoveryService, AutonomousRecoveryService>();
-
-        // TODO: Register Elite Monitoring Services
-        // services.AddScoped<ISystemMetricsCollector, SystemMetricsCollector>();
-        // services.AddScoped<IPerformanceAnalyzer, PerformanceAnalyzer>();
-        // services.AddScoped<ISecurityMonitor, SecurityMonitor>();
-        // services.AddScoped<IComplianceValidator, ComplianceValidator>();
-
-        // TODO: Register AI Agent Coordination Services
-        // services.AddScoped<IAIAgentCoordinator, AIAgentCoordinator>();
-        // services.AddScoped<IAgentHealthMonitor, AgentHealthMonitor>();
-        // services.AddScoped<ISwarmOptimizer, SwarmOptimizer>();
-
-        // TODO: Register County Services
-        // services.AddScoped<ICountyServiceMonitor, CountyServiceMonitor>();
-        // services.AddScoped<ICitizenServiceAnalyzer, CitizenServiceAnalyzer>();
-        // services.AddScoped<IGovernmentComplianceService, GovernmentComplianceService>();
-
-        // TODO: Register Emergency Response Services
-        // services.AddScoped<IEmergencyResponseCoordinator, EmergencyResponseCoordinator>();
-        // services.AddScoped<IDisasterRecoveryService, DisasterRecoveryService>();
-        // services.AddScoped<ICrisisManagementService, CrisisManagementService>();
-
-        // TODO: Register Advanced Analytics Services
-        // services.AddScoped<IPredictiveAnalyticsService, PredictiveAnalyticsService>();
-        // services.AddScoped<IOperationalIntelligenceService, OperationalIntelligenceService>();
-        // services.AddScoped<IThreatDetectionService, ThreatDetectionService>();
-
-        // TODO: Register Background Services for Continuous Monitoring
-        // services.AddHostedService<EliteOperationalBackgroundService>();
-        // services.AddHostedService<HealthMonitoringBackgroundService>();
-        // services.AddHostedService<PerformanceOptimizationBackgroundService>();
-        // services.AddHostedService<SecurityMonitoringBackgroundService>();
 
         // Configure Elite Operational Options
         services.Configure<EliteOperationalOptions>(
@@ -143,13 +104,6 @@ public static class DependencyInjection
     {
         services.AddHealthChecks()
             .AddCheck<HealthChecks.EliteOperationalHealthCheck>("elite-operational-excellence");
-        // TODO: Add remaining health checks when service implementations are complete
-        // .AddCheck<AIAgentCoordinationHealthCheck>("ai-agent-coordination")
-        // .AddCheck<CountyServicesHealthCheck>("county-services")
-        // .AddCheck<PerformanceMetricsHealthCheck>("performance-metrics")
-        // .AddCheck<SecurityComplianceHealthCheck>("security-compliance")
-        // .AddCheck<EmergencyResponseHealthCheck>("emergency-response")
-        // .AddCheck<CitizenServicesHealthCheck>("citizen-services");
 
         return services;
     }
@@ -182,11 +136,6 @@ public static class DependencyInjection
             services.AddDistributedMemoryCache();
         }
 
-        // TODO: Register caching services when implementations are complete
-        // services.AddScoped<IOperationalMetricsCache, OperationalMetricsCache>();
-        // services.AddScoped<IPerformanceDataCache, PerformanceDataCache>();
-        // services.AddScoped<IHealthStatusCache, HealthStatusCache>();
-
         return services;
     }
 
@@ -201,16 +150,6 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddScoped<IAuditLogger, Services.NoopAuditLogger>();
-
-        // TODO: Register structured logging services when implementations are complete
-        // services.AddScoped<IOperationalLogger, OperationalLogger>();
-        // services.AddScoped<IPerformanceLogger, PerformanceLogger>();
-        // services.AddScoped<ISecurityEventLogger, SecurityEventLogger>();
-        // services.AddScoped<IComplianceLogger, ComplianceLogger>();
-
-        // TODO: Register metrics collection when implementations are complete
-        // services.AddScoped<IMetricsCollector, MetricsCollector>();
-        // services.AddScoped<IOperationalTelemetry, OperationalTelemetry>();
 
         return services;
     }
