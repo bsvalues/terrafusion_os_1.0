@@ -1,98 +1,33 @@
 /**
  * TerraFusion OS Desktop Icon Grid Component
  *
- * Grid layout of CONSTITUTIONAL SUITES only.
+ * Grid layout of CONSTITUTIONAL SUITES + OS FEATURES.
  * Legacy modules are accessible via Start Menu with [EXT] badge.
  *
- * Phase 9: Desktop now shows only constitutional suites from suiteRegistry.ts
+ * Phase 22: Desktop icons derived from canonical desktopManifest.ts
+ * (no hardcoded icon list — single source of truth is suiteRegistry.ts)
  *
  * @module shell/desktop/DesktopIconGrid
- * @see config/suiteRegistry.ts - Single source of truth
+ * @see config/desktopManifest.ts - Derived desktop icon entries
+ * @see config/suiteRegistry.ts - Canonical source of truth
  */
 
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { Category } from '../../config/generatedModules';
-import { DesktopIcon, type WiringStatus } from './DesktopIcon';
+import { getDesktopIcons } from '../../config/desktopManifest';
+import { DesktopIcon } from './DesktopIcon';
 
 // ============================================================================
-// Constants - Constitutional Suites with HONEST Wiring Status
+// Derived Icons from Canonical Registry (Phase 22)
 // ============================================================================
 
 /**
- * Demo parcel ID for workbench routing.
- * In production, this would come from user's recent parcels.
- */
-const DEMO_PARCEL_ID = '1234567890';
-
-/**
- * Desktop icon definitions from Constitutional Suite Registry.
- * Each suite routes to Workbench (real MWUX) instead of WIP suite homes.
+ * Desktop icons derived from the canonical suite registry.
+ * This is the ONLY list DesktopIconGrid should render.
  *
- * Wiring Status Legend:
- * - WB: Opens Workbench tab (BEST - real invokeTool flows)
- * - OS: Native OS route (live)
- * - WIP: Work in progress (placeholder page)
+ * @see getDesktopIcons() — derives from CONSTITUTIONAL_SUITES + OS_FEATURES
  */
-const DESKTOP_ICONS: Array<{
-  id: string;
-  name: string;
-  iconName: string;
-  category: Category;
-  route: string;
-  wiringStatus: WiringStatus;
-}> = [
-  // Constitutional Suites → Route to Workbench tabs (real MWUX)
-  {
-    id: 'forge',
-    name: 'TerraForge',
-    iconName: 'Hammer',
-    category: 'assessment',
-    route: `/property/${DEMO_PARCEL_ID}/forge`, // Real invokeTool: explain_model_results
-    wiringStatus: 'WB',
-  },
-  {
-    id: 'atlas',
-    name: 'TerraAtlas',
-    iconName: 'Globe',
-    category: 'mapping',
-    route: `/property/${DEMO_PARCEL_ID}/atlas`, // Real invokeTool: query_parcel_layers
-    wiringStatus: 'WB',
-  },
-  {
-    id: 'dais',
-    name: 'TerraDais',
-    iconName: 'LayoutDashboard',
-    category: 'system',
-    route: `/property/${DEMO_PARCEL_ID}/dais`, // Real invokeTool: check_cert_status
-    wiringStatus: 'WB',
-  },
-  {
-    id: 'dossier',
-    name: 'TerraDossier',
-    iconName: 'FileStack',
-    category: 'records',
-    route: `/property/${DEMO_PARCEL_ID}/dossier`, // Real invokeTool: summarize_dossier
-    wiringStatus: 'WB',
-  },
-  {
-    id: 'gpt',
-    name: 'TerraGPT',
-    iconName: 'Bot',
-    category: 'ai',
-    route: `/property/${DEMO_PARCEL_ID}/pilot`, // Real invokeTool: registry.list_tools
-    wiringStatus: 'WB',
-  },
-  // OS Feature: Pilot Console (full standalone route)
-  {
-    id: 'pilot',
-    name: 'TerraPilot',
-    iconName: 'Compass',
-    category: 'system',
-    route: '/pilot', // Native OS route (live)
-    wiringStatus: 'OS',
-  },
-];
+const DESKTOP_ICONS = getDesktopIcons();
 
 // ============================================================================
 // Types

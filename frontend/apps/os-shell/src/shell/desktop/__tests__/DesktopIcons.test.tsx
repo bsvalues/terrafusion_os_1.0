@@ -29,17 +29,12 @@ jest.mock('react-router-dom', () => {
 });
 
 // ============================================================================
-// Constants — must match DesktopIconGrid's hardcoded DESKTOP_ICONS
+// Constants — derived from canonical desktopManifest (Phase 22)
 // ============================================================================
 
-const DESKTOP_ICONS = [
-  { id: 'forge', name: 'TerraForge', iconName: 'Hammer', route: '/property/1234567890/forge' },
-  { id: 'atlas', name: 'TerraAtlas', iconName: 'Globe', route: '/property/1234567890/atlas' },
-  { id: 'dais', name: 'TerraDais', iconName: 'LayoutDashboard', route: '/property/1234567890/dais' },
-  { id: 'dossier', name: 'TerraDossier', iconName: 'FileStack', route: '/property/1234567890/dossier' },
-  { id: 'gpt', name: 'TerraGPT', iconName: 'Bot', route: '/property/1234567890/pilot' },
-  { id: 'pilot', name: 'TerraPilot', iconName: 'Compass', route: '/pilot' },
-];
+import { getDesktopIcons } from '../../../config/desktopManifest';
+
+const DESKTOP_ICONS = getDesktopIcons();
 
 // ============================================================================
 // Test Utilities
