@@ -96,6 +96,13 @@ namespace TerraFusion.API.Security
 
                 options.AddPolicy("RequireUser", policy =>
                     policy.RequireAuthenticatedUser());
+
+                // OS-level access policies referenced by controllers (Phase 14)
+                options.AddPolicy("OSCoreAccess", policy =>
+                    policy.RequireRole("GovernmentUser", "SystemAdministrator", "Admin", "SystemAdmin"));
+
+                options.AddPolicy("TIER5AIAccess", policy =>
+                    policy.RequireRole("SystemAdministrator", "Admin", "SystemAdmin", "AIModuleAccess"));
             });
 
             return services;
