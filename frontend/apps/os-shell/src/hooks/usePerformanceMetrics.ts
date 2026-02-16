@@ -9,6 +9,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
 
 export interface PerformanceMetric {
   id: string;
@@ -116,7 +117,7 @@ export interface PerformanceBaseline {
   environment: 'development' | 'staging' | 'production' | 'research';
 }
 
-const PERFORMANCE_BASE_URL = process.env.REACT_APP_PERFORMANCE_URL || 'http://localhost:3006';
+const PERFORMANCE_BASE_URL = getViteEnv().VITE_PERFORMANCE_URL || 'http://localhost:3006';
 
 class PerformanceMetricsAPI {
   private baseURL: string;

@@ -10,6 +10,7 @@
 import * as signalR from '@microsoft/signalr';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
 
 interface ExperimentRun {
   id: string;
@@ -62,7 +63,7 @@ interface ConsciousnessVisualizationData {
   timestamp: Date;
 }
 
-const EXPERIMENTS_BASE_URL = process.env.REACT_APP_EXPERIMENTS_URL || 'http://localhost:5010';
+const EXPERIMENTS_BASE_URL = getViteEnv().VITE_EXPERIMENTS_URL || 'http://localhost:5010';
 
 /**
  * Elite Experiment Runs Hook
@@ -345,3 +346,4 @@ export const useExperimentRuns = (experimentId: string | null) => {
 };
 
 export type { ConsciousnessVisualizationData, ExperimentRun, StartExperimentRequest };
+

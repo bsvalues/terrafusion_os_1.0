@@ -10,6 +10,7 @@
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
 
 export interface ConsciousnessAgent {
   id: string;
@@ -113,7 +114,7 @@ export interface OptimizationRequest {
   };
 }
 
-const CONSCIOUSNESS_BASE_URL = process.env.REACT_APP_CONSCIOUSNESS_URL || 'http://localhost:3004';
+const CONSCIOUSNESS_BASE_URL = getViteEnv().VITE_CONSCIOUSNESS_URL || 'http://localhost:3004';
 const SIGNALR_HUB_URL = `${CONSCIOUSNESS_BASE_URL}/hubs/consciousness`;
 
 class QuantumConsciousnessAPI {

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { lazy, memo, Suspense } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
 
 /**
  * Frontend Performance Optimization Service
@@ -42,7 +43,7 @@ export const OptimizedValuationComponent = memo(({ propertyId }: { propertyId: s
 class ValuationAPIService {
   private static instance: ValuationAPIService;
   private cache = new Map<string, any>();
-  private readonly baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  private readonly baseURL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
 
   static getInstance(): ValuationAPIService {
     if (!ValuationAPIService.instance) {

@@ -9,6 +9,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
 
 export interface ResearchDataset {
   id: string;
@@ -112,7 +113,7 @@ export interface ModelTrainingRequest {
   };
 }
 
-const ANALYTICS_BASE_URL = process.env.REACT_APP_ANALYTICS_URL || 'http://localhost:3005';
+const ANALYTICS_BASE_URL = getViteEnv().VITE_ANALYTICS_URL || 'http://localhost:3005';
 
 class ResearchAnalyticsAPI {
   private baseURL: string;

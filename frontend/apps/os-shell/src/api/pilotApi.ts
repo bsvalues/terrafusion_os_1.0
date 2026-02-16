@@ -17,12 +17,31 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { getSession } from '../auth/session';
 import { ErrorInfo } from '../hooks/useErrorHandler';
 import { getViteEnv } from '../shared/viteEnv';
 
 // Pilot API Base URL (Pilot subsystem, port 5000 - NOT TerraFusion core telemetry API)
 const env = getViteEnv();
 const API_BASE_URL = env.VITE_API_URL || 'http://localhost:5000';
+
+/**
+ * Build standard Pilot API headers including identity from current session.
+ * Injects x-user-id and x-county-id when a session exists.
+ */
+function buildPilotHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  const session = getSession();
+  if (session) {
+    headers['x-user-id'] = session.userId;
+    headers['x-county-id'] = session.countyId;
+    if (session.role) headers['x-role'] = session.role;
+    if (session.mode) headers['x-mode'] = session.mode;
+  }
+  return headers;
+}
 
 // ═══════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS (mirrors os-platform/core/types)
@@ -224,9 +243,7 @@ export async function listPilotTools(mode?: Mode): Promise<PilotToolListResponse
 
   const response = await fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: buildPilotHeaders(),
   });
 
   if (!response.ok) {
@@ -246,9 +263,7 @@ export async function getPilotTool(toolId: string): Promise<PilotToolFull> {
 
   const response = await fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: buildPilotHeaders(),
   });
 
   if (!response.ok) {
@@ -273,9 +288,7 @@ export async function invokePilotTool(request: PilotInvokeRequest): Promise<Pilo
 
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: buildPilotHeaders(),
     body: JSON.stringify(request),
   });
 
@@ -344,9 +357,7 @@ export async function validatePilotTool(
 
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: buildPilotHeaders(),
     body: JSON.stringify(request),
   });
 
@@ -369,9 +380,7 @@ export async function getPilotTrace(correlationId: string): Promise<PilotTraceRe
 
   const response = await fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: buildPilotHeaders(),
   });
 
   if (!response.ok) {
@@ -390,9 +399,7 @@ export async function getPilotHealth(): Promise<PilotHealthResponse> {
 
   const response = await fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: buildPilotHeaders(),
   });
 
   if (!response.ok) {
@@ -416,9 +423,7 @@ export async function requestApprovalToken(
 
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: buildPilotHeaders(),
     body: JSON.stringify(request),
   });
 

@@ -1,3 +1,5 @@
+import { getViteEnv } from '../env/getViteEnv';
+
 // Real Database Service for Terrafusion OS
 // Connects to backend APIs that access the real Benton County databases
 
@@ -84,7 +86,7 @@ class RealDataService {
   private readonly baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+    this.baseUrl = getViteEnv().VITE_API_BASE_URL || 'http://localhost:5000';
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
