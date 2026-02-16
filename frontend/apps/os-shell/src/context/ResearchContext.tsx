@@ -148,7 +148,7 @@ export const ResearchSessionProvider: React.FC<{ children: ReactNode }> = ({ chi
   const logout = useCallback(() => {
     setSession(null);
     localStorage.removeItem('terrafusion_research_session');
-    localStorage.removeItem('terrafusion_auth_token');
+    localStorage.removeItem('authToken');
     console.log('🚪 Research session terminated');
   }, []);
 
