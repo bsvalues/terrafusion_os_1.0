@@ -1,5 +1,7 @@
 import { getViteEnv } from '@/env/getViteEnv';
 import axios from 'axios';
+import { getToken } from '@/auth/authStorage';
+import { logout as authBridgeLogout, isLogoutInFlight } from '@/auth/authBridge';
 
 const env = getViteEnv();
 const API_BASE_URL =
@@ -13,9 +15,9 @@ const api = axios.create({
   },
 });
 
-// Add auth token to requests
+// Add auth token to requests (reads via authStorage bridge)
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -28,10 +30,14 @@ api.interceptors.response.use(
   (error) => {
     console.error('API Error:', error);
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
+      // Delegate to auth bridge — ensures single logout per burst
+      if (!isLogoutInFlight()) {
+        authBridgeLogout('unauthorized');
+        window.location.href = '/login';
+      }
     }
     if (error.response?.status === 403) {
+      // 403 = Forbidden — do NOT logout, just warn
       console.warn('Forbidden: insufficient permissions for', error.config?.url);
     }
     return Promise.reject(error);

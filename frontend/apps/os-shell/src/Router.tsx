@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
+import { AuthProvider, AuthGuard } from './auth/AuthProvider';
 
 // Loading component for Suspense fallback
 const LoadingFallback = () => (
@@ -94,105 +95,109 @@ const Router: React.FC = () => {
         v7_relativeSplatPath: true,
       }}
     >
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
-            {/* Phase 5: OS Landing Surface */}
-            <Route
-              path='/'
-              element={
-                <div className='min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
-                  <ShellHome />
-                </div>
-              }
-            />
+      <AuthProvider>
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingFallback />}>
+            <AuthGuard>
+              <Routes>
+                {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
+                <Route path='/login' element={<LoginPage />} />
 
-            {/* Desktop Shell - Full Windows-like experience */}
-            <Route path='/desktop' element={<App />} />
+                {/* Phase 5: OS Landing Surface */}
+                <Route
+                  path='/'
+                  element={
+                    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
+                      <ShellHome />
+                    </div>
+                  }
+                />
 
-            {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
-            <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
-              <Route index element={<PropertySummary />} />
-              <Route path='forge' element={<PropertyForge />} />
-              <Route path='atlas' element={<PropertyAtlas />} />
-              <Route path='dais' element={<PropertyDais />} />
-              <Route path='dossier' element={<PropertyDossier />} />
-              <Route path='pilot' element={<PropertyPilot />} />
-            </Route>
+                {/* Desktop Shell - Full Windows-like experience */}
+                <Route path='/desktop' element={<App />} />
 
-            {/* Legacy Redirects - Demote broken defaults with telemetry */}
-            <Route
-              path='/modules/property-workbench'
-              element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
-            />
-            <Route
-              path='/modules/property-workbench/*'
-              element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
-            />
+                {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
+                <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
+                  <Route index element={<PropertySummary />} />
+                  <Route path='forge' element={<PropertyForge />} />
+                  <Route path='atlas' element={<PropertyAtlas />} />
+                  <Route path='dais' element={<PropertyDais />} />
+                  <Route path='dossier' element={<PropertyDossier />} />
+                  <Route path='pilot' element={<PropertyPilot />} />
+                </Route>
 
-            <Route path='/monitoring' element={<Monitoring />} />
-            <Route path='/marketplace' element={<TerraFusionMarketplace />} />
-            <Route path='/experiments' element={<ExperimentsList />} />
-            <Route path='/experiments/create' element={<CreateExperiment />} />
-            <Route path='/elite-research' element={<EliteExperimentalResearchInterface />} />
-            <Route path='/codex/preferences' element={<NotificationPreferences />} />
+                {/* Legacy Redirects - Demote broken defaults with telemetry */}
+                <Route
+                  path='/modules/property-workbench'
+                  element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+                />
+                <Route
+                  path='/modules/property-workbench/*'
+                  element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+                />
 
-            {/* Gen2 Module Routes - Internal OS modules */}
-            <Route path='/gen2/terraforge' element={<TerraForgeGen2 />} />
-            <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
+                <Route path='/monitoring' element={<Monitoring />} />
+                <Route path='/marketplace' element={<TerraFusionMarketplace />} />
+                <Route path='/experiments' element={<ExperimentsList />} />
+                <Route path='/experiments/create' element={<CreateExperiment />} />
+                <Route path='/elite-research' element={<EliteExperimentalResearchInterface />} />
+                <Route path='/codex/preferences' element={<NotificationPreferences />} />
 
-            {/* Suite Routes (Phase 5: MWUX Slices) */}
-            <Route path='/suites/terra-prime/*' element={<TerraPrimeSuite />} />
+                {/* Gen2 Module Routes - Internal OS modules */}
+                <Route path='/gen2/terraforge' element={<TerraForgeGen2 />} />
+                <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
 
-            {/* Constitutional Suite Home Routes (Phase 9) */}
-            <Route path='/forge' element={<ForgeHome />} />
-            <Route path='/atlas' element={<AtlasHome />} />
-            <Route path='/dais' element={<DaisHome />} />
-            <Route path='/dossier' element={<DossierHome />} />
-            <Route path='/gpt' element={<GptHome />} />
+                {/* Suite Routes (Phase 5: MWUX Slices) */}
+                <Route path='/suites/terra-prime/*' element={<TerraPrimeSuite />} />
 
-            {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
-            <Route path='/pilot' element={<PilotHome />} />
-            {/* Legacy: Direct PilotConsole (for backwards compat during transition) */}
-            <Route path='/pilot/legacy' element={<PilotConsole />} />
-            {/* Slice 6.1: TerraTrace - Observability & Telemetry */}
-            <Route path='/trace' element={<TraceHome />} />
+                {/* Constitutional Suite Home Routes (Phase 9) */}
+                <Route path='/forge' element={<ForgeHome />} />
+                <Route path='/atlas' element={<AtlasHome />} />
+                <Route path='/dais' element={<DaisHome />} />
+                <Route path='/dossier' element={<DossierHome />} />
+                <Route path='/gpt' element={<GptHome />} />
 
-            {/* GovernanceLock - Dashboard (role-gated) */}
-            <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
-            <Route path='/pilot/api' element={<PilotApiDemo />} />
+                {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
+                <Route path='/pilot' element={<PilotHome />} />
+                {/* Legacy: Direct PilotConsole (for backwards compat during transition) */}
+                <Route path='/pilot/legacy' element={<PilotConsole />} />
+                {/* Slice 6.1: TerraTrace - Observability & Telemetry */}
+                <Route path='/trace' element={<TraceHome />} />
 
-            {/* Phase 17: Login (auth redirect target) */}
-            <Route path='/login' element={<LoginPage />} />
+                {/* GovernanceLock - Dashboard (role-gated) */}
+                <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
+                <Route path='/pilot/api' element={<PilotApiDemo />} />
 
-            {/* Phase 1: Error Display Demo */}
-            <Route path='/error-demo' element={<ErrorDisplayDemo />} />
+                {/* Phase 1: Error Display Demo */}
+                <Route path='/error-demo' element={<ErrorDisplayDemo />} />
 
-            {/* Phase 2: Pilot Tool Invocation Demo */}
-            <Route path='/pilot-demo' element={<PilotDemo />} />
+                {/* Phase 2: Pilot Tool Invocation Demo */}
+                <Route path='/pilot-demo' element={<PilotDemo />} />
 
-            {/* Phase 7: Dev-only Legacy Burn-Down Viewer (always registered, element guards) */}
-            <Route
-              path='/dev/legacy-metrics'
-              element={
-                import.meta.env.DEV ? (
-                  <LegacyMetricsViewer />
-                ) : (
-                  <div className='p-8 text-center text-gray-400'>
-                    Dev-only route. Not available in production.
-                  </div>
-                )
-              }
-            />
+                {/* Phase 7: Dev-only Legacy Burn-Down Viewer (always registered, element guards) */}
+                <Route
+                  path='/dev/legacy-metrics'
+                  element={
+                    import.meta.env.DEV ? (
+                      <LegacyMetricsViewer />
+                    ) : (
+                      <div className='p-8 text-center text-gray-400'>
+                        Dev-only route. Not available in production.
+                      </div>
+                    )
+                  }
+                />
 
-            {/* Legacy module routes - redirect to home with telemetry */}
-            <Route
-              path='/modules/*'
-              element={<LegacyRedirect to='/' legacyAppId='modules.unknown' />}
-            />
-          </Routes>
-        </Suspense>
-      </ErrorBoundary>
+                {/* Legacy module routes - redirect to home with telemetry */}
+                <Route
+                  path='/modules/*'
+                  element={<LegacyRedirect to='/' legacyAppId='modules.unknown' />}
+                />
+              </Routes>
+            </AuthGuard>
+          </Suspense>
+        </ErrorBoundary>
+      </AuthProvider>
     </BrowserRouter>
   );
 };
