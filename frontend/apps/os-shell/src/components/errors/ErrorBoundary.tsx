@@ -44,8 +44,22 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 9);
     return {
       hasError: true,
+      errorInfo: {
+        message: error.message || 'An unexpected error occurred',
+        stack: error.stack,
+        timestamp: new Date().toISOString(),
+        errorId: `boundary-${Date.now()}`,
+        correlationId: `ebnd-${timestamp}-${random}`,
+        context: {
+          errorCode: 'REACT_RENDER_ERROR',
+          component: 'ErrorBoundary',
+          severity: 'high',
+        },
+      },
     };
   }
 
