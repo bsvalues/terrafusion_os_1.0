@@ -22,9 +22,7 @@ const { DesktopIconGrid } = require('../DesktopIconGrid');
 
 const DESKTOP_ICONS = getDesktopIcons();
 
-// Skip: Phase 22 test — DesktopIconGrid still uses hardcoded DESKTOP_ICONS,
-// not yet rewired to consume desktopManifest. Enable after Phase 22 implementation.
-describe.skip('DesktopIconGrid canonical behavior (Phase 22)', () => {
+describe('DesktopIconGrid canonical behavior (Phase 22)', () => {
   beforeEach(() => mockNavigate.mockClear());
 
   it('renders the correct number of icons from manifest', () => {
