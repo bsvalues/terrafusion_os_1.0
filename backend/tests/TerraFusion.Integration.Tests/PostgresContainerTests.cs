@@ -62,7 +62,38 @@ public class PostgresContainerTests
 
                 using var client = config.CreateClient();
                 client.System.PingAsync(cts.Token).GetAwaiter().GetResult();
-                return true;
+                return CanStartAndConnectToPostgresContainer();
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool CanStartAndConnectToPostgresContainer()
+        {
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+                var testContainer = new PostgreSqlBuilder()
+                    .WithImage("postgres:15-alpine")
+                    .WithDatabase("testdb")
+                    .WithUsername("postgres")
+                    .WithPassword("testpw")
+                    .Build();
+
+                testContainer.StartAsync(cts.Token).GetAwaiter().GetResult();
+                try
+                {
+                    var connString = testContainer.GetConnectionString();
+                    using var conn = new NpgsqlConnection(connString);
+                    conn.Open();
+                    return true;
+                }
+                finally
+                {
+                    testContainer.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                }
             }
             catch
             {
