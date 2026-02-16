@@ -85,6 +85,7 @@ namespace TerraFusion.API.Security
             services.AddScoped<CoreAuth.IJwtTokenService, ApiJwtTokenServiceAdapter>();
             services.AddScoped<CoreAuth.IAuthenticationService, CoreAuth.AuthenticationService>();
             services.TryAddSingleton<CoreAuth.ISecurityService, InMemorySecurityService>();
+            services.AddHostedService<CoreAuth.RevocationCleanupBackgroundService>();
 
             services.AddAuthorization(options =>
             {
