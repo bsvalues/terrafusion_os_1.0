@@ -1,0 +1,301 @@
+/**
+ * Phase 28 — Desktop Parcel Param Robustness Contract
+ *
+ * Contract: all /property/:parcelId/* routes handle invalid/missing parcelId
+ * gracefully — no crash, no blank. Must render either:
+ *   - A tab landmark (when parcelId is present but garbage → workbench renders)
+ *   - The "workbench-no-parcel" landmark (when parcelId is truly missing/falsy)
+ *   - NOT the crash fallback ("Reset Application")
+ *
+ * Phase 22–27 proved the happy path (valid parcelId → landmarks).
+ * Phase 28 proves the sad path (garbage/missing → no crash, stable landmark).
+ *
+ * Prevents:
+ * - Crash loops from malformed parcel URLs (pen-test, broken links, typos)
+ * - White screens from URL fuzzing
+ * - XSS through parcelId injection into rendered output
+ * - Parameter parsing regressions across Router/Workbench boundary
+ *
+ * Technique:
+ * - Mock BrowserRouter → MemoryRouter (same as Phase 24–27)
+ * - Navigate to /property/{BAD_VALUE}/{tab} with various bad parcelIds
+ * - Assert: no crash fallback + at least one stable landmark renders
+ *
+ * Scope: Mechanical robustness only; not asserting backend data correctness.
+ */
+
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import React from 'react';
+import { getDesktopIcons } from '../../config/desktopManifest';
+
+// ============================================================================
+// Mocks (hoisted before imports by Jest)
+// ============================================================================
+
+let memoryRouterEntries: string[] = ['/'];
+
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    BrowserRouter: ({ children }: { children: React.ReactNode }) => (
+      <actual.MemoryRouter initialEntries={memoryRouterEntries}>{children}</actual.MemoryRouter>
+    ),
+  };
+});
+
+jest.mock('../../auth/authStorage', () => ({
+  getToken: () => 'smoke-test-token',
+  setToken: jest.fn(),
+  clearToken: jest.fn(),
+}));
+
+jest.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: jest.fn(),
+  unregisterLogoutHandler: jest.fn(),
+}));
+
+import Router from '../../Router';
+
+// ============================================================================
+// Test Vectors — bad parcelId values that must not crash
+// ============================================================================
+
+/**
+ * Each vector is a parcelId string that should be safely handled.
+ * React Router's /:parcelId always matches a non-empty segment,
+ * so all these will reach PropertyWorkbench with parcelId = the value.
+ * The workbench should render (with empty/placeholder data) without crashing.
+ */
+const BAD_PARCEL_IDS = [
+  { label: 'random string', value: 'INVALID_GARBAGE' },
+  { label: 'numeric but fake', value: '0000000000' },
+  { label: 'negative number', value: '-1' },
+  { label: 'special chars', value: 'abc!@%23$%25%5E&*()' },
+  { label: 'SQL injection attempt', value: "1' OR '1'='1" },
+  { label: 'path traversal attempt', value: '..%2F..%2F..%2Fetc%2Fpasswd' },
+  { label: 'very long string', value: 'A'.repeat(500) },
+  { label: 'unicode', value: '日本語テスト🏠' },
+  { label: 'single char', value: 'x' },
+  { label: 'whitespace encoded', value: 'hello%20world' },
+  { label: 'NaN literal', value: 'NaN' },
+  { label: 'script injection', value: '<script>alert(1)</script>' },
+];
+
+// ============================================================================
+// Property Route Extraction (from canonical registry)
+// ============================================================================
+
+/**
+ * Extract property route suffixes from desktop icons.
+ * Desktop icons have routes like /property/1234567890/forge.
+ * We extract the suffix (forge, atlas, etc.) to build test routes.
+ */
+function extractPropertyTabSuffixes(): string[] {
+  const icons = getDesktopIcons();
+  const suffixes: string[] = [];
+  for (const icon of icons) {
+    const route = icon.route;
+    if (!route || typeof route !== 'string') continue;
+    const m = route.match(/^\/property\/[^/]+\/([^/?#]+)$/);
+    if (!m) continue;
+    const suffix = m[1];
+    if (!suffixes.includes(suffix)) suffixes.push(suffix);
+  }
+  return suffixes;
+}
+
+/**
+ * Valid landmark testids that prove the workbench rendered content.
+ * Any of these appearing means the app didn't crash or blank.
+ */
+const TAB_LANDMARKS: Record<string, string[]> = {
+  forge: ['property-forge-tab', 'property-workbench-root'],
+  atlas: ['property-atlas-tab', 'property-workbench-root'],
+  dais: ['property-dais-tab', 'property-workbench-root'],
+  dossier: ['property-dossier-tab', 'property-workbench-root'],
+  pilot: ['property-pilot-tab', 'property-workbench-root'],
+};
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+function hasAnyLandmark(testIds: string[]): boolean {
+  return testIds.some((id) => screen.queryByTestId(id) !== null);
+}
+
+// ============================================================================
+// Tests
+// ============================================================================
+
+describe('Phase 28 contract: parcel param robustness — invalid parcelId never crashes', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  // Structural guard: ensure we have property tabs to test
+  it('desktop icons contain property route suffixes', () => {
+    const suffixes = extractPropertyTabSuffixes();
+    expect(suffixes.length).toBeGreaterThan(0);
+    // Verify all canonical tabs are present
+    expect(suffixes).toEqual(
+      expect.arrayContaining(['forge', 'atlas', 'dais', 'dossier', 'pilot'])
+    );
+  });
+
+  /**
+   * Core contract: for the canonical tab (forge), every bad parcelId
+   * renders the workbench without crashing.
+   *
+   * We test forge as the primary tab. If forge survives, the others
+   * will too (they share the same PropertyWorkbench parent guard).
+   */
+  it.each(BAD_PARCEL_IDS)(
+    'parcelId="$label": /property/{value}/forge renders without crash',
+    async ({ value }) => {
+      memoryRouterEntries = [`/property/${encodeURIComponent(value)}/forge`];
+
+      render(<Router />);
+
+      // Wait for Suspense to resolve
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      // HARD GUARD: must not be in crash fallback state
+      expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
+
+      // The workbench should render content (tab landmark or no-parcel state).
+      // With garbage parcelId, PropertyWorkbench still mounts because :parcelId matched.
+      await waitFor(
+        () => {
+          const hasTab = hasAnyLandmark(TAB_LANDMARKS.forge);
+          const hasNoParcel = screen.queryByTestId('workbench-no-parcel') !== null;
+          if (!hasTab && !hasNoParcel) {
+            throw new Error(
+              `Phase 28: /property/${value}/forge rendered but no landmark found.\n` +
+                'Expected either a tab landmark or workbench-no-parcel state.'
+            );
+          }
+        },
+        { timeout: 5000 }
+      );
+    }
+  );
+
+  /**
+   * Cross-tab coverage: one representative bad parcelId per tab.
+   * Ensures no tab has a unique crash path for bad input.
+   */
+  it.each(Object.keys(TAB_LANDMARKS))(
+    'tab "%s" with garbage parcelId renders without crash',
+    async (tab) => {
+      const badParcel = 'ROBUSTNESS_TEST_INVALID';
+      memoryRouterEntries = [`/property/${badParcel}/${tab}`];
+
+      render(<Router />);
+
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      // Must not crash
+      expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
+
+      // Should render tab content or no-parcel state
+      await waitFor(
+        () => {
+          const landmarks = TAB_LANDMARKS[tab] || [];
+          const hasTab = hasAnyLandmark(landmarks);
+          const hasNoParcel = screen.queryByTestId('workbench-no-parcel') !== null;
+          if (!hasTab && !hasNoParcel) {
+            throw new Error(
+              `Phase 28: /property/${badParcel}/${tab} rendered but no landmark found.`
+            );
+          }
+        },
+        { timeout: 5000 }
+      );
+    }
+  );
+
+  /**
+   * Edge case: /property with NO parcelId segment.
+   * React Router won't match /property/:parcelId, so this falls through
+   * to no matching route. Verify: no crash, graceful behavior.
+   */
+  it('/property (no parcelId segment) does not crash', async () => {
+    memoryRouterEntries = ['/property'];
+
+    render(<Router />);
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    // Must not crash
+    expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * Edge case: /property/ (trailing slash, no parcelId).
+   * Same as above — should not crash.
+   */
+  it('/property/ (trailing slash, no parcelId) does not crash', async () => {
+    memoryRouterEntries = ['/property/'];
+
+    render(<Router />);
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * Sanity: valid parcelId still renders tab landmarks normally.
+   * Guards against overzealous redirects that break the happy path.
+   */
+  it('valid parcelId still resolves property routes (sanity check)', async () => {
+    const suffixes = extractPropertyTabSuffixes();
+
+    for (const suffix of suffixes) {
+      cleanup();
+      memoryRouterEntries = [`/property/1234567890/${suffix}`];
+      render(<Router />);
+
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      // Must not crash
+      expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
+
+      // Must render tab landmark (not just a safety state)
+      const landmarks = TAB_LANDMARKS[suffix] || [];
+      await waitFor(
+        () => {
+          expect(hasAnyLandmark(landmarks)).toBe(true);
+        },
+        { timeout: 5000 }
+      );
+    }
+  });
+});
