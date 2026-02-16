@@ -1,9 +1,9 @@
 /**
  * Phase 27 — Desktop Deep-Link Intent Contract
  *
- * Contract: navigating directly to each desktop route (as if pasting a URL
- * or hitting browser refresh) must mount the full Router and render the
- * Phase 25 landmark — without any prior desktop click or navigation.
+ * Contract: for every desktop route from getDesktopIcons(), direct navigation
+ * (paste URL / browser refresh) renders the Phase 25 landmark WITHOUT
+ * requiring prior desktop interaction (no click, no icon grid).
  *
  * Phase 22 guarantees "IDs are canonical".
  * Phase 23 guarantees "route exists in Router".
@@ -135,11 +135,11 @@ describe('Phase 27 contract: deep-link → Router mounts → landmark renders', 
     expect(testableIcons.length).toBeGreaterThan(0);
   });
 
-  it('every route has a landmark spec registered', () => {
+  it('every route has a deep-link landmark spec registered', () => {
     const missing = testableIcons.filter((icon) => !ROUTE_LANDMARKS[icon.route]);
     if (missing.length > 0) {
       throw new Error(
-        'Routes without landmark spec:\n' +
+        'Routes without deep-link landmark spec:\n' +
           missing.map((i) => `  - ${i.id}: ${i.route}`).join('\n') +
           '\nAdd them to ROUTE_LANDMARKS in this test file.'
       );
