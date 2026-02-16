@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { AuthProvider, AuthGuard } from './auth/AuthProvider';
+import { getViteEnv } from './env/getViteEnv';
 
 // Loading component for Suspense fallback
 const LoadingFallback = () => (
@@ -178,7 +179,7 @@ const Router: React.FC = () => {
                 <Route
                   path='/dev/legacy-metrics'
                   element={
-                    import.meta.env.DEV ? (
+                    getViteEnv().DEV ? (
                       <LegacyMetricsViewer />
                     ) : (
                       <div className='p-8 text-center text-gray-400'>
