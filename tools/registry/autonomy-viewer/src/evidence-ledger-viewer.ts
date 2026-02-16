@@ -23,7 +23,7 @@
  *   --verbose             Verbose output
  */
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { EvidenceIndex, EvidenceRecord } from './evidence-index.js';
@@ -247,7 +247,7 @@ export function loadIndices(inputPath: string, verbose = false): EvidenceIndex[]
   }
 
   // Check if it's a file or directory
-  const stat = require('node:fs').statSync(inputPath);
+  const stat = statSync(inputPath);
 
   if (stat.isFile()) {
     // Single file

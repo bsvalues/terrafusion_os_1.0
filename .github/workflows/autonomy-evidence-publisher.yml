@@ -67,9 +67,9 @@ jobs:
           LABELS="${{ join(github.event.pull_request.labels.*.name, ',') }}"
           echo "PR Labels: $LABELS"
 
-          # Generate release tag (monthly rollup format)
+          # Generate release tag (slash-free monthly rollup format)
           YEAR_MONTH=$(date +%Y-%m)
-          RELEASE_TAG="autonomy-evidence/${YEAR_MONTH}"
+          RELEASE_TAG="autonomy-evidence-${YEAR_MONTH}"
           RUN_ID="${{ github.run_id }}"
 
           echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
@@ -143,6 +143,21 @@ jobs:
             echo "⚠️ No performance plan (may be empty run)"
           fi
 
+      - name: Ensure apply proofs artifact exists
+        run: |
+          mkdir -p "${{ env.OUT_DIR }}"
+          if [ ! -f "${{ env.OUT_DIR }}/apply-proofs.json" ]; then
+            echo "[]" > "${{ env.OUT_DIR }}/apply-proofs.json"
+            echo "ℹ️ Created fallback apply-proofs.json for deterministic bundling"
+          fi
+
+      - name: Ensure governance contract file exists
+        run: |
+          if [ ! -f "AUTONOMY_V1_GOVERNANCE_CONTRACT.md" ] && [ -f "QUARANTINE/root-md/AUTONOMY_V1_GOVERNANCE_CONTRACT.md" ]; then
+            cp "QUARANTINE/root-md/AUTONOMY_V1_GOVERNANCE_CONTRACT.md" "AUTONOMY_V1_GOVERNANCE_CONTRACT.md"
+            echo "ℹ️ Restored AUTONOMY_V1_GOVERNANCE_CONTRACT.md from QUARANTINE/root-md"
+          fi
+
       - name: Generate CIO Dashboard
         run: |
           echo "📊 Generating County CIO Dashboard..."
@@ -158,7 +173,7 @@ jobs:
         id: bundle
         run: |
           echo "📦 Generating Evidence Bundle..."
-          BUNDLE_NAME="autonomy-evidence-${{ needs.gate.outputs.run_id }}"
+          BUNDLE_NAME="autonomy-evidence-${{ needs.gate.outputs.run_id }}.zip"
 
           npx tsx tools/registry/autonomy-viewer/src/bundle.ts \
             --in ${{ github.workspace }} \
@@ -168,15 +183,17 @@ jobs:
             --emit-manifest \
             --verbose
 
+          MANIFEST_PATH="${{ env.VIEWER_DIR }}/${BUNDLE_NAME}.manifest.json"
+
           # Capture manifest SHA256
-          if [ -f "${{ env.VIEWER_DIR }}/MANIFEST.json" ]; then
-            MANIFEST_SHA=$(sha256sum ${{ env.VIEWER_DIR }}/MANIFEST.json | cut -d' ' -f1)
+          if [ -f "$MANIFEST_PATH" ]; then
+            MANIFEST_SHA=$(sha256sum "$MANIFEST_PATH" | cut -d' ' -f1)
             echo "manifest_sha=$MANIFEST_SHA" >> $GITHUB_OUTPUT
-            echo "bundle_name=${BUNDLE_NAME}.zip" >> $GITHUB_OUTPUT
-            echo "bundle_path=${{ env.VIEWER_DIR }}/${BUNDLE_NAME}.zip" >> $GITHUB_OUTPUT
-            echo "✅ Bundle generated: ${BUNDLE_NAME}.zip"
+            echo "bundle_name=${BUNDLE_NAME}" >> $GITHUB_OUTPUT
+            echo "bundle_path=${{ env.VIEWER_DIR }}/${BUNDLE_NAME}" >> $GITHUB_OUTPUT
+            echo "✅ Bundle generated: ${BUNDLE_NAME}"
           else
-            echo "::error::MANIFEST.json not found"
+            echo "::error::Bundle manifest not found at $MANIFEST_PATH"
             exit 1
           fi
 
@@ -260,7 +277,7 @@ jobs:
 
           # Phase 4N20: Include SHA for identity pinning
           npx tsx tools/registry/autonomy-viewer/src/evidence-index.ts \
-            --out ${{ env.VIEWER_DIR }}/autonomy-evidence-index.json \
+            --out ${{ env.VIEWER_DIR }} \
             --artifacts ${{ env.OUT_DIR }} \
             --bundle "${{ steps.bundle.outputs.bundle_name }}" \
             --manifest-sha "${{ steps.bundle.outputs.manifest_sha }}" \
