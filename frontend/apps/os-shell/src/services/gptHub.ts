@@ -1,6 +1,7 @@
 // TerraFusionGPT Suite: SignalR Hub Client
 // Elite Government OS Engineering - Real-Time Communication
 
+import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
 import * as signalR from '@microsoft/signalr';
 import { GPTConfiguration, GPTMessage } from './gptAPI';
@@ -109,7 +110,7 @@ class GPTHubClient {
     this.handlers = eventHandlers;
 
     // Get auth token
-    const token = localStorage.getItem('authToken');
+    const token = getToken();
 
     // Build connection
     this.connection = new signalR.HubConnectionBuilder()

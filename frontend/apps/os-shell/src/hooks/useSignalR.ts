@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
+import { useEffect, useRef, useState } from 'react';
+import { getToken } from '../auth/authStorage';
 
 interface SignalRConnection {
   connection: signalR.HubConnection | null;
@@ -34,8 +35,7 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
           skipNegotiation: true,
           transport: signalR.HttpTransportType.WebSockets,
           accessTokenFactory: () => {
-            // Get auth token from localStorage
-            return localStorage.getItem('authToken') || '';
+            return getToken() || '';
           },
         })
         .withAutomaticReconnect()

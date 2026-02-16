@@ -7,6 +7,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { getToken } from '../auth/authStorage';
 
 interface PropertyData {
   parcelId: string;
@@ -75,7 +76,7 @@ export const usePropertyAnalysis = ({
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+              Authorization: `Bearer ${getToken()}`,
             },
           }
         );
