@@ -31,6 +31,9 @@ api.interceptors.response.use(
       localStorage.removeItem('authToken');
       window.location.href = '/login';
     }
+    if (error.response?.status === 403) {
+      console.warn('Forbidden: insufficient permissions for', error.config?.url);
+    }
     return Promise.reject(error);
   }
 );

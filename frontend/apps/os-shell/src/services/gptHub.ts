@@ -109,7 +109,7 @@ class GPTHubClient {
     this.handlers = eventHandlers;
 
     // Get auth token
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('authToken');
 
     // Build connection
     this.connection = new signalR.HubConnectionBuilder()
