@@ -19,8 +19,8 @@
  * Scope: Mechanical intent only; not asserting business data.
  */
 
-import React from 'react';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { getDesktopIcons, type DesktopIconEntry } from '../../config/desktopManifest';
 
@@ -197,14 +197,16 @@ describe('Phase 26 intent contract: click desktop icon → navigate → landmark
         { timeout: 5000 }
       );
 
-      // Let async effects settle
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
       // Phase 24 crash guard (redundant but cheap)
       expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
 
-      // Phase 25 landmark assertion
-      assertLandmark(icon.route);
+      // Phase 25 landmark assertion — use waitFor to handle lazy tab rendering under load.
+      await waitFor(
+        () => {
+          assertLandmark(icon.route);
+        },
+        { timeout: 5000 }
+      );
     }
   );
 });
