@@ -262,7 +262,7 @@ async function apiClient<T>(
     const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
     // Add authentication token if available
-    const token = localStorage.getItem('terrafusion_auth_token');
+    const token = localStorage.getItem('authToken');
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       'X-Request-ID': requestId,

@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TerraFusion.Operations.Configuration;
 using TerraFusion.Operations.Incidents;
+using TerraFusion.Operations.Runbooks;
+using TerraFusion.Operations.Runbooks.Remediation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,9 +65,13 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddEliteOperationalExcellence(builder.Configuration);
 builder.Services.AddEliteOperationalSecurity(builder.Configuration);
 builder.Services.AddEliteOperationalHealthChecks(builder.Configuration);
+builder.Services.AddHealthChecks().AddIncidentTriageHealthChecks();
 builder.Services.AddEliteOperationalCaching(builder.Configuration);
 builder.Services.AddEliteOperationalLogging(builder.Configuration);
 builder.Services.AddIncidentTriageServices(builder.Configuration);
+builder.Services.AddRunbookEngine();
+builder.Services.AddRunbookExecutor();
+builder.Services.AddRemediationPolicyEngine();
 
 // Configure CORS
 builder.Services.AddCors(options =>

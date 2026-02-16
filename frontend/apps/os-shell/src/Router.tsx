@@ -83,6 +83,9 @@ const PilotDemo = lazy(() => import('./pages/PilotDemo'));
 // Phase 7: Dev-only Legacy Burn-Down Viewer
 const LegacyMetricsViewer = lazy(() => import('./pages/dev/LegacyMetricsViewer'));
 
+// Phase 17: Login page (auth redirect target)
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+
 const Router: React.FC = () => {
   return (
     <BrowserRouter
@@ -158,6 +161,9 @@ const Router: React.FC = () => {
             {/* GovernanceLock - Dashboard (role-gated) */}
             <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
             <Route path='/pilot/api' element={<PilotApiDemo />} />
+
+            {/* Phase 17: Login (auth redirect target) */}
+            <Route path='/login' element={<LoginPage />} />
 
             {/* Phase 1: Error Display Demo */}
             <Route path='/error-demo' element={<ErrorDisplayDemo />} />
