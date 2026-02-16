@@ -5,7 +5,6 @@ using System.Collections.Concurrent;
 using TerraFusion.Core.Entities;
 
 
-#pragma warning disable CS1998
 
 namespace TerraFusion.Core.Services
 {

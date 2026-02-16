@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 
-#pragma warning disable CS1998
 
 namespace TerraFusion.Core.Security
 {

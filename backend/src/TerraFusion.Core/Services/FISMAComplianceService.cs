@@ -3,7 +3,6 @@ using System.Text.Json;
 using TerraFusion.Core.DTOs;
 
 
-#pragma warning disable CS1998
 
 namespace TerraFusion.Core.Services
 {

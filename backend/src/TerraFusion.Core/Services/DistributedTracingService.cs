@@ -9,7 +9,6 @@ using System.Net.Http;
 using System.Text;
 
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators
 
 namespace TerraFusion.Core.Services
 {

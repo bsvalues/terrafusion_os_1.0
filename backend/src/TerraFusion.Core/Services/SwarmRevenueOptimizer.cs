@@ -6,8 +6,6 @@ using System.Security.Cryptography;
 using TerraFusion.Core.Services.QuantumEnhanced;
 
 
-#pragma warning disable CS1998
-
 namespace TerraFusion.Core.Services
 {
     public interface ISwarmRevenueOptimizer
@@ -180,7 +178,7 @@ namespace TerraFusion.Core.Services
             };
         }
 
-        public async Task<bool> UpdateSwarmConfiguration(SwarmConfiguration config)
+        public Task<bool> UpdateSwarmConfiguration(SwarmConfiguration config)
         {
             _logger.LogInformation("[SWARM-CONFIG] Updating swarm configuration");
 
@@ -188,12 +186,12 @@ namespace TerraFusion.Core.Services
             {
                 _swarmConfig = config;
                 _logger.LogInformation("[SWARM-CONFIG] ✅ Configuration updated successfully");
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[SWARM-CONFIG] Configuration update failed");
-                return false;
+                return Task.FromResult(false);
             }
         }
 
@@ -402,7 +400,7 @@ namespace TerraFusion.Core.Services
             return mlResult.ExpectedRevenue;
         }
 
-        private async Task DepositPheromone(RevenueSolution solution)
+        private Task DepositPheromone(RevenueSolution solution)
         {
             var trailId = Guid.NewGuid().ToString();
             var trail = new PheromoneTrail
@@ -416,6 +414,7 @@ namespace TerraFusion.Core.Services
             };
 
             _pheromoneTrails[trailId] = trail;
+            return Task.CompletedTask;
         }
 
         private async Task<RevenueSolution> ApplyQuantumEnhancement(RevenueSolution solution, SwarmOptimizationRequest request)

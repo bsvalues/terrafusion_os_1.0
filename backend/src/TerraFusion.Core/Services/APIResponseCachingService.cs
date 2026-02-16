@@ -11,7 +11,6 @@ using System.Security.Cryptography;
 using System.IO;
 
 
-#pragma warning disable CS1998
 
 namespace TerraFusion.Core.Services
 {
