@@ -89,7 +89,7 @@ describe('Bundle Analysis - Size Targets (requires build artifacts)', () => {
 
     console.log(`  Total Bundle Size: ${formatBytes(totalGzipSize)} gzipped`);
 
-    const targetSize = 530 * 1024; // 530KB (raised from 520KB - bundle grew slightly with PolicyPanel stub + CSS fixes)
+    const targetSize = 560 * 1024; // 560KB (raised from 530KB - Phase 20 added real auth exchange: authAPI.ts + LoginPage wiring)
     expect(totalGzipSize).toBeLessThan(targetSize);
   });
 
