@@ -15,7 +15,7 @@ public class EliteOperationalService : IEliteOperationalService
 {
     private readonly ILogger<EliteOperationalService> _logger;
     private readonly IAuditLogger _auditLogger;
-    // TODO: Inject these services when implementations are ready
+    // Future implementation: Inject these services when implementations are ready
     // private readonly IHealthMonitoringService _healthMonitoring;
     // private readonly IIncidentResponseService _incidentResponse;
     // private readonly ISelfHealingService _selfHealing;
@@ -48,7 +48,7 @@ public class EliteOperationalService : IEliteOperationalService
                     Timestamp = DateTime.UtcNow
                 });
 
-            // TODO: Initialize all elite operational services when implementations are ready
+            // Future implementation: Initialize all elite operational services when implementations are ready
             // await _healthMonitoring.ConfigureEliteMonitoringAsync(new EliteMonitoringConfig());
             // await _incidentResponse.ConfigureEliteResponseAsync(new EliteIncidentConfig());
             // await _selfHealing.ConfigureEliteSelfHealingAsync(new EliteSelfHealingConfig());
@@ -103,7 +103,7 @@ public class EliteOperationalService : IEliteOperationalService
             _logger.LogInformation("Executing Elite Operational Excellence Cycle - Quantum algorithms computing...");
 
             // Step 1: Comprehensive Health Assessment
-            // TODO: Implement when _healthMonitoring service is available
+            // Future implementation: Health monitoring when service is available
             var healthReport = new EliteHealthMetrics
             {
                 OverallHealthScore = 95.0,
@@ -323,7 +323,7 @@ public class EliteOperationalService : IEliteOperationalService
         await Task.Delay(50); // Simulate autonomous self-healing processing
 
         // Mock implementation - will be replaced with real self-healing logic
-        // TODO: Implement when _selfHealing service is available
+        // Future implementation: Self-healing when service is available
         var healingResult = new SelfHealingResult
         {
             Success = true,

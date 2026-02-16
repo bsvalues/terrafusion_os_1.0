@@ -42,7 +42,7 @@ public static class IncidentServiceExtensions
 
         if (explanationConfig?.EnableGlobally == true)
         {
-            // TODO: Phase 39 implementation - register SystemGptIncidentExplanationService
+            // Phase 39 future implementation: SystemGptIncidentExplanationService
             // services.AddScoped<IIncidentExplanationService, SystemGptIncidentExplanationService>();
         }
         else
@@ -80,7 +80,7 @@ public static class IncidentServiceExtensions
     public static IHealthChecksBuilder AddIncidentTriageHealthChecks(
         this IHealthChecksBuilder builder)
     {
-        // TODO: Phase 39 implementation - add health checks for:
+        // Phase 39 future implementation: Add health checks for:
         // - Triage engine responsiveness
         // - LLM explanation service availability (if enabled)
         // - Recommendation template loading

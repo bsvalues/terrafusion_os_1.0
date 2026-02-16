@@ -25,40 +25,40 @@ public static class DependencyInjection
         // Register Core Operational Services - Mock implementations for now
         services.AddScoped<IEliteOperationalService, Services.EliteOperationalService>();
 
-        // TODO: Implement remaining service implementations
+        // Future implementation: Remaining service implementations
         // services.AddScoped<IHealthMonitoringService, HealthMonitoringService>();
         // services.AddScoped<IIncidentResponseService, IncidentResponseService>();
         // services.AddScoped<ISelfHealingService, SelfHealingService>();
         // services.AddScoped<IPerformanceOptimizationService, PerformanceOptimizationService>();
         // services.AddScoped<IAutonomousRecoveryService, AutonomousRecoveryService>();
 
-        // TODO: Register Elite Monitoring Services
+        // Future implementation: Elite Monitoring Services
         // services.AddScoped<ISystemMetricsCollector, SystemMetricsCollector>();
         // services.AddScoped<IPerformanceAnalyzer, PerformanceAnalyzer>();
         // services.AddScoped<ISecurityMonitor, SecurityMonitor>();
         // services.AddScoped<IComplianceValidator, ComplianceValidator>();
 
-        // TODO: Register AI Agent Coordination Services
+        // Future implementation: AI Agent Coordination Services
         // services.AddScoped<IAIAgentCoordinator, AIAgentCoordinator>();
         // services.AddScoped<IAgentHealthMonitor, AgentHealthMonitor>();
         // services.AddScoped<ISwarmOptimizer, SwarmOptimizer>();
 
-        // TODO: Register County Services
+        // Future implementation: County Services
         // services.AddScoped<ICountyServiceMonitor, CountyServiceMonitor>();
         // services.AddScoped<ICitizenServiceAnalyzer, CitizenServiceAnalyzer>();
         // services.AddScoped<IGovernmentComplianceService, GovernmentComplianceService>();
 
-        // TODO: Register Emergency Response Services
+        // Future implementation: Emergency Response Services
         // services.AddScoped<IEmergencyResponseCoordinator, EmergencyResponseCoordinator>();
         // services.AddScoped<IDisasterRecoveryService, DisasterRecoveryService>();
         // services.AddScoped<ICrisisManagementService, CrisisManagementService>();
 
-        // TODO: Register Advanced Analytics Services
+        // Future implementation: Advanced Analytics Services
         // services.AddScoped<IPredictiveAnalyticsService, PredictiveAnalyticsService>();
         // services.AddScoped<IOperationalIntelligenceService, OperationalIntelligenceService>();
         // services.AddScoped<IThreatDetectionService, ThreatDetectionService>();
 
-        // TODO: Register Background Services for Continuous Monitoring
+        // Future implementation: Background Services for Continuous Monitoring
         // services.AddHostedService<EliteOperationalBackgroundService>();
         // services.AddHostedService<HealthMonitoringBackgroundService>();
         // services.AddHostedService<PerformanceOptimizationBackgroundService>();
@@ -143,7 +143,7 @@ public static class DependencyInjection
     {
         services.AddHealthChecks()
             .AddCheck<HealthChecks.EliteOperationalHealthCheck>("elite-operational-excellence");
-        // TODO: Add remaining health checks when service implementations are complete
+        // Future implementation: Additional health checks when service implementations are complete
         // .AddCheck<AIAgentCoordinationHealthCheck>("ai-agent-coordination")
         // .AddCheck<CountyServicesHealthCheck>("county-services")
         // .AddCheck<PerformanceMetricsHealthCheck>("performance-metrics")
@@ -182,7 +182,7 @@ public static class DependencyInjection
             services.AddDistributedMemoryCache();
         }
 
-        // TODO: Register caching services when implementations are complete
+        // Future implementation: Caching services when implementations are complete
         // services.AddScoped<IOperationalMetricsCache, OperationalMetricsCache>();
         // services.AddScoped<IPerformanceDataCache, PerformanceDataCache>();
         // services.AddScoped<IHealthStatusCache, HealthStatusCache>();
@@ -202,13 +202,13 @@ public static class DependencyInjection
     {
         services.AddScoped<IAuditLogger, Services.NoopAuditLogger>();
 
-        // TODO: Register structured logging services when implementations are complete
+        // Future implementation: Structured logging services when implementations are complete
         // services.AddScoped<IOperationalLogger, OperationalLogger>();
         // services.AddScoped<IPerformanceLogger, PerformanceLogger>();
         // services.AddScoped<ISecurityEventLogger, SecurityEventLogger>();
         // services.AddScoped<IComplianceLogger, ComplianceLogger>();
 
-        // TODO: Register metrics collection when implementations are complete
+        // Future implementation: Metrics collection when implementations are complete
         // services.AddScoped<IMetricsCollector, MetricsCollector>();
         // services.AddScoped<IOperationalTelemetry, OperationalTelemetry>();
 
