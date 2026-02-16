@@ -9,7 +9,6 @@ using System.Data;
 using System.Diagnostics.CodeAnalysis;
 
 
-#pragma warning disable CS1998
 
 namespace TerraFusion.Core.Configuration;
 

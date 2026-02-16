@@ -7,7 +7,6 @@ using TerraFusion.Core.Services.Monitoring;
 using TerraFusion.Core.Extensions;
 
 
-#pragma warning disable CS1998
 
 namespace TerraFusion.Core.Services.AI;
 

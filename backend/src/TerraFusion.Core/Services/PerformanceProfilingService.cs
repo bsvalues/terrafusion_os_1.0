@@ -9,7 +9,6 @@ using System.Collections.Concurrent;
 using System.Linq;
 
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators
 
 namespace TerraFusion.Core.Services
 {
