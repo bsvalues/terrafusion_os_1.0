@@ -68,8 +68,13 @@ import Router from '../../Router';
 // ============================================================================
 
 describe('Phase 35 contract: TerraCanon supports multiple session workspaces and a safe switcher', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(() => {
     cleanup();
+    localStorage.clear();
   });
 
   /**

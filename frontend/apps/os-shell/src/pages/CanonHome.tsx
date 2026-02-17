@@ -10,6 +10,7 @@
  * Phase 35: Multi-workspace switcher — in-memory array, active index, per-workspace rename.
  * Phase 36: Close workspace intent — remove active, fallback or return to empty.
  * Phase 37: Reopen last closed workspace — undo-close via lastClosedRef.
+ * Phase 38: Persistence spine — localStorage v1, schema-safe restore.
  *
  * Layout:
  *   terracanon-root
@@ -30,7 +31,8 @@
  *                         ├─ terracanon-workspace-item-0
  *                         └─ terracanon-workspace-item-N
  *
- * State: workspaces[] array + activeIndex. No persistence, no filesystem, no LSP.
+ * State: workspaces[] array + activeIndex. Persisted to localStorage (v1 keys).
+ * No filesystem, no LSP.
  *
  * @module pages/CanonHome
  * @see Phase 30: TerraCanon Launch Spine Contract
@@ -41,9 +43,10 @@
  * @see Phase 35: TerraCanon Multi-Workspace Switcher Contract
  * @see Phase 36: TerraCanon Close Workspace Intent Contract
  * @see Phase 37: TerraCanon Reopen Last Closed Workspace Contract
+ * @see Phase 38: TerraCanon Persistence Spine Contract
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
@@ -258,13 +261,72 @@ function CanonWorkspace({
 // Canon Content (root landmark + workspace)
 // ============================================================================
 
+const STORAGE_KEY_WORKSPACES = 'tf.canon.workspaces.v1';
+const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
+
+function isValidWorkspaceArray(data: unknown): data is Workspace[] {
+  if (!Array.isArray(data)) return false;
+  return data.every(
+    (item) =>
+      typeof item === 'object' &&
+      item !== null &&
+      typeof (item as Workspace).id === 'string' &&
+      (item as Workspace).id.length > 0 &&
+      typeof (item as Workspace).name === 'string' &&
+      (item as Workspace).name.length > 0,
+  );
+}
+
+function loadPersistedState(): { workspaces: Workspace[]; activeIndex: number } | null {
+  try {
+    const rawWs = localStorage.getItem(STORAGE_KEY_WORKSPACES);
+    const rawIdx = localStorage.getItem(STORAGE_KEY_ACTIVE);
+    if (rawWs === null || rawIdx === null) return null;
+    const parsed = JSON.parse(rawWs);
+    if (!isValidWorkspaceArray(parsed)) return null;
+    const idx = Number(rawIdx);
+    if (!Number.isInteger(idx) || idx < 0 || idx >= parsed.length) return null;
+    return { workspaces: parsed, activeIndex: idx };
+  } catch {
+    return null;
+  }
+}
+
+function persistState(workspaces: Workspace[], activeIndex: number): void {
+  localStorage.setItem(STORAGE_KEY_WORKSPACES, JSON.stringify(workspaces));
+  localStorage.setItem(STORAGE_KEY_ACTIVE, String(activeIndex));
+}
+
 let workspaceCounter = 0;
 
 function CanonContent(): React.ReactElement {
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>(() => {
+    const persisted = loadPersistedState();
+    if (persisted) {
+      const maxId = persisted.workspaces.reduce((max, ws) => {
+        const match = ws.id.match(/^canon-workspace-(\d+)$/);
+        return match ? Math.max(max, Number(match[1])) : max;
+      }, 0);
+      if (maxId > workspaceCounter) workspaceCounter = maxId;
+    }
+    return persisted ? persisted.workspaces : [];
+  });
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const persisted = loadPersistedState();
+    return persisted ? persisted.activeIndex : 0;
+  });
   const [renameDraft, setRenameDraft] = useState('');
   const lastClosedRef = useRef<Workspace | null>(null);
+  const mountedRef = useRef(false);
+
+  // Persist on state change (skip initial mount to avoid double-write)
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+    persistState(workspaces, activeIndex);
+  }, [workspaces, activeIndex]);
 
   const hasWorkspace = workspaces.length > 0;
   const active = hasWorkspace ? workspaces[activeIndex] : null;

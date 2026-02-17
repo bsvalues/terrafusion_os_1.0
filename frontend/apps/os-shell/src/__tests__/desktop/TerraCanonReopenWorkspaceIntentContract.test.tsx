@@ -66,8 +66,13 @@ import Router from '../../Router';
 // ============================================================================
 
 describe('Phase 37 contract: TerraCanon can reopen the last closed workspace (session-only)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(() => {
     cleanup();
+    localStorage.clear();
   });
 
   /**
