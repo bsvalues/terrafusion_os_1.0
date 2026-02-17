@@ -8,6 +8,7 @@
  * Phase 33: Workspace identity — session-stable name + id (no persistence).
  * Phase 34: Rename workspace intent — editable name (session-only, no persistence).
  * Phase 35: Multi-workspace switcher — in-memory array, active index, per-workspace rename.
+ * Phase 36: Close workspace intent — remove active, fallback or return to empty.
  *
  * Layout:
  *   terracanon-root
@@ -21,6 +22,7 @@
  *                    ├─ terracanon-rename-workspace-input (rename draft)
  *                    ├─ terracanon-rename-workspace-commit (commit rename)
  *                    ├─ terracanon-new-workspace (create additional workspace)
+ *                    ├─ terracanon-close-workspace (close active workspace)
  *                    └─ terracanon-workspace-switcher (switch active workspace)
  *                         ├─ terracanon-workspace-item-0
  *                         └─ terracanon-workspace-item-N
@@ -34,6 +36,7 @@
  * @see Phase 33: TerraCanon Workspace Identity Contract
  * @see Phase 34: TerraCanon Rename Workspace Intent Contract
  * @see Phase 35: TerraCanon Multi-Workspace Switcher Contract
+ * @see Phase 36: TerraCanon Close Workspace Intent Contract
  */
 
 import React, { useState } from 'react';
@@ -76,6 +79,7 @@ interface EditorPaneProps {
   workspaces: Workspace[];
   activeIndex: number;
   onNewWorkspace: () => void;
+  onCloseWorkspace: () => void;
   onSwitchWorkspace: (index: number) => void;
 }
 
@@ -89,6 +93,7 @@ function EditorPane({
   workspaces,
   activeIndex,
   onNewWorkspace,
+  onCloseWorkspace,
   onSwitchWorkspace,
 }: EditorPaneProps): React.ReactElement {
   return (
@@ -127,6 +132,13 @@ function EditorPane({
               onClick={onNewWorkspace}
             >
               New Workspace
+            </button>
+            <button
+              className='px-2 py-1 text-xs rounded bg-red-700 hover:bg-red-600 text-white'
+              data-testid='terracanon-close-workspace'
+              onClick={onCloseWorkspace}
+            >
+              Close
             </button>
           </div>
           <div className='mt-2 flex items-center gap-1' data-testid='terracanon-workspace-switcher'>
@@ -170,6 +182,7 @@ interface CanonWorkspaceProps {
   workspaces: Workspace[];
   activeIndex: number;
   onNewWorkspace: () => void;
+  onCloseWorkspace: () => void;
   onSwitchWorkspace: (index: number) => void;
 }
 
@@ -183,6 +196,7 @@ function CanonWorkspace({
   workspaces,
   activeIndex,
   onNewWorkspace,
+  onCloseWorkspace,
   onSwitchWorkspace,
 }: CanonWorkspaceProps): React.ReactElement {
   return (
@@ -201,6 +215,7 @@ function CanonWorkspace({
         workspaces={workspaces}
         activeIndex={activeIndex}
         onNewWorkspace={onNewWorkspace}
+        onCloseWorkspace={onCloseWorkspace}
         onSwitchWorkspace={onSwitchWorkspace}
       />
     </div>
@@ -252,6 +267,14 @@ function CanonContent(): React.ReactElement {
     }
   };
 
+  const closeWorkspace = () => {
+    if (workspaces.length === 0) return;
+    const next = workspaces.filter((_, i) => i !== activeIndex);
+    setWorkspaces(next);
+    setActiveIndex(next.length === 0 ? 0 : Math.min(activeIndex, next.length - 1));
+    setRenameDraft('');
+  };
+
   const commitRename = () => {
     const next = renameDraft.trim();
     if (!next) return;
@@ -281,6 +304,7 @@ function CanonContent(): React.ReactElement {
         workspaces={workspaces}
         activeIndex={activeIndex}
         onNewWorkspace={newWorkspace}
+        onCloseWorkspace={closeWorkspace}
         onSwitchWorkspace={switchWorkspace}
       />
     </div>
