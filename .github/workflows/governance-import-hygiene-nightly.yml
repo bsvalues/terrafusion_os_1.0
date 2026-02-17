@@ -3,7 +3,7 @@ name: Governance Import Hygiene (Nightly)
 on:
   schedule:
     # Nightly at 03:17 UTC (arbitrary low-traffic time)
-    - cron: "17 3 * * *"
+    - cron: '17 3 * * *'
   workflow_dispatch: {}
 
 permissions:
@@ -26,14 +26,42 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
-      - name: Governance import hygiene report (informational)
+      - name: Run report + write job summary (informational, non-blocking)
         shell: bash
         run: |
           set +e
+
           echo "=== Governance Import Hygiene Report (informational) ==="
-          node scripts/governance/report-non-barrel-governance-imports.mjs
+          # Capture output (never fail the job)
+          REPORT_OUT="$(node scripts/governance/report-non-barrel-governance-imports.mjs 2>&1)"
+          echo "$REPORT_OUT"
           echo "=== End Report ==="
-          # Always succeed (non-blocking visibility job)
+
+          # Derive offender count from output (script prints " - <path>" lines for offenders)
+          OFFENDER_COUNT="$(printf "%s\n" "$REPORT_OUT" | grep -cE '^\s*-\s+' || true)"
+
+          # Write GitHub Actions Job Summary
+          {
+            echo "## Governance Import Hygiene (Nightly)"
+            echo ""
+            echo "**Run (UTC):** $(date -u '+%Y-%m-%d %H:%M:%S')"
+            echo ""
+            echo "**Offenders:** $OFFENDER_COUNT"
+            echo ""
+            if [ "$OFFENDER_COUNT" -eq 0 ]; then
+              echo ":white_check_mark: No non-barrel governance imports detected."
+            else
+              echo ":warning: Non-barrel governance imports detected. Please migrate to \`canon/governance.ts\`."
+              echo ""
+              echo "### Offender list"
+              echo ""
+              echo '```'
+              printf "%s\n" "$REPORT_OUT" | grep -E '^\s*-\s+' || true
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Always succeed
           exit 0
