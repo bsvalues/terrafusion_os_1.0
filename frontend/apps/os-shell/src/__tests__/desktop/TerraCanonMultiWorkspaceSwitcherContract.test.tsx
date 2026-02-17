@@ -83,7 +83,7 @@ describe('Phase 35 contract: TerraCanon supports multiple session workspaces and
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 5000 }
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
@@ -99,7 +99,7 @@ describe('Phase 35 contract: TerraCanon supports multiple session workspaces and
       () => {
         expect(screen.getByTestId('terracanon-open-empty-workspace')).toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 5000 }
     );
 
     fireEvent.click(screen.getByTestId('terracanon-open-empty-workspace'));
@@ -108,7 +108,7 @@ describe('Phase 35 contract: TerraCanon supports multiple session workspaces and
       () => {
         expect(screen.getByTestId('terracanon-workspace-loaded')).toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 5000 }
     );
   }
 
@@ -122,7 +122,7 @@ describe('Phase 35 contract: TerraCanon supports multiple session workspaces and
       () => {
         expect(screen.getByTestId('terracanon-no-workspace')).toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 5000 }
     );
 
     expect(screen.queryByTestId('terracanon-workspace-switcher')).not.toBeInTheDocument();
@@ -207,9 +207,7 @@ describe('Phase 35 contract: TerraCanon supports multiple session workspaces and
 
     // Create workspace 1 (active)
     fireEvent.click(screen.getByTestId('terracanon-new-workspace'));
-    const nameBInitial = (
-      screen.getByTestId('terracanon-workspace-name').textContent ?? ''
-    ).trim();
+    const nameBInitial = (screen.getByTestId('terracanon-workspace-name').textContent ?? '').trim();
     expect(nameBInitial.length).toBeGreaterThan(0);
     expect(nameBInitial).not.toBe('Workspace Alpha');
 
