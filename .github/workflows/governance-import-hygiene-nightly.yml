@@ -1,0 +1,39 @@
+name: Governance Import Hygiene (Nightly)
+
+on:
+  schedule:
+    # Nightly at 03:17 UTC (arbitrary low-traffic time)
+    - cron: "17 3 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: governance-import-hygiene-nightly
+  cancel-in-progress: true
+
+jobs:
+  report:
+    name: Run non-blocking governance import hygiene report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Governance import hygiene report (informational)
+        shell: bash
+        run: |
+          set +e
+          echo "=== Governance Import Hygiene Report (informational) ==="
+          node scripts/governance/report-non-barrel-governance-imports.mjs
+          echo "=== End Report ==="
+          # Always succeed (non-blocking visibility job)
+          exit 0
