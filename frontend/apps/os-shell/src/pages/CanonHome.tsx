@@ -9,6 +9,7 @@
  * Phase 34: Rename workspace intent — editable name (session-only, no persistence).
  * Phase 35: Multi-workspace switcher — in-memory array, active index, per-workspace rename.
  * Phase 36: Close workspace intent — remove active, fallback or return to empty.
+ * Phase 37: Reopen last closed workspace — undo-close via lastClosedRef.
  *
  * Layout:
  *   terracanon-root
@@ -16,6 +17,7 @@
  *          ├─ terracanon-filetree (sidebar)
  *          └─ terracanon-editor (main pane)
  *               ├─ terracanon-no-workspace (empty state, hidden when loaded)
+ *               │    └─ terracanon-reopen-workspace (reopen, if history)
  *               └─ terracanon-workspace-loaded (loaded state, shown after open)
  *                    ├─ terracanon-workspace-name (active workspace name)
  *                    ├─ terracanon-workspace-id (active workspace id)
@@ -23,6 +25,7 @@
  *                    ├─ terracanon-rename-workspace-commit (commit rename)
  *                    ├─ terracanon-new-workspace (create additional workspace)
  *                    ├─ terracanon-close-workspace (close active workspace)
+ *                    ├─ terracanon-reopen-workspace (reopen last closed)
  *                    └─ terracanon-workspace-switcher (switch active workspace)
  *                         ├─ terracanon-workspace-item-0
  *                         └─ terracanon-workspace-item-N
@@ -37,9 +40,10 @@
  * @see Phase 34: TerraCanon Rename Workspace Intent Contract
  * @see Phase 35: TerraCanon Multi-Workspace Switcher Contract
  * @see Phase 36: TerraCanon Close Workspace Intent Contract
+ * @see Phase 37: TerraCanon Reopen Last Closed Workspace Contract
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
@@ -80,6 +84,8 @@ interface EditorPaneProps {
   activeIndex: number;
   onNewWorkspace: () => void;
   onCloseWorkspace: () => void;
+  onReopenWorkspace: () => void;
+  hasClosedHistory: boolean;
   onSwitchWorkspace: (index: number) => void;
 }
 
@@ -94,6 +100,8 @@ function EditorPane({
   activeIndex,
   onNewWorkspace,
   onCloseWorkspace,
+  onReopenWorkspace,
+  hasClosedHistory,
   onSwitchWorkspace,
 }: EditorPaneProps): React.ReactElement {
   return (
@@ -140,6 +148,15 @@ function EditorPane({
             >
               Close
             </button>
+            {hasClosedHistory && (
+              <button
+                className='px-2 py-1 text-xs rounded bg-yellow-700 hover:bg-yellow-600 text-white'
+                data-testid='terracanon-reopen-workspace'
+                onClick={onReopenWorkspace}
+              >
+                Reopen
+              </button>
+            )}
           </div>
           <div className='mt-2 flex items-center gap-1' data-testid='terracanon-workspace-switcher'>
             {workspaces.map((ws, i) => (
@@ -162,6 +179,15 @@ function EditorPane({
         <div className='text-center text-gray-500' data-testid='terracanon-no-workspace'>
           <p className='text-lg mb-1'>No workspace loaded</p>
           <p className='text-sm'>Open a file or create a new workspace to get started.</p>
+          {hasClosedHistory && (
+            <button
+              className='mt-2 px-2 py-1 text-xs rounded bg-yellow-700 hover:bg-yellow-600 text-white'
+              data-testid='terracanon-reopen-workspace'
+              onClick={onReopenWorkspace}
+            >
+              Reopen Last Closed
+            </button>
+          )}
         </div>
       )}
     </section>
@@ -183,6 +209,8 @@ interface CanonWorkspaceProps {
   activeIndex: number;
   onNewWorkspace: () => void;
   onCloseWorkspace: () => void;
+  onReopenWorkspace: () => void;
+  hasClosedHistory: boolean;
   onSwitchWorkspace: (index: number) => void;
 }
 
@@ -197,6 +225,8 @@ function CanonWorkspace({
   activeIndex,
   onNewWorkspace,
   onCloseWorkspace,
+  onReopenWorkspace,
+  hasClosedHistory,
   onSwitchWorkspace,
 }: CanonWorkspaceProps): React.ReactElement {
   return (
@@ -216,6 +246,8 @@ function CanonWorkspace({
         activeIndex={activeIndex}
         onNewWorkspace={onNewWorkspace}
         onCloseWorkspace={onCloseWorkspace}
+        onReopenWorkspace={onReopenWorkspace}
+        hasClosedHistory={hasClosedHistory}
         onSwitchWorkspace={onSwitchWorkspace}
       />
     </div>
@@ -232,6 +264,7 @@ function CanonContent(): React.ReactElement {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [renameDraft, setRenameDraft] = useState('');
+  const lastClosedRef = useRef<Workspace | null>(null);
 
   const hasWorkspace = workspaces.length > 0;
   const active = hasWorkspace ? workspaces[activeIndex] : null;
@@ -269,11 +302,23 @@ function CanonContent(): React.ReactElement {
 
   const closeWorkspace = () => {
     if (workspaces.length === 0) return;
+    lastClosedRef.current = workspaces[activeIndex];
     const next = workspaces.filter((_, i) => i !== activeIndex);
     setWorkspaces(next);
     setActiveIndex(next.length === 0 ? 0 : Math.min(activeIndex, next.length - 1));
     setRenameDraft('');
   };
+
+  const reopenLastClosed = () => {
+    const ws = lastClosedRef.current;
+    if (!ws) return;
+    lastClosedRef.current = null;
+    setWorkspaces((prev) => [...prev, ws]);
+    setActiveIndex(workspaces.length); // new last index
+    setRenameDraft('');
+  };
+
+  const hasClosedHistory = lastClosedRef.current !== null;
 
   const commitRename = () => {
     const next = renameDraft.trim();
@@ -305,6 +350,8 @@ function CanonContent(): React.ReactElement {
         activeIndex={activeIndex}
         onNewWorkspace={newWorkspace}
         onCloseWorkspace={closeWorkspace}
+        onReopenWorkspace={reopenLastClosed}
+        hasClosedHistory={hasClosedHistory}
         onSwitchWorkspace={switchWorkspace}
       />
     </div>
