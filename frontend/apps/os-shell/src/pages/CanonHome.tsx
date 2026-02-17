@@ -11,6 +11,7 @@
  * Phase 36: Close workspace intent — remove active, fallback or return to empty.
  * Phase 37: Reopen last closed workspace — undo-close via lastClosedRef.
  * Phase 38: Persistence spine — localStorage v1, schema-safe restore.
+ * Phase 39: Persist lastClosed — reopen-after-refresh via localStorage.
  *
  * Layout:
  *   terracanon-root
@@ -44,6 +45,7 @@
  * @see Phase 36: TerraCanon Close Workspace Intent Contract
  * @see Phase 37: TerraCanon Reopen Last Closed Workspace Contract
  * @see Phase 38: TerraCanon Persistence Spine Contract
+ * @see Phase 39: TerraCanon Persisted Reopen Contract
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -263,6 +265,7 @@ function CanonWorkspace({
 
 const STORAGE_KEY_WORKSPACES = 'tf.canon.workspaces.v1';
 const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
+const STORAGE_KEY_LAST_CLOSED = 'tf.canon.lastClosed.v1';
 
 function isValidWorkspaceArray(data: unknown): data is Workspace[] {
   if (!Array.isArray(data)) return false;
@@ -273,7 +276,7 @@ function isValidWorkspaceArray(data: unknown): data is Workspace[] {
       typeof (item as Workspace).id === 'string' &&
       (item as Workspace).id.length > 0 &&
       typeof (item as Workspace).name === 'string' &&
-      (item as Workspace).name.length > 0,
+      (item as Workspace).name.length > 0
   );
 }
 
@@ -297,6 +300,33 @@ function persistState(workspaces: Workspace[], activeIndex: number): void {
   localStorage.setItem(STORAGE_KEY_ACTIVE, String(activeIndex));
 }
 
+function isValidWorkspace(data: unknown): data is Workspace {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    typeof (data as Workspace).id === 'string' &&
+    (data as Workspace).id.length > 0 &&
+    typeof (data as Workspace).name === 'string' &&
+    (data as Workspace).name.length > 0
+  );
+}
+
+function loadLastClosed(): Workspace | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_LAST_CLOSED);
+    if (raw === null) return null;
+    const parsed = JSON.parse(raw);
+    if (!isValidWorkspace(parsed)) {
+      localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
+      return null;
+    }
+    return parsed;
+  } catch {
+    localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
+    return null;
+  }
+}
+
 let workspaceCounter = 0;
 
 function CanonContent(): React.ReactElement {
@@ -316,7 +346,7 @@ function CanonContent(): React.ReactElement {
     return persisted ? persisted.activeIndex : 0;
   });
   const [renameDraft, setRenameDraft] = useState('');
-  const lastClosedRef = useRef<Workspace | null>(null);
+  const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
 
   // Persist on state change (skip initial mount to avoid double-write)
@@ -364,7 +394,9 @@ function CanonContent(): React.ReactElement {
 
   const closeWorkspace = () => {
     if (workspaces.length === 0) return;
-    lastClosedRef.current = workspaces[activeIndex];
+    const closed = workspaces[activeIndex];
+    lastClosedRef.current = closed;
+    localStorage.setItem(STORAGE_KEY_LAST_CLOSED, JSON.stringify(closed));
     const next = workspaces.filter((_, i) => i !== activeIndex);
     setWorkspaces(next);
     setActiveIndex(next.length === 0 ? 0 : Math.min(activeIndex, next.length - 1));
@@ -375,6 +407,7 @@ function CanonContent(): React.ReactElement {
     const ws = lastClosedRef.current;
     if (!ws) return;
     lastClosedRef.current = null;
+    localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
     setWorkspaces((prev) => [...prev, ws]);
     setActiveIndex(workspaces.length); // new last index
     setRenameDraft('');
