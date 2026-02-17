@@ -51,6 +51,11 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+    isValidWorkspace,
+    STORAGE_KEY_LAST_CLOSED,
+    type Workspace,
+} from '../canon/reopenPersistence';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
@@ -74,11 +79,6 @@ function FileTreePane(): React.ReactElement {
 // ============================================================================
 // Editor Pane (main content area)
 // ============================================================================
-
-interface Workspace {
-  id: string;
-  name: string;
-}
 
 interface EditorPaneProps {
   hasWorkspace: boolean;
@@ -267,7 +267,7 @@ function CanonWorkspace({
 
 const STORAGE_KEY_WORKSPACES = 'tf.canon.workspaces.v1';
 const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
-const STORAGE_KEY_LAST_CLOSED = 'tf.canon.lastClosed.v1';
+// STORAGE_KEY_LAST_CLOSED imported from @/canon/reopenPersistence
 
 function isValidWorkspaceArray(data: unknown): data is Workspace[] {
   if (!Array.isArray(data)) return false;
@@ -302,16 +302,7 @@ function persistState(workspaces: Workspace[], activeIndex: number): void {
   localStorage.setItem(STORAGE_KEY_ACTIVE, String(activeIndex));
 }
 
-function isValidWorkspace(data: unknown): data is Workspace {
-  if (typeof data !== 'object' || data === null || Array.isArray(data)) return false;
-  if (Object.keys(data as Record<string, unknown>).length !== 2) return false;
-  return (
-    typeof (data as Workspace).id === 'string' &&
-    (data as Workspace).id.length > 0 &&
-    typeof (data as Workspace).name === 'string' &&
-    (data as Workspace).name.length > 0
-  );
-}
+// isValidWorkspace imported from @/canon/reopenPersistence (Phase 41 dedup)
 
 function loadLastClosed(): Workspace | null {
   try {
