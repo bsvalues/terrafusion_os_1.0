@@ -163,7 +163,9 @@ describe('Phase 34 contract: loaded workspace can be renamed (session-only, no p
     fireEvent.change(input, { target: { value: 'My First Workspace' } });
     fireEvent.click(commit);
 
-    expect(screen.getByTestId('terracanon-workspace-name').textContent).toContain('My First Workspace');
+    expect(screen.getByTestId('terracanon-workspace-name').textContent).toContain(
+      'My First Workspace'
+    );
   });
 
   // --------------------------------------------------------------------------
