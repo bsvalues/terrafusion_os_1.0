@@ -245,9 +245,10 @@ describe('Phase 40 contract: cross-tab sync reloads workspace state from storage
     // No reopen control initially (nothing closed)
     expect(screen.queryByTestId('terracanon-reopen-workspace')).not.toBeInTheDocument();
 
-    // Another tab closes a workspace (writes lastClosed)
+    // Another tab closes a workspace (writes lastClosed as v2 envelope)
     const closedWs = { id: 'canon-workspace-77', name: 'Closed Elsewhere' };
-    simulateCrossTabWrite(KEY_LAST_CLOSED, JSON.stringify(closedWs));
+    const envelope = { v: 2, workspace: closedWs, ts: Date.now() };
+    simulateCrossTabWrite(KEY_LAST_CLOSED, JSON.stringify(envelope));
 
     // Reopen control should appear
     await waitFor(
@@ -264,9 +265,10 @@ describe('Phase 40 contract: cross-tab sync reloads workspace state from storage
   it('S4: external lastClosed clear removes reopen control', async () => {
     await renderCanonAndOpenWorkspace();
 
-    // Set lastClosed from another tab
+    // Set lastClosed from another tab (v2 envelope)
     const closedWs = { id: 'canon-workspace-88', name: 'Will Clear' };
-    simulateCrossTabWrite(KEY_LAST_CLOSED, JSON.stringify(closedWs));
+    const envelope = { v: 2, workspace: closedWs, ts: Date.now() };
+    simulateCrossTabWrite(KEY_LAST_CLOSED, JSON.stringify(envelope));
 
     await waitFor(
       () => {
@@ -276,7 +278,7 @@ describe('Phase 40 contract: cross-tab sync reloads workspace state from storage
     );
 
     // Another tab clears lastClosed
-    simulateCrossTabWrite(KEY_LAST_CLOSED, null, JSON.stringify(closedWs));
+    simulateCrossTabWrite(KEY_LAST_CLOSED, null, JSON.stringify(envelope));
 
     await waitFor(
       () => {
