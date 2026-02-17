@@ -13,6 +13,7 @@
  * Phase 38: Persistence spine — localStorage v1, schema-safe restore.
  * Phase 39: Persist lastClosed — reopen-after-refresh via localStorage.
  * Phase 40: Cross-tab sync — storage events trigger safe state reload.
+ * Phase 47: Operational hardening — versioned envelope v2, cross-tab determinism.
  *
  * Layout:
  *   terracanon-root
@@ -48,10 +49,17 @@
  * @see Phase 38: TerraCanon Persistence Spine Contract
  * @see Phase 39: TerraCanon Persisted Reopen Contract
  * @see Phase 40: TerraCanon Cross-Tab Sync Contract
+ * @see Phase 47: TerraCanon Operational Hardening (envelope v2)
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { isValidWorkspace, STORAGE_KEY_LAST_CLOSED, type Workspace } from '../canon/governance';
+import {
+  isValidWorkspace,
+  parseLastClosedV2,
+  serializeLastClosedV2,
+  STORAGE_KEY_LAST_CLOSED,
+  type Workspace,
+} from '../canon/governance';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
@@ -263,7 +271,7 @@ function CanonWorkspace({
 
 const STORAGE_KEY_WORKSPACES = 'tf.canon.workspaces.v1';
 const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
-// STORAGE_KEY_LAST_CLOSED imported from @/canon/reopenPersistence
+// STORAGE_KEY_LAST_CLOSED imported from @/canon/governance (barrel)
 
 function isValidWorkspaceArray(data: unknown): data is Workspace[] {
   if (!Array.isArray(data)) return false;
@@ -290,18 +298,30 @@ function persistState(workspaces: Workspace[], activeIndex: number): void {
   localStorage.setItem(STORAGE_KEY_ACTIVE, String(activeIndex));
 }
 
-// isValidWorkspace imported from @/canon/reopenPersistence (Phase 41 dedup)
+// isValidWorkspace imported from @/canon/governance (Phase 41 dedup, Phase 47 barrel)
 
+/**
+ * Phase 47: Load lastClosed from localStorage with versioned envelope.
+ *
+ * Priority: v2 envelope → v1 bare workspace (upgrade path) → fail-closed.
+ * Any unknown shape clears the key (fail-closed, no crash).
+ */
 function loadLastClosed(): Workspace | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_LAST_CLOSED);
     if (raw === null) return null;
+
+    // Phase 47: Try v2 envelope first
+    const v2 = parseLastClosedV2(raw);
+    if (v2) return v2.workspace;
+
+    // Fallback: v1 bare workspace shape (upgrade path — next write will use v2)
     const parsed = JSON.parse(raw);
-    if (!isValidWorkspace(parsed)) {
-      localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
-      return null;
-    }
-    return parsed;
+    if (isValidWorkspace(parsed)) return parsed;
+
+    // Unknown shape → fail-closed: clear key, return null
+    localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
+    return null;
   } catch {
     localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
     return null;
@@ -345,7 +365,7 @@ function CanonContent(): React.ReactElement {
     persistState(workspaces, activeIndex);
   }, [workspaces, activeIndex]);
 
-  // Phase 40: Cross-tab sync — reload state when another tab writes to localStorage
+  // Phase 40 + 47: Cross-tab sync — reload state when another tab writes to localStorage
   const handleStorageEvent = useCallback((e: StorageEvent) => {
     if (e.storageArea !== localStorage) return;
 
@@ -367,18 +387,20 @@ function CanonContent(): React.ReactElement {
       // Malformed → ignore, keep current state (fail-closed)
     }
 
+    // Phase 47: Cross-tab lastClosed sync via envelope v2
     if (e.key === STORAGE_KEY_LAST_CLOSED) {
       if (e.newValue === null) {
         // Another tab consumed the lastClosed (reopen or clear)
         lastClosedRef.current = null;
         forceUpdate((n) => n + 1);
       } else {
-        const loaded = loadLastClosed();
-        if (loaded) {
-          lastClosedRef.current = loaded;
+        // Phase 47: Parse via v2 envelope for cross-tab determinism
+        const v2 = parseLastClosedV2(e.newValue);
+        if (v2) {
+          lastClosedRef.current = v2.workspace;
           forceUpdate((n) => n + 1);
         }
-        // Malformed → ignore (fail-closed)
+        // Malformed or non-v2 → ignore (fail-closed, no crash)
       }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -426,7 +448,8 @@ function CanonContent(): React.ReactElement {
     if (workspaces.length === 0) return;
     const closed = workspaces[activeIndex];
     lastClosedRef.current = closed;
-    localStorage.setItem(STORAGE_KEY_LAST_CLOSED, JSON.stringify(closed));
+    // Phase 47: Serialize as v2 envelope (deterministic, upgrade-safe)
+    localStorage.setItem(STORAGE_KEY_LAST_CLOSED, serializeLastClosedV2(closed));
     const next = workspaces.filter((_, i) => i !== activeIndex);
     setWorkspaces(next);
     setActiveIndex(next.length === 0 ? 0 : Math.min(activeIndex, next.length - 1));
