@@ -5,6 +5,7 @@
  * Phase 30: Launch spine — route + root landmark.
  * Phase 31: Workspace bootstrap — IDE interior layout skeleton.
  * Phase 32: Open empty workspace intent — state toggle + loaded landmark.
+ * Phase 33: Workspace identity — session-stable name + id (no persistence).
  *
  * Layout:
  *   terracanon-root
@@ -13,16 +14,19 @@
  *          └─ terracanon-editor (main pane)
  *               ├─ terracanon-no-workspace (empty state, hidden when loaded)
  *               └─ terracanon-workspace-loaded (loaded state, shown after open)
+ *                    ├─ terracanon-workspace-name (session identity)
+ *                    └─ terracanon-workspace-id (session identity)
  *
- * State: local boolean `hasWorkspace`. No persistence, no filesystem, no LSP.
+ * State: local boolean `hasWorkspace` + useRef identity. No persistence, no filesystem, no LSP.
  *
  * @module pages/CanonHome
  * @see Phase 30: TerraCanon Launch Spine Contract
  * @see Phase 31: TerraCanon Workspace Bootstrap Contract
  * @see Phase 32: TerraCanon Open Empty Workspace Intent Contract
+ * @see Phase 33: TerraCanon Workspace Identity Contract
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
@@ -47,7 +51,13 @@ function FileTreePane(): React.ReactElement {
 // Editor Pane (main content area)
 // ============================================================================
 
-function EditorPane({ hasWorkspace }: { hasWorkspace: boolean }): React.ReactElement {
+interface EditorPaneProps {
+  hasWorkspace: boolean;
+  workspaceName: string | null;
+  workspaceId: string | null;
+}
+
+function EditorPane({ hasWorkspace, workspaceName, workspaceId }: EditorPaneProps): React.ReactElement {
   return (
     <section
       className='canon-editor flex-1 min-h-[200px] p-4 flex items-center justify-center'
@@ -57,12 +67,13 @@ function EditorPane({ hasWorkspace }: { hasWorkspace: boolean }): React.ReactEle
         <div data-testid='terracanon-workspace-loaded'>
           <p className='text-lg mb-1 text-gray-300'>Workspace loaded</p>
           <p className='text-sm text-gray-500'>Ready to edit.</p>
+          <div className='mt-2 text-xs text-gray-500'>
+            <span data-testid='terracanon-workspace-name'>{workspaceName}</span>
+            <span className='ml-2' data-testid='terracanon-workspace-id'>{workspaceId}</span>
+          </div>
         </div>
       ) : (
-        <div
-          className='text-center text-gray-500'
-          data-testid='terracanon-no-workspace'
-        >
+        <div className='text-center text-gray-500' data-testid='terracanon-no-workspace'>
           <p className='text-lg mb-1'>No workspace loaded</p>
           <p className='text-sm'>Open a file or create a new workspace to get started.</p>
         </div>
@@ -75,14 +86,20 @@ function EditorPane({ hasWorkspace }: { hasWorkspace: boolean }): React.ReactEle
 // Workspace Shell (IDE layout container)
 // ============================================================================
 
-function CanonWorkspace({ hasWorkspace }: { hasWorkspace: boolean }): React.ReactElement {
+interface CanonWorkspaceProps {
+  hasWorkspace: boolean;
+  workspaceName: string | null;
+  workspaceId: string | null;
+}
+
+function CanonWorkspace({ hasWorkspace, workspaceName, workspaceId }: CanonWorkspaceProps): React.ReactElement {
   return (
     <div
       className='canon-workspace flex border border-gray-700/30 rounded-lg overflow-hidden bg-gray-900/50'
       data-testid='terracanon-workspace'
     >
       <FileTreePane />
-      <EditorPane hasWorkspace={hasWorkspace} />
+      <EditorPane hasWorkspace={hasWorkspace} workspaceName={workspaceName} workspaceId={workspaceId} />
     </div>
   );
 }
@@ -91,25 +108,38 @@ function CanonWorkspace({ hasWorkspace }: { hasWorkspace: boolean }): React.Reac
 // Canon Content (root landmark + workspace)
 // ============================================================================
 
+let workspaceCounter = 0;
+
 function CanonContent(): React.ReactElement {
   const [hasWorkspace, setHasWorkspace] = useState(false);
+  const workspaceIdRef = useRef<string | null>(null);
+  const [workspaceName, setWorkspaceName] = useState<string | null>(null);
+
+  const openEmptyWorkspace = () => {
+    if (!workspaceIdRef.current) {
+      workspaceCounter += 1;
+      workspaceIdRef.current = `canon-workspace-${workspaceCounter}`;
+    }
+    if (!workspaceName) {
+      setWorkspaceName('Untitled Workspace');
+    }
+    setHasWorkspace(true);
+  };
 
   return (
     <div className='canon-console' data-testid='terracanon-root'>
       <section className='canon-console__overview mb-4'>
         <h2>TerraCanon IDE</h2>
         <p>Integrated development environment for TerraFusion OS.</p>
-        {!hasWorkspace && (
-          <button
-            className='mt-2 px-3 py-1 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white'
-            data-testid='terracanon-open-empty-workspace'
-            onClick={() => setHasWorkspace(true)}
-          >
-            Open Empty Workspace
-          </button>
-        )}
+        <button
+          className='mt-2 px-3 py-1 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white'
+          data-testid='terracanon-open-empty-workspace'
+          onClick={openEmptyWorkspace}
+        >
+          Open Empty Workspace
+        </button>
       </section>
-      <CanonWorkspace hasWorkspace={hasWorkspace} />
+      <CanonWorkspace hasWorkspace={hasWorkspace} workspaceName={workspaceName} workspaceId={workspaceIdRef.current} />
     </div>
   );
 }
