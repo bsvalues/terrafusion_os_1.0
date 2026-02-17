@@ -7,6 +7,7 @@
  * Phase 32: Open empty workspace intent — state toggle + loaded landmark.
  * Phase 33: Workspace identity — session-stable name + id (no persistence).
  * Phase 34: Rename workspace intent — editable name (session-only, no persistence).
+ * Phase 35: Multi-workspace switcher — in-memory array, active index, per-workspace rename.
  *
  * Layout:
  *   terracanon-root
@@ -15,12 +16,16 @@
  *          └─ terracanon-editor (main pane)
  *               ├─ terracanon-no-workspace (empty state, hidden when loaded)
  *               └─ terracanon-workspace-loaded (loaded state, shown after open)
- *                    ├─ terracanon-workspace-name (session identity, editable)
- *                    ├─ terracanon-workspace-id (session identity)
+ *                    ├─ terracanon-workspace-name (active workspace name)
+ *                    ├─ terracanon-workspace-id (active workspace id)
  *                    ├─ terracanon-rename-workspace-input (rename draft)
- *                    └─ terracanon-rename-workspace-commit (commit rename)
+ *                    ├─ terracanon-rename-workspace-commit (commit rename)
+ *                    ├─ terracanon-new-workspace (create additional workspace)
+ *                    └─ terracanon-workspace-switcher (switch active workspace)
+ *                         ├─ terracanon-workspace-item-0
+ *                         └─ terracanon-workspace-item-N
  *
- * State: local boolean `hasWorkspace` + useRef identity + renameDraft. No persistence, no filesystem, no LSP.
+ * State: workspaces[] array + activeIndex. No persistence, no filesystem, no LSP.
  *
  * @module pages/CanonHome
  * @see Phase 30: TerraCanon Launch Spine Contract
@@ -28,9 +33,10 @@
  * @see Phase 32: TerraCanon Open Empty Workspace Intent Contract
  * @see Phase 33: TerraCanon Workspace Identity Contract
  * @see Phase 34: TerraCanon Rename Workspace Intent Contract
+ * @see Phase 35: TerraCanon Multi-Workspace Switcher Contract
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
@@ -55,6 +61,11 @@ function FileTreePane(): React.ReactElement {
 // Editor Pane (main content area)
 // ============================================================================
 
+interface Workspace {
+  id: string;
+  name: string;
+}
+
 interface EditorPaneProps {
   hasWorkspace: boolean;
   workspaceName: string | null;
@@ -62,6 +73,10 @@ interface EditorPaneProps {
   renameDraft: string;
   onRenameDraftChange: (value: string) => void;
   onCommitRename: () => void;
+  workspaces: Workspace[];
+  activeIndex: number;
+  onNewWorkspace: () => void;
+  onSwitchWorkspace: (index: number) => void;
 }
 
 function EditorPane({
@@ -71,6 +86,10 @@ function EditorPane({
   renameDraft,
   onRenameDraftChange,
   onCommitRename,
+  workspaces,
+  activeIndex,
+  onNewWorkspace,
+  onSwitchWorkspace,
 }: EditorPaneProps): React.ReactElement {
   return (
     <section
@@ -102,6 +121,29 @@ function EditorPane({
             >
               Rename
             </button>
+            <button
+              className='px-2 py-1 text-xs rounded bg-cyan-700 hover:bg-cyan-600 text-white'
+              data-testid='terracanon-new-workspace'
+              onClick={onNewWorkspace}
+            >
+              New Workspace
+            </button>
+          </div>
+          <div className='mt-2 flex items-center gap-1' data-testid='terracanon-workspace-switcher'>
+            {workspaces.map((ws, i) => (
+              <button
+                key={ws.id}
+                className={`px-2 py-0.5 text-xs rounded ${
+                  i === activeIndex
+                    ? 'bg-cyan-700 text-white'
+                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                }`}
+                data-testid={`terracanon-workspace-item-${i}`}
+                onClick={() => onSwitchWorkspace(i)}
+              >
+                {ws.name}
+              </button>
+            ))}
           </div>
         </div>
       ) : (
@@ -125,6 +167,10 @@ interface CanonWorkspaceProps {
   renameDraft: string;
   onRenameDraftChange: (value: string) => void;
   onCommitRename: () => void;
+  workspaces: Workspace[];
+  activeIndex: number;
+  onNewWorkspace: () => void;
+  onSwitchWorkspace: (index: number) => void;
 }
 
 function CanonWorkspace({
@@ -134,6 +180,10 @@ function CanonWorkspace({
   renameDraft,
   onRenameDraftChange,
   onCommitRename,
+  workspaces,
+  activeIndex,
+  onNewWorkspace,
+  onSwitchWorkspace,
 }: CanonWorkspaceProps): React.ReactElement {
   return (
     <div
@@ -148,6 +198,10 @@ function CanonWorkspace({
         renameDraft={renameDraft}
         onRenameDraftChange={onRenameDraftChange}
         onCommitRename={onCommitRename}
+        workspaces={workspaces}
+        activeIndex={activeIndex}
+        onNewWorkspace={onNewWorkspace}
+        onSwitchWorkspace={onSwitchWorkspace}
       />
     </div>
   );
@@ -160,26 +214,48 @@ function CanonWorkspace({
 let workspaceCounter = 0;
 
 function CanonContent(): React.ReactElement {
-  const [hasWorkspace, setHasWorkspace] = useState(false);
-  const workspaceIdRef = useRef<string | null>(null);
-  const [workspaceName, setWorkspaceName] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [renameDraft, setRenameDraft] = useState('');
 
+  const hasWorkspace = workspaces.length > 0;
+  const active = hasWorkspace ? workspaces[activeIndex] : null;
+
   const openEmptyWorkspace = () => {
-    if (!workspaceIdRef.current) {
+    if (workspaces.length === 0) {
       workspaceCounter += 1;
-      workspaceIdRef.current = `canon-workspace-${workspaceCounter}`;
+      const ws: Workspace = {
+        id: `canon-workspace-${workspaceCounter}`,
+        name: 'Untitled Workspace',
+      };
+      setWorkspaces([ws]);
+      setActiveIndex(0);
+      setRenameDraft('');
     }
-    if (!workspaceName) {
-      setWorkspaceName('Untitled Workspace');
+  };
+
+  const newWorkspace = () => {
+    workspaceCounter += 1;
+    const ws: Workspace = {
+      id: `canon-workspace-${workspaceCounter}`,
+      name: 'Untitled Workspace',
+    };
+    setWorkspaces((prev) => [...prev, ws]);
+    setActiveIndex(workspaces.length); // will be the new last index
+    setRenameDraft('');
+  };
+
+  const switchWorkspace = (index: number) => {
+    if (index >= 0 && index < workspaces.length) {
+      setActiveIndex(index);
+      setRenameDraft('');
     }
-    setHasWorkspace(true);
   };
 
   const commitRename = () => {
     const next = renameDraft.trim();
     if (!next) return;
-    setWorkspaceName(next);
+    setWorkspaces((prev) => prev.map((ws, i) => (i === activeIndex ? { ...ws, name: next } : ws)));
   };
 
   return (
@@ -197,11 +273,15 @@ function CanonContent(): React.ReactElement {
       </section>
       <CanonWorkspace
         hasWorkspace={hasWorkspace}
-        workspaceName={workspaceName}
-        workspaceId={workspaceIdRef.current}
+        workspaceName={active?.name ?? null}
+        workspaceId={active?.id ?? null}
         renameDraft={renameDraft}
         onRenameDraftChange={setRenameDraft}
         onCommitRename={commitRename}
+        workspaces={workspaces}
+        activeIndex={activeIndex}
+        onNewWorkspace={newWorkspace}
+        onSwitchWorkspace={switchWorkspace}
       />
     </div>
   );
