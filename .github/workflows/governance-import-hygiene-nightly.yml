@@ -28,86 +28,81 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Download previous hygiene state
+      - name: Download previous hygiene state (if any)
         uses: actions/download-artifact@v4
         with:
-          name: governance-hygiene-state
+          name: governance-import-hygiene-state
           path: .governance-state
         continue-on-error: true
 
-      - name: Run report + write job summary (informational, non-blocking)
+      - name: Governance import hygiene report + job summary (with delta, informational)
         shell: bash
         run: |
           set +e
 
+          STATE_FILE=".governance-state/state.json"
+          PREV_COUNT="unknown"
+
+          if [ -f "$STATE_FILE" ]; then
+            PREV_COUNT="$(node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('$STATE_FILE','utf8'));process.stdout.write(String(s.offenderCount ?? 'unknown'));" 2>/dev/null || echo unknown)"
+          fi
+
           echo "=== Governance Import Hygiene Report (informational) ==="
-          # Capture output (never fail the job)
           REPORT_OUT="$(node scripts/governance/report-non-barrel-governance-imports.mjs 2>&1)"
           echo "$REPORT_OUT"
           echo "=== End Report ==="
 
-          # Derive offender count from output (script prints " - <path>" lines for offenders)
-          OFFENDER_COUNT="$(printf "%s\n" "$REPORT_OUT" | grep -cE '^\s*-\s+' || true)"
+          # Offender lines are formatted as: " - path/to/file"
+          OFFENDER_COUNT="$(printf "%s\n" "$REPORT_OUT" | grep -E '^[[:space:]]*-[[:space:]]+' -c || true)"
 
-          # Load previous state (if artifact was downloaded)
-          PREV_COUNT=""
-          if [ -f ".governance-state/state.json" ]; then
-            PREV_COUNT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('.governance-state/state.json','utf8')).offenderCount)}catch{}" 2>/dev/null || true)"
-          fi
-
-          # Compute delta string
-          DELTA_STR=""
-          if [ -n "$PREV_COUNT" ]; then
+          # Delta if we have a numeric previous count
+          DELTA="unknown"
+          if [[ "$PREV_COUNT" =~ ^[0-9]+$ ]]; then
             DELTA=$((OFFENDER_COUNT - PREV_COUNT))
-            if [ "$DELTA" -gt 0 ]; then
-              DELTA_STR="+${DELTA} :arrow_up:"
-            elif [ "$DELTA" -lt 0 ]; then
-              DELTA_STR="${DELTA} :arrow_down:"
-            else
-              DELTA_STR="0 (no change)"
-            fi
           fi
 
-          # Write GitHub Actions Job Summary
           {
             echo "## Governance Import Hygiene (Nightly)"
             echo ""
             echo "**Run (UTC):** $(date -u '+%Y-%m-%d %H:%M:%S')"
             echo ""
-            if [ -n "$PREV_COUNT" ]; then
-              echo "| Metric | Count |"
-              echo "|--------|-------|"
-              echo "| Previous | $PREV_COUNT |"
-              echo "| Current  | $OFFENDER_COUNT |"
-              echo "| Delta    | $DELTA_STR |"
+            echo "**Offenders (current):** $OFFENDER_COUNT"
+            echo "**Offenders (previous):** $PREV_COUNT"
+            if [ "$DELTA" != "unknown" ]; then
+              if [ "$DELTA" -gt 0 ]; then
+                echo "**Delta:** +$DELTA"
+              else
+                echo "**Delta:** $DELTA"
+              fi
             else
-              echo "**Offenders:** $OFFENDER_COUNT _(first run — no previous state)_"
+              echo "**Delta:** unknown"
             fi
             echo ""
             if [ "$OFFENDER_COUNT" -eq 0 ]; then
-              echo ":white_check_mark: No non-barrel governance imports detected."
+              echo "✅ No non-barrel governance imports detected."
             else
-              echo ":warning: Non-barrel governance imports detected. Please migrate to \`canon/governance.ts\`."
+              echo "⚠️ Non-barrel governance imports detected. Please migrate to \`canon/governance.ts\`."
               echo ""
               echo "### Offender list"
               echo ""
               echo '```'
-              printf "%s\n" "$REPORT_OUT" | grep -E '^\s*-\s+' || true
+              printf "%s\n" "$REPORT_OUT" | grep -E '^[[:space:]]*-[[:space:]]+' || true
               echo '```'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
           # Persist current state for next run
           mkdir -p .governance-state
-          node -e "require('fs').writeFileSync('.governance-state/state.json',JSON.stringify({offenderCount:${OFFENDER_COUNT},timestamp:new Date().toISOString()}))"
+          node -e "const fs=require('fs');const n=Number(process.env.OFFENDER_COUNT);fs.writeFileSync('.governance-state/state.json', JSON.stringify({ offenderCount: Number.isFinite(n) ? n : 0 }, null, 2));" \
+            OFFENDER_COUNT="$OFFENDER_COUNT" || true
 
-          # Always succeed
+          # Always succeed (non-blocking)
           exit 0
 
-      - name: Upload hygiene state artifact
+      - name: Upload hygiene state artifact (for next run)
         uses: actions/upload-artifact@v4
         with:
-          name: governance-hygiene-state
+          name: governance-import-hygiene-state
           path: .governance-state/state.json
+          if-no-files-found: ignore
           retention-days: 14
-        if: always()
