@@ -62,6 +62,7 @@ const SUITE_CATEGORY: Record<string, Category> = {
 const FEATURE_CATEGORY: Record<string, Category> = {
   pilot: 'system',
   trace: 'system',
+  canon: 'system',
 };
 
 // ============================================================================

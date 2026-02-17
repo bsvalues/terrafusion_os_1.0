@@ -71,6 +71,8 @@ const PilotConsole = lazy(() => import('./pages/PilotConsole'));
 const PilotHome = lazy(() => import('./pages/PilotHome'));
 // Slice 6.1: Standalone Home Shell for Trace
 const TraceHome = lazy(() => import('./pages/TraceHome'));
+// Phase 30: TerraCanon IDE Shell
+const CanonHome = lazy(() => import('./pages/CanonHome'));
 
 // GovernanceLock - Dashboard (role-gated metrics)
 const GovernanceDashboard = lazy(() => import('./pages/GovernanceDashboard'));
@@ -164,6 +166,8 @@ const Router: React.FC = () => {
                 <Route path='/pilot/legacy' element={<PilotConsole />} />
                 {/* Slice 6.1: TerraTrace - Observability & Telemetry */}
                 <Route path='/trace' element={<TraceHome />} />
+                {/* Phase 30: TerraCanon - Integrated Development Environment */}
+                <Route path='/canon' element={<CanonHome />} />
 
                 {/* GovernanceLock - Dashboard (role-gated) */}
                 <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
