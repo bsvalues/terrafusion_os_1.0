@@ -23,7 +23,8 @@ export type SuiteId =
 
 export type OsFeatureId =
   | 'pilot' // TerraPilot - Agentic Task Orchestration
-  | 'trace'; // TerraTrace - Observability & Audit Trail
+  | 'trace' // TerraTrace - Observability & Audit Trail
+  | 'canon'; // TerraCanon - Integrated Development Environment
 
 export type OsSurfaceId = 'workbench'; // Property Workbench - Primary parcel-context UX
 
@@ -298,6 +299,30 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
           icon: '🔍',
         },
       ],
+    },
+  },
+  {
+    id: 'canon',
+    displayName: 'TerraCanon',
+    shortName: 'Canon',
+    description: 'Integrated Development Environment',
+    iconName: 'Code',
+    route: '/canon',
+    status: 'live',
+    label: 'TerraCanon',
+    icon: 'code',
+    homeMeta: {
+      title: 'TerraCanon IDE',
+      description: 'Integrated development environment for TerraFusion OS.',
+      subtitle: 'Standalone',
+      primaryActions: [
+        {
+          id: 'new-file',
+          label: 'New File',
+          intent: 'standalone',
+        },
+      ],
+      showWorkbenchCta: false,
     },
   },
 ] as const;

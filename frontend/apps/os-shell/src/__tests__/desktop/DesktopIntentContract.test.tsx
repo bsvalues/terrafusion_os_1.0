@@ -100,6 +100,9 @@ const ROUTE_LANDMARKS: Record<string, { anyTestIds: string[] }> = {
   '/trace': {
     anyTestIds: ['standalone-shell', 'trace-console-content'],
   },
+  '/canon': {
+    anyTestIds: ['terracanon-root', 'standalone-shell'],
+  },
 };
 
 // ============================================================================
