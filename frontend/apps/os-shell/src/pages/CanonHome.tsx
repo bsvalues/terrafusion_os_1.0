@@ -51,11 +51,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    isValidWorkspace,
-    STORAGE_KEY_LAST_CLOSED,
-    type Workspace,
-} from '../canon/reopenPersistence';
+import { isValidWorkspace, STORAGE_KEY_LAST_CLOSED, type Workspace } from '../canon/governance';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
