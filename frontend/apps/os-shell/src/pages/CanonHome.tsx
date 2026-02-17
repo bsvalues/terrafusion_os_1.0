@@ -12,6 +12,7 @@
  * Phase 37: Reopen last closed workspace — undo-close via lastClosedRef.
  * Phase 38: Persistence spine — localStorage v1, schema-safe restore.
  * Phase 39: Persist lastClosed — reopen-after-refresh via localStorage.
+ * Phase 40: Cross-tab sync — storage events trigger safe state reload.
  *
  * Layout:
  *   terracanon-root
@@ -46,9 +47,10 @@
  * @see Phase 37: TerraCanon Reopen Last Closed Workspace Contract
  * @see Phase 38: TerraCanon Persistence Spine Contract
  * @see Phase 39: TerraCanon Persisted Reopen Contract
+ * @see Phase 40: TerraCanon Cross-Tab Sync Contract
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
@@ -301,9 +303,9 @@ function persistState(workspaces: Workspace[], activeIndex: number): void {
 }
 
 function isValidWorkspace(data: unknown): data is Workspace {
+  if (typeof data !== 'object' || data === null || Array.isArray(data)) return false;
+  if (Object.keys(data as Record<string, unknown>).length !== 2) return false;
   return (
-    typeof data === 'object' &&
-    data !== null &&
     typeof (data as Workspace).id === 'string' &&
     (data as Workspace).id.length > 0 &&
     typeof (data as Workspace).name === 'string' &&
@@ -346,17 +348,66 @@ function CanonContent(): React.ReactElement {
     return persisted ? persisted.activeIndex : 0;
   });
   const [renameDraft, setRenameDraft] = useState('');
+  const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
+  const syncingRef = useRef(false);
 
-  // Persist on state change (skip initial mount to avoid double-write)
+  // Persist on state change (skip initial mount and cross-tab sync writes)
   useEffect(() => {
     if (!mountedRef.current) {
       mountedRef.current = true;
       return;
     }
+    if (syncingRef.current) {
+      syncingRef.current = false;
+      return;
+    }
     persistState(workspaces, activeIndex);
   }, [workspaces, activeIndex]);
+
+  // Phase 40: Cross-tab sync — reload state when another tab writes to localStorage
+  const handleStorageEvent = useCallback((e: StorageEvent) => {
+    if (e.storageArea !== localStorage) return;
+
+    if (e.key === STORAGE_KEY_WORKSPACES || e.key === STORAGE_KEY_ACTIVE) {
+      const reloaded = loadPersistedState();
+      if (reloaded) {
+        // Reconcile workspaceCounter from reloaded IDs
+        const maxId = reloaded.workspaces.reduce((max, ws) => {
+          const match = ws.id.match(/^canon-workspace-(\d+)$/);
+          return match ? Math.max(max, Number(match[1])) : max;
+        }, 0);
+        if (maxId > workspaceCounter) workspaceCounter = maxId;
+
+        syncingRef.current = true;
+        setWorkspaces(reloaded.workspaces);
+        setActiveIndex(reloaded.activeIndex);
+        setRenameDraft('');
+      }
+      // Malformed → ignore, keep current state (fail-closed)
+    }
+
+    if (e.key === STORAGE_KEY_LAST_CLOSED) {
+      if (e.newValue === null) {
+        // Another tab consumed the lastClosed (reopen or clear)
+        lastClosedRef.current = null;
+        forceUpdate((n) => n + 1);
+      } else {
+        const loaded = loadLastClosed();
+        if (loaded) {
+          lastClosedRef.current = loaded;
+          forceUpdate((n) => n + 1);
+        }
+        // Malformed → ignore (fail-closed)
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    window.addEventListener('storage', handleStorageEvent);
+    return () => window.removeEventListener('storage', handleStorageEvent);
+  }, [handleStorageEvent]);
 
   const hasWorkspace = workspaces.length > 0;
   const active = hasWorkspace ? workspaces[activeIndex] : null;
