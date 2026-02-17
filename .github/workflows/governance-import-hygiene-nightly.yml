@@ -28,6 +28,13 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Download previous hygiene state
+        uses: actions/download-artifact@v4
+        with:
+          name: governance-hygiene-state
+          path: .governance-state
+        continue-on-error: true
+
       - name: Run report + write job summary (informational, non-blocking)
         shell: bash
         run: |
@@ -42,13 +49,40 @@ jobs:
           # Derive offender count from output (script prints " - <path>" lines for offenders)
           OFFENDER_COUNT="$(printf "%s\n" "$REPORT_OUT" | grep -cE '^\s*-\s+' || true)"
 
+          # Load previous state (if artifact was downloaded)
+          PREV_COUNT=""
+          if [ -f ".governance-state/state.json" ]; then
+            PREV_COUNT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('.governance-state/state.json','utf8')).offenderCount)}catch{}" 2>/dev/null || true)"
+          fi
+
+          # Compute delta string
+          DELTA_STR=""
+          if [ -n "$PREV_COUNT" ]; then
+            DELTA=$((OFFENDER_COUNT - PREV_COUNT))
+            if [ "$DELTA" -gt 0 ]; then
+              DELTA_STR="+${DELTA} :arrow_up:"
+            elif [ "$DELTA" -lt 0 ]; then
+              DELTA_STR="${DELTA} :arrow_down:"
+            else
+              DELTA_STR="0 (no change)"
+            fi
+          fi
+
           # Write GitHub Actions Job Summary
           {
             echo "## Governance Import Hygiene (Nightly)"
             echo ""
             echo "**Run (UTC):** $(date -u '+%Y-%m-%d %H:%M:%S')"
             echo ""
-            echo "**Offenders:** $OFFENDER_COUNT"
+            if [ -n "$PREV_COUNT" ]; then
+              echo "| Metric | Count |"
+              echo "|--------|-------|"
+              echo "| Previous | $PREV_COUNT |"
+              echo "| Current  | $OFFENDER_COUNT |"
+              echo "| Delta    | $DELTA_STR |"
+            else
+              echo "**Offenders:** $OFFENDER_COUNT _(first run — no previous state)_"
+            fi
             echo ""
             if [ "$OFFENDER_COUNT" -eq 0 ]; then
               echo ":white_check_mark: No non-barrel governance imports detected."
@@ -63,5 +97,17 @@ jobs:
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
+          # Persist current state for next run
+          mkdir -p .governance-state
+          node -e "require('fs').writeFileSync('.governance-state/state.json',JSON.stringify({offenderCount:${OFFENDER_COUNT},timestamp:new Date().toISOString()}))"
+
           # Always succeed
           exit 0
+
+      - name: Upload hygiene state artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-hygiene-state
+          path: .governance-state/state.json
+          retention-days: 14
+        if: always()
