@@ -6,6 +6,7 @@
  * Phase 31: Workspace bootstrap — IDE interior layout skeleton.
  * Phase 32: Open empty workspace intent — state toggle + loaded landmark.
  * Phase 33: Workspace identity — session-stable name + id (no persistence).
+ * Phase 34: Rename workspace intent — editable name (session-only, no persistence).
  *
  * Layout:
  *   terracanon-root
@@ -14,16 +15,19 @@
  *          └─ terracanon-editor (main pane)
  *               ├─ terracanon-no-workspace (empty state, hidden when loaded)
  *               └─ terracanon-workspace-loaded (loaded state, shown after open)
- *                    ├─ terracanon-workspace-name (session identity)
- *                    └─ terracanon-workspace-id (session identity)
+ *                    ├─ terracanon-workspace-name (session identity, editable)
+ *                    ├─ terracanon-workspace-id (session identity)
+ *                    ├─ terracanon-rename-workspace-input (rename draft)
+ *                    └─ terracanon-rename-workspace-commit (commit rename)
  *
- * State: local boolean `hasWorkspace` + useRef identity. No persistence, no filesystem, no LSP.
+ * State: local boolean `hasWorkspace` + useRef identity + renameDraft. No persistence, no filesystem, no LSP.
  *
  * @module pages/CanonHome
  * @see Phase 30: TerraCanon Launch Spine Contract
  * @see Phase 31: TerraCanon Workspace Bootstrap Contract
  * @see Phase 32: TerraCanon Open Empty Workspace Intent Contract
  * @see Phase 33: TerraCanon Workspace Identity Contract
+ * @see Phase 34: TerraCanon Rename Workspace Intent Contract
  */
 
 import React, { useRef, useState } from 'react';
@@ -55,9 +59,19 @@ interface EditorPaneProps {
   hasWorkspace: boolean;
   workspaceName: string | null;
   workspaceId: string | null;
+  renameDraft: string;
+  onRenameDraftChange: (value: string) => void;
+  onCommitRename: () => void;
 }
 
-function EditorPane({ hasWorkspace, workspaceName, workspaceId }: EditorPaneProps): React.ReactElement {
+function EditorPane({
+  hasWorkspace,
+  workspaceName,
+  workspaceId,
+  renameDraft,
+  onRenameDraftChange,
+  onCommitRename,
+}: EditorPaneProps): React.ReactElement {
   return (
     <section
       className='canon-editor flex-1 min-h-[200px] p-4 flex items-center justify-center'
@@ -69,7 +83,25 @@ function EditorPane({ hasWorkspace, workspaceName, workspaceId }: EditorPaneProp
           <p className='text-sm text-gray-500'>Ready to edit.</p>
           <div className='mt-2 text-xs text-gray-500'>
             <span data-testid='terracanon-workspace-name'>{workspaceName}</span>
-            <span className='ml-2' data-testid='terracanon-workspace-id'>{workspaceId}</span>
+            <span className='ml-2' data-testid='terracanon-workspace-id'>
+              {workspaceId}
+            </span>
+          </div>
+          <div className='mt-2 flex items-center gap-2'>
+            <input
+              className='px-2 py-1 text-xs rounded bg-gray-800 border border-gray-600 text-gray-300'
+              data-testid='terracanon-rename-workspace-input'
+              value={renameDraft}
+              onChange={(e) => onRenameDraftChange(e.target.value)}
+              placeholder='Rename workspace'
+            />
+            <button
+              className='px-2 py-1 text-xs rounded bg-cyan-700 hover:bg-cyan-600 text-white'
+              data-testid='terracanon-rename-workspace-commit'
+              onClick={onCommitRename}
+            >
+              Rename
+            </button>
           </div>
         </div>
       ) : (
@@ -90,16 +122,33 @@ interface CanonWorkspaceProps {
   hasWorkspace: boolean;
   workspaceName: string | null;
   workspaceId: string | null;
+  renameDraft: string;
+  onRenameDraftChange: (value: string) => void;
+  onCommitRename: () => void;
 }
 
-function CanonWorkspace({ hasWorkspace, workspaceName, workspaceId }: CanonWorkspaceProps): React.ReactElement {
+function CanonWorkspace({
+  hasWorkspace,
+  workspaceName,
+  workspaceId,
+  renameDraft,
+  onRenameDraftChange,
+  onCommitRename,
+}: CanonWorkspaceProps): React.ReactElement {
   return (
     <div
       className='canon-workspace flex border border-gray-700/30 rounded-lg overflow-hidden bg-gray-900/50'
       data-testid='terracanon-workspace'
     >
       <FileTreePane />
-      <EditorPane hasWorkspace={hasWorkspace} workspaceName={workspaceName} workspaceId={workspaceId} />
+      <EditorPane
+        hasWorkspace={hasWorkspace}
+        workspaceName={workspaceName}
+        workspaceId={workspaceId}
+        renameDraft={renameDraft}
+        onRenameDraftChange={onRenameDraftChange}
+        onCommitRename={onCommitRename}
+      />
     </div>
   );
 }
@@ -114,6 +163,7 @@ function CanonContent(): React.ReactElement {
   const [hasWorkspace, setHasWorkspace] = useState(false);
   const workspaceIdRef = useRef<string | null>(null);
   const [workspaceName, setWorkspaceName] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState('');
 
   const openEmptyWorkspace = () => {
     if (!workspaceIdRef.current) {
@@ -124,6 +174,12 @@ function CanonContent(): React.ReactElement {
       setWorkspaceName('Untitled Workspace');
     }
     setHasWorkspace(true);
+  };
+
+  const commitRename = () => {
+    const next = renameDraft.trim();
+    if (!next) return;
+    setWorkspaceName(next);
   };
 
   return (
@@ -139,7 +195,14 @@ function CanonContent(): React.ReactElement {
           Open Empty Workspace
         </button>
       </section>
-      <CanonWorkspace hasWorkspace={hasWorkspace} workspaceName={workspaceName} workspaceId={workspaceIdRef.current} />
+      <CanonWorkspace
+        hasWorkspace={hasWorkspace}
+        workspaceName={workspaceName}
+        workspaceId={workspaceIdRef.current}
+        renameDraft={renameDraft}
+        onRenameDraftChange={setRenameDraft}
+        onCommitRename={commitRename}
+      />
     </div>
   );
 }
