@@ -15,6 +15,10 @@ export {
 } from './ToolRegistry.js';
 
 export {
+    createPreflight,
+} from './ToolRunner.preflight.js';
+
+export {
     ErrorCodes,
     ToolRunnerError,
     ToolRunner,
