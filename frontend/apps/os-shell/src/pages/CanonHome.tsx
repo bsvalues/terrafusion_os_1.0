@@ -263,7 +263,7 @@ function CanonWorkspace({
 
 const STORAGE_KEY_WORKSPACES = 'tf.canon.workspaces.v1';
 const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
-// STORAGE_KEY_LAST_CLOSED imported from @/canon/reopenPersistence
+// STORAGE_KEY_LAST_CLOSED imported from @/canon/governance (Phase 42 barrel)
 
 function isValidWorkspaceArray(data: unknown): data is Workspace[] {
   if (!Array.isArray(data)) return false;
@@ -290,7 +290,7 @@ function persistState(workspaces: Workspace[], activeIndex: number): void {
   localStorage.setItem(STORAGE_KEY_ACTIVE, String(activeIndex));
 }
 
-// isValidWorkspace imported from @/canon/reopenPersistence (Phase 41 dedup)
+// isValidWorkspace imported from @/canon/governance (Phase 42 barrel)
 
 function loadLastClosed(): Workspace | null {
   try {
