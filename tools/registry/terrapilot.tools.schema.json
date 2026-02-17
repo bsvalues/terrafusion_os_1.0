@@ -46,6 +46,28 @@
       "type": "string",
       "enum": ["pilot", "muse"]
     },
+    "CommandIntent": {
+      "type": "string",
+      "enum": ["inspect", "explain", "plan", "simulate", "mutate", "execute"]
+    },
+    "MutationClass": {
+      "type": "string",
+      "enum": ["none", "transient", "durable"]
+    },
+    "VisibilityClass": {
+      "type": "string",
+      "enum": ["public", "restricted", "secret"]
+    },
+    "CommandGovernanceMeta": {
+      "type": "object",
+      "required": ["intent", "mutation", "visibility"],
+      "additionalProperties": false,
+      "properties": {
+        "intent": { "$ref": "#/definitions/CommandIntent" },
+        "mutation": { "$ref": "#/definitions/MutationClass" },
+        "visibility": { "$ref": "#/definitions/VisibilityClass" }
+      }
+    },
     "Tool": {
       "type": "object",
       "required": ["toolId", "suite", "risk"],
@@ -138,6 +160,10 @@
           "type": "string",
           "enum": ["dossier", "secure-blob", "case-store"],
           "description": "Where payload refs are stored (required if tracePolicy is payload_ref)"
+        },
+        "governance": {
+          "$ref": "#/definitions/CommandGovernanceMeta",
+          "description": "Optional command governance metadata for preflight policy checks"
         }
       }
     }

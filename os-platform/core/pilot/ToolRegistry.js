@@ -12,11 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VALID_TRACE_POLICIES = exports.VALID_SUITES = exports.VALID_RISKS = exports.VALID_PII_HANDLING = exports.toolRegistry = exports.ToolRegistry = exports.ManifestValidationError = void 0;
 const fs_1 = require("fs");
 const path_1 = require("path");
+const commandGovernance_js_1 = require("../types/commandGovernance.js");
 // ============================================================================
 // Constants
 // ============================================================================
 const MANIFEST_VERSION = '1.3.0';
-const CANONICAL_MANIFEST_PATH = (0, path_1.resolve)(__dirname, '../../../tools/registry/terrapilot.tools.json');
+const BASE_DIR = __dirname;
+const CANONICAL_MANIFEST_PATH = (0, path_1.resolve)(BASE_DIR, '../../../tools/registry/terrapilot.tools.json');
 const VALID_SUITES = ['forge', 'atlas', 'dais', 'dossier', 'os', 'pilot', 'gpt'];
 exports.VALID_SUITES = VALID_SUITES;
 const VALID_RISKS = ['read_only', 'write_low', 'write_high', 'irreversible'];
@@ -95,6 +97,11 @@ function validateTool(tool, index) {
     // payload_ref requires payloadStore
     if (tool.tracePolicy === 'payload_ref' && !tool.payloadStore) {
         violations.push(`${prefix}: payload_ref tracePolicy requires payloadStore`);
+    }
+    // Phase 48A: Optional governance metadata (strict shape when present)
+    const governance = tool.governance;
+    if (governance !== undefined && !(0, commandGovernance_js_1.isCommandGovernanceMeta)(governance)) {
+        violations.push(`${prefix}: governance must match { intent, mutation, visibility } with valid enum values`);
     }
     return violations;
 }
