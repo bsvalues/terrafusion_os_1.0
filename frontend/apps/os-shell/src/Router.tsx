@@ -1,9 +1,9 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
-import { AuthProvider, AuthGuard } from './auth/AuthProvider';
 import { getViteEnv } from './env/getViteEnv';
 
 // Loading component for Suspense fallback

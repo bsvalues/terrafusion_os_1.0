@@ -11,13 +11,13 @@
  * @see config/suiteRegistry.ts - Canonical source of truth
  */
 
-import type { Category } from './generatedModules';
 import type { WiringStatus } from '../shell/desktop/DesktopIcon';
+import type { Category } from './generatedModules';
 import {
-  CONSTITUTIONAL_SUITES,
-  OS_FEATURES,
-  type SuiteDefinition,
-  type OsFeatureDefinition,
+    CONSTITUTIONAL_SUITES,
+    OS_FEATURES,
+    type OsFeatureDefinition,
+    type SuiteDefinition,
 } from './suiteRegistry';
 
 // ============================================================================
