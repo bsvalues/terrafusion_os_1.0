@@ -4,22 +4,25 @@
  * Standalone home page for TerraCanon (IDE) using the shared StandaloneHomeShell.
  * Phase 30: Launch spine — route + root landmark.
  * Phase 31: Workspace bootstrap — IDE interior layout skeleton.
+ * Phase 32: Open empty workspace intent — state toggle + loaded landmark.
  *
  * Layout:
  *   terracanon-root
  *     └─ terracanon-workspace
  *          ├─ terracanon-filetree (sidebar)
  *          └─ terracanon-editor (main pane)
- *               └─ terracanon-no-workspace (empty state)
+ *               ├─ terracanon-no-workspace (empty state, hidden when loaded)
+ *               └─ terracanon-workspace-loaded (loaded state, shown after open)
  *
- * No persistence, no real files, no LSP. Skeleton only.
+ * State: local boolean `hasWorkspace`. No persistence, no filesystem, no LSP.
  *
  * @module pages/CanonHome
  * @see Phase 30: TerraCanon Launch Spine Contract
  * @see Phase 31: TerraCanon Workspace Bootstrap Contract
+ * @see Phase 32: TerraCanon Open Empty Workspace Intent Contract
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { StandaloneHomeShell } from '../components/standalone';
 
 // ============================================================================
@@ -44,19 +47,26 @@ function FileTreePane(): React.ReactElement {
 // Editor Pane (main content area)
 // ============================================================================
 
-function EditorPane(): React.ReactElement {
+function EditorPane({ hasWorkspace }: { hasWorkspace: boolean }): React.ReactElement {
   return (
     <section
       className='canon-editor flex-1 min-h-[200px] p-4 flex items-center justify-center'
       data-testid='terracanon-editor'
     >
-      <div
-        className='text-center text-gray-500'
-        data-testid='terracanon-no-workspace'
-      >
-        <p className='text-lg mb-1'>No workspace loaded</p>
-        <p className='text-sm'>Open a file or create a new workspace to get started.</p>
-      </div>
+      {hasWorkspace ? (
+        <div data-testid='terracanon-workspace-loaded'>
+          <p className='text-lg mb-1 text-gray-300'>Workspace loaded</p>
+          <p className='text-sm text-gray-500'>Ready to edit.</p>
+        </div>
+      ) : (
+        <div
+          className='text-center text-gray-500'
+          data-testid='terracanon-no-workspace'
+        >
+          <p className='text-lg mb-1'>No workspace loaded</p>
+          <p className='text-sm'>Open a file or create a new workspace to get started.</p>
+        </div>
+      )}
     </section>
   );
 }
@@ -65,14 +75,14 @@ function EditorPane(): React.ReactElement {
 // Workspace Shell (IDE layout container)
 // ============================================================================
 
-function CanonWorkspace(): React.ReactElement {
+function CanonWorkspace({ hasWorkspace }: { hasWorkspace: boolean }): React.ReactElement {
   return (
     <div
       className='canon-workspace flex border border-gray-700/30 rounded-lg overflow-hidden bg-gray-900/50'
       data-testid='terracanon-workspace'
     >
       <FileTreePane />
-      <EditorPane />
+      <EditorPane hasWorkspace={hasWorkspace} />
     </div>
   );
 }
@@ -82,13 +92,24 @@ function CanonWorkspace(): React.ReactElement {
 // ============================================================================
 
 function CanonContent(): React.ReactElement {
+  const [hasWorkspace, setHasWorkspace] = useState(false);
+
   return (
     <div className='canon-console' data-testid='terracanon-root'>
       <section className='canon-console__overview mb-4'>
         <h2>TerraCanon IDE</h2>
         <p>Integrated development environment for TerraFusion OS.</p>
+        {!hasWorkspace && (
+          <button
+            className='mt-2 px-3 py-1 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white'
+            data-testid='terracanon-open-empty-workspace'
+            onClick={() => setHasWorkspace(true)}
+          >
+            Open Empty Workspace
+          </button>
+        )}
       </section>
-      <CanonWorkspace />
+      <CanonWorkspace hasWorkspace={hasWorkspace} />
     </div>
   );
 }
