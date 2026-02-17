@@ -271,15 +271,7 @@ const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
 
 function isValidWorkspaceArray(data: unknown): data is Workspace[] {
   if (!Array.isArray(data)) return false;
-  return data.every(
-    (item) =>
-      typeof item === 'object' &&
-      item !== null &&
-      typeof (item as Workspace).id === 'string' &&
-      (item as Workspace).id.length > 0 &&
-      typeof (item as Workspace).name === 'string' &&
-      (item as Workspace).name.length > 0
-  );
+  return data.every(isValidWorkspace);
 }
 
 function loadPersistedState(): { workspaces: Workspace[]; activeIndex: number } | null {
