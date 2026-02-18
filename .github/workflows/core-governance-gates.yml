@@ -58,6 +58,22 @@ jobs:
         run: bash scripts/ci/phase-lane-server-guard.sh
       - name: CI Assert Clean Tree (no mutation)
         run: bash scripts/ci/assert-clean-tree.sh
+      - name: Collect failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .tmp/ci-diagnostics
+          git status --porcelain > .tmp/ci-diagnostics/git-status-porcelain.txt || true
+          git diff --name-status > .tmp/ci-diagnostics/git-diff-name-status.txt || true
+          git diff --cached --name-status > .tmp/ci-diagnostics/git-diff-cached-name-status.txt || true
+          bash scripts/ci/audit-governed-no-write.sh > .tmp/ci-diagnostics/audit-governed-no-write.log 2>&1 || true
+      - name: Upload failure diagnostics artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/ci-diagnostics/
+          if-no-files-found: ignore
 
   phase50-4-governance:
     needs: [changes, phase-lane-server-guard]
@@ -140,6 +156,22 @@ jobs:
           fi
       - name: CI Assert Clean Tree (no mutation)
         run: bash scripts/ci/assert-clean-tree.sh
+      - name: Collect failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .tmp/ci-diagnostics
+          git status --porcelain > .tmp/ci-diagnostics/git-status-porcelain.txt || true
+          git diff --name-status > .tmp/ci-diagnostics/git-diff-name-status.txt || true
+          git diff --cached --name-status > .tmp/ci-diagnostics/git-diff-cached-name-status.txt || true
+          bash scripts/ci/audit-governed-no-write.sh > .tmp/ci-diagnostics/audit-governed-no-write.log 2>&1 || true
+      - name: Upload failure diagnostics artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/ci-diagnostics/
+          if-no-files-found: ignore
 
   phase50-5-main-invariants:
     if: github.event_name == 'push' && github.ref_name == 'main'
@@ -202,6 +234,22 @@ jobs:
           echo "phase50.5: branch protection verification PASS"
       - name: Assert clean tree (no mutation)
         run: bash scripts/ci/assert-clean-tree.sh
+      - name: Collect failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .tmp/ci-diagnostics
+          git status --porcelain > .tmp/ci-diagnostics/git-status-porcelain.txt || true
+          git diff --name-status > .tmp/ci-diagnostics/git-diff-name-status.txt || true
+          git diff --cached --name-status > .tmp/ci-diagnostics/git-diff-cached-name-status.txt || true
+          bash scripts/ci/audit-governed-no-write.sh > .tmp/ci-diagnostics/audit-governed-no-write.log 2>&1 || true
+      - name: Upload failure diagnostics artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/ci-diagnostics/
+          if-no-files-found: ignore
 
   governed-spine:
     needs: [changes, phase-lane-server-guard, phase50-4-governance]
@@ -220,6 +268,22 @@ jobs:
         run: pnpm test:governed
       - name: CI Assert Clean Tree (no mutation)
         run: bash scripts/ci/assert-clean-tree.sh
+      - name: Collect failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .tmp/ci-diagnostics
+          git status --porcelain > .tmp/ci-diagnostics/git-status-porcelain.txt || true
+          git diff --name-status > .tmp/ci-diagnostics/git-diff-name-status.txt || true
+          git diff --cached --name-status > .tmp/ci-diagnostics/git-diff-cached-name-status.txt || true
+          bash scripts/ci/audit-governed-no-write.sh > .tmp/ci-diagnostics/audit-governed-no-write.log 2>&1 || true
+      - name: Upload failure diagnostics artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/ci-diagnostics/
+          if-no-files-found: ignore
 
   phase85-tools:
     needs: [changes, phase-lane-server-guard, phase50-4-governance]
@@ -238,6 +302,22 @@ jobs:
         run: node --test os-platform/core/tests/phase85-tools.test.mjs
       - name: CI Assert Clean Tree (no mutation)
         run: bash scripts/ci/assert-clean-tree.sh
+      - name: Collect failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .tmp/ci-diagnostics
+          git status --porcelain > .tmp/ci-diagnostics/git-status-porcelain.txt || true
+          git diff --name-status > .tmp/ci-diagnostics/git-diff-name-status.txt || true
+          git diff --cached --name-status > .tmp/ci-diagnostics/git-diff-cached-name-status.txt || true
+          bash scripts/ci/audit-governed-no-write.sh > .tmp/ci-diagnostics/audit-governed-no-write.log 2>&1 || true
+      - name: Upload failure diagnostics artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/ci-diagnostics/
+          if-no-files-found: ignore
 
   phase86-toolrunner:
     needs: [changes, phase-lane-server-guard, phase50-4-governance]
@@ -256,6 +336,22 @@ jobs:
         run: node --test os-platform/core/tests/phase86-toolrunner.test.mjs
       - name: CI Assert Clean Tree (no mutation)
         run: bash scripts/ci/assert-clean-tree.sh
+      - name: Collect failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .tmp/ci-diagnostics
+          git status --porcelain > .tmp/ci-diagnostics/git-status-porcelain.txt || true
+          git diff --name-status > .tmp/ci-diagnostics/git-diff-name-status.txt || true
+          git diff --cached --name-status > .tmp/ci-diagnostics/git-diff-cached-name-status.txt || true
+          bash scripts/ci/audit-governed-no-write.sh > .tmp/ci-diagnostics/audit-governed-no-write.log 2>&1 || true
+      - name: Upload failure diagnostics artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/ci-diagnostics/
+          if-no-files-found: ignore
 
   check-generated-js:
     needs: [changes, phase-lane-server-guard, phase50-4-governance]
@@ -278,6 +374,22 @@ jobs:
         run: pnpm run check:generated
       - name: CI Assert Clean Tree (no mutation)
         run: bash scripts/ci/assert-clean-tree.sh
+      - name: Collect failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .tmp/ci-diagnostics
+          git status --porcelain > .tmp/ci-diagnostics/git-status-porcelain.txt || true
+          git diff --name-status > .tmp/ci-diagnostics/git-diff-name-status.txt || true
+          git diff --cached --name-status > .tmp/ci-diagnostics/git-diff-cached-name-status.txt || true
+          bash scripts/ci/audit-governed-no-write.sh > .tmp/ci-diagnostics/audit-governed-no-write.log 2>&1 || true
+      - name: Upload failure diagnostics artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/ci-diagnostics/
+          if-no-files-found: ignore
 
   no-relevant-changes:
     needs: changes
