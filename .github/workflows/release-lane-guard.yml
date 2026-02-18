@@ -1,0 +1,77 @@
+name: Release Lane Guard (No Auto-Approve, No Rogue Prod)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Guard: forbid terraform -auto-approve in workflows"
+        run: |
+          set -euo pipefail
+          hits="$(grep -RIn --include="*.yml" --include="*.yaml" "terraform apply.*-auto-approve" .github/workflows | grep -v ".github/workflows/release-lane-guard.yml" || true)"
+          if [ -n "${hits}" ]; then
+            echo "::error::Forbidden: terraform apply -auto-approve found in workflows."
+            echo "${hits}"
+            exit 1
+          fi
+
+      - name: "Guard: only release-lane.yml may reference production in deprecated lanes"
+        run: |
+          set -euo pipefail
+          deprecated_lanes=(
+            ".github/workflows/infrastructure-cicd.yml"
+            ".github/workflows/terrafusion-ci-cd-production.yml"
+            ".github/workflows/ci-cd-main.yml"
+            ".github/workflows/ci-cd-pipeline.yml"
+            ".github/workflows/ci-verified.yml"
+            ".github/workflows/deployment.yml"
+            ".github/workflows/kubernetes-infrastructure-ci.yml"
+          )
+
+          offenders=""
+          for wf in "${deprecated_lanes[@]}"; do
+            if grep -nE "environment:\s*production([[:space:]]|$)|name:\s*production([[:space:]]|$)" "$wf" >/dev/null 2>&1; then
+              offenders="${offenders}\n${wf}"
+            fi
+          done
+
+          if [ -n "${offenders}" ]; then
+            echo "::error::Forbidden: production environment referenced in deprecated release lanes."
+            printf '%b\n' "${offenders}"
+            exit 1
+          fi
+
+      - name: "Guard: deprecated lanes must be workflow_dispatch-only"
+        run: |
+          set -euo pipefail
+          deprecated_lanes=(
+            ".github/workflows/infrastructure-cicd.yml"
+            ".github/workflows/terrafusion-ci-cd-production.yml"
+            ".github/workflows/ci-cd-main.yml"
+            ".github/workflows/ci-cd-pipeline.yml"
+            ".github/workflows/ci-verified.yml"
+            ".github/workflows/deployment.yml"
+            ".github/workflows/kubernetes-infrastructure-ci.yml"
+          )
+
+          offenders=""
+          for wf in "${deprecated_lanes[@]}"; do
+            if grep -nE "^  (push|schedule|pull_request):" "$wf" >/dev/null 2>&1; then
+              offenders="${offenders}\n${wf}"
+            fi
+          done
+
+          if [ -n "${offenders}" ]; then
+            echo "::error::Forbidden: deprecated lanes may not have push/schedule/pull_request triggers."
+            printf '%b\n' "${offenders}"
+            exit 1
+          fi

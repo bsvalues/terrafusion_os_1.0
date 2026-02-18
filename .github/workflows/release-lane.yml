@@ -1,0 +1,103 @@
+name: Release Lane (Build Once, Promote)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-lane-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  TF_ARTIFACT_NAME: tf-release-artifact
+  TF_ARTIFACT_DIR: dist-release
+  TF_SHA: ${{ github.sha }}
+
+jobs:
+  build_once:
+    name: Build Once (Immutable Artifact)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node / pnpm
+        run: |
+          corepack enable
+          node -v
+          pnpm -v
+
+      - name: Build
+        run: |
+          mkdir -p "${TF_ARTIFACT_DIR}"
+          printf '%s\n' "${TF_SHA}" > "${TF_ARTIFACT_DIR}/commit.sha"
+          printf '%s\n' "immutable-release-artifact" > "${TF_ARTIFACT_DIR}/manifest.txt"
+
+      - name: Create immutable bundle
+        run: |
+          tar -czf "${TF_ARTIFACT_NAME}-${TF_SHA}.tgz" "${TF_ARTIFACT_DIR}"
+
+      - name: Upload immutable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}
+          path: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}.tgz
+          if-no-files-found: error
+          retention-days: 30
+
+  promote_dev:
+    name: Promote -> DEV
+    needs: [build_once]
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}
+
+      - name: Extract
+        run: |
+          tar -xzf "${TF_ARTIFACT_NAME}-${TF_SHA}.tgz"
+
+      - name: Deploy DEV
+        run: |
+          echo "Deploying ${TF_SHA} to DEV..."
+
+  promote_staging:
+    name: Promote -> STAGING (Approval Required)
+    needs: [promote_dev]
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}
+
+      - name: Extract
+        run: |
+          tar -xzf "${TF_ARTIFACT_NAME}-${TF_SHA}.tgz"
+
+      - name: Deploy STAGING
+        run: |
+          echo "Deploying ${TF_SHA} to STAGING..."
+
+  promote_prod:
+    name: Promote -> PROD (Approval Required)
+    needs: [promote_staging]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}
+
+      - name: Extract
+        run: |
+          tar -xzf "${TF_ARTIFACT_NAME}-${TF_SHA}.tgz"
+
+      - name: Deploy PROD
+        run: |
+          echo "Deploying ${TF_SHA} to PROD..."

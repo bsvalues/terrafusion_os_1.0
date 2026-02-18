@@ -5,17 +5,6 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    branches: [production]
-    tags: ['v*']
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'src/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '*.sln'
-      - '.github/workflows/terrafusion-ci-cd-production.yml'
   workflow_dispatch:
     inputs:
       deploy_environment:
@@ -423,9 +412,9 @@ jobs:
     name: Infrastructure Deployment (Terraform)
     runs-on: ubuntu-latest
     needs: [container-build]
-    if: github.ref == 'refs/heads/production' || github.event_name == 'workflow_dispatch'
+    if: false
     environment:
-      name: ${{ github.event.inputs.deploy_environment || (github.ref == 'refs/heads/production' && 'production' || 'staging') }}
+      name: staging-deprecated
     permissions:
       contents: read
       id-token: write
@@ -455,7 +444,7 @@ jobs:
           terraform plan -var="environment=${{ github.event.inputs.deploy_environment || 'staging' }}"
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/production' || github.event_name == 'workflow_dispatch'
+        if: false
         run: |
           cd infrastructure/terraform
           terraform apply -var="environment=${{ github.event.inputs.deploy_environment || 'staging' }}"
@@ -465,7 +454,7 @@ jobs:
     name: ArgoCD Application Deployment
     runs-on: ubuntu-latest
     needs: [infrastructure-deployment, container-build]
-    if: github.ref == 'refs/heads/production' || github.event_name == 'workflow_dispatch'
+    if: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
