@@ -53,6 +53,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { invokeWithPreflight, type CanonInvokeResult } from '../canon/invokeWithPreflight';
 import {
   isValidWorkspace,
   parseLastClosedV2,
@@ -347,6 +348,8 @@ function CanonContent(): React.ReactElement {
     return persisted ? persisted.activeIndex : 0;
   });
   const [renameDraft, setRenameDraft] = useState('');
+  const [commandResult, setCommandResult] = useState<CanonInvokeResult | null>(null);
+  const [commandRunning, setCommandRunning] = useState(false);
   const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
@@ -474,6 +477,22 @@ function CanonContent(): React.ReactElement {
     setWorkspaces((prev) => prev.map((ws, i) => (i === activeIndex ? { ...ws, name: next } : ws)));
   };
 
+  const runGovernedCommand = async () => {
+    setCommandRunning(true);
+    try {
+      const outcome = await invokeWithPreflight({
+        toolId: 'summarize_dossier',
+        mode: 'muse',
+        params: {
+          dossierId: active?.id ?? 'canon-workspace',
+        },
+      });
+      setCommandResult(outcome);
+    } finally {
+      setCommandRunning(false);
+    }
+  };
+
   return (
     <div className='canon-console' data-testid='terracanon-root'>
       <section className='canon-console__overview mb-4'>
@@ -486,6 +505,22 @@ function CanonContent(): React.ReactElement {
         >
           Open Empty Workspace
         </button>
+        <button
+          className='mt-2 ml-2 px-3 py-1 text-sm rounded bg-indigo-700 hover:bg-indigo-600 text-white disabled:opacity-50'
+          data-testid='terracanon-run-governed-command'
+          onClick={runGovernedCommand}
+          disabled={commandRunning}
+        >
+          {commandRunning ? 'Running...' : 'Run Governed Command'}
+        </button>
+        {commandResult && (
+          <div className='mt-3 text-xs text-gray-300' data-testid='terracanon-command-result'>
+            <div data-testid='terracanon-command-correlation'>{commandResult.correlationId}</div>
+            {commandResult.status === 'denied' && (
+              <div data-testid='terracanon-command-deny-reason'>{commandResult.reason}</div>
+            )}
+          </div>
+        )}
       </section>
       <CanonWorkspace
         hasWorkspace={hasWorkspace}
