@@ -14,8 +14,7 @@ env:
   TF_PERF_BENCH: '1'
   TF_AI_SWARM_MONITOR: '1'
   TF_GOV_COMPLIANCE: '1'
-  TF_ENFORCE_BRANCH_PROTECTION: '0'
-  TF_REQUIRED_CHECKS: '🔒 SEAL,typecheck-core,phase83-tools'
+  TF_ENFORCE_BRANCH_PROTECTION: '1'
 
 jobs:
   changes:
@@ -119,56 +118,20 @@ jobs:
           fi
           trap - ERR
           echo "phase50.4: no-write audit PASS"
-      - name: Verify branch protection matches canon (optional enforce)
+      - name: Verify branch protection matches canon snapshot
+        if: env.TF_ENFORCE_BRANCH_PROTECTION == '1'
         shell: bash
         env:
           TF_REPO: ${{ github.repository }}
-          TF_PROTECTED_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          record_fail() {
-            code=$?
-            mkdir -p .tf-ci-failure
-            echo "verify-branch-protection" > .tf-ci-failure/failing_step.txt
-            echo "${code}" > .tf-ci-failure/failing_exit_code.txt
-            if [[ -n "${GITHUB_ENV:-}" ]]; then
-              {
-                echo "TF_FAILING_STEP=verify-branch-protection"
-                echo "TF_FAILING_EXIT_CODE=${code}"
-              } >> "${GITHUB_ENV}"
-            fi
-            exit "${code}"
-          }
-          trap 'record_fail' ERR
-          echo "phase50.4: verifying branch protection for ${TF_REPO}@${TF_PROTECTED_BRANCH}"
-          api="https://api.github.com/repos/${TF_REPO}/branches/${TF_PROTECTED_BRANCH}/protection"
-          if ! json="$(curl -fsSL -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "$api" 2>/dev/null)"; then
-            if [[ "${TF_ENFORCE_BRANCH_PROTECTION}" == "1" ]]; then
-              echo "ERROR: failed to fetch branch protection and enforcement is enabled"
-              exit 1
-            fi
-            echo "phase50.4: branch protection check skipped (insufficient token permissions)"
-            exit 0
-          fi
-          contexts="$(echo "$json" | jq -r '.required_status_checks.contexts[]? // empty')"
-          missing=0
-          IFS=',' read -ra required <<< "${TF_REQUIRED_CHECKS}"
-          for req in "${required[@]}"; do
-            req="$(echo "$req" | xargs)"
-            [[ -z "$req" ]] && continue
-            if ! echo "$contexts" | grep -Fxq "$req"; then
-              echo "ERROR: missing required status check: $req"
-              missing=1
-            fi
-          done
-          if [[ "$missing" == "1" ]]; then
-            echo "Observed required checks:"
-            echo "${contexts:-<none>}" | sed 's/^/  - /'
-            exit 1
-          fi
-          trap - ERR
-          echo "phase50.4: branch protection verification PASS"
+          GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci/verify-branch-protection-against-canon.sh
+      - name: Verify AGENTS.md matches protection canon
+        shell: bash
+        run: bash scripts/ci/verify-agents-doc-against-protection-canon.sh
+      - name: Release lane safety lint (no auto-approve / no direct-to-prod)
+        shell: bash
+        run: bash scripts/ci/release-lane-safety-lint.sh
       - name: Merge choreography gate (phase branches)
         shell: bash
         env:
@@ -267,56 +230,20 @@ jobs:
           fi
           trap - ERR
           echo "phase50.5: no-write audit PASS"
-      - name: Verify branch protection matches canon (optional enforce)
+      - name: Verify branch protection matches canon snapshot
+        if: env.TF_ENFORCE_BRANCH_PROTECTION == '1'
         shell: bash
         env:
           TF_REPO: ${{ github.repository }}
-          TF_PROTECTED_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          record_fail() {
-            code=$?
-            mkdir -p .tf-ci-failure
-            echo "verify-branch-protection" > .tf-ci-failure/failing_step.txt
-            echo "${code}" > .tf-ci-failure/failing_exit_code.txt
-            if [[ -n "${GITHUB_ENV:-}" ]]; then
-              {
-                echo "TF_FAILING_STEP=verify-branch-protection"
-                echo "TF_FAILING_EXIT_CODE=${code}"
-              } >> "${GITHUB_ENV}"
-            fi
-            exit "${code}"
-          }
-          trap 'record_fail' ERR
-          echo "phase50.5: verifying branch protection for ${TF_REPO}@${TF_PROTECTED_BRANCH}"
-          api="https://api.github.com/repos/${TF_REPO}/branches/${TF_PROTECTED_BRANCH}/protection"
-          if ! json="$(curl -fsSL -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "$api" 2>/dev/null)"; then
-            if [[ "${TF_ENFORCE_BRANCH_PROTECTION}" == "1" ]]; then
-              echo "ERROR: failed to fetch branch protection and enforcement is enabled"
-              exit 1
-            fi
-            echo "phase50.5: branch protection check skipped (insufficient token permissions)"
-            exit 0
-          fi
-          contexts="$(echo "$json" | jq -r '.required_status_checks.contexts[]? // empty')"
-          missing=0
-          IFS=',' read -ra required <<< "${TF_REQUIRED_CHECKS}"
-          for req in "${required[@]}"; do
-            req="$(echo "$req" | xargs)"
-            [[ -z "$req" ]] && continue
-            if ! echo "$contexts" | grep -Fxq "$req"; then
-              echo "ERROR: missing required status check: $req"
-              missing=1
-            fi
-          done
-          if [[ "$missing" == "1" ]]; then
-            echo "Observed required checks:"
-            echo "${contexts:-<none>}" | sed 's/^/  - /'
-            exit 1
-          fi
-          trap - ERR
-          echo "phase50.5: branch protection verification PASS"
+          GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci/verify-branch-protection-against-canon.sh
+      - name: Verify AGENTS.md matches protection canon
+        shell: bash
+        run: bash scripts/ci/verify-agents-doc-against-protection-canon.sh
+      - name: Release lane safety lint (no auto-approve / no direct-to-prod)
+        shell: bash
+        run: bash scripts/ci/release-lane-safety-lint.sh
       - name: Assert clean tree (no mutation)
         run: bash scripts/ci/run-recorded-step.sh "assert-clean-tree" -- bash scripts/ci/assert-clean-tree.sh
       - name: Collect failure diagnostics
