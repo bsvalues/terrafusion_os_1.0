@@ -112,7 +112,7 @@ jobs:
   deploy-staging:
     needs: [build-and-test, backend-tests]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'staging'
+    if: github.event.inputs.environment == 'staging'
     environment: staging
     steps:
       - uses: actions/checkout@v4

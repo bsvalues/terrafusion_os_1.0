@@ -5,7 +5,7 @@
 #   - Frontend: pnpm --frozen-lockfile (HARD FAIL if lockfile drifts)
 #   - Backend: dotnet with NuGet cache (retry on transient failures)
 #   - Security: CodeQL analysis (continue-on-error to not block release)
-#   - Deployment: main branch only
+#   - Deployment: manual dispatch only (production gated)
 # ============================================================================
 name: 🏛️ TerraFusion OS - Main CI/CD Pipeline
 
@@ -307,7 +307,7 @@ jobs:
     name: 🚀 Deployment Pipeline
     runs-on: ubuntu-latest
     needs: build-package
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch'
 
     environment: production
 

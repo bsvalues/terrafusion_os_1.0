@@ -505,7 +505,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to Production
     needs: deploy-staging
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deployment_environment == 'production'
     environment: production
 
     steps:
@@ -573,7 +573,7 @@ jobs:
   rollback:
     runs-on: ubuntu-latest
     name: Emergency Rollback
-    if: failure() && github.ref == 'refs/heads/main'
+    if: failure() && github.event_name == 'workflow_dispatch' && github.event.inputs.deployment_environment == 'production'
     needs: deploy-production
     environment: production
 
