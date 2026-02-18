@@ -1,95 +1,75 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/usr/bin/env bash
+set -euo pipefail
 
-# ============================================================================
-# SPECLOCK: TerraFusion Pre-Push Quality Gate (pnpm-first, deterministic)
-# Contract: Must pass on clean machine with pnpm installed
-# Note: Lockfile truth is ROOT pnpm-lock.yaml (workspace-aware builds)
-#       frontend/pnpm-lock.yaml was removed — do NOT recreate it.
+# Husky pre-push: MUST be check-only.
+# This hook is allowed to run validation (tests/scans/build),
+# but it must NEVER modify tracked files nor stage changes.
 #
-# Environment Variables:
-#   TF_STRICT_PUSH=1  - Fail on ANY test/lint error (CI mode)
-#   TF_STRICT_PUSH=0  - Warn but allow push (default, development mode)
-# ============================================================================
+# If any command mutates the working tree or index, we fail fast
+# and report WHICH step caused it.
 
-echo "🏛️ TerraFusion OS Pre-Push Quality Gate Validation"
-echo "================================================="
+# Ensure we run from repo root
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
 
-# Strictness mode: TF_STRICT_PUSH=1 fails on errors, default warns
-STRICT_MODE="${TF_STRICT_PUSH:-0}"
-if [ "$STRICT_MODE" = "1" ]; then
-  echo "🔒 STRICT MODE ENABLED (TF_STRICT_PUSH=1)"
-fi
+echo "husky(pre-push): enforcing check-only (no working tree or index mutations)"
 
-# Gate 0: Verify pnpm is available (machine determinism)
-command -v pnpm >/dev/null 2>&1 || {
-  echo "❌ pnpm is required for TerraFusion quality gates."
-  echo "   Install via: npm install -g pnpm"
-  echo "   Or via Corepack: corepack enable && corepack prepare pnpm@latest --activate"
+die() {
+  echo ""
+  echo "ERROR: $1"
+  echo ""
+  echo "Working tree changes:"
+  git diff --name-status || true
+  echo ""
+  echo "Index (staged) changes:"
+  git diff --cached --name-status || true
   exit 1
 }
 
-# Gate 1: Verify root lockfile exists (single source of truth)
-if [ ! -f "pnpm-lock.yaml" ]; then
-  echo "❌ pnpm-lock.yaml not found at repo root. Repository may be corrupted."
-  exit 1
-fi
-
-# Gate 2: Verify root deps exist (npm workspace for root, pnpm for frontend)
-if [ ! -d "node_modules" ]; then
-  echo "⚠️ Root node_modules not found. Installing..."
-  npm install --legacy-peer-deps || {
-    echo "❌ Failed to install root dependencies."
-    exit 1
-  }
-fi
-
-# Gate 3: Verify vitest is available from root
-if ! npx vitest --version >/dev/null 2>&1; then
-  echo "❌ vitest not available. Run: npm install"
-  exit 1
-fi
-
-echo "✅ Pre-flight checks passed"
-echo ""
-
-# Helper: Run command, fail in strict mode or warn in dev mode
-run_gate() {
-  local name="$1"
-  shift
-  echo "$name"
-  if "$@"; then
-    return 0
-  else
-    if [ "$STRICT_MODE" = "1" ]; then
-      echo "❌ $name FAILED (strict mode)"
-      exit 1
-    else
-      echo "⚠️ $name failed (non-blocking in dev mode)"
-      return 0
-    fi
+assert_clean() {
+  if ! git diff --quiet; then
+    die "Working tree is dirty before running pre-push."
+  fi
+  if ! git diff --cached --quiet; then
+    die "Index is dirty (staged changes) before running pre-push."
   fi
 }
 
-run_gate "🧪 Running unit tests..." npm run test:unit
+run_step() {
+  local name="$1"
+  shift
 
-echo ""
-run_gate "🔒 Running security audit..." npm run security:scan
+  echo ""
+  echo "husky(pre-push): step => $name"
+  assert_clean
 
-echo ""
-run_gate "📊 Running performance validation..." npm run performance:benchmark
+  # Run the step
+  "$@"
 
-echo ""
-run_gate "🤖 Validating AI agent coordination..." npm run ai-swarm:monitor
+  # Fail if anything changed
+  if ! git diff --quiet || ! git diff --cached --quiet; then
+    echo ""
+    echo "husky(pre-push): MUTATION DETECTED after step: $name"
+    die "Pre-push must not mutate the repo. Fix the offending step or move generation to an explicit command."
+  fi
+}
 
-echo ""
-run_gate "🏛️ Government compliance validation..." npm run government:compliance
-
-echo ""
-run_gate "🏗️ Build verification..." npm run build
-
-echo ""
-echo "✅ Core quality gates passed! Government. Transcended."
-if [ "$STRICT_MODE" != "1" ]; then
-  echo "💡 Tip: Set TF_STRICT_PUSH=1 to enable strict mode (CI behavior)"
+# If you need an emergency escape hatch while repairing the chain:
+#   HUSKY_NO_MUTATION_GUARD=1 git push
+if [[ "${HUSKY_NO_MUTATION_GUARD:-0}" == "1" ]]; then
+  echo "husky(pre-push): WARNING guard disabled via HUSKY_NO_MUTATION_GUARD=1"
+  exit 0
 fi
+
+assert_clean
+
+# --- Heavy chain (each isolated so we can pinpoint the mutator) ---
+run_step "test:unit" npm run -s test:unit
+run_step "security:scan" npm run -s security:scan
+run_step "performance:benchmark" npm run -s performance:benchmark
+run_step "ai-swarm:monitor" npm run -s ai-swarm:monitor
+run_step "government:compliance" npm run -s government:compliance
+run_step "build" npm run -s build
+
+echo ""
+echo "husky(pre-push): OK (no mutations detected)"
