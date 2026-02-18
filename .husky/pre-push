@@ -64,6 +64,7 @@ fi
 assert_clean
 
 # --- Heavy chain (each isolated so we can pinpoint the mutator) ---
+run_step "cross-lane-core-touch-guard" bash scripts/guards/cross-lane-core-touch-guard.sh
 run_step "test:unit" npm run -s test:unit
 if [[ "${TF_SECURITY_SCAN:-0}" == "1" ]]; then
   run_step "security:scan" npm run -s security:scan
@@ -71,9 +72,24 @@ else
   echo ""
   echo "husky(pre-push): step => security:scan (SKIPPED; set TF_SECURITY_SCAN=1 to enable locally)"
 fi
-run_step "performance:benchmark" npm run -s performance:benchmark
-run_step "ai-swarm:monitor" npm run -s ai-swarm:monitor
-run_step "government:compliance" npm run -s government:compliance
+if [[ "${TF_PERF_BENCH:-0}" == "1" ]]; then
+  run_step "performance:benchmark" npm run -s performance:benchmark
+else
+  echo ""
+  echo "husky(pre-push): step => performance:benchmark (SKIPPED; set TF_PERF_BENCH=1 to enable locally)"
+fi
+if [[ "${TF_AI_SWARM_MONITOR:-0}" == "1" ]]; then
+  run_step "ai-swarm:monitor" npm run -s ai-swarm:monitor
+else
+  echo ""
+  echo "husky(pre-push): step => ai-swarm:monitor (SKIPPED; set TF_AI_SWARM_MONITOR=1 to enable locally)"
+fi
+if [[ "${TF_GOV_COMPLIANCE:-0}" == "1" ]]; then
+  run_step "government:compliance" npm run -s government:compliance
+else
+  echo ""
+  echo "husky(pre-push): step => government:compliance (SKIPPED; set TF_GOV_COMPLIANCE=1 to enable locally)"
+fi
 run_step "build" npm run -s build
 
 echo ""

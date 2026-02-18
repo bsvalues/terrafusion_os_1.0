@@ -9,6 +9,12 @@ on:
   push:
     branches: [main]
 
+env:
+  TF_SECURITY_SCAN: '1'
+  TF_PERF_BENCH: '1'
+  TF_AI_SWARM_MONITOR: '1'
+  TF_GOV_COMPLIANCE: '1'
+
 jobs:
   changes:
     runs-on: ubuntu-latest
