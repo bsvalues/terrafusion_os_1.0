@@ -14,6 +14,7 @@
  * Phase 39: Persist lastClosed — reopen-after-refresh via localStorage.
  * Phase 40: Cross-tab sync — storage events trigger safe state reload.
  * Phase 47: Operational hardening — versioned envelope v2, cross-tab determinism.
+ * Phase 50: Module host + layout persistence — CanonModuleHost, LayoutEnvelope v1.
  *
  * Layout:
  *   terracanon-root
@@ -335,7 +336,8 @@ function loadLastClosed(): Workspace | null {
 let workspaceCounter = 0;
 
 function CanonContent(): React.ReactElement {
-  const [layout] = useCanonLayout();
+  // Phase 50: Initialize layout persistence (fail-closed via LayoutEnvelope v1)
+  useCanonLayout();
   const [workspaces, setWorkspaces] = useState<Workspace[]>(() => {
     const persisted = loadPersistedState();
     if (persisted) {
@@ -499,9 +501,6 @@ function CanonContent(): React.ReactElement {
 
   return (
     <div className='canon-console' data-testid='terracanon-root'>
-      <div className='hidden' data-testid='terracanon-layout-version'>
-        v1:{layout.leftPaneWidth}:{layout.rightPaneWidth}:{layout.inspectorOpen ? '1' : '0'}
-      </div>
       <section className='canon-console__overview mb-4'>
         <h2>TerraCanon IDE</h2>
         <p>Integrated development environment for TerraFusion OS.</p>
@@ -544,7 +543,12 @@ function CanonContent(): React.ReactElement {
         hasClosedHistory={hasClosedHistory}
         onSwitchWorkspace={switchWorkspace}
       />
-      <CanonModuleHost module={BuiltinNoopModule} workspaceId={active?.id ?? null} />
+      {active && (
+        <CanonModuleHost
+          workspaceId={active.id}
+          module={BuiltinNoopModule}
+        />
+      )}
     </div>
   );
 }
