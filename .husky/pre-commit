@@ -1,14 +1,23 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/usr/bin/env bash
+set -euo pipefail
 
-echo "🔒 TERRAFUSION OS: Pre-commit Quality Gate"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
 
-# Run lint-staged if available (graceful degradation)
-if command -v npx >/dev/null 2>&1 && npx lint-staged --version >/dev/null 2>&1; then
-  echo "📝 Running lint-staged..."
-  npx lint-staged || exit 1
-else
-  echo "⚠️  lint-staged not available - skipping (run 'npm install' to enable)"
+echo "husky(pre-commit): running lint-staged"
+npx lint-staged
+
+# Staged changes are expected (lint-staged may fix+stage).
+# But unstaged drift is not allowed—it's how gremlins leak across lanes.
+if ! git diff --quiet; then
+  echo ""
+  echo "ERROR: pre-commit introduced unstaged changes. Refusing to commit."
+  echo ""
+  echo "Unstaged changes:"
+  git diff --name-status || true
+  echo ""
+  echo "Hint: stage the changes intentionally or adjust lint-staged config to avoid touching unrelated files."
+  exit 1
 fi
 
-echo "✅ Quality gate passed - Government. Transcended."
+echo "husky(pre-commit): OK (no unstaged drift)"
