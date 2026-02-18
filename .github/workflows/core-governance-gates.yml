@@ -39,6 +39,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.core == 'true'
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    env:
+      BRANCH_PROTECTION_READ_TOKEN: ${{ secrets.BRANCH_PROTECTION_READ_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -49,10 +51,10 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
       - name: Verify branch protection matches canon snapshot
-        if: env.TF_ENFORCE_BRANCH_PROTECTION == '1' && github.event_name == 'push' && github.ref_name == 'main'
+        if: env.TF_ENFORCE_BRANCH_PROTECTION == '1' && github.event_name == 'push' && github.ref_name == 'main' && env.BRANCH_PROTECTION_READ_TOKEN != ''
         env:
           TF_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_READ_TOKEN }}
+          GH_TOKEN: ${{ env.BRANCH_PROTECTION_READ_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
         run: bash scripts/ci/verify-branch-protection-against-canon.sh
       - name: Verify AGENTS.md matches protection canon
