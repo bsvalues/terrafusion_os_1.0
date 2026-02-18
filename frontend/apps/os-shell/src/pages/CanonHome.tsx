@@ -335,7 +335,8 @@ function loadLastClosed(): Workspace | null {
 let workspaceCounter = 0;
 
 function CanonContent(): React.ReactElement {
-  const [layout] = useCanonLayout();
+  // Phase 50/50.1: Initialize layout persistence (fail-closed via LayoutEnvelope v1)
+  const { layout } = useCanonLayout();
   const [workspaces, setWorkspaces] = useState<Workspace[]>(() => {
     const persisted = loadPersistedState();
     if (persisted) {
@@ -474,6 +475,7 @@ function CanonContent(): React.ReactElement {
   };
 
   const hasClosedHistory = lastClosedRef.current !== null;
+  const moduleGuard = useCallback(() => ({ allow: true as const }), []);
 
   const commitRename = () => {
     const next = renameDraft.trim();
@@ -500,7 +502,8 @@ function CanonContent(): React.ReactElement {
   return (
     <div className='canon-console' data-testid='terracanon-root'>
       <div className='hidden' data-testid='terracanon-layout-version'>
-        v1:{layout.leftPaneWidth}:{layout.rightPaneWidth}:{layout.inspectorOpen ? '1' : '0'}
+        v1:{layout.panels.leftNav.size}:{layout.panels.rightInspector.size}:
+        {layout.panels.rightInspector.visible ? '1' : '0'}
       </div>
       <section className='canon-console__overview mb-4'>
         <h2>TerraCanon IDE</h2>
@@ -544,7 +547,14 @@ function CanonContent(): React.ReactElement {
         hasClosedHistory={hasClosedHistory}
         onSwitchWorkspace={switchWorkspace}
       />
-      <CanonModuleHost module={BuiltinNoopModule} workspaceId={active?.id ?? null} />
+      {active && (
+        <CanonModuleHost
+          workspaceId={active.id}
+          storageNamespace={`canon:${active.id}`}
+          module={BuiltinNoopModule}
+          guard={moduleGuard}
+        />
+      )}
     </div>
   );
 }
@@ -571,3 +581,4 @@ export function CanonHome(): React.ReactElement {
 }
 
 export default CanonHome;
+

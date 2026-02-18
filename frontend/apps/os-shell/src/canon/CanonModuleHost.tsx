@@ -1,39 +1,61 @@
+/**
+ * Phase 50 / 50.1: Canon Module Host
+ *
+ * Deterministic mount/unmount lifecycle for a single WorkspaceModule.
+ * - Mounts exactly once per workspaceId
+ * - Unmounts previous module on workspace change (before new mount)
+ * - Unmounts on host unmount (React cleanup)
+ * - Passes full ModuleContext: workspaceId, storageNamespace, guard
+ * - Race-safe: if component unmounts during async mount, calls unmount immediately
+ *
+ * Phase 50.1: Restored canonical core-lane type imports and full ModuleContext.
+ *
+ * @module canon/CanonModuleHost
+ * @see Phase 50: TerraCanon Module Host + Layout Persistence
+ * @see Phase 50.1: Convergence Patch
+ */
+
 import React, { useEffect, useRef } from 'react';
 
-export type UnmountFn = () => void;
+// @ts-ignore — core-lane TS types
+import type {
+  WorkspaceModule,
+  UnmountFn,
+  GuardDecision,
+  GuardRequest,
+} from '../../../../../os-platform/core/types/workspaceModule';
 
-export interface ModuleContext {
+export interface CanonModuleHostProps {
   workspaceId: string;
-}
-
-export interface WorkspaceModule {
-  id: string;
-  title(workspaceId: string): string;
-  mount(ctx: ModuleContext): Promise<UnmountFn | void>;
-}
-
-interface CanonModuleHostProps {
+  storageNamespace: string;
   module: WorkspaceModule;
-  workspaceId: string | null;
+  guard: (req: GuardRequest) => GuardDecision;
 }
 
-export function CanonModuleHost({ module, workspaceId }: CanonModuleHostProps): React.ReactElement | null {
+export function CanonModuleHost(props: CanonModuleHostProps): React.ReactElement | null {
   const cleanupRef = useRef<UnmountFn | null>(null);
 
   useEffect(() => {
-    if (!workspaceId) return;
-
     let disposed = false;
+
+    // Deterministic teardown of previous module
     const priorCleanup = cleanupRef.current;
     cleanupRef.current = null;
     if (priorCleanup) priorCleanup();
 
     (async () => {
-      const unmount = await module.mount({ workspaceId });
+      const unmount = await props.module.mount({
+        workspaceId: props.workspaceId,
+        storageNamespace: props.storageNamespace,
+        guard: props.guard,
+      });
+
       if (disposed) {
+        // Component unmounted during async mount — call unmount immediately
         if (typeof unmount === 'function') unmount();
         return;
       }
+
       cleanupRef.current = typeof unmount === 'function' ? unmount : null;
     })();
 
@@ -43,7 +65,7 @@ export function CanonModuleHost({ module, workspaceId }: CanonModuleHostProps): 
       cleanupRef.current = null;
       if (mountedCleanup) mountedCleanup();
     };
-  }, [module, workspaceId]);
+  }, [props.module, props.workspaceId, props.storageNamespace, props.guard]);
 
   return null;
 }
