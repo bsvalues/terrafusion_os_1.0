@@ -352,8 +352,17 @@ jobs:
           cache: 'pnpm'
       - name: Install
         run: bash scripts/ci/run-recorded-step.sh "install" -- pnpm install --frozen-lockfile
-      - name: Governed Spine (type-check + phase83-tools)
-        run: bash scripts/ci/run-recorded-step.sh "test-governed" -- pnpm test:governed
+      - name: Typecheck core
+        id: typecheck_core
+        run: bash scripts/ci/run-recorded-step.sh "typecheck-core" -- pnpm run type-check
+      - name: Capture tsc --showConfig (core) on typecheck-core failure
+        if: failure() && steps.typecheck_core.outcome == 'failure'
+        run: |
+          set -euo pipefail
+          mkdir -p .tf-ci-diagnostics
+          pnpm exec tsc --showConfig -p tsconfig.core.json > .tf-ci-diagnostics/tsc-showconfig-core.json
+      - name: Core tests (phase83 + tsconfig contract)
+        run: bash scripts/ci/run-recorded-step.sh "core-tests" -- node --test os-platform/core/tests/phase83-tools.test.mjs os-platform/core/tests/tsconfig-core-types.contract.test.mjs
       - name: CI Assert Clean Tree (no mutation)
         run: bash scripts/ci/run-recorded-step.sh "assert-clean-tree" -- bash scripts/ci/assert-clean-tree.sh
       - name: Collect failure diagnostics
