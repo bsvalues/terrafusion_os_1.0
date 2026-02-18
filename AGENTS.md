@@ -36,15 +36,11 @@ The following status checks are **required** on `main` branch:
 
 | Check | Scope | Enforcement |
 |-------|-------|-------------|
-| `🔒 SEAL` | All PRs | Required, admins enforced |
-| `typecheck-core` | All PRs | Required |
-| `phase83-tools` | All PRs | Required |
-| `SEAL Gate 8 (workflow)` | Triggering paths | Required (part of SEAL) |
-| `SEAL Gate 9 (truth)` | All PRs | Required (part of SEAL) |
-| `Accreditation Compat Check` | Accreditation paths only | Required when triggered |
-| `Accreditation Oracle Health` | Scheduled weekly | Non-blocking (monitoring) |
-
-**NOTE:** Gate 8 and Gate 9 are sub-gates of 🔒 SEAL. If SEAL passes, they passed.
+| `governed-spine` | Core-governance surface PRs | Required |
+| `phase85-tools` | Core-governance surface PRs | Required |
+| `phase86-toolrunner` | Core-governance surface PRs | Required |
+| `🔒 TerraFusion Seal Gate` | All PRs | Required |
+| `🧪 Tier-1 UI Harness Validation` | All PRs | Required |
 
 ### Two-Tier Oracle Model
 
@@ -65,16 +61,28 @@ main:
   required_status_checks:
     strict: true
     contexts:
-      - "🔒 SEAL"              # Includes Gate 8 (workflow) + Gate 9 (truth)
-      - "typecheck-core"
-      - "phase83-tools"
-      - "Accreditation Compat Check (ubuntu-latest)"
-      - "Accreditation Compat Check (windows-latest)"
+      - "governed-spine"
+      - "phase85-tools"
+      - "phase86-toolrunner"
+      - "🔒 TerraFusion Seal Gate"
+      - "🧪 Tier-1 UI Harness Validation"
   enforce_admins: true
   require_pull_request: true
   required_pull_request_reviews:
     required_approving_review_count: 0  # Solo dev: CI = Constitutional Review
   restrictions: null
+```
+
+### Branch Protection Canon (Machine Readable)
+
+```yaml
+enforce_admins: true
+required_checks:
+  - governed-spine
+  - phase85-tools
+  - phase86-toolrunner
+  - 🔒 TerraFusion Seal Gate
+  - 🧪 Tier-1 UI Harness Validation
 ```
 
 **Solo Dev Governance:**
@@ -96,7 +104,7 @@ These are the **enforced invariants** for `main` branch. Any deviation is a gove
 
 | Invariant | Value | Rationale |
 |-----------|-------|-----------|
-| Required checks | `🔒 SEAL`, `typecheck-core`, `phase83-tools` | Constitutional review |
+| Required checks | `governed-spine`, `phase85-tools`, `phase86-toolrunner`, `🔒 TerraFusion Seal Gate`, `🧪 Tier-1 UI Harness Validation` | Constitutional review |
 | Approving reviews | **0** | Solo dev: CI = approval |
 | Require PR | **true** | Evidence trail |
 | Require up-to-date | **true** | No merge race conditions |
@@ -113,7 +121,8 @@ gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection > .tmp/main.pr
 
 # Verify invariants
 jq '.required_pull_request_reviews.required_approving_review_count == 0' .tmp/main.protection.current.json
-jq '.required_status_checks.contexts | contains(["🔒 SEAL"])' .tmp/main.protection.current.json
+jq '.enforce_admins.enabled == true' .tmp/main.protection.current.json
+jq '.required_status_checks.contexts | contains(["governed-spine","phase85-tools","phase86-toolrunner","🔒 TerraFusion Seal Gate","🧪 Tier-1 UI Harness Validation"])' .tmp/main.protection.current.json
 
 # Raw diff (no dependencies)
 git diff --no-index .governance/main.protection.json .tmp/main.protection.current.json
@@ -130,7 +139,7 @@ git diff --no-index .tmp/main.protection.canon.norm.json .tmp/main.protection.cu
 - Link to the PR that authorized the change
 - Update "Last verified" date below
 
-**Last verified:** 2026-02-04 (PR #242 merged without `--admin`)
+**Last verified:** 2026-02-18 (Phase 51.0 canonical reconciliation)
 
 ## TOOL GOVERNANCE RULES
 - ToolRegistry must resolve the manifest path canonically (relative to ToolRegistry) and allow env override only:

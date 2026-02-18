@@ -157,7 +157,7 @@ jobs:
             bash ops/scripts/deploy-team-packages.sh
           fi
       - name: Perfect-Power soak guard
-        if: ${{ env.TF_ENV == 'stage' || github.ref == 'refs/heads/main' }}
+        if: ${{ env.TF_ENV == 'stage' }}
         run: |
           if [[ -f "ops/scripts/soak-guard.sh" ]]; then
             bash ops/scripts/soak-guard.sh

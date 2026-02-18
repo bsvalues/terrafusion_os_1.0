@@ -9,6 +9,9 @@ on:
   push:
     branches: [main]
 
+env:
+  TF_ENFORCE_BRANCH_PROTECTION: '1'
+
 jobs:
   changes:
     runs-on: ubuntu-latest
@@ -45,6 +48,17 @@ jobs:
           cache: 'pnpm'
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Verify branch protection matches canon snapshot
+        if: env.TF_ENFORCE_BRANCH_PROTECTION == '1' && github.event_name == 'push' && github.ref_name == 'main'
+        env:
+          TF_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci/verify-branch-protection-against-canon.sh
+      - name: Verify AGENTS.md matches protection canon
+        run: bash scripts/ci/verify-agents-doc-against-protection-canon.sh
+      - name: Release lane safety lint (no auto-approve / no direct-to-prod)
+        run: bash scripts/ci/release-lane-safety-lint.sh
       - name: Governed Spine (type-check + phase83-tools)
         run: pnpm test:governed
 

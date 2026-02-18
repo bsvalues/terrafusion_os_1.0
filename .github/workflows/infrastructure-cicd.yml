@@ -2,7 +2,16 @@
 name: TerraFusion Infrastructure CI/CD
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
 env:
   TF_VERSION: '1.5.0'
   TF_VAR_region: 'us-east-1'
@@ -145,7 +154,7 @@ jobs:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: [validate-terraform, validate-helm, security-scan]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
     environment:
       name: staging
 
@@ -179,7 +188,7 @@ jobs:
           terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET_STAGING }}"
           terraform workspace select staging || terraform workspace new staging
           terraform plan -out=tfplan
-          terraform apply -auto-approve tfplan
+          terraform apply tfplan
 
       - name: Get EKS cluster credentials
         run: |
@@ -205,7 +214,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: [deploy-staging]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     environment:
       name: production
 
@@ -239,7 +248,7 @@ jobs:
           terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET_PROD }}"
           terraform workspace select production || terraform workspace new production
           terraform plan -out=tfplan
-          terraform apply -auto-approve tfplan
+          terraform apply tfplan
 
       - name: Get EKS cluster credentials
         run: |
@@ -276,7 +285,7 @@ jobs:
     name: Rollback on Failure
     runs-on: ubuntu-latest
     needs: [deploy-production]
-    if: failure() && github.ref == 'refs/heads/main'
+    if: failure() && github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
 
     steps:
       - name: Checkout code
