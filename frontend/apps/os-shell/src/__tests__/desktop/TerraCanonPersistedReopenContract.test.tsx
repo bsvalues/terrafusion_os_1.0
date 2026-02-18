@@ -146,10 +146,14 @@ describe('Phase 39 contract: persisted lastClosed enables reopen-after-refresh (
 
     const parsed = JSON.parse(raw!);
     expect(typeof parsed).toBe('object');
-    expect(typeof parsed.id).toBe('string');
-    expect(parsed.id).toBe(idBefore);
-    expect(typeof parsed.name).toBe('string');
-    expect(parsed.name).toBe('Persist Me');
+    // Phase 47: stored as v2 envelope { v: 2, workspace: { id, name }, ts }
+    expect(parsed.v).toBe(2);
+    expect(typeof parsed.ts).toBe('number');
+    expect(typeof parsed.workspace).toBe('object');
+    expect(typeof parsed.workspace.id).toBe('string');
+    expect(parsed.workspace.id).toBe(idBefore);
+    expect(typeof parsed.workspace.name).toBe('string');
+    expect(parsed.workspace.name).toBe('Persist Me');
   });
 
   // --------------------------------------------------------------------------
