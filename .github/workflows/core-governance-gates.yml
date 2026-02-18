@@ -361,6 +361,12 @@ jobs:
           set -euo pipefail
           mkdir -p .tf-ci-diagnostics
           pnpm exec tsc --showConfig -p tsconfig.core.json > .tf-ci-diagnostics/tsc-showconfig-core.json
+      - name: Capture pnpm dependency snapshot (top-level) on typecheck-core failure
+        if: failure() && steps.typecheck_core.outcome == 'failure'
+        run: |
+          set -euo pipefail
+          mkdir -p .tf-ci-diagnostics
+          pnpm -w list --depth 0 > .tf-ci-diagnostics/pnpm-deps-top-level.txt
       - name: Core tests (phase83 + tsconfig contract)
         run: bash scripts/ci/run-recorded-step.sh "core-tests" -- node --test os-platform/core/tests/phase83-tools.test.mjs os-platform/core/tests/tsconfig-core-types.contract.test.mjs
       - name: CI Assert Clean Tree (no mutation)
