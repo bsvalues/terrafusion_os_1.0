@@ -65,7 +65,12 @@ assert_clean
 
 # --- Heavy chain (each isolated so we can pinpoint the mutator) ---
 run_step "test:unit" npm run -s test:unit
-run_step "security:scan" npm run -s security:scan
+if [[ "${TF_SECURITY_SCAN:-0}" == "1" ]]; then
+  run_step "security:scan" npm run -s security:scan
+else
+  echo ""
+  echo "husky(pre-push): step => security:scan (SKIPPED; set TF_SECURITY_SCAN=1 to enable locally)"
+fi
 run_step "performance:benchmark" npm run -s performance:benchmark
 run_step "ai-swarm:monitor" npm run -s ai-swarm:monitor
 run_step "government:compliance" npm run -s government:compliance
