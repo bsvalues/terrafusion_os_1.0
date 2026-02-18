@@ -8,8 +8,8 @@
  */
 
 import { readFileSync } from 'fs';
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
+import { isCommandGovernanceMeta } from '../types/commandGovernance.js';
 import type { Mode, Risk, Suite, Tool, ToolManifest } from '../types/index.js';
 
 // ============================================================================
@@ -17,8 +17,7 @@ import type { Mode, Risk, Suite, Tool, ToolManifest } from '../types/index.js';
 // ============================================================================
 
 const MANIFEST_VERSION = '1.3.0';
-const BASE_DIR =
-  typeof __dirname !== 'undefined' ? __dirname : dirname(fileURLToPath(import.meta.url));
+const BASE_DIR = __dirname;
 const CANONICAL_MANIFEST_PATH = resolve(
   BASE_DIR,
   '../../../tools/registry/terrapilot.tools.json'
@@ -113,6 +112,14 @@ function validateTool(tool: Tool, index: number): string[] {
   // payload_ref requires payloadStore
   if (tool.tracePolicy === 'payload_ref' && !tool.payloadStore) {
     violations.push(`${prefix}: payload_ref tracePolicy requires payloadStore`);
+  }
+
+  // Phase 48A: Optional governance metadata (strict shape when present)
+  const governance = (tool as Tool & { governance?: unknown }).governance;
+  if (governance !== undefined && !isCommandGovernanceMeta(governance)) {
+    violations.push(
+      `${prefix}: governance must match { intent, mutation, visibility } with valid enum values`
+    );
   }
 
   return violations;
