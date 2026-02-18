@@ -38,8 +38,27 @@ jobs:
               - 'pnpm-lock.yaml'
               - '.github/workflows/**'
 
-  governed-spine:
+  phase-lane-server-guard:
     needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: CI Phase Lane Guard (no core touches on phase lanes)
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: bash scripts/ci/phase-lane-server-guard.sh
+      - name: CI Assert Clean Tree (no mutation)
+        run: bash scripts/ci/assert-clean-tree.sh
+
+  governed-spine:
+    needs: [changes, phase-lane-server-guard]
     if: needs.changes.outputs.core == 'true'
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
@@ -53,9 +72,11 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Governed Spine (type-check + phase83-tools)
         run: pnpm test:governed
+      - name: CI Assert Clean Tree (no mutation)
+        run: bash scripts/ci/assert-clean-tree.sh
 
   phase85-tools:
-    needs: changes
+    needs: [changes, phase-lane-server-guard]
     if: needs.changes.outputs.core == 'true'
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
@@ -69,9 +90,11 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Phase 8.5 tool gates
         run: node --test os-platform/core/tests/phase85-tools.test.mjs
+      - name: CI Assert Clean Tree (no mutation)
+        run: bash scripts/ci/assert-clean-tree.sh
 
   phase86-toolrunner:
-    needs: changes
+    needs: [changes, phase-lane-server-guard]
     if: needs.changes.outputs.core == 'true'
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
@@ -85,9 +108,11 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Phase 8.6 ToolRunner gates
         run: node --test os-platform/core/tests/phase86-toolrunner.test.mjs
+      - name: CI Assert Clean Tree (no mutation)
+        run: bash scripts/ci/assert-clean-tree.sh
 
   check-generated-js:
-    needs: changes
+    needs: [changes, phase-lane-server-guard]
     if: needs.changes.outputs.core == 'true'
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     steps:
@@ -105,6 +130,8 @@ jobs:
         run: git diff --exit-code
       - name: Generated JS in sync
         run: pnpm run check:generated
+      - name: CI Assert Clean Tree (no mutation)
+        run: bash scripts/ci/assert-clean-tree.sh
 
   no-relevant-changes:
     needs: changes
