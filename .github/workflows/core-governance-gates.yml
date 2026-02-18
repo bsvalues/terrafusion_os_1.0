@@ -49,7 +49,7 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
       - name: Verify branch protection matches canon snapshot
-        if: env.TF_ENFORCE_BRANCH_PROTECTION == '1'
+        if: env.TF_ENFORCE_BRANCH_PROTECTION == '1' && github.event_name == 'push' && github.ref_name == 'main'
         env:
           TF_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_READ_TOKEN }}
