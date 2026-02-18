@@ -141,6 +141,68 @@ jobs:
       - name: CI Assert Clean Tree (no mutation)
         run: bash scripts/ci/assert-clean-tree.sh
 
+  phase50-5-main-invariants:
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Audit governed surfaces are check-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "phase50.5: auditing governed surfaces for ungated write paths"
+          surfaces=(.github/workflows/core-governance-gates.yml .husky/pre-push)
+          forbidden='--write|prettier[[:space:]].*--write|eslint[[:space:]].*--fix([^a-zA-Z-]|$)|stylelint[[:space:]].*--fix|patch-package|changeset[[:space:]]+version|npm[[:space:]]+version'
+          hits="$(rg -n -S -e "$forbidden" "${surfaces[@]}" || true)"
+          ungated="$(echo "$hits" | grep -Ev 'TF_ALLOW_WRITE=1|--fix-dry-run' || true)"
+          if [[ -n "${ungated}" ]]; then
+            echo "ERROR: ungated write paths detected in governed surfaces:"
+            echo "${ungated}"
+            exit 1
+          fi
+          echo "phase50.5: no-write audit PASS"
+      - name: Verify branch protection matches canon (optional enforce)
+        shell: bash
+        env:
+          TF_REPO: ${{ github.repository }}
+          TF_PROTECTED_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "phase50.5: verifying branch protection for ${TF_REPO}@${TF_PROTECTED_BRANCH}"
+          api="https://api.github.com/repos/${TF_REPO}/branches/${TF_PROTECTED_BRANCH}/protection"
+          if ! json="$(curl -fsSL -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "$api" 2>/dev/null)"; then
+            if [[ "${TF_ENFORCE_BRANCH_PROTECTION}" == "1" ]]; then
+              echo "ERROR: failed to fetch branch protection and enforcement is enabled"
+              exit 1
+            fi
+            echo "phase50.5: branch protection check skipped (insufficient token permissions)"
+            exit 0
+          fi
+          contexts="$(echo "$json" | jq -r '.required_status_checks.contexts[]? // empty')"
+          missing=0
+          IFS=',' read -ra required <<< "${TF_REQUIRED_CHECKS}"
+          for req in "${required[@]}"; do
+            req="$(echo "$req" | xargs)"
+            [[ -z "$req" ]] && continue
+            if ! echo "$contexts" | grep -Fxq "$req"; then
+              echo "ERROR: missing required status check: $req"
+              missing=1
+            fi
+          done
+          if [[ "$missing" == "1" ]]; then
+            echo "Observed required checks:"
+            echo "${contexts:-<none>}" | sed 's/^/  - /'
+            exit 1
+          fi
+          echo "phase50.5: branch protection verification PASS"
+      - name: Assert clean tree (no mutation)
+        run: bash scripts/ci/assert-clean-tree.sh
+
   governed-spine:
     needs: [changes, phase-lane-server-guard, phase50-4-governance]
     if: needs.changes.outputs.core == 'true'
