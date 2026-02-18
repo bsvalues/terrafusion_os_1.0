@@ -365,15 +365,19 @@ jobs:
           echo "   Identity: $TF_SIG_IDENTITY"
           echo "   SHA: $TF_SIG_SHA"
 
-          # Verify bundle with policy from evidence index
+          # Verify bundle using explicit expected pins
           BUNDLE_PATH="${{ steps.bundle.outputs.bundle_path }}"
-          INDEX_PATH="${{ env.VIEWER_DIR }}/autonomy-evidence-index.json"
 
           set +e
           npx tsx tools/registry/autonomy-viewer/src/verify-bundle.ts \
             --zip "$BUNDLE_PATH" \
             --verify-signatures \
-            --policy-from-index "$INDEX_PATH" \
+            --expected-issuer "$TF_SIG_ISSUER" \
+            --expected-identity "$TF_SIG_IDENTITY" \
+            --expected-repo "$TF_SIG_REPO" \
+            --expected-workflow "$TF_SIG_WORKFLOW" \
+            --expected-ref "$TF_SIG_REF" \
+            --expected-sha "$TF_SIG_SHA" \
             --strict \
             --verbose
           VERIFY_EXIT=$?
