@@ -221,4 +221,70 @@ describe('TerraCanon ping panel', () => {
       fetchMock.mock.calls.some(([url]) => String(url).includes('/pilot/canon/gatefast'))
     ).toBe(true);
   });
+
+  it('Run All runs Doctor -> GateFast -> Ping and stops on first failure', async () => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
+      const url = String(input);
+
+      if (url.includes('/pilot/canon/doctor')) {
+        return mockTextResponse({
+          tool: 'terracanon-doctor',
+          version: 1,
+          startedAt: '2026-02-19T02:00:00.000Z',
+          dryRun: false,
+          overallOk: true,
+        });
+      }
+
+      if (url.includes('/pilot/canon/gatefast')) {
+        return mockTextResponse({
+          tool: 'terracanon-gatefast',
+          version: 1,
+          startedAt: '2026-02-19T02:00:01.000Z',
+          dryRun: false,
+          overallOk: false,
+          error: 'gatefast failed',
+          rawStderr: 'boom',
+        });
+      }
+
+      if (url.includes('/pilot/canon/ping')) {
+        return mockTextResponse({
+          tool: 'terracanon-ping',
+          version: 1,
+          startedAt: '2026-02-19T02:00:02.000Z',
+          dryRun: false,
+          overallOk: true,
+          normalized: {
+            ok: true,
+            ts: '2026-02-19T02:00:02.000Z',
+            echo: 'hello',
+            toolId: 'explain_model_inputs',
+            inputCount: 3,
+          },
+        });
+      }
+
+      return mockTextResponse({ overallOk: false, error: 'not found' });
+    });
+
+    await renderCanonRoute();
+
+    fireEvent.click(screen.getByTestId('terracanon-run-all'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('terracanon-run-all-step-doctor')).toHaveTextContent('PASS');
+      expect(screen.getByTestId('terracanon-run-all-step-gatefast')).toHaveTextContent('FAIL');
+    });
+
+    expect(screen.getByTestId('terracanon-run-all-step-gatefast-error')).toHaveTextContent(
+      'gatefast failed'
+    );
+    expect(screen.getByTestId('terracanon-run-all-step-ping')).toHaveTextContent('IDLE');
+
+    const calls = fetchMock.mock.calls.map((call) => String(call[0]));
+    expect(calls.some((url) => url.includes('/pilot/canon/doctor'))).toBe(true);
+    expect(calls.some((url) => url.includes('/pilot/canon/gatefast'))).toBe(true);
+    expect(calls.some((url) => url.includes('/pilot/canon/ping'))).toBe(false);
+  });
 });

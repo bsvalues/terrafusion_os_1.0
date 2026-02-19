@@ -232,6 +232,25 @@ interface CanonWorkspaceProps {
   onSwitchWorkspace: (index: number) => void;
 }
 
+type RunAllStepId = 'doctor' | 'gatefast' | 'ping';
+type RunAllStepStatus = 'idle' | 'running' | 'pass' | 'fail';
+
+interface RunAllStepState {
+  id: RunAllStepId;
+  label: string;
+  status: RunAllStepStatus;
+  ts?: string;
+  error?: string;
+}
+
+function buildInitialRunAllSteps(): RunAllStepState[] {
+  return [
+    { id: 'doctor', label: 'Canon Doctor', status: 'idle' },
+    { id: 'gatefast', label: 'GateFast', status: 'idle' },
+    { id: 'ping', label: 'Canon Ping', status: 'idle' },
+  ];
+}
+
 function CanonWorkspace({
   hasWorkspace,
   workspaceName,
@@ -364,10 +383,20 @@ function CanonContent(): React.ReactElement {
   const [doctorResult, setDoctorResult] = useState<CanonDoctorResponse | null>(null);
   const [gateFastRunning, setGateFastRunning] = useState(false);
   const [gateFastResult, setGateFastResult] = useState<CanonGateFastResponse | null>(null);
+  const [runAllActive, setRunAllActive] = useState(false);
+  const [runAllSteps, setRunAllSteps] = useState<RunAllStepState[]>(() => buildInitialRunAllSteps());
   const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
   const syncingRef = useRef(false);
+
+  const setRunAllStep = useCallback((id: RunAllStepId, patch: Partial<RunAllStepState>) => {
+    setRunAllSteps((prev) => prev.map((step) => (step.id === id ? { ...step, ...patch } : step)));
+  }, []);
+
+  const resetRunAll = useCallback(() => {
+    setRunAllSteps(buildInitialRunAllSteps());
+  }, []);
 
   // Persist on state change (skip initial mount and cross-tab sync writes)
   useEffect(() => {
@@ -537,6 +566,57 @@ function CanonContent(): React.ReactElement {
     }
   };
 
+  const runAllChecks = async () => {
+    if (runAllActive) return;
+
+    const now = () => new Date().toISOString();
+    setRunAllActive(true);
+    resetRunAll();
+
+    try {
+      setRunAllStep('doctor', { status: 'running', ts: undefined, error: undefined });
+      const doctor = await runCanonDoctor();
+      setDoctorResult(doctor);
+      if (!doctor.overallOk) {
+        setRunAllStep('doctor', {
+          status: 'fail',
+          ts: doctor.startedAt || now(),
+          error: doctor.error || 'Doctor failed',
+        });
+        return;
+      }
+      setRunAllStep('doctor', { status: 'pass', ts: doctor.startedAt || now() });
+
+      setRunAllStep('gatefast', { status: 'running', ts: undefined, error: undefined });
+      const gateFast = await runCanonGateFast();
+      setGateFastResult(gateFast);
+      if (!gateFast.overallOk) {
+        setRunAllStep('gatefast', {
+          status: 'fail',
+          ts: gateFast.startedAt || now(),
+          error: gateFast.error || 'GateFast failed',
+        });
+        return;
+      }
+      setRunAllStep('gatefast', { status: 'pass', ts: gateFast.startedAt || now() });
+
+      setRunAllStep('ping', { status: 'running', ts: undefined, error: undefined });
+      const ping = await runCanonPing(pingEcho);
+      setPingResult(ping);
+      if (!ping.overallOk) {
+        setRunAllStep('ping', {
+          status: 'fail',
+          ts: ping.startedAt || now(),
+          error: ping.error || 'Ping failed',
+        });
+        return;
+      }
+      setRunAllStep('ping', { status: 'pass', ts: ping.startedAt || now() });
+    } finally {
+      setRunAllActive(false);
+    }
+  };
+
   return (
     <div className='canon-console' data-testid='terracanon-root'>
       <div className='hidden' data-testid='terracanon-layout-version'>
@@ -549,6 +629,7 @@ function CanonContent(): React.ReactElement {
           className='mt-2 px-3 py-1 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white'
           data-testid='terracanon-open-empty-workspace'
           onClick={openEmptyWorkspace}
+          disabled={runAllActive}
         >
           Open Empty Workspace
         </button>
@@ -556,7 +637,7 @@ function CanonContent(): React.ReactElement {
           className='mt-2 ml-2 px-3 py-1 text-sm rounded bg-indigo-700 hover:bg-indigo-600 text-white disabled:opacity-50'
           data-testid='terracanon-run-governed-command'
           onClick={runGovernedCommand}
-          disabled={commandRunning}
+          disabled={commandRunning || runAllActive}
         >
           {commandRunning ? 'Running...' : 'Run Governed Command'}
         </button>
@@ -566,12 +647,33 @@ function CanonContent(): React.ReactElement {
         >
           <h3 className='text-sm font-semibold text-gray-200'>Safety Dashboard</h3>
           <p className='mt-1 text-xs text-gray-400'>Local checks mirrored from TerraCanon CLI.</p>
+          <div className='mt-2 flex items-center gap-2'>
+            <button
+              className='px-3 py-1 text-sm rounded bg-teal-700 hover:bg-teal-600 text-white disabled:opacity-50'
+              data-testid='terracanon-run-all'
+              onClick={runAllChecks}
+              disabled={runAllActive}
+            >
+              {runAllActive ? 'Running...' : 'Run All'}
+            </button>
+          </div>
+          <div className='mt-2 text-xs text-gray-300' data-testid='terracanon-run-all-status'>
+            {runAllSteps.map((step) => (
+              <div key={step.id} data-testid={`terracanon-run-all-step-${step.id}`}>
+                <span>{step.label}</span> <span>{step.status.toUpperCase()}</span>
+                {step.ts ? <span> - {step.ts}</span> : null}
+                {step.status === 'fail' && step.error ? (
+                  <div data-testid={`terracanon-run-all-step-${step.id}-error`}>{step.error}</div>
+                ) : null}
+              </div>
+            ))}
+          </div>
           <div className='mt-2 flex flex-wrap items-center gap-2'>
             <button
               className='px-3 py-1 text-sm rounded bg-sky-700 hover:bg-sky-600 text-white disabled:opacity-50'
               data-testid='terracanon-run-canon-doctor'
               onClick={runCanonDoctorCommand}
-              disabled={doctorRunning}
+              disabled={doctorRunning || runAllActive}
             >
               {doctorRunning ? 'Running Doctor...' : 'Run Canon Doctor'}
             </button>
@@ -579,7 +681,7 @@ function CanonContent(): React.ReactElement {
               className='px-3 py-1 text-sm rounded bg-violet-700 hover:bg-violet-600 text-white disabled:opacity-50'
               data-testid='terracanon-run-canon-gatefast'
               onClick={runCanonGateFastCommand}
-              disabled={gateFastRunning}
+              disabled={gateFastRunning || runAllActive}
             >
               {gateFastRunning ? 'Running GateFast...' : 'Run GateFast'}
             </button>
@@ -653,12 +755,13 @@ function CanonContent(): React.ReactElement {
             value={pingEcho}
             onChange={(event) => setPingEcho(event.target.value)}
             placeholder='Echo'
+            disabled={runAllActive}
           />
           <button
             className='px-3 py-1 text-sm rounded bg-emerald-700 hover:bg-emerald-600 text-white disabled:opacity-50'
             data-testid='terracanon-run-canon-ping'
             onClick={runCanonPingCommand}
-            disabled={pingRunning}
+            disabled={pingRunning || runAllActive}
           >
             {pingRunning ? 'Running Ping...' : 'Run Canon Ping'}
           </button>
