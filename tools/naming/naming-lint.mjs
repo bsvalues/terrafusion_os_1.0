@@ -81,7 +81,12 @@ function hasAllowedExtension(filePath, cfg) {
 }
 
 function shouldSkipDir(name, cfg) {
-  return cfg.excludeDirs.includes(name);
+  const normalized = String(name).toLowerCase();
+  if (normalized.includes("worktree")) return true;
+  return cfg.excludeDirs.some((rule) => {
+    const r = String(rule).toLowerCase();
+    return normalized === r || normalized.endsWith(r);
+  });
 }
 
 function shouldSkipFile(name, cfg) {

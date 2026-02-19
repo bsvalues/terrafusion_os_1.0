@@ -151,3 +151,51 @@ test("skips excluded directories", async () => {
 
   assert.equal(code, 0);
 });
+
+test("skips quarantine/archive/worktree-style directories", async () => {
+  const root = tmpDir();
+
+  write(path.join(root, "archive/a.md"), "TerraFusion IDE\n");
+  write(path.join(root, "archived/b.md"), "TerraFusion IDE\n");
+  write(path.join(root, "quarantine/c.md"), "TerraFusion IDE\n");
+  write(path.join(root, "QUARANTINE/case.md"), "TerraFusion IDE\n");
+  write(path.join(root, "zzz-archive/d.md"), "TerraFusion IDE\n");
+  write(path.join(root, "worktrees/e.md"), "TerraFusion IDE\n");
+  write(path.join(root, "terrafusion-os.worktrees/f.md"), "TerraFusion IDE\n");
+  write(path.join(root, "real.md"), "clean\n");
+
+  const cfg = {
+    version: 1,
+    root: ".",
+    bannedPhrases: [{ phrase: "TerraFusion IDE", message: "placeholder label" }],
+    extensions: [".md"],
+    excludeDirs: [
+      ".git",
+      "node_modules",
+      "archive",
+      "archived",
+      "quarantine",
+      "zzz-archive",
+      "worktrees",
+      ".worktrees",
+      ".quarantine",
+    ],
+    excludeFiles: [],
+    maxFileBytes: 2000000,
+    required: [],
+  };
+
+  const cfgPath = path.join(root, "naming-lint.config.json");
+  fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2), "utf8");
+
+  const io = capture();
+  const code = await runNamingLint({
+    argv: ["node", "naming-lint.mjs", "--config", cfgPath, "--root", root],
+    stdout: io.stdout,
+    stderr: io.stderr,
+    cwd: root,
+  });
+
+  assert.equal(code, 0);
+  assert.match(io.out(), /No banned product labels/i);
+});
