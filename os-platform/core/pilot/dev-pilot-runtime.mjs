@@ -38,6 +38,12 @@ const DEFAULT_EXPLAIN_INPUT = {
   modelId: "res_avm_v3",
   asOfYear: 2025,
 };
+const DEFAULT_SALES_COMPS_INPUT = {
+  county: "benton",
+  subjectId: "P-300",
+  compIds: ["C-101", "C-102", "C-103"],
+  adjustments: true,
+};
 
 function nowIso() {
   return new Date().toISOString();
@@ -374,6 +380,69 @@ function normalizeExplainInput(body) {
   return { params, echo: fallbackEcho };
 }
 
+function normalizeSalesCompsInput(body) {
+  if (!body || typeof body !== "object" || body.input === undefined || body.input === null) {
+    return {
+      params: {
+        ...DEFAULT_SALES_COMPS_INPUT,
+        compIds: [...DEFAULT_SALES_COMPS_INPUT.compIds],
+      },
+    };
+  }
+
+  const input = body.input;
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return { error: "input must be an object" };
+  }
+
+  const source = input;
+  const allowed = new Set(["county", "subjectId", "compIds", "adjustments"]);
+  for (const key of Object.keys(source)) {
+    if (!allowed.has(key)) {
+      return { error: `input contains unsupported key: ${key}` };
+    }
+  }
+
+  const params = {
+    ...DEFAULT_SALES_COMPS_INPUT,
+    compIds: [...DEFAULT_SALES_COMPS_INPUT.compIds],
+  };
+
+  if ("county" in source) {
+    if (typeof source.county !== "string" || !source.county.trim()) {
+      return { error: "input.county must be a non-empty string" };
+    }
+    params.county = source.county.trim().toLowerCase();
+  }
+
+  if ("subjectId" in source) {
+    if (typeof source.subjectId !== "string" || !source.subjectId.trim()) {
+      return { error: "input.subjectId must be a non-empty string" };
+    }
+    params.subjectId = source.subjectId.trim().slice(0, 128);
+  }
+
+  if ("compIds" in source) {
+    if (!Array.isArray(source.compIds) || source.compIds.length === 0 || source.compIds.length > 12) {
+      return { error: "input.compIds must be an array of 1-12 ids" };
+    }
+    const compIds = source.compIds.map((value) => String(value).trim()).filter(Boolean);
+    if (compIds.length !== source.compIds.length) {
+      return { error: "input.compIds must contain non-empty values" };
+    }
+    params.compIds = compIds.map((value) => value.slice(0, 128));
+  }
+
+  if ("adjustments" in source) {
+    if (typeof source.adjustments !== "boolean") {
+      return { error: "input.adjustments must be boolean" };
+    }
+    params.adjustments = source.adjustments;
+  }
+
+  return { params };
+}
+
 let compareRunnerPromise = null;
 
 async function getCompareRunner() {
@@ -561,6 +630,88 @@ async function handleExplainModelInputs(body) {
   }
 }
 
+async function handleSummarizeSalesCompsRationale(body) {
+  const startedAt = nowIso();
+  const normalizedRequest = normalizeSalesCompsInput(body);
+  if (!normalizedRequest.params) {
+    return {
+      status: 200,
+      payload: {
+        tool: "summarize_sales_comps_rationale",
+        version: 1,
+        startedAt,
+        dryRun: false,
+        overallOk: false,
+        error: normalizedRequest.error || "invalid input",
+        normalized: null,
+        raw: null,
+      },
+    };
+  }
+
+  try {
+    const runner = await getCompareRunner();
+    const result = await runner.execute({
+      toolId: "summarize_sales_comps_rationale",
+      params: normalizedRequest.params,
+      context: {
+        countyId: "benton",
+        userId: "pilot-runtime",
+        roles: ["appraiser"],
+        mode: "muse",
+      },
+    });
+
+    if (result.ok) {
+      return {
+        status: 200,
+        payload: {
+          tool: "summarize_sales_comps_rationale",
+          version: 1,
+          startedAt,
+          dryRun: false,
+          overallOk: true,
+          normalized: result.result,
+          raw: {
+            correlationId: result.correlationId,
+            traceEventId: result.traceEventId,
+          },
+        },
+      };
+    }
+
+    return {
+      status: 200,
+      payload: {
+        tool: "summarize_sales_comps_rationale",
+        version: 1,
+        startedAt,
+        dryRun: false,
+        overallOk: false,
+        error: result.error || "summarize_sales_comps_rationale failed",
+        rawStderr: result.errorCode ? String(result.errorCode) : undefined,
+        raw: {
+          correlationId: result.correlationId,
+          errorCode: result.errorCode,
+        },
+      },
+    };
+  } catch (err) {
+    return {
+      status: 200,
+      payload: {
+        tool: "summarize_sales_comps_rationale",
+        version: 1,
+        startedAt,
+        dryRun: false,
+        overallOk: false,
+        error: err?.message ?? String(err),
+        raw: null,
+      },
+    };
+  }
+}
+
 const server = createServer(async (req, res) => {
   setCors(res);
   if (req.method === "OPTIONS") {
@@ -627,6 +778,13 @@ const server = createServer(async (req, res) => {
     if (method === "POST" && pathname === "/pilot/workbench/compare-assessed-value-history") {
       const body = await readJsonBody(req);
       const result = await handleCompareAssessedValueHistory(body);
+      writeJson(res, result.status, result.payload);
+      return;
+    }
+
+    if (method === "POST" && pathname === "/pilot/workbench/summarize-sales-comps-rationale") {
+      const body = await readJsonBody(req);
+      const result = await handleSummarizeSalesCompsRationale(body);
       writeJson(res, result.status, result.payload);
       return;
     }

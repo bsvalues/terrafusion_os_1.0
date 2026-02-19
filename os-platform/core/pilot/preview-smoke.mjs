@@ -75,6 +75,11 @@ async function run() {
       path: "/pilot/workbench/compare-assessed-value-history",
       body: {},
     },
+    {
+      id: "workbench_summarize_sales_comps_rationale",
+      path: "/pilot/workbench/summarize-sales-comps-rationale",
+      body: {},
+    },
   ];
 
   let failures = 0;
@@ -119,4 +124,3 @@ async function run() {
 }
 
 await run();
-
