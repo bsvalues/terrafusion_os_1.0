@@ -11,11 +11,20 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..", "..", "..");
 const READY_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 750;
+const DEFAULT_BACKEND_BASE_URL = "http://localhost:5001";
+const DEFAULT_FRONTEND_BASE_URL = "http://localhost:5173";
 
 function parseArgs(argv) {
-  const flags = new Set(argv.slice(2));
+  const args = argv.slice(2).filter((arg) => arg !== "--");
+  const flags = new Set(args);
+  const baseUrlIndex = args.indexOf("--base-url");
+  const baseUrl =
+    baseUrlIndex >= 0 && args[baseUrlIndex + 1]
+      ? args[baseUrlIndex + 1]
+      : process.env.PILOT_PREVIEW_BASE_URL || DEFAULT_BACKEND_BASE_URL;
   return {
     once: flags.has("--once"),
+    baseUrl: baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl,
   };
 }
 
@@ -114,8 +123,8 @@ async function stopChildren(children) {
   }
 }
 
-async function runPreviewSmoke() {
-  const invocation = getPnpmInvocation(["run", "preview:smoke"]);
+async function runPreviewSmoke(baseUrl) {
+  const invocation = getPnpmInvocation(["run", "preview:smoke", "--", "--base-url", baseUrl]);
   const smoke = spawn(invocation.command, invocation.args, {
     cwd: REPO_ROOT,
     env: process.env,
@@ -163,14 +172,18 @@ async function main() {
 
   try {
     process.stdout.write("Waiting for backend /health...\n");
-    await waitForUrl("http://localhost:5001/health", "backend health");
+    await waitForUrl(`${args.baseUrl}/health`, "backend health");
     process.stdout.write("Waiting for pilot /pilot/health...\n");
-    await waitForUrl("http://localhost:5001/pilot/health", "pilot health");
+    await waitForUrl(`${args.baseUrl}/pilot/health`, "pilot health");
     process.stdout.write("Waiting for frontend :5173...\n");
-    await waitForUrl("http://localhost:5173", "frontend dev server");
+    await waitForUrl(DEFAULT_FRONTEND_BASE_URL, "frontend dev server");
+
+    process.stdout.write(
+      `Preview URLs:\n- ${DEFAULT_FRONTEND_BASE_URL}/canon\n- ${DEFAULT_FRONTEND_BASE_URL}/property/12345-001\n`
+    );
 
     process.stdout.write("Running preview smoke checks...\n");
-    const smokeExit = await runPreviewSmoke();
+    const smokeExit = await runPreviewSmoke(args.baseUrl);
     if (smokeExit !== 0) {
       process.stderr.write(`preview:smoke failed with exit code ${smokeExit}\n`);
       await shutdown(smokeExit);
