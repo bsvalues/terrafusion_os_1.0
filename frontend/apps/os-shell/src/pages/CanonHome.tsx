@@ -343,6 +343,7 @@ function buildInitialRunAllSteps(): RunAllStepState[] {
 
 const STORAGE_KEY_WORKSPACES = 'tf.canon.workspaces.v1';
 const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
+const STORAGE_KEY_FILES = 'tf.canon.files.v1';
 // STORAGE_KEY_LAST_CLOSED imported from @/canon/governance (barrel)
 
 function isValidWorkspaceArray(data: unknown): data is Workspace[] {
@@ -368,6 +369,38 @@ function loadPersistedState(): { workspaces: Workspace[]; activeIndex: number } 
 function persistState(workspaces: Workspace[], activeIndex: number): void {
   localStorage.setItem(STORAGE_KEY_WORKSPACES, JSON.stringify(workspaces));
   localStorage.setItem(STORAGE_KEY_ACTIVE, String(activeIndex));
+}
+
+function isValidFileArray(data: unknown): data is WorkspaceFile[] {
+  if (!Array.isArray(data)) return false;
+  return data.every(
+    (f) =>
+      typeof f === 'object' &&
+      f !== null &&
+      typeof (f as WorkspaceFile).id === 'string' &&
+      typeof (f as WorkspaceFile).name === 'string' &&
+      typeof (f as WorkspaceFile).content === 'string'
+  );
+}
+
+function loadPersistedFiles(): Record<string, WorkspaceFile[]> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_FILES);
+    if (raw === null) return {};
+    const parsed = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+    const result: Record<string, WorkspaceFile[]> = {};
+    for (const [wsId, files] of Object.entries(parsed)) {
+      if (isValidFileArray(files)) result[wsId] = files;
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
+
+function persistFiles(filesByWorkspace: Record<string, WorkspaceFile[]>): void {
+  localStorage.setItem(STORAGE_KEY_FILES, JSON.stringify(filesByWorkspace));
 }
 
 // isValidWorkspace imported from @/canon/governance (Phase 41 dedup, Phase 47 barrel)
@@ -434,12 +467,15 @@ function CanonContent(): React.ReactElement {
     buildInitialRunAllSteps()
   );
   const [commandHistory, setCommandHistory] = useState<{ id: string; ranAt: string }[]>([]);
-  const [filesByWorkspace, setFilesByWorkspace] = useState<Record<string, WorkspaceFile[]>>({});
+  const [filesByWorkspace, setFilesByWorkspace] = useState<Record<string, WorkspaceFile[]>>(() =>
+    loadPersistedFiles()
+  );
   const [openTabs, setOpenTabs] = useState<string[]>([]);
   const [activeFileId, setActiveFileId] = useState<string | null>(null);
   const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
+  const filesMountedRef = useRef(false);
   const syncingRef = useRef(false);
 
   const setRunAllStep = useCallback((id: RunAllStepId, patch: Partial<RunAllStepState>) => {
@@ -489,6 +525,15 @@ function CanonContent(): React.ReactElement {
     }
     persistState(workspaces, activeIndex);
   }, [workspaces, activeIndex]);
+
+  // Persist files on change (skip initial mount)
+  useEffect(() => {
+    if (!filesMountedRef.current) {
+      filesMountedRef.current = true;
+      return;
+    }
+    persistFiles(filesByWorkspace);
+  }, [filesByWorkspace]);
 
   // Phase 40 + 47: Cross-tab sync — reload state when another tab writes to localStorage
   const handleStorageEvent = useCallback((e: StorageEvent) => {
@@ -587,11 +632,7 @@ function CanonContent(): React.ReactElement {
     setWorkspaces(next);
     setActiveIndex(next.length === 0 ? 0 : Math.min(activeIndex, next.length - 1));
     setRenameDraft('');
-    setFilesByWorkspace((prev) => {
-      const copy = { ...prev };
-      delete copy[closed.id];
-      return copy;
-    });
+    // Keep files in localStorage (persist through close/reopen)
     setOpenTabs([]);
     setActiveFileId(null);
   };
@@ -604,6 +645,13 @@ function CanonContent(): React.ReactElement {
     setWorkspaces((prev) => [...prev, ws]);
     setActiveIndex(workspaces.length); // new last index
     setRenameDraft('');
+    // Restore files: if persisted copy exists use it, otherwise seed fresh
+    setFilesByWorkspace((prev) => {
+      if (prev[ws.id] && prev[ws.id].length > 0) return prev;
+      return { ...prev, [ws.id]: seedWorkspaceFiles(ws.id) };
+    });
+    setOpenTabs([]);
+    setActiveFileId(null);
   };
 
   const hasClosedHistory = lastClosedRef.current !== null;
