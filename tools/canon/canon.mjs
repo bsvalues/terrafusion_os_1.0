@@ -9,6 +9,7 @@
  * Subcommands:
  * - doctor: delegates to existing doctor (supports --dry/--json)
  * - gatefast: runs minimal gates (doctor + naming lint if available)
+ * - ping: end-to-end read-only tool invocation through TerraPilot ToolRunner
  */
 
 import { spawnSync } from "node:child_process";
@@ -59,11 +60,13 @@ function help() {
       "Commands:",
       "  doctor     Run Canon Doctor health report",
       "  gatefast   Run minimal safe gates (doctor + naming lint if available)",
+      "  ping       Run read-only TerraPilot ping slice",
       "",
       "Examples:",
       "  pnpm canon:doctor",
       "  pnpm canon:gatefast",
       "  pnpm canon:gatefast --dry",
+      "  pnpm canon:ping",
       "",
     ].join("\n") + "\n",
   );
@@ -71,6 +74,57 @@ function help() {
 
 function icon(ok) {
   return ok ? "PASS" : "FAIL";
+}
+
+function valueAfterFlag(flags, name, fallback) {
+  const idx = flags.indexOf(name);
+  if (idx === -1) return fallback;
+  return flags[idx + 1] ?? fallback;
+}
+
+function resolveManifest(cwd, flags) {
+  const provided = valueAfterFlag(flags, "--manifest", undefined);
+  if (!provided) return path.resolve(cwd, "tools/registry/terrapilot.tools.json");
+  return path.resolve(cwd, provided);
+}
+
+async function runPingLive(cwd, flags) {
+  const pilotModuleUrl = pathToFileURL(path.resolve(cwd, "os-platform/core/pilot/index.js")).href;
+  const pilotModule = await import(pilotModuleUrl);
+  const pilot = pilotModule.default || pilotModule;
+
+  const { ToolRegistry, ToolRunner, registerPhase84Handlers } = pilot;
+  const registry = new ToolRegistry();
+  await registry.initialize(resolveManifest(cwd, flags));
+
+  const runner = new ToolRunner({ registry });
+  registerPhase84Handlers(runner);
+
+  const context = {
+    countyId: "benton",
+    userId: "canon-ping",
+    roles: ["appraiser"],
+    mode: "muse",
+  };
+
+  const echo = valueAfterFlag(flags, "--echo", "pong");
+  const params = {
+    county: "benton",
+    modelId: "res_avm_v3",
+    asOfYear: 2025,
+  };
+
+  const startedAt = new Date().toISOString();
+  const toolResult = await runner.run("explain_model_inputs", params, context);
+  const output = {
+    ok: true,
+    ts: startedAt,
+    echo,
+    toolId: toolResult.toolId,
+    inputCount: Array.isArray(toolResult.result?.inputs) ? toolResult.result.inputs.length : 0,
+  };
+
+  return { ok: true, output, raw: toolResult };
 }
 
 async function main() {
@@ -166,6 +220,70 @@ async function main() {
       if (namingRes.stderr) eprint(namingRes.stderr);
     }
 
+    process.exit(overallOk ? 0 : 1);
+  }
+
+  if (cmd === "ping") {
+    const started = new Date().toISOString();
+    const echo = valueAfterFlag(flags, "--echo", "pong");
+
+    if (dry) {
+      const report = {
+        tool: "terracanon-ping",
+        version: 1,
+        startedAt: started,
+        dryRun: true,
+        overallOk: true,
+        result: { ok: true, ts: "DRY", echo },
+      };
+      if (json) {
+        print(JSON.stringify(report, null, 2) + "\n");
+      } else {
+        print("=== Canon Ping ===\n");
+        print(`Started: ${started}\n`);
+        print("Mode: DRY\n\n");
+        print("PASS system.ping\n");
+        print("PASS Overall: PASS\n");
+      }
+      process.exit(0);
+    }
+
+    let live;
+    let overallOk = false;
+    let failure = "";
+    try {
+      live = await runPingLive(process.cwd(), flags);
+      overallOk = !!live.ok;
+    } catch (err) {
+      overallOk = false;
+      failure = err?.message ?? String(err);
+    }
+
+    if (json) {
+      const payload = {
+        tool: "terracanon-ping",
+        version: 1,
+        startedAt: started,
+        dryRun: false,
+        overallOk,
+        result: overallOk ? live.output : null,
+        error: overallOk ? "" : failure,
+      };
+      print(JSON.stringify(payload, null, 2) + "\n");
+      process.exit(overallOk ? 0 : 1);
+    }
+
+    print("=== Canon Ping ===\n");
+    print(`Started: ${started}\n`);
+    print("Mode: LIVE\n\n");
+    print(`${icon(overallOk)} system.ping\n`);
+    print(`\n${icon(overallOk)} Overall: ${overallOk ? "PASS" : "FAIL"}\n`);
+    if (overallOk) {
+      print("\n--- normalized output ---\n");
+      print(JSON.stringify(live.output, null, 2) + "\n");
+    } else {
+      eprint(`\n${failure}\n`);
+    }
     process.exit(overallOk ? 0 : 1);
   }
 
