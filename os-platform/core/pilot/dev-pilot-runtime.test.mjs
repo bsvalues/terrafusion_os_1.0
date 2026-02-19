@@ -86,7 +86,17 @@ async function stopChild(child) {
   }
 }
 
-test("canon ping normalized toolId stays terracanon-ping", async () => {
+async function postJson(port, pathname, body) {
+  const response = await fetch(`http://127.0.0.1:${port}${pathname}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const payload = await response.json();
+  return { status: response.status, payload };
+}
+
+test("pilot runtime preview endpoints return overallOk true", async () => {
   const port = await getFreePort();
   const runtimePath = path.resolve("os-platform/core/pilot/dev-pilot-runtime.mjs");
   const child = spawn(process.execPath, [runtimePath], {
@@ -101,20 +111,33 @@ test("canon ping normalized toolId stays terracanon-ping", async () => {
   try {
     await waitForReady(child);
 
-    const response = await fetch(`http://127.0.0.1:${port}/pilot/canon/ping`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ echo: "nametag" }),
-    });
-    assert.equal(response.status, 200);
+    const ping = await postJson(port, "/pilot/canon/ping", { echo: "nametag" });
+    assert.equal(ping.status, 200);
+    assert.equal(ping.payload.overallOk, true);
+    assert.equal(ping.payload.normalized?.toolId, "terracanon-ping");
+    assert.equal(ping.payload.normalized?.echo, "nametag");
+    assert.equal(ping.payload.normalized?.inputCount, 1);
 
-    const payload = await response.json();
-    assert.equal(payload.overallOk, true);
-    assert.equal(payload.normalized?.toolId, "terracanon-ping");
-    assert.equal(payload.normalized?.echo, "nametag");
-    assert.equal(payload.normalized?.inputCount, 1);
+    const explain = await postJson(port, "/pilot/workbench/explain-model-inputs", {});
+    assert.equal(explain.status, 200);
+    assert.equal(explain.payload.overallOk, true);
+    assert.equal(explain.payload.tool, "explain_model_inputs");
+    assert.equal(explain.payload.normalized?.toolId, "explain_model_inputs");
+    assert.ok(typeof explain.payload.normalized?.inputCount === "number");
+
+    const compare = await postJson(port, "/pilot/workbench/compare-assessed-value-history", {});
+    assert.equal(compare.status, 200);
+    assert.equal(compare.payload.overallOk, true);
+    assert.equal(compare.payload.tool, "compare_assessed_value_history");
+    assert.ok(Array.isArray(compare.payload.normalized?.trend));
+
+    const salesComps = await postJson(port, "/pilot/workbench/summarize-sales-comps-rationale", {});
+    assert.equal(salesComps.status, 200);
+    assert.equal(salesComps.payload.overallOk, true);
+    assert.equal(salesComps.payload.tool, "summarize_sales_comps_rationale");
+    assert.ok(typeof salesComps.payload.normalized?.rationale === "string");
+    assert.ok(Array.isArray(salesComps.payload.normalized?.comps));
   } finally {
     await stopChild(child);
   }
 });
-
