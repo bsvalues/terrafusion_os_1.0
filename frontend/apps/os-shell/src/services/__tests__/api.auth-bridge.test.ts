@@ -7,6 +7,7 @@
  */
 import * as authBridge from '../../auth/authBridge';
 import * as authStorage from '../../auth/authStorage';
+import api from '../api';
 
 // We test the interceptor behavior by importing the configured api instance
 // and mocking the HTTP layer underneath.
@@ -92,5 +93,34 @@ describe('api.ts auth bridge integration', () => {
     expect(typeof authStorage.getToken).toBe('function');
     expect(typeof authStorage.setToken).toBe('function');
     expect(typeof authStorage.clearToken).toBe('function');
+  });
+
+  it('on_401_in_mock_mode_does_not_logout_or_redirect', async () => {
+    process.env.VITE_USE_MOCK_DATA = 'true';
+    process.env.VITE_DEV_PREVIEW_BYPASS_AUTH = 'false';
+
+    const logoutSpy = jest.spyOn(authBridge, 'logout');
+    const inFlightSpy = jest.spyOn(authBridge, 'isLogoutInFlight').mockReturnValue(false);
+
+    const rejected = (api.interceptors.response as any).handlers.find(
+      (h: { rejected?: unknown }) => typeof h.rejected === 'function'
+    )?.rejected;
+
+    expect(typeof rejected).toBe('function');
+
+    const startHref = window.location.href;
+    const err = {
+      response: { status: 401 },
+      config: { url: '/pilot/canon/ping' },
+    };
+
+    await expect(rejected(err)).rejects.toBe(err);
+    expect(logoutSpy).not.toHaveBeenCalled();
+    expect(window.location.href).toBe(startHref);
+
+    inFlightSpy.mockRestore();
+    logoutSpy.mockRestore();
+    delete process.env.VITE_USE_MOCK_DATA;
+    delete process.env.VITE_DEV_PREVIEW_BYPASS_AUTH;
   });
 });

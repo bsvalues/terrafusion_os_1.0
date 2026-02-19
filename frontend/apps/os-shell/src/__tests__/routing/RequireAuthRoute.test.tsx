@@ -38,6 +38,8 @@ describe('RequireAuth / AuthGuard route guard', () => {
   beforeEach(() => {
     localStorage.clear();
     jest.restoreAllMocks();
+    delete process.env.VITE_USE_MOCK_DATA;
+    delete process.env.VITE_DEV_PREVIEW_BYPASS_AUTH;
   });
 
   it('unauthenticated_redirects_to_login', () => {
@@ -71,5 +73,14 @@ describe('RequireAuth / AuthGuard route guard', () => {
     renderGuardedRoute('/');
 
     expect(screen.getByTestId('home')).toBeInTheDocument();
+  });
+
+  it('dev_preview_mode_bypasses_login_redirect_without_token', () => {
+    process.env.VITE_DEV_PREVIEW_BYPASS_AUTH = 'true';
+
+    renderGuardedRoute('/dashboard');
+
+    expect(screen.getByTestId('protected')).toBeInTheDocument();
+    expect(screen.queryByTestId('login-page')).not.toBeInTheDocument();
   });
 });
