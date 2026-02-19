@@ -83,6 +83,8 @@
     "test:governed": "pnpm run type-check && node --test os-platform/core/tests/phase83-tools.test.mjs",
     "lint:platform": "node scripts/platform-lint.mjs",
     "doctor": "node scripts/doctor.mjs",
+    "canon:doctor": "node tools/canon/doctor.mjs",
+    "test:canon-doctor": "node --test os-platform/core/tests/canon-doctor.test.mjs",
     "trace:query": "node scripts/trace-query.mjs",
     "support:bundle": "node scripts/support-bundle.mjs",
     "check:generated": "node tools/registry/check-generated-js.mjs",
