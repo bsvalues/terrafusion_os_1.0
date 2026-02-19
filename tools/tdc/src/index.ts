@@ -6,6 +6,7 @@ import { aiCommand } from './commands/ai';
 import { debugCommand } from './commands/debug';
 import { launchCommand } from './commands/launch-backend';
 import { statusCommand } from './commands/status';
+import { uiCommand } from './commands/ui';
 import { workspaceCommand } from './commands/workspace';
 
 const program = new Command();
@@ -30,6 +31,7 @@ program.addCommand(launchCommand);
 program.addCommand(workspaceCommand);
 program.addCommand(debugCommand);
 program.addCommand(aiCommand);
+program.addCommand(uiCommand);
 
 // Default action - show help
 program.action(() => {
