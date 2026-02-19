@@ -67,6 +67,7 @@
     "dev:backend": "concurrently -n api,pilot -c green,cyan \"dotnet watch run --project backend/api-unified/TerraFusion.API.csproj\" \"pnpm run dev:pilot\"",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:setup": "node scripts/dev-setup.mjs",
+    "preview:smoke": "node os-platform/core/pilot/preview-smoke.mjs",
     "backend:dev": "cd backend && dotnet run --project api-unified/TerraFusion.API.csproj",
     "frontend:dev": "cd frontend && npm start",
     "dev:pilot": "node os-platform/core/pilot/dev-pilot-runtime.mjs",
