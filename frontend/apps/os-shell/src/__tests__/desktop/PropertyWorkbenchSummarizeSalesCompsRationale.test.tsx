@@ -67,6 +67,12 @@ describe('PropertyWorkbench summarize_sales_comps_rationale action', () => {
               { id: 'C-102', similarity: 0.88, notes: ['quality'] },
             ],
           },
+          raw: {
+            audit: {
+              inputHash: 'in_hash_123',
+              outputHash: 'out_hash_456',
+            },
+          },
         });
       }
 
@@ -88,6 +94,23 @@ describe('PropertyWorkbench summarize_sales_comps_rationale action', () => {
         screen.getByTestId('workbench-summarize-sales-comps-rationale-json')
       ).toHaveTextContent('"comps"');
     });
+
+    fireEvent.click(screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-summary'));
+    expect(
+      screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-tool-id')
+    ).toHaveTextContent('summarize_sales_comps_rationale');
+    expect(
+      screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-started-at')
+    ).toHaveTextContent('2026-02-20T11:00:00.000Z');
+    expect(
+      screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-overall-ok')
+    ).toHaveTextContent('true');
+    expect(
+      screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-input-hash')
+    ).toHaveTextContent('in_hash_123');
+    expect(
+      screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-output-hash')
+    ).toHaveTextContent('out_hash_456');
   });
 
   it('renders summarize_sales_comps_rationale failure and details toggle', async () => {
@@ -130,6 +153,22 @@ describe('PropertyWorkbench summarize_sales_comps_rationale action', () => {
     expect(
       screen.getByTestId('workbench-summarize-sales-comps-rationale-raw-stderr')
     ).toHaveTextContent('MODE_MISMATCH');
+
+    fireEvent.click(screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-summary'));
+    expect(
+      screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-tool-id')
+    ).toHaveTextContent('summarize_sales_comps_rationale');
+    expect(
+      screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-started-at')
+    ).toHaveTextContent('2026-02-20T11:01:00.000Z');
+    expect(
+      screen.getByTestId('workbench-summarize-sales-comps-rationale-audit-overall-ok')
+    ).toHaveTextContent('false');
+    expect(
+      screen.queryByTestId('workbench-summarize-sales-comps-rationale-audit-input-hash')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('workbench-summarize-sales-comps-rationale-audit-output-hash')
+    ).not.toBeInTheDocument();
   });
 });
-

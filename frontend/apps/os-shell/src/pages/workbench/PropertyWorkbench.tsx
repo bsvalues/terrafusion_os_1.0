@@ -51,6 +51,14 @@ interface WorkbenchTab {
   enabled: boolean;
 }
 
+interface AuditEnvelopeData {
+  toolId: string;
+  startedAt: string;
+  overallOk: boolean;
+  inputHash?: string;
+  outputHash?: string;
+}
+
 // ============================================================================
 // Utilities
 // ============================================================================
@@ -84,6 +92,62 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): string {
     pilot: 'pilot',
   };
   return tabPathMap[pathAfterBase] ?? 'summary';
+}
+
+function readHashValue(source: unknown, keys: string[]): string | undefined {
+  if (!source || typeof source !== 'object') return undefined;
+  const record = source as Record<string, unknown>;
+
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'string' && value.trim().length > 0) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function extractAuditEnvelope(
+  fallbackToolId: string,
+  result:
+    | WorkbenchExplainModelInputsResponse
+    | WorkbenchCompareAssessedValueHistoryResponse
+    | WorkbenchSummarizeSalesCompsRationaleResponse
+    | null
+): AuditEnvelopeData | null {
+  if (!result) return null;
+
+  const normalized =
+    result.normalized && typeof result.normalized === 'object'
+      ? (result.normalized as Record<string, unknown>)
+      : null;
+  const raw = result.raw && typeof result.raw === 'object' ? (result.raw as Record<string, unknown>) : null;
+  const rawAudit =
+    raw?.audit && typeof raw.audit === 'object' ? (raw.audit as Record<string, unknown>) : null;
+
+  const toolId =
+    (typeof normalized?.toolId === 'string' && normalized.toolId) ||
+    (typeof result.tool === 'string' && result.tool) ||
+    fallbackToolId;
+
+  const inputHash =
+    readHashValue(rawAudit, ['inputHash', 'input_hash', 'inputSha256']) ??
+    readHashValue(raw, ['inputHash', 'input_hash', 'inputSha256']) ??
+    readHashValue(result, ['inputHash', 'input_hash', 'inputSha256']);
+
+  const outputHash =
+    readHashValue(rawAudit, ['outputHash', 'output_hash', 'outputSha256']) ??
+    readHashValue(raw, ['outputHash', 'output_hash', 'outputSha256']) ??
+    readHashValue(result, ['outputHash', 'output_hash', 'outputSha256']);
+
+  return {
+    toolId,
+    startedAt: result.startedAt,
+    overallOk: result.overallOk,
+    inputHash,
+    outputHash,
+  };
 }
 
 // ============================================================================
@@ -126,6 +190,34 @@ const TabLoader: React.FC = () => (
     </div>
   </div>
 );
+
+const AuditEnvelopePanel: React.FC<{
+  prefix: string;
+  audit: AuditEnvelopeData | null;
+}> = ({ prefix, audit }) => {
+  if (!audit) return null;
+
+  return (
+    <details className='mt-2' data-testid={`${prefix}-audit-details`}>
+      <summary data-testid={`${prefix}-audit-summary`}>Audit Envelope</summary>
+      <div className='mt-2 space-y-1 text-xs text-white/75'>
+        <div data-testid={`${prefix}-audit-tool-id`}>toolId: {audit.toolId}</div>
+        <div data-testid={`${prefix}-audit-started-at`}>startedAt: {audit.startedAt}</div>
+        <div data-testid={`${prefix}-audit-overall-ok`}>overallOk: {String(audit.overallOk)}</div>
+        {audit.inputHash && (
+          <div className='font-mono break-all' data-testid={`${prefix}-audit-input-hash`}>
+            inputHash: {audit.inputHash}
+          </div>
+        )}
+        {audit.outputHash && (
+          <div className='font-mono break-all' data-testid={`${prefix}-audit-output-hash`}>
+            outputHash: {audit.outputHash}
+          </div>
+        )}
+      </div>
+    </details>
+  );
+};
 
 /**
  * Property Header - Shows parcel info and navigation
@@ -250,6 +342,19 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const [salesCompsRunning, setSalesCompsRunning] = useState(false);
   const [salesCompsResult, setSalesCompsResult] =
     useState<WorkbenchSummarizeSalesCompsRationaleResponse | null>(null);
+
+  const explainAudit = useMemo(
+    () => extractAuditEnvelope('explain_model_inputs', explainResult),
+    [explainResult]
+  );
+  const compareAudit = useMemo(
+    () => extractAuditEnvelope('compare_assessed_value_history', compareResult),
+    [compareResult]
+  );
+  const salesCompsAudit = useMemo(
+    () => extractAuditEnvelope('summarize_sales_comps_rationale', salesCompsResult),
+    [salesCompsResult]
+  );
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -482,6 +587,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
                   )}
                 </div>
               )}
+
+              <AuditEnvelopePanel prefix='workbench-explain-model-inputs' audit={explainAudit} />
             </div>
           )}
         </section>
@@ -564,6 +671,11 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
                   )}
                 </div>
               )}
+
+              <AuditEnvelopePanel
+                prefix='workbench-compare-assessed-value-history'
+                audit={compareAudit}
+              />
             </div>
           )}
         </section>
@@ -650,6 +762,11 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
                   )}
                 </div>
               )}
+
+              <AuditEnvelopePanel
+                prefix='workbench-summarize-sales-comps-rationale'
+                audit={salesCompsAudit}
+              />
             </div>
           )}
         </section>
