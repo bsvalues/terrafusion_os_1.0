@@ -52,22 +52,30 @@
  * @see Phase 47: TerraCanon Operational Hardening (envelope v2)
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { runCanonDoctor, type CanonDoctorResponse } from '../api/canonDoctor';
 import { runCanonGateFast, type CanonGateFastResponse } from '../api/canonGateFast';
 import { runCanonPing, type CanonPingResponse } from '../api/canonPing';
+import { CanonAgentsPanel } from '../canon/CanonAgentsPanel';
+import { CanonCommandPalette, type CanonCommand } from '../canon/CanonCommandPalette';
 import { CanonModuleHost } from '../canon/CanonModuleHost';
+import {
+    isValidWorkspace,
+    parseLastClosedV2,
+    serializeLastClosedV2,
+    STORAGE_KEY_LAST_CLOSED,
+    type Workspace,
+} from '../canon/governance';
 import { invokeWithPreflight, type CanonInvokeResult } from '../canon/invokeWithPreflight';
 import { BuiltinNoopModule } from '../canon/modules/BuiltinNoopModule';
 import { useCanonLayout } from '../canon/useCanonLayout';
-import {
-  isValidWorkspace,
-  parseLastClosedV2,
-  serializeLastClosedV2,
-  STORAGE_KEY_LAST_CLOSED,
-  type Workspace,
-} from '../canon/governance';
+import { AuditEnvelope } from '../components/AuditEnvelope';
+import { CommandPalette, type CommandPaletteItem } from '../components/CommandPalette';
+import { RealityBoard } from '../components/RealityBoard';
 import { StandaloneHomeShell } from '../components/standalone';
+import '../styles/canon-ide.css';
+import '../styles/canon.css';
+import { LiquidPanel } from '../ui/materials';
 
 // ============================================================================
 // File Tree Pane (sidebar placeholder)
@@ -213,24 +221,12 @@ function EditorPane({
 }
 
 // ============================================================================
-// Workspace Shell (IDE layout container)
+// Workspace Shell — structural landmark preserved for test compatibility
 // ============================================================================
 
-interface CanonWorkspaceProps {
-  hasWorkspace: boolean;
-  workspaceName: string | null;
-  workspaceId: string | null;
-  renameDraft: string;
-  onRenameDraftChange: (value: string) => void;
-  onCommitRename: () => void;
-  workspaces: Workspace[];
-  activeIndex: number;
-  onNewWorkspace: () => void;
-  onCloseWorkspace: () => void;
-  onReopenWorkspace: () => void;
-  hasClosedHistory: boolean;
-  onSwitchWorkspace: (index: number) => void;
-}
+// CanonWorkspace is now layout-only: display:contents lets children participate
+// in the parent IDE grid while preserving data-testid='terracanon-workspace'
+// for phase 30-47 test contracts.
 
 type RunAllStepId = 'doctor' | 'gatefast' | 'ping';
 type RunAllStepStatus = 'idle' | 'running' | 'pass' | 'fail';
@@ -251,48 +247,8 @@ function buildInitialRunAllSteps(): RunAllStepState[] {
   ];
 }
 
-function CanonWorkspace({
-  hasWorkspace,
-  workspaceName,
-  workspaceId,
-  renameDraft,
-  onRenameDraftChange,
-  onCommitRename,
-  workspaces,
-  activeIndex,
-  onNewWorkspace,
-  onCloseWorkspace,
-  onReopenWorkspace,
-  hasClosedHistory,
-  onSwitchWorkspace,
-}: CanonWorkspaceProps): React.ReactElement {
-  return (
-    <div
-      className='canon-workspace flex border border-gray-700/30 rounded-lg overflow-hidden bg-gray-900/50'
-      data-testid='terracanon-workspace'
-    >
-      <FileTreePane />
-      <EditorPane
-        hasWorkspace={hasWorkspace}
-        workspaceName={workspaceName}
-        workspaceId={workspaceId}
-        renameDraft={renameDraft}
-        onRenameDraftChange={onRenameDraftChange}
-        onCommitRename={onCommitRename}
-        workspaces={workspaces}
-        activeIndex={activeIndex}
-        onNewWorkspace={onNewWorkspace}
-        onCloseWorkspace={onCloseWorkspace}
-        onReopenWorkspace={onReopenWorkspace}
-        hasClosedHistory={hasClosedHistory}
-        onSwitchWorkspace={onSwitchWorkspace}
-      />
-    </div>
-  );
-}
-
 // ============================================================================
-// Canon Content (root landmark + workspace)
+// Canon Content (root landmark + IDE shell)
 // ============================================================================
 
 const STORAGE_KEY_WORKSPACES = 'tf.canon.workspaces.v1';
@@ -384,7 +340,10 @@ function CanonContent(): React.ReactElement {
   const [gateFastRunning, setGateFastRunning] = useState(false);
   const [gateFastResult, setGateFastResult] = useState<CanonGateFastResponse | null>(null);
   const [runAllActive, setRunAllActive] = useState(false);
-  const [runAllSteps, setRunAllSteps] = useState<RunAllStepState[]>(() => buildInitialRunAllSteps());
+  const [runAllSteps, setRunAllSteps] = useState<RunAllStepState[]>(() =>
+    buildInitialRunAllSteps()
+  );
+  const [commandHistory, setCommandHistory] = useState<{ id: string; ranAt: string }[]>([]);
   const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
@@ -396,6 +355,13 @@ function CanonContent(): React.ReactElement {
 
   const resetRunAll = useCallback(() => {
     setRunAllSteps(buildInitialRunAllSteps());
+  }, []);
+
+  const recordHistory = useCallback((id: string) => {
+    setCommandHistory((prev) => {
+      const next = [{ id, ranAt: new Date().toISOString() }, ...prev.filter((h) => h.id !== id)];
+      return next.slice(0, 10);
+    });
   }, []);
 
   // Persist on state change (skip initial mount and cross-tab sync writes)
@@ -617,218 +583,484 @@ function CanonContent(): React.ReactElement {
     }
   };
 
+  // ── Ctrl+K overlay commands ────────────────────────────────────
+  const overlayCommands: CommandPaletteItem[] = useMemo(
+    () => [
+      {
+        id: 'run-all',
+        title: 'Run All Canon Tasks',
+        subtitle: 'Doctor → Gatefast → Ping (sequential pipeline)',
+        keywords: ['all', 'pipeline', 'ci', 'check'],
+        run: runAllChecks,
+      },
+      {
+        id: 'doctor',
+        title: 'Run Doctor',
+        subtitle: 'Diagnostics + environment check',
+        keywords: ['health', 'diagnose'],
+        run: runCanonDoctorCommand,
+      },
+      {
+        id: 'gatefast',
+        title: 'Run Gatefast',
+        subtitle: 'Fast gate validation',
+        keywords: ['gate', 'validate'],
+        run: runCanonGateFastCommand,
+      },
+      {
+        id: 'ping',
+        title: 'Ping Runtime',
+        subtitle: 'Reachability check',
+        keywords: ['network', 'health'],
+        run: runCanonPingCommand,
+      },
+      {
+        id: 'governed-command',
+        title: 'Run Governed Command',
+        subtitle: 'Policy-wrapped command execution',
+        keywords: ['policy', 'governance'],
+        run: runGovernedCommand,
+      },
+    ],
+    [] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  // ── Recent items for Ctrl+K palette (derived from history) ─────
+  const recentOverlayItems: CommandPaletteItem[] = useMemo(() => {
+    return commandHistory
+      .map((h) => {
+        const original = overlayCommands.find((c) => c.id === h.id);
+        if (!original) return null;
+        return { ...original, subtitle: `Last run: ${h.ranAt.replace('T', ' ').slice(0, 19)}` };
+      })
+      .filter((x): x is CommandPaletteItem => x !== null);
+  }, [commandHistory, overlayCommands]);
+
+  // ── Command palette commands ────────────────────────────────────
+  const paletteCommands: CanonCommand[] = useMemo(
+    () => [
+      {
+        id: 'open-workspace',
+        label: 'Open Empty Workspace',
+        group: 'Workspace',
+        onRun: openEmptyWorkspace,
+        disabled: runAllActive,
+      },
+      { id: 'new-workspace', label: 'New Workspace', group: 'Workspace', onRun: newWorkspace },
+      {
+        id: 'run-all',
+        label: 'Run All Checks',
+        group: 'Tasks',
+        onRun: runAllChecks,
+        disabled: runAllActive,
+      },
+      {
+        id: 'run-doctor',
+        label: 'Run Canon Doctor',
+        group: 'Tasks',
+        onRun: runCanonDoctorCommand,
+        disabled: doctorRunning || runAllActive,
+      },
+      {
+        id: 'run-gatefast',
+        label: 'Run GateFast',
+        group: 'Tasks',
+        onRun: runCanonGateFastCommand,
+        disabled: gateFastRunning || runAllActive,
+      },
+      {
+        id: 'run-ping',
+        label: 'Run Canon Ping',
+        group: 'Tasks',
+        onRun: runCanonPingCommand,
+        disabled: pingRunning || runAllActive,
+      },
+      {
+        id: 'run-governed',
+        label: 'Run Governed Command',
+        group: 'Agents',
+        onRun: runGovernedCommand,
+        disabled: commandRunning || runAllActive,
+      },
+    ],
+    [runAllActive, doctorRunning, gateFastRunning, pingRunning, commandRunning] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   return (
-    <div className='canon-console' data-testid='terracanon-root'>
-      <div className='hidden' data-testid='terracanon-layout-version'>
+    <div className='canon-shell' data-testid='terracanon-root'>
+      <CommandPalette
+        items={overlayCommands}
+        recentItems={recentOverlayItems}
+        onCommandRun={recordHistory}
+      />
+      <div className='canon-ide__hidden' data-testid='terracanon-layout-version'>
         v1:{layout.leftPaneWidth}:{layout.rightPaneWidth}:{layout.inspectorOpen ? '1' : '0'}
       </div>
-      <section className='canon-console__overview mb-4'>
-        <h2>TerraCanon IDE</h2>
-        <p>Integrated development environment for TerraFusion OS.</p>
-        <button
-          className='mt-2 px-3 py-1 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white'
-          data-testid='terracanon-open-empty-workspace'
-          onClick={openEmptyWorkspace}
-          disabled={runAllActive}
-        >
-          Open Empty Workspace
-        </button>
-        <button
-          className='mt-2 ml-2 px-3 py-1 text-sm rounded bg-indigo-700 hover:bg-indigo-600 text-white disabled:opacity-50'
-          data-testid='terracanon-run-governed-command'
-          onClick={runGovernedCommand}
-          disabled={commandRunning || runAllActive}
-        >
-          {commandRunning ? 'Running...' : 'Run Governed Command'}
-        </button>
-        <section
-          className='mt-4 rounded border border-gray-700/50 bg-gray-900/60 p-3'
-          data-testid='terracanon-safety-dashboard'
-        >
-          <h3 className='text-sm font-semibold text-gray-200'>Safety Dashboard</h3>
-          <p className='mt-1 text-xs text-gray-400'>Local checks mirrored from TerraCanon CLI.</p>
-          <div className='mt-2 flex items-center gap-2'>
-            <button
-              className='px-3 py-1 text-sm rounded bg-teal-700 hover:bg-teal-600 text-white disabled:opacity-50'
-              data-testid='terracanon-run-all'
-              onClick={runAllChecks}
-              disabled={runAllActive}
-            >
-              {runAllActive ? 'Running...' : 'Run All'}
-            </button>
-          </div>
-          <div className='mt-2 text-xs text-gray-300' data-testid='terracanon-run-all-status'>
-            {runAllSteps.map((step) => (
-              <div key={step.id} data-testid={`terracanon-run-all-step-${step.id}`}>
-                <span>{step.label}</span> <span>{step.status.toUpperCase()}</span>
-                {step.ts ? <span> - {step.ts}</span> : null}
-                {step.status === 'fail' && step.error ? (
-                  <div data-testid={`terracanon-run-all-step-${step.id}-error`}>{step.error}</div>
-                ) : null}
-              </div>
-            ))}
-          </div>
-          <div className='mt-2 flex flex-wrap items-center gap-2'>
-            <button
-              className='px-3 py-1 text-sm rounded bg-sky-700 hover:bg-sky-600 text-white disabled:opacity-50'
-              data-testid='terracanon-run-canon-doctor'
-              onClick={runCanonDoctorCommand}
-              disabled={doctorRunning || runAllActive}
-            >
-              {doctorRunning ? 'Running Doctor...' : 'Run Canon Doctor'}
-            </button>
-            <button
-              className='px-3 py-1 text-sm rounded bg-violet-700 hover:bg-violet-600 text-white disabled:opacity-50'
-              data-testid='terracanon-run-canon-gatefast'
-              onClick={runCanonGateFastCommand}
-              disabled={gateFastRunning || runAllActive}
-            >
-              {gateFastRunning ? 'Running GateFast...' : 'Run GateFast'}
-            </button>
-          </div>
-          {doctorResult && (
-            <div className='mt-2 text-xs text-gray-300' data-testid='terracanon-canon-doctor-result'>
-              <div data-testid='terracanon-canon-doctor-status'>
-                status: {doctorResult.overallOk ? 'PASS' : 'FAIL'}
-              </div>
-              <div data-testid='terracanon-canon-doctor-started'>
-                startedAt: {doctorResult.startedAt}
-              </div>
-              {!doctorResult.overallOk && (
-                <>
-                  <div data-testid='terracanon-canon-doctor-error'>
-                    {doctorResult.error || 'canon doctor failed'}
-                  </div>
-                  {(doctorResult.stderr ||
-                    doctorResult.rawStdout ||
-                    doctorResult.rawStderr) && (
-                    <details className='mt-1' data-testid='terracanon-canon-doctor-details'>
-                      <summary>Details</summary>
-                      <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
-                        {doctorResult.stderr ||
-                          doctorResult.rawStderr ||
-                          doctorResult.rawStdout}
-                      </pre>
-                    </details>
+
+      {/* ── Header ─ branding + command palette ────────────────────── */}
+      <header className='canon-header' data-testid='canon-header'>
+        <span className='canon-header__title'>TerraCanon</span>
+        <LiquidPanel variant='shell' radius='none' className='flex-1'>
+          <CanonCommandPalette commands={paletteCommands} />
+        </LiquidPanel>
+        <kbd className='canon-header__shortcut'>Ctrl+K</kbd>
+      </header>
+
+      {/* ── Dev Cockpit ─ primary surface ─────────────────────────── */}
+      <section className='canon-devCockpit' data-testid='canon-devCockpit'>
+        <div className='canon-devCockpit__inner canon-ide'>
+          {/* ── Suite Launcher (workspace panels) ────────────────────── */}
+          <div style={{ display: 'contents' }} data-testid='canon-suiteLauncher'>
+            {/* ── Structural landmark for test compat (display:contents) ── */}
+            <div style={{ display: 'contents' }} data-testid='terracanon-workspace'>
+              {/* ── Explorer ─ Left sidebar ────────────────────────────────── */}
+              <LiquidPanel variant='shell' radius='none' className='canon-ide__explorer'>
+                <div className='canon-ide__explorer-header'>Explorer</div>
+
+                <div className='canon-ide__explorer-section'>
+                  <h4>Workspaces</h4>
+                  {workspaces.length === 0 ? (
+                    <p className='text-gray-500 text-xs italic'>No workspaces open</p>
+                  ) : (
+                    <div className='flex flex-col gap-0.5'>
+                      {workspaces.map((ws, i) => (
+                        <button
+                          key={ws.id}
+                          className={`text-left px-2 py-0.5 text-xs rounded truncate ${
+                            i === activeIndex
+                              ? 'bg-cyan-700/30 text-cyan-300'
+                              : 'text-gray-400 hover:bg-gray-800'
+                          }`}
+                          data-testid={`terracanon-explorer-ws-${i}`}
+                          onClick={() => switchWorkspace(i)}
+                        >
+                          {ws.name}
+                        </button>
+                      ))}
+                    </div>
                   )}
-                </>
-              )}
-            </div>
-          )}
-          {gateFastResult && (
-            <div
-              className='mt-2 text-xs text-gray-300'
-              data-testid='terracanon-canon-gatefast-result'
-            >
-              <div data-testid='terracanon-canon-gatefast-status'>
-                status: {gateFastResult.overallOk ? 'PASS' : 'FAIL'}
-              </div>
-              <div data-testid='terracanon-canon-gatefast-started'>
-                startedAt: {gateFastResult.startedAt}
-              </div>
-              {!gateFastResult.overallOk && (
-                <>
-                  <div data-testid='terracanon-canon-gatefast-error'>
-                    {gateFastResult.error || 'gatefast failed'}
-                  </div>
-                  {(gateFastResult.stderr ||
-                    gateFastResult.rawStdout ||
-                    gateFastResult.rawStderr) && (
-                    <details className='mt-1' data-testid='terracanon-canon-gatefast-details'>
-                      <summary>Details</summary>
-                      <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
-                        {gateFastResult.stderr ||
-                          gateFastResult.rawStderr ||
-                          gateFastResult.rawStdout}
-                      </pre>
-                    </details>
+                </div>
+
+                <div className='flex flex-col gap-1 mt-2'>
+                  <button
+                    className='px-2 py-1 text-xs rounded bg-cyan-700 hover:bg-cyan-600 text-white'
+                    data-testid='terracanon-open-empty-workspace'
+                    onClick={openEmptyWorkspace}
+                    disabled={runAllActive}
+                  >
+                    + Open Workspace
+                  </button>
+                  {hasClosedHistory && (
+                    <button
+                      className='px-2 py-1 text-xs rounded bg-yellow-700 hover:bg-yellow-600 text-white'
+                      data-testid='terracanon-explorer-reopen'
+                      onClick={reopenLastClosed}
+                    >
+                      ↩ Reopen Last
+                    </button>
                   )}
-                </>
-              )}
+                </div>
+
+                <FileTreePane />
+              </LiquidPanel>
+
+              {/* ── Editor ─ Center main area ──────────────────────────────── */}
+              <LiquidPanel variant='infrastructure' radius='none' className='canon-ide__editor'>
+                <EditorPane
+                  hasWorkspace={hasWorkspace}
+                  workspaceName={active?.name ?? null}
+                  workspaceId={active?.id ?? null}
+                  renameDraft={renameDraft}
+                  onRenameDraftChange={setRenameDraft}
+                  onCommitRename={commitRename}
+                  workspaces={workspaces}
+                  activeIndex={activeIndex}
+                  onNewWorkspace={newWorkspace}
+                  onCloseWorkspace={closeWorkspace}
+                  onReopenWorkspace={reopenLastClosed}
+                  hasClosedHistory={hasClosedHistory}
+                  onSwitchWorkspace={switchWorkspace}
+                />
+              </LiquidPanel>
             </div>
-          )}
-        </section>
-        <div className='mt-3 flex flex-wrap items-center gap-2'>
-          <input
-            className='px-2 py-1 text-sm rounded bg-gray-800 border border-gray-600 text-gray-300'
-            data-testid='terracanon-canon-ping-echo'
-            value={pingEcho}
-            onChange={(event) => setPingEcho(event.target.value)}
-            placeholder='Echo'
-            disabled={runAllActive}
-          />
-          <button
-            className='px-3 py-1 text-sm rounded bg-emerald-700 hover:bg-emerald-600 text-white disabled:opacity-50'
-            data-testid='terracanon-run-canon-ping'
-            onClick={runCanonPingCommand}
-            disabled={pingRunning || runAllActive}
-          >
-            {pingRunning ? 'Running Ping...' : 'Run Canon Ping'}
-          </button>
-        </div>
-        {pingResult && (
-          <div className='mt-2 text-xs text-gray-300' data-testid='terracanon-canon-ping-result'>
-            <div data-testid='terracanon-canon-ping-overall'>
-              overallOk: {String(pingResult.overallOk)}
-            </div>
-            {pingResult.overallOk && pingResult.normalized ? (
-              <>
-                <div data-testid='terracanon-canon-ping-ok'>
-                  ok: {String(pingResult.normalized.ok)}
+            {/* end terracanon-workspace landmark */}
+
+            {/* ── Agents ─ Right sidebar (TerraPilot) ──────────────────── */}
+            <LiquidPanel variant='shell' radius='none'>
+              <CanonAgentsPanel workspaceId={active?.id ?? null} />
+            </LiquidPanel>
+          </div>
+          {/* end canon-suiteLauncher */}
+
+          {/* ── Tasks & Logs ─ Bottom panel ──────────────────────────── */}
+          <LiquidPanel variant='infrastructure' radius='none' className='canon-ide__tasks'>
+            <section data-testid='terracanon-safety-dashboard'>
+              <div className='canon-ide__tasks-toolbar'>
+                <span className='text-xs font-semibold text-gray-300 uppercase tracking-wider'>
+                  Tasks
+                </span>
+                <button
+                  className='px-3 py-1 text-xs rounded bg-teal-700 hover:bg-teal-600 text-white disabled:opacity-50'
+                  data-testid='terracanon-run-all'
+                  onClick={runAllChecks}
+                  disabled={runAllActive}
+                >
+                  {runAllActive ? 'Running…' : 'Run All'}
+                </button>
+                <button
+                  className='px-3 py-1 text-xs rounded bg-sky-700 hover:bg-sky-600 text-white disabled:opacity-50'
+                  data-testid='terracanon-run-canon-doctor'
+                  onClick={runCanonDoctorCommand}
+                  disabled={doctorRunning || runAllActive}
+                >
+                  {doctorRunning ? 'Doctor…' : 'Doctor'}
+                </button>
+                <button
+                  className='px-3 py-1 text-xs rounded bg-violet-700 hover:bg-violet-600 text-white disabled:opacity-50'
+                  data-testid='terracanon-run-canon-gatefast'
+                  onClick={runCanonGateFastCommand}
+                  disabled={gateFastRunning || runAllActive}
+                >
+                  {gateFastRunning ? 'GateFast…' : 'GateFast'}
+                </button>
+                <input
+                  className='px-2 py-1 text-xs rounded bg-gray-800 border border-gray-600 text-gray-300'
+                  data-testid='terracanon-canon-ping-echo'
+                  value={pingEcho}
+                  onChange={(event) => setPingEcho(event.target.value)}
+                  placeholder='Echo'
+                  disabled={runAllActive}
+                />
+                <button
+                  className='px-3 py-1 text-xs rounded bg-emerald-700 hover:bg-emerald-600 text-white disabled:opacity-50'
+                  data-testid='terracanon-run-canon-ping'
+                  onClick={runCanonPingCommand}
+                  disabled={pingRunning || runAllActive}
+                >
+                  {pingRunning ? 'Ping…' : 'Ping'}
+                </button>
+                <button
+                  className='px-3 py-1 text-xs rounded bg-indigo-700 hover:bg-indigo-600 text-white disabled:opacity-50'
+                  data-testid='terracanon-run-governed-command'
+                  onClick={runGovernedCommand}
+                  disabled={commandRunning || runAllActive}
+                >
+                  {commandRunning ? 'Running…' : 'Governed Cmd'}
+                </button>
+              </div>
+
+              {/* ── Log output area ──────────────────────────────────────── */}
+              <div className='canon-ide__tasks-log'>
+                <div className='text-xs text-gray-300' data-testid='terracanon-run-all-status'>
+                  {runAllSteps.map((step) => (
+                    <div key={step.id} data-testid={`terracanon-run-all-step-${step.id}`}>
+                      <span>{step.label}</span> <span>{step.status.toUpperCase()}</span>
+                      {step.ts ? <span> — {step.ts}</span> : null}
+                      {step.status === 'fail' && step.error ? (
+                        <div data-testid={`terracanon-run-all-step-${step.id}-error`}>
+                          {step.error}
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
                 </div>
-                <div data-testid='terracanon-canon-ping-ts'>ts: {pingResult.normalized.ts}</div>
-                <div data-testid='terracanon-canon-ping-echo-value'>
-                  echo: {pingResult.normalized.echo}
-                </div>
-                <div data-testid='terracanon-canon-ping-tool-id'>
-                  toolId: {pingResult.normalized.toolId}
-                </div>
-                <div data-testid='terracanon-canon-ping-input-count'>
-                  inputCount: {pingResult.normalized.inputCount}
-                </div>
-              </>
-            ) : (
-              <>
-                <div data-testid='terracanon-canon-ping-error'>
-                  {pingResult.error || 'canon ping failed'}
-                </div>
-                {(pingResult.stderr || pingResult.rawStdout || pingResult.rawStderr) && (
-                  <details className='mt-1' data-testid='terracanon-canon-ping-error-details'>
-                    <summary>Details</summary>
-                    <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
-                      {pingResult.stderr || pingResult.rawStderr || pingResult.rawStdout}
-                    </pre>
-                  </details>
+
+                {/* ── Run All rollup badge ──────────────────────────────── */}
+                {(() => {
+                  const hasRun = runAllSteps.some((s) => s.status !== 'idle');
+                  if (!hasRun) return null;
+                  const allPass = runAllSteps.every((s) => s.status === 'pass');
+                  const anyFail = runAllSteps.some((s) => s.status === 'fail');
+                  const anyRunning = runAllSteps.some((s) => s.status === 'running');
+                  const overallOk = allPass && !anyFail && !anyRunning;
+                  const firstFailStep = runAllSteps.find((s) => s.status === 'fail');
+                  return (
+                    <div data-testid='terracanon-run-all-rollup' className='mt-1'>
+                      <AuditEnvelope
+                        data={{
+                          toolId: 'run-all-pipeline',
+                          startedAt: runAllSteps[0]?.ts ?? new Date().toISOString(),
+                          overallOk,
+                          error: anyRunning
+                            ? 'Pipeline running…'
+                            : firstFailStep
+                              ? `Failed at: ${firstFailStep.label}`
+                              : undefined,
+                        }}
+                      />
+                    </div>
+                  );
+                })()}
+
+                {doctorResult && (
+                  <div
+                    className='mt-2 text-xs text-gray-300'
+                    data-testid='terracanon-canon-doctor-result'
+                  >
+                    <AuditEnvelope
+                      data={{
+                        toolId: doctorResult.tool,
+                        startedAt: doctorResult.startedAt,
+                        overallOk: doctorResult.overallOk,
+                        error: doctorResult.error,
+                      }}
+                    />
+                    <div data-testid='terracanon-canon-doctor-status'>
+                      Doctor: {doctorResult.overallOk ? 'PASS' : 'FAIL'}
+                    </div>
+                    <div data-testid='terracanon-canon-doctor-started'>
+                      startedAt: {doctorResult.startedAt}
+                    </div>
+                    {!doctorResult.overallOk && (
+                      <>
+                        <div data-testid='terracanon-canon-doctor-error'>
+                          {doctorResult.error || 'canon doctor failed'}
+                        </div>
+                        {(doctorResult.stderr ||
+                          doctorResult.rawStdout ||
+                          doctorResult.rawStderr) && (
+                          <details className='mt-1' data-testid='terracanon-canon-doctor-details'>
+                            <summary>Details</summary>
+                            <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
+                              {doctorResult.stderr ||
+                                doctorResult.rawStderr ||
+                                doctorResult.rawStdout}
+                            </pre>
+                          </details>
+                        )}
+                      </>
+                    )}
+                  </div>
                 )}
-              </>
-            )}
-          </div>
-        )}
-        {commandResult && (
-          <div className='mt-3 text-xs text-gray-300' data-testid='terracanon-command-result'>
-            <div data-testid='terracanon-command-correlation'>{commandResult.correlationId}</div>
-            {commandResult.status === 'denied' && (
-              <div data-testid='terracanon-command-deny-reason'>{commandResult.reason}</div>
-            )}
-          </div>
-        )}
+
+                {gateFastResult && (
+                  <div
+                    className='mt-2 text-xs text-gray-300'
+                    data-testid='terracanon-canon-gatefast-result'
+                  >
+                    <AuditEnvelope
+                      data={{
+                        toolId: gateFastResult.tool,
+                        startedAt: gateFastResult.startedAt,
+                        overallOk: gateFastResult.overallOk,
+                        error: gateFastResult.error,
+                      }}
+                    />
+                    <div data-testid='terracanon-canon-gatefast-status'>
+                      GateFast: {gateFastResult.overallOk ? 'PASS' : 'FAIL'}
+                    </div>
+                    <div data-testid='terracanon-canon-gatefast-started'>
+                      startedAt: {gateFastResult.startedAt}
+                    </div>
+                    {!gateFastResult.overallOk && (
+                      <>
+                        <div data-testid='terracanon-canon-gatefast-error'>
+                          {gateFastResult.error || 'gatefast failed'}
+                        </div>
+                        {(gateFastResult.stderr ||
+                          gateFastResult.rawStdout ||
+                          gateFastResult.rawStderr) && (
+                          <details className='mt-1' data-testid='terracanon-canon-gatefast-details'>
+                            <summary>Details</summary>
+                            <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
+                              {gateFastResult.stderr ||
+                                gateFastResult.rawStderr ||
+                                gateFastResult.rawStdout}
+                            </pre>
+                          </details>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {pingResult && (
+                  <div
+                    className='mt-2 text-xs text-gray-300'
+                    data-testid='terracanon-canon-ping-result'
+                  >
+                    <AuditEnvelope
+                      data={{
+                        toolId: pingResult.tool,
+                        startedAt: pingResult.startedAt,
+                        overallOk: pingResult.overallOk,
+                        error: pingResult.error,
+                      }}
+                    />
+                    {pingResult.overallOk && pingResult.normalized ? (
+                      <>
+                        <div data-testid='terracanon-canon-ping-ok'>
+                          ok: {String(pingResult.normalized.ok)}
+                        </div>
+                        <div data-testid='terracanon-canon-ping-ts'>
+                          ts: {pingResult.normalized.ts}
+                        </div>
+                        <div data-testid='terracanon-canon-ping-echo-value'>
+                          echo: {pingResult.normalized.echo}
+                        </div>
+                        <div data-testid='terracanon-canon-ping-tool-id'>
+                          toolId: {pingResult.normalized.toolId}
+                        </div>
+                        <div data-testid='terracanon-canon-ping-input-count'>
+                          inputCount: {pingResult.normalized.inputCount}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div data-testid='terracanon-canon-ping-error'>
+                          {pingResult.error || 'canon ping failed'}
+                        </div>
+                        {(pingResult.stderr || pingResult.rawStdout || pingResult.rawStderr) && (
+                          <details
+                            className='mt-1'
+                            data-testid='terracanon-canon-ping-error-details'
+                          >
+                            <summary>Details</summary>
+                            <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
+                              {pingResult.stderr || pingResult.rawStderr || pingResult.rawStdout}
+                            </pre>
+                          </details>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {commandResult && (
+                  <div
+                    className='mt-2 text-xs text-gray-300'
+                    data-testid='terracanon-command-result'
+                  >
+                    <AuditEnvelope
+                      data={{
+                        toolId: 'governed-command',
+                        startedAt: new Date().toISOString(),
+                        overallOk: commandResult.status === 'ok',
+                        correlationId: commandResult.correlationId,
+                        error: commandResult.status === 'denied' ? commandResult.reason : undefined,
+                      }}
+                    />
+                    <div data-testid='terracanon-command-correlation'>
+                      {commandResult.correlationId}
+                    </div>
+                    {commandResult.status === 'denied' && (
+                      <div data-testid='terracanon-command-deny-reason'>{commandResult.reason}</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <RealityBoard />
+          </LiquidPanel>
+        </div>
+        {/* end canon-devCockpit__inner */}
       </section>
-      <CanonWorkspace
-        hasWorkspace={hasWorkspace}
-        workspaceName={active?.name ?? null}
-        workspaceId={active?.id ?? null}
-        renameDraft={renameDraft}
-        onRenameDraftChange={setRenameDraft}
-        onCommitRename={commitRename}
-        workspaces={workspaces}
-        activeIndex={activeIndex}
-        onNewWorkspace={newWorkspace}
-        onCloseWorkspace={closeWorkspace}
-        onReopenWorkspace={reopenLastClosed}
-        hasClosedHistory={hasClosedHistory}
-        onSwitchWorkspace={switchWorkspace}
-      />
-      <CanonModuleHost module={BuiltinNoopModule} workspaceId={active?.id ?? null} />
+      {/* end canon-devCockpit */}
+
+      <div className='canon-ide__hidden'>
+        <CanonModuleHost module={BuiltinNoopModule} workspaceId={active?.id ?? null} />
+      </div>
     </div>
   );
 }

@@ -1,0 +1,219 @@
+/**
+ * @fileoverview Canon Visual Contract — P20 Design Tokens + Region Styles
+ *
+ * This is the single source of truth for Canon's visual hierarchy.
+ * No random glows. No idle pulsing. Every surface has a mission.
+ *
+ * Regions:
+ *   .canon-shell          — root wrapper (dark background, full height)
+ *   .canon-header          — top bar (palette + branding)
+ *   .canon-devCockpit      — primary surface (tasks, pipeline, receipts)
+ *   .canon-suiteLauncher   — secondary surface (workspace/editor/agents)
+ */
+
+/* ============================================================================
+   Design Tokens
+   ============================================================================ */
+
+.canon-shell {
+  /* Surface backgrounds (quiet, no noise) */
+  --canon-bg: #0d1117;
+  --canon-surface-1: rgba(255, 255, 255, 0.03);
+  --canon-surface-2: rgba(255, 255, 255, 0.05);
+  --canon-surface-raised: rgba(255, 255, 255, 0.07);
+
+  /* Borders (consistent, not random) */
+  --canon-border: rgba(255, 255, 255, 0.08);
+  --canon-border-strong: rgba(255, 255, 255, 0.14);
+
+  /* Typography scale (4 stops, monospace for receipts) */
+  --canon-font-xs: 0.6875rem; /* 11px — audit receipts */
+  --canon-font-sm: 0.75rem; /* 12px — labels, metadata */
+  --canon-font-md: 0.8125rem; /* 13px — body text */
+  --canon-font-lg: 0.875rem; /* 14px — section headers */
+
+  /* Spacing rhythm (4px base) */
+  --canon-space-1: 0.25rem; /* 4px */
+  --canon-space-2: 0.5rem; /* 8px */
+  --canon-space-3: 0.75rem; /* 12px */
+  --canon-space-4: 1rem; /* 16px */
+  --canon-space-6: 1.5rem; /* 24px */
+
+  /* Accent — single hue, two weights */
+  --canon-accent: rgb(6, 182, 212);
+  --canon-accent-muted: rgba(6, 182, 212, 0.4);
+
+  /* Status */
+  --canon-pass: #4ade80;
+  --canon-fail: #f87171;
+  --canon-warn: #fbbf24;
+}
+
+/* ============================================================================
+   Shell Root — the entire Canon page
+   ============================================================================ */
+
+.canon-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--canon-bg);
+  color: rgba(255, 255, 255, 0.85);
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
+
+/* ============================================================================
+   Header — top bar (palette, branding, Ctrl+K hint)
+   ============================================================================ */
+
+.canon-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--canon-space-3);
+  padding: var(--canon-space-2) var(--canon-space-4);
+  border-bottom: 1px solid var(--canon-border);
+  background: var(--canon-surface-1);
+}
+
+.canon-header__title {
+  font-size: var(--canon-font-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.canon-header__shortcut {
+  font-size: var(--canon-font-xs);
+  color: rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--canon-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+}
+
+/* ============================================================================
+   Dev Cockpit — primary surface (Tasks, Pipeline, AuditEnvelopes, RealityBoard)
+   ============================================================================ */
+
+.canon-devCockpit {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.canon-devCockpit__inner {
+  display: grid;
+  grid-template-columns: 240px 1fr 280px;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    'explorer  editor    agents'
+    'tasks     tasks     tasks';
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ============================================================================
+   Suite Launcher — secondary surface (workspace tiles, editor, agents)
+   ============================================================================ */
+
+/* Suite launcher wraps the existing explorer/editor/agents panels.
+   Currently the grid places them inside devCockpit; this class exists
+   as a semantic landmark for tests & future extraction. */
+
+/* ============================================================================
+   Button Contract — consistent hover/focus states everywhere in Canon
+   ============================================================================ */
+
+.canon-shell button {
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease-out,
+    opacity 0.12s ease-out;
+}
+
+.canon-shell button:focus-visible {
+  outline: 2px solid var(--canon-accent);
+  outline-offset: 2px;
+}
+
+.canon-shell button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* ============================================================================
+   Audit Receipt Typography — monospace, compact, scannable
+   ============================================================================ */
+
+.canon-shell [data-testid='audit-envelope'] {
+  font-size: var(--canon-font-xs);
+  border-color: var(--canon-border-strong);
+  background: var(--canon-surface-1);
+}
+
+/* ============================================================================
+   Tasks Toolbar — compact, aligned, no visual noise
+   ============================================================================ */
+
+.canon-shell .canon-ide__tasks-toolbar {
+  border-bottom: 1px solid var(--canon-border);
+  padding-bottom: var(--canon-space-2);
+  margin-bottom: var(--canon-space-2);
+}
+
+/* ============================================================================
+   Tasks Log — monospaced, receipt-style output
+   ============================================================================ */
+
+.canon-shell .canon-ide__tasks-log {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: var(--canon-font-xs);
+  line-height: 1.5;
+}
+
+/* ============================================================================
+   Reality Board — disciplined surface within Canon's token system
+   ============================================================================ */
+
+.canon-shell [data-testid='reality-board'] {
+  border-color: var(--canon-border-strong);
+  background: var(--canon-surface-1);
+}
+
+/* ============================================================================
+   Pulse Kill — Canon neutralizes idle animations in dev preview
+   ============================================================================ */
+
+.canon-shell .animate-pulse,
+.canon-shell .animate-pulse-slow,
+.canon-shell .animate-pulse-glow,
+.canon-shell [class*='animate-pulse'] {
+  animation: none !important;
+}
+
+/* ============================================================================
+   Responsive: stack on narrow viewports
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .canon-devCockpit__inner {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      'explorer'
+      'editor'
+      'agents'
+      'tasks';
+  }
+}
