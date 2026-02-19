@@ -78,19 +78,68 @@ import '../styles/canon.css';
 import { LiquidPanel } from '../ui/materials';
 
 // ============================================================================
-// File Tree Pane (sidebar placeholder)
+// Workspace File types
 // ============================================================================
 
-function FileTreePane(): React.ReactElement {
+interface WorkspaceFile {
+  id: string;
+  name: string;
+  content: string;
+}
+
+function seedWorkspaceFiles(workspaceId: string): WorkspaceFile[] {
+  return [
+    {
+      id: `${workspaceId}:readme`,
+      name: 'README.md',
+      content:
+        '# Untitled Workspace\n\nWelcome to TerraCanon.\n\nThis workspace is ready for development.',
+    },
+    {
+      id: `${workspaceId}:config`,
+      name: 'terrafusion.json',
+      content: '{\n  "version": "1.0",\n  "runtime": "canon",\n  "compliance": "FISMA-HIGH"\n}',
+    },
+  ];
+}
+
+// ============================================================================
+// File Tree Pane
+// ============================================================================
+
+interface FileTreePaneProps {
+  files: WorkspaceFile[];
+  activeFileId: string | null;
+  onOpenFile: (fileId: string) => void;
+}
+
+function FileTreePane({ files, activeFileId, onOpenFile }: FileTreePaneProps): React.ReactElement {
   return (
     <aside
       className='canon-filetree border-r border-gray-700/50 w-60 min-h-[200px] p-3'
       data-testid='terracanon-filetree'
     >
-      <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'>
-        Explorer
-      </h3>
-      <p className='text-gray-500 text-xs italic'>No files open</p>
+      <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'>Files</h3>
+      {files.length === 0 ? (
+        <p className='text-gray-500 text-xs italic'>No files open</p>
+      ) : (
+        <div className='flex flex-col gap-0.5'>
+          {files.map((file, i) => (
+            <button
+              key={file.id}
+              className={`text-left px-2 py-0.5 text-xs rounded truncate ${
+                file.id === activeFileId
+                  ? 'bg-cyan-700/30 text-cyan-300'
+                  : 'text-gray-400 hover:bg-gray-800'
+              }`}
+              data-testid={`terracanon-file-${i}`}
+              onClick={() => onOpenFile(file.id)}
+            >
+              {file.name}
+            </button>
+          ))}
+        </div>
+      )}
     </aside>
   );
 }
@@ -113,6 +162,10 @@ interface EditorPaneProps {
   onReopenWorkspace: () => void;
   hasClosedHistory: boolean;
   onSwitchWorkspace: (index: number) => void;
+  openTabs: WorkspaceFile[];
+  activeFileId: string | null;
+  onSwitchTab: (fileId: string) => void;
+  onCloseTab: (fileId: string) => void;
 }
 
 function EditorPane({
@@ -129,13 +182,50 @@ function EditorPane({
   onReopenWorkspace,
   hasClosedHistory,
   onSwitchWorkspace,
+  openTabs,
+  activeFileId,
+  onSwitchTab,
+  onCloseTab,
 }: EditorPaneProps): React.ReactElement {
+  const activeFile = openTabs.find((f) => f.id === activeFileId);
   return (
     <section
-      className='canon-editor flex-1 min-h-[200px] p-4 flex items-center justify-center'
+      className='canon-editor flex-1 min-h-[200px] flex flex-col'
       data-testid='terracanon-editor'
     >
-      {hasWorkspace ? (
+      {/* ── Tab bar ────────────────────────────────────────────── */}
+      {openTabs.length > 0 && (
+        <div className='canon-ide__tab-bar' data-testid='terracanon-tab-bar'>
+          {openTabs.map((file) => (
+            <button
+              key={file.id}
+              className={`canon-ide__tab ${file.id === activeFileId ? 'canon-ide__tab--active' : ''}`}
+              data-testid={`terracanon-tab-${file.name}`}
+              onClick={() => onSwitchTab(file.id)}
+            >
+              <span>{file.name}</span>
+              <span
+                className='canon-ide__tab-close'
+                role='button'
+                aria-label={`Close ${file.name}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCloseTab(file.id);
+                }}
+              >
+                ×
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Content area ───────────────────────────────────────── */}
+      {activeFile ? (
+        <pre className='canon-ide__file-content' data-testid='terracanon-editor-content'>
+          {activeFile.content}
+        </pre>
+      ) : hasWorkspace ? (
         <div data-testid='terracanon-workspace-loaded'>
           <p className='text-lg mb-1 text-gray-300'>Workspace loaded</p>
           <p className='text-sm text-gray-500'>Ready to edit.</p>
@@ -344,6 +434,9 @@ function CanonContent(): React.ReactElement {
     buildInitialRunAllSteps()
   );
   const [commandHistory, setCommandHistory] = useState<{ id: string; ranAt: string }[]>([]);
+  const [filesByWorkspace, setFilesByWorkspace] = useState<Record<string, WorkspaceFile[]>>({});
+  const [openTabs, setOpenTabs] = useState<string[]>([]);
+  const [activeFileId, setActiveFileId] = useState<string | null>(null);
   const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
@@ -361,6 +454,26 @@ function CanonContent(): React.ReactElement {
     setCommandHistory((prev) => {
       const next = [{ id, ranAt: new Date().toISOString() }, ...prev.filter((h) => h.id !== id)];
       return next.slice(0, 10);
+    });
+  }, []);
+
+  const openFile = useCallback((fileId: string) => {
+    setOpenTabs((prev) => (prev.includes(fileId) ? prev : [...prev, fileId]));
+    setActiveFileId(fileId);
+  }, []);
+
+  const switchTab = useCallback((fileId: string) => {
+    setActiveFileId(fileId);
+  }, []);
+
+  const closeTab = useCallback((fileId: string) => {
+    setOpenTabs((prev) => {
+      const next = prev.filter((id) => id !== fileId);
+      setActiveFileId((prevActive) => {
+        if (prevActive !== fileId) return prevActive;
+        return next.length > 0 ? next[next.length - 1] : null;
+      });
+      return next;
     });
   }, []);
 
@@ -424,35 +537,43 @@ function CanonContent(): React.ReactElement {
 
   const hasWorkspace = workspaces.length > 0;
   const active = hasWorkspace ? workspaces[activeIndex] : null;
+  const activeFiles = active ? (filesByWorkspace[active.id] ?? []) : [];
+  const resolvedOpenTabs = openTabs
+    .map((id) => activeFiles.find((f) => f.id === id))
+    .filter((f): f is WorkspaceFile => f != null);
 
   const openEmptyWorkspace = () => {
     if (workspaces.length === 0) {
       workspaceCounter += 1;
-      const ws: Workspace = {
-        id: `canon-workspace-${workspaceCounter}`,
-        name: 'Untitled Workspace',
-      };
+      const wsId = `canon-workspace-${workspaceCounter}`;
+      const ws: Workspace = { id: wsId, name: 'Untitled Workspace' };
       setWorkspaces([ws]);
       setActiveIndex(0);
       setRenameDraft('');
+      setFilesByWorkspace((prev) => ({ ...prev, [wsId]: seedWorkspaceFiles(wsId) }));
+      setOpenTabs([]);
+      setActiveFileId(null);
     }
   };
 
   const newWorkspace = () => {
     workspaceCounter += 1;
-    const ws: Workspace = {
-      id: `canon-workspace-${workspaceCounter}`,
-      name: 'Untitled Workspace',
-    };
+    const wsId = `canon-workspace-${workspaceCounter}`;
+    const ws: Workspace = { id: wsId, name: 'Untitled Workspace' };
     setWorkspaces((prev) => [...prev, ws]);
-    setActiveIndex(workspaces.length); // will be the new last index
+    setActiveIndex(workspaces.length);
     setRenameDraft('');
+    setFilesByWorkspace((prev) => ({ ...prev, [wsId]: seedWorkspaceFiles(wsId) }));
+    setOpenTabs([]);
+    setActiveFileId(null);
   };
 
   const switchWorkspace = (index: number) => {
     if (index >= 0 && index < workspaces.length) {
       setActiveIndex(index);
       setRenameDraft('');
+      setOpenTabs([]);
+      setActiveFileId(null);
     }
   };
 
@@ -466,6 +587,13 @@ function CanonContent(): React.ReactElement {
     setWorkspaces(next);
     setActiveIndex(next.length === 0 ? 0 : Math.min(activeIndex, next.length - 1));
     setRenameDraft('');
+    setFilesByWorkspace((prev) => {
+      const copy = { ...prev };
+      delete copy[closed.id];
+      return copy;
+    });
+    setOpenTabs([]);
+    setActiveFileId(null);
   };
 
   const reopenLastClosed = () => {
@@ -761,7 +889,11 @@ function CanonContent(): React.ReactElement {
                   )}
                 </div>
 
-                <FileTreePane />
+                <FileTreePane
+                  files={activeFiles}
+                  activeFileId={activeFileId}
+                  onOpenFile={openFile}
+                />
               </LiquidPanel>
 
               {/* ── Editor ─ Center main area ──────────────────────────────── */}
@@ -780,6 +912,10 @@ function CanonContent(): React.ReactElement {
                   onReopenWorkspace={reopenLastClosed}
                   hasClosedHistory={hasClosedHistory}
                   onSwitchWorkspace={switchWorkspace}
+                  openTabs={resolvedOpenTabs}
+                  activeFileId={activeFileId}
+                  onSwitchTab={switchTab}
+                  onCloseTab={closeTab}
                 />
               </LiquidPanel>
             </div>

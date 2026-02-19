@@ -128,6 +128,69 @@
   min-height: 0;
 }
 
+/* ── Tab bar ─────────────────────────────────────────────────── */
+
+.canon-ide__tab-bar {
+  display: flex;
+  gap: 1px;
+  background: var(--canon-bg, #0a0a0f);
+  border-bottom: 1px solid var(--canon-border, rgba(255, 255, 255, 0.06));
+  padding: 0 var(--canon-space-2, 0.5rem);
+  min-height: 2rem;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.canon-ide__tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 var(--canon-space-2, 0.5rem);
+  font-size: var(--canon-font-xs, 0.6875rem);
+  color: var(--canon-text-muted, rgba(255, 255, 255, 0.45));
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+
+.canon-ide__tab:hover {
+  color: var(--canon-text, rgba(255, 255, 255, 0.87));
+}
+
+.canon-ide__tab--active {
+  color: var(--canon-accent, #22d3ee);
+  border-bottom-color: var(--canon-accent, #22d3ee);
+}
+
+.canon-ide__tab-close {
+  font-size: 0.75rem;
+  opacity: 0.4;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.canon-ide__tab-close:hover {
+  opacity: 1;
+}
+
+/* ── File content (read-only) ────────────────────────────────── */
+
+.canon-ide__file-content {
+  flex: 1;
+  margin: 0;
+  padding: var(--canon-space-3, 0.75rem) var(--canon-space-4, 1rem);
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: var(--canon-font-sm, 0.75rem);
+  line-height: 1.6;
+  color: var(--canon-text, rgba(255, 255, 255, 0.87));
+  background: var(--canon-surface-1, rgba(255, 255, 255, 0.03));
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* ============================================================================
    Agents (right sidebar)
    ============================================================================ */
