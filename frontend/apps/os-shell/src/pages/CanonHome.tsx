@@ -166,6 +166,9 @@ interface EditorPaneProps {
   activeFileId: string | null;
   onSwitchTab: (fileId: string) => void;
   onCloseTab: (fileId: string) => void;
+  drafts: Record<string, string>;
+  onDraftChange: (fileId: string, content: string) => void;
+  onSave: (fileId: string) => void;
 }
 
 function EditorPane({
@@ -186,8 +189,13 @@ function EditorPane({
   activeFileId,
   onSwitchTab,
   onCloseTab,
+  drafts,
+  onDraftChange,
+  onSave,
 }: EditorPaneProps): React.ReactElement {
   const activeFile = openTabs.find((f) => f.id === activeFileId);
+  const isFileDirty = (file: WorkspaceFile) =>
+    drafts[file.id] !== undefined && drafts[file.id] !== file.content;
   return (
     <section
       className='canon-editor flex-1 min-h-[200px] flex flex-col'
@@ -199,11 +207,11 @@ function EditorPane({
           {openTabs.map((file) => (
             <button
               key={file.id}
-              className={`canon-ide__tab ${file.id === activeFileId ? 'canon-ide__tab--active' : ''}`}
+              className={`canon-ide__tab ${file.id === activeFileId ? 'canon-ide__tab--active' : ''} ${isFileDirty(file) ? 'canon-ide__tab--dirty' : ''}`}
               data-testid={`terracanon-tab-${file.name}`}
               onClick={() => onSwitchTab(file.id)}
             >
-              <span>{file.name}</span>
+              <span>{isFileDirty(file) ? `● ${file.name}` : file.name}</span>
               <span
                 className='canon-ide__tab-close'
                 role='button'
@@ -222,9 +230,25 @@ function EditorPane({
 
       {/* ── Content area ───────────────────────────────────────── */}
       {activeFile ? (
-        <pre className='canon-ide__file-content' data-testid='terracanon-editor-content'>
-          {activeFile.content}
-        </pre>
+        <div className='canon-ide__editor-surface' data-testid='terracanon-editor-content'>
+          {isFileDirty(activeFile) && (
+            <div className='canon-ide__editor-toolbar'>
+              <button
+                className='px-2 py-0.5 text-xs rounded bg-cyan-700 hover:bg-cyan-600 text-white'
+                data-testid='terracanon-save'
+                onClick={() => onSave(activeFile.id)}
+              >
+                Save
+              </button>
+            </div>
+          )}
+          <textarea
+            className='canon-ide__editor-textarea'
+            data-testid='terracanon-editor-textarea'
+            value={drafts[activeFile.id] ?? activeFile.content}
+            onChange={(e) => onDraftChange(activeFile.id, e.target.value)}
+          />
+        </div>
       ) : hasWorkspace ? (
         <div data-testid='terracanon-workspace-loaded'>
           <p className='text-lg mb-1 text-gray-300'>Workspace loaded</p>
@@ -472,6 +496,7 @@ function CanonContent(): React.ReactElement {
   );
   const [openTabs, setOpenTabs] = useState<string[]>([]);
   const [activeFileId, setActiveFileId] = useState<string | null>(null);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
@@ -510,6 +535,35 @@ function CanonContent(): React.ReactElement {
         return next.length > 0 ? next[next.length - 1] : null;
       });
       return next;
+    });
+  }, []);
+
+  const handleDraftChange = useCallback((fileId: string, content: string) => {
+    setDrafts((prev) => ({ ...prev, [fileId]: content }));
+  }, []);
+
+  const handleSave = useCallback((fileId: string) => {
+    setDrafts((prev) => {
+      const draftContent = prev[fileId];
+      if (draftContent === undefined) return prev;
+      // Write draft into filesByWorkspace
+      setFilesByWorkspace((prevFiles) => {
+        const next = { ...prevFiles };
+        for (const [wsId, files] of Object.entries(next)) {
+          const idx = files.findIndex((f) => f.id === fileId);
+          if (idx !== -1) {
+            next[wsId] = files.map((f) =>
+              f.id === fileId ? { ...f, content: draftContent } : f
+            );
+            break;
+          }
+        }
+        return next;
+      });
+      // Remove draft entry
+      const nextDrafts = { ...prev };
+      delete nextDrafts[fileId];
+      return nextDrafts;
     });
   }, []);
 
@@ -964,6 +1018,9 @@ function CanonContent(): React.ReactElement {
                   activeFileId={activeFileId}
                   onSwitchTab={switchTab}
                   onCloseTab={closeTab}
+                  drafts={drafts}
+                  onDraftChange={handleDraftChange}
+                  onSave={handleSave}
                 />
               </LiquidPanel>
             </div>

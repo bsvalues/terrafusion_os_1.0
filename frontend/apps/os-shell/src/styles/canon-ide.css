@@ -175,6 +175,12 @@
   opacity: 1;
 }
 
+/* ── Dirty tab indicator ─────────────────────────────────────── */
+
+.canon-ide__tab--dirty {
+  font-style: italic;
+}
+
 /* ── File content (read-only) ────────────────────────────────── */
 
 .canon-ide__file-content {
@@ -189,6 +195,43 @@
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+/* ── Editor surface (edit buffer) ────────────────────────────── */
+
+.canon-ide__editor-surface {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.canon-ide__editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem var(--canon-space-4, 1rem);
+  border-bottom: 1px solid var(--canon-border, rgba(255, 255, 255, 0.06));
+  min-height: 1.5rem;
+  flex-shrink: 0;
+}
+
+.canon-ide__editor-textarea {
+  flex: 1;
+  margin: 0;
+  padding: var(--canon-space-3, 0.75rem) var(--canon-space-4, 1rem);
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: var(--canon-font-sm, 0.75rem);
+  line-height: 1.6;
+  color: var(--canon-text, rgba(255, 255, 255, 0.87));
+  background: var(--canon-surface-1, rgba(255, 255, 255, 0.03));
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 0;
 }
 
 /* ============================================================================
