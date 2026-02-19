@@ -27,9 +27,13 @@ test("canon ping --json --dry emits stable shape", () => {
 test("canon ping fails with invalid manifest path", () => {
   const res = spawnSync(
     "node",
-    ["tools/canon/canon.mjs", "ping", "--manifest", "does/not/exist.json"],
+    ["tools/canon/canon.mjs", "ping", "--json", "--manifest", "__does_not_exist__.json"],
     { encoding: "utf8" }
   );
-  assert.equal(res.status, 1);
-  assert.match(res.stdout, /Overall:\s*FAIL/i);
+  assert.notEqual(res.status, 0);
+  const parsed = JSON.parse(res.stdout);
+  assert.equal(parsed.tool, "terracanon-ping");
+  assert.equal(parsed.version, 1);
+  assert.equal(parsed.overallOk, false);
+  assert.ok(typeof parsed.error === "string" && parsed.error.length > 0);
 });

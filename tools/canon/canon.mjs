@@ -76,6 +76,48 @@ function icon(ok) {
   return ok ? "PASS" : "FAIL";
 }
 
+function parseJsonStrict(label, s) {
+  try {
+    return JSON.parse(s);
+  } catch (err) {
+    const msg = err?.message ?? String(err);
+    throw new Error(`${label}: invalid JSON (${msg})`);
+  }
+}
+
+function requireKeys(label, obj, keys) {
+  if (!obj || typeof obj !== "object") {
+    throw new Error(`${label}: expected object`);
+  }
+  const missing = keys.filter((k) => !(k in obj));
+  if (missing.length) {
+    throw new Error(`${label}: missing keys: ${missing.join(", ")}`);
+  }
+}
+
+function isNonEmptyString(v) {
+  return typeof v === "string" && v.trim().length > 0;
+}
+
+function validatePingNormalized(normalized) {
+  requireKeys("normalized result", normalized, ["ok", "ts", "echo", "toolId", "inputCount"]);
+  if (typeof normalized.ok !== "boolean") {
+    throw new Error("normalized result: ok must be boolean");
+  }
+  if (!isNonEmptyString(normalized.ts)) {
+    throw new Error("normalized result: ts must be non-empty string");
+  }
+  if (!isNonEmptyString(normalized.echo)) {
+    throw new Error("normalized result: echo must be non-empty string");
+  }
+  if (!isNonEmptyString(normalized.toolId)) {
+    throw new Error("normalized result: toolId must be non-empty string");
+  }
+  if (typeof normalized.inputCount !== "number") {
+    throw new Error("normalized result: inputCount must be number");
+  }
+}
+
 function valueAfterFlag(flags, name, fallback) {
   const idx = flags.indexOf(name);
   if (idx === -1) return fallback;
@@ -260,17 +302,57 @@ async function main() {
     }
 
     if (json) {
+      if (!overallOk) {
+        const payload = {
+          tool: "terracanon-ping",
+          version: 1,
+          startedAt: started,
+          dryRun: false,
+          overallOk: false,
+          error: failure,
+          raw: null,
+          normalized: null,
+        };
+        print(JSON.stringify(payload, null, 2) + "\n");
+        process.exit(1);
+      }
+
+      let toolRunnerPayload;
+      let normalized;
+      try {
+        const rawJson = JSON.stringify(live.raw);
+        toolRunnerPayload = parseJsonStrict("toolrunner output", rawJson);
+        const normalizedSource =
+          toolRunnerPayload?.normalized ?? toolRunnerPayload?.result ?? live.output;
+        const normalizedJson = JSON.stringify(normalizedSource);
+        normalized = parseJsonStrict("normalized result", normalizedJson);
+        validatePingNormalized(normalized);
+      } catch (err) {
+        const payload = {
+          tool: "terracanon-ping",
+          version: 1,
+          startedAt: started,
+          dryRun: false,
+          overallOk: false,
+          error: err?.message ?? String(err),
+          raw: live?.raw ?? null,
+          normalized: null,
+        };
+        print(JSON.stringify(payload, null, 2) + "\n");
+        process.exit(1);
+      }
+
       const payload = {
         tool: "terracanon-ping",
         version: 1,
         startedAt: started,
         dryRun: false,
-        overallOk,
-        result: overallOk ? live.output : null,
-        error: overallOk ? "" : failure,
+        overallOk: true,
+        raw: toolRunnerPayload,
+        normalized,
       };
       print(JSON.stringify(payload, null, 2) + "\n");
-      process.exit(overallOk ? 0 : 1);
+      process.exit(0);
     }
 
     print("=== Canon Ping ===\n");
