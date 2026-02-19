@@ -33,6 +33,10 @@ import {
   runWorkbenchExplainModelInputs,
   type WorkbenchExplainModelInputsResponse,
 } from '../../api/workbenchExplainModelInputs';
+import {
+  runWorkbenchSummarizeSalesCompsRationale,
+  type WorkbenchSummarizeSalesCompsRationaleResponse,
+} from '../../api/workbenchSummarizeSalesCompsRationale';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
@@ -243,6 +247,9 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const [compareRunning, setCompareRunning] = useState(false);
   const [compareResult, setCompareResult] =
     useState<WorkbenchCompareAssessedValueHistoryResponse | null>(null);
+  const [salesCompsRunning, setSalesCompsRunning] = useState(false);
+  const [salesCompsResult, setSalesCompsResult] =
+    useState<WorkbenchSummarizeSalesCompsRationaleResponse | null>(null);
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -293,6 +300,22 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       setCompareRunning(false);
     }
   }, [compareRunning, parcelId]);
+
+  const handleRunSummarizeSalesCompsRationale = useCallback(async () => {
+    if (salesCompsRunning) return;
+    setSalesCompsRunning(true);
+    try {
+      const result = await runWorkbenchSummarizeSalesCompsRationale({
+        county: 'benton',
+        subjectId: parcelId || 'P-300',
+        compIds: ['C-101', 'C-102', 'C-103'],
+        adjustments: true,
+      });
+      setSalesCompsResult(result);
+    } finally {
+      setSalesCompsRunning(false);
+    }
+  }, [parcelId, salesCompsRunning]);
 
   /**
    * Handle tab click - emits OS action trace for user-initiated tab switches
@@ -535,6 +558,92 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
                           data-testid='workbench-compare-assessed-value-history-raw-stdout'
                         >
                           {compareResult.rawStdout}
+                        </pre>
+                      )}
+                    </details>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        <section
+          className='mb-6 rounded-lg border border-white/10 bg-slate-900/50 p-4'
+          data-testid='workbench-summarize-sales-comps-rationale-panel'
+        >
+          <h2 className='text-white text-base font-semibold mb-1'>Workbench Action</h2>
+          <p className='text-white/60 text-sm mb-3'>Summarize Sales Comps Rationale (read-only)</p>
+          <button
+            className='px-3 py-1.5 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white disabled:opacity-50'
+            data-testid='workbench-run-summarize-sales-comps-rationale'
+            disabled={salesCompsRunning}
+            onClick={handleRunSummarizeSalesCompsRationale}
+          >
+            {salesCompsRunning ? 'Running...' : 'Summarize Sales Comps Rationale'}
+          </button>
+
+          {salesCompsResult && (
+            <div
+              className='mt-3 rounded border border-white/10 bg-black/20 p-3 text-sm text-white/85'
+              data-testid='workbench-summarize-sales-comps-rationale-result'
+            >
+              <div className='font-semibold' data-testid='workbench-summarize-sales-comps-rationale-status'>
+                {salesCompsResult.overallOk ? 'PASS' : 'FAIL'}
+              </div>
+              <div data-testid='workbench-summarize-sales-comps-rationale-started'>
+                {salesCompsResult.startedAt}
+              </div>
+
+              {salesCompsResult.overallOk && salesCompsResult.normalized ? (
+                <div className='mt-2 space-y-2'>
+                  <div data-testid='workbench-summarize-sales-comps-rationale-text'>
+                    {salesCompsResult.normalized.rationale}
+                  </div>
+                  <pre
+                    className='text-xs whitespace-pre-wrap rounded bg-black/30 p-2'
+                    data-testid='workbench-summarize-sales-comps-rationale-json'
+                  >
+                    {JSON.stringify(salesCompsResult.normalized, null, 2)}
+                  </pre>
+                </div>
+              ) : (
+                <div className='mt-2'>
+                  <div data-testid='workbench-summarize-sales-comps-rationale-error'>
+                    {salesCompsResult.error || 'Workbench summarize sales comps action failed'}
+                  </div>
+                  {(
+                    salesCompsResult.rawStderr ||
+                    salesCompsResult.rawStdout ||
+                    salesCompsResult.stderr
+                  ) && (
+                    <details
+                      className='mt-2'
+                      data-testid='workbench-summarize-sales-comps-rationale-details'
+                    >
+                      <summary>Details</summary>
+                      {salesCompsResult.stderr && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-summarize-sales-comps-rationale-stderr'
+                        >
+                          {salesCompsResult.stderr}
+                        </pre>
+                      )}
+                      {salesCompsResult.rawStderr && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-summarize-sales-comps-rationale-raw-stderr'
+                        >
+                          {salesCompsResult.rawStderr}
+                        </pre>
+                      )}
+                      {salesCompsResult.rawStdout && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-summarize-sales-comps-rationale-raw-stdout'
+                        >
+                          {salesCompsResult.rawStdout}
                         </pre>
                       )}
                     </details>
