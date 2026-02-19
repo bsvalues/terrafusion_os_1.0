@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "ruleId": "naming-governance",
+  "description": "Bans placeholder label pending rename sweep. Phase C will perform replacements and activate required checks.",
+  "root": ".",
+  "bannedPhrases": [
+    {
+      "phrase": "TerraFusion IDE",
+      "message": "Placeholder label detected. Use 'Pillar Studio' after Phase C rename sweep."
+    }
+  ],
+  "extensions": [
+    ".md",
+    ".txt",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".mjs",
+    ".cjs",
+    ".json",
+    ".yml",
+    ".yaml",
+    ".toml",
+    ".ini"
+  ],
+  "excludeDirs": [
+    ".git",
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".next",
+    ".turbo",
+    ".cache",
+    ".pnpm-store",
+    ".vercel",
+    "out",
+    "target"
+  ],
+  "excludeFiles": ["pnpm-lock.yaml", "package-lock.json", "yarn.lock"],
+  "maxFileBytes": 2000000,
+  "required": []
+}

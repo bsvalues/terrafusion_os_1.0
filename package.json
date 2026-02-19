@@ -86,6 +86,8 @@
     "canon:doctor": "node tools/canon/doctor.mjs",
     "test:canon-doctor": "node --test os-platform/core/tests/canon-doctor.test.mjs",
     "trace:query": "node scripts/trace-query.mjs",
+    "test:naming": "node --test tools/naming/naming-lint.test.mjs",
+    "naming:lint": "node tools/naming/naming-lint.mjs",
     "support:bundle": "node scripts/support-bundle.mjs",
     "check:generated": "node tools/registry/check-generated-js.mjs",
     "build:core-js": "node tools/registry/build-core-js.mjs",
