@@ -98,23 +98,15 @@ function buildPingNormalizedFallback(raw, startedAt, echoFallback) {
     return null;
   }
 
-  const result =
-    raw.result && typeof raw.result === "object" && !Array.isArray(raw.result)
-      ? raw.result
-      : null;
-  const inputCount = Array.isArray(result?.inputs) ? result.inputs.length : 0;
-
-  const toolId =
-    typeof raw.toolId === "string" && raw.toolId.trim()
-      ? raw.toolId.trim()
-      : "canon_ping";
+  const echo = normalizeEcho(echoFallback);
+  const inputCount = echo ? 1 : 0;
   const ok = typeof raw.ok === "boolean" ? raw.ok : true;
 
   return {
     ok,
     ts: startedAt,
-    echo: normalizeEcho(echoFallback),
-    toolId,
+    echo,
+    toolId: "terracanon-ping",
     inputCount,
   };
 }
