@@ -1,4 +1,5 @@
 using Serilog;
+using System.Net.Http.Headers;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -24,6 +25,71 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseCors();
+
+var pilotBaseUrl = Environment.GetEnvironmentVariable("PILOT_BASE_URL") ?? "http://localhost:4317";
+var pilotProxyHttpClient = new HttpClient();
+
+app.MapMethods(
+    "/pilot/{**catchAll}",
+    new[] { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" },
+    async (HttpContext context, string? catchAll) =>
+    {
+        if (HttpMethods.IsOptions(context.Request.Method))
+        {
+            context.Response.StatusCode = StatusCodes.Status204NoContent;
+            return;
+        }
+
+        var targetPath = string.IsNullOrWhiteSpace(catchAll) ? string.Empty : catchAll;
+        var targetUri = new Uri($"{pilotBaseUrl.TrimEnd('/')}/pilot/{targetPath}{context.Request.QueryString}");
+
+        using var proxyRequest = new HttpRequestMessage(new HttpMethod(context.Request.Method), targetUri);
+
+        if (context.Request.ContentLength > 0 || context.Request.Headers.ContainsKey("Transfer-Encoding"))
+        {
+            proxyRequest.Content = new StreamContent(context.Request.Body);
+            if (!string.IsNullOrWhiteSpace(context.Request.ContentType))
+            {
+                proxyRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(context.Request.ContentType);
+            }
+        }
+
+        foreach (var header in context.Request.Headers)
+        {
+            if (string.Equals(header.Key, "Host", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var values = header.Value.ToArray();
+            if (!proxyRequest.Headers.TryAddWithoutValidation(header.Key, values))
+            {
+                proxyRequest.Content?.Headers.TryAddWithoutValidation(header.Key, values);
+            }
+        }
+
+        using var proxyResponse = await pilotProxyHttpClient.SendAsync(
+            proxyRequest,
+            HttpCompletionOption.ResponseHeadersRead,
+            context.RequestAborted
+        );
+
+        context.Response.StatusCode = (int)proxyResponse.StatusCode;
+
+        foreach (var header in proxyResponse.Headers)
+        {
+            context.Response.Headers[header.Key] = header.Value.ToArray();
+        }
+
+        foreach (var header in proxyResponse.Content.Headers)
+        {
+            context.Response.Headers[header.Key] = header.Value.ToArray();
+        }
+
+        context.Response.Headers.Remove("transfer-encoding");
+        await proxyResponse.Content.CopyToAsync(context.Response.Body);
+    }
+);
 
 // API routes
 app.MapGet("/health", () => new { status = "healthy", timestamp = DateTime.UtcNow });
