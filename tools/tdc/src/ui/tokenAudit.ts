@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type {
-  TokenViolation,
-  UiTokenComplianceContract,
-  TokenViolationKind,
+    TokenViolation,
+    TokenViolationKind,
+    UiTokenComplianceContract,
 } from '../contracts/ui-token-compliance.contract';
 
 // ── Slop patterns (ban these) ────────────────────────────────────
@@ -17,7 +17,17 @@ const ALLOW_TOKEN_RE = /(?:hsl|hsla)\(\s*var\(--tf-[a-z0-9-]+\)|var\(--tf-[a-z0-
 
 // ── File extensions to scan ──────────────────────────────────────
 const SCAN_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.css', '.scss', '.mdx']);
-const SKIP_DIRS = new Set(['node_modules', 'dist', '.next', 'build', 'coverage', '.git', 'ARCHIVE', 'QUARANTINE']);
+const SKIP_DIRS = new Set([
+  'node_modules',
+  'dist',
+  '.next',
+  'build',
+  'coverage',
+  '.git',
+  '.claude',
+  'ARCHIVE',
+  'QUARANTINE',
+]);
 
 function walkFiles(dir: string): string[] {
   const results: string[] = [];
@@ -49,7 +59,7 @@ function makeViolation(
   const lines = before.split('\n');
   const line = lines.length;
   const column = (lines[lines.length - 1]?.length ?? 0) + 1;
-  const excerpt = (content.slice(index, Math.min(index + 140, content.length)).split('\n')[0]) ?? '';
+  const excerpt = content.slice(index, Math.min(index + 140, content.length)).split('\n')[0] ?? '';
   return { kind, file, line, column, excerpt };
 }
 

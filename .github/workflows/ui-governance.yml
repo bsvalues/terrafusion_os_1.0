@@ -1,0 +1,107 @@
+name: UI Governance (Lumin)
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - 'packages/ui/**'
+      - 'packages/eslint-plugin-terrafusion-ui/**'
+      - 'tools/tdc/src/ui/**'
+      - 'tools/tdc/src/contracts/**'
+      - 'tools/tdc/src/commands/ui.ts'
+      - 'configs/eslint/**'
+      - '.github/workflows/ui-governance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'packages/ui/**'
+      - 'packages/eslint-plugin-terrafusion-ui/**'
+      - 'tools/tdc/src/ui/**'
+      - 'tools/tdc/src/contracts/**'
+      - 'tools/tdc/src/commands/ui.ts'
+      - 'configs/eslint/**'
+      - '.github/workflows/ui-governance.yml'
+
+env:
+  NODE_VERSION: '20'
+
+concurrency:
+  group: ui-gov-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ui-token-contract:
+    name: UI Token Contract (TDC)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: UI Token Contract Audit
+        continue-on-error: true # Non-blocking until baseline violations are fixed
+        run: pnpm tdc:ui:tokens
+
+      - name: Upload Contract Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-token-contract
+          path: ui-token-compliance.contract.json
+          if-no-files-found: warn
+
+  tdc-tests:
+    name: TDC Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: TDC Tests
+        run: pnpm --dir tools/tdc exec jest --no-coverage
+
+  eslint-plugin-tests:
+    name: ESLint Plugin Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: ESLint Plugin Tests
+        run: pnpm --dir packages/eslint-plugin-terrafusion-ui exec vitest run --config vitest.config.js --no-coverage

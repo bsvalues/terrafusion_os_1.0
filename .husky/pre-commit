@@ -3,7 +3,16 @@
 
 echo "🔒 TERRAFUSION OS: Pre-commit Quality Gate"
 
-# Run lint-staged if available (graceful degradation)
+# Gate 1: UI Token Contract (Lumin design system enforcement)
+# Currently informational — flip || true to || exit 1 when baseline is clean
+if command -v pnpm >/dev/null 2>&1; then
+  echo "🎨 Running UI token contract audit..."
+  pnpm -s tdc:ui:tokens || true
+else
+  echo "⚠️  pnpm not available - skipping UI token audit"
+fi
+
+# Gate 2: lint-staged (ESLint + Prettier + dotnet format)
 if command -v npx >/dev/null 2>&1 && npx lint-staged --version >/dev/null 2>&1; then
   echo "📝 Running lint-staged..."
   npx lint-staged || exit 1

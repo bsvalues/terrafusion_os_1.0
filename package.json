@@ -56,6 +56,10 @@
     "registry:generate": "tsx tools/registry/generate-modules.ts",
     "registry:check": "tsx tools/registry/generate-modules.ts --out frontend/apps/os-shell/src/config/generatedModules.ts && git diff --exit-code frontend/apps/os-shell/src/config/generatedModules.ts",
     "tdc": "node tools/tf.js",
+    "tdc:build": "tsc -p tools/tdc/tsconfig.json",
+    "tdc:ui:tokens": "tsx tools/tdc/src/index.ts ui audit --tokens --out ui-token-compliance.contract.json",
+    "lint:ui": "pnpm -r --filter \"./frontend/apps/**\" --filter \"./packages/**\" lint",
+    "ci:ui": "pnpm tdc:ui:tokens && pnpm lint:ui",
     "console": "node tools/tf.js",
     "ai-agent-info": "echo 'TERRAFUSION OS - Complete Government Operating System with 50,000+ AI Agents. NOT a web app. Read AI_AGENT_START_HERE.md first!'",
     "dev:os:shell": "pnpm -C frontend run dev -- --open",
@@ -354,6 +358,9 @@
     "frontend/**/*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "prettier --write"
+    ],
+    "packages/**/*.{ts,tsx,js,jsx,css,scss,mdx}": [
+      "pnpm tdc:ui:tokens"
     ],
     "backend/**/*.cs": [
       "dotnet format"
