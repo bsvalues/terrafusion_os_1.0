@@ -33,6 +33,11 @@ const DEFAULT_COMPARE_INPUT = {
   years: [2024, 2022, 2023],
   includeBreakdown: false,
 };
+const DEFAULT_EXPLAIN_INPUT = {
+  county: "benton",
+  modelId: "res_avm_v3",
+  asOfYear: 2025,
+};
 
 function nowIso() {
   return new Date().toISOString();
@@ -88,7 +93,33 @@ function normalizeEcho(value) {
   return trimmed.slice(0, 160);
 }
 
-function parseCanonResponse(commandLabel, stdout, stderr, exitCode) {
+function buildPingNormalizedFallback(raw, startedAt, echoFallback) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return null;
+  }
+
+  const result =
+    raw.result && typeof raw.result === "object" && !Array.isArray(raw.result)
+      ? raw.result
+      : null;
+  const inputCount = Array.isArray(result?.inputs) ? result.inputs.length : 0;
+
+  const toolId =
+    typeof raw.toolId === "string" && raw.toolId.trim()
+      ? raw.toolId.trim()
+      : "canon_ping";
+  const ok = typeof raw.ok === "boolean" ? raw.ok : true;
+
+  return {
+    ok,
+    ts: startedAt,
+    echo: normalizeEcho(echoFallback),
+    toolId,
+    inputCount,
+  };
+}
+
+function parseCanonResponse(commandLabel, stdout, stderr, exitCode, options = {}) {
   const startedAt = nowIso();
   const trimmed = stdout.trim();
 
@@ -113,6 +144,27 @@ function parseCanonResponse(commandLabel, stdout, stderr, exitCode) {
       throw new Error("payload is not an object");
     }
 
+    let overallOk = typeof parsed.overallOk === "boolean" ? parsed.overallOk : exitCode === 0;
+    let error = typeof parsed.error === "string" ? parsed.error : undefined;
+    let normalizedPayload = parsed.normalized;
+    let pingRecovered = false;
+
+    if (
+      commandLabel === "canon:ping" &&
+      !overallOk &&
+      !normalizedPayload &&
+      typeof error === "string" &&
+      error.includes("missing keys")
+    ) {
+      const fallback = buildPingNormalizedFallback(parsed.raw, startedAt, options.echoFallback);
+      if (fallback) {
+        normalizedPayload = fallback;
+        overallOk = fallback.ok;
+        error = fallback.ok ? undefined : error;
+        pingRecovered = fallback.ok;
+      }
+    }
+
     const normalized = {
       tool:
         typeof parsed.tool === "string"
@@ -123,16 +175,16 @@ function parseCanonResponse(commandLabel, stdout, stderr, exitCode) {
       version: typeof parsed.version === "number" ? parsed.version : 1,
       startedAt: typeof parsed.startedAt === "string" ? parsed.startedAt : startedAt,
       dryRun: typeof parsed.dryRun === "boolean" ? parsed.dryRun : false,
-      overallOk: typeof parsed.overallOk === "boolean" ? parsed.overallOk : exitCode === 0,
-      error: typeof parsed.error === "string" ? parsed.error : undefined,
+      overallOk,
+      error,
       stderr: typeof parsed.stderr === "string" ? parsed.stderr : undefined,
       rawStdout: typeof parsed.rawStdout === "string" ? parsed.rawStdout : undefined,
       rawStderr: typeof parsed.rawStderr === "string" ? parsed.rawStderr : undefined,
-      normalized: parsed.normalized,
+      normalized: normalizedPayload,
       raw: parsed.raw,
     };
 
-    if (exitCode !== 0) {
+    if (exitCode !== 0 && !pingRecovered) {
       return {
         ...normalized,
         overallOk: false,
@@ -280,6 +332,56 @@ function normalizeCompareInput(body) {
   return { params };
 }
 
+function normalizeExplainInput(body) {
+  const fallbackEcho = normalizeEcho(body?.echo);
+
+  if (!body || typeof body !== "object" || body.input === undefined || body.input === null) {
+    return {
+      params: { ...DEFAULT_EXPLAIN_INPUT },
+      echo: fallbackEcho,
+    };
+  }
+
+  const input = body.input;
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return { error: "input must be an object", echo: fallbackEcho };
+  }
+
+  const source = input;
+  const allowed = new Set(["county", "modelId", "asOfYear"]);
+  for (const key of Object.keys(source)) {
+    if (!allowed.has(key)) {
+      return { error: `input contains unsupported key: ${key}`, echo: fallbackEcho };
+    }
+  }
+
+  const params = { ...DEFAULT_EXPLAIN_INPUT };
+
+  if ("county" in source) {
+    if (typeof source.county !== "string" || !source.county.trim()) {
+      return { error: "input.county must be a non-empty string", echo: fallbackEcho };
+    }
+    params.county = source.county.trim().toLowerCase();
+  }
+
+  if ("modelId" in source) {
+    if (typeof source.modelId !== "string" || !source.modelId.trim()) {
+      return { error: "input.modelId must be a non-empty string", echo: fallbackEcho };
+    }
+    params.modelId = source.modelId.trim().slice(0, 128);
+  }
+
+  if ("asOfYear" in source) {
+    const asOfYear = Number(source.asOfYear);
+    if (!Number.isInteger(asOfYear) || asOfYear < 1900 || asOfYear > 2100) {
+      return { error: "input.asOfYear must be a valid integer year", echo: fallbackEcho };
+    }
+    params.asOfYear = asOfYear;
+  }
+
+  return { params, echo: fallbackEcho };
+}
+
 let compareRunnerPromise = null;
 
 async function getCompareRunner() {
@@ -377,6 +479,96 @@ async function handleCompareAssessedValueHistory(body) {
   }
 }
 
+async function handleExplainModelInputs(body) {
+  const startedAt = nowIso();
+  const normalizedRequest = normalizeExplainInput(body);
+  if (!normalizedRequest.params) {
+    return {
+      status: 200,
+      payload: {
+        tool: "explain_model_inputs",
+        version: 1,
+        startedAt,
+        dryRun: false,
+        overallOk: false,
+        error: normalizedRequest.error || "invalid input",
+        normalized: null,
+        raw: null,
+      },
+    };
+  }
+
+  try {
+    const runner = await getCompareRunner();
+    const result = await runner.execute({
+      toolId: "explain_model_inputs",
+      params: normalizedRequest.params,
+      context: {
+        countyId: "benton",
+        userId: "pilot-runtime",
+        roles: ["appraiser"],
+        mode: "muse",
+      },
+    });
+
+    if (result.ok) {
+      const inputs = Array.isArray(result.result?.inputs) ? result.result.inputs : [];
+      return {
+        status: 200,
+        payload: {
+          tool: "explain_model_inputs",
+          version: 1,
+          startedAt,
+          dryRun: false,
+          overallOk: true,
+          normalized: {
+            ok: true,
+            ts: startedAt,
+            echo: normalizedRequest.echo,
+            toolId: "explain_model_inputs",
+            inputCount: inputs.length,
+          },
+          raw: {
+            correlationId: result.correlationId,
+            traceEventId: result.traceEventId,
+            result: result.result,
+          },
+        },
+      };
+    }
+
+    return {
+      status: 200,
+      payload: {
+        tool: "explain_model_inputs",
+        version: 1,
+        startedAt,
+        dryRun: false,
+        overallOk: false,
+        error: result.error || "explain_model_inputs failed",
+        rawStderr: result.errorCode ? String(result.errorCode) : undefined,
+        raw: {
+          correlationId: result.correlationId,
+          errorCode: result.errorCode,
+        },
+      },
+    };
+  } catch (err) {
+    return {
+      status: 200,
+      payload: {
+        tool: "explain_model_inputs",
+        version: 1,
+        startedAt,
+        dryRun: false,
+        overallOk: false,
+        error: err?.message ?? String(err),
+        raw: null,
+      },
+    };
+  }
+}
+
 const server = createServer(async (req, res) => {
   setCors(res);
   if (req.method === "OPTIONS") {
@@ -402,13 +594,19 @@ const server = createServer(async (req, res) => {
     if (method === "POST" && pathname === "/pilot/canon/ping") {
       const body = await readJsonBody(req);
       const echo = normalizeEcho(body.echo);
-      const result = await runCanonCommand("canon:ping", ["canon:ping", "--json", "--echo", echo]);
-      writeJson(res, 200, parseCanonResponse("canon:ping", result.stdout, result.stderr, result.exitCode));
+      const result = await runCanonCommand("canon:ping", ["--json", "--echo", echo]);
+      writeJson(
+        res,
+        200,
+        parseCanonResponse("canon:ping", result.stdout, result.stderr, result.exitCode, {
+          echoFallback: echo,
+        })
+      );
       return;
     }
 
     if (method === "POST" && pathname === "/pilot/canon/doctor") {
-      const result = await runCanonCommand("canon:doctor", ["canon:doctor", "--json"]);
+      const result = await runCanonCommand("canon:doctor", ["--json"]);
       writeJson(
         res,
         200,
@@ -418,7 +616,7 @@ const server = createServer(async (req, res) => {
     }
 
     if (method === "POST" && pathname === "/pilot/canon/gatefast") {
-      const result = await runCanonCommand("canon:gatefast", ["canon:gatefast", "--json"]);
+      const result = await runCanonCommand("canon:gatefast", ["--json"]);
       writeJson(
         res,
         200,
@@ -429,9 +627,8 @@ const server = createServer(async (req, res) => {
 
     if (method === "POST" && pathname === "/pilot/workbench/explain-model-inputs") {
       const body = await readJsonBody(req);
-      const echo = normalizeEcho(body.echo);
-      const result = await runCanonCommand("canon:ping", ["canon:ping", "--json", "--echo", echo]);
-      writeJson(res, 200, parseCanonResponse("canon:ping", result.stdout, result.stderr, result.exitCode));
+      const result = await handleExplainModelInputs(body);
+      writeJson(res, result.status, result.payload);
       return;
     }
 
