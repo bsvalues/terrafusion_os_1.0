@@ -78,6 +78,10 @@ interface CanonPingRequest {
   echo?: string;
 }
 
+interface WorkbenchExplainModelInputsRequest {
+  echo?: string;
+}
+
 interface CanonCommandResponse {
   tool: string;
   version: number;
@@ -574,6 +578,25 @@ export function createPilotRouter(runner?: ToolRunner): Router {
       '--json',
     ]);
     const payload = parseCanonCommandResponse('canon:gatefast', stdout, stderr, exitCode);
+    return res.status(200).json(payload);
+  });
+
+  /**
+   * POST /pilot/workbench/explain-model-inputs
+   *
+   * Local adapter endpoint that executes `pnpm canon:ping --json --echo <value>`.
+   * This is the minimal read-only Workbench action surface.
+   */
+  router.post('/workbench/explain-model-inputs', async (req: Request, res: Response) => {
+    const body = (req.body as WorkbenchExplainModelInputsRequest) || {};
+    const echo = normalizeEcho(body.echo);
+    const { exitCode, stdout, stderr } = await runCanonCommand('canon:ping', [
+      'canon:ping',
+      '--json',
+      '--echo',
+      echo,
+    ]);
+    const payload = parseCanonCommandResponse('canon:ping', stdout, stderr, exitCode);
     return res.status(200).json(payload);
   });
 

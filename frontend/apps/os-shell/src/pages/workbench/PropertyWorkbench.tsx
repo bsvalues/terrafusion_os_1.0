@@ -22,9 +22,13 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { Suspense, lazy, useCallback, useMemo, useRef } from 'react';
+import React, { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
+import {
+  runWorkbenchExplainModelInputs,
+  type WorkbenchExplainModelInputsResponse,
+} from '../../api/workbenchExplainModelInputs';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
@@ -227,6 +231,11 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const { parcelId } = useParams<{ parcelId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const [explainEcho, setExplainEcho] = useState('hello');
+  const [explainRunning, setExplainRunning] = useState(false);
+  const [explainResult, setExplainResult] = useState<WorkbenchExplainModelInputsResponse | null>(
+    null
+  );
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -251,6 +260,17 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const handleBack = useCallback(() => {
     navigate('/');
   }, [navigate]);
+
+  const handleRunExplainModelInputs = useCallback(async () => {
+    if (explainRunning) return;
+    setExplainRunning(true);
+    try {
+      const result = await runWorkbenchExplainModelInputs(explainEcho);
+      setExplainResult(result);
+    } finally {
+      setExplainRunning(false);
+    }
+  }, [explainEcho, explainRunning]);
 
   /**
    * Handle tab click - emits OS action trace for user-initiated tab switches
@@ -336,6 +356,90 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
       {/* Tab Content */}
       <main className='flex-1 overflow-auto p-6'>
+        <section
+          className='mb-6 rounded-lg border border-white/10 bg-slate-900/50 p-4'
+          data-testid='workbench-explain-model-inputs-panel'
+        >
+          <h2 className='text-white text-base font-semibold mb-1'>Workbench Action</h2>
+          <p className='text-white/60 text-sm mb-3'>Explain Model Inputs (read-only)</p>
+          <div className='flex flex-wrap items-center gap-2'>
+            <input
+              className='px-2 py-1 text-sm rounded bg-slate-800 border border-slate-700 text-white'
+              data-testid='workbench-explain-model-inputs-echo'
+              type='text'
+              value={explainEcho}
+              onChange={(event) => setExplainEcho(event.target.value)}
+              disabled={explainRunning}
+              placeholder='Echo value'
+            />
+            <button
+              className='px-3 py-1.5 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white disabled:opacity-50'
+              data-testid='workbench-run-explain-model-inputs'
+              disabled={explainRunning}
+              onClick={handleRunExplainModelInputs}
+            >
+              {explainRunning ? 'Running...' : 'Run Explain Model Inputs'}
+            </button>
+          </div>
+
+          {explainResult && (
+            <div
+              className='mt-3 rounded border border-white/10 bg-black/20 p-3 text-sm text-white/85'
+              data-testid='workbench-explain-model-inputs-result'
+            >
+              <div className='font-semibold' data-testid='workbench-explain-model-inputs-status'>
+                {explainResult.overallOk ? 'PASS' : 'FAIL'}
+              </div>
+              <div data-testid='workbench-explain-model-inputs-started'>{explainResult.startedAt}</div>
+
+              {explainResult.overallOk && explainResult.normalized ? (
+                <div className='mt-2 space-y-1'>
+                  <div data-testid='workbench-explain-model-inputs-ok'>
+                    ok: {String(explainResult.normalized.ok)}
+                  </div>
+                  <div data-testid='workbench-explain-model-inputs-ts'>
+                    ts: {explainResult.normalized.ts}
+                  </div>
+                  <div data-testid='workbench-explain-model-inputs-echo-value'>
+                    echo: {explainResult.normalized.echo}
+                  </div>
+                  <div data-testid='workbench-explain-model-inputs-tool-id'>
+                    toolId: {explainResult.normalized.toolId}
+                  </div>
+                  <div data-testid='workbench-explain-model-inputs-input-count'>
+                    inputCount: {String(explainResult.normalized.inputCount)}
+                  </div>
+                </div>
+              ) : (
+                <div className='mt-2'>
+                  <div data-testid='workbench-explain-model-inputs-error'>
+                    {explainResult.error || 'Workbench action failed'}
+                  </div>
+                  {(explainResult.rawStderr || explainResult.rawStdout || explainResult.stderr) && (
+                    <details className='mt-2' data-testid='workbench-explain-model-inputs-details'>
+                      <summary>Details</summary>
+                      {explainResult.stderr && (
+                        <pre className='mt-1 whitespace-pre-wrap' data-testid='workbench-explain-model-inputs-stderr'>
+                          {explainResult.stderr}
+                        </pre>
+                      )}
+                      {explainResult.rawStderr && (
+                        <pre className='mt-1 whitespace-pre-wrap' data-testid='workbench-explain-model-inputs-raw-stderr'>
+                          {explainResult.rawStderr}
+                        </pre>
+                      )}
+                      {explainResult.rawStdout && (
+                        <pre className='mt-1 whitespace-pre-wrap' data-testid='workbench-explain-model-inputs-raw-stdout'>
+                          {explainResult.rawStdout}
+                        </pre>
+                      )}
+                    </details>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
         <ErrorBoundary>
           <Suspense fallback={<TabLoader />}>
             <Outlet context={{ parcelId, propertyData }} />
