@@ -8,6 +8,8 @@
  */
 
 import { randomUUID } from 'crypto';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
 import { NextFunction, Request, Response, Router } from 'express';
 import { toolRegistry, ToolRunner, toolRunner } from '../pilot/index.js';
 import {
@@ -70,6 +72,164 @@ export interface PilotValidateResponse {
     requiresConfirmation?: boolean;
     reasonCodes?: string[];
   };
+}
+
+interface CanonPingRequest {
+  echo?: string;
+}
+
+interface CanonPingResponse {
+  tool: 'terracanon-ping';
+  version: number;
+  startedAt: string;
+  dryRun: boolean;
+  overallOk: boolean;
+  error?: string;
+  stderr?: string;
+  rawStdout?: string;
+  rawStderr?: string;
+  normalized?: unknown;
+  raw?: unknown;
+}
+
+const MAX_CANON_ECHO_LENGTH = 160;
+const CANON_PING_TIMEOUT_MS = 10_000;
+
+function resolvePnpmCommand(): string {
+  return process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+}
+
+function normalizeEcho(value: unknown): string {
+  if (typeof value !== 'string') return 'hello';
+  const trimmed = value.trim();
+  if (!trimmed) return 'hello';
+  return trimmed.slice(0, MAX_CANON_ECHO_LENGTH);
+}
+
+function parseCanonPingResponse(stdout: string, stderr: string, exitCode: number): CanonPingResponse {
+  const startedAt = new Date().toISOString();
+  const trimmed = stdout.trim();
+  if (!trimmed) {
+    return {
+      tool: 'terracanon-ping',
+      version: 1,
+      startedAt,
+      dryRun: false,
+      overallOk: false,
+      error: `canon:ping produced no JSON output (exit ${exitCode})`,
+      stderr: stderr.trim(),
+      rawStdout: stdout,
+      rawStderr: stderr,
+      normalized: null,
+      raw: null,
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed) as CanonPingResponse;
+    const withExitState =
+      exitCode === 0
+        ? parsed
+        : {
+            ...parsed,
+            overallOk: false,
+            error: parsed.error || `canon:ping exited with code ${exitCode}`,
+          };
+
+    if (stderr.trim()) {
+      return { ...withExitState, stderr: withExitState.stderr || stderr.trim() };
+    }
+
+    return withExitState;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      tool: 'terracanon-ping',
+      version: 1,
+      startedAt,
+      dryRun: false,
+      overallOk: false,
+      error: `canon:ping returned invalid JSON: ${message}`,
+      stderr: stderr.trim(),
+      rawStdout: stdout,
+      rawStderr: stderr,
+      normalized: null,
+      raw: null,
+    };
+  }
+}
+
+function runCanonPing(echo: string): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  return new Promise((resolve) => {
+    const canonEnv: Record<string, string> = {};
+    const envAllow = [
+      'PATH',
+      'SystemRoot',
+      'ComSpec',
+      'HOME',
+      'USERPROFILE',
+      'PNPM_HOME',
+      'TEMP',
+      'TMP',
+      'NODE_OPTIONS',
+    ];
+    for (const key of envAllow) {
+      const value = process.env[key];
+      if (typeof value === 'string') {
+        canonEnv[key] = value;
+      }
+    }
+    canonEnv.TF_CANON_ADAPTER = '1';
+
+    const child = spawn(resolvePnpmCommand(), ['canon:ping', '--json', '--echo', echo], {
+      cwd: path.resolve(process.cwd()),
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: canonEnv,
+    });
+
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      child.kill();
+      settled = true;
+      resolve({
+        exitCode: 1,
+        stdout,
+        stderr: `${stderr}\ncanon:ping timed out after ${CANON_PING_TIMEOUT_MS}ms`,
+      });
+    }, CANON_PING_TIMEOUT_MS);
+
+    child.stdout.on('data', (chunk: Buffer | string) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on('data', (chunk: Buffer | string) => {
+      stderr += chunk.toString();
+    });
+
+    child.on('error', (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      resolve({
+        exitCode: 1,
+        stdout: '',
+        stderr: error.message,
+      });
+    });
+
+    child.on('close', (code) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      resolve({
+        exitCode: code ?? 1,
+        stdout,
+        stderr,
+      });
+    });
+  });
 }
 
 // ============================================================================
@@ -334,6 +494,20 @@ export function createPilotRouter(runner?: ToolRunner): Router {
       traceEventCount: traceService.getEventCount(),
       timestamp: new Date().toISOString(),
     });
+  });
+
+  /**
+   * POST /pilot/canon/ping
+   *
+   * Local adapter endpoint that executes `pnpm canon:ping --json`.
+   * Returns the canon wrapper payload directly for deterministic UI rendering.
+   */
+  router.post('/canon/ping', async (req: Request, res: Response) => {
+    const body = (req.body as CanonPingRequest) || {};
+    const echo = normalizeEcho(body.echo);
+    const { exitCode, stdout, stderr } = await runCanonPing(echo);
+    const payload = parseCanonPingResponse(stdout, stderr, exitCode);
+    return res.status(200).json(payload);
   });
 
   // ═══════════════════════════════════════════════════════════════════════════

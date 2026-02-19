@@ -53,6 +53,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { runCanonPing, type CanonPingResponse } from '../api/canonPing';
 import { CanonModuleHost } from '../canon/CanonModuleHost';
 import { invokeWithPreflight, type CanonInvokeResult } from '../canon/invokeWithPreflight';
 import { BuiltinNoopModule } from '../canon/modules/BuiltinNoopModule';
@@ -354,6 +355,9 @@ function CanonContent(): React.ReactElement {
   const [renameDraft, setRenameDraft] = useState('');
   const [commandResult, setCommandResult] = useState<CanonInvokeResult | null>(null);
   const [commandRunning, setCommandRunning] = useState(false);
+  const [pingEcho, setPingEcho] = useState('hello');
+  const [pingRunning, setPingRunning] = useState(false);
+  const [pingResult, setPingResult] = useState<CanonPingResponse | null>(null);
   const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
@@ -497,6 +501,16 @@ function CanonContent(): React.ReactElement {
     }
   };
 
+  const runCanonPingCommand = async () => {
+    setPingRunning(true);
+    try {
+      const response = await runCanonPing(pingEcho);
+      setPingResult(response);
+    } finally {
+      setPingRunning(false);
+    }
+  };
+
   return (
     <div className='canon-console' data-testid='terracanon-root'>
       <div className='hidden' data-testid='terracanon-layout-version'>
@@ -520,6 +534,61 @@ function CanonContent(): React.ReactElement {
         >
           {commandRunning ? 'Running...' : 'Run Governed Command'}
         </button>
+        <div className='mt-3 flex flex-wrap items-center gap-2'>
+          <input
+            className='px-2 py-1 text-sm rounded bg-gray-800 border border-gray-600 text-gray-300'
+            data-testid='terracanon-canon-ping-echo'
+            value={pingEcho}
+            onChange={(event) => setPingEcho(event.target.value)}
+            placeholder='Echo'
+          />
+          <button
+            className='px-3 py-1 text-sm rounded bg-emerald-700 hover:bg-emerald-600 text-white disabled:opacity-50'
+            data-testid='terracanon-run-canon-ping'
+            onClick={runCanonPingCommand}
+            disabled={pingRunning}
+          >
+            {pingRunning ? 'Running Ping...' : 'Run Canon Ping'}
+          </button>
+        </div>
+        {pingResult && (
+          <div className='mt-2 text-xs text-gray-300' data-testid='terracanon-canon-ping-result'>
+            <div data-testid='terracanon-canon-ping-overall'>
+              overallOk: {String(pingResult.overallOk)}
+            </div>
+            {pingResult.overallOk && pingResult.normalized ? (
+              <>
+                <div data-testid='terracanon-canon-ping-ok'>
+                  ok: {String(pingResult.normalized.ok)}
+                </div>
+                <div data-testid='terracanon-canon-ping-ts'>ts: {pingResult.normalized.ts}</div>
+                <div data-testid='terracanon-canon-ping-echo-value'>
+                  echo: {pingResult.normalized.echo}
+                </div>
+                <div data-testid='terracanon-canon-ping-tool-id'>
+                  toolId: {pingResult.normalized.toolId}
+                </div>
+                <div data-testid='terracanon-canon-ping-input-count'>
+                  inputCount: {pingResult.normalized.inputCount}
+                </div>
+              </>
+            ) : (
+              <>
+                <div data-testid='terracanon-canon-ping-error'>
+                  {pingResult.error || 'canon ping failed'}
+                </div>
+                {(pingResult.stderr || pingResult.rawStdout || pingResult.rawStderr) && (
+                  <details className='mt-1' data-testid='terracanon-canon-ping-error-details'>
+                    <summary>Details</summary>
+                    <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
+                      {pingResult.stderr || pingResult.rawStderr || pingResult.rawStdout}
+                    </pre>
+                  </details>
+                )}
+              </>
+            )}
+          </div>
+        )}
         {commandResult && (
           <div className='mt-3 text-xs text-gray-300' data-testid='terracanon-command-result'>
             <div data-testid='terracanon-command-correlation'>{commandResult.correlationId}</div>
