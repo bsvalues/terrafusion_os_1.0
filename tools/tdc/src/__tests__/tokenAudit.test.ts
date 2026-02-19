@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { runTokenAudit } from '../ui/tokenAudit';
+import { computeScopeHash, runTokenAudit } from '../ui/tokenAudit';
 
 const tmpRoot = path.join(__dirname, '..', '..', '.tdc-test-tmp');
 
@@ -78,11 +78,7 @@ describe('tdc ui audit --tokens (tokenAudit)', () => {
   });
 
   it('emits correct contract structure', () => {
-    fs.writeFileSync(
-      path.join(tmpRoot, 'Any.tsx'),
-      `export const x = 1;`,
-      'utf8'
-    );
+    fs.writeFileSync(path.join(tmpRoot, 'Any.tsx'), `export const x = 1;`, 'utf8');
 
     const c = runTokenAudit(tmpRoot);
     expect(c.contract).toBe('ui-token-compliance.contract.json');
@@ -97,14 +93,76 @@ describe('tdc ui audit --tokens (tokenAudit)', () => {
   it('skips node_modules directories', () => {
     const nmDir = path.join(tmpRoot, 'node_modules', 'bad-pkg');
     fs.mkdirSync(nmDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(nmDir, 'index.js'),
-      `const color = "#ff0000";`,
-      'utf8'
-    );
+    fs.writeFileSync(path.join(nmDir, 'index.js'), `const color = "#ff0000";`, 'utf8');
 
     const c = runTokenAudit(tmpRoot);
     expect(c.ok).toBe(true);
     expect(c.scannedFileCount).toBe(0);
+  });
+});
+
+// ── Scoped scanning ──────────────────────────────────────────────
+
+describe('tdc ui audit --tokens (scoped scanning)', () => {
+  it('only includes specified directories', () => {
+    const gen2 = path.join(tmpRoot, 'gen2');
+    const legacy = path.join(tmpRoot, 'legacy');
+    fs.mkdirSync(gen2, { recursive: true });
+    fs.mkdirSync(legacy, { recursive: true });
+
+    fs.writeFileSync(path.join(gen2, 'A.tsx'), 'const c = "#ff0000";', 'utf8');
+    fs.writeFileSync(path.join(legacy, 'B.tsx'), 'const c = "#00ff00";', 'utf8');
+
+    const c = runTokenAudit(tmpRoot, { include: ['gen2/**'] });
+    expect(c.violationCount).toBeGreaterThan(0);
+    expect(c.violations.every(v => v.file.startsWith('gen2'))).toBe(true);
+  });
+
+  it('skips excluded directories within included scope', () => {
+    const src = path.join(tmpRoot, 'src');
+    const tests = path.join(tmpRoot, 'src', '__tests__');
+    fs.mkdirSync(tests, { recursive: true });
+
+    fs.writeFileSync(path.join(src, 'A.tsx'), 'const c = "#ff0000";', 'utf8');
+    fs.writeFileSync(path.join(tests, 'B.test.tsx'), 'const c = "#00ff00";', 'utf8');
+
+    const c = runTokenAudit(tmpRoot, {
+      include: ['src/**'],
+      exclude: ['**/__tests__/**'],
+    });
+    expect(c.violations.some(v => v.file.includes('__tests__'))).toBe(false);
+    expect(c.violations.some(v => v.file.includes('A.tsx'))).toBe(true);
+  });
+
+  it('handles non-existent include directories gracefully', () => {
+    const c = runTokenAudit(tmpRoot, { include: ['does-not-exist/**'] });
+    expect(c.ok).toBe(true);
+    expect(c.scannedFileCount).toBe(0);
+  });
+});
+
+// ── computeScopeHash ─────────────────────────────────────────────
+
+describe('computeScopeHash', () => {
+  it('is order-independent', () => {
+    const h1 = computeScopeHash({ include: ['a/**', 'b/**'] });
+    const h2 = computeScopeHash({ include: ['b/**', 'a/**'] });
+    expect(h1).toBe(h2);
+  });
+
+  it('differs when scope changes', () => {
+    const h1 = computeScopeHash({ include: ['a/**'] });
+    const h2 = computeScopeHash({ include: ['a/**', 'b/**'] });
+    expect(h1).not.toBe(h2);
+  });
+
+  it('returns a 16-char hex string', () => {
+    const h = computeScopeHash({ include: ['x/**'] });
+    expect(h).toMatch(/^[0-9a-f]{16}$/);
+  });
+
+  it('handles undefined scope', () => {
+    const h = computeScopeHash(undefined);
+    expect(h).toMatch(/^[0-9a-f]{16}$/);
   });
 });

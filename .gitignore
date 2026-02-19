@@ -63,6 +63,7 @@ ci_telemetry.json
 
 # TDC contract outputs (generated, not source)
 ui-token-compliance.contract.json
+ui-token-compliance.full.contract.json
 
 # Phase 3 Extraction Artifacts (archived)
 # Note: Actual extraction scripts archived in archive/phase-3-extraction/

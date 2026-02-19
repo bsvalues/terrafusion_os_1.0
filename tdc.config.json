@@ -1,0 +1,16 @@
+{
+  "ui": {
+    "tokens": {
+      "include": [
+        "frontend/apps/os-shell/**",
+        "packages/ui/**"
+      ],
+      "exclude": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/__tests__/**",
+        "**/__mocks__/**"
+      ]
+    }
+  }
+}

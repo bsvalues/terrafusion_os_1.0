@@ -10,6 +10,7 @@ on:
       - 'tools/tdc/src/contracts/**'
       - 'tools/tdc/src/commands/ui.ts'
       - 'configs/eslint/**'
+      - 'tdc.config.json'
       - '.github/workflows/ui-governance.yml'
   push:
     branches: [main]
@@ -21,6 +22,7 @@ on:
       - 'tools/tdc/src/contracts/**'
       - 'tools/tdc/src/commands/ui.ts'
       - 'configs/eslint/**'
+      - 'tdc.config.json'
       - '.github/workflows/ui-governance.yml'
 
 env:
@@ -31,8 +33,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ui-token-contract:
-    name: UI Token Contract (TDC)
+  ui-token-gen2:
+    name: UI Token Contract (Gen2 — blocking)
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -50,16 +52,54 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: UI Token Contract Audit
-        continue-on-error: true # Non-blocking until baseline violations are fixed
+      - name: UI Token Contract (Gen2 scope + ratchet)
         run: pnpm tdc:ui:tokens
 
       - name: Upload Contract Artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ui-token-contract
+          name: ui-token-contract-gen2
           path: ui-token-compliance.contract.json
+          if-no-files-found: warn
+
+      - name: Upload Baseline
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-token-baseline
+          path: ui-token-baseline.json
+          if-no-files-found: warn
+
+  ui-token-full:
+    name: UI Token Contract (Full — telemetry)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: UI Token Contract (Full scan — informational)
+        continue-on-error: true
+        run: pnpm tdc:ui:tokens:full
+
+      - name: Upload Full Contract Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-token-contract-full
+          path: ui-token-compliance.full.contract.json
           if-no-files-found: warn
 
   tdc-tests:

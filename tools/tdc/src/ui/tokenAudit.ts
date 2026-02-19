@@ -1,6 +1,8 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import type {
+    TokenAuditScope,
     TokenViolation,
     TokenViolationKind,
     UiTokenComplianceContract,
@@ -29,7 +31,7 @@ const SKIP_DIRS = new Set([
   'QUARANTINE',
 ]);
 
-function walkFiles(dir: string): string[] {
+function walkFiles(dir: string, extraSkips?: Set<string>): string[] {
   const results: string[] = [];
   let entries: fs.Dirent[];
   try {
@@ -39,14 +41,41 @@ function walkFiles(dir: string): string[] {
   }
   for (const entry of entries) {
     if (SKIP_DIRS.has(entry.name)) continue;
+    if (extraSkips?.has(entry.name)) continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      results.push(...walkFiles(full));
+      results.push(...walkFiles(full, extraSkips));
     } else if (entry.isFile() && SCAN_EXTENSIONS.has(path.extname(entry.name))) {
       results.push(full);
     }
   }
   return results;
+}
+
+/** Extract directory prefix from glob pattern (everything before first wildcard). */
+function extractBaseDir(pattern: string): string {
+  const idx = pattern.indexOf('*');
+  if (idx === -1) return pattern;
+  return pattern.slice(0, idx).replace(/[\\/]+$/, '');
+}
+
+/** Extract directory names from double-star exclude patterns for use in skip set. */
+function parseExcludeDirNames(patterns: string[]): Set<string> {
+  const dirs = new Set<string>();
+  for (const p of patterns) {
+    const m = p.match(/^\*\*\/([^/*]+)\/\*\*$/);
+    if (m) dirs.add(m[1]);
+  }
+  return dirs;
+}
+
+/** Deterministic hash of scope config for baseline drift detection. */
+export function computeScopeHash(scope?: TokenAuditScope): string {
+  const input = JSON.stringify({
+    include: [...(scope?.include ?? [])].sort(),
+    exclude: [...(scope?.exclude ?? [])].sort(),
+  });
+  return crypto.createHash('sha256').update(input).digest('hex').slice(0, 16);
 }
 
 function makeViolation(
@@ -63,9 +92,32 @@ function makeViolation(
   return { kind, file, line, column, excerpt };
 }
 
-export function runTokenAudit(repoRoot: string): UiTokenComplianceContract {
+export function runTokenAudit(repoRoot: string, scope?: TokenAuditScope): UiTokenComplianceContract {
   const cwd = path.resolve(repoRoot);
-  const files = walkFiles(cwd);
+
+  let files: string[];
+
+  if (scope?.include?.length) {
+    // Scoped scan: walk only specified directories
+    const extraSkips = scope.exclude?.length
+      ? parseExcludeDirNames(scope.exclude)
+      : new Set<string>();
+    const baseDirs = scope.include.map(p => extractBaseDir(p));
+    files = [];
+    for (const dir of baseDirs) {
+      const abs = path.resolve(cwd, dir);
+      try {
+        if (fs.statSync(abs).isDirectory()) {
+          files.push(...walkFiles(abs, extraSkips));
+        }
+      } catch {
+        // directory doesn't exist — skip silently
+      }
+    }
+  } else {
+    // Full scan (legacy behavior)
+    files = walkFiles(cwd);
+  }
 
   const violations: TokenViolation[] = [];
 
