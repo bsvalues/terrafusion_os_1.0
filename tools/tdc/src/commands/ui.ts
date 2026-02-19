@@ -1,8 +1,9 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import chalk from 'chalk';
 import { Command } from 'commander';
+import fs from 'node:fs';
+import path from 'node:path';
 import ora from 'ora';
+import { printTokenReport } from '../ui/printTokenReport';
 import { runTokenAudit } from '../ui/tokenAudit';
 
 const auditCommand = new Command('audit')
@@ -27,13 +28,10 @@ const auditCommand = new Command('audit')
       spinner.stop();
 
       if (!contract.ok) {
-        console.error(
-          chalk.red(
-            `\nToken audit FAILED: ${contract.violationCount} violations (contract: ${opts.out}).`
-          )
-        );
+        // Print human-friendly summary report
+        console.error(printTokenReport(outPath));
 
-        // Show first 10 violations
+        // Show first 10 individual violations
         const shown = contract.violations.slice(0, 10);
         for (const v of shown) {
           console.error(
@@ -43,7 +41,9 @@ const auditCommand = new Command('audit')
           );
         }
         if (contract.violationCount > 10) {
-          console.error(chalk.gray(`  ... and ${contract.violationCount - 10} more. See ${opts.out}`));
+          console.error(
+            chalk.gray(`  ... and ${contract.violationCount - 10} more. See ${opts.out}`)
+          );
         }
 
         process.exitCode = 1;
@@ -57,10 +57,7 @@ const auditCommand = new Command('audit')
       );
     } catch (error) {
       spinner.fail('Token audit failed');
-      console.error(
-        chalk.red('Error:'),
-        error instanceof Error ? error.message : 'Unknown error'
-      );
+      console.error(chalk.red('Error:'), error instanceof Error ? error.message : 'Unknown error');
       process.exitCode = 1;
     }
   });
