@@ -82,6 +82,24 @@ interface WorkbenchExplainModelInputsRequest {
   echo?: string;
 }
 
+interface WorkbenchCompareAssessedValueHistoryInput {
+  county?: unknown;
+  parcelId?: unknown;
+  years?: unknown;
+  includeBreakdown?: unknown;
+}
+
+interface WorkbenchCompareAssessedValueHistoryRequest {
+  input?: WorkbenchCompareAssessedValueHistoryInput;
+}
+
+const DEFAULT_COMPARE_HISTORY_INPUT = {
+  county: 'benton',
+  parcelId: 'P-300',
+  years: [2024, 2022, 2023] as number[],
+  includeBreakdown: false,
+};
+
 interface CanonCommandResponse {
   tool: string;
   version: number;
@@ -120,6 +138,78 @@ function normalizeEcho(value: unknown): string {
   const trimmed = value.trim();
   if (!trimmed) return 'hello';
   return trimmed.slice(0, MAX_CANON_ECHO_LENGTH);
+}
+
+function normalizeCompareAssessedValueHistoryInput(
+  body: WorkbenchCompareAssessedValueHistoryRequest | undefined
+): { params?: Record<string, unknown>; error?: string } {
+  const base = {
+    county: DEFAULT_COMPARE_HISTORY_INPUT.county,
+    parcelId: DEFAULT_COMPARE_HISTORY_INPUT.parcelId,
+    years: [...DEFAULT_COMPARE_HISTORY_INPUT.years],
+    includeBreakdown: DEFAULT_COMPARE_HISTORY_INPUT.includeBreakdown,
+  };
+
+  if (!body || body.input === undefined || body.input === null) {
+    return { params: base };
+  }
+
+  const input = body.input;
+  if (typeof input !== 'object' || Array.isArray(input)) {
+    return { error: 'input must be an object' };
+  }
+
+  let serialized = '';
+  try {
+    serialized = JSON.stringify(input);
+  } catch {
+    return { error: 'input must be JSON-serializable' };
+  }
+  if (serialized.length > 2_000) {
+    return { error: 'input payload too large (max 2000 chars)' };
+  }
+
+  const source = input as Record<string, unknown>;
+  const allowedKeys = new Set(['county', 'parcelId', 'years', 'includeBreakdown']);
+  for (const key of Object.keys(source)) {
+    if (!allowedKeys.has(key)) {
+      return { error: `input contains unsupported key: ${key}` };
+    }
+  }
+
+  if ('county' in source) {
+    if (typeof source.county !== 'string' || !source.county.trim()) {
+      return { error: 'input.county must be a non-empty string' };
+    }
+    base.county = source.county.trim().toLowerCase();
+  }
+
+  if ('parcelId' in source) {
+    if (typeof source.parcelId !== 'string' || !source.parcelId.trim()) {
+      return { error: 'input.parcelId must be a non-empty string' };
+    }
+    base.parcelId = source.parcelId.trim().slice(0, 128);
+  }
+
+  if ('years' in source) {
+    if (!Array.isArray(source.years) || source.years.length === 0 || source.years.length > 8) {
+      return { error: 'input.years must be an array of 1-8 years' };
+    }
+    const parsedYears = source.years.map((value) => Number(value));
+    if (parsedYears.some((year) => !Number.isInteger(year) || year < 1900 || year > 2100)) {
+      return { error: 'input.years must contain valid integer years' };
+    }
+    base.years = parsedYears;
+  }
+
+  if ('includeBreakdown' in source) {
+    if (typeof source.includeBreakdown !== 'boolean') {
+      return { error: 'input.includeBreakdown must be boolean' };
+    }
+    base.includeBreakdown = source.includeBreakdown;
+  }
+
+  return { params: base };
 }
 
 function defaultToolForCommand(commandLabel: string): string {
@@ -599,6 +689,83 @@ export function createPilotRouter(runner?: ToolRunner): Router {
     const payload = parseCanonCommandResponse('canon:ping', stdout, stderr, exitCode);
     return res.status(200).json(payload);
   });
+
+  /**
+   * POST /pilot/workbench/compare-assessed-value-history
+   *
+   * Local adapter endpoint for read-only Workbench action.
+   * Executes compare_assessed_value_history through ToolRunner with deterministic defaults.
+   */
+  router.post(
+    '/workbench/compare-assessed-value-history',
+    async (req: AuthenticatedRequest, res: Response) => {
+      const startedAt = new Date().toISOString();
+      const normalizedRequest = normalizeCompareAssessedValueHistoryInput(
+        req.body as WorkbenchCompareAssessedValueHistoryRequest
+      );
+
+      if (!normalizedRequest.params) {
+        return res.status(200).json({
+          tool: 'compare_assessed_value_history',
+          version: 1,
+          startedAt,
+          dryRun: false,
+          overallOk: false,
+          error: normalizedRequest.error || 'invalid input',
+          normalized: null,
+          raw: null,
+        });
+      }
+
+      const user = req.user ?? {
+        userId: 'anonymous',
+        roles: ['viewer'],
+        countyId: 'benton',
+      };
+
+      const context: ToolExecutionContext = {
+        countyId: user.countyId,
+        userId: user.userId,
+        roles: user.roles,
+        mode: 'muse',
+      };
+
+      const result = await effectiveRunner.execute({
+        toolId: 'compare_assessed_value_history',
+        params: normalizedRequest.params,
+        context,
+      });
+
+      if (result.ok) {
+        return res.status(200).json({
+          tool: 'compare_assessed_value_history',
+          version: 1,
+          startedAt,
+          dryRun: false,
+          overallOk: true,
+          normalized: result.result,
+          raw: {
+            correlationId: result.correlationId,
+            traceEventId: result.traceEventId,
+          },
+        });
+      }
+
+      return res.status(200).json({
+        tool: 'compare_assessed_value_history',
+        version: 1,
+        startedAt,
+        dryRun: false,
+        overallOk: false,
+        error: result.error || 'compare_assessed_value_history failed',
+        rawStderr: result.errorCode ? String(result.errorCode) : undefined,
+        raw: {
+          correlationId: result.correlationId,
+          errorCode: result.errorCode,
+        },
+      });
+    }
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // GOVERNANCE DASHBOARD ENDPOINTS (Phase 7.4)

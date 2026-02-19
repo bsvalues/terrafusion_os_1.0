@@ -26,6 +26,10 @@ import React, { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'r
 import { NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import {
+  runWorkbenchCompareAssessedValueHistory,
+  type WorkbenchCompareAssessedValueHistoryResponse,
+} from '../../api/workbenchCompareAssessedValueHistory';
+import {
   runWorkbenchExplainModelInputs,
   type WorkbenchExplainModelInputsResponse,
 } from '../../api/workbenchExplainModelInputs';
@@ -236,6 +240,9 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const [explainResult, setExplainResult] = useState<WorkbenchExplainModelInputsResponse | null>(
     null
   );
+  const [compareRunning, setCompareRunning] = useState(false);
+  const [compareResult, setCompareResult] =
+    useState<WorkbenchCompareAssessedValueHistoryResponse | null>(null);
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -271,6 +278,21 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       setExplainRunning(false);
     }
   }, [explainEcho, explainRunning]);
+
+  const handleRunCompareAssessedValueHistory = useCallback(async () => {
+    if (compareRunning) return;
+    setCompareRunning(true);
+    try {
+      const result = await runWorkbenchCompareAssessedValueHistory({
+        county: 'benton',
+        parcelId: parcelId || 'P-300',
+        years: [2024, 2022, 2023],
+      });
+      setCompareResult(result);
+    } finally {
+      setCompareRunning(false);
+    }
+  }, [compareRunning, parcelId]);
 
   /**
    * Handle tab click - emits OS action trace for user-initiated tab switches
@@ -431,6 +453,88 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
                       {explainResult.rawStdout && (
                         <pre className='mt-1 whitespace-pre-wrap' data-testid='workbench-explain-model-inputs-raw-stdout'>
                           {explainResult.rawStdout}
+                        </pre>
+                      )}
+                    </details>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        <section
+          className='mb-6 rounded-lg border border-white/10 bg-slate-900/50 p-4'
+          data-testid='workbench-compare-assessed-value-history-panel'
+        >
+          <h2 className='text-white text-base font-semibold mb-1'>Workbench Action</h2>
+          <p className='text-white/60 text-sm mb-3'>Compare Assessed Value History (read-only)</p>
+          <button
+            className='px-3 py-1.5 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white disabled:opacity-50'
+            data-testid='workbench-run-compare-assessed-value-history'
+            disabled={compareRunning}
+            onClick={handleRunCompareAssessedValueHistory}
+          >
+            {compareRunning ? 'Running...' : 'Compare Assessed Value History'}
+          </button>
+
+          {compareResult && (
+            <div
+              className='mt-3 rounded border border-white/10 bg-black/20 p-3 text-sm text-white/85'
+              data-testid='workbench-compare-assessed-value-history-result'
+            >
+              <div className='font-semibold' data-testid='workbench-compare-assessed-value-history-status'>
+                {compareResult.overallOk ? 'PASS' : 'FAIL'}
+              </div>
+              <div data-testid='workbench-compare-assessed-value-history-started'>
+                {compareResult.startedAt}
+              </div>
+
+              {compareResult.overallOk && compareResult.normalized ? (
+                <div className='mt-2 space-y-2'>
+                  <div data-testid='workbench-compare-assessed-value-history-narrative'>
+                    {compareResult.normalized.narrative}
+                  </div>
+                  <pre
+                    className='text-xs whitespace-pre-wrap rounded bg-black/30 p-2'
+                    data-testid='workbench-compare-assessed-value-history-json'
+                  >
+                    {JSON.stringify(compareResult.normalized, null, 2)}
+                  </pre>
+                </div>
+              ) : (
+                <div className='mt-2'>
+                  <div data-testid='workbench-compare-assessed-value-history-error'>
+                    {compareResult.error || 'Workbench compare action failed'}
+                  </div>
+                  {(compareResult.rawStderr || compareResult.rawStdout || compareResult.stderr) && (
+                    <details
+                      className='mt-2'
+                      data-testid='workbench-compare-assessed-value-history-details'
+                    >
+                      <summary>Details</summary>
+                      {compareResult.stderr && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-compare-assessed-value-history-stderr'
+                        >
+                          {compareResult.stderr}
+                        </pre>
+                      )}
+                      {compareResult.rawStderr && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-compare-assessed-value-history-raw-stderr'
+                        >
+                          {compareResult.rawStderr}
+                        </pre>
+                      )}
+                      {compareResult.rawStdout && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-compare-assessed-value-history-raw-stdout'
+                        >
+                          {compareResult.rawStdout}
                         </pre>
                       )}
                     </details>
