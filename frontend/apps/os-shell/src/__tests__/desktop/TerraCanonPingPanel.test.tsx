@@ -44,6 +44,12 @@ describe('TerraCanon ping panel', () => {
     );
   }
 
+  function mockTextResponse(payload: unknown): Response {
+    return {
+      text: async () => JSON.stringify(payload),
+    } as Response;
+  }
+
   it('click -> request fires and normalized result renders', async () => {
     const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue({
       text: async () =>
@@ -114,5 +120,105 @@ describe('TerraCanon ping panel', () => {
         'spawn timeout'
       );
     });
+  });
+
+  it('runs canon doctor and renders PASS status', async () => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
+      const url = String(input);
+      if (url.includes('/pilot/canon/doctor')) {
+        return mockTextResponse({
+          tool: 'terracanon-doctor',
+          version: 1,
+          startedAt: '2026-02-19T01:00:00.000Z',
+          dryRun: false,
+          overallOk: true,
+        });
+      }
+
+      return mockTextResponse({
+        tool: 'terracanon-ping',
+        version: 1,
+        startedAt: '2026-02-19T00:00:00.000Z',
+        dryRun: false,
+        overallOk: true,
+        normalized: {
+          ok: true,
+          ts: '2026-02-19T00:00:00.000Z',
+          echo: 'hello',
+          toolId: 'explain_model_inputs',
+          inputCount: 3,
+        },
+      });
+    });
+
+    await renderCanonRoute();
+    fireEvent.click(screen.getByTestId('terracanon-run-canon-doctor'));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled();
+      expect(screen.getByTestId('terracanon-canon-doctor-status')).toHaveTextContent('PASS');
+      expect(screen.getByTestId('terracanon-canon-doctor-started')).toHaveTextContent(
+        '2026-02-19T01:00:00.000Z'
+      );
+    });
+
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/pilot/canon/doctor'))).toBe(
+      true
+    );
+  });
+
+  it('runs gatefast and renders failure with details', async () => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
+      const url = String(input);
+      if (url.includes('/pilot/canon/gatefast')) {
+        return mockTextResponse({
+          tool: 'terracanon-gatefast',
+          version: 1,
+          startedAt: '2026-02-19T01:05:00.000Z',
+          dryRun: false,
+          overallOk: false,
+          error: 'gatefast failed',
+          rawStderr: 'boom',
+        });
+      }
+
+      return mockTextResponse({
+        tool: 'terracanon-ping',
+        version: 1,
+        startedAt: '2026-02-19T00:00:00.000Z',
+        dryRun: false,
+        overallOk: true,
+        normalized: {
+          ok: true,
+          ts: '2026-02-19T00:00:00.000Z',
+          echo: 'hello',
+          toolId: 'explain_model_inputs',
+          inputCount: 3,
+        },
+      });
+    });
+
+    await renderCanonRoute();
+    fireEvent.click(screen.getByTestId('terracanon-run-canon-gatefast'));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled();
+      expect(screen.getByTestId('terracanon-canon-gatefast-status')).toHaveTextContent('FAIL');
+      expect(screen.getByTestId('terracanon-canon-gatefast-error')).toHaveTextContent(
+        'gatefast failed'
+      );
+    });
+
+    const details = screen.getByTestId('terracanon-canon-gatefast-details');
+    const summary = details.querySelector('summary');
+    if (!summary) {
+      throw new Error('missing gatefast details summary');
+    }
+    fireEvent.click(summary);
+    expect(details).toHaveTextContent('boom');
+
+    expect(
+      fetchMock.mock.calls.some(([url]) => String(url).includes('/pilot/canon/gatefast'))
+    ).toBe(true);
   });
 });

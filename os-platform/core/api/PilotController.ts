@@ -78,8 +78,8 @@ interface CanonPingRequest {
   echo?: string;
 }
 
-interface CanonPingResponse {
-  tool: 'terracanon-ping';
+interface CanonCommandResponse {
+  tool: string;
   version: number;
   startedAt: string;
   dryRun: boolean;
@@ -93,7 +93,19 @@ interface CanonPingResponse {
 }
 
 const MAX_CANON_ECHO_LENGTH = 160;
-const CANON_PING_TIMEOUT_MS = 10_000;
+const CANON_COMMAND_TIMEOUT_MS = 10_000;
+
+const SAFE_CANON_ENV_KEYS = [
+  'PATH',
+  'SystemRoot',
+  'ComSpec',
+  'HOME',
+  'USERPROFILE',
+  'PNPM_HOME',
+  'TEMP',
+  'TMP',
+  'NODE_OPTIONS',
+];
 
 function resolvePnpmCommand(): string {
   return process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
@@ -106,17 +118,29 @@ function normalizeEcho(value: unknown): string {
   return trimmed.slice(0, MAX_CANON_ECHO_LENGTH);
 }
 
-function parseCanonPingResponse(stdout: string, stderr: string, exitCode: number): CanonPingResponse {
+function defaultToolForCommand(commandLabel: string): string {
+  if (commandLabel === 'canon:ping') return 'terracanon-ping';
+  if (commandLabel === 'canon:doctor') return 'terracanon-doctor';
+  if (commandLabel === 'canon:gatefast') return 'terracanon-gatefast';
+  return 'terracanon-canon-command';
+}
+
+function parseCanonCommandResponse(
+  commandLabel: string,
+  stdout: string,
+  stderr: string,
+  exitCode: number
+): CanonCommandResponse {
   const startedAt = new Date().toISOString();
   const trimmed = stdout.trim();
   if (!trimmed) {
     return {
-      tool: 'terracanon-ping',
+      tool: defaultToolForCommand(commandLabel),
       version: 1,
       startedAt,
       dryRun: false,
       overallOk: false,
-      error: `canon:ping produced no JSON output (exit ${exitCode})`,
+      error: `${commandLabel} produced no JSON output (exit ${exitCode})`,
       stderr: stderr.trim(),
       rawStdout: stdout,
       rawStderr: stderr,
@@ -126,14 +150,32 @@ function parseCanonPingResponse(stdout: string, stderr: string, exitCode: number
   }
 
   try {
-    const parsed = JSON.parse(trimmed) as CanonPingResponse;
+    const parsed = JSON.parse(trimmed) as Partial<CanonCommandResponse>;
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('payload is not an object');
+    }
+
+    const normalized: CanonCommandResponse = {
+      tool: typeof parsed.tool === 'string' ? parsed.tool : defaultToolForCommand(commandLabel),
+      version: typeof parsed.version === 'number' ? parsed.version : 1,
+      startedAt: typeof parsed.startedAt === 'string' ? parsed.startedAt : startedAt,
+      dryRun: typeof parsed.dryRun === 'boolean' ? parsed.dryRun : false,
+      overallOk: typeof parsed.overallOk === 'boolean' ? parsed.overallOk : exitCode === 0,
+      error: typeof parsed.error === 'string' ? parsed.error : undefined,
+      stderr: typeof parsed.stderr === 'string' ? parsed.stderr : undefined,
+      rawStdout: typeof parsed.rawStdout === 'string' ? parsed.rawStdout : undefined,
+      rawStderr: typeof parsed.rawStderr === 'string' ? parsed.rawStderr : undefined,
+      normalized: parsed.normalized,
+      raw: parsed.raw,
+    };
+
     const withExitState =
       exitCode === 0
-        ? parsed
+        ? normalized
         : {
-            ...parsed,
+            ...normalized,
             overallOk: false,
-            error: parsed.error || `canon:ping exited with code ${exitCode}`,
+            error: normalized.error || `${commandLabel} exited with code ${exitCode}`,
           };
 
     if (stderr.trim()) {
@@ -144,12 +186,12 @@ function parseCanonPingResponse(stdout: string, stderr: string, exitCode: number
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
-      tool: 'terracanon-ping',
+      tool: defaultToolForCommand(commandLabel),
       version: 1,
       startedAt,
       dryRun: false,
       overallOk: false,
-      error: `canon:ping returned invalid JSON: ${message}`,
+      error: `${commandLabel} returned invalid JSON: ${message}`,
       stderr: stderr.trim(),
       rawStdout: stdout,
       rawStderr: stderr,
@@ -159,21 +201,13 @@ function parseCanonPingResponse(stdout: string, stderr: string, exitCode: number
   }
 }
 
-function runCanonPing(echo: string): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+function runCanonCommand(
+  commandLabel: string,
+  commandArgs: string[]
+): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   return new Promise((resolve) => {
     const canonEnv: Record<string, string> = {};
-    const envAllow = [
-      'PATH',
-      'SystemRoot',
-      'ComSpec',
-      'HOME',
-      'USERPROFILE',
-      'PNPM_HOME',
-      'TEMP',
-      'TMP',
-      'NODE_OPTIONS',
-    ];
-    for (const key of envAllow) {
+    for (const key of SAFE_CANON_ENV_KEYS) {
       const value = process.env[key];
       if (typeof value === 'string') {
         canonEnv[key] = value;
@@ -181,7 +215,7 @@ function runCanonPing(echo: string): Promise<{ exitCode: number; stdout: string;
     }
     canonEnv.TF_CANON_ADAPTER = '1';
 
-    const child = spawn(resolvePnpmCommand(), ['canon:ping', '--json', '--echo', echo], {
+    const child = spawn(resolvePnpmCommand(), commandArgs, {
       cwd: path.resolve(process.cwd()),
       stdio: ['ignore', 'pipe', 'pipe'],
       env: canonEnv,
@@ -197,9 +231,9 @@ function runCanonPing(echo: string): Promise<{ exitCode: number; stdout: string;
       resolve({
         exitCode: 1,
         stdout,
-        stderr: `${stderr}\ncanon:ping timed out after ${CANON_PING_TIMEOUT_MS}ms`,
+        stderr: `${stderr}\n${commandLabel} timed out after ${CANON_COMMAND_TIMEOUT_MS}ms`,
       });
-    }, CANON_PING_TIMEOUT_MS);
+    }, CANON_COMMAND_TIMEOUT_MS);
 
     child.stdout.on('data', (chunk: Buffer | string) => {
       stdout += chunk.toString();
@@ -505,8 +539,41 @@ export function createPilotRouter(runner?: ToolRunner): Router {
   router.post('/canon/ping', async (req: Request, res: Response) => {
     const body = (req.body as CanonPingRequest) || {};
     const echo = normalizeEcho(body.echo);
-    const { exitCode, stdout, stderr } = await runCanonPing(echo);
-    const payload = parseCanonPingResponse(stdout, stderr, exitCode);
+    const { exitCode, stdout, stderr } = await runCanonCommand('canon:ping', [
+      'canon:ping',
+      '--json',
+      '--echo',
+      echo,
+    ]);
+    const payload = parseCanonCommandResponse('canon:ping', stdout, stderr, exitCode);
+    return res.status(200).json(payload);
+  });
+
+  /**
+   * POST /pilot/canon/doctor
+   *
+   * Local adapter endpoint that executes `pnpm canon:doctor --json`.
+   */
+  router.post('/canon/doctor', async (_req: Request, res: Response) => {
+    const { exitCode, stdout, stderr } = await runCanonCommand('canon:doctor', [
+      'canon:doctor',
+      '--json',
+    ]);
+    const payload = parseCanonCommandResponse('canon:doctor', stdout, stderr, exitCode);
+    return res.status(200).json(payload);
+  });
+
+  /**
+   * POST /pilot/canon/gatefast
+   *
+   * Local adapter endpoint that executes `pnpm canon:gatefast --json`.
+   */
+  router.post('/canon/gatefast', async (_req: Request, res: Response) => {
+    const { exitCode, stdout, stderr } = await runCanonCommand('canon:gatefast', [
+      'canon:gatefast',
+      '--json',
+    ]);
+    const payload = parseCanonCommandResponse('canon:gatefast', stdout, stderr, exitCode);
     return res.status(200).json(payload);
   });
 

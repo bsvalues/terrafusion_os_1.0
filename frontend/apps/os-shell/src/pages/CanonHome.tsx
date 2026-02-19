@@ -53,6 +53,8 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { runCanonDoctor, type CanonDoctorResponse } from '../api/canonDoctor';
+import { runCanonGateFast, type CanonGateFastResponse } from '../api/canonGateFast';
 import { runCanonPing, type CanonPingResponse } from '../api/canonPing';
 import { CanonModuleHost } from '../canon/CanonModuleHost';
 import { invokeWithPreflight, type CanonInvokeResult } from '../canon/invokeWithPreflight';
@@ -358,6 +360,10 @@ function CanonContent(): React.ReactElement {
   const [pingEcho, setPingEcho] = useState('hello');
   const [pingRunning, setPingRunning] = useState(false);
   const [pingResult, setPingResult] = useState<CanonPingResponse | null>(null);
+  const [doctorRunning, setDoctorRunning] = useState(false);
+  const [doctorResult, setDoctorResult] = useState<CanonDoctorResponse | null>(null);
+  const [gateFastRunning, setGateFastRunning] = useState(false);
+  const [gateFastResult, setGateFastResult] = useState<CanonGateFastResponse | null>(null);
   const [, forceUpdate] = useState(0);
   const lastClosedRef = useRef<Workspace | null>(loadLastClosed());
   const mountedRef = useRef(false);
@@ -511,6 +517,26 @@ function CanonContent(): React.ReactElement {
     }
   };
 
+  const runCanonDoctorCommand = async () => {
+    setDoctorRunning(true);
+    try {
+      const response = await runCanonDoctor();
+      setDoctorResult(response);
+    } finally {
+      setDoctorRunning(false);
+    }
+  };
+
+  const runCanonGateFastCommand = async () => {
+    setGateFastRunning(true);
+    try {
+      const response = await runCanonGateFast();
+      setGateFastResult(response);
+    } finally {
+      setGateFastRunning(false);
+    }
+  };
+
   return (
     <div className='canon-console' data-testid='terracanon-root'>
       <div className='hidden' data-testid='terracanon-layout-version'>
@@ -534,6 +560,92 @@ function CanonContent(): React.ReactElement {
         >
           {commandRunning ? 'Running...' : 'Run Governed Command'}
         </button>
+        <section
+          className='mt-4 rounded border border-gray-700/50 bg-gray-900/60 p-3'
+          data-testid='terracanon-safety-dashboard'
+        >
+          <h3 className='text-sm font-semibold text-gray-200'>Safety Dashboard</h3>
+          <p className='mt-1 text-xs text-gray-400'>Local checks mirrored from TerraCanon CLI.</p>
+          <div className='mt-2 flex flex-wrap items-center gap-2'>
+            <button
+              className='px-3 py-1 text-sm rounded bg-sky-700 hover:bg-sky-600 text-white disabled:opacity-50'
+              data-testid='terracanon-run-canon-doctor'
+              onClick={runCanonDoctorCommand}
+              disabled={doctorRunning}
+            >
+              {doctorRunning ? 'Running Doctor...' : 'Run Canon Doctor'}
+            </button>
+            <button
+              className='px-3 py-1 text-sm rounded bg-violet-700 hover:bg-violet-600 text-white disabled:opacity-50'
+              data-testid='terracanon-run-canon-gatefast'
+              onClick={runCanonGateFastCommand}
+              disabled={gateFastRunning}
+            >
+              {gateFastRunning ? 'Running GateFast...' : 'Run GateFast'}
+            </button>
+          </div>
+          {doctorResult && (
+            <div className='mt-2 text-xs text-gray-300' data-testid='terracanon-canon-doctor-result'>
+              <div data-testid='terracanon-canon-doctor-status'>
+                status: {doctorResult.overallOk ? 'PASS' : 'FAIL'}
+              </div>
+              <div data-testid='terracanon-canon-doctor-started'>
+                startedAt: {doctorResult.startedAt}
+              </div>
+              {!doctorResult.overallOk && (
+                <>
+                  <div data-testid='terracanon-canon-doctor-error'>
+                    {doctorResult.error || 'canon doctor failed'}
+                  </div>
+                  {(doctorResult.stderr ||
+                    doctorResult.rawStdout ||
+                    doctorResult.rawStderr) && (
+                    <details className='mt-1' data-testid='terracanon-canon-doctor-details'>
+                      <summary>Details</summary>
+                      <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
+                        {doctorResult.stderr ||
+                          doctorResult.rawStderr ||
+                          doctorResult.rawStdout}
+                      </pre>
+                    </details>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+          {gateFastResult && (
+            <div
+              className='mt-2 text-xs text-gray-300'
+              data-testid='terracanon-canon-gatefast-result'
+            >
+              <div data-testid='terracanon-canon-gatefast-status'>
+                status: {gateFastResult.overallOk ? 'PASS' : 'FAIL'}
+              </div>
+              <div data-testid='terracanon-canon-gatefast-started'>
+                startedAt: {gateFastResult.startedAt}
+              </div>
+              {!gateFastResult.overallOk && (
+                <>
+                  <div data-testid='terracanon-canon-gatefast-error'>
+                    {gateFastResult.error || 'gatefast failed'}
+                  </div>
+                  {(gateFastResult.stderr ||
+                    gateFastResult.rawStdout ||
+                    gateFastResult.rawStderr) && (
+                    <details className='mt-1' data-testid='terracanon-canon-gatefast-details'>
+                      <summary>Details</summary>
+                      <pre className='mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-400'>
+                        {gateFastResult.stderr ||
+                          gateFastResult.rawStderr ||
+                          gateFastResult.rawStdout}
+                      </pre>
+                    </details>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </section>
         <div className='mt-3 flex flex-wrap items-center gap-2'>
           <input
             className='px-2 py-1 text-sm rounded bg-gray-800 border border-gray-600 text-gray-300'
