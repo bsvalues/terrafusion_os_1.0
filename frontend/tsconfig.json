@@ -47,6 +47,9 @@
       ],
       "@terrafusion/shared": [
         "../terrafusion-shared/dist/index.js"
+      ],
+      "@terrafusion/ui": [
+        "../packages/ui/src/index"
       ]
     }
   },

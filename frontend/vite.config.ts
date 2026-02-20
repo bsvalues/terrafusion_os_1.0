@@ -66,6 +66,7 @@ export default defineConfig(({ mode }) => {
         '@utils': path.resolve(appRoot, 'src/utils'),
         '@types': path.resolve(appRoot, 'src/types'),
         '@terrafusion/shared': path.resolve(__dirname, '../terrafusion-shared/dist/index.js'),
+        '@terrafusion/ui': path.resolve(__dirname, '../packages/ui/src/index.ts'),
       },
     },
 

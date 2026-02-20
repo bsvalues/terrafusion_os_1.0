@@ -141,16 +141,16 @@
   /* ═══ LUMIN BRIDGE (consumed by @terrafusion/ui primitives) ═══
      HSL channel values — used as hsl(var(--tf-bg) / <alpha>).
      Derived from the foundation hex tokens above.                   */
-  --tf-bg: 225 44% 7%;            /* #0a0e1a  (void-black)          */
-  --tf-surface: 217 33% 17%;      /* #1e293b  (terra-slate)         */
-  --tf-surface-2: 225 29% 11%;    /* #141824  (surface-darker)      */
-  --tf-border: 180 100% 50%;      /* #00ffff  (quantum-cyan)        */
-  --tf-text: 0 0% 100%;           /* #ffffff  (text-primary)        */
-  --tf-muted: 215 20% 65%;        /* #94a3b8  (gray-400)            */
-  --tf-accent: 180 100% 50%;      /* #00ffff  (quantum-cyan)        */
-  --tf-accent-2: 210 100% 50%;    /* #0080ff  (network-blue)        */
-  --tf-r-lg: var(--radius-lg);    /* 1rem                           */
-  --tf-r-xl: var(--radius-xl);    /* 1.5rem                         */
+  --tf-bg: 225 44% 7%; /* #0a0e1a  (void-black)          */
+  --tf-surface: 217 33% 17%; /* #1e293b  (terra-slate)         */
+  --tf-surface-2: 225 29% 11%; /* #141824  (surface-darker)      */
+  --tf-border: 220 18% 24%; /* muted slate (not accent!)      */
+  --tf-text: 0 0% 100%; /* #ffffff  (text-primary)        */
+  --tf-muted: 215 20% 65%; /* #94a3b8  (gray-400)            */
+  --tf-accent: 180 100% 50%; /* #00ffff  (quantum-cyan)        */
+  --tf-accent-2: 210 100% 50%; /* #0080ff  (network-blue)        */
+  --tf-r-lg: var(--radius-lg); /* 1rem                           */
+  --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px rgba(0, 255, 255, 0.2); /* shadow-lg    */
 
   /* ═══ GLASSMORPHISM (Brand Kit Exact) ═══ */

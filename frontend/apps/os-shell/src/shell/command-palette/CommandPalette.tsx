@@ -16,6 +16,7 @@
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Panel } from '@terrafusion/ui';
 import { activateModule } from '../../orchestration/moduleActivation';
 import {
   useCommandPaletteStore,
@@ -413,7 +414,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
       />
 
       {/* Palette */}
-      <div
+      <Panel
         data-testid='command-palette'
         role='dialog'
         aria-label='Command Palette'
@@ -421,10 +422,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
         className={cn(
           'fixed top-[15%] left-1/2 -translate-x-1/2',
           'w-full max-w-xl',
-          'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
-          'border border-[var(--tf-transcend-highlight)]/30',
-          'rounded-xl overflow-hidden',
-          'shadow-[0_0_60px_rgba(0,255,238,0.2),0_25px_50px_rgba(0,0,0,0.5)]',
+          '!p-0 !rounded-xl overflow-hidden',
           'z-[10000]',
           className
         )}
@@ -513,7 +511,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
           </div>
           <span data-testid='command-palette-count'>{flatList.length} commands</span>
         </div>
-      </div>
+      </Panel>
     </>
   );
 };

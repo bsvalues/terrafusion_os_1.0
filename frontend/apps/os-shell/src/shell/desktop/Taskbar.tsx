@@ -11,6 +11,7 @@
 import { cn } from '@/lib/utils';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@terrafusion/ui';
 import { ParcelContextIndicator } from '../../components/ParcelContext';
 import { getLucideIcon } from '../../config/iconMap';
 import { useContextMenu } from '../../hooks/useContextMenu';
@@ -131,15 +132,15 @@ const SovereignDock: React.FC = () => {
   return (
     <div className='flex items-center gap-2 px-2 shrink-0'>
       {SOVEREIGN_NODES.map((node) => (
-        <button
+        <Button
           key={node}
-          type='button'
+          variant='ghost'
           onClick={() => handleNodeClick(node)}
           data-testid={`sovereign-launch-${node.toLowerCase()}`}
-          className='glass-button px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white/90'
+          className='px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white/90'
         >
           {node}
-        </button>
+        </Button>
       ))}
     </div>
   );
