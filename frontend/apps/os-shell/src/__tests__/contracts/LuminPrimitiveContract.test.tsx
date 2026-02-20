@@ -10,13 +10,15 @@
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { CSSAmbientLayer } from '../../components/compositor/layers/CSSAmbientLayer';
 import { DesktopContextMenu } from '../../shell/desktop/DesktopContextMenu';
 import { StartMenu } from '../../shell/desktop/StartMenu';
 import { Taskbar } from '../../shell/desktop/Taskbar';
 import { Window } from '../../shell/desktop/Window';
-import { CSSAmbientLayer } from '../../components/compositor/layers/CSSAmbientLayer';
+import { WindowPeek } from '../../shell/desktop/WindowPeek';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+import { useWindowPeekStore } from '../../stores/windowPeekStore';
 
 // Mock react-rnd (same as Window.test.tsx)
 jest.mock('react-rnd', () => {
@@ -241,5 +243,46 @@ describe('Lumin Primitive Contract', () => {
       .map((d) => d.getAttribute('style') ?? '')
       .join(' ');
     expect(vignetteStyles).toContain('var(--tf-bg)');
+  });
+
+  it('WindowPeek contains no raw rgba() and uses token-backed shadows', () => {
+    const mockWindow = {
+      id: 'peek-contract-1',
+      moduleId: 'costforge',
+      title: 'Peek Contract Window',
+      icon: 'FileText',
+      position: { x: 100, y: 100 },
+      size: { width: 600, height: 400 },
+      state: 'normal' as const,
+      zIndex: 1,
+      desktopId: 'default',
+    };
+
+    useDesktopStore.setState({
+      windows: [mockWindow],
+      activeWindowId: mockWindow.id,
+      currentDesktopId: 'default',
+      nextZIndex: 2,
+    });
+
+    useWindowPeekStore.setState({
+      isVisible: true,
+      targetWindowId: mockWindow.id,
+      position: { x: 200, y: 50 },
+      pendingWindowId: null,
+    });
+
+    render(<WindowPeek />);
+
+    const peek = screen.getByTestId('window-peek');
+    const cls = peek.getAttribute('class') ?? '';
+    const style = peek.getAttribute('style') ?? '';
+    const combined = cls + ' ' + style;
+
+    // No raw rgba in classes or inline styles
+    expect(combined).not.toMatch(/rgba\(/);
+    // Shadow uses token-backed hsl vars
+    expect(style).toContain('var(--tf-accent)');
+    expect(style).toContain('var(--tf-bg)');
   });
 });

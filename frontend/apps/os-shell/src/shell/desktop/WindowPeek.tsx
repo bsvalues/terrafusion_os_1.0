@@ -120,15 +120,16 @@ export const WindowPeek: React.FC<WindowPeekProps> = ({ className }) => {
         'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
         // Border
         'border border-[var(--tf-transcend-highlight)]/30',
-        // Shadow
-        'shadow-[0_0_30px_rgba(0,255,238,0.2),0_10px_40px_rgba(0,0,0,0.5)]',
         // Shape
         'rounded-lg overflow-hidden',
         // Animation
         'animate-in fade-in slide-in-from-bottom-2 duration-150',
         className
       )}
-      style={popupStyle}
+      style={{
+        ...popupStyle,
+        boxShadow: '0 0 30px hsl(var(--tf-accent) / 0.2), 0 10px 40px hsl(var(--tf-bg) / 0.6)',
+      }}
       onClick={handleClick}
       onMouseEnter={handlePeekMouseEnter}
       onMouseLeave={handlePeekMouseLeave}
