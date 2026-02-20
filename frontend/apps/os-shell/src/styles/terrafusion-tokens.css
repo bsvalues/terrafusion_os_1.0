@@ -154,6 +154,8 @@
   --tf-warning: 40 100% 50%; /* #ffaa00  (warning-amber)       */
   --tf-anim-blue: 207 100% 50%; /* animation system-blue          */
   --tf-anim-green: 120 100% 50%; /* animation pure-green           */
+  --tf-indigo: 234 85% 66%; /* #667eea  (AI assistant accent)  */
+  --tf-purple: 271 37% 46%; /* #764ba2  (AI gradient pair)     */
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px rgba(0, 255, 255, 0.2); /* shadow-lg    */

@@ -2,6 +2,13 @@
 ⚛️ TerraFusion Quantum Animation System
 PhD-Level CSS Houdini & Advanced Animation Architecture
 Reliability Through Quantum-Inspired Motion Design
+
+Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
+  hsl(0/30/60/90/144/168/192/216 100% 50% / <alpha>)
+  These are spectrum stops in keyframe color-shift animations
+  (fault-tolerance-recovery, quantum-agent-superposition, module-transcendence-load).
+  They are NOT semantic colors — they are physics hue angles.
+  Do NOT replace with --tf-* semantic tokens.
 */
 
 /* ===== QUANTUM PHYSICS-INSPIRED ANIMATIONS ===== */
