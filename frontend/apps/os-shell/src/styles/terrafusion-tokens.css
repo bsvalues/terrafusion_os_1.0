@@ -156,6 +156,14 @@
   --tf-anim-green: 120 100% 50%; /* animation pure-green           */
   --tf-indigo: 234 85% 66%; /* #667eea  (AI assistant accent)  */
   --tf-purple: 271 37% 46%; /* #764ba2  (AI gradient pair)     */
+
+  /* ─── LIGHT-THEME BRIDGE (Lane C: DataScience / TerraLevy) ─── */
+  --tf-brand-blue: 217 91% 60%;       /* blue-500  (brand primary)      */
+  --tf-brand-blue-dark: 224 76% 48%;  /* blue-700  (gradient darker)    */
+  --tf-light-border: 214 32% 91%;     /* slate-200 (light border)       */
+  --tf-light-muted: 215 16% 47%;      /* slate-500 (secondary text)     */
+  --tf-light-surface: 210 40% 98%;    /* slate-50  (light surface)      */
+
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px rgba(0, 255, 255, 0.2); /* shadow-lg    */
