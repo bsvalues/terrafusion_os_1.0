@@ -330,12 +330,12 @@ export const visualizationColors = {
   chart: [
     brandColors.transcend[500],
     brandColors.primary[500],
-    '#8B5CF6', // Purple
+    '#8B5CF6', // Purple /* chart-viz */
     stateColors.warning[500],
     stateColors.error[500],
     stateColors.success[500],
-    '#F97316', // Orange
-    '#6366F1', // Indigo
+    '#F97316', // Orange /* chart-viz */
+    '#6366F1', // Indigo /* chart-viz */
   ],
   sparkline: {
     latency: brandColors.transcend[500],
