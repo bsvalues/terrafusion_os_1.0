@@ -190,7 +190,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
         // Border & Shadow
         'border border-[var(--tf-transcend-highlight)]/20',
         'rounded-lg',
-        'shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_20px_rgba(0,255,238,0.1)]',
+        'shadow-[0_8px_32px_hsl(var(--tf-bg)/0.5),0_0_20px_hsl(var(--tf-accent)/0.1)]',
 
         // Padding
         'py-1',
@@ -243,7 +243,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
               ],
 
               // Focused state
-              isFocused && 'bg-[var(--tf-transcend-highlight)]/10 text-[var(--tf-transcend-highlight)]',
+              isFocused &&
+                'bg-[var(--tf-transcend-highlight)]/10 text-[var(--tf-transcend-highlight)]',
 
               // Disabled cursor
               item.disabled && 'cursor-not-allowed'

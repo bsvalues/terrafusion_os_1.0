@@ -37,7 +37,9 @@ const WindowCard: React.FC<WindowCardProps> = ({ windowId, title, icon, isSelect
         // Background
         isSelected ? 'bg-[var(--tf-void-black)]/95' : 'bg-[var(--tf-void-black)]/80',
         // Border
-        isSelected ? 'border-[var(--tf-transcend-highlight)] shadow-[0_0_20px_rgba(0,255,238,0.5)]' : 'border-white/20',
+        isSelected
+          ? 'border-[var(--tf-transcend-highlight)] shadow-[0_0_20px_hsl(var(--tf-accent)/0.5)]'
+          : 'border-white/20',
         // Focus
         'focus:outline-none'
       )}
@@ -103,7 +105,7 @@ export const AltTabSwitcher: React.FC = () => {
           'border border-[var(--tf-transcend-highlight)]/30',
           'rounded-xl',
           // Shadow
-          'shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_60px_rgba(0,255,238,0.2)]',
+          'shadow-[0_8px_32px_hsl(var(--tf-bg)/0.5),0_0_60px_hsl(var(--tf-accent)/0.2)]',
           // Padding
           'p-6'
         )}
