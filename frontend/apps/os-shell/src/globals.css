@@ -24,7 +24,8 @@
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
-  *::after {
+  *::after,
+  :root {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -32,6 +33,7 @@
 }
 
 /* Force reduced motion via class (dev mode default) */
+.reduce-motion-force,
 .reduce-motion-force *,
 .reduce-motion-force *::before,
 .reduce-motion-force *::after {
@@ -129,9 +131,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    /* TerraFusion Brand Kit Colors */
-    background: #0a0e1a; /* terra-midnight */
-    color: #f1f5f9; /* gray-100 for body text, NOT cyan */
+    /* TerraFusion Brand Kit Colors — Lumin tokens */
+    background: hsl(var(--tf-bg));
+    color: hsl(var(--tf-text));
     overflow: hidden; /* Prevent scrollbars, this is an OS */
   }
 
@@ -150,7 +152,7 @@
   h5,
   h6 {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-    color: #00ffff;
+    color: hsl(var(--tf-accent));
     font-weight: 300;
     letter-spacing: -0.01em;
   }
@@ -163,8 +165,8 @@
   }
 
   .dark body {
-    background: #0a0e1a;
-    color: #f1f5f9;
+    background: hsl(var(--tf-bg));
+    color: hsl(var(--tf-text));
   }
 
   /* Custom scrollbar for the immersive feel */

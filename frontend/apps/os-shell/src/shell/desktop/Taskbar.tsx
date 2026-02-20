@@ -387,14 +387,14 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           className
         )}
         style={{
-          // Immersive Glassmorphism - floats over WebGL
-          background: 'rgba(10, 14, 26, 0.7)',
+          // Immersive Glassmorphism — Lumin tokens (no raw rgba)
+          background: 'hsl(var(--tf-bg) / 0.7)',
           backdropFilter: 'saturate(200%) blur(30px)',
           WebkitBackdropFilter: 'saturate(200%) blur(30px)',
-          borderTop: '1px solid rgba(0, 229, 255, 0.25)',
+          borderTop: '1px solid hsl(var(--tf-accent) / 0.25)',
           boxShadow: `
             0 -8px 32px rgba(0, 0, 0, 0.4),
-            0 0 60px rgba(0, 229, 255, 0.08),
+            0 0 60px hsl(var(--tf-accent) / 0.08),
             inset 0 1px 0 rgba(255, 255, 255, 0.08)
           `,
         }}
