@@ -186,6 +186,7 @@
   --tf-navy-border-hs: 240 33% 30%; /* #333366 (dark border)          */
   --tf-deep-navy-hs: 233 59% 15%; /* rgba(16,21,62) (deep backdrop) */
   --tf-transcend-green-hs: 160 100% 50%; /* #00ffaa (consciousness transcendent) */
+  --tf-clarity-blue-hs: 204 100% 50%; /* #0099ff (clarity/brand blue)     */
 
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
