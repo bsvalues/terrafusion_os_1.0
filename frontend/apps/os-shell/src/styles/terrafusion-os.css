@@ -11,7 +11,7 @@
   --terra-success: var(--success-green);
   --terra-warning: var(--warning-amber);
   --terra-error: var(--error-red);
-  --terra-glow: rgba(0, 255, 255, 0.4);
+  --terra-glow: hsl(var(--tf-accent) / 0.4);
 
   /* Golden Ratio Typography Scale */
   --text-xs: 0.75rem; /* 12px */
@@ -34,15 +34,15 @@
   --space-golden: 1.618rem; /* Golden ratio spacing */
 
   /* Elite Glass Effects */
-  --glass-bg: rgba(30, 41, 59, 0.3);
-  --glass-border: rgba(0, 255, 255, 0.2);
+  --glass-bg: hsl(var(--tf-surface) / 0.3);
+  --glass-border: hsl(var(--tf-accent) / 0.2);
   --glass-blur: blur(20px);
 
   /* Advanced Shadow System */
-  --shadow-glow: 0 0 40px rgba(0, 255, 255, 0.4);
-  --shadow-quantum: 0 0 20px rgba(0, 255, 255, 0.3);
-  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
-  --shadow-elite: 0 8px 40px rgba(0, 255, 255, 0.2);
+  --shadow-glow: 0 0 40px hsl(var(--tf-accent) / 0.4);
+  --shadow-quantum: 0 0 20px hsl(var(--tf-accent) / 0.3);
+  --shadow-soft: 0 4px 20px hsl(var(--tf-bg) / 0.3);
+  --shadow-elite: 0 8px 40px hsl(var(--tf-accent) / 0.2);
 }
 
 /* ========================================
@@ -52,8 +52,13 @@
 /* Legacy Support for Quantum OS */
 .terrafusion-quantum-os {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--tf-surface-darker) 50%, #0f172a 100%);
-  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    var(--terra-midnight) 0%,
+    var(--tf-surface-darker) 50%,
+    hsl(var(--tf-surface-2)) 100%
+  );
+  color: hsl(var(--tf-text));
   font-family:
     'Inter',
     -apple-system,
@@ -77,8 +82,13 @@
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--tf-surface-darker) 50%, #0f172a 100%);
+  color: hsl(var(--tf-text));
+  background: linear-gradient(
+    135deg,
+    var(--terra-midnight) 0%,
+    var(--tf-surface-darker) 50%,
+    hsl(var(--tf-surface-2)) 100%
+  );
   position: fixed;
   top: 0;
   left: 0;
@@ -96,10 +106,10 @@
 /* Elite OS Header */
 .terrafusion-os-header {
   height: 80px;
-  background: rgba(0, 255, 255, 0.08);
+  background: hsl(var(--tf-accent) / 0.08);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+  border-bottom: 2px solid hsl(var(--tf-accent) / 0.3);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -116,8 +126,8 @@
 /* Navigation Sidebar */
 .terrafusion-os-navigation {
   width: 280px;
-  background: rgba(0, 255, 255, 0.05);
-  border-right: 2px solid rgba(0, 255, 255, 0.2);
+  background: hsl(var(--tf-accent) / 0.05);
+  border-right: 2px solid hsl(var(--tf-accent) / 0.2);
   padding: var(--space-8) var(--space-4);
   display: flex;
   flex-direction: column;
@@ -159,7 +169,7 @@
   flex: 1;
   padding: var(--space-8);
   overflow: auto;
-  background: rgba(0, 0, 0, 0.2);
+  background: hsl(var(--tf-bg) / 0.2);
   position: relative;
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -174,17 +184,17 @@
 /* Elite OS Taskbar */
 .terrafusion-os-taskbar {
   height: 60px;
-  background: rgba(0, 255, 255, 0.08);
+  background: hsl(var(--tf-accent) / 0.08);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-top: 2px solid rgba(0, 255, 255, 0.3);
+  border-top: 2px solid hsl(var(--tf-accent) / 0.3);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-8);
   position: relative;
   z-index: 100;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -4px 20px hsl(var(--tf-bg) / 0.3);
 }
 
 /* ========================================
@@ -194,9 +204,9 @@
 /* Elite Navigation Button */
 .terrafusion-nav-button {
   padding: var(--space-4);
-  background: rgba(0, 255, 255, 0.1);
+  background: hsl(var(--tf-accent) / 0.1);
   color: var(--terra-cyan);
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  border: 1px solid hsl(var(--tf-accent) / 0.3);
   border-radius: 8px;
   cursor: pointer;
   font-weight: normal;
@@ -211,7 +221,7 @@
 }
 
 .terrafusion-nav-button:hover {
-  background: rgba(0, 255, 255, 0.2);
+  background: hsl(var(--tf-accent) / 0.2);
   transform: translateY(-1px);
 }
 
@@ -233,7 +243,7 @@
 
 .terrafusion-view-toggle:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 10px 25px hsl(var(--tf-accent) / 0.3);
 }
 
 .terrafusion-view-toggle::before {
@@ -243,7 +253,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, hsl(var(--tf-text) / 0.2), transparent);
   transition: left 0.5s;
 }
 
@@ -299,48 +309,48 @@
 
 /* Opacity Variants */
 .bg-terra-cyan\/10 {
-  background-color: rgba(0, 255, 255, 0.1);
+  background-color: hsl(var(--tf-accent) / 0.1);
 }
 .bg-terra-cyan\/20 {
-  background-color: rgba(0, 255, 255, 0.2);
+  background-color: hsl(var(--tf-accent) / 0.2);
 }
 .bg-terra-cyan\/30 {
-  background-color: rgba(0, 255, 255, 0.3);
+  background-color: hsl(var(--tf-accent) / 0.3);
 }
 .bg-terra-midnight\/90 {
-  background-color: rgba(10, 14, 26, 0.9);
+  background-color: hsl(var(--tf-bg) / 0.9);
 }
 .bg-terra-midnight\/95 {
-  background-color: rgba(10, 14, 26, 0.95);
+  background-color: hsl(var(--tf-bg) / 0.95);
 }
 .bg-terra-slate\/20 {
-  background-color: rgba(30, 41, 59, 0.2);
+  background-color: hsl(var(--tf-surface) / 0.2);
 }
 .bg-terra-slate\/30 {
-  background-color: rgba(30, 41, 59, 0.3);
+  background-color: hsl(var(--tf-surface) / 0.3);
 }
 
 .text-terra-cyan\/50 {
-  color: rgba(0, 255, 255, 0.5);
+  color: hsl(var(--tf-accent) / 0.5);
 }
 .text-terra-cyan\/60 {
-  color: rgba(0, 255, 255, 0.6);
+  color: hsl(var(--tf-accent) / 0.6);
 }
 .text-terra-cyan\/70 {
-  color: rgba(0, 255, 255, 0.7);
+  color: hsl(var(--tf-accent) / 0.7);
 }
 .text-terra-cyan\/80 {
-  color: rgba(0, 255, 255, 0.8);
+  color: hsl(var(--tf-accent) / 0.8);
 }
 
 .border-terra-cyan\/10 {
-  border-color: rgba(0, 255, 255, 0.1);
+  border-color: hsl(var(--tf-accent) / 0.1);
 }
 .border-terra-cyan\/20 {
-  border-color: rgba(0, 255, 255, 0.2);
+  border-color: hsl(var(--tf-accent) / 0.2);
 }
 .border-terra-cyan\/30 {
-  border-color: rgba(0, 255, 255, 0.3);
+  border-color: hsl(var(--tf-accent) / 0.3);
 }
 
 /* ========================================
@@ -352,12 +362,12 @@
   100% {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 20px hsl(var(--tf-accent) / 0.3);
   }
   50% {
     opacity: 0.8;
     transform: scale(1.02);
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 40px hsl(var(--tf-accent) / 0.6);
   }
 }
 
@@ -403,10 +413,10 @@
 @keyframes terra-pulse {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 20px hsl(var(--tf-accent) / 0.3);
   }
   50% {
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 40px hsl(var(--tf-accent) / 0.6);
   }
 }
 
@@ -467,7 +477,7 @@
 }
 
 .terra-glass:hover {
-  border-color: rgba(0, 255, 255, 0.4);
+  border-color: hsl(var(--tf-accent) / 0.4);
   box-shadow: var(--shadow-quantum);
 }
 
@@ -481,7 +491,7 @@
 
 /* Quantum Typography */
 .terra-heading {
-  background: linear-gradient(135deg, var(--terra-cyan), #ffffff);
+  background: linear-gradient(135deg, var(--terra-cyan), hsl(var(--tf-text)));
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -496,12 +506,12 @@
 }
 
 .terra-body {
-  color: rgba(255, 255, 255, 0.8);
+  color: hsl(var(--tf-text) / 0.8);
   line-height: 1.6;
 }
 
 .terra-caption {
-  color: rgba(0, 255, 170, 0.7);
+  color: hsl(var(--tf-success) / 0.7);
   font-size: var(--text-sm);
   font-weight: 500;
 }
@@ -540,21 +550,21 @@
 }
 
 .status-indicator.active {
-  background: rgba(0, 255, 136, 0.2);
+  background: hsl(var(--tf-success) / 0.2);
   color: var(--terra-success);
-  border: 1px solid rgba(0, 255, 136, 0.3);
+  border: 1px solid hsl(var(--tf-success) / 0.3);
 }
 
 .status-indicator.warning {
-  background: rgba(255, 170, 0, 0.2);
+  background: hsl(var(--tf-warning) / 0.2);
   color: var(--terra-warning);
-  border: 1px solid rgba(255, 170, 0, 0.3);
+  border: 1px solid hsl(var(--tf-warning) / 0.3);
 }
 
 .status-indicator.error {
-  background: rgba(255, 68, 68, 0.2);
+  background: hsl(var(--tf-error) / 0.2);
   color: var(--terra-error);
-  border: 1px solid rgba(255, 68, 68, 0.3);
+  border: 1px solid hsl(var(--tf-error) / 0.3);
 }
 
 /* ========================================
@@ -578,7 +588,7 @@
 
 .quantum-grid-item:hover {
   transform: translateY(-4px);
-  border-color: rgba(0, 255, 255, 0.4);
+  border-color: hsl(var(--tf-accent) / 0.4);
   box-shadow: var(--shadow-quantum);
 }
 
@@ -701,6 +711,8 @@
 
 /* ========================================
    HIGH CONTRAST THEME (WCAG 2.1 AA)
+   TDC-INTENTIONAL-INLINE: absolute black/white hex below are
+   WCAG accessibility overrides — must NOT be tokenized to themed vars.
    ======================================== */
 
 .high-contrast {
