@@ -9,6 +9,7 @@ on:
       - 'tools/tdc/src/ui/**'
       - 'tools/tdc/src/contracts/**'
       - 'tools/tdc/src/commands/ui.ts'
+      - 'tools/registry/ratchet_guard.mjs'
       - 'configs/eslint/**'
       - 'tdc.config.json'
       - 'ui-token-baseline.json'
@@ -22,6 +23,7 @@ on:
       - 'tools/tdc/src/ui/**'
       - 'tools/tdc/src/contracts/**'
       - 'tools/tdc/src/commands/ui.ts'
+      - 'tools/registry/ratchet_guard.mjs'
       - 'configs/eslint/**'
       - 'tdc.config.json'
       - 'ui-token-baseline.json'
@@ -58,6 +60,12 @@ jobs:
 
       - name: UI Token Contract (Gen2 scope + ratchet)
         run: pnpm tdc:ui:tokens
+
+      - name: Strict ratchet guard (Gen2 scope)
+        if: github.event_name == 'pull_request'
+        run: node tools/registry/ratchet_guard.mjs --minDelta 1 --baseRef "origin/${{ github.base_ref }}"
+        env:
+          DEBUG_RATCHET_GUARD: '0'
 
       - name: Guard baseline tampering
         if: github.event_name == 'pull_request'
