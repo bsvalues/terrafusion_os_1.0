@@ -181,6 +181,11 @@
   --tf-light-muted: 215 16% 47%; /* slate-500 (secondary text)     */
   --tf-light-surface: 210 40% 98%; /* slate-50  (light surface)      */
 
+  /* ─── DARK-THEME BRIDGE (Lane D: Workflow Designer) ─── */
+  --tf-sky-blue-hs: 200 100% 50%; /* #00aaff (sky-blue accent)      */
+  --tf-navy-border-hs: 240 33% 30%; /* #333366 (dark border)          */
+  --tf-deep-navy-hs: 233 59% 15%; /* rgba(16,21,62) (deep backdrop) */
+
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px hsl(var(--tf-accent) / 0.2); /* shadow-lg    */

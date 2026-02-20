@@ -51,6 +51,10 @@ const REQUIRED_BRIDGE_TOKENS = [
   '--tf-slate-600',
   '--tf-slate-700',
   '--tf-slate-950',
+  // Dark-theme bridge (Phase 18)
+  '--tf-sky-blue-hs',
+  '--tf-navy-border-hs',
+  '--tf-deep-navy-hs',
 ];
 
 function stripComments(input: string): string {
