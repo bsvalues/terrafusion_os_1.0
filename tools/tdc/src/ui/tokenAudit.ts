@@ -12,7 +12,10 @@ import type {
 const HEX_RE = /#[0-9a-fA-F]{3,8}\b/g;
 const TW_ARBITRARY_RE =
   /\b(?:bg|text|border|ring|from|via|to)-\[(?:#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)).*?\]/g;
-const COLOR_FN_RE = /\b(?:rgba?|hsla?)\([^)]*\)/g;
+// (?<![0-9A-Za-z]) treats _ as a separator so Tailwind arbitrary values
+// like shadow-[0_0_0_rgba(...)] are detected. \b would miss them because
+// _ is a word character.
+export const COLOR_FN_RE = /(?<![0-9A-Za-z])(?:rgba?|hsla?)\([^)]*\)/g;
 
 // ── Allowlist: TF token patterns ─────────────────────────────────
 const ALLOW_TOKEN_RE = /(?:hsl|hsla)\(\s*var\(--tf-[a-z0-9-]+\)|var\(--tf-[a-z0-9-]+\)/;
@@ -92,7 +95,10 @@ function makeViolation(
   return { kind, file, line, column, excerpt };
 }
 
-export function runTokenAudit(repoRoot: string, scope?: TokenAuditScope): UiTokenComplianceContract {
+export function runTokenAudit(
+  repoRoot: string,
+  scope?: TokenAuditScope
+): UiTokenComplianceContract {
   const cwd = path.resolve(repoRoot);
 
   let files: string[];

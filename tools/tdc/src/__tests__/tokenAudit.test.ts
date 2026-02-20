@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { computeScopeHash, runTokenAudit } from '../ui/tokenAudit';
+import { COLOR_FN_RE, computeScopeHash, runTokenAudit } from '../ui/tokenAudit';
 
 const tmpRoot = path.join(__dirname, '..', '..', '.tdc-test-tmp');
 
@@ -99,6 +99,18 @@ describe('tdc ui audit --tokens (tokenAudit)', () => {
     expect(c.ok).toBe(true);
     expect(c.scannedFileCount).toBe(0);
   });
+
+  it('flags rgba() inside Tailwind underscore-separated shadow values', () => {
+    fs.writeFileSync(
+      path.join(tmpRoot, 'Shadow.tsx'),
+      `export function X(){ return <div className="shadow-[0_0_0_rgba(0,0,0,0.5)]">hi</div>; }`,
+      'utf8'
+    );
+
+    const c = runTokenAudit(tmpRoot);
+    expect(c.ok).toBe(false);
+    expect(c.violations.some(v => v.kind === 'DISALLOWED_COLOR_FUNCTION')).toBe(true);
+  });
 });
 
 // ── Scoped scanning ──────────────────────────────────────────────
@@ -164,5 +176,54 @@ describe('computeScopeHash', () => {
   it('handles undefined scope', () => {
     const h = computeScopeHash(undefined);
     expect(h).toMatch(/^[0-9a-f]{16}$/);
+  });
+});
+
+// ── COLOR_FN_RE boundary (underscore-safe) ───────────────────────
+
+function allMatches(input: string): string[] {
+  COLOR_FN_RE.lastIndex = 0;
+  return [...input.matchAll(COLOR_FN_RE)].map(m => m[0]);
+}
+
+describe('COLOR_FN_RE boundary', () => {
+  it('matches rgba() preceded by underscore (Tailwind shadow arbitrary)', () => {
+    const hits = allMatches('shadow-[0_0_0_rgba(0,0,0,0.5)]');
+    expect(hits.some(h => h.startsWith('rgba('))).toBe(true);
+  });
+
+  it('matches rgba() inside brackets without whitespace', () => {
+    const hits = allMatches('bg-[rgba(0,0,0,0.4)]');
+    expect(hits.some(h => h.startsWith('rgba('))).toBe(true);
+  });
+
+  it('matches hsla() preceded by underscore', () => {
+    const hits = allMatches('shadow-[0_0_0_hsla(210,50%,50%,0.25)]');
+    expect(hits.some(h => h.startsWith('hsla('))).toBe(true);
+  });
+
+  it('does NOT match color functions embedded in identifiers', () => {
+    const hits = allMatches('myrgba(0,0,0,0.5)');
+    expect(hits).toHaveLength(0);
+  });
+
+  it('matches at start-of-string', () => {
+    const hits = allMatches('rgba(0,0,0,0.5)');
+    expect(hits[0]).toContain('rgba(');
+  });
+
+  it('matches after dash and bracket', () => {
+    const hits = allMatches('x-[--tw-shadow:0_0_0_rgba(0,0,0,0.5)]');
+    expect(hits.some(h => h.startsWith('rgba('))).toBe(true);
+  });
+
+  it('matches hsl() preceded by underscore', () => {
+    const hits = allMatches('shadow-[0_0_8px_hsl(0,0%,0%)]');
+    expect(hits.some(h => h.startsWith('hsl('))).toBe(true);
+  });
+
+  it('does NOT match identifiers ending with color fn name', () => {
+    const hits = allMatches('const myhsl = foo; myhsl(1,2,3)');
+    expect(hits).toHaveLength(0);
   });
 });
