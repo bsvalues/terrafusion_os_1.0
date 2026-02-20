@@ -7,12 +7,14 @@
  * @module __tests__/contracts/LuminPrimitiveContract
  */
 
-import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { useStartMenuStore } from '../../stores/startMenuStore';
-import { useDesktopStore } from '../../stores/desktopStore';
-import { StartMenu } from '../../shell/desktop/StartMenu';
+import { cleanup, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { DesktopContextMenu } from '../../shell/desktop/DesktopContextMenu';
+import { StartMenu } from '../../shell/desktop/StartMenu';
+import { Taskbar } from '../../shell/desktop/Taskbar';
+import { useDesktopStore } from '../../stores/desktopStore';
+import { useStartMenuStore } from '../../stores/startMenuStore';
 
 afterEach(cleanup);
 
@@ -48,18 +50,49 @@ describe('Lumin Primitive Contract', () => {
   });
 
   it('DesktopContextMenu renders with Lumin Panel material', () => {
-    render(
-      <DesktopContextMenu
-        isOpen={true}
-        position={{ x: 100, y: 200 }}
-        onClose={jest.fn()}
-      />
-    );
+    render(<DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />);
 
     const menu = screen.getByRole('menu', { name: /desktop context menu/i });
     expect(menu).toBeInTheDocument();
     // Panel material classes present
     expect(menu.className).toContain('border-[hsl(var(--tf-border');
     expect(menu.className).toContain('bg-[hsl(var(--tf-surface');
+  });
+
+  it('Taskbar nav uses token-backed background/border (no raw rgba)', () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Taskbar />
+      </MemoryRouter>
+    );
+
+    const nav = screen.getByRole('navigation');
+    expect(nav).toBeInTheDocument();
+    const style = nav.getAttribute('style') ?? '';
+    // Background uses hsl(var(--tf-bg)) token
+    expect(style).toContain('hsl(var(--tf-bg)');
+    // Border uses hsl(var(--tf-border)) token (not accent)
+    expect(style).toContain('hsl(var(--tf-border)');
+    // No raw rgba in inline style
+    expect(style).not.toMatch(/rgba\(/);
+  });
+
+  it('SovereignDock buttons use <Button> (no .glass-button class)', () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Taskbar />
+      </MemoryRouter>
+    );
+
+    const dockButtons = ['files', 'identity', 'finance'].map((name) =>
+      screen.getByTestId(`sovereign-launch-${name}`)
+    );
+
+    for (const btn of dockButtons) {
+      // Must NOT have the old bespoke class
+      expect(btn.className).not.toContain('glass-button');
+      // Must have Lumin Button token-backed border
+      expect(btn.className).toContain('border-[hsl(var(--tf-border');
+    }
   });
 });
