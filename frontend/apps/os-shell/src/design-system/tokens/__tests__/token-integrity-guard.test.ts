@@ -55,6 +55,8 @@ const REQUIRED_BRIDGE_TOKENS = [
   '--tf-sky-blue-hs',
   '--tf-navy-border-hs',
   '--tf-deep-navy-hs',
+  // Consciousness bridge (Phase 19)
+  '--tf-transcend-green-hs',
 ];
 
 function stripComments(input: string): string {
