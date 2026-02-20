@@ -6,10 +6,11 @@ export const CSSAmbientLayer: React.FC<{ visible?: boolean }> = ({ visible = tru
 
   return (
     <div
-      className={`absolute inset-0 w-full h-full overflow-hidden pointer-events-none bg-[#0a0a0c] ${opacity} transition-opacity duration-1000`}
+      data-testid='tf-ambient-layer'
+      className={`absolute inset-0 w-full h-full overflow-hidden pointer-events-none bg-[var(--tf-void-black)] ${opacity} transition-opacity duration-1000`}
     >
       {/* 1. Deep Base - The "Night Sky" */}
-      <div className='absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617]' />
+      <div className='absolute inset-0 bg-gradient-to-br from-[var(--tf-surface-dark)] via-[hsl(var(--tf-surface))] to-[var(--gray-950)]' />
 
       {/* 2. The Mesh Orbs - CSS Blurs (Hardware Accelerated) */}
       {/* Top Left - Indigo (no animation - pulse was causing screen jank) */}
@@ -30,7 +31,10 @@ export const CSSAmbientLayer: React.FC<{ visible?: boolean }> = ({ visible = tru
       />
 
       {/* 4. Vignette - Focuses attention to the center */}
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none' />
+      <div
+        className='absolute inset-0 pointer-events-none'
+        style={{ background: 'radial-gradient(circle at center, transparent 0%, hsl(var(--tf-bg) / 0.4) 100%)' }}
+      />
     </div>
   );
 };

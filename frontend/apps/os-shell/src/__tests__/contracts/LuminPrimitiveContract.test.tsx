@@ -14,6 +14,7 @@ import { DesktopContextMenu } from '../../shell/desktop/DesktopContextMenu';
 import { StartMenu } from '../../shell/desktop/StartMenu';
 import { Taskbar } from '../../shell/desktop/Taskbar';
 import { Window } from '../../shell/desktop/Window';
+import { CSSAmbientLayer } from '../../components/compositor/layers/CSSAmbientLayer';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 
@@ -198,5 +199,47 @@ describe('Lumin Primitive Contract', () => {
     expect(inactiveChrome).toHaveStyle({
       border: '1px solid hsl(var(--tf-border) / 0.5)',
     });
+  });
+
+  it('Workspace background contains no raw hex or rgba in classes/styles', () => {
+    render(<CSSAmbientLayer visible />);
+
+    const layer = screen.getByTestId('tf-ambient-layer');
+    // Check root and all descendant elements
+    const allEls = [layer, ...Array.from(layer.querySelectorAll('*'))];
+
+    for (const el of allEls) {
+      const cls = el.getAttribute('class') ?? '';
+      const style = el.getAttribute('style') ?? '';
+      const combined = cls + ' ' + style;
+      // No raw hex color literals (#xxx or #xxxxxx) in Tailwind classes
+      expect(combined).not.toMatch(/#[0-9a-fA-F]{3,8}(?![^"]*noiseFilter)/);
+      // No raw rgba() in classes or inline styles
+      expect(combined).not.toMatch(/rgba\(/);
+    }
+  });
+
+  it('Workspace background uses token-backed var() references', () => {
+    render(<CSSAmbientLayer visible />);
+
+    const layer = screen.getByTestId('tf-ambient-layer');
+    const cls = layer.getAttribute('class') ?? '';
+    // Root uses token var for background
+    expect(cls).toContain('var(--tf-void-black)');
+
+    // Gradient child uses token vars
+    const gradientDiv = layer.querySelector('[class*="bg-gradient"]');
+    expect(gradientDiv).not.toBeNull();
+    const gradientCls = gradientDiv!.getAttribute('class') ?? '';
+    expect(gradientCls).toContain('var(--tf-surface-dark)');
+    expect(gradientCls).toContain('var(--tf-surface)');
+    expect(gradientCls).toContain('var(--gray-950)');
+
+    // Vignette uses token var in inline style
+    const allDivs = layer.querySelectorAll('div');
+    const vignetteStyles = Array.from(allDivs)
+      .map((d) => d.getAttribute('style') ?? '')
+      .join(' ');
+    expect(vignetteStyles).toContain('var(--tf-bg)');
   });
 });
