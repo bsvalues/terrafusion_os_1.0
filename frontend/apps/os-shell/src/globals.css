@@ -90,7 +90,7 @@
     --accent-foreground: 180 100% 50%; /* Terra-Cyan */
     --destructive: var(--error-red);
     --destructive-foreground: var(--terra-cyan);
-    --border: rgba(0, 255, 255, 0.2);
+    --border: var(--tf-accent) / 0.2;
     --input: var(--terra-slate);
     --ring: var(--terra-cyan);
   }
@@ -98,7 +98,7 @@
 
 @layer base {
   * {
-    border-color: hsl(var(--border));
+    border-color: hsl(var(--tf-accent) / 0.2);
   }
 
   /* Smooth transitions everywhere */
@@ -176,22 +176,22 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
+    background: hsl(var(--tf-black) / 0.2);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(0, 229, 255, 0.3);
+    background: hsl(var(--tf-accent) / 0.3);
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 229, 255, 0.5);
+    background: hsl(var(--tf-accent) / 0.5);
   }
 
   /* Selection color */
   ::selection {
-    background: rgba(0, 229, 255, 0.3);
-    color: #ffffff;
+    background: hsl(var(--tf-accent) / 0.3);
+    color: hsl(var(--tf-text));
   }
 
   /* Elite Progress Bar Dynamic Width */
@@ -294,11 +294,11 @@
   0%,
   100% {
     opacity: 0.6;
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+    box-shadow: 0 0 20px hsl(var(--tf-accent) / 0.3);
   }
   50% {
     opacity: 1;
-    box-shadow: 0 0 40px rgba(0, 229, 255, 0.6);
+    box-shadow: 0 0 40px hsl(var(--tf-accent) / 0.6);
   }
 }
 
@@ -320,25 +320,25 @@
 
 /* Taskbar/Dock Material */
 .glass-dock {
-  background: rgba(0, 0, 0, 0.4);
+  background: hsl(var(--tf-black) / 0.4);
   backdrop-filter: blur(40px) saturate(200%);
   -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid hsl(var(--tf-text) / 0.05);
 }
 
 /* Desktop Icon hover glass */
 .glass-icon-hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: hsl(var(--tf-text) / 0.08);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid hsl(var(--tf-text) / 0.1);
 }
 
 /* Desktop Icon selected glass */
 .glass-icon-selected {
-  background: rgba(0, 229, 255, 0.15);
+  background: hsl(var(--tf-accent) / 0.15);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+  border: 1px solid hsl(var(--tf-accent) / 0.3);
+  box-shadow: 0 0 20px hsl(var(--tf-accent) / 0.2);
 }
 
 /* Slow pulse animation for ambient orbs */
@@ -363,10 +363,10 @@
    ═══════════════════════════════════════════════════════════════ */
 .tf-ambient-root {
   background:
-    radial-gradient(circle at 20% 20%, rgba(0, 128, 255, 0.08), transparent 40%),
-    radial-gradient(circle at 80% 30%, rgba(0, 229, 255, 0.06), transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(0, 255, 136, 0.05), transparent 50%),
-    linear-gradient(180deg, rgba(10, 14, 26, 0.9), rgba(10, 14, 26, 1));
+    radial-gradient(circle at 20% 20%, hsl(var(--tf-accent-2) / 0.08), transparent 40%),
+    radial-gradient(circle at 80% 30%, hsl(var(--tf-accent) / 0.06), transparent 45%),
+    radial-gradient(circle at 50% 80%, hsl(var(--tf-success) / 0.05), transparent 50%),
+    linear-gradient(180deg, hsl(var(--tf-bg) / 0.9), hsl(var(--tf-bg)));
 }
 
 .tf-css-ambient {
@@ -383,9 +383,9 @@
 
 .tf-ambient-mesh {
   background:
-    radial-gradient(circle at 25% 15%, rgba(0, 229, 255, 0.08), transparent 40%),
-    radial-gradient(circle at 70% 35%, rgba(0, 128, 255, 0.06), transparent 45%),
-    radial-gradient(circle at 40% 85%, rgba(0, 255, 136, 0.05), transparent 50%);
+    radial-gradient(circle at 25% 15%, hsl(var(--tf-accent) / 0.08), transparent 40%),
+    radial-gradient(circle at 70% 35%, hsl(var(--tf-accent-2) / 0.06), transparent 45%),
+    radial-gradient(circle at 40% 85%, hsl(var(--tf-success) / 0.05), transparent 50%);
   filter: blur(8px);
   opacity: 0.9;
 }
@@ -394,15 +394,15 @@
   background-image:
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.02) 0px,
-      rgba(255, 255, 255, 0.02) 1px,
+      hsl(var(--tf-text) / 0.02) 0px,
+      hsl(var(--tf-text) / 0.02) 1px,
       transparent 1px,
       transparent 2px
     ),
     repeating-linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.015) 0px,
-      rgba(255, 255, 255, 0.015) 1px,
+      hsl(var(--tf-text) / 0.015) 0px,
+      hsl(var(--tf-text) / 0.015) 1px,
       transparent 1px,
       transparent 2px
     );
@@ -411,7 +411,7 @@
 }
 
 .tf-ambient-vignette {
-  background: radial-gradient(circle at center, transparent 55%, rgba(0, 0, 0, 0.6) 100%);
+  background: radial-gradient(circle at center, transparent 55%, hsl(var(--tf-black) / 0.6) 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -426,7 +426,8 @@
 
   /* The Active Window State (Glow + Brightness) */
   .glass-panel-active {
-    @apply border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] ring-white/10 bg-slate-800/70;
+    @apply border-white/20 ring-white/10 bg-slate-800/70;
+    box-shadow: 0 0 50px hsl(var(--tf-black) / 0.5);
   }
 
   /* Interactive Elements */
