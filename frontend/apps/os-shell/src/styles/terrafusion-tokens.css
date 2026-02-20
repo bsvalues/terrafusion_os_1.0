@@ -152,6 +152,7 @@
   --tf-success: 152 100% 50%; /* #00ff88  (accent-success)      */
   --tf-error: 0 100% 63%; /* #ff4444  (error-red)            */
   --tf-warning: 40 100% 50%; /* #ffaa00  (warning-amber)       */
+  --tf-info: 264 100% 63%; /* #8844ff  (info-purple)          */
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px rgba(0, 255, 255, 0.2); /* shadow-lg    */
