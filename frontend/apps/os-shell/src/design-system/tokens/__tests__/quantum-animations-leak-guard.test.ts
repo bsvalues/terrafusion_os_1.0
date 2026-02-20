@@ -8,7 +8,12 @@ import { resolve } from 'path';
 
 const CSS_PATH = resolve(__dirname, '../../../styles/terrafusion-quantum-animations.css');
 
-const css = readFileSync(CSS_PATH, 'utf8');
+function stripCssComments(input: string): string {
+  return input.replace(/\/\*[\s\S]*?\*\//g, '');
+}
+
+const raw = readFileSync(CSS_PATH, 'utf8');
+const css = stripCssComments(raw);
 
 const COLOR_FN_RE = /(?<![0-9A-Za-z])(?:rgba?|hsla?)\([^)]*\)/g;
 const ALLOW_TOKEN_RE = /(?:hsl|hsla)\(\s*var\(--tf-[a-z0-9-]+\)|var\(--tf-[a-z0-9-]+\)/;
