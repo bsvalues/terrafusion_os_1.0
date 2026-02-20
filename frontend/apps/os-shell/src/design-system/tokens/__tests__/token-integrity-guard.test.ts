@@ -10,20 +10,11 @@ import { resolve } from 'node:path';
  *  3. Required LUMIN BRIDGE tokens exist (prevents accidental deletion/rename)
  */
 
-const TOKEN_PATH = resolve(
-  __dirname,
-  '../../../styles/terrafusion-tokens.css',
-);
+const TOKEN_PATH = resolve(__dirname, '../../../styles/terrafusion-tokens.css');
 
 /** Irreducible hex definitions: tokens that ARE the source values (no bridge equivalent) */
-const ALLOWED_HEX = new Set([
-  '#00ffee', // --tf-transcend-highlight
-  '#00cccc', // --tf-accent-cyan
-  '#cbd5e1', // --tf-text-secondary
-  '#f1f5f9', // --gray-100
-  '#475569', // --gray-600
-  '#334155', // --gray-700
-  '#020617', // --gray-950
+const ALLOWED_HEX = new Set<string>([
+  // Phase 14: LUMIN BRIDGE complete — zero irreducible hex remain
 ]);
 
 /** LUMIN BRIDGE tokens that must always exist */
@@ -52,6 +43,14 @@ const REQUIRED_BRIDGE_TOKENS = [
   '--tf-light-border',
   '--tf-light-muted',
   '--tf-light-surface',
+  // Bridge completion (Phase 14)
+  '--tf-transcend',
+  '--tf-dark-cyan',
+  '--tf-slate-300',
+  '--tf-slate-100',
+  '--tf-slate-600',
+  '--tf-slate-700',
+  '--tf-slate-950',
 ];
 
 function stripComments(input: string): string {
@@ -76,16 +75,14 @@ describe('Token integrity guard — terrafusion-tokens.css', () => {
 
   it('contains no unexpected raw hex colors beyond allowed definitions', () => {
     const hexHits = findAll(/#[0-9a-fA-F]{3,8}\b/g, css).filter(
-      (h) => !ALLOWED_HEX.has(h.toLowerCase()),
+      (h) => !ALLOWED_HEX.has(h.toLowerCase())
     );
 
     expect(hexHits).toEqual([]);
   });
 
   it('all required LUMIN BRIDGE tokens exist', () => {
-    const missing = REQUIRED_BRIDGE_TOKENS.filter(
-      (token) => !raw.includes(token + ':'),
-    );
+    const missing = REQUIRED_BRIDGE_TOKENS.filter((token) => !raw.includes(token + ':'));
 
     expect(missing).toEqual([]);
   });

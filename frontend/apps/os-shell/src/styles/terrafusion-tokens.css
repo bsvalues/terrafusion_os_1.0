@@ -8,9 +8,9 @@
   --tf-quantum-cyan: hsl(var(--tf-accent)); /* Terra-Cyan - The Consciousness Color */
   --tf-void-black: hsl(var(--tf-bg)); /* Terra-Midnight - The Void */
   --tf-network-blue: hsl(var(--tf-accent-2)); /* Terra-Blue - The Network (brand exact) */
-  --tf-transcend-highlight: #00ffee; /* Transcendence Accent */
+  --tf-transcend-highlight: hsl(var(--tf-transcend)); /* Transcendence Accent */
   --tf-accent-success: hsl(var(--tf-success)); /* Success Green */
-  --tf-accent-cyan: #00cccc; /* Darker Cyan */
+  --tf-accent-cyan: hsl(var(--tf-dark-cyan)); /* Darker Cyan */
   --tf-error-red: hsl(var(--tf-error)); /* Error Red */
   --tf-warning-amber: hsl(var(--tf-warning)); /* Warning Amber */
   --tf-info-purple: hsl(var(--tf-info)); /* Info Purple */
@@ -19,7 +19,7 @@
   --tf-bg-void: hsl(var(--tf-black)); /* Pure Void */
   --tf-bg-surface: hsl(var(--tf-surface)); /* Surface Background */
   --tf-text-primary: hsl(var(--tf-text)); /* Primary Text */
-  --tf-text-secondary: #cbd5e1; /* Secondary Text (gray-300) */
+  --tf-text-secondary: hsl(var(--tf-slate-300)); /* Secondary Text (gray-300) */
 
   /* ═══ PRIMARY COLORS ═══ */
   --terra-cyan: var(--tf-quantum-cyan); /* Primary - The Consciousness */
@@ -40,7 +40,12 @@
     var(--tf-network-blue) 100%
   );
   --gradient-dark: linear-gradient(135deg, var(--tf-void-black) 0%, var(--tf-bg-surface) 100%);
-  --gradient-aurora: linear-gradient(90deg, var(--tf-quantum-cyan), var(--tf-accent-success), var(--tf-info-purple));
+  --gradient-aurora: linear-gradient(
+    90deg,
+    var(--tf-quantum-cyan),
+    var(--tf-accent-success),
+    var(--tf-info-purple)
+  );
   --gradient-quantum: linear-gradient(
     45deg,
     var(--tf-quantum-cyan) 0%,
@@ -52,16 +57,16 @@
 
   /* ═══ NEUTRALS ═══ */
   --gray-50: hsl(var(--tf-light-surface));
-  --gray-100: #f1f5f9;
+  --gray-100: hsl(var(--tf-slate-100));
   --gray-200: hsl(var(--tf-light-border));
   --gray-300: var(--tf-text-secondary);
   --gray-400: hsl(var(--tf-muted));
   --gray-500: hsl(var(--tf-light-muted));
-  --gray-600: #475569;
-  --gray-700: #334155;
+  --gray-600: hsl(var(--tf-slate-600));
+  --gray-700: hsl(var(--tf-slate-700));
   --gray-800: hsl(var(--tf-surface));
   --gray-900: hsl(var(--tf-dark));
-  --gray-950: #020617;
+  --gray-950: hsl(var(--tf-slate-950));
 
   /* ═══ TYPOGRAPHY SCALE (Golden Ratio φ = 1.618) ═══ */
   --text-xs: 0.618rem; /* 9.888px */
@@ -159,6 +164,15 @@
   --tf-black: 0 0% 0%; /* pure-void (shadows)               */
   --tf-info: 262 100% 63.3%; /* info-purple                       */
   --tf-dark: 222 47% 11%; /* surface-dark / gray-900           */
+
+  /* ─── BRIDGE COMPLETION (Phase 14 — zero irreducible hex) ─── */
+  --tf-transcend: 176 100% 50%; /* transcend-highlight (#00ffee)  */
+  --tf-dark-cyan: 180 100% 40%; /* accent-cyan (#00cccc)          */
+  --tf-slate-300: 213 27% 84%; /* text-secondary (#cbd5e1)       */
+  --tf-slate-100: 210 40% 96%; /* gray-100 (#f1f5f9)             */
+  --tf-slate-600: 215 19% 35%; /* gray-600 (#475569)             */
+  --tf-slate-700: 215 25% 27%; /* gray-700 (#334155)             */
+  --tf-slate-950: 229 84% 5%; /* gray-950 (#020617)             */
 
   /* ─── LIGHT-THEME BRIDGE (Lane C: DataScience / TerraLevy) ─── */
   --tf-brand-blue: 217 91% 60%; /* blue-500  (brand primary)      */
