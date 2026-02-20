@@ -4,9 +4,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ora from 'ora';
 import type {
-  TokenAuditScope,
-  UiTokenBaseline,
-  UiTokenComplianceContract,
+    TokenAuditScope,
+    UiTokenBaseline,
+    UiTokenComplianceContract,
+    UiTokenRatchetContract,
 } from '../contracts/ui-token-compliance.contract';
 import { printTokenReport } from '../ui/printTokenReport';
 import { computeScopeHash, runTokenAudit } from '../ui/tokenAudit';
@@ -58,6 +59,7 @@ function handleBaseline(
           `\nRatchet FAILED: ${contract.violationCount} violations > baseline ${existing.violationCount}`
         )
       );
+      emitRatchetContract(root, scopeHash, existing.violationCount, contract.violationCount, false);
       return 1; // don't update baseline on regression
     }
 
@@ -77,15 +79,22 @@ function handleBaseline(
     }
   } else if (existing) {
     console.log(
-      chalk.yellow(
-        `\nScope changed — re-baselining at ${contract.violationCount} violations.`
-      )
+      chalk.yellow(`\nScope changed — re-baselining at ${contract.violationCount} violations.`)
     );
   } else {
     console.log(
       chalk.cyan(`\nNo baseline found — creating at ${contract.violationCount} violations.`)
     );
   }
+
+  // Emit ratchet health contract
+  emitRatchetContract(
+    root,
+    scopeHash,
+    existing?.violationCount ?? null,
+    contract.violationCount,
+    true
+  );
 
   // Write/update baseline (only reaches here on non-regression)
   const baseline: UiTokenBaseline = {
@@ -98,6 +107,28 @@ function handleBaseline(
   fs.writeFileSync(baselinePath, JSON.stringify(baseline, null, 2), 'utf8');
 
   return exitCode;
+}
+
+function emitRatchetContract(
+  root: string,
+  scopeHash: string,
+  baselineCount: number | null,
+  currentCount: number,
+  ok: boolean
+): void {
+  const ratchet: UiTokenRatchetContract = {
+    contract: 'ui-token-ratchet.contract.json',
+    version: 'v1',
+    ok,
+    scopeHash,
+    baselineViolationCount: baselineCount,
+    currentViolationCount: currentCount,
+    delta: baselineCount !== null ? baselineCount - currentCount : null,
+    generatedAtIso: new Date().toISOString(),
+  };
+  const outPath = path.resolve(root, 'ui-token-ratchet.contract.json');
+  fs.writeFileSync(outPath, JSON.stringify(ratchet, null, 2), 'utf8');
+  console.log(chalk.gray(`  Ratchet contract written: ui-token-ratchet.contract.json`));
 }
 
 // ── CLI command ──────────────────────────────────────────────────

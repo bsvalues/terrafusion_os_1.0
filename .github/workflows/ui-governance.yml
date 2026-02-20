@@ -11,6 +11,7 @@ on:
       - 'tools/tdc/src/commands/ui.ts'
       - 'configs/eslint/**'
       - 'tdc.config.json'
+      - 'ui-token-baseline.json'
       - '.github/workflows/ui-governance.yml'
   push:
     branches: [main]
@@ -23,6 +24,7 @@ on:
       - 'tools/tdc/src/commands/ui.ts'
       - 'configs/eslint/**'
       - 'tdc.config.json'
+      - 'ui-token-baseline.json'
       - '.github/workflows/ui-governance.yml'
 
 env:
@@ -40,6 +42,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -55,6 +59,23 @@ jobs:
       - name: UI Token Contract (Gen2 scope + ratchet)
         run: pnpm tdc:ui:tokens
 
+      - name: Guard baseline tampering
+        if: github.event_name == 'pull_request'
+        run: |
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "ui-token-baseline.json"; then
+            echo "ui-token-baseline.json changed in this PR."
+            HASH_BEFORE=$(git show origin/${{ github.base_ref }}:ui-token-baseline.json 2>/dev/null | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{console.log(JSON.parse(d).scopeHash||"")}catch{console.log("")}})' || echo "")
+            HASH_AFTER=$(node -e 'try{console.log(JSON.parse(require("fs").readFileSync("ui-token-baseline.json","utf8")).scopeHash||"")}catch{console.log("")}')
+            if [ -n "$HASH_BEFORE" ] && [ "$HASH_BEFORE" = "$HASH_AFTER" ]; then
+              echo "::error::Baseline changed without scopeHash change — likely ratchet bypass."
+              echo "If intentional, update scope in tdc.config.json or explain in PR."
+              exit 1
+            fi
+            echo "✅ Baseline changed with scopeHash change (expected rebaseline)."
+          else
+            echo "Baseline unchanged."
+          fi
+
       - name: Upload Contract Artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -69,6 +90,14 @@ jobs:
         with:
           name: ui-token-baseline
           path: ui-token-baseline.json
+          if-no-files-found: warn
+
+      - name: Upload Ratchet Health
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-token-ratchet
+          path: ui-token-ratchet.contract.json
           if-no-files-found: warn
 
   ui-token-full:

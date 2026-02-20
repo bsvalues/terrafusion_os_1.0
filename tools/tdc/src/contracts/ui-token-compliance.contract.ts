@@ -24,6 +24,17 @@ export interface TokenViolation {
   excerpt: string;
 }
 
+export interface UiTokenRatchetContract {
+  contract: 'ui-token-ratchet.contract.json';
+  version: 'v1';
+  ok: boolean;
+  scopeHash: string;
+  baselineViolationCount: number | null;
+  currentViolationCount: number;
+  delta: number | null;
+  generatedAtIso: string;
+}
+
 export interface UiTokenComplianceContract {
   contract: 'ui-token-compliance.contract.json';
   version: 'v1';
