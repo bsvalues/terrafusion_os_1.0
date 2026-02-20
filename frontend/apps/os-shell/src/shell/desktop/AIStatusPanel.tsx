@@ -114,9 +114,9 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
           'w-72 p-4 rounded-lg',
           'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
           'border border-[var(--tf-transcend-highlight)]/20',
-          'shadow-[0_-8px_30px_rgba(0,0,0,0.5),0_0_40px_rgba(0,255,238,0.1)]',
           className
         )}
+        style={{ boxShadow: '0 -8px 30px hsl(var(--tf-bg) / 0.5), 0 0 40px hsl(var(--tf-accent) / 0.1)' }}
       >
         <div className="flex items-center justify-center py-8">
           <div className="w-6 h-6 border-2 border-[var(--tf-transcend-highlight)] border-t-transparent rounded-full animate-spin" />
@@ -139,9 +139,9 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
           'w-72 p-4 rounded-lg',
           'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
           'border border-red-500/30',
-          'shadow-[0_-8px_30px_rgba(0,0,0,0.5)]',
           className
         )}
+        style={{ boxShadow: '0 -8px 30px hsl(var(--tf-bg) / 0.5)' }}
       >
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-white">AI Swarm Status</h3>
@@ -171,9 +171,9 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
         'w-80 rounded-lg overflow-hidden',
         'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
         'border border-[var(--tf-transcend-highlight)]/20',
-        'shadow-[0_-8px_30px_rgba(0,0,0,0.5),0_0_40px_rgba(0,255,238,0.1)]',
         className
       )}
+      style={{ boxShadow: '0 -8px 30px hsl(var(--tf-bg) / 0.5), 0 0 40px hsl(var(--tf-accent) / 0.1)' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-white/10">
@@ -241,7 +241,7 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
                   data-testid={`category-status-${category.status}`}
                   className={cn(
                     'w-2 h-2 rounded-full',
-                    category.status === 'active' && 'bg-[var(--tf-accent-success)] shadow-[0_0_6px_rgba(0,255,170,0.6)]',
+                    category.status === 'active' && 'bg-[var(--tf-accent-success)]',
                     category.status === 'idle' && 'bg-[var(--gray-400)]',
                     category.status === 'error' && 'bg-[var(--error-red)]'
                   )}

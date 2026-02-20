@@ -221,7 +221,7 @@ export const VirtualDesktopSwitcher: React.FC<VirtualDesktopSwitcherProps> = ({
         style={{
           backgroundColor: colors.utils.withOpacity(colors.semantic.background.void, 0.95),
           borderColor: colors.utils.withOpacity(colors.brand.transcend[500], 0.3),
-          boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 60px ${colors.utils.withOpacity(colors.brand.transcend[500], 0.2)}`,
+          boxShadow: `0 8px 32px ${colors.utils.withOpacity(colors.semantic.background.void, 0.5)}, 0 0 60px ${colors.utils.withOpacity(colors.brand.transcend[500], 0.2)}`,
           ...cssVars,
         }}
       >

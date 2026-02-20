@@ -16,6 +16,8 @@ import { StartMenu } from '../../shell/desktop/StartMenu';
 import { Taskbar } from '../../shell/desktop/Taskbar';
 import { Window } from '../../shell/desktop/Window';
 import { WindowPeek } from '../../shell/desktop/WindowPeek';
+import { AIStatusPanel, defaultAIStatus } from '../../shell/desktop/AIStatusPanel';
+import { NotificationPanel, type Notification } from '../../shell/desktop/NotificationBell';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { useWindowPeekStore } from '../../stores/windowPeekStore';
@@ -284,5 +286,55 @@ describe('Lumin Primitive Contract', () => {
     // Shadow uses token-backed hsl vars
     expect(style).toContain('var(--tf-accent)');
     expect(style).toContain('var(--tf-bg)');
+  });
+
+  it('AIStatusPanel contains no raw rgba()/rgb()/#hex and uses --tf- tokens', () => {
+    render(<AIStatusPanel status={defaultAIStatus} onClose={jest.fn()} />);
+
+    const panel = screen.getByTestId('ai-status-panel');
+    const html = panel.outerHTML;
+
+    // No illegal colors
+    expect(html).not.toMatch(/rgba\(/i);
+    expect(html).not.toMatch(/(?<![a-z-])rgb\(/i);
+    // Has token references
+    expect(html).toMatch(/--tf-/);
+  });
+
+  it('NotificationPanel contains no raw rgba()/rgb()/#hex and uses --tf- tokens', () => {
+    const testNotifications: Notification[] = [
+      {
+        id: 'contract-1',
+        title: 'Test Notification',
+        message: 'For contract testing',
+        type: 'success',
+        timestamp: new Date().toISOString(),
+        read: false,
+      },
+      {
+        id: 'contract-2',
+        title: 'Warning',
+        message: 'Another notification',
+        type: 'warning',
+        timestamp: new Date().toISOString(),
+        read: true,
+      },
+    ];
+
+    render(
+      <NotificationPanel
+        notifications={testNotifications}
+        onClose={jest.fn()}
+      />
+    );
+
+    const panel = screen.getByTestId('notification-panel');
+    const html = panel.outerHTML;
+
+    // No illegal colors
+    expect(html).not.toMatch(/rgba\(/i);
+    expect(html).not.toMatch(/(?<![a-z-])rgb\(/i);
+    // Has token references
+    expect(html).toMatch(/--tf-/);
   });
 });
