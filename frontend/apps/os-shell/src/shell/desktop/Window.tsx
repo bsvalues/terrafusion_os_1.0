@@ -267,9 +267,9 @@ const TitleBar: React.FC<TitleBarProps> = ({
       )}
       style={{
         background: isActive
-          ? 'linear-gradient(90deg, rgba(10, 14, 26, 0.9) 0%, rgba(20, 24, 36, 0.9) 50%, rgba(10, 14, 26, 0.9) 100%)'
-          : 'rgba(20, 24, 36, 0.8)',
-        borderBottom: '1px solid rgba(0, 255, 238, 0.15)',
+          ? 'linear-gradient(90deg, hsl(var(--tf-bg) / 0.9) 0%, hsl(var(--tf-surface-2) / 0.9) 50%, hsl(var(--tf-bg) / 0.9) 100%)'
+          : 'hsl(var(--tf-surface-2) / 0.8)',
+        borderBottom: '1px solid hsl(var(--tf-border) / 0.5)',
       }}
     >
       {/* Drag handle - covers most of title bar but NOT the controls */}
@@ -509,7 +509,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
         }}
       >
         <motion.div
-          data-testid='window-visuals'
+          data-testid='tf-window-chrome'
           initial='initial'
           animate={animationState}
           exit='closing'
@@ -531,22 +531,22 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
           )}
           style={{
             // Immersive Glassmorphism - lets the WebGL environment show through
-            background: 'rgba(10, 14, 26, 0.75)',
+            background: 'hsl(var(--tf-bg) / 0.75)',
             backdropFilter: 'saturate(180%) blur(24px)',
             WebkitBackdropFilter: 'saturate(180%) blur(24px)',
             border: isActive
-              ? '1px solid rgba(0, 229, 255, 0.5)'
-              : '1px solid rgba(0, 229, 255, 0.15)',
+              ? '1px solid hsl(var(--tf-accent) / 0.5)'
+              : '1px solid hsl(var(--tf-border) / 0.5)',
             boxShadow: isActive
               ? `
-                0 0 40px rgba(0, 229, 255, 0.25),
-                0 25px 50px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+                0 0 40px hsl(var(--tf-accent) / 0.25),
+                0 25px 50px hsl(var(--tf-bg) / 0.6),
+                inset 0 1px 0 hsl(var(--tf-text) / 0.1),
+                inset 0 -1px 0 hsl(var(--tf-bg) / 0.2)
               `
               : `
-                0 15px 40px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05)
+                0 15px 40px hsl(var(--tf-bg) / 0.5),
+                inset 0 1px 0 hsl(var(--tf-text) / 0.05)
               `,
           }}
         >
@@ -567,7 +567,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             data-testid='window-content'
             className={cn('flex-1 overflow-auto', 'rounded-b-lg')}
             style={{
-              background: 'linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.15) 100%)',
+              background: 'linear-gradient(180deg, transparent 0%, hsl(var(--tf-bg) / 0.15) 100%)',
             }}
           >
             <WindowInteractionContext.Provider value={{ isInteracting }}>
@@ -576,22 +576,22 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
                   className='flex items-center justify-center h-full p-4'
                   style={{
                     background:
-                      'linear-gradient(135deg, rgba(10, 14, 26, 0.5) 0%, rgba(20, 24, 36, 0.3) 100%)',
+                      'linear-gradient(135deg, hsl(var(--tf-bg) / 0.5) 0%, hsl(var(--tf-surface-2) / 0.3) 100%)',
                   }}
                 >
                   <div className='text-center'>
                     <span
                       className='text-4xl mb-4 block'
-                      style={{ filter: 'drop-shadow(0 0 15px rgba(0, 229, 255, 0.4))' }}
+                      style={{ filter: 'drop-shadow(0 0 15px hsl(var(--tf-accent) / 0.4))' }}
                     >
                       {React.createElement(getLucideIcon(windowData.icon), {
                         className: 'h-10 w-10 text-white',
                       })}
                     </span>
-                    <p style={{ color: 'rgba(0, 229, 255, 0.8)' }} className='text-sm'>
+                    <p style={{ color: 'hsl(var(--tf-accent) / 0.8)' }} className='text-sm'>
                       {windowData.title}
                     </p>
-                    <p className='text-xs mt-1' style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
+                    <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-text) / 0.4)' }}>
                       Module ID: {windowData.moduleId}
                     </p>
                   </div>

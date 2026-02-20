@@ -13,8 +13,37 @@ import { MemoryRouter } from 'react-router-dom';
 import { DesktopContextMenu } from '../../shell/desktop/DesktopContextMenu';
 import { StartMenu } from '../../shell/desktop/StartMenu';
 import { Taskbar } from '../../shell/desktop/Taskbar';
+import { Window } from '../../shell/desktop/Window';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+
+// Mock react-rnd (same as Window.test.tsx)
+jest.mock('react-rnd', () => {
+  const React = require('react');
+  return {
+    Rnd: React.forwardRef(
+      ({ children, className, style, onMouseDown, position, size, ...props }: any, ref: any) => (
+        <div
+          ref={ref}
+          data-testid='window'
+          data-window-id={props['data-window-id']}
+          className={className}
+          style={{
+            ...style,
+            position: 'absolute',
+            left: position?.x ?? 0,
+            top: position?.y ?? 0,
+            width: typeof size?.width === 'number' ? size.width : size?.width,
+            height: typeof size?.height === 'number' ? size.height : size?.height,
+          }}
+          onMouseDown={onMouseDown}
+        >
+          {children}
+        </div>
+      )
+    ),
+  };
+});
 
 afterEach(cleanup);
 
@@ -94,5 +123,80 @@ describe('Lumin Primitive Contract', () => {
       // Must have Lumin Button token-backed border
       expect(btn.className).toContain('border-[hsl(var(--tf-border');
     }
+  });
+
+  it('Window chrome uses token-backed styles and contains no raw rgba()', () => {
+    const mockWindow = {
+      id: 'contract-win-1',
+      moduleId: 'test-module',
+      title: 'Contract Test Window',
+      icon: 'FileText',
+      position: { x: 50, y: 50 },
+      size: { width: 600, height: 400 },
+      state: 'normal' as const,
+      zIndex: 1,
+      desktopId: 'default',
+    };
+
+    useDesktopStore.setState({
+      windows: [mockWindow],
+      activeWindowId: mockWindow.id,
+      currentDesktopId: 'default',
+      nextZIndex: 2,
+    });
+
+    render(<Window window={mockWindow} />);
+
+    const chrome = screen.getByTestId('tf-window-chrome');
+    const style = chrome.getAttribute('style') ?? '';
+    // Shadow uses token-backed hsl
+    expect(style).toContain('hsl(var(--tf-accent)');
+    // Border uses token-backed hsl
+    expect(style).toContain('hsl(var(--tf-');
+    // No raw rgba in inline style
+    expect(style).not.toMatch(/rgba\(/);
+  });
+
+  it('Window chrome border references --tf-border for structural and --tf-accent for active glow', () => {
+    const mockWindow = {
+      id: 'contract-win-2',
+      moduleId: 'test-module',
+      title: 'Border Contract Window',
+      icon: 'FileText',
+      position: { x: 50, y: 50 },
+      size: { width: 600, height: 400 },
+      state: 'normal' as const,
+      zIndex: 1,
+      desktopId: 'default',
+    };
+
+    // Render as active — should use --tf-accent for glow border
+    useDesktopStore.setState({
+      windows: [mockWindow],
+      activeWindowId: mockWindow.id,
+      currentDesktopId: 'default',
+      nextZIndex: 2,
+    });
+
+    const { unmount } = render(<Window window={mockWindow} />);
+    const activeChrome = screen.getByTestId('tf-window-chrome');
+    expect(activeChrome).toHaveStyle({
+      border: '1px solid hsl(var(--tf-accent) / 0.5)',
+    });
+    unmount();
+
+    // Render as inactive — should use --tf-border for structural border
+    useDesktopStore.setState({
+      windows: [mockWindow],
+      activeWindowId: 'other-window',
+      currentDesktopId: 'default',
+      nextZIndex: 2,
+    });
+
+    render(<Window window={mockWindow} />);
+    const inactiveChrome = screen.getByTestId('tf-window-chrome');
+    expect(inactiveChrome).toHaveStyle({
+      border: '1px solid hsl(var(--tf-border) / 0.5)',
+    });
   });
 });

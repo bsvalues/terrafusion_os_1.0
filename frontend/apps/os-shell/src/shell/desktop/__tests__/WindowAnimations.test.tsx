@@ -15,20 +15,20 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { DesktopWindow } from '../../../stores/desktopStore';
 import { Window } from '../Window';
 import {
-  WINDOW_ANIMATION_TIMING,
-  closeAnimationConfig,
-  focusAnimationConfig,
-  getAnimationConfigForState,
-  getAnimationVariantForState,
-  minimizeAnimationConfig,
-  openAnimationConfig,
-  restoreAnimationConfig,
-  windowCloseVariants,
-  windowFocusVariants,
-  windowMinimizeVariants,
-  windowOpenVariants,
-  windowRestoreVariants,
-  windowVariants,
+    WINDOW_ANIMATION_TIMING,
+    closeAnimationConfig,
+    focusAnimationConfig,
+    getAnimationConfigForState,
+    getAnimationVariantForState,
+    minimizeAnimationConfig,
+    openAnimationConfig,
+    restoreAnimationConfig,
+    windowCloseVariants,
+    windowFocusVariants,
+    windowMinimizeVariants,
+    windowOpenVariants,
+    windowRestoreVariants,
+    windowVariants,
 } from '../windowAnimations';
 
 // ============================================================================
@@ -333,7 +333,7 @@ describe('Window Component Animations', () => {
 
     // Window visuals should be rendered (animations handle visibility)
     await waitFor(() => {
-      const windowVisuals = screen.getByTestId('window-visuals');
+      const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals).toBeInTheDocument();
     });
   });
@@ -344,7 +344,7 @@ describe('Window Component Animations', () => {
     // Wait for animation to complete
     await waitFor(
       () => {
-        const windowVisuals = screen.getByTestId('window-visuals');
+        const windowVisuals = screen.getByTestId('tf-window-chrome');
         expect(windowVisuals).toHaveStyle({ opacity: '1' });
       },
       { timeout: 1000 }
