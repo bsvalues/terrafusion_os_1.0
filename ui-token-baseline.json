@@ -1,3 +1,9 @@
 {
-  "baseline": 2956
+  "contract": "ui-token-baseline.json",
+  "version": "v1",
+  "scopeHash": "815f66836ec52a60",
+  "violationCount": 2889,
+  "generatedAtIso": "2026-02-20T05:27:23.878Z",
+  "baseline": 2889,
+  "updatedAt": "2026-02-20T05:27:45.228Z"
 }

@@ -39,9 +39,9 @@ Reliability Through Quantum-Inspired Motion Design
     opacity: var(--tf-quantum-decoherence);
     filter: blur(0px) hue-rotate(0deg) brightness(1);
     box-shadow:
-      0 0 20px hsl(207 100% 50% / 0.3),
-      0 0 40px hsl(207 100% 50% / 0.2),
-      inset 0 0 20px hsl(207 100% 50% / 0.1);
+      0 0 20px hsl(var(--tf-anim-blue) / 0.3),
+      0 0 40px hsl(var(--tf-anim-blue) / 0.2),
+      inset 0 0 20px hsl(var(--tf-anim-blue) / 0.1);
   }
 
   25% {
@@ -49,9 +49,9 @@ Reliability Through Quantum-Inspired Motion Design
     opacity: 1;
     filter: blur(0.5px) hue-rotate(90deg) brightness(1.1);
     box-shadow:
-      0 0 30px hsl(207 100% 50% / 0.5),
-      0 0 60px hsl(207 100% 50% / 0.3),
-      inset 0 0 30px hsl(207 100% 50% / 0.2);
+      0 0 30px hsl(var(--tf-anim-blue) / 0.5),
+      0 0 60px hsl(var(--tf-anim-blue) / 0.3),
+      inset 0 0 30px hsl(var(--tf-anim-blue) / 0.2);
   }
 
   50% {
@@ -59,9 +59,9 @@ Reliability Through Quantum-Inspired Motion Design
     opacity: var(--tf-system-stability);
     filter: blur(1px) hue-rotate(180deg) brightness(1.2);
     box-shadow:
-      0 0 40px hsl(180 100% 50% / 0.6),
-      0 0 80px hsl(180 100% 50% / 0.4),
-      inset 0 0 40px hsl(180 100% 50% / 0.3);
+      0 0 40px hsl(var(--tf-accent) / 0.6),
+      0 0 80px hsl(var(--tf-accent) / 0.4),
+      inset 0 0 40px hsl(var(--tf-accent) / 0.3);
   }
 
   75% {
@@ -69,9 +69,9 @@ Reliability Through Quantum-Inspired Motion Design
     opacity: 1;
     filter: blur(0.5px) hue-rotate(270deg) brightness(1.1);
     box-shadow:
-      0 0 30px hsl(120 100% 50% / 0.5),
-      0 0 60px hsl(120 100% 50% / 0.3),
-      inset 0 0 30px hsl(120 100% 50% / 0.2);
+      0 0 30px hsl(var(--tf-anim-green) / 0.5),
+      0 0 60px hsl(var(--tf-anim-green) / 0.3),
+      inset 0 0 30px hsl(var(--tf-anim-green) / 0.2);
   }
 
   100% {
@@ -79,9 +79,9 @@ Reliability Through Quantum-Inspired Motion Design
     opacity: var(--tf-quantum-decoherence);
     filter: blur(0px) hue-rotate(360deg) brightness(1);
     box-shadow:
-      0 0 20px hsl(207 100% 50% / 0.3),
-      0 0 40px hsl(207 100% 50% / 0.2),
-      inset 0 0 20px hsl(207 100% 50% / 0.1);
+      0 0 20px hsl(var(--tf-anim-blue) / 0.3),
+      0 0 40px hsl(var(--tf-anim-blue) / 0.2),
+      inset 0 0 20px hsl(var(--tf-anim-blue) / 0.1);
   }
 }
 
@@ -93,8 +93,8 @@ Reliability Through Quantum-Inspired Motion Design
     opacity: var(--tf-quantum-superposition);
     background: radial-gradient(
       circle,
-      hsl(120 100% 50% / 0.8) 0%,
-      hsl(120 100% 50% / 0.4) 50%,
+      hsl(var(--tf-anim-green) / 0.8) 0%,
+      hsl(var(--tf-anim-green) / 0.4) 50%,
       transparent 100%
     );
   }
@@ -178,9 +178,9 @@ Reliability Through Quantum-Inspired Motion Design
       circle,
       transparent 0%,
       transparent 40%,
-      hsl(207 100% 50% / 0.1) 41%,
-      hsl(207 100% 50% / 0.3) 50%,
-      hsl(207 100% 50% / 0.1) 59%,
+      hsl(var(--tf-anim-blue) / 0.1) 41%,
+      hsl(var(--tf-anim-blue) / 0.3) 50%,
+      hsl(var(--tf-anim-blue) / 0.1) 59%,
       transparent 60%,
       transparent 100%
     );
@@ -190,13 +190,13 @@ Reliability Through Quantum-Inspired Motion Design
   50% {
     background: radial-gradient(
       circle,
-      hsl(207 100% 50% / 0.2) 0%,
-      hsl(207 100% 50% / 0.4) 30%,
-      hsl(207 100% 50% / 0.8) 40%,
-      hsl(180 100% 50% / 1) 50%,
-      hsl(207 100% 50% / 0.8) 60%,
-      hsl(207 100% 50% / 0.4) 70%,
-      hsl(207 100% 50% / 0.2) 100%
+      hsl(var(--tf-anim-blue) / 0.2) 0%,
+      hsl(var(--tf-anim-blue) / 0.4) 30%,
+      hsl(var(--tf-anim-blue) / 0.8) 40%,
+      hsl(var(--tf-accent) / 1) 50%,
+      hsl(var(--tf-anim-blue) / 0.8) 60%,
+      hsl(var(--tf-anim-blue) / 0.4) 70%,
+      hsl(var(--tf-anim-blue) / 0.2) 100%
     );
     transform: scale(1.2);
   }
@@ -206,9 +206,9 @@ Reliability Through Quantum-Inspired Motion Design
       circle,
       transparent 0%,
       transparent 40%,
-      hsl(120 100% 50% / 0.1) 41%,
-      hsl(120 100% 50% / 0.3) 50%,
-      hsl(120 100% 50% / 0.1) 59%,
+      hsl(var(--tf-anim-green) / 0.1) 41%,
+      hsl(var(--tf-anim-green) / 0.3) 50%,
+      hsl(var(--tf-anim-green) / 0.1) 59%,
       transparent 60%,
       transparent 100%
     );
@@ -220,18 +220,18 @@ Reliability Through Quantum-Inspired Motion Design
 @keyframes neural-pathway-activation {
   0% {
     stroke-dashoffset: 1000;
-    stroke: hsl(207 100% 50% / 0.2);
+    stroke: hsl(var(--tf-anim-blue) / 0.2);
     filter: blur(2px);
   }
 
   50% {
-    stroke: hsl(180 100% 50% / 0.8);
+    stroke: hsl(var(--tf-accent) / 0.8);
     filter: blur(0px) glow(5px);
   }
 
   100% {
     stroke-dashoffset: 0;
-    stroke: hsl(120 100% 50% / 1);
+    stroke: hsl(var(--tf-anim-green) / 1);
     filter: blur(0px) glow(10px);
   }
 }
@@ -244,27 +244,27 @@ Reliability Through Quantum-Inspired Motion Design
   100% {
     background: linear-gradient(
       90deg,
-      hsl(120 100% 50% / 0.1) 0%,
-      hsl(120 100% 50% / 0.3) 50%,
-      hsl(120 100% 50% / 0.1) 100%
+      hsl(var(--tf-anim-green) / 0.1) 0%,
+      hsl(var(--tf-anim-green) / 0.3) 50%,
+      hsl(var(--tf-anim-green) / 0.1) 100%
     );
-    border-color: hsl(120 100% 50% / 0.3);
+    border-color: hsl(var(--tf-anim-green) / 0.3);
     box-shadow:
-      inset 0 0 20px hsl(120 100% 50% / 0.1),
-      0 0 20px hsl(120 100% 50% / 0.2);
+      inset 0 0 20px hsl(var(--tf-anim-green) / 0.1),
+      0 0 20px hsl(var(--tf-anim-green) / 0.2);
   }
 
   50% {
     background: linear-gradient(
       90deg,
-      hsl(120 100% 50% / 0.2) 0%,
-      hsl(120 100% 50% / 0.6) 50%,
-      hsl(120 100% 50% / 0.2) 100%
+      hsl(var(--tf-anim-green) / 0.2) 0%,
+      hsl(var(--tf-anim-green) / 0.6) 50%,
+      hsl(var(--tf-anim-green) / 0.2) 100%
     );
-    border-color: hsl(120 100% 50% / 0.6);
+    border-color: hsl(var(--tf-anim-green) / 0.6);
     box-shadow:
-      inset 0 0 40px hsl(120 100% 50% / 0.2),
-      0 0 40px hsl(120 100% 50% / 0.4);
+      inset 0 0 40px hsl(var(--tf-anim-green) / 0.2),
+      0 0 40px hsl(var(--tf-anim-green) / 0.4);
   }
 }
 
@@ -299,8 +299,8 @@ Reliability Through Quantum-Inspired Motion Design
   }
 
   100% {
-    background: hsl(120 100% 50% / 0.3);
-    border-color: hsl(120 100% 50% / 0.6);
+    background: hsl(var(--tf-anim-green) / 0.3);
+    border-color: hsl(var(--tf-anim-green) / 0.6);
     transform: scale(1);
     filter: blur(0px);
   }
@@ -369,10 +369,10 @@ Reliability Through Quantum-Inspired Motion Design
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+    box-shadow: 0 0 20px hsl(var(--tf-accent) / 0.4);
   }
   50% {
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
+    box-shadow: 0 0 40px hsl(var(--tf-accent) / 0.8);
   }
 }
 
@@ -405,8 +405,8 @@ Reliability Through Quantum-Inspired Motion Design
   25% {
     background: conic-gradient(
       from 0deg,
-      hsl(207 100% 50% / 0.3) 0deg,
-      hsl(207 100% 50% / 0.1) 90deg,
+      hsl(var(--tf-anim-blue) / 0.3) 0deg,
+      hsl(var(--tf-anim-blue) / 0.1) 90deg,
       transparent 91deg,
       transparent 360deg
     );
@@ -417,9 +417,9 @@ Reliability Through Quantum-Inspired Motion Design
   50% {
     background: conic-gradient(
       from 0deg,
-      hsl(207 100% 50% / 0.4) 0deg,
-      hsl(180 100% 50% / 0.3) 90deg,
-      hsl(180 100% 50% / 0.1) 180deg,
+      hsl(var(--tf-anim-blue) / 0.4) 0deg,
+      hsl(var(--tf-accent) / 0.3) 90deg,
+      hsl(var(--tf-accent) / 0.1) 180deg,
       transparent 181deg,
       transparent 360deg
     );
@@ -430,10 +430,10 @@ Reliability Through Quantum-Inspired Motion Design
   75% {
     background: conic-gradient(
       from 0deg,
-      hsl(207 100% 50% / 0.5) 0deg,
-      hsl(180 100% 50% / 0.4) 90deg,
-      hsl(120 100% 50% / 0.3) 180deg,
-      hsl(120 100% 50% / 0.1) 270deg,
+      hsl(var(--tf-anim-blue) / 0.5) 0deg,
+      hsl(var(--tf-accent) / 0.4) 90deg,
+      hsl(var(--tf-anim-green) / 0.3) 180deg,
+      hsl(var(--tf-anim-green) / 0.1) 270deg,
       transparent 271deg,
       transparent 360deg
     );
@@ -444,11 +444,11 @@ Reliability Through Quantum-Inspired Motion Design
   100% {
     background: conic-gradient(
       from 0deg,
-      hsl(207 100% 50% / 0.3) 0deg,
-      hsl(180 100% 50% / 0.3) 90deg,
-      hsl(120 100% 50% / 0.3) 180deg,
+      hsl(var(--tf-anim-blue) / 0.3) 0deg,
+      hsl(var(--tf-accent) / 0.3) 90deg,
+      hsl(var(--tf-anim-green) / 0.3) 180deg,
       hsl(60 100% 50% / 0.3) 270deg,
-      hsl(207 100% 50% / 0.3) 360deg
+      hsl(var(--tf-anim-blue) / 0.3) 360deg
     );
     transform: rotate(360deg) scale(1);
     opacity: 1;
@@ -503,9 +503,9 @@ Reliability Through Quantum-Inspired Motion Design
   background: linear-gradient(
     90deg,
     transparent 0%,
-    hsl(180 100% 50% / 0.6) 30%,
-    hsl(180 100% 50% / 1) 50%,
-    hsl(180 100% 50% / 0.6) 70%,
+    hsl(var(--tf-accent) / 0.6) 30%,
+    hsl(var(--tf-accent) / 1) 50%,
+    hsl(var(--tf-accent) / 0.6) 70%,
     transparent 100%
   );
 }
@@ -561,9 +561,9 @@ Reliability Through Quantum-Inspired Motion Design
   background: linear-gradient(
     90deg,
     transparent 0%,
-    hsl(180 100% 50% / 0.6) 30%,
-    hsl(180 100% 50% / 1) 50%,
-    hsl(180 100% 50% / 0.6) 70%,
+    hsl(var(--tf-accent) / 0.6) 30%,
+    hsl(var(--tf-accent) / 1) 50%,
+    hsl(var(--tf-accent) / 0.6) 70%,
     transparent 100%
   );
   animation: quantum-entanglement-wave var(--tf-agent-communication-delay) linear infinite;
@@ -572,7 +572,7 @@ Reliability Through Quantum-Inspired Motion Design
 /* System Health Indicator */
 .tf-system-health-optimal {
   animation: system-health-monitor calc(var(--tf-agent-coherence-freq) * 2) ease-in-out infinite;
-  border: 2px solid hsl(120 100% 50% / 0.3);
+  border: 2px solid hsl(var(--tf-anim-green) / 0.3);
 }
 
 .tf-system-health-degraded {
@@ -591,9 +591,9 @@ Reliability Through Quantum-Inspired Motion Design
   background: linear-gradient(
     45deg,
     transparent 0%,
-    hsl(207 100% 50% / 0.1) 25%,
-    hsl(180 100% 50% / 0.3) 50%,
-    hsl(207 100% 50% / 0.1) 75%,
+    hsl(var(--tf-anim-blue) / 0.1) 25%,
+    hsl(var(--tf-accent) / 0.3) 50%,
+    hsl(var(--tf-anim-blue) / 0.1) 75%,
     transparent 100%
   );
   background-size: 200% 200%;
