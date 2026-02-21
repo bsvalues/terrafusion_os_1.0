@@ -3,10 +3,10 @@
   height: 100vh;
   width: 100vw;
   position: relative;
-  background: linear-gradient(135deg, #0a0a1a 0%, var(--tf-surface-darker) 50%, #2a2a4a 100%);
+  background: linear-gradient(135deg, hsl(var(--tf-bg)) 0%, var(--tf-surface-darker) 50%, hsl(var(--tf-surface-2)) 100%);
   overflow: hidden;
   font-family: 'Quantum UI', 'Courier New', monospace;
-  color: #ffffff;
+  color: hsl(var(--tf-text));
 }
 
 .analytics-controls {
@@ -14,13 +14,13 @@
   left: 20px;
   top: 20px;
   width: 320px;
-  background: rgba(26, 26, 58, 0.95);
+  background: hsl(var(--tf-surface) / 0.95);
   border: 2px solid var(--success-green);
   border-radius: 15px;
   padding: 20px;
   -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
-  box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1);
+  box-shadow: 0 8px 32px hsl(var(--tf-success) / 0.1);
 }
 
 .analytics-controls h3 {
@@ -38,8 +38,8 @@
 }
 
 .model-option {
-  background: rgba(16, 21, 62, 0.8);
-  border: 1px solid #333366;
+  background: hsl(var(--tf-dark) / 0.8);
+  border: 1px solid hsl(var(--tf-surface-2));
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 8px;
@@ -48,20 +48,20 @@
 }
 
 .model-option:hover {
-  border-color: #00aaff;
-  background: rgba(0, 170, 255, 0.1);
+  border-color: hsl(var(--tf-accent-2));
+  background: hsl(var(--tf-accent-2) / 0.1);
   transform: translateX(5px);
 }
 
 .model-option.active {
   border-color: var(--success-green);
-  background: rgba(0, 255, 136, 0.15);
-  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+  background: hsl(var(--tf-success) / 0.15);
+  box-shadow: 0 0 15px hsl(var(--tf-success) / 0.3);
 }
 
 .model-name {
   font-weight: bold;
-  color: #ffffff;
+  color: hsl(var(--tf-text));
   font-size: 14px;
   margin-bottom: 4px;
 }
@@ -91,7 +91,7 @@
 .quantum-toggle,
 .research-toggle {
   padding: 10px 16px;
-  background: rgba(0, 136, 255, 0.1);
+  background: hsl(var(--tf-accent-2) / 0.1);
   border: 1px solid var(--tf-network-blue);
   border-radius: 25px;
   color: var(--tf-network-blue);
@@ -105,23 +105,23 @@
 
 .quantum-toggle:hover,
 .research-toggle:hover {
-  background: rgba(0, 136, 255, 0.2);
-  box-shadow: 0 0 15px rgba(0, 136, 255, 0.3);
+  background: hsl(var(--tf-accent-2) / 0.2);
+  box-shadow: 0 0 15px hsl(var(--tf-accent-2) / 0.3);
   transform: scale(1.02);
 }
 
 .quantum-toggle.active {
-  background: rgba(255, 102, 0, 0.2);
+  background: hsl(var(--tf-warning) / 0.2);
   border-color: var(--tf-retro-orange);
   color: var(--tf-retro-orange);
-  box-shadow: 0 0 20px rgba(255, 102, 0, 0.4);
+  box-shadow: 0 0 20px hsl(var(--tf-warning) / 0.4);
 }
 
 .research-toggle.active {
-  background: rgba(255, 215, 0, 0.2);
+  background: hsl(var(--tf-warning) / 0.2);
   border-color: var(--tf-accent-yellow);
   color: var(--tf-accent-yellow);
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 20px hsl(var(--tf-warning) / 0.4);
 }
 
 .visualization-controls {
@@ -138,10 +138,10 @@
 }
 
 .visualization-controls select {
-  background: rgba(16, 21, 62, 0.9);
-  border: 1px solid #00aaff;
+  background: hsl(var(--tf-dark) / 0.9);
+  border: 1px solid hsl(var(--tf-accent-2));
   border-radius: 6px;
-  color: #ffffff;
+  color: hsl(var(--tf-text));
   padding: 8px 12px;
   font-size: 12px;
   cursor: pointer;
@@ -152,7 +152,7 @@
 .visualization-controls select:focus {
   outline: none;
   border-color: var(--success-green);
-  box-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+  box-shadow: 0 0 8px hsl(var(--tf-success) / 0.3);
 }
 
 .analytics-metrics {
@@ -162,7 +162,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  background: rgba(26, 26, 58, 0.95);
+  background: hsl(var(--tf-surface) / 0.95);
   border: 2px solid var(--warning-amber);
   border-radius: 15px;
   padding: 20px;
@@ -174,8 +174,8 @@
 .accuracy-meter,
 .processing-speed,
 .quantum-advantage {
-  background: rgba(16, 21, 62, 0.8);
-  border: 1px solid #333366;
+  background: hsl(var(--tf-dark) / 0.8);
+  border: 1px solid hsl(var(--tf-surface-2));
   border-radius: 8px;
   padding: 12px;
   text-align: center;
@@ -202,7 +202,7 @@
 }
 
 .processing-speed .metric-value {
-  color: #00aaff;
+  color: hsl(var(--tf-accent-2));
 }
 
 .quantum-advantage .metric-value {
@@ -214,7 +214,7 @@
   bottom: 20px;
   left: 20px;
   right: 20px;
-  background: rgba(26, 26, 58, 0.95);
+  background: hsl(var(--tf-surface) / 0.95);
   border: 2px solid var(--tf-accent-yellow);
   border-radius: 15px;
   padding: 20px;
@@ -238,7 +238,7 @@
 }
 
 .connection {
-  background: rgba(255, 215, 0, 0.1);
+  background: hsl(var(--tf-warning) / 0.1);
   border: 1px solid var(--tf-accent-yellow);
   border-radius: 20px;
   padding: 8px 16px;
@@ -252,7 +252,7 @@
   background: linear-gradient(45deg, var(--tf-accent-yellow), var(--warning-amber));
   border: none;
   border-radius: 25px;
-  color: #000000;
+  color: hsl(var(--tf-black));
   font-weight: bold;
   padding: 12px 24px;
   cursor: pointer;
@@ -263,21 +263,21 @@
 
 .research-action:hover {
   transform: scale(1.05);
-  box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 5px 20px hsl(var(--tf-warning) / 0.4);
 }
 
 /* Animations */
 @keyframes quantumPulse {
   0% {
-    box-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
+    box-shadow: 0 0 5px hsl(var(--tf-warning) / 0.3);
   }
   50% {
     box-shadow:
-      0 0 20px rgba(255, 102, 0, 0.6),
-      0 0 30px rgba(255, 102, 0, 0.3);
+      0 0 20px hsl(var(--tf-warning) / 0.6),
+      0 0 30px hsl(var(--tf-warning) / 0.3);
   }
   100% {
-    box-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
+    box-shadow: 0 0 5px hsl(var(--tf-warning) / 0.3);
   }
 }
 
