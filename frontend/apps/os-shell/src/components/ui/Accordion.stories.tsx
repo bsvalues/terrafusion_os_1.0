@@ -149,7 +149,7 @@ export const MultipleOpen: Story = {
             style={{
               display: 'block',
               padding: '12px',
-              backgroundColor: '#1a1a1a',
+              backgroundColor: 'hsl(var(--tf-neutral-hs) / 10%)',
               borderRadius: '6px',
               fontFamily: 'monospace',
             }}
@@ -212,7 +212,7 @@ export const WithIcons: Story = {
             <HelpCircle
               className='h-4 w-4'
               style={{
-                color: '#f59e0b',
+                color: 'hsl(var(--tf-amber-hs) / 50%)',
               }}
             />
             <span>Help & Support</span>
@@ -229,7 +229,7 @@ export const WithIcons: Story = {
             <Settings
               className='h-4 w-4'
               style={{
-                color: '#8b5cf6',
+                color: 'hsl(var(--tf-info))',
               }}
             />
             <span>Settings</span>
@@ -427,7 +427,7 @@ export const FAQExample: Story = {
       style={{
         maxWidth: '800px',
         padding: '32px',
-        backgroundColor: '#0a0a0a',
+        backgroundColor: 'hsl(var(--tf-neutral-hs) / 4%)',
         borderRadius: '12px',
       }}
     >
@@ -436,7 +436,7 @@ export const FAQExample: Story = {
           fontSize: '32px',
           fontWeight: 700,
           marginBottom: '12px',
-          background: 'linear-gradient(135deg, var(--tf-network-blue), #00ccff)',
+          background: 'linear-gradient(135deg, var(--tf-network-blue), hsl(var(--tf-cyan-hs) / 50%))',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}
@@ -645,7 +645,7 @@ export const FAQExample: Story = {
         style={{
           marginTop: '32px',
           padding: '24px',
-          backgroundColor: '#1a1a1a',
+          backgroundColor: 'hsl(var(--tf-neutral-hs) / 10%)',
           borderRadius: '8px',
           borderLeft: '4px solid var(--tf-network-blue)',
         }}
@@ -720,7 +720,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-green-hs) / 50% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -749,7 +749,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-green-hs) / 50% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -777,7 +777,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-green-hs) / 50% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -805,7 +805,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-green-hs) / 50% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -849,7 +849,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-red-hs) / 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -877,7 +877,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-red-hs) / 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -905,7 +905,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-red-hs) / 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -933,7 +933,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-red-hs) / 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -970,17 +970,17 @@ export const UsageGuidelines: Story = {
         <h4 className='font-semibold'>Keyboard Navigation</h4>
         <div
           style={{
-            backgroundColor: '#1a1a1a',
+            backgroundColor: 'hsl(var(--tf-neutral-hs) / 10%)',
             padding: '20px',
             borderRadius: '8px',
-            border: '1px solid #2a2a2a',
+            border: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
           }}
         >
           <table className='w-full border-collapse'>
             <thead>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
                 }}
               >
                 <th className='text-left font-semibold'>Key</th>
@@ -990,7 +990,7 @@ export const UsageGuidelines: Story = {
             <tbody>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
                 }}
               >
                 <td
@@ -1001,7 +1001,7 @@ export const UsageGuidelines: Story = {
                   <code
                     style={{
                       padding: '4px 8px',
-                      backgroundColor: '#0a0a0a',
+                      backgroundColor: 'hsl(var(--tf-neutral-hs) / 4%)',
                       borderRadius: '4px',
                     }}
                   >
@@ -1018,7 +1018,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
                 }}
               >
                 <td
@@ -1029,7 +1029,7 @@ export const UsageGuidelines: Story = {
                   <code
                     style={{
                       padding: '4px 8px',
-                      backgroundColor: '#0a0a0a',
+                      backgroundColor: 'hsl(var(--tf-neutral-hs) / 4%)',
                       borderRadius: '4px',
                     }}
                   >
@@ -1046,7 +1046,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
                 }}
               >
                 <td
@@ -1057,7 +1057,7 @@ export const UsageGuidelines: Story = {
                   <code
                     style={{
                       padding: '4px 8px',
-                      backgroundColor: '#0a0a0a',
+                      backgroundColor: 'hsl(var(--tf-neutral-hs) / 4%)',
                       borderRadius: '4px',
                     }}
                   >
@@ -1074,7 +1074,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
                 }}
               >
                 <td
@@ -1085,7 +1085,7 @@ export const UsageGuidelines: Story = {
                   <code
                     style={{
                       padding: '4px 8px',
-                      backgroundColor: '#0a0a0a',
+                      backgroundColor: 'hsl(var(--tf-neutral-hs) / 4%)',
                       borderRadius: '4px',
                     }}
                   >
@@ -1102,7 +1102,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
                 }}
               >
                 <td
@@ -1113,7 +1113,7 @@ export const UsageGuidelines: Story = {
                   <code
                     style={{
                       padding: '4px 8px',
-                      backgroundColor: '#0a0a0a',
+                      backgroundColor: 'hsl(var(--tf-neutral-hs) / 4%)',
                       borderRadius: '4px',
                     }}
                   >
@@ -1130,7 +1130,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
                 }}
               >
                 <td
@@ -1141,7 +1141,7 @@ export const UsageGuidelines: Story = {
                   <code
                     style={{
                       padding: '4px 8px',
-                      backgroundColor: '#0a0a0a',
+                      backgroundColor: 'hsl(var(--tf-neutral-hs) / 4%)',
                       borderRadius: '4px',
                     }}
                   >
@@ -1165,7 +1165,7 @@ export const UsageGuidelines: Story = {
                   <code
                     style={{
                       padding: '4px 8px',
-                      backgroundColor: '#0a0a0a',
+                      backgroundColor: 'hsl(var(--tf-neutral-hs) / 4%)',
                       borderRadius: '4px',
                     }}
                   >
@@ -1194,13 +1194,13 @@ export const UsageGuidelines: Story = {
         <h4 className='font-semibold'>Code Examples</h4>
         <div
           style={{
-            backgroundColor: '#1a1a1a',
+            backgroundColor: 'hsl(var(--tf-neutral-hs) / 10%)',
             padding: '20px',
             borderRadius: '8px',
             fontFamily: '"Fira Code", monospace',
             fontSize: '13px',
             overflow: 'auto',
-            border: '1px solid #2a2a2a',
+            border: '1px solid hsl(var(--tf-neutral-hs) / 16%)',
           }}
         >
           <pre
