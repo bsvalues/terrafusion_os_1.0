@@ -35,44 +35,44 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
       case 'processing':
         return {
           sphereAnimation: 'sphereRotate 3s linear infinite',
-          coreColor: '#00e5ff',
-          coreShadow: '0 0 80px #00e5ff, inset 0 0 40px #00e5ff',
+          coreColor: 'hsl(var(--tf-cyan-hs) / 50%)',
+          coreShadow: '0 0 80px hsl(var(--tf-cyan-hs) / 50%), inset 0 0 40px hsl(var(--tf-cyan-hs) / 50%)',
           ringAnimation: 'ringPulse 0.5s ease-in-out infinite',
         };
       case 'boot':
         return {
           sphereAnimation: 'bootSequence 4s ease-out infinite',
-          coreColor: '#00e5ff',
-          coreShadow: '0 0 40px #00e5ff, inset 0 0 20px #00e5ff',
+          coreColor: 'hsl(var(--tf-cyan-hs) / 50%)',
+          coreShadow: '0 0 40px hsl(var(--tf-cyan-hs) / 50%), inset 0 0 20px hsl(var(--tf-cyan-hs) / 50%)',
           ringAnimation: undefined,
         };
       case 'success':
         return {
           sphereAnimation: 'sphereRotate 10s linear infinite',
-          coreColor: '#00ff88',
-          coreShadow: '0 0 100px #00ff88, 0 0 200px #00e5ff, inset 0 0 40px #00ff88',
+          coreColor: 'hsl(var(--tf-green-hs) / 50%)',
+          coreShadow: '0 0 100px hsl(var(--tf-green-hs) / 50%), 0 0 200px hsl(var(--tf-cyan-hs) / 50%), inset 0 0 40px hsl(var(--tf-green-hs) / 50%)',
           ringAnimation: undefined,
         };
       case 'alert':
         return {
           sphereAnimation: 'sphereRotate 5s linear infinite',
-          coreColor: '#ff4444',
-          coreShadow: '0 0 40px #ff4444, inset 0 0 20px #ff4444',
+          coreColor: 'hsl(var(--tf-red-hs) / 53%)',
+          coreShadow: '0 0 40px hsl(var(--tf-red-hs) / 53%), inset 0 0 20px hsl(var(--tf-red-hs) / 53%)',
           ringAnimation: 'alertPulse 0.5s ease-in-out infinite',
-          ringColor: 'rgba(255, 68, 68, 0.5)',
+          ringColor: 'hsl(var(--tf-red-hs) / 53% / 0.5)',
         };
       default: // idle
         return {
           sphereAnimation: 'sphereRotate 10s linear infinite, breathe 6s ease-in-out infinite',
-          coreColor: '#00e5ff',
-          coreShadow: '0 0 40px #00e5ff, inset 0 0 20px #00e5ff',
+          coreColor: 'hsl(var(--tf-cyan-hs) / 50%)',
+          coreShadow: '0 0 40px hsl(var(--tf-cyan-hs) / 50%), inset 0 0 20px hsl(var(--tf-cyan-hs) / 50%)',
           ringAnimation: undefined,
         };
     }
   };
 
   const styles = getStateStyles();
-  const ringColor = (styles as any).ringColor || 'rgba(0, 229, 255, 0.3)';
+  const ringColor = (styles as any).ringColor || 'hsl(var(--tf-cyan-hs) / 50% / 0.3)';
 
   return (
     <div
@@ -168,8 +168,8 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
         }
         
         @keyframes intensePulse {
-          0%, 100% { box-shadow: 0 0 40px #00e5ff, inset 0 0 20px #00e5ff; }
-          50% { box-shadow: 0 0 80px #00e5ff, inset 0 0 40px #00e5ff; }
+          0%, 100% { box-shadow: 0 0 40px hsl(var(--tf-cyan-hs) / 50%), inset 0 0 20px hsl(var(--tf-cyan-hs) / 50%); }
+          50% { box-shadow: 0 0 80px hsl(var(--tf-cyan-hs) / 50%), inset 0 0 40px hsl(var(--tf-cyan-hs) / 50%); }
         }
         
         @keyframes breathe {
