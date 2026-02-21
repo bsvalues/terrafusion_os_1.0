@@ -49,7 +49,9 @@
       "autonomy-incident-publisher.yml",
       "autonomy-tpi-guard.yml",
       "autonomy-incident-label-guard.yml",
-      "autonomy-incident-triage.yml"
+      "autonomy-incident-triage.yml",
+      "release-lane-guard.yml",
+      "ui-governance.yml"
     ],
     "pushSignal": [
       "accreditation-compat.yml",

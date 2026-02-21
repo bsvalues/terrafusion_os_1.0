@@ -15,7 +15,12 @@ export interface CanonAgentsPanelProps {
 
 export function CanonAgentsPanel({ workspaceId }: CanonAgentsPanelProps) {
   return (
-    <div data-testid="canon-agents-panel" aria-label="Agents panel">
+    <div data-testid="terracanon-agents-panel" aria-label="Agents panel">
+      <input
+        data-testid="terracanon-agent-task-input"
+        placeholder="Assign agent task…"
+        className="w-full px-2 py-1 text-sm border-b"
+      />
       {workspaceId ? (
         <p className="text-xs text-muted-foreground p-2">
           Agents: workspace {workspaceId}

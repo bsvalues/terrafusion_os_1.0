@@ -23,11 +23,16 @@ export interface CanonCommandPaletteProps {
 
 export function CanonCommandPalette({ commands }: CanonCommandPaletteProps) {
   return (
-    <div data-testid="canon-command-palette" aria-label="Command palette">
+    <div data-testid="terracanon-command-palette" aria-label="Command palette">
+      <input
+        data-testid="terracanon-palette-input"
+        placeholder="Search commands…"
+        className="w-full px-2 py-1 text-sm border-b"
+      />
       {commands.map((cmd) => (
         <button
           key={cmd.id}
-          data-testid={`canon-cmd-${cmd.id}`}
+          data-testid={`terracanon-cmd-${cmd.id}`}
           onClick={cmd.onRun}
           disabled={cmd.disabled}
           className="block w-full text-left px-2 py-1 text-sm hover:bg-muted"
