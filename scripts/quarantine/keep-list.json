@@ -9,6 +9,7 @@
     "backend",
     "compose",
     "config",
+    "configs",
     "data",
     "database",
     "docker",
@@ -43,9 +44,11 @@
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
     "renovate.json",
+    "tdc.config.json",
     "tsconfig.core.json",
     "tsconfig.eslint.json",
     "tsconfig.json",
+    "ui-token-baseline.json",
     "vitest.config.ts"
   ]
 }
