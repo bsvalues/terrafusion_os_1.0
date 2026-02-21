@@ -47,8 +47,8 @@
 
 .tool-btn {
   padding: 0.75rem 1.5rem;
-  background: rgba(0, 255, 255, 0.1);
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.1);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.3);
   border-radius: 8px;
   color: var(--tf-quantum-cyan);
   font-weight: bold;
@@ -57,8 +57,8 @@
 }
 
 .tool-btn:hover {
-  background: rgba(0, 255, 255, 0.2);
-  border-color: rgba(0, 255, 255, 0.5);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.2);
+  border-color: hsl(var(--tf-cyan-hs) 50% / 0.5);
   transform: translateY(-2px);
 }
 
@@ -70,8 +70,8 @@
 
 /* Analytics Sections */
 .analytics-section {
-  background: rgba(0, 255, 255, 0.05);
-  border: 1px solid rgba(0, 255, 255, 0.2);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.05);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.2);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -92,16 +92,16 @@
 }
 
 .distribution-card {
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.15);
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.3s ease;
 }
 
 .distribution-card:hover {
-  background: rgba(0, 255, 255, 0.12);
-  border-color: rgba(0, 255, 255, 0.3);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.12);
+  border-color: hsl(var(--tf-cyan-hs) 50% / 0.3);
   transform: translateY(-2px);
 }
 
@@ -137,10 +137,10 @@
 /* Mini Histogram */
 .mini-histogram {
   height: 60px;
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.3);
   border-radius: 4px;
   padding: 4px;
-  background: rgba(0, 0, 0, 0.3);
+  background: hsl(var(--tf-black) / 0.3);
 }
 
 .histogram-bars {
@@ -171,8 +171,8 @@
 
 .feature-importance,
 .correlation-matrix {
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.15);
   border-radius: 8px;
   padding: 1.5rem;
 }
@@ -187,7 +187,7 @@
 .feature-row {
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background: rgba(0, 255, 255, 0.05);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.05);
   border-radius: 6px;
 }
 
@@ -209,7 +209,7 @@
 
 .importance-bar {
   height: 8px;
-  background: rgba(0, 255, 255, 0.2);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.2);
   border-radius: 4px;
   margin-bottom: 0.5rem;
   overflow: hidden;
@@ -283,8 +283,8 @@
 }
 
 .quantum-state-card {
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.15);
   border-radius: 8px;
   padding: 1rem;
   text-align: center;
@@ -292,7 +292,7 @@
 }
 
 .quantum-state-card:hover {
-  background: rgba(0, 255, 255, 0.12);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.12);
   transform: translateY(-2px);
 }
 
@@ -357,13 +357,13 @@
   background: var(--tf-quantum-cyan);
   transform-origin: bottom center;
   transform: translate(-50%, -100%);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+  box-shadow: 0 0 10px hsl(var(--tf-cyan-hs) 50% / 0.6);
 }
 
 /* Quantum Coherence Analysis */
 .quantum-coherence-analysis {
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.15);
   border-radius: 8px;
   padding: 1.5rem;
 }
@@ -384,7 +384,7 @@
   display: flex;
   justify-content: space-between;
   padding: 0.75rem;
-  background: rgba(0, 255, 255, 0.05);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.05);
   border-radius: 6px;
 }
 
@@ -396,15 +396,15 @@
 }
 
 .swarm-pattern-card {
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.15);
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.3s ease;
 }
 
 .swarm-pattern-card:hover {
-  background: rgba(0, 255, 255, 0.12);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.12);
   transform: translateY(-2px);
 }
 
@@ -431,7 +431,7 @@
 .emergent-behavior {
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background: rgba(0, 255, 255, 0.05);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.05);
   border-radius: 6px;
 }
 
@@ -451,8 +451,8 @@
 .pattern-visualization {
   height: 60px;
   position: relative;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  background: hsl(var(--tf-black) / 0.3);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.3);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -469,7 +469,7 @@
   height: 3px;
   background: var(--tf-quantum-cyan);
   border-radius: 50%;
-  box-shadow: 0 0 6px rgba(0, 255, 255, 0.8);
+  box-shadow: 0 0 6px hsl(var(--tf-cyan-hs) 50% / 0.8);
   transform: translate(-50%, 50%);
 }
 
@@ -481,15 +481,15 @@
 }
 
 .optimization-card {
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.15);
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.3s ease;
 }
 
 .optimization-card:hover {
-  background: rgba(0, 255, 255, 0.12);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.12);
   transform: translateY(-2px);
 }
 
@@ -515,11 +515,11 @@
   text-align: center;
   padding: 0.5rem;
   border-radius: 6px;
-  background: rgba(0, 255, 255, 0.05);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.05);
 }
 
 .optimal-value {
-  background: rgba(0, 255, 136, 0.1);
+  background: hsl(var(--tf-transcend-green-hs) 50% / 0.1);
 }
 
 .value-label {
@@ -563,7 +563,7 @@
 .algorithm-info {
   margin-bottom: 1rem;
   padding: 0.5rem;
-  background: rgba(0, 255, 255, 0.05);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.05);
   border-radius: 6px;
   font-size: 0.9rem;
 }
@@ -580,7 +580,7 @@
 
 .optimization-progress {
   height: 8px;
-  background: rgba(0, 255, 255, 0.2);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.2);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -663,9 +663,9 @@
 }
 
 .elite-glow {
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.3);
 }
 
 .elite-glow:hover {
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 30px hsl(var(--tf-cyan-hs) 50% / 0.5);
 }
