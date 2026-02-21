@@ -164,6 +164,7 @@ downloads/
 eggs/
 .eggs/
 lib/
+!tools/tdc/src/lib/
 lib64/
 parts/
 sdist/
