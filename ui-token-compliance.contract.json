@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 1317,
+  "violationCount": 1292,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -6181,181 +6181,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 29,
-      "column": 28,
-      "excerpt": "#00E5FF',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 100,
-      "column": 19,
-      "excerpt": "#00E5FF',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 114,
-      "column": 21,
-      "excerpt": "#00E5FF',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 21,
-      "column": 36,
-      "excerpt": "rgba(10, 14, 26, 0.98) 0%, rgba(20, 24, 36, 0.95) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 21,
-      "column": 63,
-      "excerpt": "rgba(20, 24, 36, 0.95) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 28,
-      "column": 30,
-      "excerpt": "rgba(0, 229, 255, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 30,
-      "column": 32,
-      "excerpt": "rgba(0, 229, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 33,
-      "column": 47,
-      "excerpt": "rgba(0, 229, 255, 0.8)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 57,
-      "column": 36,
-      "excerpt": "rgba(10, 14, 26, 0.98) 0%, rgba(20, 24, 36, 0.95) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 57,
-      "column": 63,
-      "excerpt": "rgba(20, 24, 36, 0.95) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 64,
-      "column": 24,
-      "excerpt": "rgba(239, 68, 68, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 65,
-      "column": 30,
-      "excerpt": "rgba(239, 68, 68, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 66,
-      "column": 32,
-      "excerpt": "rgba(239, 68, 68, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 98,
-      "column": 24,
-      "excerpt": "rgba(0, 229, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 99,
-      "column": 30,
-      "excerpt": "rgba(0, 229, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 112,
-      "column": 26,
-      "excerpt": "rgba(0, 229, 255, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 113,
-      "column": 32,
-      "excerpt": "rgba(0, 229, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 117,
-      "column": 49,
-      "excerpt": "rgba(0, 229, 255, 0.25)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 120,
-      "column": 49,
-      "excerpt": "rgba(0, 229, 255, 0.15)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 131,
-      "column": 26,
-      "excerpt": "rgba(255, 255, 255, 0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 132,
-      "column": 32,
-      "excerpt": "rgba(255, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 151,
-      "column": 22,
-      "excerpt": "rgba(239, 68, 68, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 152,
-      "column": 34,
-      "excerpt": "rgba(239, 68, 68, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 165,
-      "column": 24,
-      "excerpt": "rgba(239, 68, 68, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\GenericModuleHost.tsx",
-      "line": 166,
-      "column": 30,
-      "excerpt": "rgba(239, 68, 68, 0.3)',"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\ModuleLoader.tsx",
       "line": 51,
       "column": 26,
@@ -9225,5 +9050,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-21T15:37:42.612Z"
+  "generatedAtIso": "2026-02-21T16:17:12.507Z"
 }
