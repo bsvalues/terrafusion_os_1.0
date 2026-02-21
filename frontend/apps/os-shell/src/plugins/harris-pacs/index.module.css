@@ -2,7 +2,7 @@
   padding: 24px;
   background: linear-gradient(135deg, var(--tf-surface-darker) 0%, var(--tf-surface-darker) 100%);
   border-radius: 12px;
-  color: #ffffff;
+  color: hsl(var(--tf-text));
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -15,20 +15,20 @@
   margin: 0 0 8px 0;
   font-size: 28px;
   font-weight: 600;
-  color: #4fc3f7;
+  color: hsl(var(--tf-clarity-blue-hs) / 1);
 }
 
 .header p {
   margin: 0;
   font-size: 16px;
-  color: #b0bec5;
+  color: hsl(var(--tf-light-muted));
 }
 
 .loading {
   text-align: center;
   padding: 40px;
   font-size: 18px;
-  color: #4fc3f7;
+  color: hsl(var(--tf-clarity-blue-hs) / 1);
 }
 
 .statusGrid {
@@ -39,8 +39,8 @@
 }
 
 .statusCard {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(79, 195, 247, 0.2);
+  background: hsl(var(--tf-text) / 0.05);
+  border: 1px solid hsl(var(--tf-clarity-blue-hs) / 0.2);
   border-radius: 8px;
   padding: 20px;
   backdrop-filter: blur(10px);
@@ -50,13 +50,13 @@
   margin: 0 0 16px 0;
   font-size: 18px;
   font-weight: 500;
-  color: #4fc3f7;
+  color: hsl(var(--tf-clarity-blue-hs) / 1);
 }
 
 .progressBar {
   width: 100%;
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: hsl(var(--tf-text) / 0.1);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 8px;
@@ -64,14 +64,14 @@
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #4fc3f7, #29b6f6);
+  background: linear-gradient(90deg, hsl(var(--tf-clarity-blue-hs) / 1), hsl(var(--tf-clarity-blue-hs) / 0.85));
   transition: width 0.3s ease;
 }
 
 .progressText {
   font-size: 14px;
   font-weight: 600;
-  color: #4fc3f7;
+  color: hsl(var(--tf-clarity-blue-hs) / 1);
   text-align: center;
 }
 
@@ -89,7 +89,7 @@
 
 .statLabel {
   font-size: 14px;
-  color: #b0bec5;
+  color: hsl(var(--tf-light-muted));
 }
 
 .statValue {
@@ -98,15 +98,15 @@
 }
 
 .statValue.valid {
-  color: #4caf50;
+  color: hsl(var(--tf-success));
 }
 
 .statValue.invalid {
-  color: #f44336;
+  color: hsl(var(--tf-error));
 }
 
 .statValue.pending {
-  color: #ff9800;
+  color: hsl(var(--tf-warning));
 }
 
 .mappingInfo {
@@ -117,9 +117,9 @@
 
 .mappingRow {
   font-size: 14px;
-  color: #e0e0e0;
+  color: hsl(var(--tf-light-border));
   padding: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: hsl(var(--tf-text) / 0.05);
   border-radius: 4px;
 }
 
@@ -131,11 +131,11 @@
 }
 
 .mappingStats span:first-child {
-  color: #4caf50;
+  color: hsl(var(--tf-success));
 }
 
 .mappingStats span:last-child {
-  color: #f44336;
+  color: hsl(var(--tf-error));
 }
 
 .actions {
@@ -146,7 +146,7 @@
 }
 
 .primaryButton {
-  background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+  background: linear-gradient(135deg, hsl(var(--tf-clarity-blue-hs) / 1), hsl(var(--tf-clarity-blue-hs) / 0.85));
   color: white;
   border: none;
   padding: 12px 24px;
@@ -159,7 +159,7 @@
 }
 
 .primaryButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, #29b6f6, var(--tf-info-light));
+  background: linear-gradient(135deg, hsl(var(--tf-clarity-blue-hs) / 0.85), var(--tf-info-light));
   transform: translateY(-1px);
 }
 
@@ -171,8 +171,8 @@
 
 .secondaryButton {
   background: transparent;
-  color: #4fc3f7;
-  border: 1px solid #4fc3f7;
+  color: hsl(var(--tf-clarity-blue-hs) / 1);
+  border: 1px solid hsl(var(--tf-clarity-blue-hs) / 1);
   padding: 12px 24px;
   border-radius: 6px;
   font-size: 16px;
@@ -183,7 +183,7 @@
 }
 
 .secondaryButton:hover:not(:disabled) {
-  background: rgba(79, 195, 247, 0.1);
+  background: hsl(var(--tf-clarity-blue-hs) / 0.1);
   transform: translateY(-1px);
 }
 
@@ -194,10 +194,10 @@
 }
 
 .timeline {
-  background: rgba(255, 255, 255, 0.05);
+  background: hsl(var(--tf-text) / 0.05);
   border-radius: 8px;
   padding: 20px;
-  border: 1px solid rgba(79, 195, 247, 0.2);
+  border: 1px solid hsl(var(--tf-clarity-blue-hs) / 0.2);
 }
 
 .timelineItem {
@@ -208,19 +208,19 @@
 }
 
 .timelineItem:not(:last-child) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid hsl(var(--tf-text) / 0.1);
   margin-bottom: 8px;
   padding-bottom: 16px;
 }
 
 .timelineLabel {
   font-size: 14px;
-  color: #b0bec5;
+  color: hsl(var(--tf-light-muted));
   font-weight: 500;
 }
 
 .timelineValue {
   font-size: 14px;
-  color: #e0e0e0;
+  color: hsl(var(--tf-light-border));
   font-weight: 600;
 }
