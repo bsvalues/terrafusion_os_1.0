@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 1042,
+  "violationCount": 1022,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -172,146 +172,6 @@
       "line": 552,
       "column": 26,
       "excerpt": "rgba(0, 0, 0, 0.3)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 2,
-      "column": 15,
-      "excerpt": "#0a0a0a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 3,
-      "column": 21,
-      "excerpt": "#333;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 16,
-      "column": 28,
-      "excerpt": "#333;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 41,
-      "column": 15,
-      "excerpt": "#1a4d1a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 46,
-      "column": 15,
-      "excerpt": "#4d1a1a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 58,
-      "column": 15,
-      "excerpt": "#1a1a1a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 59,
-      "column": 21,
-      "excerpt": "#333;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 73,
-      "column": 15,
-      "excerpt": "#2a1a1a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 104,
-      "column": 15,
-      "excerpt": "#2a1a1a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 125,
-      "column": 25,
-      "excerpt": "#333;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 141,
-      "column": 15,
-      "excerpt": "#1a1a1a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 142,
-      "column": 21,
-      "excerpt": "#333;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 165,
-      "column": 15,
-      "excerpt": "#0a0a0a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 166,
-      "column": 21,
-      "excerpt": "#333;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 171,
-      "column": 17,
-      "excerpt": "#1a4d1a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 172,
-      "column": 15,
-      "excerpt": "#0f1f0f;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 176,
-      "column": 17,
-      "excerpt": "#4d1a1a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 177,
-      "column": 15,
-      "excerpt": "#1f0f0f;"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 68,
-      "column": 23,
-      "excerpt": "rgba(0, 255, 0, 0.2);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\admin\\SystemMonitor.module.css",
-      "line": 77,
-      "column": 23,
-      "excerpt": "rgba(255, 68, 68, 0.2);"
     },
     {
       "kind": "RAW_HEX",
@@ -7300,5 +7160,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-21T23:40:19.733Z"
+  "generatedAtIso": "2026-02-21T23:44:02.360Z"
 }
