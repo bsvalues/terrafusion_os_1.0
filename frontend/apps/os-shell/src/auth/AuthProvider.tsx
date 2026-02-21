@@ -10,6 +10,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { getToken, setToken as persistToken, clearToken } from './authStorage';
 import { registerLogoutHandler, unregisterLogoutHandler } from './authBridge';
 import { useAuth } from './useAuth';
+import { isDevPreviewMode, shouldForceLoginRedirect } from './authPolicy';
 
 export interface AuthContextValue {
   token: string | null;
@@ -20,8 +21,37 @@ export interface AuthContextValue {
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
+const DEV_PREVIEW_TOKEN = 'dev-preview-token';
+const DEV_SESSION_KEY = 'tf.session.dev';
+
+function seedDevPreviewSession(): void {
+  if (typeof localStorage === 'undefined') return;
+  if (localStorage.getItem(DEV_SESSION_KEY)) return;
+
+  localStorage.setItem(
+    DEV_SESSION_KEY,
+    JSON.stringify({
+      userId: 'dev-user',
+      countyId: '12345',
+      role: 'dev',
+      mode: 'pilot',
+    })
+  );
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(() => getToken());
+  const [token, setTokenState] = useState<string | null>(() => {
+    const existing = getToken();
+    if (existing) return existing;
+
+    if (isDevPreviewMode()) {
+      persistToken(DEV_PREVIEW_TOKEN);
+      seedDevPreviewSession();
+      return DEV_PREVIEW_TOKEN;
+    }
+
+    return null;
+  });
 
   const login = useCallback((newToken: string) => {
     persistToken(newToken);
@@ -62,8 +92,16 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
+  if (!shouldForceLoginRedirect()) {
+    return <>{children}</>;
+  }
+
   if (!isAuthenticated && location.pathname !== '/login') {
     return <Navigate to='/login' replace />;
+  }
+
+  if (isAuthenticated && location.pathname === '/login') {
+    return <Navigate to='/canon' replace />;
   }
 
   return <>{children}</>;

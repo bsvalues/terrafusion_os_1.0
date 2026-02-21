@@ -2,6 +2,7 @@ import { getViteEnv } from '@/env/getViteEnv';
 import axios from 'axios';
 import { getToken } from '@/auth/authStorage';
 import { logout as authBridgeLogout, isLogoutInFlight } from '@/auth/authBridge';
+import { shouldForceLoginRedirect } from '@/auth/authPolicy';
 
 const env = getViteEnv();
 const API_BASE_URL =
@@ -30,6 +31,10 @@ api.interceptors.response.use(
   (error) => {
     console.error('API Error:', error);
     if (error.response?.status === 401) {
+      if (!shouldForceLoginRedirect()) {
+        console.warn('[dev-preview] Suppressed auto-logout on 401:', error.config?.url);
+        return Promise.reject(error);
+      }
       // Delegate to auth bridge — ensures single logout per burst
       if (!isLogoutInFlight()) {
         authBridgeLogout('unauthorized');

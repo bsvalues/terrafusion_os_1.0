@@ -155,7 +155,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss, className }) => 
         'border border-white/10',
         'border-l-4',
         borderColors[toast.type],
-        'shadow-[0_4px_20px_rgba(0,0,0,0.5),0_0_30px_rgba(0,255,238,0.1)]',
+        'shadow-[0_4px_20px_hsl(var(--tf-bg)/0.5),0_0_30px_hsl(var(--tf-accent)/0.1)]',
         // Animation
         'animate-in slide-in-from-right-full fade-in duration-300',
         className

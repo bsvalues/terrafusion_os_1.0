@@ -279,9 +279,9 @@ describe('Window Component', () => {
 
       render(<Window window={mockWindow} />);
 
-      const windowVisuals = screen.getByTestId('window-visuals');
+      const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals).toHaveStyle({
-        border: '1px solid rgba(0, 229, 255, 0.5)',
+        border: '1px solid hsl(var(--tf-accent) / 0.5)',
       });
     });
 
@@ -297,9 +297,9 @@ describe('Window Component', () => {
 
       render(<Window window={mockWindow} />);
 
-      const windowVisuals = screen.getByTestId('window-visuals');
+      const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals).toHaveStyle({
-        border: '1px solid rgba(0, 229, 255, 0.15)',
+        border: '1px solid hsl(var(--tf-border) / 0.5)',
       });
     });
 
@@ -494,7 +494,7 @@ describe('Window Component', () => {
       const mockWindow = createMockWindow();
       render(<Window window={mockWindow} />);
 
-      const windowVisuals = screen.getByTestId('window-visuals');
+      const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals.style.backdropFilter).toContain('blur(24px)');
     });
 
@@ -502,7 +502,7 @@ describe('Window Component', () => {
       const mockWindow = createMockWindow();
       render(<Window window={mockWindow} />);
 
-      const windowVisuals = screen.getByTestId('window-visuals');
+      const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals.className).toContain('rounded-lg');
     });
 
@@ -510,7 +510,7 @@ describe('Window Component', () => {
       const mockWindow = createMockWindow();
       render(<Window window={mockWindow} />);
 
-      const windowVisuals = screen.getByTestId('window-visuals');
+      const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals.style.boxShadow).not.toBe('');
     });
   });

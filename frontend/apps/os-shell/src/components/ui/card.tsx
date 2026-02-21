@@ -20,7 +20,7 @@ const Card = React.forwardRef<HTMLDivElement, EliteCardProps>(
     };
 
     const glowClasses = glow
-      ? 'shadow-[0_0_20px_rgba(0,255,255,0.4)] hover:shadow-[0_0_30px_rgba(0,255,255,0.6)] transition-shadow duration-300'
+      ? 'shadow-[0_0_20px_hsl(var(--tf-accent)/0.4)] hover:shadow-[0_0_30px_hsl(var(--tf-accent)/0.6)] transition-shadow duration-300'
       : '';
 
     return (
@@ -71,3 +71,4 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 CardFooter.displayName = 'CardFooter';
 
 export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };
+

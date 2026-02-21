@@ -61,6 +61,11 @@ ci_governance_proof.log
 ci_dependency_scope_quarantine.log
 ci_telemetry.json
 
+# TDC contract outputs (generated, not source)
+ui-token-compliance.contract.json
+ui-token-compliance.full.contract.json
+ui-token-ratchet.contract.json
+
 # Phase 3 Extraction Artifacts (archived)
 # Note: Actual extraction scripts archived in archive/phase-3-extraction/
 # Keep Phase 3 documentation files (PHASE_3*.md) for reference
@@ -159,6 +164,7 @@ downloads/
 eggs/
 .eggs/
 lib/
+!tools/tdc/src/lib/
 lib64/
 parts/
 sdist/

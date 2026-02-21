@@ -224,10 +224,10 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
         'w-80 max-h-[400px] rounded-lg overflow-hidden',
         'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
         'border border-[var(--tf-transcend-highlight)]/20',
-        'shadow-[0_-8px_30px_rgba(0,0,0,0.5),0_0_40px_rgba(0,255,238,0.1)]',
         'flex flex-col',
         className
       )}
+      style={{ boxShadow: '0 -8px 30px hsl(var(--tf-bg) / 0.5), 0 0 40px hsl(var(--tf-accent) / 0.1)' }}
     >
       {/* Header */}
       <div className='flex items-center justify-between p-3 border-b border-white/10'>
@@ -347,8 +347,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               'flex items-center justify-center',
               'text-[10px] font-bold',
               'bg-[var(--error-red)] text-white rounded-full',
-              'shadow-[0_0_6px_rgba(255,68,68,0.6)]'
             )}
+            style={{ boxShadow: '0 0 6px var(--tf-error-red)' }}
           >
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>

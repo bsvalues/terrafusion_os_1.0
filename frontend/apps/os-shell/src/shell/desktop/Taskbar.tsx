@@ -9,6 +9,7 @@
  */
 
 import { cn } from '@/lib/utils';
+import { Button } from '@terrafusion/ui';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ParcelContextIndicator } from '../../components/ParcelContext';
@@ -86,7 +87,7 @@ const StartButton: React.FC = () => {
         // Hover state
         'hover:bg-white/10',
         // Active/pressed state
-        isOpen && 'bg-white/15 shadow-[0_0_20px_rgba(0,255,238,0.3)]'
+        isOpen && 'bg-white/15 shadow-[0_0_20px_hsl(var(--tf-accent)/0.3)]'
       )}
     >
       {/* TerraSphere Logo */}
@@ -131,15 +132,15 @@ const SovereignDock: React.FC = () => {
   return (
     <div className='flex items-center gap-2 px-2 shrink-0'>
       {SOVEREIGN_NODES.map((node) => (
-        <button
+        <Button
           key={node}
-          type='button'
+          variant='ghost'
           onClick={() => handleNodeClick(node)}
           data-testid={`sovereign-launch-${node.toLowerCase()}`}
-          className='glass-button px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white/90'
+          className='px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white/90'
         >
           {node}
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -206,7 +207,7 @@ const TaskbarAppButton: React.FC<TaskbarAppButtonProps> = ({
         isActive && [
           'bg-white/15',
           'border-b-2 border-[var(--tf-transcend-highlight)]',
-          'shadow-[0_2px_10px_rgba(0,255,238,0.3)]',
+          'shadow-[0_2px_10px_hsl(var(--tf-accent)/0.3)]',
         ],
         // Minimized state (dimmed)
         isMinimized && !isActive && 'opacity-60'
@@ -387,16 +388,12 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           className
         )}
         style={{
-          // Immersive Glassmorphism - floats over WebGL
-          background: 'rgba(10, 14, 26, 0.7)',
+          // Immersive Glassmorphism — Lumin tokens only
+          background: 'hsl(var(--tf-bg) / 0.7)',
           backdropFilter: 'saturate(200%) blur(30px)',
           WebkitBackdropFilter: 'saturate(200%) blur(30px)',
-          borderTop: '1px solid rgba(0, 229, 255, 0.25)',
-          boxShadow: `
-            0 -8px 32px rgba(0, 0, 0, 0.4),
-            0 0 60px rgba(0, 229, 255, 0.08),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08)
-          `,
+          borderTop: '1px solid hsl(var(--tf-border) / 0.5)',
+          boxShadow: 'var(--tf-shadow)',
         }}
       >
         {/* Start Button */}

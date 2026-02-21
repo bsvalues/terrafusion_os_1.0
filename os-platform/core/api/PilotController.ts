@@ -8,6 +8,8 @@
  */
 
 import { randomUUID } from 'crypto';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
 import { NextFunction, Request, Response, Router } from 'express';
 import { toolRegistry, ToolRunner, toolRunner } from '../pilot/index.js';
 import {
@@ -70,6 +72,292 @@ export interface PilotValidateResponse {
     requiresConfirmation?: boolean;
     reasonCodes?: string[];
   };
+}
+
+interface CanonPingRequest {
+  echo?: string;
+}
+
+interface WorkbenchExplainModelInputsRequest {
+  echo?: string;
+}
+
+interface WorkbenchCompareAssessedValueHistoryInput {
+  county?: unknown;
+  parcelId?: unknown;
+  years?: unknown;
+  includeBreakdown?: unknown;
+}
+
+interface WorkbenchCompareAssessedValueHistoryRequest {
+  input?: WorkbenchCompareAssessedValueHistoryInput;
+}
+
+const DEFAULT_COMPARE_HISTORY_INPUT = {
+  county: 'benton',
+  parcelId: 'P-300',
+  years: [2024, 2022, 2023] as number[],
+  includeBreakdown: false,
+};
+
+interface CanonCommandResponse {
+  tool: string;
+  version: number;
+  startedAt: string;
+  dryRun: boolean;
+  overallOk: boolean;
+  error?: string;
+  stderr?: string;
+  rawStdout?: string;
+  rawStderr?: string;
+  normalized?: unknown;
+  raw?: unknown;
+}
+
+const MAX_CANON_ECHO_LENGTH = 160;
+const CANON_COMMAND_TIMEOUT_MS = 10_000;
+
+const SAFE_CANON_ENV_KEYS = [
+  'PATH',
+  'SystemRoot',
+  'ComSpec',
+  'HOME',
+  'USERPROFILE',
+  'PNPM_HOME',
+  'TEMP',
+  'TMP',
+  'NODE_OPTIONS',
+];
+
+function resolvePnpmCommand(): string {
+  return process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+}
+
+function normalizeEcho(value: unknown): string {
+  if (typeof value !== 'string') return 'hello';
+  const trimmed = value.trim();
+  if (!trimmed) return 'hello';
+  return trimmed.slice(0, MAX_CANON_ECHO_LENGTH);
+}
+
+function normalizeCompareAssessedValueHistoryInput(
+  body: WorkbenchCompareAssessedValueHistoryRequest | undefined
+): { params?: Record<string, unknown>; error?: string } {
+  const base = {
+    county: DEFAULT_COMPARE_HISTORY_INPUT.county,
+    parcelId: DEFAULT_COMPARE_HISTORY_INPUT.parcelId,
+    years: [...DEFAULT_COMPARE_HISTORY_INPUT.years],
+    includeBreakdown: DEFAULT_COMPARE_HISTORY_INPUT.includeBreakdown,
+  };
+
+  if (!body || body.input === undefined || body.input === null) {
+    return { params: base };
+  }
+
+  const input = body.input;
+  if (typeof input !== 'object' || Array.isArray(input)) {
+    return { error: 'input must be an object' };
+  }
+
+  let serialized = '';
+  try {
+    serialized = JSON.stringify(input);
+  } catch {
+    return { error: 'input must be JSON-serializable' };
+  }
+  if (serialized.length > 2_000) {
+    return { error: 'input payload too large (max 2000 chars)' };
+  }
+
+  const source = input as Record<string, unknown>;
+  const allowedKeys = new Set(['county', 'parcelId', 'years', 'includeBreakdown']);
+  for (const key of Object.keys(source)) {
+    if (!allowedKeys.has(key)) {
+      return { error: `input contains unsupported key: ${key}` };
+    }
+  }
+
+  if ('county' in source) {
+    if (typeof source.county !== 'string' || !source.county.trim()) {
+      return { error: 'input.county must be a non-empty string' };
+    }
+    base.county = source.county.trim().toLowerCase();
+  }
+
+  if ('parcelId' in source) {
+    if (typeof source.parcelId !== 'string' || !source.parcelId.trim()) {
+      return { error: 'input.parcelId must be a non-empty string' };
+    }
+    base.parcelId = source.parcelId.trim().slice(0, 128);
+  }
+
+  if ('years' in source) {
+    if (!Array.isArray(source.years) || source.years.length === 0 || source.years.length > 8) {
+      return { error: 'input.years must be an array of 1-8 years' };
+    }
+    const parsedYears = source.years.map((value) => Number(value));
+    if (parsedYears.some((year) => !Number.isInteger(year) || year < 1900 || year > 2100)) {
+      return { error: 'input.years must contain valid integer years' };
+    }
+    base.years = parsedYears;
+  }
+
+  if ('includeBreakdown' in source) {
+    if (typeof source.includeBreakdown !== 'boolean') {
+      return { error: 'input.includeBreakdown must be boolean' };
+    }
+    base.includeBreakdown = source.includeBreakdown;
+  }
+
+  return { params: base };
+}
+
+function defaultToolForCommand(commandLabel: string): string {
+  if (commandLabel === 'canon:ping') return 'terracanon-ping';
+  if (commandLabel === 'canon:doctor') return 'terracanon-doctor';
+  if (commandLabel === 'canon:gatefast') return 'terracanon-gatefast';
+  return 'terracanon-canon-command';
+}
+
+function parseCanonCommandResponse(
+  commandLabel: string,
+  stdout: string,
+  stderr: string,
+  exitCode: number
+): CanonCommandResponse {
+  const startedAt = new Date().toISOString();
+  const trimmed = stdout.trim();
+  if (!trimmed) {
+    return {
+      tool: defaultToolForCommand(commandLabel),
+      version: 1,
+      startedAt,
+      dryRun: false,
+      overallOk: false,
+      error: `${commandLabel} produced no JSON output (exit ${exitCode})`,
+      stderr: stderr.trim(),
+      rawStdout: stdout,
+      rawStderr: stderr,
+      normalized: null,
+      raw: null,
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed) as Partial<CanonCommandResponse>;
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('payload is not an object');
+    }
+
+    const normalized: CanonCommandResponse = {
+      tool: typeof parsed.tool === 'string' ? parsed.tool : defaultToolForCommand(commandLabel),
+      version: typeof parsed.version === 'number' ? parsed.version : 1,
+      startedAt: typeof parsed.startedAt === 'string' ? parsed.startedAt : startedAt,
+      dryRun: typeof parsed.dryRun === 'boolean' ? parsed.dryRun : false,
+      overallOk: typeof parsed.overallOk === 'boolean' ? parsed.overallOk : exitCode === 0,
+      error: typeof parsed.error === 'string' ? parsed.error : undefined,
+      stderr: typeof parsed.stderr === 'string' ? parsed.stderr : undefined,
+      rawStdout: typeof parsed.rawStdout === 'string' ? parsed.rawStdout : undefined,
+      rawStderr: typeof parsed.rawStderr === 'string' ? parsed.rawStderr : undefined,
+      normalized: parsed.normalized,
+      raw: parsed.raw,
+    };
+
+    const withExitState =
+      exitCode === 0
+        ? normalized
+        : {
+            ...normalized,
+            overallOk: false,
+            error: normalized.error || `${commandLabel} exited with code ${exitCode}`,
+          };
+
+    if (stderr.trim()) {
+      return { ...withExitState, stderr: withExitState.stderr || stderr.trim() };
+    }
+
+    return withExitState;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      tool: defaultToolForCommand(commandLabel),
+      version: 1,
+      startedAt,
+      dryRun: false,
+      overallOk: false,
+      error: `${commandLabel} returned invalid JSON: ${message}`,
+      stderr: stderr.trim(),
+      rawStdout: stdout,
+      rawStderr: stderr,
+      normalized: null,
+      raw: null,
+    };
+  }
+}
+
+function runCanonCommand(
+  commandLabel: string,
+  commandArgs: string[]
+): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  return new Promise((resolve) => {
+    const canonEnv: Record<string, string> = {};
+    for (const key of SAFE_CANON_ENV_KEYS) {
+      const value = process.env[key];
+      if (typeof value === 'string') {
+        canonEnv[key] = value;
+      }
+    }
+    canonEnv.TF_CANON_ADAPTER = '1';
+
+    const child = spawn(resolvePnpmCommand(), commandArgs, {
+      cwd: path.resolve(process.cwd()),
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: canonEnv,
+    });
+
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      child.kill();
+      settled = true;
+      resolve({
+        exitCode: 1,
+        stdout,
+        stderr: `${stderr}\n${commandLabel} timed out after ${CANON_COMMAND_TIMEOUT_MS}ms`,
+      });
+    }, CANON_COMMAND_TIMEOUT_MS);
+
+    child.stdout.on('data', (chunk: Buffer | string) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on('data', (chunk: Buffer | string) => {
+      stderr += chunk.toString();
+    });
+
+    child.on('error', (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      resolve({
+        exitCode: 1,
+        stdout: '',
+        stderr: error.message,
+      });
+    });
+
+    child.on('close', (code) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      resolve({
+        exitCode: code ?? 1,
+        stdout,
+        stderr,
+      });
+    });
+  });
 }
 
 // ============================================================================
@@ -335,6 +623,149 @@ export function createPilotRouter(runner?: ToolRunner): Router {
       timestamp: new Date().toISOString(),
     });
   });
+
+  /**
+   * POST /pilot/canon/ping
+   *
+   * Local adapter endpoint that executes `pnpm canon:ping --json`.
+   * Returns the canon wrapper payload directly for deterministic UI rendering.
+   */
+  router.post('/canon/ping', async (req: Request, res: Response) => {
+    const body = (req.body as CanonPingRequest) || {};
+    const echo = normalizeEcho(body.echo);
+    const { exitCode, stdout, stderr } = await runCanonCommand('canon:ping', [
+      'canon:ping',
+      '--json',
+      '--echo',
+      echo,
+    ]);
+    const payload = parseCanonCommandResponse('canon:ping', stdout, stderr, exitCode);
+    return res.status(200).json(payload);
+  });
+
+  /**
+   * POST /pilot/canon/doctor
+   *
+   * Local adapter endpoint that executes `pnpm canon:doctor --json`.
+   */
+  router.post('/canon/doctor', async (_req: Request, res: Response) => {
+    const { exitCode, stdout, stderr } = await runCanonCommand('canon:doctor', [
+      'canon:doctor',
+      '--json',
+    ]);
+    const payload = parseCanonCommandResponse('canon:doctor', stdout, stderr, exitCode);
+    return res.status(200).json(payload);
+  });
+
+  /**
+   * POST /pilot/canon/gatefast
+   *
+   * Local adapter endpoint that executes `pnpm canon:gatefast --json`.
+   */
+  router.post('/canon/gatefast', async (_req: Request, res: Response) => {
+    const { exitCode, stdout, stderr } = await runCanonCommand('canon:gatefast', [
+      'canon:gatefast',
+      '--json',
+    ]);
+    const payload = parseCanonCommandResponse('canon:gatefast', stdout, stderr, exitCode);
+    return res.status(200).json(payload);
+  });
+
+  /**
+   * POST /pilot/workbench/explain-model-inputs
+   *
+   * Local adapter endpoint that executes `pnpm canon:ping --json --echo <value>`.
+   * This is the minimal read-only Workbench action surface.
+   */
+  router.post('/workbench/explain-model-inputs', async (req: Request, res: Response) => {
+    const body = (req.body as WorkbenchExplainModelInputsRequest) || {};
+    const echo = normalizeEcho(body.echo);
+    const { exitCode, stdout, stderr } = await runCanonCommand('canon:ping', [
+      'canon:ping',
+      '--json',
+      '--echo',
+      echo,
+    ]);
+    const payload = parseCanonCommandResponse('canon:ping', stdout, stderr, exitCode);
+    return res.status(200).json(payload);
+  });
+
+  /**
+   * POST /pilot/workbench/compare-assessed-value-history
+   *
+   * Local adapter endpoint for read-only Workbench action.
+   * Executes compare_assessed_value_history through ToolRunner with deterministic defaults.
+   */
+  router.post(
+    '/workbench/compare-assessed-value-history',
+    async (req: AuthenticatedRequest, res: Response) => {
+      const startedAt = new Date().toISOString();
+      const normalizedRequest = normalizeCompareAssessedValueHistoryInput(
+        req.body as WorkbenchCompareAssessedValueHistoryRequest
+      );
+
+      if (!normalizedRequest.params) {
+        return res.status(200).json({
+          tool: 'compare_assessed_value_history',
+          version: 1,
+          startedAt,
+          dryRun: false,
+          overallOk: false,
+          error: normalizedRequest.error || 'invalid input',
+          normalized: null,
+          raw: null,
+        });
+      }
+
+      const user = req.user ?? {
+        userId: 'anonymous',
+        roles: ['viewer'],
+        countyId: 'benton',
+      };
+
+      const context: ToolExecutionContext = {
+        countyId: user.countyId,
+        userId: user.userId,
+        roles: user.roles,
+        mode: 'muse',
+      };
+
+      const result = await effectiveRunner.execute({
+        toolId: 'compare_assessed_value_history',
+        params: normalizedRequest.params,
+        context,
+      });
+
+      if (result.ok) {
+        return res.status(200).json({
+          tool: 'compare_assessed_value_history',
+          version: 1,
+          startedAt,
+          dryRun: false,
+          overallOk: true,
+          normalized: result.result,
+          raw: {
+            correlationId: result.correlationId,
+            traceEventId: result.traceEventId,
+          },
+        });
+      }
+
+      return res.status(200).json({
+        tool: 'compare_assessed_value_history',
+        version: 1,
+        startedAt,
+        dryRun: false,
+        overallOk: false,
+        error: result.error || 'compare_assessed_value_history failed',
+        rawStderr: result.errorCode ? String(result.errorCode) : undefined,
+        raw: {
+          correlationId: result.correlationId,
+          errorCode: result.errorCode,
+        },
+      });
+    }
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // GOVERNANCE DASHBOARD ENDPOINTS (Phase 7.4)

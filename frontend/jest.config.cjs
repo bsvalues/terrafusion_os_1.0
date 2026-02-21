@@ -30,6 +30,7 @@ const config = {
     '^@hooks/(.*)$': '<rootDir>/apps/os-shell/src/hooks/$1',
     '^@utils/(.*)$': '<rootDir>/apps/os-shell/src/utils/$1',
     '^@lib/(.*)$': '<rootDir>/apps/os-shell/src/lib/$1',
+    '^@terrafusion/ui$': '<rootDir>/../packages/ui/src/index.ts',
     '^@assets/(.*)$': '<rootDir>/apps/os-shell/src/assets/$1',
 
     // Mock static assets

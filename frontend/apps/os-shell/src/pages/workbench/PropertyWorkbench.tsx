@@ -22,9 +22,21 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { Suspense, lazy, useCallback, useMemo, useRef } from 'react';
+import React, { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
+import {
+  runWorkbenchCompareAssessedValueHistory,
+  type WorkbenchCompareAssessedValueHistoryResponse,
+} from '../../api/workbenchCompareAssessedValueHistory';
+import {
+  runWorkbenchExplainModelInputs,
+  type WorkbenchExplainModelInputsResponse,
+} from '../../api/workbenchExplainModelInputs';
+import {
+  runWorkbenchSummarizeSalesCompsRationale,
+  type WorkbenchSummarizeSalesCompsRationaleResponse,
+} from '../../api/workbenchSummarizeSalesCompsRationale';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
@@ -37,6 +49,14 @@ interface WorkbenchTab {
   icon: string;
   path: string;
   enabled: boolean;
+}
+
+interface AuditEnvelopeData {
+  toolId: string;
+  startedAt: string;
+  overallOk: boolean;
+  inputHash?: string;
+  outputHash?: string;
 }
 
 // ============================================================================
@@ -72,6 +92,62 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): string {
     pilot: 'pilot',
   };
   return tabPathMap[pathAfterBase] ?? 'summary';
+}
+
+function readHashValue(source: unknown, keys: string[]): string | undefined {
+  if (!source || typeof source !== 'object') return undefined;
+  const record = source as Record<string, unknown>;
+
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'string' && value.trim().length > 0) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function extractAuditEnvelope(
+  fallbackToolId: string,
+  result:
+    | WorkbenchExplainModelInputsResponse
+    | WorkbenchCompareAssessedValueHistoryResponse
+    | WorkbenchSummarizeSalesCompsRationaleResponse
+    | null
+): AuditEnvelopeData | null {
+  if (!result) return null;
+
+  const normalized =
+    result.normalized && typeof result.normalized === 'object'
+      ? (result.normalized as Record<string, unknown>)
+      : null;
+  const raw = result.raw && typeof result.raw === 'object' ? (result.raw as Record<string, unknown>) : null;
+  const rawAudit =
+    raw?.audit && typeof raw.audit === 'object' ? (raw.audit as Record<string, unknown>) : null;
+
+  const toolId =
+    (typeof normalized?.toolId === 'string' && normalized.toolId) ||
+    (typeof result.tool === 'string' && result.tool) ||
+    fallbackToolId;
+
+  const inputHash =
+    readHashValue(rawAudit, ['inputHash', 'input_hash', 'inputSha256']) ??
+    readHashValue(raw, ['inputHash', 'input_hash', 'inputSha256']) ??
+    readHashValue(result, ['inputHash', 'input_hash', 'inputSha256']);
+
+  const outputHash =
+    readHashValue(rawAudit, ['outputHash', 'output_hash', 'outputSha256']) ??
+    readHashValue(raw, ['outputHash', 'output_hash', 'outputSha256']) ??
+    readHashValue(result, ['outputHash', 'output_hash', 'outputSha256']);
+
+  return {
+    toolId,
+    startedAt: result.startedAt,
+    overallOk: result.overallOk,
+    inputHash,
+    outputHash,
+  };
 }
 
 // ============================================================================
@@ -114,6 +190,34 @@ const TabLoader: React.FC = () => (
     </div>
   </div>
 );
+
+const AuditEnvelopePanel: React.FC<{
+  prefix: string;
+  audit: AuditEnvelopeData | null;
+}> = ({ prefix, audit }) => {
+  if (!audit) return null;
+
+  return (
+    <details className='mt-2' data-testid={`${prefix}-audit-details`}>
+      <summary data-testid={`${prefix}-audit-summary`}>Audit Envelope</summary>
+      <div className='mt-2 space-y-1 text-xs text-white/75'>
+        <div data-testid={`${prefix}-audit-tool-id`}>toolId: {audit.toolId}</div>
+        <div data-testid={`${prefix}-audit-started-at`}>startedAt: {audit.startedAt}</div>
+        <div data-testid={`${prefix}-audit-overall-ok`}>overallOk: {String(audit.overallOk)}</div>
+        {audit.inputHash && (
+          <div className='font-mono break-all' data-testid={`${prefix}-audit-input-hash`}>
+            inputHash: {audit.inputHash}
+          </div>
+        )}
+        {audit.outputHash && (
+          <div className='font-mono break-all' data-testid={`${prefix}-audit-output-hash`}>
+            outputHash: {audit.outputHash}
+          </div>
+        )}
+      </div>
+    </details>
+  );
+};
 
 /**
  * Property Header - Shows parcel info and navigation
@@ -227,6 +331,30 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const { parcelId } = useParams<{ parcelId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const [explainEcho, setExplainEcho] = useState('hello');
+  const [explainRunning, setExplainRunning] = useState(false);
+  const [explainResult, setExplainResult] = useState<WorkbenchExplainModelInputsResponse | null>(
+    null
+  );
+  const [compareRunning, setCompareRunning] = useState(false);
+  const [compareResult, setCompareResult] =
+    useState<WorkbenchCompareAssessedValueHistoryResponse | null>(null);
+  const [salesCompsRunning, setSalesCompsRunning] = useState(false);
+  const [salesCompsResult, setSalesCompsResult] =
+    useState<WorkbenchSummarizeSalesCompsRationaleResponse | null>(null);
+
+  const explainAudit = useMemo(
+    () => extractAuditEnvelope('explain_model_inputs', explainResult),
+    [explainResult]
+  );
+  const compareAudit = useMemo(
+    () => extractAuditEnvelope('compare_assessed_value_history', compareResult),
+    [compareResult]
+  );
+  const salesCompsAudit = useMemo(
+    () => extractAuditEnvelope('summarize_sales_comps_rationale', salesCompsResult),
+    [salesCompsResult]
+  );
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -251,6 +379,48 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const handleBack = useCallback(() => {
     navigate('/');
   }, [navigate]);
+
+  const handleRunExplainModelInputs = useCallback(async () => {
+    if (explainRunning) return;
+    setExplainRunning(true);
+    try {
+      const result = await runWorkbenchExplainModelInputs(explainEcho);
+      setExplainResult(result);
+    } finally {
+      setExplainRunning(false);
+    }
+  }, [explainEcho, explainRunning]);
+
+  const handleRunCompareAssessedValueHistory = useCallback(async () => {
+    if (compareRunning) return;
+    setCompareRunning(true);
+    try {
+      const result = await runWorkbenchCompareAssessedValueHistory({
+        county: 'benton',
+        parcelId: parcelId || 'P-300',
+        years: [2024, 2022, 2023],
+      });
+      setCompareResult(result);
+    } finally {
+      setCompareRunning(false);
+    }
+  }, [compareRunning, parcelId]);
+
+  const handleRunSummarizeSalesCompsRationale = useCallback(async () => {
+    if (salesCompsRunning) return;
+    setSalesCompsRunning(true);
+    try {
+      const result = await runWorkbenchSummarizeSalesCompsRationale({
+        county: 'benton',
+        subjectId: parcelId || 'P-300',
+        compIds: ['C-101', 'C-102', 'C-103'],
+        adjustments: true,
+      });
+      setSalesCompsResult(result);
+    } finally {
+      setSalesCompsRunning(false);
+    }
+  }, [parcelId, salesCompsRunning]);
 
   /**
    * Handle tab click - emits OS action trace for user-initiated tab switches
@@ -336,6 +506,270 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
       {/* Tab Content */}
       <main className='flex-1 overflow-auto p-6'>
+        <section
+          className='mb-6 rounded-lg border border-white/10 bg-slate-900/50 p-4'
+          data-testid='workbench-explain-model-inputs-panel'
+        >
+          <h2 className='text-white text-base font-semibold mb-1'>Workbench Action</h2>
+          <p className='text-white/60 text-sm mb-3'>Explain Model Inputs (read-only)</p>
+          <div className='flex flex-wrap items-center gap-2'>
+            <input
+              className='px-2 py-1 text-sm rounded bg-slate-800 border border-slate-700 text-white'
+              data-testid='workbench-explain-model-inputs-echo'
+              type='text'
+              value={explainEcho}
+              onChange={(event) => setExplainEcho(event.target.value)}
+              disabled={explainRunning}
+              placeholder='Echo value'
+            />
+            <button
+              className='px-3 py-1.5 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white disabled:opacity-50'
+              data-testid='workbench-run-explain-model-inputs'
+              disabled={explainRunning}
+              onClick={handleRunExplainModelInputs}
+            >
+              {explainRunning ? 'Running...' : 'Run Explain Model Inputs'}
+            </button>
+          </div>
+
+          {explainResult && (
+            <div
+              className='mt-3 rounded border border-white/10 bg-black/20 p-3 text-sm text-white/85'
+              data-testid='workbench-explain-model-inputs-result'
+            >
+              <div className='font-semibold' data-testid='workbench-explain-model-inputs-status'>
+                {explainResult.overallOk ? 'PASS' : 'FAIL'}
+              </div>
+              <div data-testid='workbench-explain-model-inputs-started'>{explainResult.startedAt}</div>
+
+              {explainResult.overallOk && explainResult.normalized ? (
+                <div className='mt-2 space-y-1'>
+                  <div data-testid='workbench-explain-model-inputs-ok'>
+                    ok: {String(explainResult.normalized.ok)}
+                  </div>
+                  <div data-testid='workbench-explain-model-inputs-ts'>
+                    ts: {explainResult.normalized.ts}
+                  </div>
+                  <div data-testid='workbench-explain-model-inputs-echo-value'>
+                    echo: {explainResult.normalized.echo}
+                  </div>
+                  <div data-testid='workbench-explain-model-inputs-tool-id'>
+                    toolId: {explainResult.normalized.toolId}
+                  </div>
+                  <div data-testid='workbench-explain-model-inputs-input-count'>
+                    inputCount: {String(explainResult.normalized.inputCount)}
+                  </div>
+                </div>
+              ) : (
+                <div className='mt-2'>
+                  <div data-testid='workbench-explain-model-inputs-error'>
+                    {explainResult.error || 'Workbench action failed'}
+                  </div>
+                  {(explainResult.rawStderr || explainResult.rawStdout || explainResult.stderr) && (
+                    <details className='mt-2' data-testid='workbench-explain-model-inputs-details'>
+                      <summary>Details</summary>
+                      {explainResult.stderr && (
+                        <pre className='mt-1 whitespace-pre-wrap' data-testid='workbench-explain-model-inputs-stderr'>
+                          {explainResult.stderr}
+                        </pre>
+                      )}
+                      {explainResult.rawStderr && (
+                        <pre className='mt-1 whitespace-pre-wrap' data-testid='workbench-explain-model-inputs-raw-stderr'>
+                          {explainResult.rawStderr}
+                        </pre>
+                      )}
+                      {explainResult.rawStdout && (
+                        <pre className='mt-1 whitespace-pre-wrap' data-testid='workbench-explain-model-inputs-raw-stdout'>
+                          {explainResult.rawStdout}
+                        </pre>
+                      )}
+                    </details>
+                  )}
+                </div>
+              )}
+
+              <AuditEnvelopePanel prefix='workbench-explain-model-inputs' audit={explainAudit} />
+            </div>
+          )}
+        </section>
+
+        <section
+          className='mb-6 rounded-lg border border-white/10 bg-slate-900/50 p-4'
+          data-testid='workbench-compare-assessed-value-history-panel'
+        >
+          <h2 className='text-white text-base font-semibold mb-1'>Workbench Action</h2>
+          <p className='text-white/60 text-sm mb-3'>Compare Assessed Value History (read-only)</p>
+          <button
+            className='px-3 py-1.5 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white disabled:opacity-50'
+            data-testid='workbench-run-compare-assessed-value-history'
+            disabled={compareRunning}
+            onClick={handleRunCompareAssessedValueHistory}
+          >
+            {compareRunning ? 'Running...' : 'Compare Assessed Value History'}
+          </button>
+
+          {compareResult && (
+            <div
+              className='mt-3 rounded border border-white/10 bg-black/20 p-3 text-sm text-white/85'
+              data-testid='workbench-compare-assessed-value-history-result'
+            >
+              <div className='font-semibold' data-testid='workbench-compare-assessed-value-history-status'>
+                {compareResult.overallOk ? 'PASS' : 'FAIL'}
+              </div>
+              <div data-testid='workbench-compare-assessed-value-history-started'>
+                {compareResult.startedAt}
+              </div>
+
+              {compareResult.overallOk && compareResult.normalized ? (
+                <div className='mt-2 space-y-2'>
+                  <div data-testid='workbench-compare-assessed-value-history-narrative'>
+                    {compareResult.normalized.narrative}
+                  </div>
+                  <pre
+                    className='text-xs whitespace-pre-wrap rounded bg-black/30 p-2'
+                    data-testid='workbench-compare-assessed-value-history-json'
+                  >
+                    {JSON.stringify(compareResult.normalized, null, 2)}
+                  </pre>
+                </div>
+              ) : (
+                <div className='mt-2'>
+                  <div data-testid='workbench-compare-assessed-value-history-error'>
+                    {compareResult.error || 'Workbench compare action failed'}
+                  </div>
+                  {(compareResult.rawStderr || compareResult.rawStdout || compareResult.stderr) && (
+                    <details
+                      className='mt-2'
+                      data-testid='workbench-compare-assessed-value-history-details'
+                    >
+                      <summary>Details</summary>
+                      {compareResult.stderr && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-compare-assessed-value-history-stderr'
+                        >
+                          {compareResult.stderr}
+                        </pre>
+                      )}
+                      {compareResult.rawStderr && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-compare-assessed-value-history-raw-stderr'
+                        >
+                          {compareResult.rawStderr}
+                        </pre>
+                      )}
+                      {compareResult.rawStdout && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-compare-assessed-value-history-raw-stdout'
+                        >
+                          {compareResult.rawStdout}
+                        </pre>
+                      )}
+                    </details>
+                  )}
+                </div>
+              )}
+
+              <AuditEnvelopePanel
+                prefix='workbench-compare-assessed-value-history'
+                audit={compareAudit}
+              />
+            </div>
+          )}
+        </section>
+
+        <section
+          className='mb-6 rounded-lg border border-white/10 bg-slate-900/50 p-4'
+          data-testid='workbench-summarize-sales-comps-rationale-panel'
+        >
+          <h2 className='text-white text-base font-semibold mb-1'>Workbench Action</h2>
+          <p className='text-white/60 text-sm mb-3'>Summarize Sales Comps Rationale (read-only)</p>
+          <button
+            className='px-3 py-1.5 text-sm rounded bg-cyan-700 hover:bg-cyan-600 text-white disabled:opacity-50'
+            data-testid='workbench-run-summarize-sales-comps-rationale'
+            disabled={salesCompsRunning}
+            onClick={handleRunSummarizeSalesCompsRationale}
+          >
+            {salesCompsRunning ? 'Running...' : 'Summarize Sales Comps Rationale'}
+          </button>
+
+          {salesCompsResult && (
+            <div
+              className='mt-3 rounded border border-white/10 bg-black/20 p-3 text-sm text-white/85'
+              data-testid='workbench-summarize-sales-comps-rationale-result'
+            >
+              <div className='font-semibold' data-testid='workbench-summarize-sales-comps-rationale-status'>
+                {salesCompsResult.overallOk ? 'PASS' : 'FAIL'}
+              </div>
+              <div data-testid='workbench-summarize-sales-comps-rationale-started'>
+                {salesCompsResult.startedAt}
+              </div>
+
+              {salesCompsResult.overallOk && salesCompsResult.normalized ? (
+                <div className='mt-2 space-y-2'>
+                  <div data-testid='workbench-summarize-sales-comps-rationale-text'>
+                    {salesCompsResult.normalized.rationale}
+                  </div>
+                  <pre
+                    className='text-xs whitespace-pre-wrap rounded bg-black/30 p-2'
+                    data-testid='workbench-summarize-sales-comps-rationale-json'
+                  >
+                    {JSON.stringify(salesCompsResult.normalized, null, 2)}
+                  </pre>
+                </div>
+              ) : (
+                <div className='mt-2'>
+                  <div data-testid='workbench-summarize-sales-comps-rationale-error'>
+                    {salesCompsResult.error || 'Workbench summarize sales comps action failed'}
+                  </div>
+                  {(
+                    salesCompsResult.rawStderr ||
+                    salesCompsResult.rawStdout ||
+                    salesCompsResult.stderr
+                  ) && (
+                    <details
+                      className='mt-2'
+                      data-testid='workbench-summarize-sales-comps-rationale-details'
+                    >
+                      <summary>Details</summary>
+                      {salesCompsResult.stderr && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-summarize-sales-comps-rationale-stderr'
+                        >
+                          {salesCompsResult.stderr}
+                        </pre>
+                      )}
+                      {salesCompsResult.rawStderr && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-summarize-sales-comps-rationale-raw-stderr'
+                        >
+                          {salesCompsResult.rawStderr}
+                        </pre>
+                      )}
+                      {salesCompsResult.rawStdout && (
+                        <pre
+                          className='mt-1 whitespace-pre-wrap'
+                          data-testid='workbench-summarize-sales-comps-rationale-raw-stdout'
+                        >
+                          {salesCompsResult.rawStdout}
+                        </pre>
+                      )}
+                    </details>
+                  )}
+                </div>
+              )}
+
+              <AuditEnvelopePanel
+                prefix='workbench-summarize-sales-comps-rationale'
+                audit={salesCompsAudit}
+              />
+            </div>
+          )}
+        </section>
         <ErrorBoundary>
           <Suspense fallback={<TabLoader />}>
             <Outlet context={{ parcelId, propertyData }} />

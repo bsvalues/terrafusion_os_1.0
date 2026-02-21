@@ -165,7 +165,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
         'w-72 rounded-lg overflow-hidden',
         'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
         'border border-[var(--tf-transcend-highlight)]/20',
-        'shadow-[0_-8px_30px_rgba(0,0,0,0.5),0_0_40px_rgba(0,255,238,0.1)]',
+        'shadow-[0_-8px_30px_hsl(var(--tf-bg)/0.5),0_0_40px_hsl(var(--tf-accent)/0.1)]',
         className
       )}
     >
@@ -215,7 +215,10 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
             <span className='text-sm text-white/70'>{t('systemHealth.network')}</span>
             <div className='flex items-center gap-2'>
               <span
-                className={cn('w-2 h-2 rounded-full', isOnline ? 'bg-[var(--tf-accent-success)]' : 'bg-[var(--error-red)]')}
+                className={cn(
+                  'w-2 h-2 rounded-full',
+                  isOnline ? 'bg-[var(--tf-accent-success)]' : 'bg-[var(--error-red)]'
+                )}
               />
               <span className='text-sm text-white capitalize'>
                 {isOnline ? t('systemHealth.status.connected') : t('systemHealth.status.offline')}

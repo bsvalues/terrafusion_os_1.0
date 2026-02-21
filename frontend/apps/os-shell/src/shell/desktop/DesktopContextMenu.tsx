@@ -16,6 +16,7 @@
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Panel } from '@terrafusion/ui';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { type ContextMenuPosition } from '../../hooks/useContextMenu';
 
@@ -241,7 +242,7 @@ export const DesktopContextMenu: React.FC<DesktopContextMenuProps> = ({
   }
 
   return (
-    <div
+    <Panel
       ref={menuRef}
       role='menu'
       aria-label='Desktop context menu'
@@ -249,10 +250,7 @@ export const DesktopContextMenu: React.FC<DesktopContextMenuProps> = ({
       className={cn(
         'fixed z-[100]',
         'min-w-[200px]',
-        'bg-[var(--tf-bg-surface)]/98 backdrop-blur-xl',
-        'border border-white/10 rounded-lg',
-        'shadow-[0_4px_20px_rgba(0,0,0,0.5)]',
-        'py-1',
+        '!p-0 !rounded-lg py-1',
         'animate-in fade-in-0 zoom-in-95 duration-100'
       )}
     >
@@ -281,7 +279,7 @@ export const DesktopContextMenu: React.FC<DesktopContextMenuProps> = ({
           )}
         </React.Fragment>
       ))}
-    </div>
+    </Panel>
   );
 };
 

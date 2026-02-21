@@ -13,6 +13,7 @@
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Panel } from '@terrafusion/ui';
 import type { Category } from '../../config/generatedModules';
 import { getLucideIcon } from '../../config/iconMap';
 import { activateModule } from '../../orchestration/moduleActivation';
@@ -492,7 +493,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
   }
 
   return (
-    <div
+    <Panel
       ref={menuRef}
       data-testid='start-menu'
       role='menu'
@@ -504,6 +505,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
         'w-[400px] h-[560px]',
         // Layout
         'flex flex-col',
+        // Override Panel defaults for start menu
+        '!p-0 !rounded-[1.5rem]',
         // Glass effect class for tests/consistency
         'backdrop-blur-xl',
         // Animation
@@ -511,18 +514,9 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
         className
       )}
       style={{
-        // Immersive Glassmorphism - floats over WebGL
-        background: 'rgba(10, 14, 26, 0.75)',
+        // Enhanced glassmorphism over Panel base
         backdropFilter: 'saturate(200%) blur(30px)',
         WebkitBackdropFilter: 'saturate(200%) blur(30px)',
-        border: '1px solid rgba(0, 229, 255, 0.3)',
-        borderRadius: '1.5rem',
-        boxShadow: `
-          0 25px 60px rgba(0, 0, 0, 0.5),
-          0 0 80px rgba(0, 229, 255, 0.12),
-          inset 0 1px 0 rgba(255, 255, 255, 0.1),
-          inset 0 -1px 0 rgba(0, 0, 0, 0.2)
-        `,
       }}
     >
       {/* Search Section */}
@@ -547,7 +541,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
 
       {/* User Profile */}
       <UserProfile />
-    </div>
+    </Panel>
   );
 };
 

@@ -193,7 +193,7 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
         'min-w-[180px]',
         'bg-[var(--tf-bg-surface)]/98 backdrop-blur-xl',
         'border border-white/10 rounded-lg',
-        'shadow-[0_4px_20px_rgba(0,0,0,0.5)]',
+        'shadow-[0_4px_20px_hsl(var(--tf-bg)/0.5)]',
         'py-1',
         'animate-in fade-in-0 zoom-in-95 duration-100'
       )}

@@ -1,0 +1,184 @@
+name: UI Governance (Lumin)
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - 'packages/ui/**'
+      - 'packages/eslint-plugin-terrafusion-ui/**'
+      - 'tools/tdc/src/ui/**'
+      - 'tools/tdc/src/contracts/**'
+      - 'tools/tdc/src/commands/ui.ts'
+      - 'tools/registry/ratchet_guard.mjs'
+      - 'configs/eslint/**'
+      - 'tdc.config.json'
+      - 'ui-token-baseline.json'
+      - '.github/workflows/ui-governance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'packages/ui/**'
+      - 'packages/eslint-plugin-terrafusion-ui/**'
+      - 'tools/tdc/src/ui/**'
+      - 'tools/tdc/src/contracts/**'
+      - 'tools/tdc/src/commands/ui.ts'
+      - 'tools/registry/ratchet_guard.mjs'
+      - 'configs/eslint/**'
+      - 'tdc.config.json'
+      - 'ui-token-baseline.json'
+      - '.github/workflows/ui-governance.yml'
+
+env:
+  NODE_VERSION: '20'
+
+concurrency:
+  group: ui-gov-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ui-token-gen2:
+    name: UI Token Contract (Gen2 — blocking)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: UI Token Contract (Gen2 scope + ratchet)
+        run: pnpm tdc:ui:tokens
+
+      - name: Strict ratchet guard (Gen2 scope)
+        if: github.event_name == 'pull_request'
+        run: node tools/registry/ratchet_guard.mjs --minDelta 1 --baseRef "origin/${{ github.base_ref }}"
+        env:
+          DEBUG_RATCHET_GUARD: '0'
+
+      - name: Guard baseline tampering
+        if: github.event_name == 'pull_request'
+        run: |
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "ui-token-baseline.json"; then
+            echo "ui-token-baseline.json changed in this PR."
+            HASH_BEFORE=$(git show origin/${{ github.base_ref }}:ui-token-baseline.json 2>/dev/null | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{console.log(JSON.parse(d).scopeHash||"")}catch{console.log("")}})' || echo "")
+            HASH_AFTER=$(node -e 'try{console.log(JSON.parse(require("fs").readFileSync("ui-token-baseline.json","utf8")).scopeHash||"")}catch{console.log("")}')
+            if [ -n "$HASH_BEFORE" ] && [ "$HASH_BEFORE" = "$HASH_AFTER" ]; then
+              echo "::error::Baseline changed without scopeHash change — likely ratchet bypass."
+              echo "If intentional, update scope in tdc.config.json or explain in PR."
+              exit 1
+            fi
+            echo "✅ Baseline changed with scopeHash change (expected rebaseline)."
+          else
+            echo "Baseline unchanged."
+          fi
+
+      - name: Upload Contract Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-token-contract-gen2
+          path: ui-token-compliance.contract.json
+          if-no-files-found: warn
+
+      - name: Upload Baseline
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-token-baseline
+          path: ui-token-baseline.json
+          if-no-files-found: warn
+
+      - name: Upload Ratchet Health
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-token-ratchet
+          path: ui-token-ratchet.contract.json
+          if-no-files-found: warn
+
+  ui-token-full:
+    name: UI Token Contract (Full — telemetry)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: UI Token Contract (Full scan — informational)
+        continue-on-error: true
+        run: pnpm tdc:ui:tokens:full
+
+      - name: Upload Full Contract Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-token-contract-full
+          path: ui-token-compliance.full.contract.json
+          if-no-files-found: warn
+
+  tdc-tests:
+    name: TDC Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: TDC Tests
+        run: pnpm --dir tools/tdc exec jest --no-coverage
+
+  eslint-plugin-tests:
+    name: ESLint Plugin Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: ESLint Plugin Tests
+        run: pnpm --dir packages/eslint-plugin-terrafusion-ui exec vitest run --config vitest.config.js --no-coverage

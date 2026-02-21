@@ -11,11 +11,11 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         primary:
-          'bg-terra-cyan text-terra-midnight font-semibold hover:bg-terra-cyan/90 shadow-lg hover:shadow-[0_0_15px_rgba(0,255,255,0.4)] transition-all duration-300',
+          'bg-terra-cyan text-terra-midnight font-semibold hover:bg-terra-cyan/90 shadow-lg hover:shadow-[0_0_15px_hsl(var(--tf-accent)/0.4)] transition-all duration-300',
         quantum:
-          'bg-gradient-to-r from-terra-cyan to-terra-blue text-white font-bold hover:from-terra-cyan/90 hover:to-terra-blue/90 shadow-xl hover:shadow-[0_0_20px_rgba(0,255,255,0.5)] animate-pulse',
+          'bg-gradient-to-r from-terra-cyan to-terra-blue text-white font-bold hover:from-terra-cyan/90 hover:to-terra-blue/90 shadow-xl hover:shadow-[0_0_20px_hsl(var(--tf-accent)/0.5)] animate-pulse',
         danger:
-          'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]',
+          'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-[0_0_15px_var(--tf-error-red)]',
         destructive:
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
@@ -58,7 +58,7 @@ function Button({
   const Comp = asChild ? Slot : 'button';
   const pulseClasses = pulse ? 'animate-pulse' : '';
   const glowClasses = glow
-    ? 'shadow-[0_0_20px_rgba(0,255,255,0.4)] hover:shadow-[0_0_30px_rgba(0,255,255,0.6)]'
+    ? 'shadow-[0_0_20px_hsl(var(--tf-accent)/0.4)] hover:shadow-[0_0_30px_hsl(var(--tf-accent)/0.6)]'
     : '';
 
   return (
@@ -71,3 +71,4 @@ function Button({
 }
 
 export { Button, buttonVariants };
+
