@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 1084,
+  "violationCount": 1063,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -95,153 +95,6 @@
       "line": 200,
       "column": 21,
       "excerpt": "hsl(214 100% 97%);"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 6,
-      "column": 39,
-      "excerpt": "#0f0f23 0%, var(--tf-surface-darker) 50%, var(--tf-surface-darker) 100%);"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 23,
-      "column": 10,
-      "excerpt": "#00aaff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 55,
-      "column": 21,
-      "excerpt": "#00aaff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 58,
-      "column": 10,
-      "excerpt": "#00aaff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 113,
-      "column": 21,
-      "excerpt": "#00aaff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 115,
-      "column": 10,
-      "excerpt": "#00aaff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 151,
-      "column": 21,
-      "excerpt": "#00aaff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 156,
-      "column": 10,
-      "excerpt": "#00aaff;"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 33,
-      "column": 15,
-      "excerpt": "rgba(0, 255, 136, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 54,
-      "column": 15,
-      "excerpt": "rgba(0, 170, 255, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 69,
-      "column": 15,
-      "excerpt": "rgba(22, 33, 62, 0.9);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 101,
-      "column": 24,
-      "excerpt": "rgba(0, 255, 136, 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 112,
-      "column": 15,
-      "excerpt": "rgba(0, 170, 255, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 133,
-      "column": 24,
-      "excerpt": "rgba(255, 136, 0, 0.4);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 137,
-      "column": 15,
-      "excerpt": "rgba(0, 255, 136, 0.2);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 140,
-      "column": 24,
-      "excerpt": "rgba(0, 255, 136, 0.4);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 150,
-      "column": 15,
-      "excerpt": "rgba(22, 33, 62, 0.8);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 205,
-      "column": 25,
-      "excerpt": "rgba(0, 255, 136, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 209,
-      "column": 16,
-      "excerpt": "rgba(0, 255, 136, 0.6),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 210,
-      "column": 16,
-      "excerpt": "rgba(0, 170, 255, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\immersive\\dashboard\\ImmersiveDashboard.css",
-      "line": 213,
-      "column": 25,
-      "excerpt": "rgba(0, 255, 136, 0.3);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -7594,5 +7447,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-21T23:15:44.092Z"
+  "generatedAtIso": "2026-02-21T23:34:24.285Z"
 }
