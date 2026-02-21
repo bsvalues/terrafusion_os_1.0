@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 1267,
+  "violationCount": 1243,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -4211,174 +4211,6 @@
       "line": 333,
       "column": 39,
       "excerpt": "#125;</strong>: Coarse control, fewer options"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 84,
-      "column": 54,
-      "excerpt": "rgba(0, 255, 255, 0.3) 50%, transparent 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 102,
-      "column": 15,
-      "excerpt": "rgb(34 197 94),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 103,
-      "column": 15,
-      "excerpt": "rgb(6 182 212);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 110,
-      "column": 15,
-      "excerpt": "rgb(34 197 94),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 111,
-      "column": 15,
-      "excerpt": "rgb(59 130 246);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 118,
-      "column": 15,
-      "excerpt": "rgb(34 197 94),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 119,
-      "column": 15,
-      "excerpt": "rgb(147 51 234);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 126,
-      "column": 15,
-      "excerpt": "rgb(34 197 94),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 127,
-      "column": 15,
-      "excerpt": "rgb(239 68 68);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 137,
-      "column": 22,
-      "excerpt": "rgba(0, 0, 0, 0.1),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 138,
-      "column": 22,
-      "excerpt": "rgba(0, 0, 0, 0.04);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 148,
-      "column": 26,
-      "excerpt": "rgba(0, 255, 255, 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 153,
-      "column": 26,
-      "excerpt": "rgba(0, 255, 255, 0.7);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 163,
-      "column": 15,
-      "excerpt": "rgba(255, 255, 255, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 164,
-      "column": 21,
-      "excerpt": "rgba(255, 255, 255, 0.2);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 170,
-      "column": 15,
-      "excerpt": "rgba(0, 0, 0, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 171,
-      "column": 21,
-      "excerpt": "rgba(0, 255, 255, 0.2);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 182,
-      "column": 33,
-      "excerpt": "rgba(0, 0, 0, 0.25);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 195,
-      "column": 25,
-      "excerpt": "rgba(0, 0, 0, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 199,
-      "column": 25,
-      "excerpt": "rgba(0, 0, 0, 0.15);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 203,
-      "column": 26,
-      "excerpt": "rgba(0, 0, 0, 0.2);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 208,
-      "column": 14,
-      "excerpt": "rgba(0, 255, 255, 0.3),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 209,
-      "column": 16,
-      "excerpt": "rgba(0, 128, 255, 0.2),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\terrafusion-ui.css",
-      "line": 210,
-      "column": 16,
-      "excerpt": "rgba(136, 68, 255, 0.1);"
     },
     {
       "kind": "RAW_HEX",
@@ -8875,5 +8707,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-21T16:34:01.767Z"
+  "generatedAtIso": "2026-02-21T19:20:41.893Z"
 }
