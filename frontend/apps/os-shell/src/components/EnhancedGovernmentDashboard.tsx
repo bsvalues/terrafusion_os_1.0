@@ -32,9 +32,9 @@ const EnhancedGovernmentDashboard: React.FC = () => {
       <Grid item xs={12} md={3}>
         <Card
           sx={{
-            background: 'linear-gradient(135deg, rgba(0,153,255,0.1) 0%, rgba(0,204,136,0.1) 100%)',
+            background: 'linear-gradient(135deg, hsl(var(--tf-blue-hs) / 50% / 0.1) 0%, hsl(var(--tf-green-hs) / 40% / 0.1) 100%)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,153,255,0.2)',
+            border: '1px solid hsl(var(--tf-blue-hs) / 50% / 0.2)',
           }}
         >
           <CardContent>
@@ -56,9 +56,9 @@ const EnhancedGovernmentDashboard: React.FC = () => {
       <Grid item xs={12} md={3}>
         <Card
           sx={{
-            background: 'linear-gradient(135deg, rgba(0,204,136,0.1) 0%, rgba(255,193,7,0.1) 100%)',
+            background: 'linear-gradient(135deg, hsl(var(--tf-green-hs) / 40% / 0.1) 0%, hsl(var(--tf-amber-hs) / 51% / 0.1) 100%)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(0,204,136,0.2)',
+            border: '1px solid hsl(var(--tf-green-hs) / 40% / 0.2)',
           }}
         >
           <CardContent>
@@ -80,9 +80,9 @@ const EnhancedGovernmentDashboard: React.FC = () => {
       <Grid item xs={12} md={3}>
         <Card
           sx={{
-            background: 'linear-gradient(135deg, rgba(255,193,7,0.1) 0%, rgba(255,87,34,0.1) 100%)',
+            background: 'linear-gradient(135deg, hsl(var(--tf-amber-hs) / 51% / 0.1) 0%, hsl(var(--tf-red-hs) / 57% / 0.1) 100%)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,193,7,0.2)',
+            border: '1px solid hsl(var(--tf-amber-hs) / 51% / 0.2)',
           }}
         >
           <CardContent>
@@ -105,9 +105,9 @@ const EnhancedGovernmentDashboard: React.FC = () => {
         <Card
           sx={{
             background:
-              'linear-gradient(135deg, rgba(76,175,80,0.1) 0%, rgba(139,195,74,0.1) 100%)',
+              'linear-gradient(135deg, hsl(var(--tf-green-hs) / 49% / 0.1) 0%, hsl(var(--tf-green-hs) / 53% / 0.1) 100%)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(76,175,80,0.2)',
+            border: '1px solid hsl(var(--tf-green-hs) / 49% / 0.2)',
           }}
         >
           <CardContent>
@@ -131,9 +131,9 @@ const EnhancedGovernmentDashboard: React.FC = () => {
         <Card
           sx={{
             background:
-              'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,153,255,0.05) 100%)',
+              'linear-gradient(135deg, hsl(var(--tf-neutral-hs) / 100% / 0.05) 0%, hsl(var(--tf-blue-hs) / 50% / 0.05) 100%)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid hsl(var(--tf-neutral-hs) / 100% / 0.1)',
             minHeight: '400px',
           }}
         >
@@ -189,9 +189,9 @@ const EnhancedGovernmentDashboard: React.FC = () => {
         <Card
           sx={{
             background:
-              'linear-gradient(135deg, rgba(156,39,176,0.1) 0%, rgba(63,81,181,0.1) 100%)',
+              'linear-gradient(135deg, hsl(var(--tf-red-hs) / 42% / 0.1) 0%, hsl(var(--tf-blue-hs) / 48% / 0.1) 100%)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(156,39,176,0.2)',
+            border: '1px solid hsl(var(--tf-red-hs) / 42% / 0.2)',
             minHeight: '500px',
           }}
         >
@@ -270,7 +270,7 @@ const EnhancedGovernmentDashboard: React.FC = () => {
       <AppBar
         position='static'
         sx={{
-          background: 'linear-gradient(135deg, rgba(0,153,255,0.95) 0%, rgba(0,204,136,0.95) 100%)',
+          background: 'linear-gradient(135deg, hsl(var(--tf-blue-hs) / 50% / 0.95) 0%, hsl(var(--tf-green-hs) / 40% / 0.95) 100%)',
           backdropFilter: 'blur(10px)',
         }}
       >
@@ -320,7 +320,7 @@ const EnhancedGovernmentDashboard: React.FC = () => {
       <Box
         sx={{
           flexGrow: 1,
-          background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.95) 100%)',
+          background: 'linear-gradient(135deg, hsl(var(--tf-neutral-hs) / 8% / 0.95) 0%, hsl(var(--tf-neutral-hs) / 12% / 0.95) 100%)',
           minHeight: 'calc(100vh - 64px)',
           p: 3,
           color: 'white',
