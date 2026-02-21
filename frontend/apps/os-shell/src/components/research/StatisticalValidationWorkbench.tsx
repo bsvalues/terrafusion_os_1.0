@@ -451,7 +451,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             <div
               style={{
                 height: '250px',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: 'hsl(var(--tf-bg) / 0.5)',
                 borderRadius: '0.5rem',
                 overflow: 'hidden',
               }}
@@ -489,7 +489,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -509,7 +509,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.7rem',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'hsl(var(--tf-text) / 0.5)',
                   marginTop: '0.25rem',
                 }}
               >
@@ -529,7 +529,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -549,7 +549,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.7rem',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'hsl(var(--tf-text) / 0.5)',
                   marginTop: '0.25rem',
                 }}
               >
@@ -569,7 +569,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -589,7 +589,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.7rem',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'hsl(var(--tf-text) / 0.5)',
                   marginTop: '0.25rem',
                 }}
               >
@@ -609,7 +609,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -621,7 +621,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.7rem',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'hsl(var(--tf-text) / 0.5)',
                   marginTop: '0.25rem',
                 }}
               >
@@ -641,7 +641,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -661,7 +661,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.7rem',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'hsl(var(--tf-text) / 0.5)',
                   marginTop: '0.25rem',
                 }}
               >
@@ -702,7 +702,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             <label
               style={{
                 fontSize: '0.875rem',
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: 'hsl(var(--tf-text) / 0.7)',
                 display: 'block',
                 marginBottom: '0.5rem',
               }}
@@ -715,7 +715,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                background: 'rgba(10, 14, 26, 0.8)',
+                background: 'hsl(var(--tf-bg) / 0.8)',
                 border: '1px solid var(--glass-border)',
                 borderRadius: '0.5rem',
                 color: 'white',
@@ -734,7 +734,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             <label
               style={{
                 fontSize: '0.875rem',
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: 'hsl(var(--tf-text) / 0.7)',
                 display: 'block',
                 marginBottom: '0.5rem',
               }}
@@ -747,7 +747,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                background: 'rgba(10, 14, 26, 0.8)',
+                background: 'hsl(var(--tf-bg) / 0.8)',
                 border: '1px solid var(--glass-border)',
                 borderRadius: '0.5rem',
                 color: 'white',
@@ -767,7 +767,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             <label
               style={{
                 fontSize: '0.875rem',
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: 'hsl(var(--tf-text) / 0.7)',
                 display: 'block',
                 marginBottom: '0.5rem',
               }}
@@ -780,7 +780,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                background: 'rgba(10, 14, 26, 0.8)',
+                background: 'hsl(var(--tf-bg) / 0.8)',
                 border: '1px solid var(--glass-border)',
                 borderRadius: '0.5rem',
                 color: 'white',
@@ -804,7 +804,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             style={{
               padding: '0.75rem 1.5rem',
               background: isValidating
-                ? 'rgba(128, 128, 128, 0.3)'
+                ? 'hsl(var(--tf-neutral-hs) 50% / 0.3)'
                 : 'linear-gradient(135deg, var(--terra-cyan) 0%, var(--terra-blue) 100%)',
               border: 'none',
               borderRadius: '0.5rem',
@@ -830,7 +830,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               fontSize: '0.875rem',
               fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 0 20px rgba(0, 128, 255, 0.3)',
+              boxShadow: '0 0 20px hsl(var(--tf-accent-2) / 0.3)',
               transition: 'all 0.3s ease',
             }}
           >
@@ -878,7 +878,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'left',
                     }}
@@ -888,7 +888,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'right',
                     }}
@@ -898,7 +898,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'right',
                     }}
@@ -908,7 +908,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'right',
                     }}
@@ -918,7 +918,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'right',
                     }}
@@ -928,7 +928,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'center',
                     }}
@@ -1004,10 +1004,10 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                           fontWeight: 600,
                           background:
                             analysis.trend === 'Improving'
-                              ? 'rgba(0, 255, 0, 0.2)'
+                              ? 'hsl(var(--tf-anim-green) / 0.2)'
                               : analysis.trend === 'Declining'
-                                ? 'rgba(255, 0, 0, 0.2)'
-                                : 'rgba(255, 255, 0, 0.2)',
+                                ? 'hsl(var(--tf-red-hs) 50% / 0.2)'
+                                : 'hsl(var(--tf-amber-hs) 50% / 0.2)',
                           color:
                             analysis.trend === 'Improving'
                               ? 'var(--success-green)'
@@ -1064,7 +1064,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: 'hsl(var(--tf-bg) / 0.5)',
                 borderRadius: '0.5rem',
                 border: '1px solid var(--glass-border)',
               }}
@@ -1072,7 +1072,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -1086,7 +1086,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: 'hsl(var(--tf-bg) / 0.5)',
                 borderRadius: '0.5rem',
                 border: '1px solid var(--glass-border)',
               }}
@@ -1094,7 +1094,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -1108,7 +1108,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: 'hsl(var(--tf-bg) / 0.5)',
                 borderRadius: '0.5rem',
                 border: '1px solid var(--glass-border)',
               }}
@@ -1116,7 +1116,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -1130,7 +1130,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'rgba(10, 14, 26, 0.5)',
+                background: 'hsl(var(--tf-bg) / 0.5)',
                 borderRadius: '0.5rem',
                 border: '1px solid var(--glass-border)',
               }}
@@ -1138,7 +1138,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               <div
                 style={{
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'hsl(var(--tf-text) / 0.6)',
                   marginBottom: '0.25rem',
                 }}
               >
@@ -1177,9 +1177,9 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   key={index}
                   style={{
                     padding: '0.75rem',
-                    background: 'rgba(10, 14, 26, 0.5)',
+                    background: 'hsl(var(--tf-bg) / 0.5)',
                     borderRadius: '0.5rem',
-                    border: `1px solid ${req.isMet ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 165, 0, 0.3)'}`,
+                    border: `1px solid ${req.isMet ? 'hsl(var(--tf-anim-green) / 0.3)' : 'hsl(var(--tf-warning) / 0.3)'}`,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -1204,13 +1204,13 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                     <span style={{ fontSize: '0.875rem', color: 'white' }}>{req.metric}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                    <span style={{ fontSize: '0.875rem', color: 'hsl(var(--tf-text) / 0.7)' }}>
                       Current:{' '}
                       <strong style={{ color: 'var(--terra-cyan)' }}>
                         {req.current.toFixed(3)}
                       </strong>
                     </span>
-                    <span style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                    <span style={{ fontSize: '0.875rem', color: 'hsl(var(--tf-text) / 0.7)' }}>
                       Target: <strong style={{ color: 'gold' }}>{req.target.toFixed(3)}</strong>
                     </span>
                     {!req.isMet && (
@@ -1241,7 +1241,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                 key={index}
                 style={{
                   padding: '1rem',
-                  background: 'rgba(10, 14, 26, 0.5)',
+                  background: 'hsl(var(--tf-bg) / 0.5)',
                   borderRadius: '0.5rem',
                   border: '1px solid var(--glass-border)',
                   marginBottom: '0.75rem',
@@ -1264,10 +1264,10 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                         fontWeight: 600,
                         background:
                           rec.priority === 'High'
-                            ? 'rgba(255, 0, 0, 0.2)'
+                            ? 'hsl(var(--tf-red-hs) 50% / 0.2)'
                             : rec.priority === 'Medium'
-                              ? 'rgba(255, 165, 0, 0.2)'
-                              : 'rgba(255, 255, 0, 0.2)',
+                              ? 'hsl(var(--tf-warning) / 0.2)'
+                              : 'hsl(var(--tf-amber-hs) 50% / 0.2)',
                         color:
                           rec.priority === 'High'
                             ? 'var(--error-red)'
@@ -1289,7 +1289,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                 <div
                   style={{
                     fontSize: '0.75rem',
-                    color: 'rgba(255, 255, 255, 0.7)',
+                    color: 'hsl(var(--tf-text) / 0.7)',
                     marginBottom: '0.5rem',
                   }}
                 >
@@ -1302,7 +1302,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   {rec.recommendedActions.map((action, actionIndex) => (
                     <li
                       key={actionIndex}
-                      style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '0.25rem' }}
+                      style={{ color: 'hsl(var(--tf-text) / 0.8)', marginBottom: '0.25rem' }}
                     >
                       {action}
                     </li>
@@ -1352,7 +1352,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'left',
                     }}
@@ -1362,7 +1362,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'right',
                     }}
@@ -1372,7 +1372,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'right',
                     }}
@@ -1382,7 +1382,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'right',
                     }}
@@ -1392,7 +1392,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'right',
                     }}
@@ -1402,7 +1402,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                   <th
                     style={{
                       padding: '0.75rem',
-                      background: 'rgba(0, 255, 255, 0.1)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
                       border: '1px solid var(--glass-border)',
                       textAlign: 'center',
                     }}
@@ -1474,7 +1474,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                           background:
                             entry.certificationLevel === 'Championship'
                               ? 'var(--glass-border)'
-                              : 'rgba(128, 128, 128, 0.2)',
+                              : 'hsl(var(--tf-neutral-hs) 50% / 0.2)',
                           color:
                             entry.certificationLevel === 'Championship'
                               ? 'var(--terra-cyan)'
