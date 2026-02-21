@@ -35,7 +35,7 @@ function splitCodeAndStrings(line: string): { code: string; strings: string } {
 
     // ── escaped character ──
     if (prev === '\\') {
-      (inString ? strings : code) += ch;
+      if (inString) { strings += ch; } else { code += ch; }
       continue;
     }
 
