@@ -375,7 +375,7 @@ export function TerraFusionQuantumOS() {
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '1rem 2rem',
-            borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
+            borderBottom: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
             backdropFilter: 'blur(10px)',
           }}
         >
@@ -419,8 +419,8 @@ export function TerraFusionQuantumOS() {
           {/* Quantum Visualization Panel */}
           <section
             style={{
-              background: 'rgba(0, 255, 255, 0.05)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              background: 'hsl(var(--tf-cyan-hs) / 50% / 0.05)',
+              border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
               borderRadius: '12px',
               padding: '1.5rem',
             }}
@@ -432,7 +432,7 @@ export function TerraFusionQuantumOS() {
                 width: '100%',
                 maxWidth: '800px',
                 height: '200px',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
               }}
             ></canvas>
             <div
@@ -467,8 +467,8 @@ export function TerraFusionQuantumOS() {
           {/* ML Model Performance Analysis */}
           <section
             style={{
-              background: 'rgba(0, 255, 255, 0.05)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              background: 'hsl(var(--tf-cyan-hs) / 50% / 0.05)',
+              border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
               borderRadius: '12px',
               padding: '1.5rem',
             }}
@@ -481,8 +481,8 @@ export function TerraFusionQuantumOS() {
                 <div
                   key={index}
                   style={{
-                    background: 'rgba(0, 255, 255, 0.08)',
-                    border: '1px solid rgba(0, 255, 255, 0.15)',
+                    background: 'hsl(var(--tf-cyan-hs) / 50% / 0.08)',
+                    border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.15)',
                     borderRadius: '8px',
                     padding: '1rem',
                   }}
@@ -517,8 +517,8 @@ export function TerraFusionQuantumOS() {
           {/* Agent Swarm Coordination */}
           <section
             style={{
-              background: 'rgba(0, 255, 255, 0.05)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              background: 'hsl(var(--tf-cyan-hs) / 50% / 0.05)',
+              border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
               borderRadius: '12px',
               padding: '1.5rem',
               gridColumn: '1 / -1',
@@ -571,8 +571,8 @@ export function TerraFusionQuantumOS() {
                 <div
                   key={agent.id}
                   style={{
-                    background: 'rgba(0, 255, 255, 0.08)',
-                    border: '1px solid rgba(0, 255, 255, 0.15)',
+                    background: 'hsl(var(--tf-cyan-hs) / 50% / 0.08)',
+                    border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.15)',
                     borderRadius: '8px',
                     padding: '1rem',
                   }}
@@ -600,8 +600,8 @@ export function TerraFusionQuantumOS() {
           {/* Advanced Statistics Panel */}
           <section
             style={{
-              background: 'rgba(0, 255, 255, 0.05)',
-              border: '1px solid rgba(0, 255, 255, 0.2)',
+              background: 'hsl(var(--tf-cyan-hs) / 50% / 0.05)',
+              border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
               borderRadius: '12px',
               padding: '1.5rem',
               gridColumn: '1 / -1',
@@ -675,9 +675,9 @@ export function TerraFusionQuantumOS() {
             left: 0,
             right: 0,
             padding: '1rem 2rem',
-            background: 'rgba(10, 14, 26, 0.9)',
+            background: 'hsl(var(--tf-neutral-hs) / 5% / 0.9)',
             backdropFilter: 'blur(10px)',
-            borderTop: '1px solid rgba(0, 255, 255, 0.2)',
+            borderTop: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -789,9 +789,9 @@ export function TerraFusionQuantumOS() {
           className='terrafusion-os-header'
           style={{
             height: '80px',
-            background: 'rgba(0, 255, 255, 0.08)',
+            background: 'hsl(var(--tf-cyan-hs) / 50% / 0.08)',
             backdropFilter: 'blur(20px)',
-            borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
+            borderBottom: '2px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -814,7 +814,7 @@ export function TerraFusionQuantumOS() {
                 fontSize: '24px',
                 fontWeight: 'bold',
                 color: colors.semantic.background.secondary,
-                boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+                boxShadow: '0 0 20px hsl(var(--tf-cyan-hs) / 50% / 0.5)',
               }}
             >
               T
@@ -906,8 +906,8 @@ export function TerraFusionQuantumOS() {
             className='terrafusion-os-navigation'
             style={{
               width: '280px',
-              background: 'rgba(0, 255, 255, 0.05)',
-              borderRight: '2px solid rgba(0, 255, 255, 0.2)',
+              background: 'hsl(var(--tf-cyan-hs) / 50% / 0.05)',
+              borderRight: '2px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
               padding: '2rem 1rem',
               display: 'flex',
               flexDirection: 'column',
@@ -1052,7 +1052,7 @@ export function TerraFusionQuantumOS() {
               flex: 1,
               padding: '2rem',
               overflow: 'auto',
-              background: 'rgba(0, 0, 0, 0.2)',
+              background: 'hsl(var(--tf-neutral-hs) / 0% / 0.2)',
               position: 'relative',
             }}
           >
@@ -1091,9 +1091,9 @@ export function TerraFusionQuantumOS() {
           className='terrafusion-os-taskbar'
           style={{
             height: '60px',
-            background: 'rgba(0, 255, 255, 0.08)',
+            background: 'hsl(var(--tf-cyan-hs) / 50% / 0.08)',
             backdropFilter: 'blur(20px)',
-            borderTop: '2px solid rgba(0, 255, 255, 0.3)',
+            borderTop: '2px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
