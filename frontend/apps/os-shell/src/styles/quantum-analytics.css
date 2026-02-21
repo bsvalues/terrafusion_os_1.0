@@ -26,10 +26,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  border-bottom: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.2);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  background: rgba(10, 14, 26, 0.9);
+  background: hsl(var(--tf-bg) / 0.9);
 }
 
 .quantum-logo-section {
@@ -41,7 +41,7 @@
 .quantum-terrasphere {
   font-size: 2rem;
   color: var(--tf-quantum-cyan);
-  text-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+  text-shadow: 0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.6);
 }
 
 .quantum-header-title {
@@ -92,8 +92,8 @@
 
 /* Analytics Panels */
 .quantum-analytics-panel {
-  background: rgba(0, 255, 255, 0.05);
-  border: 1px solid rgba(0, 255, 255, 0.2);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.05);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.2);
   border-radius: 12px;
   padding: 1.5rem;
   -webkit-backdrop-filter: blur(10px);
@@ -102,8 +102,8 @@
 }
 
 .quantum-analytics-panel:hover {
-  border-color: rgba(0, 255, 255, 0.4);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+  border-color: hsl(var(--tf-cyan-hs) 50% / 0.4);
+  box-shadow: 0 0 30px hsl(var(--tf-cyan-hs) 50% / 0.1);
 }
 
 .quantum-panel-title {
@@ -118,9 +118,9 @@
   width: 100%;
   max-width: 800px;
   height: 200px;
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.3);
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
+  background: hsl(var(--tf-black) / 0.3);
 }
 
 .quantum-state-metrics {
@@ -153,16 +153,16 @@
 }
 
 .ml-model-card {
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.15);
   border-radius: 8px;
   padding: 1rem;
   transition: all 0.3s ease;
 }
 
 .ml-model-card:hover {
-  background: rgba(0, 255, 255, 0.12);
-  border-color: rgba(0, 255, 255, 0.3);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.12);
+  border-color: hsl(var(--tf-cyan-hs) 50% / 0.3);
 }
 
 .ml-model-name {
@@ -204,7 +204,7 @@
 .agent-swarm-stat {
   text-align: center;
   padding: 1rem;
-  background: rgba(0, 255, 255, 0.08);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
   border-radius: 8px;
 }
 
@@ -227,17 +227,17 @@
 }
 
 .agent-card {
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.15);
   border-radius: 8px;
   padding: 1rem;
   transition: all 0.3s ease;
 }
 
 .agent-card:hover {
-  background: rgba(0, 255, 255, 0.12);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.12);
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 4px 20px hsl(var(--tf-cyan-hs) 50% / 0.2);
 }
 
 .agent-id {
@@ -276,15 +276,15 @@
 .statistic-card {
   text-align: center;
   padding: 1.5rem;
-  background: rgba(0, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 255, 0.2);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.08);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.2);
   border-radius: 12px;
   transition: all 0.3s ease;
 }
 
 .statistic-card:hover {
-  background: rgba(0, 255, 255, 0.12);
-  border-color: rgba(0, 255, 255, 0.4);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.12);
+  border-color: hsl(var(--tf-cyan-hs) 50% / 0.4);
   transform: translateY(-2px);
 }
 
@@ -311,7 +311,7 @@
   color: var(--tf-accent-orange);
 }
 .statistic-value.accuracy {
-  color: #8800ff;
+  color: hsl(var(--tf-info));
 }
 
 .statistic-description {
@@ -328,10 +328,10 @@
   left: 0;
   right: 0;
   padding: 1rem 2rem;
-  background: rgba(10, 14, 26, 0.95);
+  background: hsl(var(--tf-bg) / 0.95);
   -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
-  border-top: 1px solid rgba(0, 255, 255, 0.2);
+  border-top: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -360,22 +360,22 @@
 .elite-btn.primary {
   background: linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue));
   color: var(--tf-void-black);
-  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 4px 20px hsl(var(--tf-cyan-hs) 50% / 0.3);
 }
 
 .elite-btn.primary:hover {
-  box-shadow: 0 8px 30px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 8px 30px hsl(var(--tf-cyan-hs) 50% / 0.5);
 }
 
 .elite-btn.secondary {
-  background: rgba(0, 255, 255, 0.1);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.1);
   color: var(--tf-quantum-cyan);
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.3);
 }
 
 .elite-btn.secondary:hover {
-  background: rgba(0, 255, 255, 0.2);
-  border-color: rgba(0, 255, 255, 0.5);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.2);
+  border-color: hsl(var(--tf-cyan-hs) 50% / 0.5);
 }
 
 .footer-status {
@@ -487,10 +487,10 @@
 @keyframes quantumGlow {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.3);
   }
   50% {
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 40px hsl(var(--tf-cyan-hs) 50% / 0.6);
   }
 }
 
@@ -505,17 +505,17 @@
 .elite-interface {
   background: linear-gradient(
     135deg,
-    rgba(0, 255, 255, 0.05) 0%,
-    rgba(0, 153, 255, 0.03) 50%,
-    rgba(136, 0, 255, 0.05) 100%
+    hsl(var(--tf-cyan-hs) 50% / 0.05) 0%,
+    hsl(var(--tf-clarity-blue-hs) 50% / 0.03) 50%,
+    hsl(var(--tf-info) / 0.05) 100%
   );
 }
 
 .quantum-coherence-indicator {
   background: radial-gradient(
     circle,
-    rgba(0, 255, 255, 0.3) 0%,
-    rgba(0, 255, 255, 0.1) 50%,
+    hsl(var(--tf-cyan-hs) 50% / 0.3) 0%,
+    hsl(var(--tf-cyan-hs) 50% / 0.1) 50%,
     transparent 100%
   );
   border-radius: 50%;
