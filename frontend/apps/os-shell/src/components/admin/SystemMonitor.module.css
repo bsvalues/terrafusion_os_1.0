@@ -1,6 +1,6 @@
 .systemMonitor {
-  background: #0a0a0a;
-  border: 1px solid #333;
+  background: hsl(var(--tf-bg));
+  border: 1px solid hsl(var(--tf-border));
   border-radius: 8px;
   padding: 16px;
   margin: 16px 0;
@@ -13,7 +13,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid hsl(var(--tf-border));
   padding-bottom: 12px;
 }
 
@@ -38,12 +38,12 @@
 }
 
 .online {
-  background: #1a4d1a;
+  background: hsl(var(--tf-success) / 0.2);
   color: var(--tf-success-green);
 }
 
 .offline {
-  background: #4d1a1a;
+  background: hsl(var(--tf-error) / 0.2);
   color: var(--error-red);
 }
 
@@ -55,8 +55,8 @@
 }
 
 .metricCard {
-  background: #1a1a1a;
-  border: 1px solid #333;
+  background: hsl(var(--tf-surface-2));
+  border: 1px solid hsl(var(--tf-border));
   border-radius: 4px;
   padding: 12px;
   text-align: center;
@@ -65,16 +65,16 @@
 
 .metricCard:hover {
   border-color: var(--tf-success-green);
-  box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+  box-shadow: 0 0 8px hsl(var(--tf-success) / 0.2);
 }
 
 .metricCard.warning {
   border-color: var(--error-red);
-  background: #2a1a1a;
+  background: hsl(var(--tf-error) / 0.1);
 }
 
 .metricCard.warning:hover {
-  box-shadow: 0 0 8px rgba(255, 68, 68, 0.2);
+  box-shadow: 0 0 8px hsl(var(--tf-error) / 0.2);
 }
 
 .metricLabel {
@@ -101,7 +101,7 @@
 }
 
 .errorAlert {
-  background: #2a1a1a;
+  background: hsl(var(--tf-error) / 0.1);
   border: 1px solid var(--error-red);
   border-radius: 4px;
   padding: 8px 12px;
@@ -122,7 +122,7 @@
   align-items: center;
   font-size: 11px;
   color: var(--gray-500);
-  border-top: 1px solid #333;
+  border-top: 1px solid hsl(var(--tf-border));
   padding-top: 12px;
 }
 
@@ -138,8 +138,8 @@
 .databaseStatus {
   margin-bottom: 16px;
   padding: 12px;
-  background: #1a1a1a;
-  border: 1px solid #333;
+  background: hsl(var(--tf-surface-2));
+  border: 1px solid hsl(var(--tf-border));
   border-radius: 4px;
 }
 
@@ -162,19 +162,19 @@
   gap: 8px;
   padding: 8px;
   border-radius: 4px;
-  background: #0a0a0a;
-  border: 1px solid #333;
+  background: hsl(var(--tf-bg));
+  border: 1px solid hsl(var(--tf-border));
   transition: all 0.2s;
 }
 
 .dbStatusItem.connected {
-  border-color: #1a4d1a;
-  background: #0f1f0f;
+  border-color: hsl(var(--tf-success) / 0.2);
+  background: hsl(var(--tf-success) / 0.08);
 }
 
 .dbStatusItem.disconnected {
-  border-color: #4d1a1a;
-  background: #1f0f0f;
+  border-color: hsl(var(--tf-error) / 0.2);
+  background: hsl(var(--tf-error) / 0.08);
 }
 
 .dbIcon {
