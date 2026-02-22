@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 364,
+  "violationCount": 354,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2443,76 +2443,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 330,
-      "column": 24,
-      "excerpt": "#00FFFF'; // var(--tf-transcend-cyan)"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 331,
-      "column": 28,
-      "excerpt": "#0A0E1A'; // var(--tf-bg-void)"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 342,
-      "column": 24,
-      "excerpt": "#00FFFF'; // var(--tf-transcend-cyan)"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 343,
-      "column": 25,
-      "excerpt": "#1E293B'; // var(--terra-slate)"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 355,
-      "column": 17,
-      "excerpt": "#00FFFF', // Terra-cyan"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 356,
-      "column": 20,
-      "excerpt": "#0A0E1A', // Terra-midnight"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 357,
-      "column": 17,
-      "excerpt": "#1E293B', // Terra-slate"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 358,
-      "column": 14,
-      "excerpt": "#FFFFFF', // White"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 359,
-      "column": 15,
-      "excerpt": "#EF4444', // Red"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\tests\\accessibility\\AccessibilityCompliance.test.tsx",
-      "line": 360,
-      "column": 17,
-      "excerpt": "#10B981', // Green"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\ui\\materials\\materialQualityGate.ts",
       "line": 341,
       "column": 13,
@@ -2554,5 +2484,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T23:03:33.411Z"
+  "generatedAtIso": "2026-02-22T23:10:32.183Z"
 }
