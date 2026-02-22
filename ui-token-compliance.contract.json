@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 539,
+  "violationCount": 532,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2708,88 +2708,39 @@
       "excerpt": "#005a9e;"
     },
     {
-      "kind": "RAW_HEX",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 3,
+      "line": 52,
+      "column": 15,
+      "excerpt": "hsl(var(--levy-green-hs) 42%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
+      "line": 71,
+      "column": 15,
+      "excerpt": "hsl(var(--levy-cool-hs) 94%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
+      "line": 72,
       "column": 21,
-      "excerpt": "#e0e0e0;"
+      "excerpt": "hsl(var(--levy-cool-hs) 76%);"
     },
     {
-      "kind": "RAW_HEX",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 6,
-      "column": 15,
-      "excerpt": "#fafafa;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 18,
+      "line": 80,
       "column": 10,
-      "excerpt": "#2c3e50;"
+      "excerpt": "hsl(var(--levy-text-hs) 24%);"
     },
     {
-      "kind": "RAW_HEX",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 24,
-      "column": 10,
-      "excerpt": "#7f8c8d;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 34,
-      "column": 10,
-      "excerpt": "#555;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 45,
-      "column": 15,
-      "excerpt": "#27ae60;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 55,
-      "column": 15,
-      "excerpt": "#229954;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 59,
-      "column": 15,
-      "excerpt": "#95a5a6;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 64,
-      "column": 15,
-      "excerpt": "#ecf0f1;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 65,
+      "line": 89,
       "column": 21,
-      "excerpt": "#bdc3c7;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 73,
-      "column": 10,
-      "excerpt": "#2c3e50;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 82,
-      "column": 21,
-      "excerpt": "#d5dbdb;"
+      "excerpt": "hsl(var(--levy-cool-hs) 85%);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -3779,5 +3730,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T16:25:39.336Z"
+  "generatedAtIso": "2026-02-22T16:32:38.239Z"
 }
