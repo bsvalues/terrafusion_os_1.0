@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 509,
+  "violationCount": 498,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1096,83 +1096,6 @@
       "line": 102,
       "column": 33,
       "excerpt": "rgba(0,0,0,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 215,
-      "column": 21,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 298,
-      "column": 66,
-      "excerpt": "rgba(0,255,170,0.3)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 336,
-      "column": 33,
-      "excerpt": "rgba(255,255,255,0.6)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 348,
-      "column": 29,
-      "excerpt": "rgba(255,255,255,0.8)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 397,
-      "column": 59,
-      "excerpt": "rgba(0,255,238,0.1)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 433,
-      "column": 30,
-      "excerpt": "rgba(0,0,0,0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 435,
-      "column": 36,
-      "excerpt": "rgba(0,255,238,0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 451,
-      "column": 54,
-      "excerpt": "rgba(0,255,238,0.2)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 487,
-      "column": 31,
-      "excerpt": "rgba(255,255,255,0.6)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 499,
-      "column": 27,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 582,
-      "column": 27,
-      "excerpt": "rgba(255,255,255,0.7)',"
     },
     {
       "kind": "RAW_HEX",
@@ -3569,5 +3492,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T17:00:25.416Z"
+  "generatedAtIso": "2026-02-22T17:07:14.617Z"
 }

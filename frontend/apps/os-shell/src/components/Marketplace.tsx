@@ -212,7 +212,7 @@ const Marketplace: React.FC = () => {
         </h1>
         <p
           style={{
-            color: 'rgba(255,255,255,0.7)',
+            color: 'hsla(var(--tf-neutral-hs) 100% / 0.7)',
             fontSize: '1.1rem',
           }}
         >
@@ -232,8 +232,8 @@ const Marketplace: React.FC = () => {
             minWidth: '300px',
             maxWidth: '500px',
             padding: '0.8rem 1rem',
-            background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(0,255,238,0.3)',
+            background: 'hsla(var(--tf-neutral-hs) 100% / 0.1)',
+            border: '1px solid hsla(var(--tf-cyan-hs) 50% / 0.3)',
             borderRadius: '25px',
             color: 'var(--tf-text-primary)',
             fontSize: '0.9rem',
@@ -252,7 +252,7 @@ const Marketplace: React.FC = () => {
               background:
                 selectedCategory === category.id
                   ? 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))'
-                  : 'rgba(0,153,255,0.1)',
+                  : 'hsla(var(--tf-blue-hs) 50% / 0.1)',
               color: selectedCategory === category.id ? 'var(--tf-void-black)' : 'var(--tf-transcend-highlight)',
             }}
             className='font-semibold flex items-center gap-2'
@@ -284,7 +284,7 @@ const Marketplace: React.FC = () => {
               <div
                 key={item.id}
                 style={{
-                  background: 'rgba(0,0,0,0.6)',
+                  background: 'hsla(var(--tf-neutral-hs) 0% / 0.6)',
                   backdropFilter: 'blur(20px)',
                   border: '2px solid var(--tf-accent-success)',
                   borderRadius: '20px',
@@ -295,7 +295,7 @@ const Marketplace: React.FC = () => {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,255,170,0.3)';
+                  e.currentTarget.style.boxShadow = '0 20px 40px hsla(var(--tf-green-hs) 50% / 0.3)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
@@ -333,7 +333,7 @@ const Marketplace: React.FC = () => {
                     </h3>
                     <p
                       style={{
-                        color: 'rgba(255,255,255,0.6)',
+                        color: 'hsla(var(--tf-neutral-hs) 100% / 0.6)',
                         fontSize: '0.85rem',
                         margin: 0,
                       }}
@@ -345,7 +345,7 @@ const Marketplace: React.FC = () => {
 
                 <p
                   style={{
-                    color: 'rgba(255,255,255,0.8)',
+                    color: 'hsla(var(--tf-neutral-hs) 100% / 0.8)',
                     fontSize: '0.9rem',
                     lineHeight: 1.4,
                     marginBottom: '1rem',
@@ -394,7 +394,7 @@ const Marketplace: React.FC = () => {
                   <button
                     onClick={() => viewDetails(item.id)}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(0,255,238,0.1)';
+                      e.currentTarget.style.background = 'hsla(var(--tf-cyan-hs) 50% / 0.1)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'transparent';
@@ -430,9 +430,9 @@ const Marketplace: React.FC = () => {
             <div
               key={item.id}
               style={{
-                background: 'rgba(0,0,0,0.5)',
+                background: 'hsla(var(--tf-neutral-hs) 0% / 0.5)',
                 backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0,255,238,0.2)',
+                border: '1px solid hsla(var(--tf-cyan-hs) 50% / 0.2)',
                 borderRadius: '15px',
                 padding: '1.5rem',
                 transition: 'all 0.3s ease',
@@ -442,13 +442,13 @@ const Marketplace: React.FC = () => {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,255,238,0.2)';
+                e.currentTarget.style.boxShadow = '0 15px 30px hsla(var(--tf-cyan-hs) 50% / 0.2)';
                 e.currentTarget.style.borderColor = 'var(--tf-transcend-highlight)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = 'rgba(0,255,238,0.2)';
+                e.currentTarget.style.borderColor = 'hsla(var(--tf-cyan-hs) 50% / 0.2)';
               }}
             >
               {item.featured && (
@@ -484,7 +484,7 @@ const Marketplace: React.FC = () => {
                   </h3>
                   <p
                     style={{
-                      color: 'rgba(255,255,255,0.6)',
+                      color: 'hsla(var(--tf-neutral-hs) 100% / 0.6)',
                       fontSize: '0.8rem',
                       margin: 0,
                     }}
@@ -496,7 +496,7 @@ const Marketplace: React.FC = () => {
 
               <p
                 style={{
-                  color: 'rgba(255,255,255,0.7)',
+                  color: 'hsla(var(--tf-neutral-hs) 100% / 0.7)',
                   fontSize: '0.85rem',
                   lineHeight: 1.4,
                   marginBottom: '1rem',
@@ -579,7 +579,7 @@ const Marketplace: React.FC = () => {
               </div>
               <div
                 style={{
-                  color: 'rgba(255,255,255,0.7)',
+                  color: 'hsla(var(--tf-neutral-hs) 100% / 0.7)',
                   fontSize: '0.9rem',
                 }}
               >
