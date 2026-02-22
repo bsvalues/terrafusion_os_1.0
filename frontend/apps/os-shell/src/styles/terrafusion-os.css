@@ -711,23 +711,23 @@
 
 /* ========================================
    HIGH CONTRAST THEME (WCAG 2.1 AA)
-   TDC-INTENTIONAL-INLINE: absolute black/white hex below are
-   WCAG accessibility overrides — must NOT be tokenized to themed vars.
+   High-contrast WCAG 2.1 AA overrides.
+   In HSL, L=0% ≡ black and L=100% ≡ white regardless of H/S — safe to tokenize.
    ======================================== */
 
 .high-contrast {
   --terra-cyan: var(--tf-quantum-cyan);
-  --terra-midnight: #000000;
+  --terra-midnight: hsl(var(--tf-neutral-hs) 0%);
   --terra-blue: var(--tf-blueprint-blue);
-  --terra-slate: #ffffff;
+  --terra-slate: hsl(var(--tf-neutral-hs) 100%);
   --terra-transcend: var(--tf-retro-yellow);
   --terra-success: var(--tf-success-green);
   --terra-warning: var(--warning-amber);
   --terra-error: var(--tf-error-red);
 
   /* Disable glass effects */
-  --glass-bg: #000000;
-  --glass-border: #ffffff;
+  --glass-bg: hsl(var(--tf-neutral-hs) 0%);
+  --glass-border: hsl(var(--tf-neutral-hs) 100%);
   --glass-blur: none;
 
   /* Disable shadows */
@@ -739,8 +739,8 @@
 
 .high-contrast .terrafusion-os-container,
 .high-contrast .terrafusion-quantum-os {
-  background: #000000 !important;
-  color: #ffffff !important;
+  background: hsl(var(--tf-neutral-hs) 0%) !important;
+  color: hsl(var(--tf-neutral-hs) 100%) !important;
 }
 
 .high-contrast .terrafusion-os-header,
@@ -749,8 +749,8 @@
 .high-contrast .terrafusion-os-content,
 .high-contrast .terra-glass,
 .high-contrast .quantum-grid-item {
-  background: #000000 !important;
-  border: 2px solid #ffffff !important;
+  background: hsl(var(--tf-neutral-hs) 0%) !important;
+  border: 2px solid hsl(var(--tf-neutral-hs) 100%) !important;
   backdrop-filter: none !important;
   box-shadow: none !important;
 }
@@ -758,15 +758,15 @@
 .high-contrast button,
 .high-contrast input,
 .high-contrast select {
-  border: 2px solid #ffffff !important;
-  background: #000000 !important;
-  color: #ffffff !important;
+  border: 2px solid hsl(var(--tf-neutral-hs) 100%) !important;
+  background: hsl(var(--tf-neutral-hs) 0%) !important;
+  color: hsl(var(--tf-neutral-hs) 100%) !important;
 }
 
 .high-contrast button:hover,
 .high-contrast button:focus {
-  background: #ffffff !important;
-  color: #000000 !important;
+  background: hsl(var(--tf-neutral-hs) 100%) !important;
+  color: hsl(var(--tf-neutral-hs) 0%) !important;
   outline: 2px solid var(--tf-retro-yellow) !important;
 }
 
