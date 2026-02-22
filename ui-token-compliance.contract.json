@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 923,
+  "violationCount": 905,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -704,132 +704,6 @@
       "line": 122,
       "column": 34,
       "excerpt": "rgba(0, 210, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 123,
-      "column": 28,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 133,
-      "column": 28,
-      "excerpt": "rgba(0, 255, 255, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 143,
-      "column": 28,
-      "excerpt": "rgba(0, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 179,
-      "column": 22,
-      "excerpt": "rgba(30, 41, 59, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 237,
-      "column": 17,
-      "excerpt": "rgba(30, 41, 59, 0.3)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 282,
-      "column": 33,
-      "excerpt": "rgba(30, 41, 59, 0.3) 0%, rgba(30, 41, 59, 0.5) 50%, rgba(30, 41, 59, 0.3) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 282,
-      "column": 59,
-      "excerpt": "rgba(30, 41, 59, 0.5) 50%, rgba(30, 41, 59, 0.3) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 282,
-      "column": 86,
-      "excerpt": "rgba(30, 41, 59, 0.3) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 304,
-      "column": 20,
-      "excerpt": "rgba(30, 41, 59, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 307,
-      "column": 26,
-      "excerpt": "rgba(148, 163, 184, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 314,
-      "column": 22,
-      "excerpt": "rgba(148, 163, 184, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 324,
-      "column": 22,
-      "excerpt": "rgba(148, 163, 184, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 334,
-      "column": 22,
-      "excerpt": "rgba(148, 163, 184, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 356,
-      "column": 20,
-      "excerpt": "rgba(30, 41, 59, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 369,
-      "column": 34,
-      "excerpt": "rgba(148, 163, 184, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 377,
-      "column": 26,
-      "excerpt": "rgba(148, 163, 184, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 394,
-      "column": 58,
-      "excerpt": "rgba(148, 163, 184, 0.1)' : 'none',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\LoadingStates.tsx",
-      "line": 402,
-      "column": 28,
-      "excerpt": "rgba(148, 163, 184, 0.15)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -6467,5 +6341,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T01:21:42.137Z"
+  "generatedAtIso": "2026-02-22T01:25:18.501Z"
 }
