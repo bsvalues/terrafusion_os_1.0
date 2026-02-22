@@ -31,13 +31,13 @@
   --tf-transform-style: translate3d(0, 0, 0); /* Optimized transforms */
 
   /* Status-Based Colors (AI-responsive) */
-  --tf-status-active: hsl(120 100% 60%);
-  --tf-status-processing: hsl(200 100% 60%);
-  --tf-status-idle: hsl(0 0% 60%);
-  --tf-status-error: hsl(0 100% 60%);
-  --tf-status-optimal: hsl(120 80% 50%);
-  --tf-status-warning: hsl(45 100% 50%);
-  --tf-status-critical: hsl(0 100% 50%);
+  --tf-status-active: hsl(var(--tf-green-hs) 60%);
+  --tf-status-processing: hsl(var(--tf-blue-hs) 60%);
+  --tf-status-idle: hsl(var(--tf-neutral-hs) 60%);
+  --tf-status-error: hsl(var(--tf-red-hs) 60%);
+  --tf-status-optimal: hsl(var(--tf-green-hs) 50%);
+  --tf-status-warning: hsl(var(--tf-amber-hs) 50%);
+  --tf-status-critical: hsl(var(--tf-red-hs) 50%);
 
   /* Memory-Responsive Properties */
   --tf-pointer-events: auto; /* 'none' when memory > 0.8 */
@@ -45,13 +45,13 @@
 
   /* Brand Colors - TerraFusion Quantum Palette */
   --tf-primary: var(--tf-quantum-cyan); /* Terra-Cyan - The Consciousness Color */
-  --tf-primary-dark: #00cccc; /* Terra-Cyan Dark */
-  --tf-accent: #00ffaa; /* Quantum Accent */
-  --tf-accent-dark: #00cc88; /* Accent Dark */
+  --tf-primary-dark: hsl(var(--tf-cyan-hs) 40%); /* Terra-Cyan Dark */
+  --tf-accent: hsl(var(--tf-green-hs) 50%); /* Quantum Accent */
+  --tf-accent-dark: hsl(var(--tf-green-hs) 40%); /* Accent Dark */
   --tf-transcend: var(--tf-transcend-highlight); /* Transcendence */
   --tf-dark: var(--tf-void-black); /* Terra-Midnight */
   --tf-dark-lighter: var(--terra-slate); /* Terra-Slate */
-  --tf-light: #ffffff; /* Pure Light */
+  --tf-light: hsl(var(--tf-neutral-hs) 100%); /* Pure Light */
 
   /* Government Compliance */
   --tf-contrast-ratio: 4.5; /* WCAG AA minimum */
@@ -231,8 +231,8 @@
     background: linear-gradient(
       45deg,
       transparent 25%,
-      rgba(255, 0, 0, 0.1) 25%,
-      rgba(255, 0, 0, 0.1) 50%,
+      hsla(var(--tf-red-hs) 50% / 0.1) 25%,
+      hsla(var(--tf-red-hs) 50% / 0.1) 50%,
       transparent 50%
     );
   }
