@@ -228,10 +228,10 @@ export const GptStudioView: React.FC = () => {
       className='flex h-full w-full flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950/90 p-4 text-sm text-slate-50'
     >
       {/* Header / title bar */}
-      <div className='mb-3 flex items-center justify-between rounded-2xl border border-slate-800/60 bg-slate-900/70 px-4 py-2 shadow-[0_18px_45px_rgba(0,0,0,0.60)] backdrop-blur-xl'>
+      <div className='mb-3 flex items-center justify-between rounded-2xl border border-slate-800/60 bg-slate-900/70 px-4 py-2 shadow-[0_18px_45px_hsl(var(--tf-neutral-hs)_0%_/_0.60)] backdrop-blur-xl'>
         <div className='flex items-center gap-3'>
           {/* TerraSphere-style indicator */}
-          <div className='relative h-7 w-7 rounded-full bg-gradient-to-br from-sky-400 via-cyan-300 to-emerald-300 shadow-[0_0_25px_rgba(56,189,248,0.9)]'>
+          <div className='relative h-7 w-7 rounded-full bg-gradient-to-br from-sky-400 via-cyan-300 to-emerald-300 shadow-[0_0_25px_hsl(var(--tf-blue-hs)_60%_/_0.9)]'>
             <div className='absolute inset-[2px] rounded-full bg-slate-950/80 backdrop-blur' />
             <div className='absolute inset-[4px] rounded-full border border-cyan-300/40' />
           </div>
@@ -264,7 +264,7 @@ export const GptStudioView: React.FC = () => {
                   ragStatus &&
                   ragStatus.indexed &&
                   ragStatus.embeddingCount > 0 && (
-                    <span className='rounded-full border border-emerald-400/60 bg-emerald-500/10 px-2 py-0.5 text-[0.6rem] text-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.6)]'>
+                    <span className='rounded-full border border-emerald-400/60 bg-emerald-500/10 px-2 py-0.5 text-[0.6rem] text-emerald-300 shadow-[0_0_18px_hsl(var(--tf-green-hs)_52%_/_0.6)]'>
                       RAG: Benton CAMA Online · {ragStatus.documentCount} docs
                     </span>
                   )}
@@ -278,7 +278,7 @@ export const GptStudioView: React.FC = () => {
                       </span>
                       <button
                         onClick={() => void handleIndexRag()}
-                        className='rounded-full border border-cyan-400/60 bg-cyan-500/10 px-2 py-0.5 text-[0.6rem] text-cyan-300 transition-all hover:bg-cyan-500/20 hover:shadow-[0_0_12px_rgba(34,211,238,0.4)]'
+                        className='rounded-full border border-cyan-400/60 bg-cyan-500/10 px-2 py-0.5 text-[0.6rem] text-cyan-300 transition-all hover:bg-cyan-500/20 hover:shadow-[0_0_12px_hsl(var(--tf-cyan-hs)_53%_/_0.4)]'
                       >
                         Index Now
                       </button>
@@ -305,7 +305,7 @@ export const GptStudioView: React.FC = () => {
             {/* Explain This button (Phase 13) */}
             <button
               onClick={() => void handleExplainThis()}
-              className='rounded-full border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-0.5 text-[0.6rem] text-fuchsia-300 transition-all hover:bg-fuchsia-500/20 hover:shadow-[0_0_12px_rgba(217,70,239,0.4)]'
+              className='rounded-full border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-0.5 text-[0.6rem] text-fuchsia-300 transition-all hover:bg-fuchsia-500/20 hover:shadow-[0_0_12px_hsl(var(--tf-blue-hs)_61%_/_0.4)]'
               title='Explain this view'
             >
               ❓ Explain
@@ -317,7 +317,7 @@ export const GptStudioView: React.FC = () => {
       {/* Main content area */}
       <div className='flex min-h-0 flex-1 gap-4'>
         {/* Left column: GPT list */}
-        <div className='flex w-72 flex-col rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 shadow-[0_18px_55px_rgba(0,0,0,0.65)] backdrop-blur-xl'>
+        <div className='flex w-72 flex-col rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 shadow-[0_18px_55px_hsl(var(--tf-neutral-hs)_0%_/_0.65)] backdrop-blur-xl'>
           <div className='mb-2 flex items-center justify-between'>
             <div className='text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-400'>
               System GPTs
@@ -343,15 +343,15 @@ export const GptStudioView: React.FC = () => {
                   className={[
                     'group w-full rounded-xl px-3 py-2 text-left text-xs transition-all',
                     'border border-transparent bg-slate-900/70 backdrop-blur-sm',
-                    'hover:border-sky-500/70 hover:bg-slate-900/90 hover:shadow-[0_10px_30px_rgba(56,189,248,0.35)]',
+                    'hover:border-sky-500/70 hover:bg-slate-900/90 hover:shadow-[0_10px_30px_hsl(var(--tf-blue-hs)_60%_/_0.35)]',
                     isActive
-                      ? 'border-sky-400/80 bg-slate-900/95 shadow-[0_0_30px_rgba(56,189,248,0.85)]'
+                      ? 'border-sky-400/80 bg-slate-900/95 shadow-[0_0_30px_hsl(var(--tf-blue-hs)_60%_/_0.85)]'
                       : '',
                   ].join(' ')}
                 >
                   <div className='flex items-center justify-between'>
                     <div className='font-semibold text-slate-50'>{gpt.name}</div>
-                    <div className='h-1.5 w-1.5 rounded-full bg-emerald-400/80 shadow-[0_0_10px_rgba(52,211,153,0.9)] group-hover:bg-sky-400/90' />
+                    <div className='h-1.5 w-1.5 rounded-full bg-emerald-400/80 shadow-[0_0_10px_hsl(var(--tf-green-hs)_52%_/_0.9)] group-hover:bg-sky-400/90' />
                   </div>
                   <div className='mt-0.5 text-[0.7rem] leading-snug text-slate-300/90 line-clamp-2'>
                     {gpt.description}
@@ -364,13 +364,13 @@ export const GptStudioView: React.FC = () => {
 
         {/* Middle column: Assessor Flows (only for PropertyAssessmentGPT) */}
         {showAssessorFlows && (
-          <div className='flex w-64 flex-col rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 shadow-[0_18px_55px_rgba(0,0,0,0.65)] backdrop-blur-xl'>
+          <div className='flex w-64 flex-col rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 shadow-[0_18px_55px_hsl(var(--tf-neutral-hs)_0%_/_0.65)] backdrop-blur-xl'>
             <PropertyAssessmentFlows onSelectFlow={handleSelectFlow} isDisabled={sending} />
           </div>
         )}
 
         {/* Right column: conversation */}
-        <div className='flex min-w-0 flex-1 flex-col rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.75)] backdrop-blur-2xl'>
+        <div className='flex min-w-0 flex-1 flex-col rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 shadow-[0_20px_60px_hsl(var(--tf-neutral-hs)_0%_/_0.75)] backdrop-blur-2xl'>
           <div className='mb-2 flex items-center justify-between'>
             <div className='flex flex-col'>
               <div className='text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-400'>
@@ -390,7 +390,7 @@ export const GptStudioView: React.FC = () => {
                 className={[
                   'flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-[0.65rem] font-medium transition-all',
                   showSources
-                    ? 'border border-emerald-400/60 bg-emerald-500/20 text-emerald-200 shadow-[0_0_15px_rgba(52,211,153,0.4)]'
+                    ? 'border border-emerald-400/60 bg-emerald-500/20 text-emerald-200 shadow-[0_0_15px_hsl(var(--tf-green-hs)_52%_/_0.4)]'
                     : 'border border-slate-700/50 bg-slate-900/60 text-slate-400 hover:border-emerald-400/40 hover:text-emerald-300',
                 ].join(' ')}
                 title='Toggle RAG source visibility for audit traceability'
@@ -423,8 +423,8 @@ export const GptStudioView: React.FC = () => {
                         'max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed backdrop-blur',
                         'border border-slate-700/60',
                         isUser
-                          ? 'bg-gradient-to-br from-sky-500/90 via-sky-400/90 to-cyan-400/90 text-white shadow-[0_14px_40px_rgba(56,189,248,0.65)]'
-                          : 'bg-slate-900/90 text-slate-50 shadow-[0_8px_30px_rgba(15,23,42,0.80)]',
+                          ? 'bg-gradient-to-br from-sky-500/90 via-sky-400/90 to-cyan-400/90 text-white shadow-[0_14px_40px_hsl(var(--tf-blue-hs)_60%_/_0.65)]'
+                          : 'bg-slate-900/90 text-slate-50 shadow-[0_8px_30px_hsl(var(--tf-neutral-hs)_11%_/_0.80)]',
                       ].join(' ')}
                     >
                       <div className='mb-1 flex items-center gap-2'>
@@ -477,7 +477,7 @@ export const GptStudioView: React.FC = () => {
             {sendError && <div className='mb-1 text-xs text-red-400'>{sendError}</div>}
             <div className='flex items-end gap-2'>
               <textarea
-                className='h-18 flex-1 resize-none rounded-2xl border border-slate-800/70 bg-slate-950/80 px-3 py-2 text-xs text-slate-100 shadow-[0_10px_32px_rgba(0,0,0,0.75)] outline-none backdrop-blur-xl transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500/60 disabled:opacity-60'
+                className='h-18 flex-1 resize-none rounded-2xl border border-slate-800/70 bg-slate-950/80 px-3 py-2 text-xs text-slate-100 shadow-[0_10px_32px_hsl(var(--tf-neutral-hs)_0%_/_0.75)] outline-none backdrop-blur-xl transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500/60 disabled:opacity-60'
                 placeholder={
                   selectedGpt
                     ? `Ask ${selectedGpt.name} a question…`
@@ -492,7 +492,7 @@ export const GptStudioView: React.FC = () => {
                 type='button'
                 onClick={() => void handleSend()}
                 disabled={!selectedGpt || sending || !input.trim()}
-                className='mb-0.5 rounded-2xl bg-gradient-to-br from-sky-500 via-sky-400 to-cyan-400 px-4 py-2 text-xs font-semibold text-slate-950 shadow-[0_12px_40px_rgba(56,189,248,0.8)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50'
+                className='mb-0.5 rounded-2xl bg-gradient-to-br from-sky-500 via-sky-400 to-cyan-400 px-4 py-2 text-xs font-semibold text-slate-950 shadow-[0_12px_40px_hsl(var(--tf-blue-hs)_60%_/_0.8)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50'
               >
                 {sending ? 'Sending…' : 'Send'}
               </button>
