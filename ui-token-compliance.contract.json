@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 532,
+  "violationCount": 520,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -3493,90 +3493,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 169,
-      "column": 57,
-      "excerpt": "#00ffee)  */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 170,
-      "column": 49,
-      "excerpt": "#00cccc)          */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 171,
-      "column": 51,
-      "excerpt": "#cbd5e1)       */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 172,
-      "column": 45,
-      "excerpt": "#f1f5f9)             */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 173,
-      "column": 45,
-      "excerpt": "#475569)             */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 174,
-      "column": 45,
-      "excerpt": "#334155)             */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 175,
-      "column": 44,
-      "excerpt": "#020617)             */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 185,
-      "column": 38,
-      "excerpt": "#00aaff (sky-blue accent)      */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 186,
-      "column": 40,
-      "excerpt": "#333366 (dark border)          */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 188,
-      "column": 45,
-      "excerpt": "#00ffaa (consciousness transcendent) */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 189,
-      "column": 42,
-      "excerpt": "#0099ff (clarity/brand blue)     */"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
-      "line": 187,
-      "column": 38,
-      "excerpt": "rgba(16,21,62) (deep backdrop) */"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ultimate-architecture.css",
       "line": 457,
       "column": 12,
@@ -3730,5 +3646,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T16:32:38.239Z"
+  "generatedAtIso": "2026-02-22T16:50:53.746Z"
 }

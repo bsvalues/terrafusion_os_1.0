@@ -166,13 +166,13 @@
   --tf-dark: 222 47% 11%; /* surface-dark / gray-900           */
 
   /* ─── BRIDGE COMPLETION (Phase 14 — zero irreducible hex) ─── */
-  --tf-transcend: 176 100% 50%; /* transcend-highlight (#00ffee)  */
-  --tf-dark-cyan: 180 100% 40%; /* accent-cyan (#00cccc)          */
-  --tf-slate-300: 213 27% 84%; /* text-secondary (#cbd5e1)       */
-  --tf-slate-100: 210 40% 96%; /* gray-100 (#f1f5f9)             */
-  --tf-slate-600: 215 19% 35%; /* gray-600 (#475569)             */
-  --tf-slate-700: 215 25% 27%; /* gray-700 (#334155)             */
-  --tf-slate-950: 229 84% 5%; /* gray-950 (#020617)             */
+  --tf-transcend: 176 100% 50%; /* transcend-highlight              */
+  --tf-dark-cyan: 180 100% 40%; /* accent-cyan                     */
+  --tf-slate-300: 213 27% 84%; /* text-secondary                  */
+  --tf-slate-100: 210 40% 96%; /* gray-100                        */
+  --tf-slate-600: 215 19% 35%; /* gray-600                        */
+  --tf-slate-700: 215 25% 27%; /* gray-700                        */
+  --tf-slate-950: 229 84% 5%; /* gray-950                        */
 
   /* ─── LIGHT-THEME BRIDGE (Lane C: DataScience / TerraLevy) ─── */
   --tf-brand-blue: 217 91% 60%; /* blue-500  (brand primary)      */
@@ -182,11 +182,11 @@
   --tf-light-surface: 210 40% 98%; /* slate-50  (light surface)      */
 
   /* ─── DARK-THEME BRIDGE (Lane D: Workflow Designer) ─── */
-  --tf-sky-blue-hs: 200 100% 50%; /* #00aaff (sky-blue accent)      */
-  --tf-navy-border-hs: 240 33% 30%; /* #333366 (dark border)          */
-  --tf-deep-navy-hs: 233 59% 15%; /* rgba(16,21,62) (deep backdrop) */
-  --tf-transcend-green-hs: 160 100% 50%; /* #00ffaa (consciousness transcendent) */
-  --tf-clarity-blue-hs: 204 100% 50%; /* #0099ff (clarity/brand blue)     */
+  --tf-sky-blue-hs: 200 100% 50%; /* sky-blue accent                */
+  --tf-navy-border-hs: 240 33% 30%; /* dark border                    */
+  --tf-deep-navy-hs: 233 59% 15%; /* deep backdrop                  */
+  --tf-transcend-green-hs: 160 100% 50%; /* consciousness transcendent     */
+  --tf-clarity-blue-hs: 204 100% 50%; /* clarity/brand blue             */
 
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
