@@ -465,11 +465,11 @@ export const ResearchPortal: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div
         style={{
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: 'hsl(var(--tf-surface) / 0.3)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
+          borderBottom: '1px solid hsl(var(--tf-accent) / 0.2)',
           padding: '1rem 2rem',
-          boxShadow: '0 0 40px rgba(0, 255, 255, 0.15)',
+          boxShadow: '0 0 40px hsl(var(--tf-accent) / 0.15)',
         }}
       >
         <div
@@ -526,10 +526,10 @@ export const ResearchPortal: React.FC = () => {
             {/* Session Duration */}
             <div
               style={{
-                background: 'rgba(0, 255, 255, 0.1)',
+                background: 'hsl(var(--tf-accent) / 0.1)',
                 padding: '0.5rem 1rem',
                 borderRadius: '8px',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                border: '1px solid hsl(var(--tf-accent) / 0.3)',
               }}
             >
               <div style={{ fontSize: '0.75rem', color: 'var(--tf-text-secondary)', marginBottom: '0.25rem' }}>
@@ -581,12 +581,12 @@ export const ResearchPortal: React.FC = () => {
               style={{
                 background:
                   activePanel === panel.id
-                    ? 'linear-gradient(135deg, rgba(0, 255, 255, 0.2) 0%, rgba(0, 128, 255, 0.2) 100%)'
-                    : 'rgba(30, 41, 59, 0.3)',
+                    ? 'linear-gradient(135deg, hsl(var(--tf-accent) / 0.2) 0%, hsl(var(--tf-accent-2) / 0.2) 100%)'
+                    : 'hsl(var(--tf-surface) / 0.3)',
                 border:
                   activePanel === panel.id
-                    ? '2px solid rgba(0, 255, 255, 0.5)'
-                    : '1px solid rgba(148, 163, 184, 0.3)',
+                    ? '2px solid hsl(var(--tf-accent) / 0.5)'
+                    : '1px solid hsl(var(--tf-muted) / 0.3)',
                 borderRadius: '8px',
                 padding: '0.75rem 1.5rem',
                 color: activePanel === panel.id ? 'var(--tf-transcend-cyan)' : 'var(--tf-text-secondary)',
@@ -598,7 +598,7 @@ export const ResearchPortal: React.FC = () => {
                 alignItems: 'center',
                 gap: '0.5rem',
                 backdropFilter: 'blur(10px)',
-                boxShadow: activePanel === panel.id ? '0 0 20px rgba(0, 255, 255, 0.3)' : 'none',
+                boxShadow: activePanel === panel.id ? '0 0 20px hsl(var(--tf-accent) / 0.3)' : 'none',
               }}
             >
               <span style={{ fontSize: '1.25rem' }}>{panel.icon}</span>
@@ -617,8 +617,8 @@ export const ResearchPortal: React.FC = () => {
       {crossPanelInsights.length > 0 && (
         <div
           style={{
-            background: 'rgba(0, 128, 255, 0.1)',
-            borderBottom: '1px solid rgba(0, 128, 255, 0.3)',
+            background: 'hsl(var(--tf-accent-2) / 0.1)',
+            borderBottom: '1px solid hsl(var(--tf-accent-2) / 0.3)',
             padding: '0.75rem 2rem',
             fontSize: '0.875rem',
             color: 'var(--tf-transcend-cyan)',
@@ -669,9 +669,9 @@ export const ResearchPortal: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div
         style={{
-          background: 'rgba(30, 41, 59, 0.3)',
+          background: 'hsl(var(--tf-surface) / 0.3)',
           backdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(0, 255, 255, 0.2)',
+          borderTop: '1px solid hsl(var(--tf-accent) / 0.2)',
           padding: '1rem 2rem',
           display: 'flex',
           justifyContent: 'space-between',
@@ -716,8 +716,8 @@ export const ResearchPortal: React.FC = () => {
               })
             }
             style={{
-              background: 'rgba(0, 255, 255, 0.1)',
-              border: '1px solid rgba(0, 255, 255, 0.3)',
+              background: 'hsl(var(--tf-accent) / 0.1)',
+              border: '1px solid hsl(var(--tf-accent) / 0.3)',
               borderRadius: '6px',
               padding: '0.5rem 1rem',
               color: 'var(--tf-transcend-cyan)',
@@ -742,8 +742,8 @@ export const ResearchPortal: React.FC = () => {
             }
             style={{
               background:
-                'linear-gradient(135deg, rgba(0, 255, 255, 0.2) 0%, rgba(0, 128, 255, 0.2) 100%)',
-              border: '1px solid rgba(0, 255, 255, 0.5)',
+                'linear-gradient(135deg, hsl(var(--tf-accent) / 0.2) 0%, hsl(var(--tf-accent-2) / 0.2) 100%)',
+              border: '1px solid hsl(var(--tf-accent) / 0.5)',
               borderRadius: '6px',
               padding: '0.5rem 1rem',
               color: 'var(--tf-transcend-cyan)',
@@ -758,8 +758,8 @@ export const ResearchPortal: React.FC = () => {
           <button
             onClick={() => setAutoSaveEnabled(!autoSaveEnabled)}
             style={{
-              background: 'rgba(148, 163, 184, 0.1)',
-              border: '1px solid rgba(148, 163, 184, 0.3)',
+              background: 'hsl(var(--tf-muted) / 0.1)',
+              border: '1px solid hsl(var(--tf-muted) / 0.3)',
               borderRadius: '6px',
               padding: '0.5rem 1rem',
               color: 'var(--tf-text-secondary)',
