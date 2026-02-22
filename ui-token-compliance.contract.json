@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 578,
+  "violationCount": 565,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -3318,97 +3318,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 62,
-      "column": 24,
-      "excerpt": "rgba(0,0,0,0.95)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 64,
-      "column": 30,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 71,
-      "column": 24,
-      "excerpt": "rgba(255,255,255,0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 72,
-      "column": 36,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 86,
-      "column": 27,
-      "excerpt": "rgba(255,255,255,0.7)' }}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 96,
-      "column": 27,
-      "excerpt": "rgba(255,255,255,0.7)' }}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 102,
-      "column": 50,
-      "excerpt": "rgba(255,255,255,0.7)' }} onClick={onClose}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 134,
-      "column": 55,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 155,
-      "column": 29,
-      "excerpt": "rgba(255,255,255,0.8)', mb: 3, textAlign: 'center' }}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 165,
-      "column": 30,
-      "excerpt": "rgba(255,255,255,0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 166,
-      "column": 37,
-      "excerpt": "rgba(255,255,255,0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 173,
-      "column": 54,
-      "excerpt": "rgba(255,255,255,0.5)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\WindowManager.tsx",
-      "line": 178,
-      "column": 57,
-      "excerpt": "rgba(255,255,255,0.5)', mt: 2 }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\styles\\advanced-design-system.css",
       "line": 111,
       "column": 30,
@@ -4052,5 +3961,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T05:44:47.987Z"
+  "generatedAtIso": "2026-02-22T16:11:06.375Z"
 }
