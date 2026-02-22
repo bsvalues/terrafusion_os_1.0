@@ -105,14 +105,17 @@
   --duration-slow: 500ms;
   --duration-quantum: 800ms;
 
+  /* HS Channel Anchor (file-local, pure-black for ambient shadows) */
+  --tf-tokens-black-hs: 0 0%;
+
   /* ═══ ELEVATION & SHADOWS ═══ */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 30px rgba(0, 255, 255, 0.2);
-  --shadow-glow: 0 0 40px rgba(0, 255, 255, 0.4);
+  --shadow-sm: 0 1px 2px hsl(var(--tf-tokens-black-hs) 0% / 0.05);
+  --shadow-md: 0 4px 6px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
+  --shadow-lg: 0 10px 30px hsl(var(--tf-accent) / 0.2);
+  --shadow-glow: 0 0 40px hsl(var(--tf-accent) / 0.4);
   --shadow-quantum:
-    0 0 20px rgba(0, 255, 255, 0.3), 0 0 40px rgba(0, 128, 255, 0.2),
-    0 0 60px rgba(136, 68, 255, 0.1);
+    0 0 20px hsl(var(--tf-accent) / 0.3), 0 0 40px hsl(var(--tf-accent-2) / 0.2),
+    0 0 60px hsl(var(--tf-info) / 0.1);
 
   /* ═══ BORDER RADIUS ═══ */
   --radius-sm: 0.25rem; /* 4px */
@@ -155,28 +158,28 @@
   --tf-info: 264 100% 63%; /* #8844ff  (info-purple)          */
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
-  --tf-shadow: 0 10px 30px rgba(0, 255, 255, 0.2); /* shadow-lg    */
+  --tf-shadow: 0 10px 30px hsl(var(--tf-accent) / 0.2); /* shadow-lg    */
 
   /* ═══ GLASSMORPHISM (Brand Kit Exact) ═══ */
-  --glass-bg: rgba(15, 23, 42, 0.6);
-  --glass-bg-light: rgba(30, 41, 59, 0.5);
-  --glass-border: rgba(0, 255, 255, 0.2);
-  --glass-border-hover: rgba(0, 255, 255, 0.4);
+  --glass-bg: hsl(var(--tf-surface-2) / 0.6);
+  --glass-bg-light: hsl(var(--tf-surface) / 0.5);
+  --glass-border: hsl(var(--tf-accent) / 0.2);
+  --glass-border-hover: hsl(var(--tf-accent) / 0.4);
   --glass-blur: blur(20px);
   --glass-backdrop: saturate(180%) blur(20px);
 
   /* Card System */
-  --card-bg: rgba(15, 23, 42, 0.6);
-  --card-border: 1px solid rgba(0, 255, 255, 0.2);
+  --card-bg: hsl(var(--tf-surface-2) / 0.6);
+  --card-border: 1px solid hsl(var(--tf-accent) / 0.2);
   --card-radius: 1rem;
-  --card-hover-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+  --card-hover-shadow: 0 0 30px hsl(var(--tf-accent) / 0.1);
 
   /* ═══ QUANTUM EFFECTS ═══ */
-  --pulse-glow: 0 0 20px rgba(0, 255, 255, 0.5);
+  --pulse-glow: 0 0 20px hsl(var(--tf-accent) / 0.5);
   --quantum-shimmer: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(0, 255, 255, 0.4) 50%,
+    hsl(var(--tf-accent) / 0.4) 50%,
     transparent 100%
   );
 
@@ -214,8 +217,8 @@
     /* Enhanced contrast for dark mode */
     --terra-cyan: var(--tf-quantum-cyan);
     --terra-midnight: #000000;
-    --glass-bg: rgba(10, 14, 26, 0.5);
-    --glass-border: rgba(0, 255, 255, 0.3);
+    --glass-bg: hsl(var(--tf-bg) / 0.5);
+    --glass-border: hsl(var(--tf-accent) / 0.3);
   }
 }
 
