@@ -78,9 +78,9 @@ const BrandKit: React.FC = () => {
           left: 0,
           right: 0,
           zIndex: 1000,
-          background: 'rgba(11,16,32,0.95)',
+          background: 'hsl(var(--tf-neutral-hs) 8% / 0.95)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(0,255,238,0.1)',
+          borderBottom: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.1)',
           padding: '1rem 2rem',
         }}
       >
@@ -90,12 +90,12 @@ const BrandKit: React.FC = () => {
               <button
                 onClick={() => setActiveSection(section)}
                 style={{
-                  color: activeSection === section ? 'var(--tf-transcend-highlight)' : 'rgba(255,255,255,0.7)',
+                  color: activeSection === section ? 'var(--tf-transcend-highlight)' : 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
                   transition: 'all 0.3s ease',
                   padding: '0.5rem 1rem',
                   borderRadius: '50px',
                   fontWeight: 500,
-                  background: activeSection === section ? 'rgba(0,255,238,0.1)' : 'transparent',
+                  background: activeSection === section ? 'hsl(var(--tf-cyan-hs) 50% / 0.1)' : 'transparent',
                   border: 'none',
                   cursor: 'pointer',
                   textTransform: 'capitalize',
@@ -112,8 +112,8 @@ const BrandKit: React.FC = () => {
       <div
         style={{
           background: `
-          radial-gradient(circle at 20% 50%, rgba(0,153,255,0.3) 0%, transparent 50%),
-          radial-gradient(circle at 80% 50%, rgba(0,255,238,0.2) 0%, transparent 50%),
+          radial-gradient(circle at 20% 50%, hsl(var(--tf-blue-hs) 50% / 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 80% 50%, hsl(var(--tf-cyan-hs) 50% / 0.2) 0%, transparent 50%),
           linear-gradient(180deg, var(--tf-bg-surface) 0%, var(--tf-void-black) 100%)
         `,
         }}
@@ -159,7 +159,7 @@ const BrandKit: React.FC = () => {
           <div
             style={{
               fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-              color: 'rgba(255,255,255,0.7)',
+              color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
               marginBottom: '3rem',
             }}
           >
@@ -209,7 +209,7 @@ const BrandKit: React.FC = () => {
                 </div>
                 <div
                   style={{
-                    color: 'rgba(255,255,255,0.7)',
+                    color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
                     lineHeight: 1.8,
                   }}
                 >
@@ -240,7 +240,7 @@ const BrandKit: React.FC = () => {
                 </div>
                 <div
                   style={{
-                    color: 'rgba(255,255,255,0.7)',
+                    color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
                     lineHeight: 1.8,
                   }}
                 >
@@ -271,7 +271,7 @@ const BrandKit: React.FC = () => {
                 </div>
                 <div
                   style={{
-                    color: 'rgba(255,255,255,0.7)',
+                    color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
                     lineHeight: 1.8,
                   }}
                 >
@@ -314,7 +314,7 @@ const BrandKit: React.FC = () => {
                   <div
                     style={{
                       fontFamily: "'Courier New', monospace",
-                      color: 'rgba(255,255,255,0.7)',
+                      color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
                       fontSize: '0.9rem',
                     }}
                   >
@@ -333,7 +333,7 @@ const BrandKit: React.FC = () => {
 
             <div
               style={{
-                background: 'rgba(0,0,0,0.4)',
+                background: 'hsl(var(--tf-neutral-hs) 0% / 0.4)',
                 borderRadius: '20px',
                 padding: '3rem',
               }}
@@ -342,7 +342,7 @@ const BrandKit: React.FC = () => {
                 style={{
                   marginBottom: '2rem',
                   paddingBottom: '2rem',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) 100% / 0.1)',
                 }}
               >
                 <div className='text-sm'>Display Large</div>
@@ -361,7 +361,7 @@ const BrandKit: React.FC = () => {
                 style={{
                   marginBottom: '2rem',
                   paddingBottom: '2rem',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)',
+                  borderBottom: '1px solid hsl(var(--tf-neutral-hs) 100% / 0.1)',
                 }}
               >
                 <div className='text-sm'>Display Medium</div>
@@ -382,7 +382,7 @@ const BrandKit: React.FC = () => {
                   style={{
                     fontSize: '1rem',
                     lineHeight: 1.8,
-                    color: 'rgba(255,255,255,0.9)',
+                    color: 'hsl(var(--tf-neutral-hs) 100% / 0.9)',
                   }}
                 >
                   Terrafusion represents the pinnacle of government technology innovation. Our
@@ -411,9 +411,9 @@ const BrandKit: React.FC = () => {
                   key={index}
                   style={{
                     background:
-                      'linear-gradient(135deg, rgba(0,255,238,0.1) 0%, rgba(0,153,255,0.05) 100%)',
+                      'linear-gradient(135deg, hsl(var(--tf-cyan-hs) 50% / 0.1) 0%, hsl(var(--tf-blue-hs) 50% / 0.05) 100%)',
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(0,255,238,0.2)',
+                    border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.2)',
                     borderRadius: '16px',
                     padding: '1.5rem',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',

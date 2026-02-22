@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 837,
+  "violationCount": 821,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -522,118 +522,6 @@
       "line": 437,
       "column": 24,
       "excerpt": "rgba(11, 16, 32, 0.8)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 81,
-      "column": 24,
-      "excerpt": "rgba(11,16,32,0.95)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 83,
-      "column": 36,
-      "excerpt": "rgba(0,255,238,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 93,
-      "column": 89,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 98,
-      "column": 60,
-      "excerpt": "rgba(0,255,238,0.1)' : 'transparent',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 162,
-      "column": 23,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 212,
-      "column": 29,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 243,
-      "column": 29,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 274,
-      "column": 29,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 317,
-      "column": 31,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 336,
-      "column": 30,
-      "excerpt": "rgba(0,0,0,0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 345,
-      "column": 44,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 364,
-      "column": 44,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 385,
-      "column": 29,
-      "excerpt": "rgba(255,255,255,0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 414,
-      "column": 48,
-      "excerpt": "rgba(0,255,238,0.1) 0%, rgba(0,153,255,0.05) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 414,
-      "column": 72,
-      "excerpt": "rgba(0,153,255,0.05) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\BrandKit.tsx",
-      "line": 416,
-      "column": 40,
-      "excerpt": "rgba(0,255,238,0.2)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -5865,5 +5753,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T01:47:49.240Z"
+  "generatedAtIso": "2026-02-22T02:00:56.441Z"
 }
