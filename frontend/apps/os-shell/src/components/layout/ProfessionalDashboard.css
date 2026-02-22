@@ -23,8 +23,8 @@ PHD-LEVEL QUANTUM DASHBOARD FEATURES:
 }
 
 .tf-commercial-icon {
-  background: linear-gradient(135deg, #667eea, var(--tf-glass-heavy));
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, hsl(var(--tf-blue-hs) 67%), var(--tf-glass-heavy));
+  border: 1px solid hsl(var(--tf-blue-hs) 67% / 0.3);
 }
 
 /* Quantum Dashboard Grid System */
@@ -40,7 +40,7 @@ PHD-LEVEL QUANTUM DASHBOARD FEATURES:
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(0, 255, 238, 0.03) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 50%, hsl(var(--tf-cyan-hs) 50% / 0.03) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -63,9 +63,9 @@ PHD-LEVEL QUANTUM DASHBOARD FEATURES:
 .tf-quantum-orchestrator {
   background: linear-gradient(
     135deg,
-    rgba(0, 255, 238, 0.08) 0%,
-    rgba(0, 153, 255, 0.05) 50%,
-    rgba(102, 126, 234, 0.03) 100%
+    hsl(var(--tf-cyan-hs) 50% / 0.08) 0%,
+    hsl(var(--tf-blue-hs) 50% / 0.05) 50%,
+    hsl(var(--tf-blue-hs) 67% / 0.03) 100%
   );
   border: 2px solid var(--tf-glass-border);
   position: relative;
@@ -85,30 +85,30 @@ PHD-LEVEL QUANTUM DASHBOARD FEATURES:
 
 /* Module Ecosystem Enhancement */
 .tf-module-ecosystem {
-  background: linear-gradient(135deg, rgba(0, 153, 255, 0.05) 0%, rgba(0, 255, 170, 0.03) 100%);
+  background: linear-gradient(135deg, hsl(var(--tf-blue-hs) 50% / 0.05) 0%, hsl(var(--tf-green-hs) 50% / 0.03) 100%);
 }
 
 .tf-module-launcher:hover {
   transform: translateY(-4px) scale(1.02);
   border-color: var(--tf-primary);
-  background: linear-gradient(135deg, rgba(0, 153, 255, 0.1) 0%, rgba(0, 255, 238, 0.05) 100%);
+  background: linear-gradient(135deg, hsl(var(--tf-blue-hs) 50% / 0.1) 0%, hsl(var(--tf-cyan-hs) 50% / 0.05) 100%);
   box-shadow:
-    0 12px 24px rgba(0, 153, 255, 0.2),
-    0 0 40px rgba(0, 255, 238, 0.1);
+    0 12px 24px hsl(var(--tf-blue-hs) 50% / 0.2),
+    0 0 40px hsl(var(--tf-cyan-hs) 50% / 0.1);
 }
 
 /* Commercial Orchestrator */
 .tf-commercial-orchestrator {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.05) 100%);
+  background: linear-gradient(135deg, hsl(var(--tf-blue-hs) 67% / 0.08) 0%, hsl(var(--tf-blue-hs) 46% / 0.05) 100%);
 }
 
 .tf-commercial-module:hover {
   transform: translateY(-4px) scale(1.02);
-  border-color: #667eea;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-color: hsl(var(--tf-blue-hs) 67%);
+  background: linear-gradient(135deg, hsl(var(--tf-blue-hs) 67% / 0.1) 0%, hsl(var(--tf-blue-hs) 46% / 0.05) 100%);
   box-shadow:
-    0 12px 24px rgba(102, 126, 234, 0.2),
-    0 0 40px rgba(118, 75, 162, 0.1);
+    0 12px 24px hsl(var(--tf-blue-hs) 67% / 0.2),
+    0 0 40px hsl(var(--tf-blue-hs) 46% / 0.1);
 }
 
 /* Consciousness Layer Integration */
@@ -141,9 +141,9 @@ PHD-LEVEL QUANTUM DASHBOARD FEATURES:
 .tf-performance-hud {
   position: relative;
   padding: var(--tf-space-md);
-  background: rgba(0, 255, 238, 0.05);
+  background: hsl(var(--tf-cyan-hs) 50% / 0.05);
   border-radius: var(--tf-radius-md);
-  border: 1px solid rgba(0, 255, 238, 0.1);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.1);
 }
 
 /* Intelligence Pulse Animation */
@@ -155,11 +155,11 @@ PHD-LEVEL QUANTUM DASHBOARD FEATURES:
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(0, 255, 238, 0.4);
+    box-shadow: 0 0 0 0 hsl(var(--tf-cyan-hs) 50% / 0.4);
   }
   50% {
     transform: scale(1.02);
-    box-shadow: 0 0 20px 5px rgba(0, 255, 238, 0.1);
+    box-shadow: 0 0 20px 5px hsl(var(--tf-cyan-hs) 50% / 0.1);
   }
 }
 
@@ -168,7 +168,7 @@ PHD-LEVEL QUANTUM DASHBOARD FEATURES:
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(0, 255, 238, 0.02) 50%,
+    hsl(var(--tf-cyan-hs) 50% / 0.02) 50%,
     transparent 100%
   );
   padding: var(--tf-space-xl) 0;
@@ -182,7 +182,7 @@ PHD-LEVEL QUANTUM DASHBOARD FEATURES:
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 238, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, hsl(var(--tf-cyan-hs) 50% / 0.3), transparent);
 }
 
 /* Responsive Design Enhancements */
