@@ -21,10 +21,10 @@ import {
 import { styled } from '@mui/material/styles';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: 'linear-gradient(135deg, rgba(8, 145, 178, 0.95), rgba(0, 210, 255, 0.85))',
+  background: 'linear-gradient(135deg, hsl(var(--tf-cyan-hs) 36% / 0.95), hsl(var(--tf-cyan-hs) 50% / 0.85))',
   backdropFilter: 'blur(20px)',
-  borderBottom: '1px solid rgba(0, 210, 255, 0.2)',
-  boxShadow: '0 8px 32px rgba(0, 210, 255, 0.1)',
+  borderBottom: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.2)',
+  boxShadow: '0 8px 32px hsl(var(--tf-cyan-hs) 50% / 0.1)',
 }));
 
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -34,9 +34,9 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const StatusChip = styled(Chip)(({ theme }) => ({
-  background: 'rgba(0, 255, 170, 0.15)',
+  background: 'hsl(var(--tf-green-hs) 50% / 0.15)',
   color: 'var(--tf-accent-success)',
-  border: '1px solid rgba(0, 255, 170, 0.3)',
+  border: '1px solid hsl(var(--tf-green-hs) 50% / 0.3)',
   fontWeight: 600,
   '& .MuiChip-icon': {
     color: 'var(--tf-accent-success)',
@@ -63,7 +63,7 @@ const ProfessionalHeader: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 20px rgba(0, 210, 255, 0.3)',
+              boxShadow: '0 4px 20px hsl(var(--tf-cyan-hs) 50% / 0.3)',
             }}
           >
             <Business sx={{ color: 'white', fontSize: 28 }} />
@@ -74,7 +74,7 @@ const ProfessionalHeader: React.FC = () => {
               sx={{
                 fontWeight: 700,
                 color: 'white',
-                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                textShadow: '0 2px 8px hsl(var(--tf-neutral-hs) 0% / 0.3)',
                 letterSpacing: '-0.5px',
               }}
             >
@@ -83,7 +83,7 @@ const ProfessionalHeader: React.FC = () => {
             <Typography
               variant='caption'
               sx={{
-                color: 'rgba(255, 255, 255, 0.8)',
+                color: 'hsl(var(--tf-neutral-hs) 100% / 0.8)',
                 fontWeight: 500,
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
@@ -106,10 +106,10 @@ const ProfessionalHeader: React.FC = () => {
             variant='outlined'
             sx={{
               color: 'white',
-              borderColor: 'rgba(255, 255, 255, 0.3)',
+              borderColor: 'hsl(var(--tf-neutral-hs) 100% / 0.3)',
               '&:hover': {
-                borderColor: 'rgba(255, 255, 255, 0.5)',
-                background: 'rgba(255, 255, 255, 0.1)',
+                borderColor: 'hsl(var(--tf-neutral-hs) 100% / 0.5)',
+                background: 'hsl(var(--tf-neutral-hs) 100% / 0.1)',
               },
             }}
           >
