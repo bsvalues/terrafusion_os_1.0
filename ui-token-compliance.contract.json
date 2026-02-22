@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 617,
+  "violationCount": 604,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -291,97 +291,6 @@
       "line": 273,
       "column": 23,
       "excerpt": "rgba(0, 255, 255, 1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 214,
-      "column": 24,
-      "excerpt": "rgba(255, 255, 255, 0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 218,
-      "column": 30,
-      "excerpt": "rgba(0, 210, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 297,
-      "column": 93,
-      "excerpt": "rgba(0, 210, 255, 0.3)'}`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 303,
-      "column": 66,
-      "excerpt": "rgba(0, 255, 170, 0.3)' : 'none',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 309,
-      "column": 64,
-      "excerpt": "rgba(0, 210, 255, 0.3)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 315,
-      "column": 54,
-      "excerpt": "rgba(0, 210, 255, 0.3)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 348,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 360,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 363,
-      "column": 30,
-      "excerpt": "rgba(0, 0, 0, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 421,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 440,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 459,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ApplicationLauncher.tsx",
-      "line": 478,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -4325,5 +4234,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T05:20:46.892Z"
+  "generatedAtIso": "2026-02-22T05:29:29.563Z"
 }
