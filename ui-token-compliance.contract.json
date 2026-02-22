@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 962,
+  "violationCount": 942,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -6363,146 +6363,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 21,
-      "column": 22,
-      "excerpt": "#0077cc;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 22,
-      "column": 16,
-      "excerpt": "#00ffaa;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 23,
-      "column": 21,
-      "excerpt": "#00cc88;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 25,
-      "column": 14,
-      "excerpt": "#0b1020;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 26,
-      "column": 22,
-      "excerpt": "#1a1f3a;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 27,
-      "column": 15,
-      "excerpt": "#ffffff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 33,
-      "column": 17,
-      "excerpt": "#e0f7ff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 408,
-      "column": 18,
-      "excerpt": "#00aa00;"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 45,
-      "column": 5,
-      "excerpt": "rgba(0, 255, 238, 0.1) 0%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 46,
-      "column": 5,
-      "excerpt": "rgba(0, 153, 255, 0.05) 100%"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 50,
-      "column": 15,
-      "excerpt": "rgba(255, 255, 255, 0.03);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 51,
-      "column": 21,
-      "excerpt": "rgba(255, 255, 255, 0.08);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 52,
-      "column": 22,
-      "excerpt": "rgba(0, 255, 238, 0.15);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 57,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 238, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 58,
-      "column": 33,
-      "excerpt": "rgba(0, 0, 0, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 59,
-      "column": 36,
-      "excerpt": "rgba(0, 0, 0, 0.15);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 313,
-      "column": 51,
-      "excerpt": "rgba(0, 255, 238, 0.2), transparent);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 365,
-      "column": 17,
-      "excerpt": "rgba(0, 255, 238, 0.3),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 366,
-      "column": 14,
-      "excerpt": "rgba(0, 255, 238, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 376,
-      "column": 39,
-      "excerpt": "rgba(0, 255, 238, 0.1) 0%, transparent 70%);"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
       "line": 169,
       "column": 57,
@@ -6740,5 +6600,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T00:16:42.365Z"
+  "generatedAtIso": "2026-02-22T00:22:52.153Z"
 }
