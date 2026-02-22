@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 354,
+  "violationCount": 345,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -732,69 +732,6 @@
       "line": 102,
       "column": 33,
       "excerpt": "rgba(0,0,0,0.1)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 238,
-      "column": 47,
-      "excerpt": "#00e5ff)]/20',\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 239,
-      "column": 49,
-      "excerpt": "#00e5ff)]',\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 240,
-      "column": 53,
-      "excerpt": "#00e5ff)]/30',\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 268,
-      "column": 43,
-      "excerpt": "#00e5ff)]/10',\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 269,
-      "column": 54,
-      "excerpt": "#00e5ff)]/30',\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 275,
-      "column": 59,
-      "excerpt": "#00e5ff)]'>📍</span>\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 280,
-      "column": 84,
-      "excerpt": "#00e5ff)]')}\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 384,
-      "column": 14,
-      "excerpt": "#1a1a2e] border border-white/10',\r"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ParcelContext\\ParcelContextIndicator.tsx",
-      "line": 384,
-      "column": 10,
-      "excerpt": "bg-[#1a1a2e] border border-white/10',\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2484,5 +2421,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T23:10:32.183Z"
+  "generatedAtIso": "2026-02-22T23:16:08.865Z"
 }
