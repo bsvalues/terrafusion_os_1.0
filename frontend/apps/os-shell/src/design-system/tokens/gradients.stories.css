@@ -12,7 +12,7 @@
 }
 .tf-gradient-bg {
   border-radius: 16px; /* tokens.radius.xl fallback */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16); /* tokens.shadows.box.lg fallback */
+  box-shadow: 0 4px 16px hsl(var(--tf-neutral-hs) 0% / 0.16); /* tokens.shadows.box.lg fallback */
   width: 100%;
   height: 40px;
 }
@@ -22,25 +22,41 @@
 }
 .tf-gradient-value {
   font-family: monospace;
-  color: #b0b0b0;
+  color: hsl(var(--tf-neutral-hs) 69%);
 }
 
 /* Gradient backgrounds for championship compliance */
 .tf-gradient-bg-primary {
-  background: linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--tf-network-blue) 0%,
+    var(--tf-transcend-highlight) 100%
+  );
 }
 .tf-gradient-bg-transcend {
-  background: linear-gradient(135deg, var(--tf-transcend-highlight) 0%, #00ffaa 100%);
+  background: linear-gradient(
+    135deg,
+    var(--tf-transcend-highlight) 0%,
+    hsl(var(--tf-green-hs) 50%) 100%
+  );
 }
 .tf-gradient-bg-dark {
-  background: linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+  background: linear-gradient(
+    180deg,
+    hsl(var(--tf-neutral-hs) 0%) 0%,
+    hsl(var(--tf-neutral-hs) 4%) 100%
+  );
 }
 .tf-gradient-bg-glow {
-  background: radial-gradient(circle, rgba(0, 153, 255, 0.3) 0%, rgba(0, 153, 255, 0) 70%);
+  background: radial-gradient(
+    circle,
+    hsl(var(--tf-blue-hs) 50% / 0.3) 0%,
+    hsl(var(--tf-blue-hs) 50% / 0) 70%
+  );
 }
 .tf-gradient-bg-mesh {
   background:
-    radial-gradient(at 40% 20%, rgba(0, 153, 255, 0.3) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, rgba(0, 255, 238, 0.2) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, rgba(0, 255, 170, 0.2) 0px, transparent 50%);
+    radial-gradient(at 40% 20%, hsl(var(--tf-blue-hs) 50% / 0.3) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsl(var(--tf-cyan-hs) 50% / 0.2) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsl(var(--tf-green-hs) 50% / 0.2) 0px, transparent 50%);
 }
