@@ -5,6 +5,11 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .terrafusion-quantum-os {
+  /* HS Channel Anchors (file-local, layout-fixes palette) */
+  --tf-lf-cyan-hs: 180 100%;
+  --tf-lf-void-hs: 225 44%;
+  --tf-lf-slate-hs: 217 33%;
+
   position: relative;
   width: 100vw;
   height: 100vh;
@@ -45,8 +50,8 @@
 .terrafusion-view-toggle:hover {
   transform: translateY(-2px) scale(1.05);
   box-shadow:
-    0 10px 25px rgba(0, 255, 255, 0.2),
-    0 0 30px rgba(0, 255, 255, 0.1);
+    0 10px 25px hsl(var(--tf-lf-cyan-hs) 50% / 0.2),
+    0 0 30px hsl(var(--tf-lf-cyan-hs) 50% / 0.1);
 }
 
 .terrafusion-view-toggle:active {
@@ -117,7 +122,7 @@
 
   /* Custom scrollbar styling */
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 255, 255, 0.3) transparent;
+  scrollbar-color: hsl(var(--tf-lf-cyan-hs) 50% / 0.3) transparent;
 }
 
 .elite-quantum-dashboard::-webkit-scrollbar {
@@ -129,12 +134,12 @@
 }
 
 .elite-quantum-dashboard::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 255, 0.3);
+  background: hsl(var(--tf-lf-cyan-hs) 50% / 0.3);
   border-radius: 4px;
 }
 
 .elite-quantum-dashboard::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 255, 0.5);
+  background: hsl(var(--tf-lf-cyan-hs) 50% / 0.5);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -151,7 +156,7 @@
   padding: 20px;
 
   /* Ensure validation content is readable */
-  background: linear-gradient(135deg, rgba(10, 14, 26, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+  background: linear-gradient(135deg, hsl(var(--tf-lf-void-hs) 7% / 0.95) 0%, hsl(var(--tf-lf-slate-hs) 17% / 0.9) 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -241,14 +246,14 @@
   outline: 2px solid var(--terra-cyan);
   outline-offset: 4px;
   box-shadow:
-    0 0 0 4px rgba(0, 255, 255, 0.2),
-    0 10px 25px rgba(0, 255, 255, 0.2);
+    0 0 0 4px hsl(var(--tf-lf-cyan-hs) 50% / 0.2),
+    0 10px 25px hsl(var(--tf-lf-cyan-hs) 50% / 0.2);
 }
 
 .atlas-orb:focus-visible {
   outline: 2px solid var(--terra-cyan);
   outline-offset: 4px;
   box-shadow:
-    0 0 0 4px rgba(0, 255, 255, 0.2),
-    0 0 30px rgba(0, 255, 255, 0.3);
+    0 0 0 4px hsl(var(--tf-lf-cyan-hs) 50% / 0.2),
+    0 0 30px hsl(var(--tf-lf-cyan-hs) 50% / 0.3);
 }
