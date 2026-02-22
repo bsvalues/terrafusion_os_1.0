@@ -1,9 +1,13 @@
 .root {
+  /* Phase 79 – valuation-tools local HS anchors */
+  --tf-val-text-hs: 210 29%;
+  --tf-val-purple-hs: 283 39%;
+
   padding: 16px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid hsl(var(--tf-neutral-hs) 88%);
   border-radius: 8px;
   margin: 12px 0;
-  background: #f9f9f9;
+  background: hsl(var(--tf-neutral-hs) 98%);
 }
 
 .header {
@@ -15,13 +19,13 @@
 .title {
   font-size: 18px;
   font-weight: 700;
-  color: #2c3e50;
+  color: hsl(var(--tf-val-text-hs) 24%);
   margin-bottom: 4px;
 }
 
 .subtitle {
   font-size: 14px;
-  color: #7f8c8d;
+  color: hsl(var(--tf-neutral-hs) 53%);
   font-style: italic;
 }
 
@@ -31,7 +35,7 @@
   gap: 8px;
   margin-bottom: 16px;
   font-size: 13px;
-  color: #555;
+  color: hsl(var(--tf-neutral-hs) 33%);
 }
 
 .controls {
@@ -50,7 +54,7 @@
 .label {
   font-weight: 600;
   font-size: 13px;
-  color: #2c3e50;
+  color: hsl(var(--tf-val-text-hs) 24%);
 }
 
 .input,
@@ -79,12 +83,12 @@
 }
 
 .button:hover:not(:disabled) {
-  background: #c0392b;
+  background: hsl(var(--tf-red-hs) 46%);
 }
 
 .buttonSecondary {
   padding: 8px 16px;
-  background: #9b59b6;
+  background: hsl(var(--tf-val-purple-hs) 53%);
   color: white;
   border: none;
   border-radius: 4px;
@@ -94,18 +98,18 @@
 }
 
 .buttonSecondary:hover:not(:disabled) {
-  background: #8e44ad;
+  background: hsl(var(--tf-val-purple-hs) 47%);
 }
 
 .button:disabled,
 .buttonSecondary:disabled {
-  background: #95a5a6;
+  background: hsl(var(--tf-neutral-hs) 62%);
   cursor: not-allowed;
 }
 
 .results {
-  background: #ecf0f1;
-  border: 1px solid #bdc3c7;
+  background: hsl(var(--tf-neutral-hs) 94%);
+  border: 1px solid hsl(var(--tf-neutral-hs) 76%);
   border-radius: 4px;
   padding: 12px;
 }
@@ -113,7 +117,7 @@
 .resultsTitle {
   font-weight: 600;
   margin-bottom: 8px;
-  color: #2c3e50;
+  color: hsl(var(--tf-val-text-hs) 24%);
 }
 
 .resultsData {
@@ -122,7 +126,7 @@
   background: white;
   padding: 8px;
   border-radius: 3px;
-  border: 1px solid #d5dbdb;
+  border: 1px solid hsl(var(--tf-neutral-hs) 85%);
   overflow-x: auto;
   max-height: 200px;
   overflow-y: auto;

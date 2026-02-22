@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 670,
+  "violationCount": 656,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -3156,104 +3156,6 @@
       "excerpt": "#d5dbdb;"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 3,
-      "column": 21,
-      "excerpt": "#e0e0e0;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 6,
-      "column": 15,
-      "excerpt": "#f9f9f9;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 18,
-      "column": 10,
-      "excerpt": "#2c3e50;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 24,
-      "column": 10,
-      "excerpt": "#7f8c8d;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 34,
-      "column": 10,
-      "excerpt": "#555;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 53,
-      "column": 10,
-      "excerpt": "#2c3e50;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 82,
-      "column": 15,
-      "excerpt": "#c0392b;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 87,
-      "column": 15,
-      "excerpt": "#9b59b6;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 97,
-      "column": 15,
-      "excerpt": "#8e44ad;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 102,
-      "column": 15,
-      "excerpt": "#95a5a6;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 107,
-      "column": 15,
-      "excerpt": "#ecf0f1;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 108,
-      "column": 21,
-      "excerpt": "#bdc3c7;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 116,
-      "column": 10,
-      "excerpt": "#2c3e50;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\valuation-tools\\index.module.css",
-      "line": 125,
-      "column": 21,
-      "excerpt": "#d5dbdb;"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\providers\\TerraFusionExcellenceProvider.tsx",
       "line": 65,
@@ -4696,5 +4598,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T04:56:50.017Z"
+  "generatedAtIso": "2026-02-22T05:05:37.251Z"
 }
