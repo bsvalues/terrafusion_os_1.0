@@ -9,20 +9,20 @@
 /* Color Tokens - Living Telemetry System */
 :root {
   /* Primary Terra Colors */
-  --tf-cyan: #4ae0ff;
-  --tf-green: #41ffb3;
-  --tf-amber: #ffb400;
-  --tf-graphite: #161a1d;
-  --tf-mist: rgba(255, 255, 255, 0.08);
+  --tf-cyan: hsl(var(--tf-cyan-hs) 65%);
+  --tf-green: hsl(var(--tf-green-hs) 63%);
+  --tf-amber: hsl(var(--tf-amber-hs) 50%);
+  --tf-graphite: hsl(var(--tf-neutral-hs) 10%);
+  --tf-mist: hsl(var(--tf-neutral-hs) 100% / 0.08);
 
   /* Terra Glow Variants */
-  --tf-glow-high: rgba(74, 224, 255, 0.8);
-  --tf-glow-medium: rgba(65, 255, 179, 0.6);
-  --tf-glow-warning: rgba(255, 180, 0, 0.6);
+  --tf-glow-high: hsl(var(--tf-cyan-hs) 65% / 0.8);
+  --tf-glow-medium: hsl(var(--tf-green-hs) 63% / 0.6);
+  --tf-glow-warning: hsl(var(--tf-amber-hs) 50% / 0.6);
 
   /* Glass System */
-  --tf-glass-bg: rgba(30, 41, 59, 0.4);
-  --tf-glass-border: rgba(148, 163, 184, 0.2);
+  --tf-glass-bg: hsl(var(--tf-neutral-hs) 17% / 0.4);
+  --tf-glass-border: hsl(var(--tf-neutral-hs) 65% / 0.2);
   --tf-glass-blur: 12px;
 
   /* Motion Constants */
@@ -51,11 +51,11 @@
   position: relative;
   -webkit-backdrop-filter: blur(var(--tf-glass-blur));
   backdrop-filter: blur(var(--tf-glass-blur));
-  background: linear-gradient(135deg, var(--tf-glass-bg), rgba(30, 41, 59, 0.3));
+  background: linear-gradient(135deg, var(--tf-glass-bg), hsl(var(--tf-neutral-hs) 17% / 0.3));
   border: 1px solid var(--tf-glass-border);
   border-radius: 0.75rem;
   padding: var(--tf-space-lg);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px hsl(var(--tf-neutral-hs) 0% / 0.1);
   transition: all var(--tf-duration-medium) cubic-bezier(0.25, 0.1, 0.25, 1);
   z-index: var(--tf-z-base-cards);
 }
@@ -147,7 +147,7 @@
 
 .terra-metric-label {
   font-size: 0.875rem;
-  color: rgb(148, 163, 184);
+  color: hsl(var(--tf-neutral-hs) 65%);
   margin-bottom: var(--tf-space-sm);
 }
 
@@ -162,7 +162,7 @@
 
 .terra-sparkline-bar {
   width: 0.25rem;
-  background: linear-gradient(to top, rgb(71, 85, 105), var(--tf-cyan));
+  background: linear-gradient(to top, hsl(var(--tf-neutral-hs) 35%), var(--tf-cyan));
   border-radius: 9999px;
   min-height: 2px;
   transform: scaleY(0);
@@ -243,7 +243,7 @@
   bottom: 0.25rem;
   left: 0.25rem;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.8);
+  background: hsl(var(--tf-neutral-hs) 11% / 0.8);
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
 }
@@ -261,11 +261,11 @@
 }
 
 .terra-sphere-medium {
-  background: conic-gradient(from 0deg, var(--tf-green), #059669, var(--tf-green));
+  background: conic-gradient(from 0deg, var(--tf-green), hsl(var(--tf-green-hs) 30%), var(--tf-green));
 }
 
 .terra-sphere-warning {
-  background: conic-gradient(from 0deg, var(--tf-amber), #d97706, var(--tf-amber));
+  background: conic-gradient(from 0deg, var(--tf-amber), hsl(var(--tf-amber-hs) 44%), var(--tf-amber));
 }
 
 /* TerraChat Styling */
@@ -350,14 +350,14 @@
 }
 
 .terra-chat-message.ai {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: hsl(var(--tf-neutral-hs) 17% / 0.6);
+  border: 1px solid hsl(var(--tf-cyan-hs) 43% / 0.3);
   margin-left: auto;
 }
 
 .terra-chat-message.user {
-  background: rgba(55, 65, 81, 0.6);
-  border: 1px solid rgba(75, 85, 99, 0.3);
+  background: hsl(var(--tf-neutral-hs) 27% / 0.6);
+  border: 1px solid hsl(var(--tf-neutral-hs) 34% / 0.3);
   margin-right: auto;
 }
 
@@ -375,12 +375,12 @@
 
 .terra-chat-text {
   font-size: 0.875rem;
-  color: rgb(226, 232, 240);
+  color: hsl(var(--tf-neutral-hs) 91%);
 }
 
 .terra-chat-confidence {
   font-size: 0.75rem;
-  color: rgb(148, 163, 184);
+  color: hsl(var(--tf-neutral-hs) 65%);
   margin-top: var(--tf-space-xs);
 }
 
