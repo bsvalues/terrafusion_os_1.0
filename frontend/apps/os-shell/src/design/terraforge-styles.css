@@ -14,7 +14,7 @@
   height: 16px;
   background: var(--tf-quantum-cyan);
   border-radius: 50%;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.5);
   cursor: pointer;
 }
 
@@ -23,7 +23,7 @@
   height: 16px;
   background: var(--tf-quantum-cyan);
   border-radius: 50%;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.5);
   cursor: pointer;
   border: none;
 }
@@ -36,22 +36,22 @@
 }
 
 .terra-market-indicator {
-  background: rgba(30, 41, 59, 0.3);
+  background: hsl(var(--tf-blue-hs) 17% / 0.3);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 255, 255, 0.1);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.1);
 }
 
 .terra-breakdown-item {
   padding: 12px;
-  background: rgba(30, 41, 59, 0.4);
+  background: hsl(var(--tf-blue-hs) 17% / 0.4);
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .terra-breakdown-item:hover {
-  background: rgba(30, 41, 59, 0.6);
-  border-color: rgba(0, 255, 255, 0.3);
+  background: hsl(var(--tf-blue-hs) 17% / 0.6);
+  border-color: hsl(var(--tf-cyan-hs) 50% / 0.3);
 }
 
 .terra-confidence-meter {
@@ -63,19 +63,19 @@
 }
 
 .terra-comparison-card {
-  background: rgba(30, 41, 59, 0.3);
+  background: hsl(var(--tf-blue-hs) 17% / 0.3);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 255, 255, 0.1);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.1);
   padding: 16px;
   border-radius: 8px;
 }
 
 .terra-weight-adjuster {
-  background: rgba(30, 41, 59, 0.2);
+  background: hsl(var(--tf-blue-hs) 17% / 0.2);
   padding: 20px;
   border-radius: 12px;
-  border: 1px solid rgba(0, 255, 255, 0.1);
+  border: 1px solid hsl(var(--tf-cyan-hs) 50% / 0.1);
 }
 
 .terra-breakdown-dot[data-color='var(--tf-quantum-cyan)'] {
@@ -84,23 +84,23 @@
 .terra-breakdown-dot[data-color='var(--tf-network-blue)'] {
   background-color: var(--tf-network-blue);
 }
-.terra-breakdown-dot[data-color='#8B5CF6'] {
-  background-color: #8b5cf6;
+.terra-breakdown-dot[data-color='hsl(var(--tf-blue-hs) 48%)'] {
+  background-color: hsl(var(--tf-blue-hs) 48%);
 }
-.terra-breakdown-dot[data-color='#F59E0B'] {
-  background-color: #f59e0b;
+.terra-breakdown-dot[data-color='hsl(var(--tf-amber-hs) 50%)'] {
+  background-color: hsl(var(--tf-amber-hs) 50%);
 }
-.terra-breakdown-dot[data-color='#EF4444'] {
-  background-color: #ef4444;
+.terra-breakdown-dot[data-color='var(--tf-error-red)'] {
+  background-color: var(--tf-error-red);
 }
-.terra-breakdown-dot[data-color='#10B981'] {
-  background-color: #10b981;
+.terra-breakdown-dot[data-color='var(--tf-accent-success)'] {
+  background-color: var(--tf-accent-success);
 }
-.terra-breakdown-dot[data-color='#F97316'] {
-  background-color: #f97316;
+.terra-breakdown-dot[data-color='hsl(var(--tf-amber-hs) 53%)'] {
+  background-color: hsl(var(--tf-amber-hs) 53%);
 }
-.terra-breakdown-dot[data-color='#6366F1'] {
-  background-color: #6366f1;
+.terra-breakdown-dot[data-color='hsl(var(--tf-blue-hs) 67%)'] {
+  background-color: hsl(var(--tf-blue-hs) 67%);
 }
 
 .terra-slider-thumb {

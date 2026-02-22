@@ -47,7 +47,6 @@ export function hsAlpha(family: HsFamily, lightness: number, alpha: number): str
   return `${_HSL}(var(--tf-${family}-hs) ${lightness}% / ${a})`;
 }
 
-
 // ============================================================================
 // Brand Colors - Core TerraFusion Identity
 // ============================================================================
@@ -330,12 +329,12 @@ export const visualizationColors = {
   chart: [
     brandColors.transcend[500],
     brandColors.primary[500],
-    '#8B5CF6', // Purple /* chart-viz */
+    hs('blue', 48), // Purple (blue family) /* chart-viz */
     stateColors.warning[500],
     stateColors.error[500],
     stateColors.success[500],
-    '#F97316', // Orange /* chart-viz */
-    '#6366F1', // Indigo /* chart-viz */
+    hs('amber', 53), // Orange (amber family) /* chart-viz */
+    hs('blue', 67), // Indigo (blue family) /* chart-viz */
   ],
   sparkline: {
     latency: brandColors.transcend[500],

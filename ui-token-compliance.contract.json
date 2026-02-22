@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 985,
+  "violationCount": 962,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -3457,146 +3457,6 @@
       "excerpt": "rgba(255, 180, 0, 0.6)'; // Amber warning"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 87,
-      "column": 34,
-      "excerpt": "#8B5CF6'] {"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 88,
-      "column": 21,
-      "excerpt": "#8b5cf6;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 90,
-      "column": 34,
-      "excerpt": "#F59E0B'] {"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 91,
-      "column": 21,
-      "excerpt": "#f59e0b;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 93,
-      "column": 34,
-      "excerpt": "#EF4444'] {"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 94,
-      "column": 21,
-      "excerpt": "#ef4444;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 96,
-      "column": 34,
-      "excerpt": "#10B981'] {"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 97,
-      "column": 21,
-      "excerpt": "#10b981;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 99,
-      "column": 34,
-      "excerpt": "#F97316'] {"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 100,
-      "column": 21,
-      "excerpt": "#f97316;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 102,
-      "column": 34,
-      "excerpt": "#6366F1'] {"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 103,
-      "column": 21,
-      "excerpt": "#6366f1;"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 26,
-      "column": 24,
-      "excerpt": "rgba(0, 255, 255, 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 39,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 42,
-      "column": 21,
-      "excerpt": "rgba(0, 255, 255, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 47,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.4);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 53,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.6);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 54,
-      "column": 17,
-      "excerpt": "rgba(0, 255, 255, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 66,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 69,
-      "column": 21,
-      "excerpt": "rgba(0, 255, 255, 0.1);"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\design\\TerraForgeComponents.tsx",
       "line": 261,
@@ -3609,27 +3469,6 @@
       "line": 20,
       "column": 10,
       "excerpt": "#b0b0b0;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\colors.ts",
-      "line": 332,
-      "column": 6,
-      "excerpt": "#8B5CF6', // Purple /* chart-viz */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\colors.ts",
-      "line": 336,
-      "column": 6,
-      "excerpt": "#F97316', // Orange /* chart-viz */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\colors.ts",
-      "line": 337,
-      "column": 6,
-      "excerpt": "#6366F1', // Indigo /* chart-viz */"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -6901,5 +6740,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-21T23:54:07.419Z"
+  "generatedAtIso": "2026-02-22T00:16:42.365Z"
 }
