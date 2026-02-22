@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 905,
+  "violationCount": 887,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2902,132 +2902,6 @@
       "line": 22,
       "column": 74,
       "excerpt": "rgba(0,255,255,0.4)]',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 390,
-      "column": 36,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 404,
-      "column": 36,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 429,
-      "column": 36,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 442,
-      "column": 36,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 455,
-      "column": 36,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 493,
-      "column": 36,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 517,
-      "column": 27,
-      "excerpt": "#1a1a1a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 518,
-      "column": 28,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 940,
-      "column": 31,
-      "excerpt": "#1a1a1a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 946,
-      "column": 32,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 1005,
-      "column": 31,
-      "excerpt": "#1a1a1a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 1008,
-      "column": 32,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 1015,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 1026,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 1055,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 1084,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 1113,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Separator.stories.tsx",
-      "line": 1142,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
     },
     {
       "kind": "RAW_HEX",
@@ -6341,5 +6215,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T01:25:18.501Z"
+  "generatedAtIso": "2026-02-22T01:39:20.313Z"
 }
