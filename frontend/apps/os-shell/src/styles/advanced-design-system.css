@@ -108,11 +108,11 @@ MIT-Grade CSS Engineering & Performance Optimization
     --text-5xl: clamp(3rem, 8vw + 1.5rem, 5.5rem);
 
     /* Advanced Shadow System - Layered Elevation */
-    --shadow-sm: 0 0.5px 1px hsl(0deg 0% 0% / 0.12), 0 0.5px 0.5px hsl(0deg 0% 0% / 0.24);
-    --shadow-md: 0 2px 4px hsl(0deg 0% 0% / 0.12), 0 1px 2px hsl(0deg 0% 0% / 0.24);
-    --shadow-lg: 0 4px 8px hsl(0deg 0% 0% / 0.12), 0 2px 4px hsl(0deg 0% 0% / 0.24);
-    --shadow-xl: 0 8px 16px hsl(0deg 0% 0% / 0.12), 0 4px 8px hsl(0deg 0% 0% / 0.24);
-    --shadow-2xl: 0 16px 32px hsl(0deg 0% 0% / 0.12), 0 8px 16px hsl(0deg 0% 0% / 0.24);
+    --shadow-sm: 0 0.5px 1px hsl(var(--tf-neutral-hs) 0% / 0.12), 0 0.5px 0.5px hsl(var(--tf-neutral-hs) 0% / 0.24);
+    --shadow-md: 0 2px 4px hsl(var(--tf-neutral-hs) 0% / 0.12), 0 1px 2px hsl(var(--tf-neutral-hs) 0% / 0.24);
+    --shadow-lg: 0 4px 8px hsl(var(--tf-neutral-hs) 0% / 0.12), 0 2px 4px hsl(var(--tf-neutral-hs) 0% / 0.24);
+    --shadow-xl: 0 8px 16px hsl(var(--tf-neutral-hs) 0% / 0.12), 0 4px 8px hsl(var(--tf-neutral-hs) 0% / 0.24);
+    --shadow-2xl: 0 16px 32px hsl(var(--tf-neutral-hs) 0% / 0.12), 0 8px 16px hsl(var(--tf-neutral-hs) 0% / 0.24);
 
     /* Advanced Border Radius - Squircle Approximation */
     --radius-xs: 0.25rem;
