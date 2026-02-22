@@ -3,12 +3,11 @@
 PhD-Level CSS Houdini & Advanced Animation Architecture
 Reliability Through Quantum-Inspired Motion Design
 
-Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
-  hsl(0/30/60/90/144/168/192/216 100% 50% / <alpha>)
-  These are spectrum stops in keyframe color-shift animations
-  (fault-tolerance-recovery, quantum-agent-superposition, module-transcendence-load).
-  They are NOT semantic colors — they are physics hue angles.
-  Do NOT replace with --tf-* semantic tokens.
+Animation-spectrum hue stops are expressed via local --tf-anim-spectrum-* HS anchors.
+  Hues 0°/30°/60°/90°/144°/168°/192°/216° encoded as HS pairs (H 100%),
+  used in keyframe color-shift animations (fault-tolerance-recovery,
+  quantum-agent-superposition, module-transcendence-load).
+  These are physics hue angles, NOT semantic colors.
 */
 
 /* ===== QUANTUM PHYSICS-INSPIRED ANIMATIONS ===== */
@@ -35,6 +34,16 @@ Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
   --tf-system-stability: 0.9999;
   --tf-fault-tolerance: 0.95;
   --tf-recovery-time: 100ms;
+
+  /* Animation Spectrum HS Anchors — physics hue stops, NOT semantic colors */
+  --tf-anim-spectrum-red: 0 100%; /* 0° — red */
+  --tf-anim-spectrum-orange: 30 100%; /* 30° — orange */
+  --tf-anim-spectrum-yellow: 60 100%; /* 60° — yellow */
+  --tf-anim-spectrum-lime: 90 100%; /* 90° — chartreuse */
+  --tf-anim-spectrum-emerald: 144 100%; /* 144° — emerald */
+  --tf-anim-spectrum-teal: 168 100%; /* 168° — teal */
+  --tf-anim-spectrum-sky: 192 100%; /* 192° — sky blue */
+  --tf-anim-spectrum-azure: 216 100%; /* 216° — azure */
 }
 
 /* ===== AI AGENT SWARM ANIMATIONS ===== */
@@ -112,8 +121,8 @@ Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
     opacity: 0.8;
     background: radial-gradient(
       circle,
-      hsl(144 100% 50% / 0.8) 0%,
-      hsl(144 100% 50% / 0.4) 50%,
+      hsl(var(--tf-anim-spectrum-emerald) 50% / 0.8) 0%,
+      hsl(var(--tf-anim-spectrum-emerald) 50% / 0.4) 50%,
       transparent 100%
     );
   }
@@ -124,8 +133,8 @@ Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
     opacity: 1;
     background: radial-gradient(
       circle,
-      hsl(168 100% 50% / 0.8) 0%,
-      hsl(168 100% 50% / 0.4) 50%,
+      hsl(var(--tf-anim-spectrum-teal) 50% / 0.8) 0%,
+      hsl(var(--tf-anim-spectrum-teal) 50% / 0.4) 50%,
       transparent 100%
     );
   }
@@ -136,8 +145,8 @@ Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
     opacity: 0.9;
     background: radial-gradient(
       circle,
-      hsl(192 100% 50% / 0.8) 0%,
-      hsl(192 100% 50% / 0.4) 50%,
+      hsl(var(--tf-anim-spectrum-sky) 50% / 0.8) 0%,
+      hsl(var(--tf-anim-spectrum-sky) 50% / 0.4) 50%,
       transparent 100%
     );
   }
@@ -148,8 +157,8 @@ Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
     opacity: 0.85;
     background: radial-gradient(
       circle,
-      hsl(216 100% 50% / 0.8) 0%,
-      hsl(216 100% 50% / 0.4) 50%,
+      hsl(var(--tf-anim-spectrum-azure) 50% / 0.8) 0%,
+      hsl(var(--tf-anim-spectrum-azure) 50% / 0.4) 50%,
       transparent 100%
     );
   }
@@ -278,29 +287,29 @@ Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
 /* Fault Tolerance Recovery Animation */
 @keyframes fault-tolerance-recovery {
   0% {
-    background: hsl(0 100% 50% / 0.3);
-    border-color: hsl(0 100% 50% / 0.6);
+    background: hsl(var(--tf-anim-spectrum-red) 50% / 0.3);
+    border-color: hsl(var(--tf-anim-spectrum-red) 50% / 0.6);
     transform: scale(0.9);
     filter: blur(3px);
   }
 
   25% {
-    background: hsl(30 100% 50% / 0.4);
-    border-color: hsl(30 100% 50% / 0.7);
+    background: hsl(var(--tf-anim-spectrum-orange) 50% / 0.4);
+    border-color: hsl(var(--tf-anim-spectrum-orange) 50% / 0.7);
     transform: scale(0.95);
     filter: blur(2px);
   }
 
   50% {
-    background: hsl(60 100% 50% / 0.5);
-    border-color: hsl(60 100% 50% / 0.8);
+    background: hsl(var(--tf-anim-spectrum-yellow) 50% / 0.5);
+    border-color: hsl(var(--tf-anim-spectrum-yellow) 50% / 0.8);
     transform: scale(1);
     filter: blur(1px);
   }
 
   75% {
-    background: hsl(90 100% 50% / 0.6);
-    border-color: hsl(90 100% 50% / 0.9);
+    background: hsl(var(--tf-anim-spectrum-lime) 50% / 0.6);
+    border-color: hsl(var(--tf-anim-spectrum-lime) 50% / 0.9);
     transform: scale(1.02);
     filter: blur(0.5px);
   }
@@ -454,7 +463,7 @@ Animation-spectrum exceptions (14 inline HSL values — INTENTIONAL):
       hsl(var(--tf-anim-blue) / 0.3) 0deg,
       hsl(var(--tf-accent) / 0.3) 90deg,
       hsl(var(--tf-anim-green) / 0.3) 180deg,
-      hsl(60 100% 50% / 0.3) 270deg,
+      hsl(var(--tf-anim-spectrum-yellow) 50% / 0.3) 270deg,
       hsl(var(--tf-anim-blue) / 0.3) 360deg
     );
     transform: rotate(360deg) scale(1);

@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 742,
+  "violationCount": 727,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -4752,111 +4752,6 @@
       "excerpt": "#000000 !important;"
     },
     {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 7,
-      "column": 3,
-      "excerpt": "hsl(0/30/60/90/144/168/192/216 100% 50% / <alpha>)"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 115,
-      "column": 7,
-      "excerpt": "hsl(144 100% 50% / 0.8) 0%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 116,
-      "column": 7,
-      "excerpt": "hsl(144 100% 50% / 0.4) 50%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 127,
-      "column": 7,
-      "excerpt": "hsl(168 100% 50% / 0.8) 0%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 128,
-      "column": 7,
-      "excerpt": "hsl(168 100% 50% / 0.4) 50%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 139,
-      "column": 7,
-      "excerpt": "hsl(192 100% 50% / 0.8) 0%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 140,
-      "column": 7,
-      "excerpt": "hsl(192 100% 50% / 0.4) 50%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 151,
-      "column": 7,
-      "excerpt": "hsl(216 100% 50% / 0.8) 0%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 152,
-      "column": 7,
-      "excerpt": "hsl(216 100% 50% / 0.4) 50%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 281,
-      "column": 17,
-      "excerpt": "hsl(0 100% 50% / 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 282,
-      "column": 19,
-      "excerpt": "hsl(0 100% 50% / 0.6);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 288,
-      "column": 17,
-      "excerpt": "hsl(30 100% 50% / 0.4);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 289,
-      "column": 19,
-      "excerpt": "hsl(30 100% 50% / 0.7);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 295,
-      "column": 17,
-      "excerpt": "hsl(60 100% 50% / 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-quantum-animations.css",
-      "line": 296,
-      "column": 19,
-      "excerpt": "hsl(60 100% 50% / 0.8);"
-    },
-    {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-self-healing.css",
       "line": 18,
@@ -5200,5 +5095,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T04:13:29.979Z"
+  "generatedAtIso": "2026-02-22T04:21:22.286Z"
 }
