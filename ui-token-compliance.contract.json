@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 684,
+  "violationCount": 670,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -4179,104 +4179,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 122,
-      "column": 16,
-      "excerpt": "rgba(0, 255, 238, 0.2),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 123,
-      "column": 14,
-      "excerpt": "rgba(0, 153, 255, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 141,
-      "column": 26,
-      "excerpt": "rgba(0, 255, 238, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 357,
-      "column": 39,
-      "excerpt": "hsl(120 100% 60%) 0%, hsl(120 100% 40%) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 357,
-      "column": 61,
-      "excerpt": "hsl(120 100% 40%) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 358,
-      "column": 23,
-      "excerpt": "hsl(120 100% 60%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 363,
-      "column": 39,
-      "excerpt": "hsl(200 100% 60%) 0%, hsl(200 100% 40%) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 363,
-      "column": 61,
-      "excerpt": "hsl(200 100% 40%) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 364,
-      "column": 23,
-      "excerpt": "hsl(200 100% 60%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 369,
-      "column": 39,
-      "excerpt": "hsl(0 0% 60%) 0%, hsl(0 0% 40%) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 369,
-      "column": 57,
-      "excerpt": "hsl(0 0% 40%) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 374,
-      "column": 39,
-      "excerpt": "hsl(0 100% 60%) 0%, hsl(0 100% 40%) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 374,
-      "column": 59,
-      "excerpt": "hsl(0 100% 40%) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ai-responsive.css",
-      "line": 375,
-      "column": 23,
-      "excerpt": "hsl(0 100% 60%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-brand.css",
       "line": 18,
       "column": 15,
@@ -4794,5 +4696,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T04:50:32.921Z"
+  "generatedAtIso": "2026-02-22T04:56:50.017Z"
 }
