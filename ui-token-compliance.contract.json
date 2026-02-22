@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 887,
+  "violationCount": 870,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2650,125 +2650,6 @@
       "line": 419,
       "column": 29,
       "excerpt": "rgba(245, 158, 11, 0.05)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 406,
-      "column": 27,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 786,
-      "column": 31,
-      "excerpt": "#1a1a1a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 792,
-      "column": 32,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 856,
-      "column": 31,
-      "excerpt": "#1a1a1a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 859,
-      "column": 32,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 866,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 877,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 888,
-      "column": 41,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 913,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 924,
-      "column": 41,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 949,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 960,
-      "column": 41,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 985,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 996,
-      "column": 41,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 1021,
-      "column": 44,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 1032,
-      "column": 41,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\AspectRatio.stories.tsx",
-      "line": 1064,
-      "column": 41,
-      "excerpt": "#0a0a0a',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -6215,5 +6096,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T01:39:20.313Z"
+  "generatedAtIso": "2026-02-22T01:43:09.548Z"
 }
