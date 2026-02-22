@@ -3,8 +3,8 @@
   "version": "v1",
   "ok": true,
   "scopeHash": "815f66836ec52a60",
-  "baselineViolationCount": 414,
-  "currentViolationCount": 404,
+  "baselineViolationCount": 404,
+  "currentViolationCount": 394,
   "delta": 10,
-  "generatedAtIso": "2026-02-22T21:57:35.153Z"
+  "generatedAtIso": "2026-02-22T22:03:23.947Z"
 }
