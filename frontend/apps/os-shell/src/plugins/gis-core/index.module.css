@@ -1,9 +1,12 @@
 .root {
+  /* Phase 82 – gis-core local HS anchor */
+  --tf-gis-text-hs: 210 29%;
+
   padding: 16px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid hsl(var(--tf-neutral-hs) 88%);
   border-radius: 8px;
   margin: 12px 0;
-  background: #f8f9fa;
+  background: hsl(var(--tf-neutral-hs) 98%);
 }
 
 .header {
@@ -15,13 +18,13 @@
 .title {
   font-size: 18px;
   font-weight: 700;
-  color: #2c3e50;
+  color: hsl(var(--tf-gis-text-hs) 24%);
   margin-bottom: 4px;
 }
 
 .subtitle {
   font-size: 14px;
-  color: #7f8c8d;
+  color: hsl(var(--tf-neutral-hs) 53%);
   font-style: italic;
 }
 
@@ -31,7 +34,7 @@
   gap: 8px;
   margin-bottom: 16px;
   font-size: 13px;
-  color: #555;
+  color: hsl(var(--tf-neutral-hs) 33%);
 }
 
 .controls {
@@ -57,7 +60,7 @@
 
 .button {
   padding: 8px 16px;
-  background: #3498db;
+  background: hsl(var(--tf-blue-hs) 54%);
   color: white;
   border: none;
   border-radius: 4px;
@@ -67,17 +70,17 @@
 }
 
 .button:hover:not(:disabled) {
-  background: #2980b9;
+  background: hsl(var(--tf-blue-hs) 44%);
 }
 
 .button:disabled {
-  background: #95a5a6;
+  background: hsl(var(--tf-neutral-hs) 62%);
   cursor: not-allowed;
 }
 
 .results {
-  background: #ecf0f1;
-  border: 1px solid #bdc3c7;
+  background: hsl(var(--tf-neutral-hs) 94%);
+  border: 1px solid hsl(var(--tf-neutral-hs) 76%);
   border-radius: 4px;
   padding: 12px;
 }
@@ -85,11 +88,11 @@
 .resultsTitle {
   font-weight: 600;
   margin-bottom: 8px;
-  color: #2c3e50;
+  color: hsl(var(--tf-gis-text-hs) 24%);
 }
 
 .mapPlaceholder {
-  background: #34495e;
+  background: hsl(var(--tf-gis-text-hs) 29%);
   color: white;
   padding: 40px;
   text-align: center;
@@ -110,7 +113,7 @@
   background: white;
   padding: 8px;
   border-radius: 3px;
-  border: 1px solid #d5dbdb;
+  border: 1px solid hsl(var(--tf-neutral-hs) 85%);
   overflow-x: auto;
   max-height: 200px;
   overflow-y: auto;
