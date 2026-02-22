@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 942,
+  "violationCount": 923,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -4214,139 +4214,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 54,
-      "column": 47,
-      "excerpt": "#667eea 0%, #764ba2 100%);"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 54,
-      "column": 59,
-      "excerpt": "#764ba2 100%);"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 59,
-      "column": 36,
-      "excerpt": "#667eea;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 72,
-      "column": 18,
-      "excerpt": "#1a202c;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 78,
-      "column": 18,
-      "excerpt": "#718096;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 98,
-      "column": 18,
-      "excerpt": "#1a202c;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 104,
-      "column": 18,
-      "excerpt": "#2d3748;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 113,
-      "column": 23,
-      "excerpt": "#f7fafc;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 118,
-      "column": 18,
-      "excerpt": "#667eea;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 131,
-      "column": 18,
-      "excerpt": "#4a5568;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 136,
-      "column": 18,
-      "excerpt": "#2d3748;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 140,
-      "column": 23,
-      "excerpt": "#f7fafc;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 148,
-      "column": 18,
-      "excerpt": "#667eea;"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 58,
-      "column": 23,
-      "excerpt": "rgba(255, 255, 255, 0.95);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 61,
-      "column": 33,
-      "excerpt": "rgba(0, 0, 0, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 89,
-      "column": 23,
-      "excerpt": "rgba(255, 255, 255, 0.95);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 93,
-      "column": 33,
-      "excerpt": "rgba(0, 0, 0, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 122,
-      "column": 23,
-      "excerpt": "rgba(255, 255, 255, 0.95);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\PilotDemo.tsx",
-      "line": 126,
-      "column": 33,
-      "excerpt": "rgba(0, 0, 0, 0.1);"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\plugins\\cama-core\\index.module.css",
       "line": 10,
       "column": 10,
@@ -6600,5 +6467,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T00:22:52.153Z"
+  "generatedAtIso": "2026-02-22T01:21:42.137Z"
 }
