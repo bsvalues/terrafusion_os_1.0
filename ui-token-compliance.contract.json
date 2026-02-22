@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 424,
+  "violationCount": 414,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -795,76 +795,6 @@
       "line": 384,
       "column": 10,
       "excerpt": "bg-[#1a1a2e] border border-white/10',\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 252,
-      "column": 20,
-      "excerpt": "#6b7280;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 257,
-      "column": 31,
-      "excerpt": "#e5e7eb;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 258,
-      "column": 31,
-      "excerpt": "#3b82f6;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 290,
-      "column": 31,
-      "excerpt": "#d1d5db;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 296,
-      "column": 25,
-      "excerpt": "#f3f4f6;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 334,
-      "column": 33,
-      "excerpt": "#fbbf24;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 346,
-      "column": 22,
-      "excerpt": "#b45309;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 351,
-      "column": 22,
-      "excerpt": "#92400e;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 363,
-      "column": 33,
-      "excerpt": "#d1d5db;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\pilot\\RiskPolicyGate.tsx",
-      "line": 372,
-      "column": 27,
-      "excerpt": "#9ca3af;"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2974,5 +2904,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T21:28:45.367Z"
+  "generatedAtIso": "2026-02-22T21:33:26.354Z"
 }

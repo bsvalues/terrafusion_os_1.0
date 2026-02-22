@@ -249,13 +249,13 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
             align-items: center;
             gap: 0.75rem;
             padding: 1rem;
-            color: #6b7280;
+            color: hsl(var(--tf-neutral-hs) 46%);
           }
           .spinner {
             width: 20px;
             height: 20px;
-            border: 2px solid #e5e7eb;
-            border-top-color: #3b82f6;
+            border: 2px solid hsl(var(--tf-neutral-hs) 91%);
+            border-top-color: hsl(var(--tf-blue-hs) 60%);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
           }
@@ -287,13 +287,13 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
           }
           .btn-back {
             padding: 0.5rem 1rem;
-            border: 1px solid #d1d5db;
+            border: 1px solid hsl(var(--tf-neutral-hs) 85%);
             border-radius: 6px;
             background: white;
             cursor: pointer;
           }
           .btn-back:hover {
-            background: #f3f4f6;
+            background: hsl(var(--tf-neutral-hs) 96%);
           }
         `}</style>
       </div>
@@ -331,7 +331,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
               padding: 1.5rem;
               background: white;
               border-radius: 8px;
-              border: 1px solid #fbbf24;
+              border: 1px solid hsl(var(--tf-amber-hs) 56%);
               max-width: 500px;
               margin: 1rem auto;
             }
@@ -343,12 +343,12 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
             }
             .violations-header h3 {
               margin: 0;
-              color: #b45309;
+              color: hsl(var(--tf-amber-hs) 37%);
             }
             .violations-list {
               margin: 0 0 1.5rem 0;
               padding-left: 1.5rem;
-              color: #92400e;
+              color: hsl(var(--tf-amber-hs) 31%);
             }
             .violations-list li {
               margin: 0.5rem 0;
@@ -360,7 +360,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
             }
             .btn-cancel {
               padding: 0.5rem 1rem;
-              border: 1px solid #d1d5db;
+              border: 1px solid hsl(var(--tf-neutral-hs) 85%);
               border-radius: 6px;
               background: white;
               cursor: pointer;
@@ -369,7 +369,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
               padding: 0.5rem 1rem;
               border: none;
               border-radius: 6px;
-              background: #9ca3af;
+              background: hsl(var(--tf-neutral-hs) 66%);
               color: white;
               cursor: not-allowed;
               opacity: 0.5;
