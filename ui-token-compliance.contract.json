@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 698,
+  "violationCount": 684,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -4031,104 +4031,6 @@
       "excerpt": "hsl(0deg 0% 0% / 0.24);"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 20,
-      "column": 15,
-      "excerpt": "#0d1117;\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 47,
-      "column": 17,
-      "excerpt": "#4ade80;\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 48,
-      "column": 17,
-      "excerpt": "#f87171;\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 49,
-      "column": 17,
-      "excerpt": "#fbbf24;\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 21,
-      "column": 22,
-      "excerpt": "rgba(255, 255, 255, 0.03);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 22,
-      "column": 22,
-      "excerpt": "rgba(255, 255, 255, 0.05);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 23,
-      "column": 27,
-      "excerpt": "rgba(255, 255, 255, 0.07);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 26,
-      "column": 19,
-      "excerpt": "rgba(255, 255, 255, 0.08);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 27,
-      "column": 26,
-      "excerpt": "rgba(255, 255, 255, 0.14);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 43,
-      "column": 19,
-      "excerpt": "rgb(6, 182, 212);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 44,
-      "column": 25,
-      "excerpt": "rgba(6, 182, 212, 0.4);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 62,
-      "column": 10,
-      "excerpt": "rgba(255, 255, 255, 0.85);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 90,
-      "column": 10,
-      "excerpt": "rgba(255, 255, 255, 0.9);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon.css",
-      "line": 95,
-      "column": 10,
-      "excerpt": "rgba(255, 255, 255, 0.3);\r"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
       "line": 55,
@@ -4892,5 +4794,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T04:40:52.887Z"
+  "generatedAtIso": "2026-02-22T04:50:32.921Z"
 }

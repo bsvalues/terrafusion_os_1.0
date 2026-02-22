@@ -16,15 +16,20 @@
    ============================================================================ */
 
 .canon-shell {
+  /* Canon HS Anchors (file-scoped, non-semantic) */
+  --canon-bg-hs: 215 27%;      /* dark background */
+  --canon-pass-hs: 142 71%;    /* success green */
+  --canon-accent-hs: 189 95%;  /* teal accent */
+
   /* Surface backgrounds (quiet, no noise) */
-  --canon-bg: #0d1117;
-  --canon-surface-1: rgba(255, 255, 255, 0.03);
-  --canon-surface-2: rgba(255, 255, 255, 0.05);
-  --canon-surface-raised: rgba(255, 255, 255, 0.07);
+  --canon-bg: hsl(var(--canon-bg-hs) 7%);
+  --canon-surface-1: hsl(var(--tf-neutral-hs) 100% / 0.03);
+  --canon-surface-2: hsl(var(--tf-neutral-hs) 100% / 0.05);
+  --canon-surface-raised: hsl(var(--tf-neutral-hs) 100% / 0.07);
 
   /* Borders (consistent, not random) */
-  --canon-border: rgba(255, 255, 255, 0.08);
-  --canon-border-strong: rgba(255, 255, 255, 0.14);
+  --canon-border: hsl(var(--tf-neutral-hs) 100% / 0.08);
+  --canon-border-strong: hsl(var(--tf-neutral-hs) 100% / 0.14);
 
   /* Typography scale (4 stops, monospace for receipts) */
   --canon-font-xs: 0.6875rem; /* 11px — audit receipts */
@@ -40,13 +45,13 @@
   --canon-space-6: 1.5rem; /* 24px */
 
   /* Accent — single hue, two weights */
-  --canon-accent: rgb(6, 182, 212);
-  --canon-accent-muted: rgba(6, 182, 212, 0.4);
+  --canon-accent: hsl(var(--canon-accent-hs) 43%);
+  --canon-accent-muted: hsl(var(--canon-accent-hs) 43% / 0.4);
 
   /* Status */
-  --canon-pass: #4ade80;
-  --canon-fail: #f87171;
-  --canon-warn: #fbbf24;
+  --canon-pass: hsl(var(--canon-pass-hs) 58%);
+  --canon-fail: hsl(var(--tf-red-hs) 71%);
+  --canon-warn: hsl(var(--tf-amber-hs) 56%);
 }
 
 /* ============================================================================
@@ -59,7 +64,7 @@
   height: 100%;
   min-height: 0;
   background: var(--canon-bg);
-  color: rgba(255, 255, 255, 0.85);
+  color: hsl(var(--tf-neutral-hs) 100% / 0.85);
   font-family:
     'Inter',
     -apple-system,
@@ -87,12 +92,12 @@
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  color: rgba(255, 255, 255, 0.9);
+  color: hsl(var(--tf-neutral-hs) 100% / 0.9);
 }
 
 .canon-header__shortcut {
   font-size: var(--canon-font-xs);
-  color: rgba(255, 255, 255, 0.3);
+  color: hsl(var(--tf-neutral-hs) 100% / 0.3);
   border: 1px solid var(--canon-border);
   border-radius: 4px;
   padding: 1px 6px;
