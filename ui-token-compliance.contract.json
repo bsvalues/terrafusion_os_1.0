@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 552,
+  "violationCount": 539,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2975,97 +2975,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 74,
-      "column": 24,
-      "excerpt": "rgba(11, 16, 32, 0.9)', // Terrafusion Deep Space with transparency"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 76,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 238, 0.2)', // Terrafusion Transcend Cyan border"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 90,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 238, 0.4)', // Terrafusion glow"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 164,
-      "column": 32,
-      "excerpt": "rgba(11, 16, 32, 0.8)', // Terrafusion Deep Space"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 166,
-      "column": 38,
-      "excerpt": "rgba(0, 255, 238, 0.3)', // Terrafusion Transcend Cyan border"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 167,
-      "column": 43,
-      "excerpt": "rgba(10, 15, 28, 0.8), 0 0 60px rgba(0, 255, 238, 0.2)', // Terrafusion shadows"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 167,
-      "column": 75,
-      "excerpt": "rgba(0, 255, 238, 0.2)', // Terrafusion shadows"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 173,
-      "column": 36,
-      "excerpt": "rgba(0, 229, 255, 0.15), 0 0 80px rgba(0, 255, 238, 0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 173,
-      "column": 70,
-      "excerpt": "rgba(0, 255, 238, 0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 194,
-      "column": 31,
-      "excerpt": "rgba(255,255,255,0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 214,
-      "column": 32,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 216,
-      "column": 38,
-      "excerpt": "rgba(255,255,255,0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.backup.tsx",
-      "line": 261,
-      "column": 26,
-      "excerpt": "rgba(0,0,0,0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
       "line": 104,
       "column": 24,
@@ -3870,5 +3779,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T16:21:29.824Z"
+  "generatedAtIso": "2026-02-22T16:25:39.336Z"
 }

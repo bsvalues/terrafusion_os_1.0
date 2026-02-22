@@ -10,7 +10,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [react()],
   test: {
-    include: ['tests/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: [
+      'tests/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      'os-platform/core/tests/**/*.test.ts',
+    ],
     exclude: [
       'node_modules/**',
       '**/data/**',
