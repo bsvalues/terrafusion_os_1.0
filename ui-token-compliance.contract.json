@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 107,
+  "violationCount": 99,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -567,62 +567,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SystemTray.tsx",
-      "line": 31,
-      "column": 22,
-      "excerpt": "rgba(0,0,0,0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SystemTray.tsx",
-      "line": 37,
-      "column": 31,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SystemTray.tsx",
-      "line": 43,
-      "column": 53,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SystemTray.tsx",
-      "line": 57,
-      "column": 53,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
-      "line": 55,
-      "column": 14,
-      "excerpt": "hsl(120 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
-      "line": 56,
-      "column": 18,
-      "excerpt": "hsl(200 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
-      "line": 57,
-      "column": 12,
-      "excerpt": "hsl(0 0% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
-      "line": 58,
-      "column": 13,
-      "excerpt": "hsl(0 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.ts",
       "line": 62,
       "column": 14,
@@ -755,5 +699,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T19:56:29.825Z"
+  "generatedAtIso": "2026-02-23T20:08:19.090Z"
 }

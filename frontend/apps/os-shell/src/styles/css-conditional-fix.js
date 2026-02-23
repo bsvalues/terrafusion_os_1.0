@@ -52,10 +52,10 @@ export const setCSSVariables = (element, performance) => {
 
   // Set status-based colors
   const statusColors = {
-    active: 'hsl(120 100% 60%)',
-    processing: 'hsl(200 100% 60%)',
-    idle: 'hsl(0 0% 60%)',
-    error: 'hsl(0 100% 60%)',
+    active: 'hsl(var(--tf-green-hs) 60%)',
+    processing: 'hsl(var(--tf-blue-hs) 60%)',
+    idle: 'hsl(var(--tf-neutral-hs) 60%)',
+    error: 'hsl(var(--tf-red-hs) 60%)',
   };
 
   root.setProperty('--tf-status-color', statusColors[performance.status] || statusColors.idle);
