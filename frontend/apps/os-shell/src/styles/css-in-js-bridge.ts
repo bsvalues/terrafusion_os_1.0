@@ -75,7 +75,7 @@ export const muiTheme = createTheme({
     },
     background: {
       default: 'var(--tf-bg-surface)', // tf-deep-space
-      paper: 'rgba(255, 255, 255, 0.03)', // tf-glass
+      paper: 'hsl(var(--tf-neutral-hs) 100% / 0.03)', // tf-glass
     },
     error: {
       main: 'var(--error-red)', // tf-alert-red
@@ -118,10 +118,10 @@ export const muiTheme = createTheme({
           letterSpacing: '0.5px',
           textTransform: 'uppercase',
           transition: 'var(--tf-transition)',
-          boxShadow: '0 4px 15px rgba(0, 153, 255, 0.3)',
+          boxShadow: '0 4px 15px hsl(var(--tf-blue-hs) 50% / 0.3)',
           '&:hover': {
             transform: 'translateY(-2px)',
-            boxShadow: '0 8px 25px rgba(0, 255, 238, 0.4)',
+            boxShadow: '0 8px 25px hsl(var(--tf-cyan-hs) 50% / 0.4)',
           },
           '&:active': {
             transform: 'translateY(0)',
@@ -226,7 +226,7 @@ export const styledTheme = {
     heavy: {
       background: 'var(--tf-glass-heavy)',
       backdropFilter: 'var(--tf-blur-heavy)',
-      border: '1px solid rgba(0, 255, 238, 0.2)',
+      border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.2)',
     },
   },
 };
