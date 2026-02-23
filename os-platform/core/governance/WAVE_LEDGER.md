@@ -37,7 +37,7 @@ A vitest enforces this constraint automatically.
 
 ## CSS micro-batch 2 (non-tiered maintenance)
 
-- Phase 117 — PENDING — micro-batch CSS (5 files) — 10→0
+- Phase 117 — 7ef375d7b — micro-batch CSS (5 files) — 10→0
   - ProgressiveTerraFusionTest.css — 3→0
   - index.module.css (cama-core) — 3→0
   - colors.stories.css — 2→0
