@@ -30,9 +30,9 @@ export function QuantumDesktopShell() {
           left: 0,
           right: 0,
           height: '64px',
-          background: 'rgba(10, 14, 26, 0.95)',
+          background: 'hsl(var(--tf-bg) / 0.95)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
+          borderBottom: '1px solid hsl(var(--tf-accent) / 0.2)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -70,7 +70,8 @@ export function QuantumDesktopShell() {
                 width: '12px',
                 height: '12px',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
+                background:
+                  'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
                 animation: 'pulse 2s ease-in-out infinite',
               }}
             />
@@ -81,11 +82,15 @@ export function QuantumDesktopShell() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '12px', opacity: 0.7 }}>Performance</div>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--success-green)' }}>120fps</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--success-green)' }}>
+                120fps
+              </div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '12px', opacity: 0.7 }}>Security</div>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--success-green)' }}>MAX</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--success-green)' }}>
+                MAX
+              </div>
             </div>
           </div>
         </div>
@@ -108,7 +113,8 @@ export function QuantumDesktopShell() {
           style={{
             fontSize: '4rem',
             fontWeight: 'bold',
-            background: 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue), var(--success-green))',
+            background:
+              'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue), var(--success-green))',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -178,11 +184,11 @@ export function QuantumDesktopShell() {
               key={index}
               onClick={() => setCurrentModule(module.name)}
               style={{
-                background: 'rgba(0, 255, 255, 0.05)',
+                background: 'hsl(var(--tf-accent) / 0.05)',
                 border:
                   currentModule === module.name
-                    ? '2px solid rgba(0, 255, 255, 0.5)'
-                    : '1px solid rgba(0, 255, 255, 0.2)',
+                    ? '2px solid hsl(var(--tf-accent) / 0.5)'
+                    : '1px solid hsl(var(--tf-accent) / 0.2)',
                 borderRadius: '16px',
                 padding: '24px',
                 cursor: 'pointer',
@@ -191,7 +197,7 @@ export function QuantumDesktopShell() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 255, 255, 0.2)';
+                e.currentTarget.style.boxShadow = '0 10px 30px hsl(var(--tf-accent) / 0.2)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
@@ -239,8 +245,8 @@ export function QuantumDesktopShell() {
               bottom: '24px',
               left: '50%',
               transform: 'translateX(-50%)',
-              background: 'rgba(0, 255, 255, 0.1)',
-              border: '1px solid rgba(0, 255, 255, 0.3)',
+              background: 'hsl(var(--tf-accent) / 0.1)',
+              border: '1px solid hsl(var(--tf-accent) / 0.3)',
               borderRadius: '12px',
               padding: '16px 24px',
               backdropFilter: 'blur(16px)',
