@@ -23,6 +23,7 @@ import { getOsFeatureById, WORKBENCH_FALLBACK_BASE } from '../../config/suiteReg
 import { useParcelContext } from '../../context/parcelContext';
 import { executeOsAction, type OsActionContext } from '../../services/osActions';
 import { LiquidPanel, TactileButton, useMaterialQuality } from '../../ui/materials';
+import { assertUniqueKeys } from '../../utils/assertUniqueKeys';
 import { Badge } from '../ui/badge';
 import {
     DEFAULT_STANDALONE_META,
@@ -316,6 +317,28 @@ function ModuleCard({ module }: { module: StandaloneHomeModule }) {
 }
 
 // ============================================================================
+// Helpers
+// ============================================================================
+
+/**
+ * Merge two action arrays, deduplicating by `id`.
+ * When both arrays contain an action with the same id, the override wins.
+ */
+function deduplicateActionsById(
+  base: StandaloneHomeAction[],
+  overrides: StandaloneHomeAction[]
+): StandaloneHomeAction[] {
+  const overrideIds = new Set(overrides.map((a) => a.id));
+  const merged = [...base.filter((a) => !overrideIds.has(a.id)), ...overrides];
+
+  if (import.meta.env.DEV) {
+    assertUniqueKeys(merged, (a) => a.id, 'ShellHeader primaryActions');
+  }
+
+  return merged;
+}
+
+// ============================================================================
 // Main Component
 // ============================================================================
 
@@ -352,11 +375,11 @@ export function StandaloneHomeShell({
       icon: featureDefinition?.icon ?? DEFAULT_STANDALONE_META.icon,
       ...registryMeta,
       ...metaOverrides,
-      // Merge actions arrays
-      primaryActions: [
-        ...(registryMeta.primaryActions ?? []),
-        ...(metaOverrides?.primaryActions ?? []),
-      ],
+      // Merge actions arrays — deduplicate by id (overrides win)
+      primaryActions: deduplicateActionsById(
+        registryMeta.primaryActions ?? [],
+        metaOverrides?.primaryActions ?? []
+      ),
       // Merge modules (prop overrides take precedence, or use registry)
       modules: metaOverrides?.modules ?? registryMeta.modules ?? [],
     };
