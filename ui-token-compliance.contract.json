@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 254,
+  "violationCount": 247,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -874,55 +874,6 @@
       "excerpt": "hsl(var(--tf-<family>-hs) <L>% / <alpha>)`."
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Motion.stories.tsx",
-      "line": 56,
-      "column": 19,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Motion.stories.tsx",
-      "line": 114,
-      "column": 21,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Motion.stories.tsx",
-      "line": 240,
-      "column": 19,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Motion.stories.tsx",
-      "line": 322,
-      "column": 21,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Motion.stories.tsx",
-      "line": 354,
-      "column": 19,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Motion.stories.tsx",
-      "line": 459,
-      "column": 21,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Motion.stories.tsx",
-      "line": 487,
-      "column": 21,
-      "excerpt": "#b3b3b3',"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\motion.ts",
       "line": 144,
@@ -1784,5 +1735,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T01:42:28.977Z"
+  "generatedAtIso": "2026-02-23T02:27:13.603Z"
 }

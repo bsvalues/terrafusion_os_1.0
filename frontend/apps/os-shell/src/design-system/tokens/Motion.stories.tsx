@@ -53,7 +53,7 @@ export const Durations: Story = {
       </h2>
       <p
         style={{
-          color: '#b3b3b3',
+          color: 'hsl(var(--tf-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -111,7 +111,7 @@ export const Easings: Story = {
         </h2>
         <p
           style={{
-            color: '#b3b3b3',
+            color: 'hsl(var(--tf-neutral-hs) 70%)',
             marginBottom: '32px',
             fontSize: '14px',
             lineHeight: '1.6',
@@ -237,7 +237,7 @@ export const ContinuousAnimations: Story = {
       </h2>
       <p
         style={{
-          color: '#b3b3b3',
+          color: 'hsl(var(--tf-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -319,7 +319,7 @@ export const InteractiveTransitions: Story = {
         </h2>
         <p
           style={{
-            color: '#b3b3b3',
+            color: 'hsl(var(--tf-neutral-hs) 70%)',
             marginBottom: '32px',
             fontSize: '14px',
             lineHeight: '1.6',
@@ -351,7 +351,7 @@ export const LoadingStates: Story = {
       </h2>
       <p
         style={{
-          color: '#b3b3b3',
+          color: 'hsl(var(--tf-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -456,7 +456,7 @@ export const UsageGuidelines: Story = {
         </h3>
         <ul
           style={{
-            color: '#b3b3b3',
+            color: 'hsl(var(--tf-neutral-hs) 70%)',
             fontSize: '14px',
             lineHeight: '1.8',
           }}
@@ -484,7 +484,7 @@ export const UsageGuidelines: Story = {
         </h3>
         <ul
           style={{
-            color: '#b3b3b3',
+            color: 'hsl(var(--tf-neutral-hs) 70%)',
             fontSize: '14px',
             lineHeight: '1.8',
           }}
