@@ -1,6 +1,6 @@
-import React from 'react';
+import { Memory, Notifications, Speed } from '@mui/icons-material';
 import { Box, Chip, Typography } from '@mui/material';
-import { Memory, Speed, Notifications } from '@mui/icons-material';
+import React from 'react';
 
 import { useSystemHealth } from '../hooks/useSystemHealth';
 
@@ -28,19 +28,19 @@ export const SystemTray: React.FC = () => {
         left: 0,
         right: 0,
         height: 40,
-        background: 'rgba(0,0,0,0.9)',
+        background: 'hsl(var(--tf-neutral-hs) 0% / 0.9)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         px: 2,
-        borderTop: '1px solid rgba(255,255,255,0.1)',
+        borderTop: '1px solid hsl(var(--tf-neutral-hs) 100% / 0.1)',
         zIndex: 1000,
       }}
     >
       {/* Left side - System info */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+        <Typography variant='caption' sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)' }}>
           Terrafusion OS 1.0
         </Typography>
         <Chip
@@ -54,7 +54,7 @@ export const SystemTray: React.FC = () => {
 
       {/* Center - Active modules count */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+        <Typography variant='caption' sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)' }}>
           {new Date().toLocaleTimeString()}
         </Typography>
       </Box>

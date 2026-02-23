@@ -4,7 +4,7 @@
   "ok": true,
   "scopeHash": "815f66836ec52a60",
   "baselineViolationCount": 111,
-  "currentViolationCount": 111,
-  "delta": 0,
-  "generatedAtIso": "2026-02-23T19:53:51.082Z"
+  "currentViolationCount": 107,
+  "delta": 4,
+  "generatedAtIso": "2026-02-23T19:56:30.265Z"
 }
