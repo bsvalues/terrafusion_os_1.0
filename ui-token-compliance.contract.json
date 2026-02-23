@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 133,
+  "violationCount": 128,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -461,41 +461,6 @@
       "excerpt": "rgba(0, 255, 255, ${optimizedOpacity})`;"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 155,
-      "column": 13,
-      "excerpt": "#ff6b35', // Forge orange"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 167,
-      "column": 13,
-      "excerpt": "#00e5ff', // Cyan"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 179,
-      "column": 13,
-      "excerpt": "#a855f7', // Purple"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 191,
-      "column": 13,
-      "excerpt": "#22c55e', // Green"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 203,
-      "column": 13,
-      "excerpt": "#3b82f6', // Blue"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\design\\TerraFlowDesignEngine.tsx",
       "line": 45,
@@ -937,5 +902,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T19:07:49.094Z"
+  "generatedAtIso": "2026-02-23T19:12:10.485Z"
 }
