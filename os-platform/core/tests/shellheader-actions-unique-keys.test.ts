@@ -1,4 +1,3 @@
-import { describe, it, expect } from "vitest";
 import { assertUniqueBy } from "../../../frontend/apps/os-shell/src/utils/assertUniqueBy";
 
 describe("ShellHeader actions uniqueness", () => {

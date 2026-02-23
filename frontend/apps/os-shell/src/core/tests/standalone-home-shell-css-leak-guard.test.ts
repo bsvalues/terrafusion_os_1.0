@@ -1,4 +1,3 @@
-import { describe, it } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import { assertNoRawColorLeaks } from "../../tools/ui-tokens/leak-guard";
