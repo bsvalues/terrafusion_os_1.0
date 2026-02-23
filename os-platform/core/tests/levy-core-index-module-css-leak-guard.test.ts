@@ -10,6 +10,6 @@ describe('levy-core/index.module.css leak guard', () => {
       'frontend/apps/os-shell/src/plugins/levy-core/index.module.css'
     );
     const content = fs.readFileSync(file, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'levy-core/index.module.css' });
+    assertNoRawColorLeaks(content, { label: 'index.module.css' });
   });
 });
