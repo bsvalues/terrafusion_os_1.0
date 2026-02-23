@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 138,
+  "violationCount": 133,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -235,41 +235,6 @@
       "line": 179,
       "column": 37,
       "excerpt": "rgba(0, 0, 0, 0.2)`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 145,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.3) ${percentage}%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 146,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.3) 100%)`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 684,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 699,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 706,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.8);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -972,5 +937,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T19:03:51.986Z"
+  "generatedAtIso": "2026-02-23T19:07:49.094Z"
 }

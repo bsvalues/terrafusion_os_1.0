@@ -142,8 +142,8 @@ const ParameterSlider: React.FC<ParameterSliderProps> = ({
             background: `linear-gradient(to right,
               var(--tf-transcend-cyan) 0%,
               var(--tf-transcend-cyan) ${percentage}%,
-              rgba(30, 41, 59, 0.3) ${percentage}%,
-              rgba(30, 41, 59, 0.3) 100%)`,
+              hsl(var(--tf-neutral-hs) 17% / 0.3) ${percentage}%,
+              hsl(var(--tf-neutral-hs) 17% / 0.3) 100%)`,
           }}
         />
       </div>
@@ -681,13 +681,13 @@ export const ConsciousnessParameterTuningPanel: React.FC = () => {
           border-radius: 50%;
           background: var(--tf-quantum-cyan);
           cursor: pointer;
-          box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+          box-shadow: 0 0 10px hsl(var(--tf-cyan-hs) 50% / 0.5);
           transition: all 0.2s;
         }
 
         .slider-thumb::-webkit-slider-thumb:hover {
           transform: scale(1.2);
-          box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+          box-shadow: 0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.8);
         }
 
         .slider-thumb::-moz-range-thumb {
@@ -696,14 +696,14 @@ export const ConsciousnessParameterTuningPanel: React.FC = () => {
           border-radius: 50%;
           background: var(--tf-quantum-cyan);
           cursor: pointer;
-          box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+          box-shadow: 0 0 10px hsl(var(--tf-cyan-hs) 50% / 0.5);
           border: none;
           transition: all 0.2s;
         }
 
         .slider-thumb::-moz-range-thumb:hover {
           transform: scale(1.2);
-          box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+          box-shadow: 0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.8);
         }
       `}</style>
     </div>
