@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 41,
+  "violationCount": 39,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -18,20 +18,6 @@
       "line": 99,
       "column": 19,
       "excerpt": "rgba(255, 255, 255, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\costforge\\EnhancedCostCalculator.tsx",
-      "line": 1395,
-      "column": 49,
-      "excerpt": "rgba(15, 23, 42, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\costforge\\EnhancedCostCalculator.tsx",
-      "line": 1428,
-      "column": 49,
-      "excerpt": "rgba(15, 23, 42, 0.9)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -293,5 +279,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:27:11.184Z"
+  "generatedAtIso": "2026-02-23T21:30:13.517Z"
 }
