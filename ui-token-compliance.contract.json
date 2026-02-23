@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 128,
+  "violationCount": 123,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -588,41 +588,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 52,
-      "column": 15,
-      "excerpt": "hsl(var(--levy-green-hs) 42%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 71,
-      "column": 15,
-      "excerpt": "hsl(var(--levy-cool-hs) 94%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 72,
-      "column": 21,
-      "excerpt": "hsl(var(--levy-cool-hs) 76%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 80,
-      "column": 10,
-      "excerpt": "hsl(var(--levy-text-hs) 24%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\levy-core\\index.module.css",
-      "line": 89,
-      "column": 21,
-      "excerpt": "hsl(var(--levy-cool-hs) 85%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\providers\\TerraFusionExcellenceProvider.tsx",
       "line": 65,
       "column": 30,
@@ -902,5 +867,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T19:12:10.485Z"
+  "generatedAtIso": "2026-02-23T19:18:30.988Z"
 }
