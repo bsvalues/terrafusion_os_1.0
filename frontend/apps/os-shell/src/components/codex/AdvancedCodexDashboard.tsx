@@ -332,9 +332,9 @@ function UltimatePowerCard({
     <Card
       className={`bg-gradient-to-br from-terra-midnight via-terra-blue/20 to-terra-cyan/20 border-2 ${
         inDivineBalance
-          ? 'border-terra-cyan shadow-[0_0_30px_rgba(0,255,255,0.3)] animate-pulse'
+          ? 'border-terra-cyan shadow-[0_0_30px_hsl(var(--tf-cyan-hs)_50%_/_0.3)] animate-pulse'
           : isChampionshipMode
-          ? 'border-terra-blue shadow-[0_0_20px_rgba(0,153,255,0.2)]'
+          ? 'border-terra-blue shadow-[0_0_20px_hsl(var(--tf-blue-hs)_50%_/_0.2)]'
           : 'border-terra-slate'
       }`}
     >

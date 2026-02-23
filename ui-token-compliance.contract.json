@@ -3,22 +3,8 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 45,
+  "violationCount": 43,
   "violations": [
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\WebGLEffects.tsx",
-      "line": 420,
-      "column": 24,
-      "excerpt": "rgba(11, 16, 32, 0.8)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\WebGLEffects.tsx",
-      "line": 437,
-      "column": 24,
-      "excerpt": "rgba(11, 16, 32, 0.8)',"
-    },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\codex\\AdvancedCodexDashboard.tsx",
@@ -321,5 +307,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:20:54.563Z"
+  "generatedAtIso": "2026-02-23T21:24:16.053Z"
 }
