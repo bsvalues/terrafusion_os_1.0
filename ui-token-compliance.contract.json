@@ -3,22 +3,8 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 49,
+  "violationCount": 47,
   "violations": [
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\AIAssistantPanel.tsx",
-      "line": 132,
-      "column": 400,
-      "excerpt": "#8842, #9103)\\n2. Update cost factors based on market analysis\\n3. Generate assessment roll with AI validation\\n\\nWould you like me to execu"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\AIAssistantPanel.tsx",
-      "line": 132,
-      "column": 407,
-      "excerpt": "#9103)\\n2. Update cost factors based on market analysis\\n3. Generate assessment roll with AI validation\\n\\nWould you like me to execute any "
-    },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\components\\ai\\AIInsightsPanel.tsx",
@@ -349,5 +335,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:14:58.803Z"
+  "generatedAtIso": "2026-02-23T21:17:52.002Z"
 }

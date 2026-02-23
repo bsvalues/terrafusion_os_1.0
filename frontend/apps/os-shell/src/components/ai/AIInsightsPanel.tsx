@@ -7,24 +7,24 @@
  */
 
 import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  Progress,
+    Badge,
+    Card,
+    CardContent,
+    CardHeader,
+    Progress,
 } from '@/components/terrafusion-design-system';
 import { cn } from '@utils/cn';
 import {
-  AlertTriangle,
-  BarChart3,
-  Brain,
-  CheckCircle,
-  Eye,
-  Sparkles,
-  Target,
-  TrendingDown,
-  TrendingUp,
-  Zap,
+    AlertTriangle,
+    BarChart3,
+    Brain,
+    CheckCircle,
+    Eye,
+    Sparkles,
+    Target,
+    TrendingDown,
+    TrendingUp,
+    Zap,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -102,7 +102,7 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
           severity: 'warning',
           title: 'Assessment Outliers Identified',
           description:
-            '2 commercial properties (Parcels #8842, #9103) showing significant deviation from comparable properties.',
+            '2 commercial properties (Parcels P-8842, P-9103) showing significant deviation from comparable properties.',
           confidence: 0.943,
           impact: {
             category: 'accuracy',
