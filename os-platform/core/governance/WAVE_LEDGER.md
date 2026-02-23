@@ -35,6 +35,10 @@ A vitest enforces this constraint automatically.
 - Phase 115 — 3bda5ea07 — TerraSphere.css — 7→0
 - Phase 116 — 7f645ea6b — standalone-home-shell.css — 7→0
 
+## TSX component sweep
+
+- Phase 118 — PENDING — AIHealthStatusChip.tsx — 12→0
+
 ## CSS micro-batch 2 (non-tiered maintenance)
 
 - Phase 117 — 7ef375d7b — micro-batch CSS (5 files) — 10→0
