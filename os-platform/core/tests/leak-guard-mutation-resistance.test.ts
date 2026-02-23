@@ -2,118 +2,235 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-type GuardCheck = {
-  guardPath: string;
+type GuardParse = {
+  guardAbsPath: string;
+  guardRelPath: string;
   targetRelPath: string;
   targetBaseName: string;
+  labelValue: string | null;
 };
 
 /**
- * Extracts the target file's relative path from any of the four guard patterns:
- *
- * 1. path.resolve(__dirname, "../../..", "frontend/.../File.tsx")
- * 2. path.join(process.cwd(), "frontend/.../File.tsx")
- * 3. assertNoRawColorLeaks("frontend/.../File.tsx")  (inline, no label)
- * 4. resolve(__dirname, "../../../frontend/.../File.tsx")  (destructured, combined)
+ * Recursively collects files under `dir` that satisfy predicate.
+ * Avoids extra deps (glob libs) to keep the test environment stable.
  */
-function extractTargetRelPath(guardContent: string): string | null {
-  // Pattern 1: path.resolve(__dirname, "../../..", "frontend/...")
-  const p1 = guardContent.match(
-    /path\.resolve\(\s*__dirname\s*,[\s\S]*?,\s*["'`](frontend\/[^"'`]+?)["'`],?\s*\)/m
-  );
-  if (p1?.[1]) return p1[1];
+function walkFiles(dir: string, predicate: (absPath: string) => boolean): string[] {
+  const out: string[] = [];
+  const stack: string[] = [dir];
 
-  // Pattern 2: path.join(process.cwd(), "frontend/...")
-  const p2 = guardContent.match(
-    /path\.join\(\s*process\.cwd\(\)\s*,\s*["'`](frontend\/[^"'`]+?)["'`],?\s*\)/m
-  );
-  if (p2?.[1]) return p2[1];
+  while (stack.length) {
+    const current = stack.pop()!;
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(current, { withFileTypes: true });
+    } catch {
+      continue;
+    }
 
-  // Pattern 4: resolve(__dirname, "../../../frontend/...")  (destructured import)
-  const p4 = guardContent.match(
-    /\bresolve\(\s*__dirname\s*,\s*["'`][^"'`]*?(frontend\/[^"'`]+?)["'`],?\s*\)/m
+    for (const ent of entries) {
+      const abs = path.join(current, ent.name);
+      if (ent.isDirectory()) stack.push(abs);
+      else if (ent.isFile() && predicate(abs)) out.push(abs);
+    }
+  }
+
+  return out.sort();
+}
+
+/**
+ * Very small, deterministic "string constant table" for guard tests.
+ * Supports:
+ *   const X = "string";
+ *   let X = 'string';
+ *   const X = `string`;
+ *
+ * Only top-level/simple assignments are needed for our guard patterns.
+ */
+function extractStringConstants(source: string): Map<string, string> {
+  const map = new Map<string, string>();
+
+  const re =
+    /\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(["'`])([\s\S]*?)\2\s*;/g;
+
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(source)) !== null) {
+    const ident = m[1]!;
+    const value = m[3]!;
+    if (value.length > 0 && value.length < 5000) {
+      map.set(ident, value);
+    }
+  }
+
+  return map;
+}
+
+/**
+ * Extracts the target file's relative path from the guard source.
+ * Supports all known guard resolution patterns with constant-resolution:
+ *
+ * 1. path.resolve(__dirname, "../../..", <literal|CONST>)
+ * 2. path.join(process.cwd(), <literal|CONST>)  /  path.join(repoRoot, <literal|CONST>)
+ * 3. resolve(__dirname, ..., <literal|CONST>)    (destructured import)
+ * 4. const rel = "frontend/..." (variable extracted, then used in path.join)
+ * 5. assertNoRawColorLeaks("frontend/...")        (inline path, no label — target IS the path)
+ */
+function extractTargetRelPath(source: string, constants: Map<string, string>): string | null {
+  // Helper: resolve a last-arg capture (literal or identifier)
+  function resolveCapture(
+    m: RegExpMatchArray,
+    litGroup: number,
+    valGroup: number,
+    identGroup: number,
+  ): string | null {
+    const lit = m[valGroup] ?? null;
+    if (lit !== null) return lit.trim();
+    const ident = m[identGroup] ?? null;
+    if (!ident) return null;
+    const resolved = constants.get(ident);
+    return resolved ? resolved.trim() : null;
+  }
+
+  // Pattern 1: path.resolve(__dirname, "../../..", <target>)
+  const p1 = source.match(
+    /path\.resolve\(\s*__dirname\s*,[\s\S]*?,\s*(?:(["'`])([\s\S]*?)\1|([A-Za-z_$][\w$]*))\s*,?\s*\)/m,
   );
+  if (p1) {
+    const val = resolveCapture(p1, 1, 2, 3);
+    if (val) return val;
+  }
+
+  // Pattern 2: path.join(process.cwd(), <target>) or path.join(<var>, <target>)
+  const p2 = source.match(
+    /path\.join\(\s*(?:process\.cwd\(\)|[\w$]+)\s*,\s*(?:(["'`])([\s\S]*?)\1|([A-Za-z_$][\w$]*))\s*,?\s*\)/m,
+  );
+  if (p2) {
+    const val = resolveCapture(p2, 1, 2, 3);
+    if (val) return val;
+  }
+
+  // Pattern 3: resolve(__dirname, ..., <target>)  (destructured import of path.resolve)
+  const p3 = source.match(
+    /\bresolve\(\s*__dirname\s*,[\s\S]*?,?\s*(?:(["'`])([\s\S]*?)\1|([A-Za-z_$][\w$]*))\s*,?\s*\)/m,
+  );
+  if (p3) {
+    const val = resolveCapture(p3, 1, 2, 3);
+    if (val) return val;
+  }
+
+  // Pattern 4: const rel = "frontend/..." (variable with frontend path)
+  const p4 = source.match(/\bconst\s+\w+\s*=\s*["'`](frontend\/[^"'`]+?)["'`]/m);
   if (p4?.[1]) return p4[1];
 
-  // Pattern 5: const rel = 'frontend/...' (variable-based, e.g. path.join(repoRoot, rel))
-  const p5 = guardContent.match(
-    /const\s+rel\s*=\s*["'`](frontend\/[^"'`]+?)["'`]/m
-  );
+  // Pattern 5: assertNoRawColorLeaks("frontend/...")  (inline path as first arg, no label)
+  const p5 = source.match(/assertNoRawColorLeaks\(\s*["'`](frontend\/[^"'`]+?)["'`]\s*\)/m);
   if (p5?.[1]) return p5[1];
-
-  // Pattern 3: assertNoRawColorLeaks("frontend/...")  (inline path, no label)
-  const p3 = guardContent.match(/assertNoRawColorLeaks\(\s*["'`](frontend\/[^"'`]+?)["'`]\s*\)/m);
-  if (p3?.[1]) return p3[1];
 
   return null;
 }
 
 /**
- * Checks whether the guard passes a label matching the target basename.
- * Returns true if label matches OR if the guard uses the inline-path pattern
- * (pattern 3) which doesn't use labels.
+ * Extracts the label value used in:
+ *   assertNoRawColorLeaks(<any>, { label: "<value>", ... })
+ * Supports:
+ *  - label as string literal
+ *  - label as identifier resolving to string literal
+ *  - additional properties in the options object
+ *  - any variable name for the first argument (not necessarily "content")
  */
-function hasMatchingLabel(guardContent: string, expectedBaseName: string): boolean {
-  // Inline-path pattern (no label used) — exempt from label checking
-  if (/assertNoRawColorLeaks\(\s*["'`]frontend\//.test(guardContent)) {
-    return true;
-  }
+function extractLabelValue(source: string, constants: Map<string, string>): string | null {
+  const callRe = /assertNoRawColorLeaks\(\s*[\s\S]*?,\s*\{([\s\S]*?)\}\s*\)/m;
+  const callMatch = source.match(callRe);
+  if (!callMatch) return null;
 
-  const escaped = expectedBaseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(
-    `assertNoRawColorLeaks\\(\\s*\\w+\\s*,\\s*\\{\\s*label\\s*:\\s*["'\`]${escaped}["'\`],?\\s*\\}\\s*\\)`,
-    'm'
-  );
-  return re.test(guardContent);
+  const objBody = callMatch[1] ?? '';
+
+  const labelRe = /\blabel\s*:\s*(?:(["'`])([\s\S]*?)\1|([A-Za-z_$][\w$]*))/m;
+  const labelMatch = objBody.match(labelRe);
+  if (!labelMatch) return null;
+
+  const literalValue = labelMatch[2] ?? null;
+  if (literalValue !== null) return literalValue.trim();
+
+  const ident = labelMatch[3] ?? null;
+  if (!ident) return null;
+
+  const resolved = constants.get(ident);
+  return resolved ? resolved.trim() : null;
 }
 
 describe('Leak guard mutation resistance', () => {
-  it('every leak-guard test uses a label equal to the target file basename', () => {
+  it('every leak-guard uses a label equal to path.basename(target)', () => {
     const repoRoot = path.resolve(__dirname, '../../..');
     const testsRoot = path.resolve(repoRoot, 'os-platform/core/tests');
 
     expect(fs.existsSync(testsRoot), `Expected tests directory to exist: ${testsRoot}`).toBe(true);
 
-    const guardFiles = fs
-      .readdirSync(testsRoot)
-      .filter(f => f.endsWith('-leak-guard.test.ts') || f.endsWith('-leak-guard.test.tsx'))
-      .map(f => path.join(testsRoot, f))
-      .sort();
+    const guardFiles = walkFiles(
+      testsRoot,
+      (p) => p.endsWith('-leak-guard.test.ts') || p.endsWith('-leak-guard.test.tsx'),
+    );
 
     expect(
       guardFiles.length,
-      'Expected at least 1 leak-guard test file; meta-integrity indicates there should be many.'
+      'Expected leak-guard tests to exist; meta-integrity indicates there should be many.',
     ).toBeGreaterThan(0);
 
     const failures: string[] = [];
-    const parsed: GuardCheck[] = [];
+    const parsed: GuardParse[] = [];
 
-    for (const guardPath of guardFiles) {
-      const content = fs.readFileSync(guardPath, 'utf8');
-      const targetRelPath = extractTargetRelPath(content);
+    for (const guardAbsPath of guardFiles) {
+      const guardRelPath = path.relative(repoRoot, guardAbsPath);
+      const source = fs.readFileSync(guardAbsPath, 'utf8');
+      const constants = extractStringConstants(source);
 
+      const targetRelPath = extractTargetRelPath(source, constants);
       if (!targetRelPath) {
         failures.push(
-          `Missing/invalid target path resolution pattern in guard:\n  ${path.relative(repoRoot, guardPath)}`
+          [
+            `Unable to resolve target path in guard (expected path.resolve(__dirname, "../../..", <target>)):`,
+            `  ${guardRelPath}`,
+          ].join('\n'),
         );
         continue;
       }
 
       const targetBaseName = path.basename(targetRelPath);
-      parsed.push({ guardPath, targetRelPath, targetBaseName });
+      const labelValue = extractLabelValue(source, constants);
 
-      if (!hasMatchingLabel(content, targetBaseName)) {
+      // Inline-path guards (assertNoRawColorLeaks("frontend/...")) have no label — exempt
+      const isInlinePath = /assertNoRawColorLeaks\(\s*["'`]frontend\//.test(source);
+
+      parsed.push({ guardAbsPath, guardRelPath, targetRelPath, targetBaseName, labelValue });
+
+      if (!labelValue && !isInlinePath) {
         failures.push(
           [
-            `Label mismatch in guard: ${path.relative(repoRoot, guardPath)}`,
+            `Missing label in assertNoRawColorLeaks options object:`,
+            `  Guard:  ${guardRelPath}`,
             `  Target: ${targetRelPath}`,
-            `  Expected label: "${targetBaseName}"`,
-          ].join('\n')
+            `  Expected: { label: "${targetBaseName}" }`,
+          ].join('\n'),
+        );
+        continue;
+      }
+
+      if (labelValue && labelValue !== targetBaseName) {
+        failures.push(
+          [
+            `Label mismatch:`,
+            `  Guard:    ${guardRelPath}`,
+            `  Target:   ${targetRelPath}`,
+            `  Expected: ${targetBaseName}`,
+            `  Actual:   ${labelValue}`,
+          ].join('\n'),
         );
       }
     }
 
-    expect(failures.join('\n\n')).toBe('');
+    // Ensure our parser is not silently skipping guards.
     expect(parsed.length).toBe(guardFiles.length);
+
+    // Make mismatches loud + actionable.
+    expect(failures.join('\n\n')).toBe('');
   });
 });
