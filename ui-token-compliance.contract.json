@@ -3,22 +3,8 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 47,
+  "violationCount": 45,
   "violations": [
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\AIInsightsPanel.tsx",
-      "line": 105,
-      "column": 47,
-      "excerpt": "#8842, #9103) showing significant deviation from comparable properties.',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\AIInsightsPanel.tsx",
-      "line": 105,
-      "column": 54,
-      "excerpt": "#9103) showing significant deviation from comparable properties.',"
-    },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\brand\\WebGLEffects.tsx",
@@ -335,5 +321,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:17:52.002Z"
+  "generatedAtIso": "2026-02-23T21:20:54.563Z"
 }
