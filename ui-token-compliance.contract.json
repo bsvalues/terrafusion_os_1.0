@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 91,
+  "violationCount": 87,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -574,34 +574,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-celebration.css",
-      "line": 42,
-      "column": 65,
-      "excerpt": "#8b5cf6, #ef4444, var(--tf-quantum-cyan));"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-celebration.css",
-      "line": 42,
-      "column": 74,
-      "excerpt": "#ef4444, var(--tf-quantum-cyan));"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-celebration.css",
-      "line": 46,
-      "column": 88,
-      "excerpt": "#8b5cf6, #ef4444, var(--tf-quantum-cyan));"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-celebration.css",
-      "line": 46,
-      "column": 97,
-      "excerpt": "#ef4444, var(--tf-quantum-cyan));"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\ui\\materials\\materialQualityGate.ts",
       "line": 341,
       "column": 13,
@@ -643,5 +615,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T20:17:30.546Z"
+  "generatedAtIso": "2026-02-23T20:21:01.410Z"
 }

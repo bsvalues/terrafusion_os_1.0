@@ -39,11 +39,23 @@
 }
 
 .celebration-background-default {
-  background: conic-gradient(from 0deg, var(--tf-quantum-cyan), #8b5cf6, #ef4444, var(--tf-quantum-cyan));
+  background: conic-gradient(
+    from 0deg,
+    var(--tf-quantum-cyan),
+    hsl(var(--tf-blue-hs) 66%),
+    hsl(var(--tf-red-hs) 60%),
+    var(--tf-quantum-cyan)
+  );
 }
 
 .celebration-background-dynamic {
-  background: conic-gradient(from var(--particle-angle, 0deg), var(--tf-quantum-cyan), #8b5cf6, #ef4444, var(--tf-quantum-cyan));
+  background: conic-gradient(
+    from var(--particle-angle, 0deg),
+    var(--tf-quantum-cyan),
+    hsl(var(--tf-blue-hs) 66%),
+    hsl(var(--tf-red-hs) 60%),
+    var(--tf-quantum-cyan)
+  );
 }
 
 /* Achievement Animation Delays */
