@@ -10,7 +10,9 @@
  * delegates to ts-jest for the actual TypeScript compilation.
  */
 
-const tsJest = require('ts-jest');
+const tsJestModule = require('ts-jest');
+// ts-jest exports createTransformer on .default in CJS context
+const tsJest = tsJestModule.default || tsJestModule;
 
 module.exports = {
   createTransformer(tsJestConfig) {
