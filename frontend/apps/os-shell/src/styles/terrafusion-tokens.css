@@ -141,6 +141,18 @@
   --breakpoint-desktop: 1079px; /* φ³ × 255 */
   --breakpoint-wide: 1746px; /* φ⁴ × 255 */
 
+  /* ═══ SEMANTIC HS ANCHORS (H S only — consumed by leak-guarded files) ═══
+     Each anchor supplies hue + saturation so call-sites choose lightness:
+       hsl(var(--tf-<name>-hs) <L%> / <alpha>)
+     Derived from the foundation hex tokens above.                       */
+  --tf-bg-surface-hs: 217 33%;        /* #1e293b  (bg-surface)          */
+  --tf-text-primary-hs: 0 0%;         /* #ffffff  (text-primary)         */
+  --tf-text-secondary-hs: 213 27%;    /* #cbd5e1  (text-secondary)       */
+  --tf-success-hs: 152 100%;          /* #00ff88  (accent-success)       */
+  --tf-error-hs: 0 100%;              /* #ff4444  (error-red)            */
+  --tf-network-blue-hs: 210 100%;     /* #0080ff  (network-blue)         */
+  --tf-transcend-cyan-hs: 176 100%;   /* #00ffee  (transcend-highlight)  */
+
   /* ═══ LUMIN BRIDGE (consumed by @terrafusion/ui primitives) ═══
      HSL channel values — used as hsl(var(--tf-bg) / <alpha>).
      Derived from the foundation hex tokens above.                   */
