@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 158,
+  "violationCount": 148,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -140,41 +140,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 42,
-      "column": 16,
-      "excerpt": "rgba(255, 255, 255, 0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 44,
-      "column": 22,
-      "excerpt": "rgba(200, 150, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 151,
-      "column": 59,
-      "excerpt": "rgba(0,0,0,0.2)', borderRadius: '12px' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 166,
-      "column": 42,
-      "excerpt": "rgba(255,255,255,0.1)', color: 'white', mt: 0.5 }}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 170,
-      "column": 65,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\costforge\\EnhancedCostCalculator.tsx",
       "line": 1395,
       "column": 49,
@@ -221,41 +186,6 @@
       "line": 375,
       "column": 21,
       "excerpt": "hsl(239 84% 67% / 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\DatabaseStatus.tsx",
-      "line": 153,
-      "column": 23,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\DatabaseStatus.tsx",
-      "line": 174,
-      "column": 23,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\DatabaseStatus.tsx",
-      "line": 195,
-      "column": 23,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\DatabaseStatus.tsx",
-      "line": 216,
-      "column": 23,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\DatabaseStatus.tsx",
-      "line": 248,
-      "column": 21,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1112,5 +1042,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T18:42:12.152Z"
+  "generatedAtIso": "2026-02-23T18:51:35.962Z"
 }
