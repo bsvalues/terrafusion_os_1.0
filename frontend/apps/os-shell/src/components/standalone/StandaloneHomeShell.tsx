@@ -24,6 +24,7 @@ import { useParcelContext } from '../../context/parcelContext';
 import { executeOsAction, type OsActionContext } from '../../services/osActions';
 import { LiquidPanel, TactileButton, useMaterialQuality } from '../../ui/materials';
 import { Badge } from '../ui/badge';
+import { assertUniqueBy } from '../../utils/assertUniqueBy';
 import {
     DEFAULT_STANDALONE_META,
     isHandlerAction,
@@ -352,11 +353,17 @@ export function StandaloneHomeShell({
       icon: featureDefinition?.icon ?? DEFAULT_STANDALONE_META.icon,
       ...registryMeta,
       ...metaOverrides,
-      // Merge actions arrays
-      primaryActions: [
-        ...(registryMeta.primaryActions ?? []),
-        ...(metaOverrides?.primaryActions ?? []),
-      ],
+      // Merge actions arrays (override-wins dedup by id)
+      primaryActions: (() => {
+        const byId = new Map<string, StandaloneHomeAction>();
+        for (const a of registryMeta.primaryActions ?? []) byId.set(a.id, a);
+        for (const a of metaOverrides?.primaryActions ?? []) byId.set(a.id, a);
+        const actions = [...byId.values()];
+        if (import.meta.env.DEV) {
+          assertUniqueBy(actions, (a) => a.id, 'ShellHeader primaryActions');
+        }
+        return actions;
+      })(),
       // Merge modules (prop overrides take precedence, or use registry)
       modules: metaOverrides?.modules ?? registryMeta.modules ?? [],
     };
