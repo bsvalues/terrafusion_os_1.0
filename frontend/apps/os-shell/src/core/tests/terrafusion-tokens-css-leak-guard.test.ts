@@ -2,10 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { assertNoRawColorLeaks } from "../../tools/ui-tokens/leak-guard";
 
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..", "..", "..");
+
 describe("terrafusion-tokens.css leak guard", () => {
   it("contains no raw rgba/rgb color values (hex foundation definitions excluded)", () => {
     const file = path.join(
-      process.cwd(),
+      REPO_ROOT,
       "frontend/apps/os-shell/src/styles/terrafusion-tokens.css"
     );
     const content = fs.readFileSync(file, "utf8");

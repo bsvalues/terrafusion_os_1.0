@@ -2,10 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { assertNoRawColorLeaks } from "../../tools/ui-tokens/leak-guard";
 
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..", "..", "..");
+
 describe("TerraSphere.css leak guard", () => {
   it("contains no raw color values", () => {
     const file = path.join(
-      process.cwd(),
+      REPO_ROOT,
       "frontend/apps/os-shell/src/components/brand/TerraSphere.css"
     );
     const content = fs.readFileSync(file, "utf8");
