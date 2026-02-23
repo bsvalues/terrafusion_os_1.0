@@ -3,22 +3,8 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 43,
+  "violationCount": 41,
   "violations": [
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\codex\\AdvancedCodexDashboard.tsx",
-      "line": 335,
-      "column": 49,
-      "excerpt": "rgba(0,255,255,0.3)] animate-pulse'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\codex\\AdvancedCodexDashboard.tsx",
-      "line": 337,
-      "column": 49,
-      "excerpt": "rgba(0,153,255,0.2)]'"
-    },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\common\\ExplainPanel.tsx",
@@ -307,5 +293,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:24:16.053Z"
+  "generatedAtIso": "2026-02-23T21:27:11.184Z"
 }
