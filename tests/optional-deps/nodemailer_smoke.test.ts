@@ -6,19 +6,35 @@
  *
  * Skips entirely if nodemailer isn't installed (graceful degradation).
  */
-import { describe, it, expect } from 'vitest';
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { describe, expect, it } from 'vitest';
 
-// Check if nodemailer is installed before running tests
-const nodemailerInstalled = existsSync(resolve(process.cwd(), 'node_modules/nodemailer'));
+const require = createRequire(import.meta.url);
 
-describe.skipIf(!nodemailerInstalled)('nodemailer smoke', async () => {
-  // Only import if installed to avoid Vite resolution errors
-  const nodemailer = nodemailerInstalled ? await import('nodemailer') : null;
+async function importNodemailer() {
+  const entry = require.resolve('nodemailer');
+  return import(entry);
+}
+
+async function hasNodemailer(): Promise<boolean> {
+  try {
+    require.resolve('nodemailer');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const hasDep = await hasNodemailer();
+
+describe.skipIf(!hasDep)('optional-deps: nodemailer smoke', () => {
+  it('can import nodemailer', async () => {
+    const mod = await importNodemailer();
+    expect(mod).toBeTruthy();
+  });
 
   it('createTransport API exists', async () => {
-    if (!nodemailer) return;
+    const nodemailer = await importNodemailer();
 
     expect(typeof nodemailer.createTransport).toBe('function');
     expect(typeof nodemailer.createTestAccount).toBe('function');
@@ -26,9 +42,9 @@ describe.skipIf(!nodemailerInstalled)('nodemailer smoke', async () => {
   });
 
   it('can construct streamTransport and send (no network)', async () => {
-    if (!nodemailer) return;
+    const nodemailer = await importNodemailer();
 
-    // Use streamTransport to avoid network
+    // Use streamTransport to avoid network.
     const transport = nodemailer.createTransport({
       streamTransport: true,
       newline: 'unix',
@@ -39,7 +55,7 @@ describe.skipIf(!nodemailerInstalled)('nodemailer smoke', async () => {
     expect(typeof transport.sendMail).toBe('function');
     expect(typeof transport.verify).toBe('function');
 
-    // Send a test email (no network - goes to buffer)
+    // Send a test email (no network - goes to buffer).
     const info = await transport.sendMail({
       from: 'noreply@terrafusion.local',
       to: 'devnull@terrafusion.local',
@@ -50,19 +66,18 @@ describe.skipIf(!nodemailerInstalled)('nodemailer smoke', async () => {
     expect(info).toBeTruthy();
     expect(info.messageId).toBeTruthy();
 
-    // Buffer should contain the email
+    // Buffer should contain the email.
     expect(info.message).toBeInstanceOf(Buffer);
     expect(info.message.length).toBeGreaterThan(0);
   });
 
   it('transport can be closed', async () => {
-    if (!nodemailer) return;
-
+    const nodemailer = await importNodemailer();
     const transport = nodemailer.createTransport({
       streamTransport: true,
     });
 
-    // close() should not throw
+    // close() should not throw.
     expect(() => transport.close()).not.toThrow();
   });
 });

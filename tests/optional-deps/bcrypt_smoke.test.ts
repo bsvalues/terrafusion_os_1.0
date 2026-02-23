@@ -6,38 +6,47 @@
  *
  * Skips entirely if bcrypt isn't installed (graceful degradation).
  */
-import { describe, it, expect } from 'vitest';
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { describe, expect, it } from 'vitest';
 
-// Check if bcrypt is installed before running tests
-const bcryptInstalled = existsSync(resolve(process.cwd(), 'node_modules/bcrypt'));
+const require = createRequire(import.meta.url);
 
-describe.skipIf(!bcryptInstalled)('bcrypt smoke', async () => {
-  // Only import if installed to avoid Vite resolution errors
-  const bcrypt = bcryptInstalled ? await import('bcrypt') : null;
+async function importBcrypt() {
+  const entry = require.resolve('bcrypt');
+  return import(entry);
+}
 
+async function hasBcrypt(): Promise<boolean> {
+  try {
+    require.resolve('bcrypt');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const hasDep = await hasBcrypt();
+
+describe.skipIf(!hasDep)('optional-deps: bcrypt smoke', () => {
   it('hash/compare contract holds', async () => {
-    if (!bcrypt) return;
-
+    const bcrypt = await importBcrypt();
     const pw = 'terraFusion🔒';
     const hash = await bcrypt.hash(pw, 10);
 
-    // Hash should be a string with expected bcrypt format
+    // Hash should be a string with expected bcrypt format.
     expect(typeof hash).toBe('string');
     expect(hash.length).toBeGreaterThan(10);
     expect(hash).toMatch(/^\$2[aby]?\$/); // bcrypt prefix
 
-    // compare() should return true for correct password
+    // compare() should return true for correct password.
     expect(await bcrypt.compare(pw, hash)).toBe(true);
 
-    // compare() should return false for wrong password
+    // compare() should return false for wrong password.
     expect(await bcrypt.compare('wrong', hash)).toBe(false);
   });
 
   it('getRounds returns expected value', async () => {
-    if (!bcrypt) return;
-
+    const bcrypt = await importBcrypt();
     const hash = await bcrypt.hash('test', 12);
     expect(bcrypt.getRounds(hash)).toBe(12);
   });

@@ -52,7 +52,7 @@
     "ci:dependency-scope-quarantine:gate": "node scripts/governance/dependencyScopeQuarantine.mjs",
     "ci:governance": "node scripts/governance/governanceSentinel.js",
     "ci:governance-proof": "pnpm run ci:scope-proof && pnpm run ci:renovate-scope:log && pnpm run ci:governance",
-    "ci:governance-proof:log": "node scripts/ci/run_with_log.mjs pnpm run ci:governance-proof",
+    "ci:governance-proof:log": "node scripts/ci/run_with_log.mjs pnpm run ci:governance-proof > ci_governance_proof.log 2>&1",
     "registry:generate": "tsx tools/registry/generate-modules.ts",
     "registry:check": "tsx tools/registry/generate-modules.ts --out frontend/apps/os-shell/src/config/generatedModules.ts && git diff --exit-code frontend/apps/os-shell/src/config/generatedModules.ts",
     "tdc": "node tools/tf.js",

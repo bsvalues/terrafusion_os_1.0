@@ -6,29 +6,40 @@
  *
  * Skips entirely if multer isn't installed (graceful degradation).
  */
-import { describe, it, expect } from 'vitest';
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { describe, expect, it } from 'vitest';
 
-// Check if multer is installed before running tests
-const multerInstalled = existsSync(resolve(process.cwd(), 'node_modules/multer'));
+const require = createRequire(import.meta.url);
 
-describe.skipIf(!multerInstalled)('multer smoke', async () => {
-  // Only import if installed to avoid Vite resolution errors
-  const multer = multerInstalled ? await import('multer') : null;
+async function importMulter() {
+  const entry = require.resolve('multer');
+  return import(entry);
+}
 
+async function hasMulter(): Promise<boolean> {
+  try {
+    require.resolve('multer');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const hasDep = await hasMulter();
+
+describe.skipIf(!hasDep)('optional-deps: multer smoke', () => {
   it('memoryStorage and single() API exists', async () => {
-    if (!multer) return;
+    const multer = await importMulter();
 
-    // Verify core API shape
+    // Verify core API shape.
     expect(typeof multer.default).toBe('function');
     expect(typeof multer.memoryStorage).toBe('function');
     expect(typeof multer.diskStorage).toBe('function');
 
-    // Create upload middleware
+    // Create upload middleware.
     const upload = multer.default({ storage: multer.memoryStorage() });
 
-    // Verify middleware methods exist
+    // Verify middleware methods exist.
     expect(typeof upload.single).toBe('function');
     expect(typeof upload.array).toBe('function');
     expect(typeof upload.fields).toBe('function');
@@ -37,11 +48,10 @@ describe.skipIf(!multerInstalled)('multer smoke', async () => {
   });
 
   it('memoryStorage stores buffer correctly', async () => {
-    if (!multer) return;
-
+    const multer = await importMulter();
     const storage = multer.memoryStorage();
 
-    // memoryStorage should have _handleFile method
+    // memoryStorage should have _handleFile method.
     expect(typeof storage._handleFile).toBe('function');
   });
 });
