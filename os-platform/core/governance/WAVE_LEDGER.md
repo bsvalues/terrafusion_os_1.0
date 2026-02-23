@@ -33,6 +33,7 @@ A vitest enforces this constraint automatically.
 ## 7-tier wave
 
 - Phase 115 — 3bda5ea07 — TerraSphere.css — 7→0
+- Phase 116 — PENDING — standalone-home-shell.css — 7→0
 
 ## 8-tier wave
 
