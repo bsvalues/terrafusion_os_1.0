@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 233,
+  "violationCount": 226,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1169,55 +1169,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\gen2\\TerraForgeGen2.tsx",
-      "line": 29,
-      "column": 26,
-      "excerpt": "#00E5FF',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\gen2\\TerraForgeGen2.tsx",
-      "line": 21,
-      "column": 44,
-      "excerpt": "rgba(10, 14, 26, 0.98) 0%, rgba(20, 24, 36, 0.95) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\gen2\\TerraForgeGen2.tsx",
-      "line": 21,
-      "column": 71,
-      "excerpt": "rgba(20, 24, 36, 0.95) 100%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\gen2\\TerraForgeGen2.tsx",
-      "line": 28,
-      "column": 28,
-      "excerpt": "rgba(0, 229, 255, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\gen2\\TerraForgeGen2.tsx",
-      "line": 30,
-      "column": 30,
-      "excerpt": "rgba(0, 229, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\gen2\\TerraForgeGen2.tsx",
-      "line": 33,
-      "column": 50,
-      "excerpt": "rgba(0, 229, 255, 0.8)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\gen2\\TerraForgeGen2.tsx",
-      "line": 36,
-      "column": 50,
-      "excerpt": "rgba(255, 255, 255, 0.5)' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\plugins\\cama-core\\index.module.css",
       "line": 10,
       "column": 10,
@@ -1637,5 +1588,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T17:32:56.698Z"
+  "generatedAtIso": "2026-02-23T17:41:40.704Z"
 }
