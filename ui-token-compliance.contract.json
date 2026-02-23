@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 119,
+  "violationCount": 115,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -270,34 +270,6 @@
       "line": 46,
       "column": 30,
       "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Trace\\PolicyPanel\\PolicyPanel.tsx",
-      "line": 200,
-      "column": 54,
-      "excerpt": "#666', marginTop: '8px' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Trace\\PolicyPanel\\PolicyPanel.tsx",
-      "line": 209,
-      "column": 38,
-      "excerpt": "#ccc',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Trace\\PolicyPanel\\PolicyPanel.tsx",
-      "line": 221,
-      "column": 58,
-      "excerpt": "#666', marginTop: '4px' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Trace\\PolicyPanel\\PolicyPanel.tsx",
-      "line": 239,
-      "column": 42,
-      "excerpt": "#ccc', padding: '12px', borderRadius: '4px' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -839,5 +811,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T19:27:54.829Z"
+  "generatedAtIso": "2026-02-23T19:43:38.220Z"
 }
