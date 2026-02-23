@@ -5,6 +5,12 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+/* HS Channel Anchors (file-local, celebration palette) */
+:root {
+  --tf-cel-purple-hs: 258 90%;
+  --tf-cel-red-hs: 0 84%;
+}
+
 /* Elite Celebration Animations */
 @keyframes fadeInUp {
   from {
@@ -39,11 +45,11 @@
 }
 
 .celebration-background-default {
-  background: conic-gradient(from 0deg, var(--tf-quantum-cyan), #8b5cf6, #ef4444, var(--tf-quantum-cyan));
+  background: conic-gradient(from 0deg, var(--tf-quantum-cyan), hsl(var(--tf-cel-purple-hs) 66%), hsl(var(--tf-cel-red-hs) 60%), var(--tf-quantum-cyan));
 }
 
 .celebration-background-dynamic {
-  background: conic-gradient(from var(--particle-angle, 0deg), var(--tf-quantum-cyan), #8b5cf6, #ef4444, var(--tf-quantum-cyan));
+  background: conic-gradient(from var(--particle-angle, 0deg), var(--tf-quantum-cyan), hsl(var(--tf-cel-purple-hs) 66%), hsl(var(--tf-cel-red-hs) 60%), var(--tf-quantum-cyan));
 }
 
 /* Achievement Animation Delays */
