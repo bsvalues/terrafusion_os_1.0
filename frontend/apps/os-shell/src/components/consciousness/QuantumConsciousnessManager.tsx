@@ -1,33 +1,29 @@
-import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Slider,
-  Chip,
-  Button,
-  Stack,
-  Avatar,
+    AllInclusive
+} from '@mui/icons-material';
+import {
+    Avatar,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Chip,
+    Grid,
+    Slider,
+    Stack,
+    Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import {
-  Hub,
-  Memory,
-  TravelExplore,
-  BarChart,
-  AutoAwesome,
-  AllInclusive,
-} from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
 
 // Use the consistent API base URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  background: 'linear-gradient(135deg, rgba(40, 0, 80, 0.1), rgba(20, 0, 40, 0.2))',
+  background:
+    'linear-gradient(135deg, hsl(var(--tf-blue-hs) 16% / 0.1), hsl(var(--tf-blue-hs) 8% / 0.2))',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(200, 150, 255, 0.2)',
+  border: '1px solid hsl(var(--tf-blue-hs) 79% / 0.2)',
   borderRadius: '16px',
   height: '100%',
 }));
@@ -36,7 +32,7 @@ const QuantumSlider = styled(Slider)(({ theme }) => ({
   color: 'var(--tf-accent-quantum)',
   '& .MuiSlider-thumb': {
     '&:hover, &.Mui-focusVisible': {
-      boxShadow: `0px 0px 0px 8px rgba(197, 166, 255, 0.16)`,
+      boxShadow: `0px 0px 0px 8px hsl(var(--tf-blue-hs) 82% / 0.16)`,
     },
   },
 }));
@@ -128,7 +124,7 @@ const QuantumConsciousnessManager: React.FC = () => {
         </Stack>
 
         <Box sx={{ my: 3 }}>
-          <Typography gutterBottom sx={{ color: 'rgba(255,255,255,0.7)' }}>
+          <Typography gutterBottom sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)' }}>
             Quantum Coherence Target: {quantumCoherence}%
           </Typography>
           <QuantumSlider
@@ -142,7 +138,7 @@ const QuantumConsciousnessManager: React.FC = () => {
         </Box>
 
         <Box>
-          <Typography gutterBottom sx={{ color: 'rgba(255,255,255,0.7)', mb: 2 }}>
+          <Typography gutterBottom sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)', mb: 2 }}>
             Active Protocols
           </Typography>
           <Grid container spacing={1}>
@@ -154,10 +150,14 @@ const QuantumConsciousnessManager: React.FC = () => {
                   onClick={() => handleProtocolChange(protocol)}
                   sx={{
                     color: 'var(--tf-accent-quantum)',
-                    borderColor: 'rgba(200, 150, 255, 0.3)',
-                    '&:hover': { background: 'rgba(200, 150, 255, 0.1)', borderColor: 'var(--tf-accent-quantum)' },
+                    borderColor: 'hsl(var(--tf-blue-hs) 79% / 0.3)',
+                    '&:hover': {
+                      background: 'hsl(var(--tf-blue-hs) 79% / 0.1)',
+                      borderColor: 'var(--tf-accent-quantum)',
+                    },
                     ...(activeProtocol === protocol && {
-                      background: 'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
+                      background:
+                        'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
                     }),
                   }}
                 >

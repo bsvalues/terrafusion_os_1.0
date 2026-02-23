@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 193,
+  "violationCount": 158,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -137,41 +137,6 @@
       "line": 99,
       "column": 19,
       "excerpt": "rgba(255, 255, 255, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\QuantumConsciousnessManager.tsx",
-      "line": 28,
-      "column": 40,
-      "excerpt": "rgba(40, 0, 80, 0.1), rgba(20, 0, 40, 0.2))',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\QuantumConsciousnessManager.tsx",
-      "line": 28,
-      "column": 62,
-      "excerpt": "rgba(20, 0, 40, 0.2))',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\QuantumConsciousnessManager.tsx",
-      "line": 39,
-      "column": 35,
-      "excerpt": "rgba(197, 166, 255, 0.16)`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\QuantumConsciousnessManager.tsx",
-      "line": 131,
-      "column": 50,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\QuantumConsciousnessManager.tsx",
-      "line": 145,
-      "column": 50,
-      "excerpt": "rgba(255,255,255,0.7)', mb: 2 }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -396,48 +361,6 @@
       "line": 465,
       "column": 61,
       "excerpt": "rgba(0,255,255,0.6)]')}"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\legacy\\LegacyDeprecationBanner.tsx",
-      "line": 88,
-      "column": 27,
-      "excerpt": "#fef3c7', // amber-100"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\legacy\\LegacyDeprecationBanner.tsx",
-      "line": 89,
-      "column": 34,
-      "excerpt": "#f59e0b', // amber-500"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\legacy\\LegacyDeprecationBanner.tsx",
-      "line": 90,
-      "column": 17,
-      "excerpt": "#92400e', // amber-800"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\legacy\\LegacyDeprecationBanner.tsx",
-      "line": 117,
-      "column": 21,
-      "excerpt": "#92400e',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\legacy\\LegacyDeprecationBanner.tsx",
-      "line": 133,
-      "column": 21,
-      "excerpt": "#92400e',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\legacy\\LegacyDeprecationBanner.tsx",
-      "line": 102,
-      "column": 33,
-      "excerpt": "rgba(0,0,0,0.1)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -686,48 +609,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Slider.stories.tsx",
-      "line": 327,
-      "column": 31,
-      "excerpt": "#123;1&#125;</strong>: Precise control, smooth movement"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Slider.stories.tsx",
-      "line": 327,
-      "column": 38,
-      "excerpt": "#125;</strong>: Precise control, smooth movement"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Slider.stories.tsx",
-      "line": 330,
-      "column": 31,
-      "excerpt": "#123;5 or 10&#125;</strong>: Good for most use cases"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Slider.stories.tsx",
-      "line": 330,
-      "column": 44,
-      "excerpt": "#125;</strong>: Good for most use cases"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Slider.stories.tsx",
-      "line": 333,
-      "column": 31,
-      "excerpt": "#123;25&#125;</strong>: Coarse control, fewer options"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Slider.stories.tsx",
-      "line": 333,
-      "column": 39,
-      "excerpt": "#125;</strong>: Coarse control, fewer options"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Toast.stories.tsx",
       "line": 162,
       "column": 31,
@@ -844,48 +725,6 @@
       "line": 145,
       "column": 35,
       "excerpt": "rgba(0, 153, 255, 0.8)' },"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Spacing.stories.tsx",
-      "line": 67,
-      "column": 19,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Spacing.stories.tsx",
-      "line": 125,
-      "column": 19,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Spacing.stories.tsx",
-      "line": 156,
-      "column": 19,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Spacing.stories.tsx",
-      "line": 191,
-      "column": 23,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Spacing.stories.tsx",
-      "line": 288,
-      "column": 21,
-      "excerpt": "#b3b3b3',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\Spacing.stories.tsx",
-      "line": 316,
-      "column": 21,
-      "excerpt": "#b3b3b3',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1064,48 +903,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 155,
-      "column": 28,
-      "excerpt": "rgba(0,0,0,0.4)',\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 160,
-      "column": 19,
-      "excerpt": "rgba(0,0,0,0.4)',\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 161,
-      "column": 17,
-      "excerpt": "rgba(0,255,238,0.2), 0 8px 32px rgba(0,0,0,0.5)',\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 161,
-      "column": 49,
-      "excerpt": "rgba(0,0,0,0.5)',\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 162,
-      "column": 17,
-      "excerpt": "rgba(0,255,238,0.2), 0 8px 32px rgba(0,0,0,0.5)',\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 162,
-      "column": 49,
-      "excerpt": "rgba(0,0,0,0.5)',\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\shell\\QuantumDesktopShell.tsx",
       "line": 193,
       "column": 26,
@@ -1274,48 +1071,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ultimate-architecture.css",
-      "line": 457,
-      "column": 12,
-      "excerpt": "#0f0;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ultimate-architecture.css",
-      "line": 535,
-      "column": 12,
-      "excerpt": "#0f0;"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ultimate-architecture.css",
-      "line": 239,
-      "column": 31,
-      "excerpt": "hsl(120 100% 60%)) 0%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ultimate-architecture.css",
-      "line": 240,
-      "column": 33,
-      "excerpt": "hsl(120 100% 40%)) 100%"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ultimate-architecture.css",
-      "line": 249,
-      "column": 28,
-      "excerpt": "hsl(120 100% 60%));"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-ultimate-architecture.css",
-      "line": 534,
-      "column": 17,
-      "excerpt": "rgba(0, 0, 0, 0.9);"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\ui\\materials\\materialQualityGate.ts",
       "line": 341,
       "column": 13,
@@ -1357,5 +1112,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T17:57:36.826Z"
+  "generatedAtIso": "2026-02-23T18:42:12.152Z"
 }
