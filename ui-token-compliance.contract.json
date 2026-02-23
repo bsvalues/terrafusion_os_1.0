@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 35,
+  "violationCount": 33,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -140,20 +140,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\motion.ts",
-      "line": 144,
-      "column": 40,
-      "excerpt": "rgba(0, 153, 255, 0.5)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design-system\\tokens\\motion.ts",
-      "line": 145,
-      "column": 35,
-      "excerpt": "rgba(0, 153, 255, 0.8)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\PropertyAssessmentFlows.tsx",
       "line": 208,
       "column": 49,
@@ -251,5 +237,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:37:11.432Z"
+  "generatedAtIso": "2026-02-23T21:40:14.180Z"
 }
