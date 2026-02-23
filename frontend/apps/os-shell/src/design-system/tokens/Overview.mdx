@@ -8,10 +8,11 @@ import { tokens } from '../tokens';
 <div
   style={{
     padding: '32px',
-    background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 100%)',
+    background:
+      'linear-gradient(135deg, hsl(var(--tf-blue-hs) 50%) 0%, hsl(var(--tf-cyan-hs) 53%) 100%)',
     borderRadius: '16px',
     marginBottom: '48px',
-    color: '#000',
+    color: 'hsl(var(--tf-neutral-hs) 0%)',
   }}
 >
   <h2 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '16px', margin: 0 }}>
@@ -40,7 +41,7 @@ A design system is a collection of reusable components, tokens, and guidelines t
 
 100+ color tokens including brand colors, semantic colors, state colors, and component-specific colors.
 
-- **Brand Colors**: Primary (#0099ff), Transcend (#00ffee), Accent (#00ffaa)
+- **Brand Colors**: Primary (blue-500), Transcend (cyan-500), Accent (green-500)
 - **Semantic Colors**: Text, background, border, surface
 - **State Colors**: Success, error, warning, info
 - **Component Colors**: Button, input, card, navigation, modal, badge
@@ -49,7 +50,7 @@ A design system is a collection of reusable components, tokens, and guidelines t
 ```typescript
 import { tokens } from '@/design-system';
 
-const primaryColor = tokens.colors.brand.primary[500]; // #0099ff
+const primaryColor = tokens.colors.brand.primary[500]; // blue-500
 const buttonBg = tokens.colors.component.button.primary.background;
 ```
 
@@ -221,61 +222,75 @@ const space: SpacingScale = 4;
 
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', margin: '32px 0' }}>
   <div style={{ 
-    background: 'rgba(0, 153, 255, 0.1)', 
-    border: '1px solid rgba(0, 153, 255, 0.3)',
+    background: 'hsl(var(--tf-blue-hs) 50% / 0.1)', 
+    border: '1px solid hsl(var(--tf-blue-hs) 50% / 0.3)',
     borderRadius: '12px',
     padding: '24px',
     textAlign: 'center',
   }}>
-    <div style={{ fontSize: '36px', fontWeight: '700', color: '#0099ff', marginBottom: '8px' }}>
+    <div style={{ fontSize: '36px', fontWeight: '700', color: 'hsl(var(--tf-blue-hs) 50%)', marginBottom: '8px' }}>
       150+
     </div>
-    <div style={{ color: '#b3b3b3', fontSize: '14px' }}>
+    <div style={{ color: 'hsl(var(--tf-neutral-hs) 70%)', fontSize: '14px' }}>
       Design Tokens
     </div>
   </div>
 
 <div
   style={{
-    background: 'rgba(0, 255, 238, 0.1)',
-    border: '1px solid rgba(0, 255, 238, 0.3)',
+    background: 'hsl(var(--tf-cyan-hs) 53% / 0.1)',
+    border: '1px solid hsl(var(--tf-cyan-hs) 53% / 0.3)',
     borderRadius: '12px',
     padding: '24px',
     textAlign: 'center',
   }}
 >
-  <div style={{ fontSize: '36px', fontWeight: '700', color: '#00ffee', marginBottom: '8px' }}>
+  <div
+    style={{
+      fontSize: '36px',
+      fontWeight: '700',
+      color: 'hsl(var(--tf-cyan-hs) 53%)',
+      marginBottom: '8px',
+    }}
+  >
     100%
   </div>
-  <div style={{ color: '#b3b3b3', fontSize: '14px' }}>Type Coverage</div>
+  <div style={{ color: 'hsl(var(--tf-neutral-hs) 70%)', fontSize: '14px' }}>Type Coverage</div>
 </div>
 
 <div
   style={{
-    background: 'rgba(0, 255, 170, 0.1)',
-    border: '1px solid rgba(0, 255, 170, 0.3)',
+    background: 'hsl(var(--tf-green-hs) 50% / 0.1)',
+    border: '1px solid hsl(var(--tf-green-hs) 50% / 0.3)',
     borderRadius: '12px',
     padding: '24px',
     textAlign: 'center',
   }}
 >
-  <div style={{ fontSize: '36px', fontWeight: '700', color: '#00ffaa', marginBottom: '8px' }}>
+  <div
+    style={{
+      fontSize: '36px',
+      fontWeight: '700',
+      color: 'hsl(var(--tf-green-hs) 50%)',
+      marginBottom: '8px',
+    }}
+  >
     7
   </div>
-  <div style={{ color: '#b3b3b3', fontSize: '14px' }}>Token Categories</div>
+  <div style={{ color: 'hsl(var(--tf-neutral-hs) 70%)', fontSize: '14px' }}>Token Categories</div>
 </div>
 
   <div style={{ 
-    background: 'rgba(0, 153, 255, 0.1)', 
-    border: '1px solid rgba(0, 153, 255, 0.3)',
+    background: 'hsl(var(--tf-blue-hs) 50% / 0.1)', 
+    border: '1px solid hsl(var(--tf-blue-hs) 50% / 0.3)',
     borderRadius: '12px',
     padding: '24px',
     textAlign: 'center',
   }}>
-    <div style={{ fontSize: '36px', fontWeight: '700', color: '#0099ff', marginBottom: '8px' }}>
+    <div style={{ fontSize: '36px', fontWeight: '700', color: 'hsl(var(--tf-blue-hs) 50%)', marginBottom: '8px' }}>
       WCAG AA
     </div>
-    <div style={{ color: '#b3b3b3', fontSize: '14px' }}>
+    <div style={{ color: 'hsl(var(--tf-neutral-hs) 70%)', fontSize: '14px' }}>
       Accessibility
     </div>
   </div>
@@ -328,15 +343,22 @@ frontend/src/design-system/
 <div
   style={{
     padding: '24px',
-    background: 'rgba(0, 153, 255, 0.05)',
-    border: '1px solid rgba(0, 153, 255, 0.2)',
+    background: 'hsl(var(--tf-blue-hs) 50% / 0.05)',
+    border: '1px solid hsl(var(--tf-blue-hs) 50% / 0.2)',
     borderRadius: '12px',
     marginTop: '48px',
   }}
 >
-  <p style={{ margin: 0, color: '#b3b3b3', fontSize: '14px', lineHeight: '1.6' }}>
-    <strong style={{ color: '#fff' }}>Built The TerraFusion Way:</strong> Excellence, not speed.
-    MIT/PhD-level engineering with comprehensive documentation, full type safety, and accessibility
-    built-in. No compromises, just world-class design infrastructure.
+  <p
+    style={{
+      margin: 0,
+      color: 'hsl(var(--tf-neutral-hs) 70%)',
+      fontSize: '14px',
+      lineHeight: '1.6',
+    }}
+  >
+    <strong style={{ color: 'hsl(var(--tf-neutral-hs) 100%)' }}>Built The TerraFusion Way:</strong>{' '}
+    Excellence, not speed. MIT/PhD-level engineering with comprehensive documentation, full type
+    safety, and accessibility built-in. No compromises, just world-class design infrastructure.
   </p>
 </div>
