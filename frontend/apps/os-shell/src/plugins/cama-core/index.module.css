@@ -7,7 +7,7 @@
 .title {
   font-weight: 700;
   margin-bottom: 6px;
-  color: #333;
+  color: hsl(var(--tf-neutral-hs) 20%);
 }
 .meta {
   opacity: 0.8;
@@ -17,12 +17,12 @@
 .meta button {
   margin-right: 8px;
   padding: 4px 8px;
-  background: #007acc;
+  background: hsl(var(--tf-blue-hs) 40%);
   color: white;
   border: none;
   border-radius: 3px;
   cursor: pointer;
 }
 .meta button:hover {
-  background: #005a9e;
+  background: hsl(var(--tf-blue-hs) 31%);
 }

@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 54,
+  "violationCount": 51,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -314,27 +314,6 @@
       "excerpt": "rgba(0,255,238,0.1)]'>"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\cama-core\\index.module.css",
-      "line": 10,
-      "column": 10,
-      "excerpt": "#333;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\cama-core\\index.module.css",
-      "line": 20,
-      "column": 15,
-      "excerpt": "#007acc;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\cama-core\\index.module.css",
-      "line": 27,
-      "column": 15,
-      "excerpt": "#005a9e;"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\providers\\TerraFusionExcellenceProvider.tsx",
       "line": 65,
@@ -384,5 +363,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:05:12.054Z"
+  "generatedAtIso": "2026-02-23T21:08:43.723Z"
 }
