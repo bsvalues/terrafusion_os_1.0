@@ -2,8 +2,8 @@
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
   "ok": false,
-  "scannedFileCount": 849,
-  "violationCount": 247,
+  "scannedFileCount": 850,
+  "violationCount": 240,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1154,55 +1154,6 @@
       "excerpt": "rgba(251,113,133,0.4)]'"
     },
     {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\SystemGptConsoleView.tsx",
-      "line": 396,
-      "column": 147,
-      "excerpt": "rgba(0,0,0,0.60)] backdrop-blur-xl'>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\SystemGptConsoleView.tsx",
-      "line": 399,
-      "column": 136,
-      "excerpt": "rgba(167,139,250,0.8)]'>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\SystemGptConsoleView.tsx",
-      "line": 456,
-      "column": 124,
-      "excerpt": "rgba(16,185,129,0.4)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\SystemGptConsoleView.tsx",
-      "line": 457,
-      "column": 112,
-      "excerpt": "rgba(244,63,94,0.4)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\SystemGptConsoleView.tsx",
-      "line": 476,
-      "column": 165,
-      "excerpt": "rgba(14,165,233,0.4)] disabled:cursor-not-allowed disabled:opacity-50'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\SystemGptConsoleView.tsx",
-      "line": 485,
-      "column": 181,
-      "excerpt": "rgba(217,70,239,0.4)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\SystemGptConsoleView.tsx",
-      "line": 1033,
-      "column": 167,
-      "excerpt": "rgba(0,0,0,0.8)]'>"
-    },
-    {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\index.tsx",
       "line": 23,
@@ -1735,5 +1686,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T02:27:13.603Z"
+  "generatedAtIso": "2026-02-23T17:21:30.186Z"
 }
