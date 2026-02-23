@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 31,
+  "violationCount": 29,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -146,20 +146,6 @@
       "excerpt": "rgba(52,211,153,0.25)]',"
     },
     {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptPolicyPanel.tsx",
-      "line": 126,
-      "column": 47,
-      "excerpt": "rgba(52,211,153,0.5)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptPolicyPanel.tsx",
-      "line": 127,
-      "column": 44,
-      "excerpt": "rgba(251,113,133,0.4)]'"
-    },
-    {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\index.tsx",
       "line": 23,
@@ -223,5 +209,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:43:15.337Z"
+  "generatedAtIso": "2026-02-23T21:46:42.650Z"
 }
