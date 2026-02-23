@@ -74,9 +74,9 @@ export const DesktopShell: React.FC = () => {
       <AppBar
         position='static'
         sx={{
-          background: 'rgba(11, 16, 32, 0.9)',
+          background: 'hsl(var(--tf-bg) / 0.9)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(0, 255, 238, 0.2)',
+          borderBottom: '1px solid hsl(var(--tf-accent) / 0.2)',
         }}
       >
         <Toolbar>
@@ -90,7 +90,7 @@ export const DesktopShell: React.FC = () => {
               background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))',
               color: 'var(--tf-bg-surface)',
               fontWeight: 'bold',
-              boxShadow: '0 0 20px rgba(0, 255, 238, 0.4)',
+              boxShadow: '0 0 20px hsl(var(--tf-accent) / 0.4)',
             }}
           >
             TF
@@ -164,16 +164,16 @@ export const DesktopShell: React.FC = () => {
               <Card
                 className='tf-card'
                 sx={{
-                  background: 'rgba(11, 16, 32, 0.8)',
+                  background: 'hsl(var(--tf-bg) / 0.8)',
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(0, 255, 238, 0.3)',
-                  boxShadow: '0 20px 40px rgba(10, 15, 28, 0.8), 0 0 60px rgba(0, 255, 238, 0.2)',
+                  border: '1px solid hsl(var(--tf-accent) / 0.3)',
+                  boxShadow: '0 20px 40px hsl(var(--tf-bg) / 0.8), 0 0 60px hsl(var(--tf-accent) / 0.2)',
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
                     borderColor: 'var(--tf-transcend-highlight)',
                     boxShadow:
-                      '0 25px 50px rgba(0, 229, 255, 0.15), 0 0 80px rgba(0, 255, 238, 0.4)',
+                      '0 25px 50px hsl(var(--tf-accent) / 0.15), 0 0 80px hsl(var(--tf-accent) / 0.4)',
                   },
                 }}
               >
@@ -194,7 +194,7 @@ export const DesktopShell: React.FC = () => {
                   <Typography
                     variant='body1'
                     sx={{
-                      color: 'rgba(255,255,255,0.9)',
+                      color: 'hsl(var(--tf-text) / 0.9)',
                       fontWeight: 500,
                     }}
                   >
@@ -214,9 +214,9 @@ export const DesktopShell: React.FC = () => {
             <Grid item xs={12} md={4}>
               <Card
                 sx={{
-                  background: 'rgba(255,255,255,0.1)',
+                  background: 'hsl(var(--tf-text) / 0.1)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255,255,255,0.2)',
+                  border: '1px solid hsl(var(--tf-text) / 0.2)',
                 }}
               >
                 <CardContent>
@@ -261,7 +261,7 @@ export const DesktopShell: React.FC = () => {
         PaperProps={{
           sx: {
             width: 300,
-            background: 'rgba(0,0,0,0.9)',
+            background: 'hsl(var(--tf-bg) / 0.9)',
             backdropFilter: 'blur(10px)',
           },
         }}

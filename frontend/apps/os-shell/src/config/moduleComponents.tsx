@@ -218,9 +218,9 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
   status = 'coming-soon',
 }) => {
   const statusConfig = {
-    'coming-soon': { color: 'bg-[#FFAA00]', label: 'Coming Soon' },
-    'in-development': { color: 'bg-[#0080FF]', label: 'In Development' },
-    beta: { color: 'bg-[#8844FF]', label: 'Beta' },
+    'coming-soon': { color: 'hsl(var(--tf-warning))', label: 'Coming Soon' },
+    'in-development': { color: 'hsl(var(--tf-info))', label: 'In Development' },
+    beta: { color: 'hsl(var(--tf-accent-2))', label: 'Beta' },
   };
 
   const { color, label } = statusConfig[status];
@@ -230,7 +230,7 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
       className='w-full h-full flex flex-col items-center justify-center text-white p-8 relative overflow-hidden'
       style={{
         background:
-          'linear-gradient(135deg, rgba(10, 14, 26, 0.95) 0%, rgba(20, 24, 36, 0.9) 50%, rgba(10, 14, 26, 0.95) 100%)',
+          'linear-gradient(135deg, hsl(var(--tf-bg) / 0.95) 0%, hsl(var(--tf-bg) / 0.9) 50%, hsl(var(--tf-bg) / 0.95) 100%)',
       }}
     >
       {/* Subtle grid pattern */}
@@ -238,8 +238,8 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
         className='absolute inset-0 opacity-[0.03] pointer-events-none'
         style={{
           backgroundImage: `
-            linear-gradient(rgba(0, 229, 255, 0.4) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 229, 255, 0.4) 1px, transparent 1px)
+            linear-gradient(hsl(var(--tf-accent) / 0.4) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(var(--tf-accent) / 0.4) 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px',
         }}
@@ -250,7 +250,7 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
         className='absolute top-0 left-0 w-[300px] h-[300px] opacity-20 pointer-events-none'
         style={{
           background:
-            'radial-gradient(circle at center, rgba(0, 229, 255, 0.3) 0%, transparent 70%)',
+            'radial-gradient(circle at center, hsl(var(--tf-accent) / 0.3) 0%, transparent 70%)',
         }}
       />
 
@@ -258,7 +258,7 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
       <div
         className='text-6xl mb-6 relative'
         style={{
-          filter: 'drop-shadow(0 0 20px rgba(0, 229, 255, 0.4))',
+          filter: 'drop-shadow(0 0 20px hsl(var(--tf-accent) / 0.4))',
         }}
       >
         {icon}
@@ -268,8 +268,8 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
       <h2
         className='text-2xl font-light mb-2'
         style={{
-          color: '#00E5FF',
-          textShadow: '0 0 20px rgba(0, 229, 255, 0.4)',
+          color: 'hsl(var(--tf-accent))',
+          textShadow: '0 0 20px hsl(var(--tf-accent) / 0.4)',
         }}
       >
         {name}
@@ -282,13 +282,13 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
       <div
         className='flex items-center gap-2 px-4 py-2 rounded-full'
         style={{
-          background: 'rgba(0, 229, 255, 0.1)',
-          border: '1px solid rgba(0, 229, 255, 0.2)',
+          background: 'hsl(var(--tf-accent) / 0.1)',
+          border: '1px solid hsl(var(--tf-accent) / 0.2)',
         }}
       >
         <div
-          className={`w-2 h-2 ${color} rounded-full animate-pulse`}
-          style={{ boxShadow: '0 0 10px currentColor' }}
+          className='w-2 h-2 rounded-full animate-pulse'
+          style={{ backgroundColor: color, boxShadow: '0 0 10px currentColor' }}
         />
         <span className='text-sm text-white/80'>{label}</span>
       </div>
@@ -304,19 +304,19 @@ const ModuleLoadingFallback: React.FC = () => (
   <div
     className='w-full h-full flex flex-col items-center justify-center'
     style={{
-      background: 'linear-gradient(135deg, rgba(10, 14, 26, 0.95) 0%, rgba(20, 24, 36, 0.9) 100%)',
+      background: 'linear-gradient(135deg, hsl(var(--tf-bg) / 0.95) 0%, hsl(var(--tf-bg) / 0.9) 100%)',
     }}
   >
     {/* Quantum spinner */}
     <div
       className='w-12 h-12 rounded-full animate-spin'
       style={{
-        border: '3px solid rgba(0, 229, 255, 0.15)',
-        borderTopColor: '#00E5FF',
-        boxShadow: '0 0 30px rgba(0, 229, 255, 0.3)',
+        border: '3px solid hsl(var(--tf-accent) / 0.15)',
+        borderTopColor: 'hsl(var(--tf-accent))',
+        boxShadow: '0 0 30px hsl(var(--tf-accent) / 0.3)',
       }}
     />
-    <p className='mt-4 text-sm' style={{ color: 'rgba(0, 229, 255, 0.7)' }}>
+    <p className='mt-4 text-sm' style={{ color: 'hsl(var(--tf-accent) / 0.7)' }}>
       Loading module...
     </p>
   </div>

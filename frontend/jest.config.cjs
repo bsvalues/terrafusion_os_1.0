@@ -42,7 +42,7 @@ const config = {
   // Transform files with ts-jest and import.meta handling
   transform: {
     '^.+\\.tsx?$': [
-      'ts-jest',
+      './jest-import-meta-transformer.cjs',
       {
         useESM: true,
         tsconfig: {

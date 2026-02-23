@@ -53,6 +53,10 @@ Government. Transcended. Beyond. | 1,008 AI Agents Demand Excellence.
     --tf-quantum-coherence: 0.97; /* AI system coherence level */
     --tf-neural-frequency: 1.618; /* Golden ratio for AI harmony */
 
+    /* File-local HS anchors for theme definitions */
+    --tf-neutral-hs: 0 0%;
+    --tf-dark-blue-hs: 222 47%;
+
     /* Dynamic Color Calculation using CSS calc() */
     --tf-primary-h: 207; /* Hue */
     --tf-primary-s: 100%; /* Saturation */
@@ -129,35 +133,35 @@ Government. Transcended. Beyond. | 1,008 AI Agents Demand Excellence.
 
   /* Advanced Dark/Light Mode with CSS Variables */
   [data-theme='light'] {
-    --tf-bg-primary: hsl(0 0% 100%);
-    --tf-bg-secondary: hsl(0 0% 98%);
-    --tf-text-primary: hsl(0 0% 9%);
-    --tf-text-secondary: hsl(0 0% 45%);
+    --tf-bg-primary: hsl(var(--tf-neutral-hs) 100%);
+    --tf-bg-secondary: hsl(var(--tf-neutral-hs) 98%);
+    --tf-text-primary: hsl(var(--tf-neutral-hs) 9%);
+    --tf-text-secondary: hsl(var(--tf-neutral-hs) 45%);
   }
 
   [data-theme='dark'] {
-    --tf-bg-primary: hsl(222 47% 11%);
-    --tf-bg-secondary: hsl(222 47% 16%);
-    --tf-text-primary: hsl(0 0% 95%);
-    --tf-text-secondary: hsl(0 0% 65%);
+    --tf-bg-primary: hsl(var(--tf-dark-blue-hs) 11%);
+    --tf-bg-secondary: hsl(var(--tf-dark-blue-hs) 16%);
+    --tf-text-primary: hsl(var(--tf-neutral-hs) 95%);
+    --tf-text-secondary: hsl(var(--tf-neutral-hs) 65%);
   }
 
   /* Auto-adaptive theming */
   @media (prefers-color-scheme: light) {
     :root:not([data-theme]) {
-      --tf-bg-primary: hsl(0 0% 100%);
-      --tf-bg-secondary: hsl(0 0% 98%);
-      --tf-text-primary: hsl(0 0% 9%);
-      --tf-text-secondary: hsl(0 0% 45%);
+      --tf-bg-primary: hsl(var(--tf-neutral-hs) 100%);
+      --tf-bg-secondary: hsl(var(--tf-neutral-hs) 98%);
+      --tf-text-primary: hsl(var(--tf-neutral-hs) 9%);
+      --tf-text-secondary: hsl(var(--tf-neutral-hs) 45%);
     }
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
-      --tf-bg-primary: hsl(222 47% 11%);
-      --tf-bg-secondary: hsl(222 47% 16%);
-      --tf-text-primary: hsl(0 0% 95%);
-      --tf-text-secondary: hsl(0 0% 65%);
+      --tf-bg-primary: hsl(var(--tf-dark-blue-hs) 11%);
+      --tf-bg-secondary: hsl(var(--tf-dark-blue-hs) 16%);
+      --tf-text-primary: hsl(var(--tf-neutral-hs) 95%);
+      --tf-text-secondary: hsl(var(--tf-neutral-hs) 65%);
     }
   }
 }

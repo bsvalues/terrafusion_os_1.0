@@ -235,9 +235,9 @@ export const ParcelContextIndicator: React.FC<ParcelContextIndicatorProps> = ({
           onClick={handleSelectOrChange}
           className={cn(
             'ml-1 px-2 py-0.5 rounded text-[10px] font-medium',
-            'bg-[var(--tf-transcend-highlight,#00e5ff)]/20',
-            'text-[var(--tf-transcend-highlight,#00e5ff)]',
-            'hover:bg-[var(--tf-transcend-highlight,#00e5ff)]/30',
+            'bg-[var(--tf-transcend-highlight)]/20',
+            'text-[var(--tf-transcend-highlight)]',
+            'hover:bg-[var(--tf-transcend-highlight)]/30',
             'transition-colors'
           )}
         >
@@ -265,19 +265,19 @@ export const ParcelContextIndicator: React.FC<ParcelContextIndicatorProps> = ({
       ref={recentsRef}
       className={cn(
         'relative flex items-center gap-2 px-2 py-1 rounded-md',
-        'bg-[var(--tf-transcend-highlight,#00e5ff)]/10',
-        'border border-[var(--tf-transcend-highlight,#00e5ff)]/30',
+        'bg-[var(--tf-transcend-highlight)]/10',
+        'border border-[var(--tf-transcend-highlight)]/30',
         'text-xs',
         className
       )}
     >
       {/* Parcel Icon */}
-      <span className='text-[var(--tf-transcend-highlight,#00e5ff)]'>📍</span>
+      <span className='text-[var(--tf-transcend-highlight)]'>📍</span>
 
       {/* Parcel ID Badge */}
       <span
         data-testid='parcel-context-id'
-        className={cn('font-mono font-medium', 'text-[var(--tf-transcend-highlight,#00e5ff)]')}
+        className={cn('font-mono font-medium', 'text-[var(--tf-transcend-highlight)]')}
       >
         {context.parcelId}
       </span>
@@ -378,10 +378,11 @@ const RecentsDropdown: React.FC<RecentsDropdownProps> = ({ recents, onSelect }) 
     <div
       data-testid='parcel-recents-dropdown'
       role='menu'
+      style={{ '--tf-pci-midnight-hs': '240 28%' } as React.CSSProperties}
       className={cn(
         'absolute top-full left-0 mt-1 z-50',
         'min-w-[180px] py-1 rounded-md shadow-lg',
-        'bg-[#1a1a2e] border border-white/10',
+        'bg-[hsl(var(--tf-pci-midnight-hs)_14%)] border border-white/10',
         'max-h-[200px] overflow-y-auto'
       )}
     >

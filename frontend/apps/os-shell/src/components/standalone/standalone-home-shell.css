@@ -41,8 +41,8 @@
 
 .standalone-fallback .standalone-shell__panel {
   /* Static background instead of glass effects */
-  background-color: var(--tf-surface-elevated, #1e1e2e);
-  border: 1px solid var(--tf-border-subtle, #3e3e4e);
+  background-color: var(--tf-surface-elevated);
+  border: 1px solid var(--tf-border-subtle);
   border-radius: 0.75rem;
 }
 
@@ -55,7 +55,7 @@
   flex-direction: column;
   gap: 0.75rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--tf-border-subtle, rgba(255, 255, 255, 0.1));
+  border-bottom: 1px solid var(--tf-border-subtle);
 }
 
 .standalone-shell__title-row {
@@ -71,7 +71,7 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  color: var(--tf-accent-cyan, #22d3ee);
+  color: var(--tf-accent-cyan);
   flex-shrink: 0;
 }
 
@@ -84,7 +84,7 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--tf-text-primary, #f0f0f0);
+  color: var(--tf-text-primary);
   line-height: 1.2;
 }
 
@@ -95,14 +95,14 @@
 }
 
 .standalone-shell__subtitle {
-  color: var(--tf-text-muted, #a0a0a0);
+  color: var(--tf-text-muted);
   font-size: 0.875rem;
   margin-left: auto;
 }
 
 .standalone-shell__description {
   margin: 0;
-  color: var(--tf-text-secondary, #c0c0c0);
+  color: var(--tf-text-secondary);
   font-size: 0.875rem;
   line-height: 1.5;
   max-width: 60ch;

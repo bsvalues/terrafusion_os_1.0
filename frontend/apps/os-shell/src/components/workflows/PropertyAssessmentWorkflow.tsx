@@ -37,13 +37,17 @@ import {
 import { styled } from '@mui/material/styles';
 
 const WorkflowCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.05)',
+  /* HS Channel Anchors (file-local, property-assessment-workflow palette) */
+  '--tf-paw-neutral-hs': '0 0%',
+  '--tf-paw-cyan-hs': '191 100%',
+  '--tf-paw-green-hs': '160 100%',
+  background: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.05)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(0, 210, 255, 0.1)',
+  border: '1px solid hsl(var(--tf-paw-cyan-hs) 50% / 0.1)',
   borderRadius: '16px',
   transition: 'all 0.3s ease',
   '&:hover': {
-    border: '1px solid rgba(0, 210, 255, 0.3)',
+    border: '1px solid hsl(var(--tf-paw-cyan-hs) 50% / 0.3)',
     transform: 'translateY(-2px)',
   },
 }));
@@ -263,7 +267,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                     },
                   }}
                 />
-                <Typography variant='body2' sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                <Typography variant='body2' sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)' }}>
                   Advancing county intelligence with 1,008 AI agents...
                 </Typography>
               </Box>
@@ -336,8 +340,8 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                   <Alert
                     severity='success'
                     sx={{
-                      background: 'rgba(0, 255, 170, 0.1)',
-                      border: '1px solid rgba(0, 255, 170, 0.3)',
+                      background: 'hsl(var(--tf-paw-green-hs) 50% / 0.1)',
+                      border: '1px solid hsl(var(--tf-paw-green-hs) 50% / 0.3)',
                       color: 'var(--tf-accent-success)',
                       '& .MuiAlert-icon': { color: 'var(--tf-accent-success)' },
                     }}
@@ -383,8 +387,8 @@ const PropertyAssessmentWorkflow: React.FC = () => {
             <Alert
               severity='info'
               sx={{
-                background: 'rgba(0, 210, 255, 0.1)',
-                border: '1px solid rgba(0, 210, 255, 0.3)',
+                background: 'hsl(var(--tf-paw-cyan-hs) 50% / 0.1)',
+                border: '1px solid hsl(var(--tf-paw-cyan-hs) 50% / 0.3)',
                 color: 'var(--tf-transcend-cyan)',
                 mb: 3,
                 '& .MuiAlert-icon': { color: 'var(--tf-transcend-cyan)' },
@@ -399,15 +403,15 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                 </Typography>
                 <Stack spacing={1}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Parcel ID:</Typography>
+                    <Typography sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)' }}>Parcel ID:</Typography>
                     <Typography sx={{ color: 'white' }}>{propertyData.parcelId}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Address:</Typography>
+                    <Typography sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)' }}>Address:</Typography>
                     <Typography sx={{ color: 'white' }}>{propertyData.address}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Type:</Typography>
+                    <Typography sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)' }}>Type:</Typography>
                     <Typography sx={{ color: 'white' }}>{propertyData.propertyType}</Typography>
                   </Box>
                 </Stack>
@@ -418,11 +422,11 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                 </Typography>
                 <Stack spacing={1}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Land Value:</Typography>
+                    <Typography sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)' }}>Land Value:</Typography>
                     <Typography sx={{ color: 'var(--tf-accent-success)' }}>{propertyData.landValue}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                    <Typography sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)' }}>
                       Improvement Value:
                     </Typography>
                     <Typography sx={{ color: 'var(--tf-transcend-cyan)' }}>
@@ -430,7 +434,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Total Value:</Typography>
+                    <Typography sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)' }}>Total Value:</Typography>
                     <Typography sx={{ color: 'var(--tf-accent-quantum)', fontWeight: 700 }}>
                       {propertyData.totalValue}
                     </Typography>
@@ -463,7 +467,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                       StepIconComponent={() => <StepIcon>{step.icon}</StepIcon>}
                       sx={{
                         '& .MuiStepLabel-label': {
-                          color: activeStep === index ? 'var(--tf-transcend-cyan)' : 'rgba(255, 255, 255, 0.7)',
+                          color: activeStep === index ? 'var(--tf-transcend-cyan)' : 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)',
                           fontWeight: activeStep === index ? 600 : 400,
                         },
                       }}
@@ -471,7 +475,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                       {step.label}
                     </StepLabel>
                     <StepContent>
-                      <Typography variant='body2' sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                      <Typography variant='body2' sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.6)' }}>
                         {step.description}
                       </Typography>
                     </StepContent>
@@ -498,9 +502,9 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                   variant='outlined'
                   sx={{
                     color: 'white',
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderColor: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.3)',
                     '&:hover': {
-                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                      borderColor: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.5)',
                     },
                   }}
                 >

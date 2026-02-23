@@ -51,14 +51,14 @@ export const PilotDemo: React.FC = () => {
       <style>{`
         .pilot-demo-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, hsl(var(--tf-info)) 0%, hsl(var(--tf-info) / 0.7) 100%);
         }
 
         .demo-header {
-          background: rgba(255, 255, 255, 0.95);
-          border-bottom: 3px solid #667eea;
+          background: hsl(var(--tf-text) / 0.95);
+          border-bottom: 3px solid hsl(var(--tf-info));
           padding: 2rem 0;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px hsl(var(--tf-bg) / 0.1);
         }
 
         .header-content {
@@ -69,13 +69,13 @@ export const PilotDemo: React.FC = () => {
 
         .demo-header h1 {
           margin: 0 0 0.5rem 0;
-          color: #1a202c;
+          color: hsl(var(--tf-surface));
           font-size: 2rem;
         }
 
         .tagline {
           margin: 0;
-          color: #718096;
+          color: hsl(var(--tf-muted));
           font-size: 1.1rem;
         }
 
@@ -86,22 +86,22 @@ export const PilotDemo: React.FC = () => {
         }
 
         .demo-info {
-          background: rgba(255, 255, 255, 0.95);
+          background: hsl(var(--tf-text) / 0.95);
           padding: 2rem;
           border-radius: 8px;
           margin-bottom: 2rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px hsl(var(--tf-bg) / 0.1);
         }
 
         .demo-info h2 {
           margin: 0 0 1rem 0;
-          color: #1a202c;
+          color: hsl(var(--tf-surface));
         }
 
         .demo-info ul {
           margin: 0;
           padding-left: 1.5rem;
-          color: #2d3748;
+          color: hsl(var(--tf-border));
         }
 
         .demo-info li {
@@ -110,34 +110,34 @@ export const PilotDemo: React.FC = () => {
         }
 
         .demo-info code {
-          background: #f7fafc;
+          background: hsl(var(--tf-text) / 0.03);
           padding: 0.2rem 0.5rem;
           border-radius: 4px;
           font-family: 'Courier New', monospace;
           font-size: 0.9em;
-          color: #667eea;
+          color: hsl(var(--tf-info));
         }
 
         .demo-footer {
-          background: rgba(255, 255, 255, 0.95);
+          background: hsl(var(--tf-text) / 0.95);
           padding: 1.5rem;
           border-radius: 8px;
           margin-top: 2rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px hsl(var(--tf-bg) / 0.1);
         }
 
         .meta {
           margin: 0.5rem 0;
-          color: #4a5568;
+          color: hsl(var(--tf-muted) / 0.6);
           font-size: 0.9rem;
         }
 
         .meta strong {
-          color: #2d3748;
+          color: hsl(var(--tf-border));
         }
 
         .meta code {
-          background: #f7fafc;
+          background: hsl(var(--tf-text) / 0.03);
           padding: 0.2rem 0.5rem;
           border-radius: 4px;
           font-family: 'Courier New', monospace;
@@ -145,7 +145,7 @@ export const PilotDemo: React.FC = () => {
         }
 
         .meta a {
-          color: #667eea;
+          color: hsl(var(--tf-info));
           text-decoration: none;
         }
 

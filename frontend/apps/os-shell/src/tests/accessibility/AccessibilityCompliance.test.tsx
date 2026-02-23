@@ -324,11 +324,25 @@ describe('Accessibility - Keyboard Navigation', () => {
 // TEST SUITE: COLOR CONTRAST (WCAG 2.1 AA - 4.5:1 minimum)
 // ═══════════════════════════════════════════════════════════════════════════════
 
+/**
+ * Resolved design-system token values for WCAG contrast computation.
+ * getContrastRatio() requires hex strings — these are the canonical
+ * hex equivalents of the corresponding design tokens.
+ */
+const RESOLVED_TOKENS = {
+  terraCyan: '#00FFFF',       // resolved-token-value: var(--tf-transcend-cyan)
+  terraMidnight: '#0A0E1A',   // resolved-token-value: var(--tf-bg-void)
+  terraSlate: '#1E293B',      // resolved-token-value: var(--terra-slate)
+  white: '#FFFFFF',           // resolved-token-value: var(--tf-text-primary)
+  errorRed: '#EF4444',        // resolved-token-value: var(--tf-status-error)
+  successGreen: '#10B981',    // resolved-token-value: var(--tf-status-success)
+} as const;
+
 describe('Accessibility - Color Contrast', () => {
   test('should meet WCAG AA contrast ratio for normal text (4.5:1)', () => {
     // TerraFusion Design System colors (resolved from variables)
-    const terraCyan = '#00FFFF'; // var(--tf-transcend-cyan)
-    const terraMidnight = '#0A0E1A'; // var(--tf-bg-void)
+    const terraCyan = RESOLVED_TOKENS.terraCyan;
+    const terraMidnight = RESOLVED_TOKENS.terraMidnight;
 
     const contrastRatio = getContrastRatio(terraCyan, terraMidnight);
 
@@ -339,8 +353,8 @@ describe('Accessibility - Color Contrast', () => {
   });
 
   test('should meet WCAG AA contrast ratio for large text (3:1)', () => {
-    const terraCyan = '#00FFFF'; // var(--tf-transcend-cyan)
-    const terraSlate = '#1E293B'; // var(--terra-slate)
+    const terraCyan = RESOLVED_TOKENS.terraCyan;
+    const terraSlate = RESOLVED_TOKENS.terraSlate;
 
     const contrastRatio = getContrastRatio(terraCyan, terraSlate);
 
@@ -352,12 +366,12 @@ describe('Accessibility - Color Contrast', () => {
 
   test('should validate all design system color combinations', () => {
     const colors = {
-      primary: '#00FFFF', // Terra-cyan
-      background: '#0A0E1A', // Terra-midnight
-      surface: '#1E293B', // Terra-slate
-      text: '#FFFFFF', // White
-      error: '#EF4444', // Red
-      success: '#10B981', // Green
+      primary: RESOLVED_TOKENS.terraCyan,
+      background: RESOLVED_TOKENS.terraMidnight,
+      surface: RESOLVED_TOKENS.terraSlate,
+      text: RESOLVED_TOKENS.white,
+      error: RESOLVED_TOKENS.errorRed,
+      success: RESOLVED_TOKENS.successGreen,
     };
 
     // Test primary on background

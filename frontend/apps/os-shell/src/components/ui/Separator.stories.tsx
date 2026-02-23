@@ -387,7 +387,7 @@ export const InNavigation: Story = {
               style={{
                 padding: '6px 10px',
                 backgroundColor: 'transparent',
-                border: '1px solid #2a2a2a',
+                border: '1px solid hsl(var(--tf-border))',
                 borderRadius: '4px',
                 color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
@@ -401,7 +401,7 @@ export const InNavigation: Story = {
               style={{
                 padding: '6px 10px',
                 backgroundColor: 'transparent',
-                border: '1px solid #2a2a2a',
+                border: '1px solid hsl(var(--tf-border))',
                 borderRadius: '4px',
                 color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
@@ -426,7 +426,7 @@ export const InNavigation: Story = {
               style={{
                 padding: '6px 10px',
                 backgroundColor: 'transparent',
-                border: '1px solid #2a2a2a',
+                border: '1px solid hsl(var(--tf-border))',
                 borderRadius: '4px',
                 color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
@@ -439,7 +439,7 @@ export const InNavigation: Story = {
               style={{
                 padding: '6px 10px',
                 backgroundColor: 'transparent',
-                border: '1px solid #2a2a2a',
+                border: '1px solid hsl(var(--tf-border))',
                 borderRadius: '4px',
                 color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
@@ -452,7 +452,7 @@ export const InNavigation: Story = {
               style={{
                 padding: '6px 10px',
                 backgroundColor: 'transparent',
-                border: '1px solid #2a2a2a',
+                border: '1px solid hsl(var(--tf-border))',
                 borderRadius: '4px',
                 color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
@@ -490,7 +490,7 @@ export const InNavigation: Story = {
               style={{
                 padding: '6px 12px',
                 backgroundColor: 'transparent',
-                border: '1px solid #2a2a2a',
+                border: '1px solid hsl(var(--tf-border))',
                 borderRadius: '4px',
                 color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
@@ -514,8 +514,8 @@ export const RealWorldCard: Story = {
     <div
       style={{
         maxWidth: '400px',
-        backgroundColor: '#1a1a1a',
-        border: '1px solid #2a2a2a',
+        backgroundColor: 'hsl(var(--tf-surface-2))',
+        border: '1px solid hsl(var(--tf-border))',
         borderRadius: '12px',
         overflow: 'hidden',
       }}
@@ -689,7 +689,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success) / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -717,7 +717,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success) / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -745,7 +745,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success) / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -773,7 +773,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success) / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -816,7 +816,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-error) / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -844,7 +844,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-error) / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -872,7 +872,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-error) / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -900,7 +900,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-error) / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -937,13 +937,13 @@ export const UsageGuidelines: Story = {
         <h4 className='font-semibold'>Code Examples</h4>
         <div
           style={{
-            backgroundColor: '#1a1a1a',
+            backgroundColor: 'hsl(var(--tf-surface-2))',
             padding: '20px',
             borderRadius: '8px',
             fontFamily: '"Fira Code", monospace',
             fontSize: '13px',
             overflow: 'auto',
-            border: '1px solid #2a2a2a',
+            border: '1px solid hsl(var(--tf-border))',
           }}
         >
           <pre
@@ -1002,17 +1002,17 @@ export const UsageGuidelines: Story = {
         <h4 className='font-semibold'>When to Use Separators</h4>
         <div
           style={{
-            backgroundColor: '#1a1a1a',
+            backgroundColor: 'hsl(var(--tf-surface-2))',
             padding: '20px',
             borderRadius: '8px',
-            border: '1px solid #2a2a2a',
+            border: '1px solid hsl(var(--tf-border))',
           }}
         >
           <table className='w-full border-collapse'>
             <thead>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-border))',
                 }}
               >
                 <th className='text-left font-semibold'>Use Case</th>
@@ -1023,7 +1023,7 @@ export const UsageGuidelines: Story = {
             <tbody>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-border))',
                 }}
               >
                 <td
@@ -1052,7 +1052,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-border))',
                 }}
               >
                 <td
@@ -1081,7 +1081,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-border))',
                 }}
               >
                 <td
@@ -1110,7 +1110,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-border))',
                 }}
               >
                 <td
@@ -1139,7 +1139,7 @@ export const UsageGuidelines: Story = {
               </tr>
               <tr
                 style={{
-                  borderBottom: '1px solid #2a2a2a',
+                  borderBottom: '1px solid hsl(var(--tf-border))',
                 }}
               >
                 <td
