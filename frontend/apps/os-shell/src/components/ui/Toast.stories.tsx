@@ -1,9 +1,9 @@
 import {
-  CheckCircledIcon,
-  CrossCircledIcon,
-  ExclamationTriangleIcon,
-  InfoCircledIcon,
-  ReloadIcon,
+    CheckCircledIcon,
+    CrossCircledIcon,
+    ExclamationTriangleIcon,
+    InfoCircledIcon,
+    ReloadIcon,
 } from '@radix-ui/react-icons';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { toast } from 'sonner';
@@ -159,7 +159,7 @@ export const BasicToasts: Story = {
  * ### Usage:
  * ```tsx
  * toast.success('Payment Successful', {
- *   description: 'Your order #12345 has been confirmed',
+ *   description: 'Your order ORD-12345 has been confirmed',
  * });
  *
  * toast.error('Upload Failed', {
@@ -181,7 +181,7 @@ export const WithDescriptions: Story = {
         <Button
           onClick={() =>
             toast.success('Payment Successful', {
-              description: 'Your order #12345 has been confirmed',
+              description: 'Your order ORD-12345 has been confirmed',
             })
           }
         >
@@ -739,7 +739,7 @@ export const RichContent: Story = {
  *    ```tsx
  *    // ✅ Include relevant details
  *    toast.success('Order placed', {
- *      description: 'Order #12345 will arrive in 3-5 days',
+ *      description: 'Order ORD-12345 will arrive in 3-5 days',
  *    });
  *    ```
  *

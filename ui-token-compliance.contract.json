@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 57,
+  "violationCount": 54,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -223,27 +223,6 @@
       "excerpt": "rgba(0,255,255,0.4)]',"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Toast.stories.tsx",
-      "line": 162,
-      "column": 31,
-      "excerpt": "#12345 has been confirmed',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Toast.stories.tsx",
-      "line": 184,
-      "column": 40,
-      "excerpt": "#12345 has been confirmed',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Toast.stories.tsx",
-      "line": 742,
-      "column": 29,
-      "excerpt": "#12345 will arrive in 3-5 days',"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\config\\elite-production-config.ts",
       "line": 112,
@@ -405,5 +384,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:01:10.655Z"
+  "generatedAtIso": "2026-02-23T21:05:12.054Z"
 }
