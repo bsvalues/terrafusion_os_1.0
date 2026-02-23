@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 123,
+  "violationCount": 119,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -18,34 +18,6 @@
       "line": 124,
       "column": 29,
       "excerpt": "rgba(6, 182, 212, 0.2)'\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\workflow\\VisualWorkflowDesigner.css",
-      "line": 20,
-      "column": 15,
-      "excerpt": "hsl(240 38% 16% / 0.95);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\workflow\\VisualWorkflowDesigner.css",
-      "line": 209,
-      "column": 26,
-      "excerpt": "hsl(24 100% 50% / 0.4);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\workflow\\VisualWorkflowDesigner.css",
-      "line": 233,
-      "column": 49,
-      "excerpt": "hsl(208 100% 50% / 0.05) 0%, transparent 70%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\components\\workflow\\VisualWorkflowDesigner.css",
-      "line": 239,
-      "column": 15,
-      "excerpt": "hsl(240 38% 16% / 0.95);"
     },
     {
       "kind": "RAW_HEX",
@@ -867,5 +839,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T19:18:30.988Z"
+  "generatedAtIso": "2026-02-23T19:27:54.829Z"
 }

@@ -5,7 +5,7 @@
   width: 100vw;
   background: linear-gradient(
     135deg,
-    hsl(240 44% 7%) 0%,
+    hsl(var(--tf-neutral-hs) 7%) 0%,
     var(--tf-surface-darker) 50%,
     var(--tf-surface-darker) 100%
   );
@@ -17,7 +17,7 @@
 /* Control Panel */
 .workflow-controls {
   width: 320px;
-  background: hsl(240 38% 16% / 0.95);
+  background: hsl(var(--tf-neutral-hs) 16% / 0.95);
   border-right: 2px solid var(--success-green);
   padding: 20px;
   overflow-y: auto;
@@ -90,7 +90,7 @@
 }
 
 .category {
-  background: hsl(208 100% 50% / 0.2);
+  background: hsl(var(--tf-blue-hs) 50% / 0.2);
   color: hsl(var(--tf-sky-blue-hs));
   padding: 2px 8px;
   border-radius: 12px;
@@ -206,12 +206,12 @@
 
 .simulation-controls button:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 5px 20px hsl(24 100% 50% / 0.4);
+  box-shadow: 0 5px 20px hsl(var(--tf-amber-hs) 50% / 0.4);
 }
 
 .simulation-controls button:disabled {
-  background: hsl(0 0% 27% / 0.8);
-  color: hsl(0 0% 60%);
+  background: hsl(var(--tf-neutral-hs) 27% / 0.8);
+  color: hsl(var(--tf-neutral-hs) 60%);
   cursor: not-allowed;
 }
 
@@ -230,13 +230,17 @@
 .workflow-canvas {
   flex: 1;
   position: relative;
-  background: radial-gradient(circle at center, hsl(208 100% 50% / 0.05) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    hsl(var(--tf-blue-hs) 50% / 0.05) 0%,
+    transparent 70%
+  );
 }
 
 /* Properties Panel */
 .properties-panel {
   width: 300px;
-  background: hsl(240 38% 16% / 0.95);
+  background: hsl(var(--tf-neutral-hs) 16% / 0.95);
   border-left: 2px solid var(--warning-amber);
   padding: 20px;
   overflow-y: auto;
@@ -292,7 +296,7 @@
 }
 
 .node-type.process {
-  background: hsl(208 100% 50% / 0.2);
+  background: hsl(var(--tf-blue-hs) 50% / 0.2);
   color: var(--tf-network-blue);
 }
 
@@ -302,12 +306,12 @@
 }
 
 .node-type.approval {
-  background: hsl(24 100% 50% / 0.2);
+  background: hsl(var(--tf-amber-hs) 50% / 0.2);
   color: var(--tf-retro-orange);
 }
 
 .node-type.notification {
-  background: hsl(257 100% 77% / 0.2);
+  background: hsl(var(--tf-blue-hs) 77% / 0.2);
   color: var(--tf-accent-purple);
 }
 
@@ -371,7 +375,7 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: hsl(240 38% 16% / 0.95);
+  background: hsl(var(--tf-neutral-hs) 16% / 0.95);
   border: 2px solid hsl(var(--tf-sky-blue-hs));
   border-radius: 15px;
   padding: 20px;
