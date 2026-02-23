@@ -13,7 +13,7 @@ const badgeVariants = cva(
         warning: 'border-transparent bg-yellow-600 text-white shadow hover:bg-yellow-700',
         error: 'border-transparent bg-red-600 text-white shadow hover:bg-red-700',
         quantum:
-          'border-terra-cyan bg-gradient-to-r from-terra-cyan/20 to-terra-blue/20 text-terra-cyan shadow-lg hover:shadow-[0_0_10px_rgba(0,255,255,0.4)]',
+          'border-terra-cyan bg-gradient-to-r from-terra-cyan/20 to-terra-blue/20 text-terra-cyan shadow-lg hover:shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.4)]',
         secondary:
           'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
         destructive:

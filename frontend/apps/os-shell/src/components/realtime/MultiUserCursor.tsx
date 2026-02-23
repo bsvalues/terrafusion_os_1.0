@@ -81,8 +81,8 @@ function calculateCursorCoordinates(
   const charWidth = 8.4; // Approximate width for monospace characters
 
   // Calculate position relative to cell
-  const x = textRect.left - cellRect.left + (position.column * charWidth);
-  const y = textRect.top - cellRect.top + (position.line * lineHeight);
+  const x = textRect.left - cellRect.left + position.column * charWidth;
+  const y = textRect.top - cellRect.top + position.line * lineHeight;
 
   return { x, y };
 }
@@ -141,7 +141,7 @@ export function MultiUserCursor({
   return (
     <div
       ref={cursorRef}
-      className="multi-user-cursor absolute z-50 pointer-events-none"
+      className='multi-user-cursor absolute z-50 pointer-events-none'
       style={{
         left: `${coordinates.x}px`,
         top: `${coordinates.y}px`,
@@ -150,7 +150,7 @@ export function MultiUserCursor({
     >
       {/* Cursor Line */}
       <div
-        className="cursor-line"
+        className='cursor-line'
         style={{
           width: '2px',
           height: '20px',
@@ -163,20 +163,20 @@ export function MultiUserCursor({
       {/* User Label */}
       {showLabel && (
         <div
-          className="cursor-label absolute top-0 left-2 whitespace-nowrap"
+          className='cursor-label absolute top-0 left-2 whitespace-nowrap'
           style={{
             transform: 'translateY(-100%)',
             marginBottom: '2px',
           }}
         >
           <Badge
-            variant="default"
+            variant='default'
             style={{
               backgroundColor: userColor,
               color: 'var(--tf-void-black)',
               fontSize: '10px',
               padding: '2px 6px',
-              boxShadow: `0 2px 4px rgba(0, 0, 0, 0.2)`,
+              boxShadow: `0 2px 4px hsl(var(--tf-neutral-hs) 0% / 0.2)`,
             }}
           >
             {userName}
@@ -186,7 +186,7 @@ export function MultiUserCursor({
 
       {/* Cursor Glow Effect */}
       <div
-        className="cursor-glow absolute top-0 left-0"
+        className='cursor-glow absolute top-0 left-0'
         style={{
           width: '8px',
           height: '8px',
@@ -200,16 +200,19 @@ export function MultiUserCursor({
 
       <style jsx>{`
         @keyframes cursor-blink {
-          0%, 49% {
+          0%,
+          49% {
             opacity: 1;
           }
-          50%, 100% {
+          50%,
+          100% {
             opacity: 0.3;
           }
         }
 
         @keyframes cursor-pulse {
-          0%, 100% {
+          0%,
+          100% {
             transform: translate(-3px, -4px) scale(1);
             opacity: 0.3;
           }
@@ -242,7 +245,7 @@ export function MultiUserCursorOverlay({
   showLabels = true,
 }: MultiUserCursorOverlayProps) {
   return (
-    <div className="multi-user-cursor-overlay absolute inset-0 pointer-events-none">
+    <div className='multi-user-cursor-overlay absolute inset-0 pointer-events-none'>
       {Array.from(cursors.entries()).map(([userName, position]) => {
         // Don't show current user's cursor
         if (userName === currentUserName) return null;

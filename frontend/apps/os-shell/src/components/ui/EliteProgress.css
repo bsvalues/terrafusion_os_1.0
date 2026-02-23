@@ -18,5 +18,5 @@
 }
 
 .elite-progress-glow {
-  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  filter: drop-shadow(0 0 10px hsl(var(--tf-cyan-hs) 50% / 0.5));
 }

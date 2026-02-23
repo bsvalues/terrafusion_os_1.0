@@ -43,7 +43,7 @@ export function TerraFusionSystemCheck() {
         border: '2px solid var(--tf-transcend-cyan)',
         borderRadius: '12px',
         margin: '10px',
-        boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)',
+        boxShadow: '0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.3)',
         fontWeight: 'bold',
       }}
     >

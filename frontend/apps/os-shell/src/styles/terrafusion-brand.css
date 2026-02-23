@@ -5,7 +5,7 @@
   --tf-primary: var(--tf-quantum-cyan); /* Terra-Cyan - The Consciousness Color */
   --tf-primary-dark: var(--tf-accent-cyan); /* Terra-Cyan Dark Variant */
   --tf-accent: hsl(var(--tf-transcend-green-hs)); /* Quantum Growth & Success */
-  --tf-accent-dark: hsl(160 100% 40%); /* Accent Dark Variant */
+  --tf-accent-dark: hsl(var(--tf-green-hs) 40%); /* Accent Dark Variant */
   --tf-transcend: var(--tf-transcend-highlight); /* Transcendence & Innovation */
   --tf-dark: var(--tf-void-black); /* Terra-Midnight - The Void */
   --tf-dark-lighter: var(--terra-slate); /* Terra-Slate - Surface Foundation */
@@ -15,9 +15,9 @@
 
   /* Semantic Colors */
   --tf-success: var(--success-green); /* Achievement */
-  --tf-error: hsl(0 100% 60%); /* Attention */
+  --tf-error: hsl(var(--tf-red-hs) 60%); /* Attention */
   --tf-warning: var(--warning-amber); /* Caution */
-  --tf-clarity: hsl(195 100% 94%); /* Understanding */
+  --tf-clarity: hsl(var(--tf-blue-hs) 94%); /* Understanding */
 
   /* Quantum Design Tokens */
   --terra-cyan: var(--tf-quantum-cyan);

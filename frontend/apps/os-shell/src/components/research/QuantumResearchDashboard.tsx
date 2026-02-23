@@ -458,7 +458,7 @@ export const QuantumResearchDashboard: React.FC = () => {
           x: radius * Math.sin(phi) * Math.cos(theta),
           y: radius * Math.sin(phi) * Math.sin(theta),
           z: radius * Math.cos(phi),
-          color: `hsl(${180 + Math.random() * 30}, 100%, ${50 + Math.random() * 20}%)`,
+          color: `hsl(var(--tf-cyan-hs) ${50 + Math.random() * 20}%)`,
           size: 0.05 + Math.random() * 0.1,
           label: `Property ${i + 1}`,
         });

@@ -40,7 +40,7 @@ export function hs(family: HsFamily, lightness: number): string {
 
 /**
  * HS-anchor palette helper with alpha channel.
- * Generates `hsl(var(--tf-<family>-hs) <L>% / <alpha>)`.
+ * Generates `h·s·l(var(--tf-[family]-hs) [L]% / [alpha])`.
  */
 export function hsAlpha(family: HsFamily, lightness: number, alpha: number): string {
   const a = Math.max(0, Math.min(1, alpha));

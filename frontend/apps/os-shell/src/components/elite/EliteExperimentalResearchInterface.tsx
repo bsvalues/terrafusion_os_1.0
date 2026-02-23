@@ -615,7 +615,7 @@ const EliteExperimentalResearchInterface: React.FC = () => {
                           key={node.id}
                           className='w-3 h-3 rounded-full terra-glow'
                           style={{
-                            backgroundColor: `rgba(0, 255, 255, ${node.consciousnessLevel || 0.5})`,
+                            backgroundColor: `hsl(var(--tf-cyan-hs) 50% / ${node.consciousnessLevel || 0.5})`,
                             opacity: node.consciousnessLevel || 0.5,
                           }}
                           title={`Node ${node.id}: ${((node.consciousnessLevel || 0) * 100).toFixed(1)}%`}

@@ -20,7 +20,7 @@ if (import.meta.env.DEV) {
   document.documentElement.classList.add('reduce-motion-force');
   console.log(
     '%c[TerraFusion] Motion reduced in dev mode. Run: document.documentElement.classList.remove("reduce-motion-force") to preview animations.',
-    'color: #00e5ff'
+    'color: hsl(var(--tf-cyan-hs) 50%)'
   );
 }
 

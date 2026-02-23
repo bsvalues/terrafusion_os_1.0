@@ -6,14 +6,14 @@
 
 import React, { useState } from 'react';
 import {
-  getPlaygroundHealth,
-  getPlaygroundRun,
-  listPlaygroundRuns,
-  listPlaygroundScenarios,
-  startPlaygroundScenario,
-  type PlaygroundHealth,
-  type PlaygroundRun,
-  type PlaygroundScenario,
+    getPlaygroundHealth,
+    getPlaygroundRun,
+    listPlaygroundRuns,
+    listPlaygroundScenarios,
+    startPlaygroundScenario,
+    type PlaygroundHealth,
+    type PlaygroundRun,
+    type PlaygroundScenario,
 } from '../../services/PlaygroundEnvironmentService';
 
 type TestResult = {
@@ -184,7 +184,7 @@ export const PlaygroundTester: React.FC = () => {
           className={`px-8 py-3 rounded-full font-semibold uppercase transition-all duration-300 ${
             isRunning
               ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              : 'terra-gradient-quantum text-white hover:shadow-[0_0_30px_rgba(0,255,255,0.5)] hover:-translate-y-1'
+              : 'terra-gradient-quantum text-white hover:shadow-[0_0_30px_hsl(var(--tf-cyan-hs)_50%_/_0.5)] hover:-translate-y-1'
           }`}
         >
           {isRunning ? '⏳ Running Tests...' : '🚀 Run All Tests'}
@@ -261,14 +261,18 @@ export const PlaygroundTester: React.FC = () => {
       {/* Performance Metrics */}
       {testResults.some((r) => r.duration) && (
         <div className='mt-6 p-4 terra-glass rounded-lg border border-[var(--tf-transcend-highlight)]/20'>
-          <h3 className='text-sm font-semibold text-[var(--tf-transcend-highlight)] mb-2'>⚡ Performance Metrics</h3>
+          <h3 className='text-sm font-semibold text-[var(--tf-transcend-highlight)] mb-2'>
+            ⚡ Performance Metrics
+          </h3>
           <div className='grid grid-cols-2 gap-2 text-xs'>
             {testResults
               .filter((r) => r.duration)
               .map((test, index) => (
                 <div key={index} className='flex justify-between text-gray-300'>
                   <span>{test.name}:</span>
-                  <span className='font-mono text-[var(--tf-accent-success)]'>{test.duration}ms</span>
+                  <span className='font-mono text-[var(--tf-accent-success)]'>
+                    {test.duration}ms
+                  </span>
                 </div>
               ))}
             {testResults.filter((r) => r.duration).length > 0 && (
