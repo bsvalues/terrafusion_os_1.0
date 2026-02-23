@@ -100,29 +100,29 @@ export const AIHealthStatusChip: React.FC<AIHealthStatusChipProps> = ({
     switch (level) {
       case 'healthy':
         return {
-          bg: 'rgba(0, 255, 136, 0.15)',
-          border: 'rgba(0, 255, 136, 0.5)',
+          bg: 'hsl(var(--tf-green-hs) 50% / 0.15)',
+          border: 'hsl(var(--tf-green-hs) 50% / 0.5)',
           text: 'var(--success-green)',
-          glow: '0 0 10px rgba(0, 255, 136, 0.3)',
+          glow: '0 0 10px hsl(var(--tf-green-hs) 50% / 0.3)',
         };
       case 'degraded':
         return {
-          bg: 'rgba(255, 200, 0, 0.15)',
-          border: 'rgba(255, 200, 0, 0.5)',
+          bg: 'hsl(var(--tf-amber-hs) 50% / 0.15)',
+          border: 'hsl(var(--tf-amber-hs) 50% / 0.5)',
           text: 'var(--tf-warning-amber)',
-          glow: '0 0 10px rgba(255, 200, 0, 0.3)',
+          glow: '0 0 10px hsl(var(--tf-amber-hs) 50% / 0.3)',
         };
       case 'unhealthy':
         return {
-          bg: 'rgba(255, 80, 80, 0.15)',
-          border: 'rgba(255, 80, 80, 0.5)',
+          bg: 'hsl(var(--tf-red-hs) 50% / 0.15)',
+          border: 'hsl(var(--tf-red-hs) 50% / 0.5)',
           text: 'var(--tf-error-red)',
-          glow: '0 0 10px rgba(255, 80, 80, 0.3)',
+          glow: '0 0 10px hsl(var(--tf-red-hs) 50% / 0.3)',
         };
       default:
         return {
-          bg: 'rgba(128, 128, 128, 0.15)',
-          border: 'rgba(128, 128, 128, 0.5)',
+          bg: 'hsl(var(--tf-neutral-hs) 50% / 0.15)',
+          border: 'hsl(var(--tf-neutral-hs) 50% / 0.5)',
           text: 'var(--gray-400)',
           glow: 'none',
         };
@@ -199,7 +199,7 @@ export const AIHealthStatusChip: React.FC<AIHealthStatusChipProps> = ({
         <span
           style={{
             fontSize: '0.8rem',
-            color: 'rgba(0, 255, 255, 0.7)',
+            color: 'hsl(var(--tf-cyan-hs) 50% / 0.7)',
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
           }}
