@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 60,
+  "violationCount": 57,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -123,27 +123,6 @@
       "line": 618,
       "column": 47,
       "excerpt": "rgba(0, 255, 255, ${node.consciousnessLevel || 0.5})`,"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\ProgressiveTerraFusionTest.css",
-      "line": 9,
-      "column": 10,
-      "excerpt": "#ffffff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\ProgressiveTerraFusionTest.css",
-      "line": 32,
-      "column": 10,
-      "excerpt": "#ffffff;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\ProgressiveTerraFusionTest.css",
-      "line": 49,
-      "column": 10,
-      "excerpt": "#ffffff;"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -426,5 +405,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T20:57:58.704Z"
+  "generatedAtIso": "2026-02-23T21:01:10.655Z"
 }
