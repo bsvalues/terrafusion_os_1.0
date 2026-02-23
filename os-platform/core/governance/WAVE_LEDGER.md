@@ -30,6 +30,10 @@ A vitest enforces this constraint automatically.
   - terrafusion-brand-compliant.css — 0→0 (guard only)
   - terrafusion-advanced-architecture.css — 0→0 (guard only)
 
+## 7-tier wave
+
+- Phase 115 — 7fb410ef7 — TerraSphere.css — 7→0
+
 ## 8-tier wave
 
 - Wave 8-tier Phase 1 — c890d03e6 — UniversalTranslationInterface.tsx — 8→0
