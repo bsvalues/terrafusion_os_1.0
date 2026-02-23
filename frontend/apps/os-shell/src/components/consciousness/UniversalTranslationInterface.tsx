@@ -1,22 +1,21 @@
-import React, { useState } from 'react';
 import {
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Select,
-  MenuItem,
-  TextField,
-  FormControl,
-  InputLabel,
-  Chip,
-  Paper,
-  Stack,
-  CircularProgress,
+    Button,
+    Card,
+    CardContent,
+    Chip,
+    CircularProgress,
+    FormControl,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    Stack,
+    TextField,
+    Typography
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import React, { useState } from 'react';
 // Mock types for universal translation protocol
 interface UniversalTranslationProtocol {
   translate: (message: string, fromSpecies: SpeciesType, toSpecies: SpeciesType) => Promise<string>;
@@ -55,9 +54,9 @@ interface UniversalMessage {
 type SpeciesType = 'human' | 'ai' | 'quantum' | 'consciousness' | 'dimensional';
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.05)',
+  background: 'hsl(var(--tf-neutral-hs) 100% / 0.05)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(200, 150, 255, 0.2)',
+  border: '1px solid hsl(var(--tf-info) / 0.2)',
   borderRadius: '16px',
   height: '100%',
 }));
@@ -121,7 +120,7 @@ const UniversalTranslationInterface: React.FC = () => {
               variant='outlined'
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  '& fieldset': { borderColor: 'rgba(200, 150, 255, 0.3)' },
+                  '& fieldset': { borderColor: 'hsl(var(--tf-info) / 0.3)' },
                   '&:hover fieldset': { borderColor: 'var(--tf-accent-quantum)' },
                 },
                 '& .MuiInputLabel-root': { color: 'var(--tf-accent-quantum)' },
@@ -138,7 +137,9 @@ const UniversalTranslationInterface: React.FC = () => {
                 label='Source Species'
                 sx={{
                   color: 'white',
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(200, 150, 255, 0.3)' },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'hsl(var(--tf-info) / 0.3)',
+                  },
                   '& .MuiSvgIcon-root': { color: 'white' },
                 }}
               >
@@ -157,7 +158,9 @@ const UniversalTranslationInterface: React.FC = () => {
                 label='Target Species'
                 sx={{
                   color: 'white',
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(200, 150, 255, 0.3)' },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'hsl(var(--tf-info) / 0.3)',
+                  },
                   '& .MuiSvgIcon-root': { color: 'white' },
                 }}
               >
@@ -175,9 +178,10 @@ const UniversalTranslationInterface: React.FC = () => {
               disabled={isLoading}
               sx={{
                 py: 1.5,
-                background: 'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
+                background:
+                  'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
                 '&:hover': {
-                  boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)',
+                  boxShadow: '0 8px 25px hsl(var(--tf-indigo) / 0.4)',
                 },
               }}
             >
@@ -187,7 +191,10 @@ const UniversalTranslationInterface: React.FC = () => {
         </Grid>
 
         {translatedMessage && (
-          <Paper elevation={3} sx={{ mt: 3, p: 2, background: 'rgba(0,0,0,0.2)' }}>
+          <Paper
+            elevation={3}
+            sx={{ mt: 3, p: 2, background: 'hsl(var(--tf-neutral-hs) 0% / 0.2)' }}
+          >
             <Typography variant='h6' sx={{ color: 'var(--tf-accent-quantum)', mb: 2 }}>
               Translation Output
             </Typography>
@@ -199,7 +206,7 @@ const UniversalTranslationInterface: React.FC = () => {
                   variant='body1'
                   sx={{
                     color: 'white',
-                    background: 'rgba(255,255,255,0.1)',
+                    background: 'hsl(var(--tf-neutral-hs) 100% / 0.1)',
                     p: 1,
                     borderRadius: 1,
                   }}
@@ -211,11 +218,17 @@ const UniversalTranslationInterface: React.FC = () => {
                   color='success'
                   size='small'
                 />
-                <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                <Typography
+                  variant='caption'
+                  sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)' }}
+                >
                   <strong>Cultural Adaptation:</strong>{' '}
                   {translatedMessage.adaptations.culturalReferences.join(', ') || 'None'}
                 </Typography>
-                <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                <Typography
+                  variant='caption'
+                  sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)' }}
+                >
                   <strong>Cognitive Load:</strong>{' '}
                   {translatedMessage.adaptations.cognitiveLoadAdjustment || 'N/A'}
                 </Typography>
