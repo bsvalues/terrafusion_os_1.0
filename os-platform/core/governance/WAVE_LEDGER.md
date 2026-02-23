@@ -35,6 +35,15 @@ A vitest enforces this constraint automatically.
 - Phase 115 — 3bda5ea07 — TerraSphere.css — 7→0
 - Phase 116 — 7f645ea6b — standalone-home-shell.css — 7→0
 
+## CSS micro-batch 2 (non-tiered maintenance)
+
+- Phase 117 — PENDING — micro-batch CSS (5 files) — 10→0
+  - ProgressiveTerraFusionTest.css — 3→0
+  - index.module.css (cama-core) — 3→0
+  - colors.stories.css — 2→0
+  - EliteProgress.css — 1→0
+  - OSStatusBadge.module.css — 1→0
+
 ## 8-tier wave
 
 - Wave 8-tier Phase 1 — c890d03e6 — UniversalTranslationInterface.tsx — 8→0

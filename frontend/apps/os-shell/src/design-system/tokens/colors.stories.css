@@ -1,3 +1,8 @@
+/* HS Channel Anchors (file-local, colors-stories palette) */
+:root {
+  --tf-cs-neutral-hs: 0 0%;
+}
+
 .tf-color-swatch {
   display: inline-flex;
   flex-direction: column;
@@ -6,7 +11,7 @@
 }
 .tf-color-swatch-bg {
   border-radius: 8px; /* tokens.radius.md fallback */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); /* tokens.shadows.box.md fallback */
+  box-shadow: 0 2px 8px hsl(var(--tf-cs-neutral-hs) 0% / 0.12); /* tokens.shadows.box.md fallback */
   width: 100%;
   height: 40px;
 }
@@ -17,7 +22,7 @@
 }
 .tf-color-swatch-value {
   font-family: monospace;
-  color: #b0b0b0;
+  color: hsl(var(--tf-cs-neutral-hs) 69%);
 }
 .tf-color-scale {
   margin-bottom: 32px;

@@ -1,4 +1,10 @@
 /* Championship-level styles for ProgressiveTerraFusionTest */
+
+/* HS Channel Anchors (file-local, ProgressiveTerraFusionTest palette) */
+:root {
+  --tf-ptf-white-hs: 0 0%;
+}
+
 .tf-progressive-test-fixed-bg {
   position: fixed;
   top: 0;
@@ -6,7 +12,7 @@
   width: 100vw;
   height: 100vh;
   background: var(--tf-void-black);
-  color: #ffffff;
+  color: hsl(var(--tf-ptf-white-hs) 100%);
   overflow: auto;
 }
 .tf-progressive-test-container {
@@ -29,7 +35,7 @@
   font-size: 1.1rem;
 }
 .tf-progressive-test-white {
-  color: #ffffff;
+  color: hsl(var(--tf-ptf-white-hs) 100%);
 }
 .tf-progressive-test-btn {
   padding: 1rem 2rem;
@@ -46,5 +52,5 @@
 }
 .tf-progressive-test-btn-red {
   background: var(--error-red);
-  color: #ffffff;
+  color: hsl(var(--tf-ptf-white-hs) 100%);
 }
