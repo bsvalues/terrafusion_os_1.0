@@ -321,7 +321,7 @@ const GovernmentArchitecture: React.FC = () => {
         {/* Core Architecture */}
         <div
           style={{
-            background: 'rgba(30, 40, 60, 0.95)',
+            background: 'hsl(var(--tf-neutral-hs) 18% / 0.95)',
             border: '2px solid var(--tf-network-blue)',
             borderRadius: '15px',
             padding: '25px',
@@ -335,7 +335,7 @@ const GovernmentArchitecture: React.FC = () => {
 
           <div
             style={{
-              background: 'rgba(10, 14, 39, 0.9)',
+              background: 'hsl(var(--tf-neutral-hs) 10% / 0.9)',
               borderRadius: '10px',
               padding: '15px',
               margin: '15px 0',
@@ -402,7 +402,7 @@ public class TerraFusionLauncher {
         {/* Security Framework */}
         <div
           style={{
-            background: 'rgba(30, 40, 60, 0.95)',
+            background: 'hsl(var(--tf-neutral-hs) 18% / 0.95)',
             border: '2px solid var(--tf-network-blue)',
             borderRadius: '15px',
             padding: '25px',
@@ -469,7 +469,7 @@ public class TerraFusionLauncher {
       {/* Deployment Flow */}
       <div
         style={{
-          background: 'rgba(10, 14, 39, 0.95)',
+          background: 'hsl(var(--tf-neutral-hs) 10% / 0.95)',
           border: '2px solid var(--tf-accent-warning)',
           borderRadius: '15px',
           padding: '30px',
@@ -532,9 +532,9 @@ public class TerraFusionLauncher {
             <div
               key={index}
               style={{
-                background: swarmActive ? 'rgba(79, 195, 247, 0.3)' : 'rgba(79, 195, 247, 0.1)',
+                background: swarmActive ? 'hsl(var(--tf-blue-hs) 64% / 0.3)' : 'hsl(var(--tf-blue-hs) 64% / 0.1)',
                 transform: swarmActive ? 'scale(1.05)' : 'scale(1)',
-                boxShadow: swarmActive ? '0 5px 20px rgba(79, 195, 247, 0.5)' : 'none',
+                boxShadow: swarmActive ? '0 5px 20px hsl(var(--tf-blue-hs) 64% / 0.5)' : 'none',
               }}
               className='text-center'
             >
@@ -564,7 +564,7 @@ public class TerraFusionLauncher {
       {/* Module Ecosystem */}
       <div
         style={{
-          background: 'rgba(30, 40, 60, 0.95)',
+          background: 'hsl(var(--tf-neutral-hs) 18% / 0.95)',
           border: '2px solid var(--tf-network-blue)',
           borderRadius: '15px',
           padding: '25px',
@@ -610,7 +610,7 @@ public class TerraFusionLauncher {
       {/* Compliance Checklist */}
       <div
         style={{
-          background: 'rgba(0, 230, 118, 0.05)',
+          background: 'hsl(var(--tf-green-hs) 45% / 0.05)',
           border: '2px solid var(--tf-accent-success)',
           borderRadius: '15px',
           padding: '25px',
@@ -739,7 +739,7 @@ public class TerraFusionLauncher {
         .module-tile:hover {
           transform: translateY(-5px);
           border-color: var(--tf-accent-success);
-          box-shadow: 0 10px 30px rgba(0, 230, 118, 0.3);
+          box-shadow: 0 10px 30px hsl(var(--tf-green-hs) 45% / 0.3);
         }
         
         .module-tile::before {
@@ -749,7 +749,7 @@ public class TerraFusionLauncher {
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(79, 195, 247, 0.3), transparent);
+          background: linear-gradient(90deg, transparent, hsl(var(--tf-blue-hs) 64% / 0.3), transparent);
           transition: left 0.5s;
         }
         

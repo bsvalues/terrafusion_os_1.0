@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 199,
+  "violationCount": 193,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -354,48 +354,6 @@
       "line": 85,
       "column": 57,
       "excerpt": "rgba(0, 255, 255, 0.3)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\GovernmentArchitecture.tsx",
-      "line": 338,
-      "column": 28,
-      "excerpt": "rgba(10, 14, 39, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\GovernmentArchitecture.tsx",
-      "line": 535,
-      "column": 44,
-      "excerpt": "rgba(79, 195, 247, 0.3)' : 'rgba(79, 195, 247, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\GovernmentArchitecture.tsx",
-      "line": 535,
-      "column": 72,
-      "excerpt": "rgba(79, 195, 247, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\GovernmentArchitecture.tsx",
-      "line": 537,
-      "column": 54,
-      "excerpt": "rgba(79, 195, 247, 0.5)' : 'none',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\GovernmentArchitecture.tsx",
-      "line": 742,
-      "column": 35,
-      "excerpt": "rgba(0, 230, 118, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\GovernmentArchitecture.tsx",
-      "line": 752,
-      "column": 59,
-      "excerpt": "rgba(79, 195, 247, 0.3), transparent);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1399,5 +1357,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T17:48:44.185Z"
+  "generatedAtIso": "2026-02-23T17:57:36.826Z"
 }
