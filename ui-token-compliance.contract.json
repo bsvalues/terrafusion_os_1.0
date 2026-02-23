@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 63,
+  "violationCount": 60,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -186,27 +186,6 @@
       "line": 46,
       "column": 30,
       "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\transparency\\DevelopmentModeIndicator.css",
-      "line": 231,
-      "column": 15,
-      "excerpt": "hsl(270 50% / 40% / 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\transparency\\DevelopmentModeIndicator.css",
-      "line": 232,
-      "column": 21,
-      "excerpt": "hsl(270 50% / 40% / 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\transparency\\DevelopmentModeIndicator.css",
-      "line": 240,
-      "column": 10,
-      "excerpt": "hsl(270 50% / 55%);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -447,5 +426,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T20:54:43.123Z"
+  "generatedAtIso": "2026-02-23T20:57:58.704Z"
 }

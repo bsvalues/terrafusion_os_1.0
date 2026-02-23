@@ -228,8 +228,8 @@
 }
 
 .development-info {
-  background: hsl(270 50% / 40% / 0.1);
-  border: 1px solid hsl(270 50% / 40% / 0.3);
+  background: hsl(var(--tf-blue-hs) 40% / 0.1);
+  border: 1px solid hsl(var(--tf-blue-hs) 40% / 0.3);
   border-radius: 8px;
   padding: 12px;
 }
@@ -237,7 +237,7 @@
 .development-info h5 {
   margin: 0 0 8px 0;
   font-size: 12px;
-  color: hsl(270 50% / 55%);
+  color: hsl(var(--tf-blue-hs) 55%);
   font-weight: bold;
 }
 
