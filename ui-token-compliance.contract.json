@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 29,
+  "violationCount": 25,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -168,34 +168,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\services\\QuantumModuleManager.ts",
-      "line": 337,
-      "column": 19,
-      "excerpt": "rgba(10, 14, 26, 0.95);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\services\\QuantumModuleManager.ts",
-      "line": 338,
-      "column": 25,
-      "excerpt": "rgba(0, 255, 255, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\services\\TerraFusionCSSEngine.ts",
-      "line": 224,
-      "column": 21,
-      "excerpt": "hsl(120 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\services\\TerraFusionCSSEngine.ts",
-      "line": 225,
-      "column": 22,
-      "excerpt": "hsl(0 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\SnapPreview.tsx",
       "line": 79,
       "column": 27,
@@ -209,5 +181,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:46:42.650Z"
+  "generatedAtIso": "2026-02-23T21:53:41.689Z"
 }
