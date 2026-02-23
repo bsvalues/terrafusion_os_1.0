@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 75,
+  "violationCount": 72,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -336,27 +336,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\TerraFlowDesignEngine.tsx",
-      "line": 45,
-      "column": 34,
-      "excerpt": "rgba(74, 224, 255, 0.8)'; // Terra Cyan"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\TerraFlowDesignEngine.tsx",
-      "line": 46,
-      "column": 33,
-      "excerpt": "rgba(65, 255, 179, 0.6)'; // Terra Green"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\TerraFlowDesignEngine.tsx",
-      "line": 47,
-      "column": 11,
-      "excerpt": "rgba(255, 180, 0, 0.6)'; // Amber warning"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\design\\TerraForgeComponents.tsx",
       "line": 261,
       "column": 19,
@@ -531,5 +510,5 @@
       "excerpt": "rgba(r, g, b, a)"
     }
   ],
-  "generatedAtIso": "2026-02-23T20:39:50.453Z"
+  "generatedAtIso": "2026-02-23T20:42:45.444Z"
 }
