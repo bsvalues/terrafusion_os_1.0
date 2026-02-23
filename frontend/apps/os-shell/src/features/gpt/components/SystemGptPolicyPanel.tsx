@@ -123,8 +123,8 @@ export const SystemGptPolicyPanel: React.FC<SystemGptPolicyPanelProps> = ({
       <div
         className={`h-3 w-3 rounded-full ${
           enabled
-            ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]'
-            : 'bg-rose-400 shadow-[0_0_6px_rgba(251,113,133,0.4)]'
+            ? 'bg-emerald-400 shadow-[0_0_6px_hsl(var(--tf-green-hs)_52%_/_0.5)]'
+            : 'bg-rose-400 shadow-[0_0_6px_hsl(var(--tf-red-hs)_71%_/_0.4)]'
         }`}
       />
       <span className={enabled ? 'text-emerald-300' : 'text-rose-300'}>

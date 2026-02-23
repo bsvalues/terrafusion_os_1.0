@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 33,
+  "violationCount": 31,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -147,20 +147,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptAtlasPanel.tsx",
-      "line": 375,
-      "column": 31,
-      "excerpt": "rgba(0, 255, 255, 0.1) 1px, transparent 1px),\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptAtlasPanel.tsx",
-      "line": 376,
-      "column": 38,
-      "excerpt": "rgba(0, 255, 255, 0.1) 1px, transparent 1px)\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptPolicyPanel.tsx",
       "line": 126,
       "column": 47,
@@ -237,5 +223,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:40:14.180Z"
+  "generatedAtIso": "2026-02-23T21:43:15.337Z"
 }
