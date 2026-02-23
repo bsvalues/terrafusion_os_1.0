@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 72,
+  "violationCount": 69,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -487,28 +487,7 @@
       "line": 18,
       "column": 15,
       "excerpt": "hsl(0 100% 60%); /* Attention */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\materials\\materialQualityGate.ts",
-      "line": 341,
-      "column": 13,
-      "excerpt": "#ffffff'; // Pure white"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\materials\\materialQualityGate.ts",
-      "line": 344,
-      "column": 13,
-      "excerpt": "#0a0a0a'; // Near black"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\materials\\materialQualityGate.ts",
-      "line": 292,
-      "column": 13,
-      "excerpt": "rgba(r, g, b, a)"
     }
   ],
-  "generatedAtIso": "2026-02-23T20:42:45.444Z"
+  "generatedAtIso": "2026-02-23T20:48:19.127Z"
 }
