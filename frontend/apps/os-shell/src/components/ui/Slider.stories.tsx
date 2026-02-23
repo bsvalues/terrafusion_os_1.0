@@ -324,13 +324,13 @@ export const StepValues: Story = {
             <p className='text-sm font-medium mb-2'>🎯 Choosing Step Values:</p>
             <ul className='text-sm text-muted-foreground space-y-1 list-disc list-inside'>
               <li>
-                <strong>step=&#123;1&#125;</strong>: Precise control, smooth movement
+                <strong>{'step={1}'}</strong>: Precise control, smooth movement
               </li>
               <li>
-                <strong>step=&#123;5 or 10&#125;</strong>: Good for most use cases
+                <strong>{'step={5 or 10}'}</strong>: Good for most use cases
               </li>
               <li>
-                <strong>step=&#123;25&#125;</strong>: Coarse control, fewer options
+                <strong>{'step={25}'}</strong>: Coarse control, fewer options
               </li>
               <li>
                 <strong>Decimal steps</strong>: Ratings, measurements
