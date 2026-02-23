@@ -366,7 +366,7 @@ if ($triggersWorkflow -or $isFeatureBranch) {
                 if ($qaCount -gt 0) {
                     Write-Host "   PASS (discovery: $qaCount Q/A - incremental work)" -ForegroundColor Green
                 } else {
-                    Write-Host "   WARN: discovery.md has $qaCount Q/A entries (30+ recommended for new initiatives)" -ForegroundColor Yellow
+                    Write-Host "   WARN: discovery.md has $qaCount Q/A entries (minimum 30 required for new initiatives)" -ForegroundColor Yellow
                 }
             }
         } else {
