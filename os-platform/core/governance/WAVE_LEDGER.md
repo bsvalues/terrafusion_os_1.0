@@ -37,7 +37,7 @@ A vitest enforces this constraint automatically.
 
 ## TSX component sweep
 
-- Phase 118 — PENDING — AIHealthStatusChip.tsx — 12→0
+- Phase 118 — 9d2f25fcc — AIHealthStatusChip.tsx — 12→0
 
 ## CSS micro-batch 2 (non-tiered maintenance)
 
