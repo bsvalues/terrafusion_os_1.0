@@ -236,8 +236,8 @@ ARCHITECTURE OVERVIEW:
     /* AI status-based background - using CSS custom properties */
     background: radial-gradient(
       circle,
-      var(--tf-agent-primary, hsl(120 100% 60%)) 0%,
-      var(--tf-agent-secondary, hsl(120 100% 40%)) 100%
+      var(--tf-agent-primary, hsl(var(--tf-green-hs) 60%)) 0%,
+      var(--tf-agent-secondary, hsl(var(--tf-green-hs) 40%)) 100%
     );
 
     /* Quantum animations with performance awareness */
@@ -246,7 +246,7 @@ ARCHITECTURE OVERVIEW:
 
     /* Neural network connections */
     box-shadow: 0 0 calc(4px * var(--tf-quantum-coherence, 1))
-      var(--tf-agent-glow, hsl(120 100% 60%));
+      var(--tf-agent-glow, hsl(var(--tf-green-hs) 60%));
 
     /* Performance optimizations */
     transform: translateZ(0);
@@ -454,7 +454,7 @@ ARCHITECTURE OVERVIEW:
     width: 100vw;
     height: 100vh;
     background: var(--tf-void-black);
-    color: #0f0;
+    color: hsl(var(--tf-green-hs) 50%);
     font-family: monospace;
     font-size: 14px;
     padding: 20px;
@@ -531,8 +531,8 @@ ARCHITECTURE OVERVIEW:
     position: fixed;
     bottom: 10px;
     left: 10px;
-    background: rgba(0, 0, 0, 0.9);
-    color: #0f0;
+    background: hsl(var(--tf-neutral-hs) 0% / 0.9);
+    color: hsl(var(--tf-green-hs) 50%);
     font-family: monospace;
     font-size: 10px;
     padding: 8px;
