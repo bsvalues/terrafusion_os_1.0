@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 115,
+  "violationCount": 111,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -305,34 +305,6 @@
       "line": 16,
       "column": 132,
       "excerpt": "rgba(0,255,255,0.4)]',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Button.stories.tsx",
-      "line": 290,
-      "column": 27,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Button.stories.tsx",
-      "line": 292,
-      "column": 28,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Button.stories.tsx",
-      "line": 640,
-      "column": 31,
-      "excerpt": "#1a1a1a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Button.stories.tsx",
-      "line": 646,
-      "column": 32,
-      "excerpt": "#2a2a2a',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -811,5 +783,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T19:47:46.493Z"
+  "generatedAtIso": "2026-02-23T19:53:51.079Z"
 }

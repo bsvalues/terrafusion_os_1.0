@@ -100,10 +100,10 @@ export function WebGLBackground() {
         float t = u_time * 0.3;
         
         // Base colors - TerraFusion Brand
-        vec3 voidBlack = vec3(0.039, 0.055, 0.102);     // #0A0E1A
-        vec3 terraCyan = vec3(0.0, 0.898, 1.0);         // #00E5FF
-        vec3 terraBlue = vec3(0.0, 0.502, 1.0);         // #0080FF
-        vec3 terraGreen = vec3(0.0, 1.0, 0.533);        // #00FF88
+        vec3 voidBlack = vec3(0.039, 0.055, 0.102);     // --tf-neutral-hs
+        vec3 terraCyan = vec3(0.0, 0.898, 1.0);         // --tf-cyan-hs
+        vec3 terraBlue = vec3(0.0, 0.502, 1.0);         // --tf-blue-hs
+        vec3 terraGreen = vec3(0.0, 1.0, 0.533);        // --tf-green-hs
         
         // Create flowing energy field
         vec2 flowUV = st;
