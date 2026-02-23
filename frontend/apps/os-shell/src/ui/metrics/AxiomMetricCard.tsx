@@ -32,10 +32,10 @@ const Badge = styled.span<{ status: KPI['status'] }>`
   text-transform: uppercase;
   background: ${(props) =>
     props.status === 'verified'
-      ? 'rgba(0, 255, 136, 0.1)'
+      ? 'hsl(var(--tf-green-hs) 50% / 0.1)'
       : props.status === 'anomaly'
-        ? 'rgba(255, 68, 68, 0.1)'
-        : 'rgba(255, 255, 255, 0.1)'};
+        ? 'hsl(var(--tf-red-hs) 60% / 0.1)'
+        : 'hsl(var(--tf-neutral-hs) 100% / 0.1)'};
   color: ${(props) =>
     props.status === 'verified'
       ? 'var(--success-green)'
