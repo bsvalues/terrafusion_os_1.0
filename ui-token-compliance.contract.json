@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 87,
+  "violationCount": 81,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -46,27 +46,6 @@
       "line": 105,
       "column": 54,
       "excerpt": "#9103) showing significant deviation from comparable properties.',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\ConsciousnessEngine.tsx",
-      "line": 246,
-      "column": 34,
-      "excerpt": "rgba(0,255,255,0.6)]';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\ConsciousnessEngine.tsx",
-      "line": 248,
-      "column": 34,
-      "excerpt": "rgba(0,255,136,0.4)]';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\ConsciousnessEngine.tsx",
-      "line": 250,
-      "column": 34,
-      "excerpt": "rgba(255,170,0,0.3)]';"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -592,28 +571,7 @@
       "line": 292,
       "column": 13,
       "excerpt": "rgba(r, g, b, a)"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\metrics\\AxiomMetricCard.tsx",
-      "line": 35,
-      "column": 10,
-      "excerpt": "rgba(0, 255, 136, 0.1)'\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\metrics\\AxiomMetricCard.tsx",
-      "line": 37,
-      "column": 12,
-      "excerpt": "rgba(255, 68, 68, 0.1)'\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\metrics\\AxiomMetricCard.tsx",
-      "line": 38,
-      "column": 12,
-      "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-23T20:21:01.410Z"
+  "generatedAtIso": "2026-02-23T20:31:34.270Z"
 }
