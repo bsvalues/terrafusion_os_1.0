@@ -370,9 +370,9 @@
 }
 
 .quantum-status-maintenance .quantum-status-badge {
-  background: hsl(239 84% 67% / 0.2);
-  color: hsl(239 84% 67%);
-  border: 1px solid hsl(239 84% 67% / 0.3);
+  background: hsl(var(--tf-blue-hs) 67% / 0.2);
+  color: hsl(var(--tf-blue-hs) 67%);
+  border: 1px solid hsl(var(--tf-blue-hs) 67% / 0.3);
 }
 
 .quantum-status-icon {
