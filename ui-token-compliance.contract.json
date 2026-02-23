@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 849,
-  "violationCount": 327,
+  "violationCount": 254,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -46,55 +46,6 @@
       "line": 239,
       "column": 15,
       "excerpt": "hsl(240 38% 16% / 0.95);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ABTestingFramework.tsx",
-      "line": 175,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ABTestingFramework.tsx",
-      "line": 197,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ABTestingFramework.tsx",
-      "line": 283,
-      "column": 31,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ABTestingFramework.tsx",
-      "line": 297,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ABTestingFramework.tsx",
-      "line": 353,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ABTestingFramework.tsx",
-      "line": 410,
-      "column": 25,
-      "excerpt": "rgba(255, 255, 255, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ABTestingFramework.tsx",
-      "line": 552,
-      "column": 26,
-      "excerpt": "rgba(0, 0, 0, 0.3)',"
     },
     {
       "kind": "RAW_HEX",
@@ -147,55 +98,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\TerraSphere.css",
-      "line": 15,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.3));"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\TerraSphere.css",
-      "line": 77,
-      "column": 55,
-      "excerpt": "rgba(0, 255, 255, 0.3) 50%, transparent 70%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\TerraSphere.css",
-      "line": 85,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.5));"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\TerraSphere.css",
-      "line": 95,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(0, 128, 255, 0.3))"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\TerraSphere.css",
-      "line": 95,
-      "column": 77,
-      "excerpt": "rgba(0, 128, 255, 0.3))"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\TerraSphere.css",
-      "line": 96,
-      "column": 26,
-      "excerpt": "rgba(136, 68, 255, 0.2));"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\TerraSphere.css",
-      "line": 245,
-      "column": 34,
-      "excerpt": "rgba(0, 255, 255, 0.5));"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\brand\\WebGLEffects.tsx",
       "line": 420,
       "column": 24,
@@ -228,55 +130,6 @@
       "line": 229,
       "column": 49,
       "excerpt": "rgba(0,0,0,0.75)] backdrop-blur-xl"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\FloatingActionMenu.tsx",
-      "line": 19,
-      "column": 31,
-      "excerpt": "rgba(0, 210, 255, 0.6)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\FloatingActionMenu.tsx",
-      "line": 24,
-      "column": 18,
-      "excerpt": "rgba(255, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\FloatingActionMenu.tsx",
-      "line": 26,
-      "column": 24,
-      "excerpt": "rgba(0, 210, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\FloatingActionMenu.tsx",
-      "line": 29,
-      "column": 20,
-      "excerpt": "rgba(0, 210, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\FloatingActionMenu.tsx",
-      "line": 30,
-      "column": 26,
-      "excerpt": "rgba(0, 210, 255, 0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\FloatingActionMenu.tsx",
-      "line": 119,
-      "column": 28,
-      "excerpt": "rgba(0, 0, 0, 0.8)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\FloatingActionMenu.tsx",
-      "line": 122,
-      "column": 34,
-      "excerpt": "rgba(0, 210, 255, 0.2)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -353,62 +206,6 @@
       "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
       "line": 170,
       "column": 65,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\UniversalTranslationInterface.tsx",
-      "line": 58,
-      "column": 16,
-      "excerpt": "rgba(255, 255, 255, 0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\UniversalTranslationInterface.tsx",
-      "line": 60,
-      "column": 22,
-      "excerpt": "rgba(200, 150, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\UniversalTranslationInterface.tsx",
-      "line": 141,
-      "column": 73,
-      "excerpt": "rgba(200, 150, 255, 0.3)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\UniversalTranslationInterface.tsx",
-      "line": 160,
-      "column": 73,
-      "excerpt": "rgba(200, 150, 255, 0.3)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\UniversalTranslationInterface.tsx",
-      "line": 180,
-      "column": 42,
-      "excerpt": "rgba(102, 126, 234, 0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\UniversalTranslationInterface.tsx",
-      "line": 202,
-      "column": 34,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\UniversalTranslationInterface.tsx",
-      "line": 214,
-      "column": 61,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\UniversalTranslationInterface.tsx",
-      "line": 218,
-      "column": 61,
       "excerpt": "rgba(255,255,255,0.7)' }}>"
     },
     {
@@ -501,55 +298,6 @@
       "line": 618,
       "column": 47,
       "excerpt": "rgba(0, 255, 255, ${node.consciousnessLevel || 0.5})`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\EmergencyTerraFusionTest.tsx",
-      "line": 48,
-      "column": 33,
-      "excerpt": "rgba(0, 255, 255, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\EmergencyTerraFusionTest.tsx",
-      "line": 62,
-      "column": 24,
-      "excerpt": "rgba(0, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\EmergencyTerraFusionTest.tsx",
-      "line": 89,
-      "column": 34,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\EmergencyTerraFusionTest.tsx",
-      "line": 94,
-      "column": 57,
-      "excerpt": "rgba(0, 255, 255, 0.5)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\EmergencyTerraFusionTest.tsx",
-      "line": 98,
-      "column": 57,
-      "excerpt": "rgba(0, 255, 255, 0.3)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\EmergencyTerraFusionTest.tsx",
-      "line": 109,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\EmergencyTerraFusionTest.tsx",
-      "line": 111,
-      "column": 24,
-      "excerpt": "rgba(0, 255, 255, 0.05)',"
     },
     {
       "kind": "RAW_HEX",
@@ -797,104 +545,6 @@
       "excerpt": "hsl(${180 + Math.random() * 30}, 100%, ${50 + Math.random() * 20}%)`,"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\standalone\\standalone-home-shell.css",
-      "line": 44,
-      "column": 48,
-      "excerpt": "#1e1e2e);\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\standalone\\standalone-home-shell.css",
-      "line": 45,
-      "column": 45,
-      "excerpt": "#3e3e4e);\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\standalone\\standalone-home-shell.css",
-      "line": 74,
-      "column": 32,
-      "excerpt": "#22d3ee);\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\standalone\\standalone-home-shell.css",
-      "line": 87,
-      "column": 33,
-      "excerpt": "#f0f0f0);\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\standalone\\standalone-home-shell.css",
-      "line": 98,
-      "column": 31,
-      "excerpt": "#a0a0a0);\r"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\standalone\\standalone-home-shell.css",
-      "line": 105,
-      "column": 35,
-      "excerpt": "#c0c0c0);\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\standalone\\standalone-home-shell.css",
-      "line": 58,
-      "column": 52,
-      "excerpt": "rgba(255, 255, 255, 0.1));\r"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\status\\AIHealthStatusChip.tsx",
-      "line": 103,
-      "column": 16,
-      "excerpt": "rgba(0, 255, 136, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\status\\AIHealthStatusChip.tsx",
-      "line": 104,
-      "column": 20,
-      "excerpt": "rgba(0, 255, 136, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\status\\AIHealthStatusChip.tsx",
-      "line": 106,
-      "column": 27,
-      "excerpt": "rgba(0, 255, 136, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\status\\AIHealthStatusChip.tsx",
-      "line": 120,
-      "column": 27,
-      "excerpt": "rgba(255, 80, 80, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\status\\AIHealthStatusChip.tsx",
-      "line": 124,
-      "column": 16,
-      "excerpt": "rgba(128, 128, 128, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\status\\AIHealthStatusChip.tsx",
-      "line": 125,
-      "column": 20,
-      "excerpt": "rgba(128, 128, 128, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\status\\AIHealthStatusChip.tsx",
-      "line": 202,
-      "column": 21,
-      "excerpt": "rgba(0, 255, 255, 0.7)',"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\terra-flow\\SwarmVisualization3D.tsx",
       "line": 118,
@@ -1033,55 +683,6 @@
       "line": 646,
       "column": 32,
       "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Card.stories.tsx",
-      "line": 142,
-      "column": 27,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Card.stories.tsx",
-      "line": 311,
-      "column": 27,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Card.stories.tsx",
-      "line": 1428,
-      "column": 31,
-      "excerpt": "#1a1a1a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Card.stories.tsx",
-      "line": 1434,
-      "column": 32,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Card.stories.tsx",
-      "line": 322,
-      "column": 57,
-      "excerpt": "rgba(0, 153, 255, 0.15)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Card.stories.tsx",
-      "line": 361,
-      "column": 57,
-      "excerpt": "rgba(0, 153, 255, 0.15)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Card.stories.tsx",
-      "line": 399,
-      "column": 57,
-      "excerpt": "rgba(0, 153, 255, 0.15)';"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1932,62 +1533,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
-      "line": 104,
-      "column": 24,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
-      "line": 106,
-      "column": 30,
-      "excerpt": "rgba(255,255,255,0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
-      "line": 110,
-      "column": 26,
-      "excerpt": "rgba(255,255,255,0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
-      "line": 112,
-      "column": 36,
-      "excerpt": "rgba(0,0,0,0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
-      "line": 121,
-      "column": 27,
-      "excerpt": "rgba(255,255,255,0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
-      "line": 124,
-      "column": 40,
-      "excerpt": "rgba(255,255,255,0.3)' },"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
-      "line": 137,
-      "column": 55,
-      "excerpt": "rgba(255,255,255,0.7)', mb: 1 }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
-      "line": 148,
-      "column": 55,
-      "excerpt": "rgba(255,255,255,0.5)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\shell\\QuantumDesktopShell.tsx",
       "line": 193,
       "column": 26,
@@ -2006,62 +1551,6 @@
       "line": 197,
       "column": 26,
       "excerpt": "rgba(255, 170, 0, 0.3)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SimplifiedQuantumDesktopShell.tsx",
-      "line": 33,
-      "column": 24,
-      "excerpt": "rgba(10, 14, 26, 0.95)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SimplifiedQuantumDesktopShell.tsx",
-      "line": 35,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SimplifiedQuantumDesktopShell.tsx",
-      "line": 181,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 255, 0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SimplifiedQuantumDesktopShell.tsx",
-      "line": 184,
-      "column": 34,
-      "excerpt": "rgba(0, 255, 255, 0.5)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SimplifiedQuantumDesktopShell.tsx",
-      "line": 185,
-      "column": 34,
-      "excerpt": "rgba(0, 255, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SimplifiedQuantumDesktopShell.tsx",
-      "line": 194,
-      "column": 64,
-      "excerpt": "rgba(0, 255, 255, 0.2)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SimplifiedQuantumDesktopShell.tsx",
-      "line": 242,
-      "column": 28,
-      "excerpt": "rgba(0, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SimplifiedQuantumDesktopShell.tsx",
-      "line": 243,
-      "column": 34,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2295,5 +1784,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};\r"
     }
   ],
-  "generatedAtIso": "2026-02-22T23:58:02.416Z"
+  "generatedAtIso": "2026-02-23T01:42:28.977Z"
 }
