@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 interface CountyData {
   name: string;
   properties: string;
@@ -127,8 +127,10 @@ const ABTestingFramework: React.FC = () => {
   };
   const getCountyTheme = (county: string) => {
     const themes: Record<string, string> = {
-      benton: 'linear-gradient(135deg, var(--tf-accent-indigo-dark) 0%, var(--tf-accent-blue-dark) 100%)',
-      clark: 'linear-gradient(135deg, var(--tf-accent-teal-dark) 0%, var(--tf-accent-teal-dark) 100%)',
+      benton:
+        'linear-gradient(135deg, var(--tf-accent-indigo-dark) 0%, var(--tf-accent-blue-dark) 100%)',
+      clark:
+        'linear-gradient(135deg, var(--tf-accent-teal-dark) 0%, var(--tf-accent-teal-dark) 100%)',
       king: 'linear-gradient(135deg, var(--tf-accent-purple-dark) 0%, var(--tf-accent-purple) 100%)',
       snohomish: 'linear-gradient(135deg, var(--tf-error-dark) 0%, var(--tf-error-red) 100%)',
       pierce: 'linear-gradient(135deg, var(--tf-warning-dark) 0%, var(--tf-warning-amber) 100%)',
@@ -160,7 +162,8 @@ const ABTestingFramework: React.FC = () => {
                 fontWeight: 300,
                 marginBottom: '24px',
                 lineHeight: 1.1,
-                background: 'linear-gradient(135deg, var(--tf-accent-error) 0%, var(--tf-accent-yellow) 100%)',
+                background:
+                  'linear-gradient(135deg, var(--tf-accent-error) 0%, var(--tf-accent-yellow) 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -172,7 +175,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-neutral-hs) 100% / 0.9)',
                 marginBottom: '24px',
                 maxWidth: '800px',
                 margin: '0 auto 24px',
@@ -194,7 +197,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-neutral-hs) 100% / 0.9)',
                 marginBottom: '48px',
                 maxWidth: '800px',
                 margin: '0 auto 48px',
@@ -262,7 +265,7 @@ const ABTestingFramework: React.FC = () => {
                 <div
                   key={index}
                   style={{
-                    background: 'rgba(0, 255, 238, 0.1)',
+                    background: 'hsl(var(--tf-accent) / 0.1)',
                     padding: '20px',
                     borderRadius: '12px',
                     border: '1px solid var(--tf-transcend-highlight)',
@@ -280,7 +283,7 @@ const ABTestingFramework: React.FC = () => {
                   <div
                     style={{
                       fontSize: '14px',
-                      color: 'rgba(255, 255, 255, 0.7)',
+                      color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
                       marginTop: '5px',
                     }}
                   >
@@ -294,7 +297,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-neutral-hs) 100% / 0.9)',
                 marginBottom: '48px',
                 maxWidth: '800px',
                 margin: '0 auto 48px',
@@ -331,7 +334,7 @@ const ABTestingFramework: React.FC = () => {
 
             <div
               style={{
-                background: 'rgba(255, 0, 0, 0.1)',
+                background: 'hsl(var(--tf-red-hs) 50% / 0.1)',
                 border: '2px solid var(--tf-error-red)',
                 padding: '15px 30px',
                 borderRadius: '50px',
@@ -350,7 +353,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-neutral-hs) 100% / 0.9)',
                 marginBottom: '24px',
                 maxWidth: '800px',
                 margin: '0 auto 24px',
@@ -407,7 +410,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-neutral-hs) 100% / 0.9)',
                 marginBottom: '48px',
                 maxWidth: '800px',
                 margin: '0 auto 48px',
@@ -481,7 +484,7 @@ const ABTestingFramework: React.FC = () => {
           position: 'fixed',
           top: '20px',
           right: '20px',
-          background: 'rgba(26, 31, 58, 0.95)',
+          background: 'hsl(var(--tf-bg) / 0.95)',
           padding: '20px',
           borderRadius: '12px',
           border: '1px solid var(--tf-transcend-highlight)',
@@ -532,8 +535,10 @@ const ABTestingFramework: React.FC = () => {
                 flex: '1',
                 minWidth: '60px',
                 padding: '8px',
-                background: currentVariant === variant ? 'var(--tf-accent-success)' : 'var(--tf-bg-surface)',
-                color: currentVariant === variant ? 'var(--tf-bg-surface)' : 'var(--tf-accent-success)',
+                background:
+                  currentVariant === variant ? 'var(--tf-accent-success)' : 'var(--tf-bg-surface)',
+                color:
+                  currentVariant === variant ? 'var(--tf-bg-surface)' : 'var(--tf-accent-success)',
                 border: '1px solid var(--tf-accent-success)',
                 borderRadius: '6px',
                 cursor: 'pointer',
@@ -549,7 +554,7 @@ const ABTestingFramework: React.FC = () => {
 
         <div
           style={{
-            background: 'rgba(0, 0, 0, 0.3)',
+            background: 'hsl(var(--tf-neutral-hs) 0% / 0.3)',
             padding: '10px',
             borderRadius: '6px',
             fontSize: '12px',
