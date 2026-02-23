@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 850,
-  "violationCount": 37,
+  "violationCount": 35,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -81,20 +81,6 @@
       "line": 16,
       "column": 132,
       "excerpt": "rgba(0,255,255,0.4)]',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\divider.tsx",
-      "line": 26,
-      "column": 53,
-      "excerpt": "rgba(0,255,255,0.3)]',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\divider.tsx",
-      "line": 27,
-      "column": 47,
-      "excerpt": "rgba(0,255,255,0.5)] animate-pulse',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -265,5 +251,5 @@
       "excerpt": "hsl(0 100% 60%); /* Attention */"
     }
   ],
-  "generatedAtIso": "2026-02-23T21:34:02.771Z"
+  "generatedAtIso": "2026-02-23T21:37:11.432Z"
 }

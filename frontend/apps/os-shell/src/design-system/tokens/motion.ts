@@ -141,8 +141,8 @@ export const keyframes = {
 
   // Glow animation
   glow: {
-    '0%, 100%': { boxShadow: '0 0 20px rgba(0, 153, 255, 0.5)' },
-    '50%': { boxShadow: '0 0 40px rgba(0, 153, 255, 0.8)' },
+    '0%, 100%': { boxShadow: '0 0 20px hsl(var(--tf-blue-hs) 50% / 0.5)' },
+    '50%': { boxShadow: '0 0 40px hsl(var(--tf-blue-hs) 50% / 0.8)' },
   },
 
   // Shimmer animation (loading skeleton)
