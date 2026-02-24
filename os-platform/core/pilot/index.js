@@ -6,7 +6,7 @@
  * Re-exports all pilot module components for clean imports.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.summarizeSalesCompsHandler = exports.summarizeParcelCasefileHandler = exports.summarizeLevyRateHandler = exports.summarizeDossierHandler = exports.searchTraceByCorrelationHandler = exports.registerPhase84Handlers = exports.registerPhase83Handlers = exports.registerAllHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.explainSeniorExemptionHandler = exports.explainModelResultsHandler = exports.explainModelInputsHandler = exports.draftValueChangeNoticeHandler = exports.draftBoeAppealResponseHandler = exports.draftAppealResponseHandler = exports.compareAssessedValueHandler = exports.addDossierNoteHandler = exports.toolRunner = exports.ToolRunner = exports.ToolRunnerError = exports.ErrorCodes = exports.toolRegistry = exports.VALID_TRACE_POLICIES = exports.VALID_SUITES = exports.VALID_RISKS = exports.VALID_PII_HANDLING = exports.ToolRegistry = exports.ManifestValidationError = void 0;
+exports.summarizeSalesCompsHandler = exports.summarizeParcelCasefileHandler = exports.summarizeLevyRateHandler = exports.summarizeDossierHandler = exports.searchTraceByCorrelationHandler = exports.registerPhase84Handlers = exports.registerPhase83Handlers = exports.registerAllHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.explainSeniorExemptionHandler = exports.explainModelResultsHandler = exports.explainModelInputsHandler = exports.draftValueChangeNoticeHandler = exports.draftBoeAppealResponseHandler = exports.draftAppealResponseHandler = exports.compareAssessedValueHandler = exports.addDossierNoteHandler = exports.toolRunner = exports.ToolRunner = exports.ToolRunnerError = exports.ErrorCodes = exports.createPreflight = exports.toolRegistry = exports.VALID_TRACE_POLICIES = exports.VALID_SUITES = exports.VALID_RISKS = exports.VALID_PII_HANDLING = exports.ToolRegistry = exports.ManifestValidationError = void 0;
 var ToolRegistry_js_1 = require("./ToolRegistry.js");
 Object.defineProperty(exports, "ManifestValidationError", { enumerable: true, get: function () { return ToolRegistry_js_1.ManifestValidationError; } });
 Object.defineProperty(exports, "ToolRegistry", { enumerable: true, get: function () { return ToolRegistry_js_1.ToolRegistry; } });
@@ -15,6 +15,8 @@ Object.defineProperty(exports, "VALID_RISKS", { enumerable: true, get: function 
 Object.defineProperty(exports, "VALID_SUITES", { enumerable: true, get: function () { return ToolRegistry_js_1.VALID_SUITES; } });
 Object.defineProperty(exports, "VALID_TRACE_POLICIES", { enumerable: true, get: function () { return ToolRegistry_js_1.VALID_TRACE_POLICIES; } });
 Object.defineProperty(exports, "toolRegistry", { enumerable: true, get: function () { return ToolRegistry_js_1.toolRegistry; } });
+var ToolRunner_preflight_js_1 = require("./ToolRunner.preflight.js");
+Object.defineProperty(exports, "createPreflight", { enumerable: true, get: function () { return ToolRunner_preflight_js_1.createPreflight; } });
 var ToolRunner_js_1 = require("./ToolRunner.js");
 Object.defineProperty(exports, "ErrorCodes", { enumerable: true, get: function () { return ToolRunner_js_1.ErrorCodes; } });
 Object.defineProperty(exports, "ToolRunnerError", { enumerable: true, get: function () { return ToolRunner_js_1.ToolRunnerError; } });

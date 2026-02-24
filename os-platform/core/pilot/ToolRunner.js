@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.toolRunner = exports.ToolRunner = exports.ToolRunnerError = exports.ErrorCodes = void 0;
 const crypto_1 = require("crypto");
 const TraceService_js_1 = require("../trace/TraceService.js");
+const ToolRunner_preflight_js_1 = require("./ToolRunner.preflight.js");
 const ToolRegistry_js_1 = require("./ToolRegistry.js");
 // ============================================================================
 // Error Codes
@@ -33,6 +34,7 @@ exports.ErrorCodes = {
     // General
     TOOL_NOT_FOUND: 'TOOL_NOT_FOUND',
     MODE_MISMATCH: 'MODE_MISMATCH',
+    POLICY_DENIED: 'POLICY_DENIED',
     EXECUTION_FAILED: 'EXECUTION_FAILED',
 };
 class ToolRunnerError extends Error {
@@ -116,6 +118,7 @@ class ToolRunner {
         this.handlers = new Map();
         this.registry = options.registry ?? ToolRegistry_js_1.toolRegistry;
         this.trace = options.trace ?? TraceService_js_1.traceService;
+        this.preflight = (0, ToolRunner_preflight_js_1.createPreflight)(options.preflightPolicy);
     }
     /**
      * Canonical execution path.
@@ -179,6 +182,24 @@ class ToolRunner {
         // Mode check
         if (tool.mode && tool.mode !== context.mode) {
             return this.fail(correlationId, exports.ErrorCodes.MODE_MISMATCH, `Tool ${toolId} requires mode "${tool.mode}" but got "${context.mode}"`);
+        }
+        // Optional preflight policy gate (additive, defaults to allow)
+        const governance = tool.governance;
+        const preflight = this.preflight.decide({
+            toolId,
+            correlationId,
+            governance,
+            requestedMutation: mutationFromRisk(tool.risk),
+        });
+        if (preflight.allow !== true) {
+            // Narrow to denial branch for TS discriminated union compat
+            const denied = preflight;
+            this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
+                summary: `Policy denied ${toolId}: ${denied.reason}`,
+                errorCode: exports.ErrorCodes.POLICY_DENIED,
+                component: 'ToolRunner',
+            });
+            return this.fail(correlationId, exports.ErrorCodes.POLICY_DENIED, denied.reason);
         }
         // Collect all enforcement violations
         const violations = [
@@ -308,6 +329,7 @@ function mapErrorCode(code) {
             return 'PII_BLOCKED';
         case exports.ErrorCodes.TOOL_NOT_FOUND:
             return 'TOOL_NOT_FOUND';
+        case exports.ErrorCodes.POLICY_DENIED:
         case exports.ErrorCodes.WRITE_LANE_MISMATCH:
         case exports.ErrorCodes.WRITE_LANE_REQUIRED:
         case exports.ErrorCodes.CONFIRMATION_REQUIRED:
@@ -319,6 +341,13 @@ function mapErrorCode(code) {
         default:
             return 'EXECUTION_FAILED';
     }
+}
+function mutationFromRisk(risk) {
+    if (risk === 'read_only')
+        return 'none';
+    if (risk === 'write_low')
+        return 'transient';
+    return 'durable';
 }
 // ============================================================================
 // Singleton Instance

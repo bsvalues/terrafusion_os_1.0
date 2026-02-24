@@ -12,6 +12,13 @@
 import { randomUUID } from 'crypto';
 import { traceService, TraceService } from '../trace/TraceService.js';
 import type {
+  CommandGovernanceMeta,
+  MutationClass,
+  PolicyDecision,
+  PreflightPolicy,
+} from '../types/commandGovernance.js';
+import { createPreflight } from './ToolRunner.preflight.js';
+import type {
     Tool,
     ToolExecutionContext,
     ToolExecutionInput,
@@ -42,6 +49,7 @@ export const ErrorCodes = {
   // General
   TOOL_NOT_FOUND: 'TOOL_NOT_FOUND',
   MODE_MISMATCH: 'MODE_MISMATCH',
+  POLICY_DENIED: 'POLICY_DENIED',
   EXECUTION_FAILED: 'EXECUTION_FAILED',
 } as const;
 
@@ -172,16 +180,19 @@ export type ToolHandler<TParams = unknown, TResult = unknown> = (
 export interface ToolRunnerOptions {
   registry?: ToolRegistry;
   trace?: TraceService;
+  preflightPolicy?: PreflightPolicy;
 }
 
 export class ToolRunner {
   private registry: ToolRegistry;
   private trace: TraceService;
   private handlers: Map<string, ToolHandler> = new Map();
+  private preflight: ReturnType<typeof createPreflight>;
 
   constructor(options: ToolRunnerOptions = {}) {
     this.registry = options.registry ?? toolRegistry;
     this.trace = options.trace ?? traceService;
+    this.preflight = createPreflight(options.preflightPolicy);
   }
 
   /**
@@ -275,6 +286,25 @@ export class ToolRunner {
         ErrorCodes.MODE_MISMATCH,
         `Tool ${toolId} requires mode "${tool.mode}" but got "${context.mode}"`
       );
+    }
+
+    // Optional preflight policy gate (additive, defaults to allow)
+    const governance = (tool as Tool & { governance?: CommandGovernanceMeta }).governance;
+    const preflight = this.preflight.decide({
+      toolId,
+      correlationId,
+      governance,
+      requestedMutation: mutationFromRisk(tool.risk),
+    });
+    if (preflight.allow !== true) {
+      // Narrow to denial branch for TS discriminated union compat
+      const denied = preflight as Extract<PolicyDecision, { allow: false }>;
+      this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
+        summary: `Policy denied ${toolId}: ${denied.reason}`,
+        errorCode: ErrorCodes.POLICY_DENIED,
+        component: 'ToolRunner',
+      });
+      return this.fail(correlationId, ErrorCodes.POLICY_DENIED, denied.reason);
     }
 
     // Collect all enforcement violations
@@ -445,6 +475,7 @@ function mapErrorCode(code: ErrorCode): RunnerErrorCode {
       return 'PII_BLOCKED';
     case ErrorCodes.TOOL_NOT_FOUND:
       return 'TOOL_NOT_FOUND';
+    case ErrorCodes.POLICY_DENIED:
     case ErrorCodes.WRITE_LANE_MISMATCH:
     case ErrorCodes.WRITE_LANE_REQUIRED:
     case ErrorCodes.CONFIRMATION_REQUIRED:
@@ -456,6 +487,12 @@ function mapErrorCode(code: ErrorCode): RunnerErrorCode {
     default:
       return 'EXECUTION_FAILED';
   }
+}
+
+function mutationFromRisk(risk: Tool['risk']): MutationClass {
+  if (risk === 'read_only') return 'none';
+  if (risk === 'write_low') return 'transient';
+  return 'durable';
 }
 
 // ============================================================================
