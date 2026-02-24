@@ -52,7 +52,7 @@ jobs:
 
       - name: Run Governance Proof (log)
         if: steps.changes.outputs.governance == 'true'
-        run: pnpm run ci:governance-proof:log
+        run: node scripts/ci/run_with_log.mjs pnpm run ci:governance > ci_governance_proof.log 2>&1
         env:
           GH_TOKEN: ${{ github.token }}
 
