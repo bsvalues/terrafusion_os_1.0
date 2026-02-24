@@ -1,6 +1,6 @@
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -68,26 +68,6 @@ function walkFiles(dir: string, predicate: (abs: string) => boolean): string[] {
   }
 
   return out.sort();
-}
-
-function listTrackedGuardFiles(repoRoot: string, testsRoot: string): string[] {
-  try {
-    const out = execSync(
-      'git ls-files -- os-platform/core/tests/*-leak-guard.test.ts os-platform/core/tests/*-leak-guard.test.tsx',
-      { cwd: repoRoot, encoding: 'utf8' }
-    );
-
-    return out
-      .split(/\r?\n/)
-      .map(s => s.trim())
-      .filter(Boolean)
-      .map(rel => path.resolve(repoRoot, rel))
-      .filter(abs => fs.existsSync(abs))
-      .sort();
-  } catch {
-    // Fallback for environments where git is unavailable.
-    return walkFiles(testsRoot, abs => GUARD_SUFFIXES.some(s => abs.endsWith(s)));
-  }
 }
 
 function extractStringConstants(source: string): Map<string, string> {
@@ -179,9 +159,20 @@ describe('Leak guard coverage mapping (Phase 202)', () => {
 
     expect(fs.existsSync(testsRoot), `Expected tests directory: ${testsRoot}`).toBe(true);
 
-    const guardFiles = listTrackedGuardFiles(repoRoot, testsRoot);
+    // Use git ls-files for deterministic enumeration — only tracked guards count.
+    // This prevents untracked (regenerated) files from affecting the result.
+    const trackedRaw = execSync(
+      'git ls-files os-platform/core/tests/*-leak-guard.test.ts os-platform/core/tests/*-leak-guard.test.tsx',
+      {
+        cwd: repoRoot,
+        encoding: 'utf8',
+      }
+    ).trim();
+    const guardFiles = trackedRaw
+      ? trackedRaw.split('\n').map(rel => path.resolve(repoRoot, rel.trim()))
+      : [];
 
-    expect(guardFiles.length, 'Expected leak-guard tests to exist.').toBeGreaterThan(0);
+    expect(guardFiles.length, 'Expected tracked leak-guard tests to exist.').toBeGreaterThan(0);
 
     const failures: string[] = [];
     const targetToGuard = new Map<string, string>(); // targetRelPath -> guardRelPath
