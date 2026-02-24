@@ -6,6 +6,18 @@ const HEADER = '// GENERATED - DO NOT EDIT';
 const ROOT = process.cwd();
 const targets = [
   {
+    source: 'os-platform/core/types/commandGovernance.ts',
+    out: 'os-platform/core/types/commandGovernance.js',
+  },
+  {
+    source: 'os-platform/core/pilot/ToolRegistry.ts',
+    out: 'os-platform/core/pilot/ToolRegistry.js',
+  },
+  {
+    source: 'os-platform/core/pilot/ToolRunner.preflight.ts',
+    out: 'os-platform/core/pilot/ToolRunner.preflight.js',
+  },
+  {
     source: 'os-platform/core/pilot/handlers.ts',
     out: 'os-platform/core/pilot/handlers.js',
   },
