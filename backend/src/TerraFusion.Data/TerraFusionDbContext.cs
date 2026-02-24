@@ -58,6 +58,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Security Entities
     public DbSet<SecurityEvent> SecurityEvents { get; set; }
     public DbSet<UserSession> UserSessions { get; set; }
+    public DbSet<PasswordHistory> PasswordHistories { get; set; }
 
     // Collaboration Entities
     public DbSet<CollaborationUser> CollaborationUsers { get; set; }
@@ -232,6 +233,21 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
             entity.Property(e => e.Metadata).HasColumnType("jsonb");
             entity.HasIndex(e => e.Timestamp);
             entity.HasIndex(e => e.EventType);
+        });
+
+        // Configure PasswordHistory entity (Phase 4 Sprint 1)
+        modelBuilder.Entity<PasswordHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.CreatedAt).IsRequired();
+            entity.HasIndex(e => new { e.UserId, e.CreatedAt })
+                .HasDatabaseName("IX_PasswordHistory_UserId_CreatedAt");
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Plugin>(entity =>
