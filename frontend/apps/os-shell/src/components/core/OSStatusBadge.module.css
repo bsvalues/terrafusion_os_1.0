@@ -30,7 +30,7 @@
 }
 .dot.connected {
   background: var(--tf-status-teal-light);
-  box-shadow: 0 0 6px 2px rgba(52, 211, 153, 0.6);
+  box-shadow: 0 0 6px 2px hsl(var(--tf-green-hs) 52% / 0.6);
 }
 .dot.connecting {
   background: var(--tf-status-blue-light);
