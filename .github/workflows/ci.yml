@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          hits=$(rg -n --glob '.github/workflows/*.yml' --glob '!.github/workflows/dotnet-test.yml' '(^|\s)dotnet\s+test(\s|$)' .github/workflows || true)
+          hits=$(grep -RInE --include='*.yml' --exclude='dotnet-test.yml' '(^|[[:space:]])dotnet[[:space:]]+test([[:space:]]|$)' .github/workflows || true)
 
           if [[ -n "$hits" ]]; then
             echo "❌ Drift Guard: direct 'dotnet test' detected in workflow files."
@@ -60,7 +60,7 @@ jobs:
               exit 1
             fi
 
-            if ! rg -q 'uses:\s*\./\.github/workflows/dotnet-test\.yml' "$f"; then
+            if ! grep -qE 'uses:[[:space:]]*\./\.github/workflows/dotnet-test\.yml' "$f"; then
               echo "❌ Drift Guard: $f does not call the reusable dotnet-test workflow."
               echo "Expected to find: uses: ./.github/workflows/dotnet-test.yml"
               exit 1
@@ -642,6 +642,12 @@ jobs:
             exit 1
           fi
           echo "✅ Quality Gate passed"
+
+      - name: Ensure SEAL helper scripts executable
+        if: steps.check-quality.outcome == 'success' && (env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed')
+        shell: bash
+        run: |
+          chmod +x scripts/speclock-tss-verify.sh scripts/speclock-tss-verify-state.sh || true
 
       - name: 🔒 TerraFusion Seal Gate (Backend)
         if: steps.check-quality.outcome == 'success' && (env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed')

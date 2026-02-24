@@ -134,7 +134,7 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: ./backend
-          file: ./backend/Dockerfile
+          file: ./backend/Dockerfile.API
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -215,7 +215,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile.frontend
+          file: ./docker/Dockerfile.frontend
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_frontend.outputs.tags }}
           labels: ${{ steps.meta_frontend.outputs.labels }}

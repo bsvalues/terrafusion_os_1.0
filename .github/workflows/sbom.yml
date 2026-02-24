@@ -138,7 +138,7 @@ jobs:
       - name: Generate SBOM (Container image)
         if: github.event_name != 'pull_request'
         run: |
-          docker build -t frontend-temp:latest -f Dockerfile.frontend .
+          docker build -t frontend-temp:latest -f docker/Dockerfile.frontend .
           syft frontend-temp:latest -o spdx-json=sbom-frontend-container-spdx.json
           syft frontend-temp:latest -o cyclonedx-json=sbom-frontend-container-cyclonedx.json
 
