@@ -113,16 +113,16 @@
        hsl(var(--tf-<name>-hs) <L%>)
        hsl(var(--tf-<name>-hs) <L%> / <alpha>)
      Derived from the foundation hex tokens above.                     */
-  --tf-bg-surface-hs: 217 33%;       /* #1e293b  (bg-surface)          */
-  --tf-surface-dark-hs: 222 47%;     /* #0f172a  (surface-dark)        */
-  --tf-text-primary-hs: 0 0%;        /* #ffffff  (text-primary)        */
-  --tf-text-secondary-hs: 213 27%;   /* #cbd5e1  (text-secondary)      */
-  --tf-success-hs: 152 100%;         /* #00ff88  (accent-success)      */
-  --tf-error-hs: 0 100%;             /* #ff4444  (error-red)           */
-  --tf-warning-hs: 40 100%;          /* #ffaa00  (warning-amber)       */
-  --tf-info-hs: 264 100%;            /* #8844ff  (info-purple)         */
-  --tf-network-blue-hs: 210 100%;    /* #0080ff  (network-blue)        */
-  --tf-transcend-cyan-hs: 180 100%;  /* #00ffff  (quantum-cyan)        */
+  --tf-bg-surface-hs: 217 33%;       /* bg-surface                     */
+  --tf-surface-dark-hs: 222 47%;     /* surface-dark                   */
+  --tf-text-primary-hs: 0 0%;        /* text-primary                   */
+  --tf-text-secondary-hs: 213 27%;   /* text-secondary                 */
+  --tf-success-hs: 152 100%;         /* accent-success                 */
+  --tf-error-hs: 0 100%;             /* error-red                      */
+  --tf-warning-hs: 40 100%;          /* warning-amber                  */
+  --tf-info-hs: 264 100%;            /* info-purple                    */
+  --tf-network-blue-hs: 210 100%;    /* network-blue                   */
+  --tf-transcend-cyan-hs: 180 100%;  /* quantum-cyan                   */
   --tf-neutral-hs: 220 13%;          /* gray scale base                */
 
   /* ═══ LIGHTNESS STEPS ═══
