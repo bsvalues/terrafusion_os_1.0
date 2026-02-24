@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -67,6 +68,26 @@ function walkFiles(dir: string, predicate: (abs: string) => boolean): string[] {
   }
 
   return out.sort();
+}
+
+function listTrackedGuardFiles(repoRoot: string, testsRoot: string): string[] {
+  try {
+    const out = execSync(
+      'git ls-files -- os-platform/core/tests/*-leak-guard.test.ts os-platform/core/tests/*-leak-guard.test.tsx',
+      { cwd: repoRoot, encoding: 'utf8' }
+    );
+
+    return out
+      .split(/\r?\n/)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(rel => path.resolve(repoRoot, rel))
+      .filter(abs => fs.existsSync(abs))
+      .sort();
+  } catch {
+    // Fallback for environments where git is unavailable.
+    return walkFiles(testsRoot, abs => GUARD_SUFFIXES.some(s => abs.endsWith(s)));
+  }
 }
 
 function extractStringConstants(source: string): Map<string, string> {
@@ -158,7 +179,7 @@ describe('Leak guard coverage mapping (Phase 202)', () => {
 
     expect(fs.existsSync(testsRoot), `Expected tests directory: ${testsRoot}`).toBe(true);
 
-    const guardFiles = walkFiles(testsRoot, abs => GUARD_SUFFIXES.some(s => abs.endsWith(s)));
+    const guardFiles = listTrackedGuardFiles(repoRoot, testsRoot);
 
     expect(guardFiles.length, 'Expected leak-guard tests to exist.').toBeGreaterThan(0);
 
