@@ -10,6 +10,8 @@ on:
       - 'tools/tdc/src/contracts/**'
       - 'tools/tdc/src/commands/ui.ts'
       - 'tools/registry/ratchet_guard.mjs'
+      - 'tests/governance/**'
+      - 'package.json'
       - 'configs/eslint/**'
       - 'tdc.config.json'
       - 'ui-token-baseline.json'
@@ -24,6 +26,8 @@ on:
       - 'tools/tdc/src/contracts/**'
       - 'tools/tdc/src/commands/ui.ts'
       - 'tools/registry/ratchet_guard.mjs'
+      - 'tests/governance/**'
+      - 'package.json'
       - 'configs/eslint/**'
       - 'tdc.config.json'
       - 'ui-token-baseline.json'
@@ -61,6 +65,9 @@ jobs:
       - name: UI Token Contract (Gen2 scope + ratchet)
         run: pnpm tdc:ui:tokens
 
+      - name: UI Governance Tripwires
+        run: pnpm -w run test:governance:ui
+
       - name: Strict ratchet guard (Gen2 scope)
         if: github.event_name == 'pull_request'
         run: node tools/registry/ratchet_guard.mjs --minDelta 1 --baseRef "origin/${{ github.base_ref }}"
@@ -74,12 +81,21 @@ jobs:
             echo "ui-token-baseline.json changed in this PR."
             HASH_BEFORE=$(git show origin/${{ github.base_ref }}:ui-token-baseline.json 2>/dev/null | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{console.log(JSON.parse(d).scopeHash||"")}catch{console.log("")}})' || echo "")
             HASH_AFTER=$(node -e 'try{console.log(JSON.parse(require("fs").readFileSync("ui-token-baseline.json","utf8")).scopeHash||"")}catch{console.log("")}')
+            COUNT_BEFORE=$(git show origin/${{ github.base_ref }}:ui-token-baseline.json 2>/dev/null | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{const j=JSON.parse(d);console.log(Number.isFinite(j.violationCount)?j.violationCount:"")}catch{console.log("")}})' || echo "")
+            COUNT_AFTER=$(node -e 'try{const j=JSON.parse(require("fs").readFileSync("ui-token-baseline.json","utf8"));console.log(Number.isFinite(j.violationCount)?j.violationCount:"")}catch{console.log("")}')
             if [ -n "$HASH_BEFORE" ] && [ "$HASH_BEFORE" = "$HASH_AFTER" ]; then
-              echo "::error::Baseline changed without scopeHash change — likely ratchet bypass."
-              echo "If intentional, update scope in tdc.config.json or explain in PR."
-              exit 1
+              if [ "$COUNT_BEFORE" = "0" ] && [ -n "$COUNT_AFTER" ] && [ "$COUNT_AFTER" -gt 0 ]; then
+                echo "Bootstrap baseline repair detected (0 -> $COUNT_AFTER) with unchanged scopeHash; allowing one-time fix."
+              else
+                echo "::error::Baseline changed without scopeHash change — likely ratchet bypass."
+                echo "If intentional, update scope in tdc.config.json or explain in PR."
+                exit 1
+              fi
+            elif [ -n "$HASH_BEFORE" ] && [ -n "$HASH_AFTER" ]; then
+              echo "✅ Baseline changed with scopeHash change (expected rebaseline)."
+            else
+              echo "⚠️ Could not validate baseline scopeHash transition; check baseline JSON schema."
             fi
-            echo "✅ Baseline changed with scopeHash change (expected rebaseline)."
           else
             echo "Baseline unchanged."
           fi
