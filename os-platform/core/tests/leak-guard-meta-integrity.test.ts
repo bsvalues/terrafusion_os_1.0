@@ -17,8 +17,8 @@ describe('leak-guard meta-integrity', () => {
   const guardsDir = path.resolve(__dirname);
   const guardFiles = fs.readdirSync(guardsDir).filter(f => f.endsWith('-leak-guard.test.ts'));
 
-  it('has at least 108 leak-guard test files', () => {
-    expect(guardFiles.length).toBeGreaterThanOrEqual(108);
+  it('has at least 340 leak-guard test files', () => {
+    expect(guardFiles.length).toBeGreaterThanOrEqual(340);
   });
 
   it('every guard imports assertNoRawColorLeaks', () => {
