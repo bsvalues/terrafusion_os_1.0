@@ -19,13 +19,20 @@
  * Environment:
  *   RATCHET_BASE_REF      - base ref (default: origin/main, or GITHUB_BASE_REF)
  *   RATCHET_MIN_DELTA     - minimum improvement required (default: 1)
- *   RATCHET_SCOPE         - comma-separated scope patterns (default: apps/os-shell/**,packages/ui/**)
+ *   RATCHET_SCOPE         - comma-separated scope patterns
+ *                          (default: frontend/apps/os-shell/**,apps/os-shell/**,packages/ui/**)
  *   RATCHET_BASELINE_FILE - baseline JSON file path (default: ui-token-baseline.json)
  *   DEBUG_RATCHET_GUARD   - set to "1" for verbose output
  */
 
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+
+const DEFAULT_SCOPE = [
+  "frontend/apps/os-shell/**",
+  "apps/os-shell/**",
+  "packages/ui/**",
+];
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -40,7 +47,10 @@ function parseArgs(argv) {
   const out = {
     baseRef: process.env.RATCHET_BASE_REF || process.env.GITHUB_BASE_REF || "origin/main",
     minDelta: Number(process.env.RATCHET_MIN_DELTA || "1"),
-    scope: (process.env.RATCHET_SCOPE || "apps/os-shell/**,packages/ui/**").split(",").map(s => s.trim()).filter(Boolean),
+    scope: (process.env.RATCHET_SCOPE || DEFAULT_SCOPE.join(","))
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
     baselineFile: process.env.RATCHET_BASELINE_FILE || "ui-token-baseline.json",
     debug: process.env.DEBUG_RATCHET_GUARD === "1",
   };

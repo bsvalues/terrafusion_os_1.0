@@ -89,6 +89,7 @@
     "type-check": "tsc -p tsconfig.core.json",
     "typecheck:core": "tsc -p tsconfig.core.json",
     "test:governed": "pnpm run type-check && node --test os-platform/core/tests/phase83-tools.test.mjs",
+    "test:governance:ui": "vitest run tests/governance/noNewRawColors.contract.test.ts tests/governance/uiTokenBaseline.contract.test.ts tests/governance/ratchetGuardScope.contract.test.ts",
     "lint:platform": "node scripts/platform-lint.mjs",
     "doctor": "node scripts/doctor.mjs",
     "canon": "node tools/canon/canon.mjs",
