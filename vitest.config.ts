@@ -14,6 +14,7 @@ export default defineConfig({
       'tests/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       'os-platform/core/tests/**/*.test.ts',
       'os-platform/core/pilot/**/*.test.ts',
+      'os-platform/core/terratrc/**/*.test.ts',
     ],
     exclude: [
       'node_modules/**',
