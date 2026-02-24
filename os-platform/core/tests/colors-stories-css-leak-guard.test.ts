@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
 import { assertNoRawColorLeaks } from '../../../tools/ui-tokens/leak-guard';
 
 describe('colors.stories.css leak guard', () => {
