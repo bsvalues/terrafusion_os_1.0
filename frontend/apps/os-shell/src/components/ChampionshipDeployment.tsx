@@ -244,7 +244,7 @@ const ChampionshipDeployment: React.FC = () => {
         style={{
           background: 'linear-gradient(90deg, var(--tf-network-blue) 0%, var(--tf-network-light) 100%)',
           padding: '20px',
-          boxShadow: '0 4px 30px hsl(var(--tf-neutral-hs) / 4% / 0.5)',
+          boxShadow: '0 4px 30px hsl(var(--tf-bg) / 0.5)',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -336,8 +336,8 @@ const ChampionshipDeployment: React.FC = () => {
       >
         <div
           style={{
-            background: 'hsl(var(--tf-blue-hs) / 16% / 0.9)',
-            border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+            background: 'hsl(var(--tf-surface) / 0.9)',
+            border: '1px solid hsl(var(--tf-accent-2) / 0.3)',
             borderRadius: '10px',
             padding: '20px',
             position: 'relative',
@@ -377,7 +377,7 @@ const ChampionshipDeployment: React.FC = () => {
           <div
             style={{
               height: '10px',
-              background: 'hsl(var(--tf-neutral-hs) / 100% / 0.1)',
+              background: 'hsl(var(--tf-text) / 0.1)',
               borderRadius: '5px',
               overflow: 'hidden',
               marginTop: '10px',
@@ -389,8 +389,8 @@ const ChampionshipDeployment: React.FC = () => {
 
         <div
           style={{
-            background: 'hsl(var(--tf-blue-hs) / 16% / 0.9)',
-            border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+            background: 'hsl(var(--tf-surface) / 0.9)',
+            border: '1px solid hsl(var(--tf-accent-2) / 0.3)',
             borderRadius: '10px',
             padding: '20px',
             position: 'relative',
@@ -430,7 +430,7 @@ const ChampionshipDeployment: React.FC = () => {
           <div
             style={{
               height: '10px',
-              background: 'hsl(var(--tf-neutral-hs) / 100% / 0.1)',
+              background: 'hsl(var(--tf-text) / 0.1)',
               borderRadius: '5px',
               overflow: 'hidden',
               marginTop: '10px',
@@ -450,8 +450,8 @@ const ChampionshipDeployment: React.FC = () => {
 
         <div
           style={{
-            background: 'hsl(var(--tf-blue-hs) / 16% / 0.9)',
-            border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+            background: 'hsl(var(--tf-surface) / 0.9)',
+            border: '1px solid hsl(var(--tf-accent-2) / 0.3)',
             borderRadius: '10px',
             padding: '20px',
             position: 'relative',
@@ -491,7 +491,7 @@ const ChampionshipDeployment: React.FC = () => {
           <div
             style={{
               height: '10px',
-              background: 'hsl(var(--tf-neutral-hs) / 100% / 0.1)',
+              background: 'hsl(var(--tf-text) / 0.1)',
               borderRadius: '5px',
               overflow: 'hidden',
               marginTop: '10px',
@@ -503,8 +503,8 @@ const ChampionshipDeployment: React.FC = () => {
 
         <div
           style={{
-            background: 'hsl(var(--tf-blue-hs) / 16% / 0.9)',
-            border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+            background: 'hsl(var(--tf-surface) / 0.9)',
+            border: '1px solid hsl(var(--tf-accent-2) / 0.3)',
             borderRadius: '10px',
             padding: '20px',
             position: 'relative',
@@ -544,7 +544,7 @@ const ChampionshipDeployment: React.FC = () => {
           <div
             style={{
               height: '10px',
-              background: 'hsl(var(--tf-neutral-hs) / 100% / 0.1)',
+              background: 'hsl(var(--tf-text) / 0.1)',
               borderRadius: '5px',
               overflow: 'hidden',
               marginTop: '10px',
@@ -564,8 +564,8 @@ const ChampionshipDeployment: React.FC = () => {
 
         <div
           style={{
-            background: 'hsl(var(--tf-blue-hs) / 16% / 0.9)',
-            border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+            background: 'hsl(var(--tf-surface) / 0.9)',
+            border: '1px solid hsl(var(--tf-accent-2) / 0.3)',
             borderRadius: '10px',
             padding: '20px',
             position: 'relative',
@@ -605,7 +605,7 @@ const ChampionshipDeployment: React.FC = () => {
           <div
             style={{
               height: '10px',
-              background: 'hsl(var(--tf-neutral-hs) / 100% / 0.1)',
+              background: 'hsl(var(--tf-text) / 0.1)',
               borderRadius: '5px',
               overflow: 'hidden',
               marginTop: '10px',
@@ -617,8 +617,8 @@ const ChampionshipDeployment: React.FC = () => {
 
         <div
           style={{
-            background: 'hsl(var(--tf-blue-hs) / 16% / 0.9)',
-            border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+            background: 'hsl(var(--tf-surface) / 0.9)',
+            border: '1px solid hsl(var(--tf-accent-2) / 0.3)',
             borderRadius: '10px',
             padding: '20px',
             position: 'relative',
@@ -658,7 +658,7 @@ const ChampionshipDeployment: React.FC = () => {
           <div
             style={{
               height: '10px',
-              background: 'hsl(var(--tf-neutral-hs) / 100% / 0.1)',
+              background: 'hsl(var(--tf-text) / 0.1)',
               borderRadius: '5px',
               overflow: 'hidden',
               marginTop: '10px',
@@ -680,7 +680,7 @@ const ChampionshipDeployment: React.FC = () => {
       {/* Swarm Visualization */}
       <div
         style={{
-          background: 'hsl(var(--tf-blue-hs) / 10% / 0.9)',
+          background: 'hsl(var(--tf-bg) / 0.9)',
           borderRadius: '10px',
           padding: '20px',
           margin: '20px',
@@ -845,7 +845,7 @@ const ChampionshipDeployment: React.FC = () => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'scale(1.05)';
-              e.currentTarget.style.boxShadow = '0 5px 20px hsl(var(--tf-cyan-hs) / 50% / 0.5)';
+              e.currentTarget.style.boxShadow = '0 5px 20px hsl(var(--tf-accent-2) / 0.5)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'scale(1)';
@@ -860,7 +860,7 @@ const ChampionshipDeployment: React.FC = () => {
       {/* Deployment Log */}
       <div
         style={{
-          background: 'hsl(var(--tf-blue-hs) / 10% / 0.9)',
+          background: 'hsl(var(--tf-bg) / 0.9)',
           border: '1px solid var(--tf-network-blue)',
           borderRadius: '10px',
           padding: '20px',
@@ -884,7 +884,7 @@ const ChampionshipDeployment: React.FC = () => {
             style={{
               padding: '8px',
               margin: '5px 0',
-              background: 'hsl(var(--tf-cyan-hs) / 50% / 0.1)',
+              background: 'hsl(var(--tf-accent-2) / 0.1)',
               borderLeft: `3px solid ${entry.type === 'success' ? 'var(--tf-accent-success)' : entry.type === 'warning' ? 'var(--tf-accent-warning)' : 'var(--tf-network-blue)'}`,
               fontFamily: "'Courier New', monospace",
               fontSize: '0.9em',

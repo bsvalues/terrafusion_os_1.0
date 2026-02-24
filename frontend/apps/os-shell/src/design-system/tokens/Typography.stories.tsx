@@ -13,6 +13,13 @@ const meta: Meta = {
     layout: 'padded',
   },
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <div style={{ '--tf-ts-neutral-hs': '0 0%' } as any}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 export default meta;
 type Story = StoryObj;
@@ -63,7 +70,7 @@ export const DisplayText: Story = {
       </h2>
       <p
         style={{
-          color: 'hsl(var(--tf-neutral-hs) 70%)',
+          color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -115,7 +122,7 @@ export const Headings: Story = {
       </h2>
       <p
         style={{
-          color: 'hsl(var(--tf-neutral-hs) 70%)',
+          color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -171,7 +178,7 @@ export const BodyText: Story = {
       </h2>
       <p
         style={{
-          color: 'hsl(var(--tf-neutral-hs) 70%)',
+          color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -217,7 +224,7 @@ export const Labels: Story = {
       </h2>
       <p
         style={{
-          color: 'hsl(var(--tf-neutral-hs) 70%)',
+          color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -258,7 +265,7 @@ export const CodeText: Story = {
       </h2>
       <p
         style={{
-          color: 'hsl(var(--tf-neutral-hs) 70%)',
+          color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -299,7 +306,7 @@ export const FontWeights: Story = {
       </h2>
       <p
         style={{
-          color: 'hsl(var(--tf-neutral-hs) 70%)',
+          color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
           marginBottom: '32px',
           fontSize: '14px',
           lineHeight: '1.6',
@@ -376,7 +383,7 @@ export const RealWorldExample: Story = {
         <p
           style={{
             ...tokens.typography.textStyles.body.lg,
-            color: 'hsl(var(--tf-neutral-hs) 90%)',
+            color: 'hsl(var(--tf-ts-neutral-hs) 90%)',
             marginBottom: tokens.spacing[4],
           }}
         >
@@ -397,7 +404,7 @@ export const RealWorldExample: Story = {
         <p
           style={{
             ...tokens.typography.textStyles.body.md,
-            color: 'hsl(var(--tf-neutral-hs) 70%)',
+            color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
             marginBottom: tokens.spacing[4],
             lineHeight: '1.7',
           }}
@@ -460,7 +467,7 @@ export const UsageGuidelines: Story = {
         </h3>
         <ul
           style={{
-            color: 'hsl(var(--tf-neutral-hs) 70%)',
+            color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
             fontSize: '14px',
             lineHeight: '1.8',
           }}
@@ -488,7 +495,7 @@ export const UsageGuidelines: Story = {
         </h3>
         <ul
           style={{
-            color: 'hsl(var(--tf-neutral-hs) 70%)',
+            color: 'hsl(var(--tf-ts-neutral-hs) 70%)',
             fontSize: '14px',
             lineHeight: '1.8',
           }}

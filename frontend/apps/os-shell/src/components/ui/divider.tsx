@@ -23,8 +23,8 @@ export const Divider: React.FC<DividerProps> = ({
 
   const variantClasses = {
     default: 'border-terra-cyan/20',
-    quantum: 'border-terra-cyan/40 shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.3)]',
-    glow: 'border-terra-cyan shadow-[0_0_15px_hsl(var(--tf-cyan-hs)_50%_/_0.5)] animate-pulse',
+    quantum: 'border-terra-cyan/40 shadow-[0_0_10px_rgba(0,255,255,0.3)]',
+    glow: 'border-terra-cyan shadow-[0_0_15px_rgba(0,255,255,0.5)] animate-pulse',
     gradient:
       'border-transparent bg-gradient-to-r from-transparent via-terra-cyan to-transparent h-px',
     solid: 'border-terra-cyan',

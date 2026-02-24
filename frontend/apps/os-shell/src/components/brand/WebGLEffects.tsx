@@ -393,7 +393,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
             onClick={() => changeEffect(num)}
             style={{
               padding: '8px 12px',
-              backgroundColor: currentEffect === num ? 'var(--tf-transcend-highlight)' : 'hsl(var(--tf-cyan-hs) 47% / 0.2)',
+              backgroundColor: currentEffect === num ? 'var(--tf-transcend-highlight)' : 'rgba(0, 255, 238, 0.2)',
               color: currentEffect === num ? 'var(--tf-bg-surface)' : 'var(--tf-transcend-highlight)',
               border: '1px solid var(--tf-transcend-highlight)',
               borderRadius: '5px',
@@ -417,7 +417,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
           color: 'var(--tf-transcend-highlight)',
           fontFamily: 'monospace',
           fontSize: '14px',
-          background: 'hsl(var(--tf-neutral-hs) 8% / 0.8)',
+          background: 'rgba(11, 16, 32, 0.8)',
           padding: '5px 10px',
           borderRadius: '5px',
         }}
@@ -434,7 +434,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
           zIndex: 1000,
           color: 'var(--tf-transcend-highlight)',
           fontSize: '12px',
-          background: 'hsl(var(--tf-neutral-hs) 8% / 0.8)',
+          background: 'rgba(11, 16, 32, 0.8)',
           padding: '5px 10px',
           borderRadius: '5px',
         }}

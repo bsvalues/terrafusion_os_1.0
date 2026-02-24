@@ -129,7 +129,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
   const generateAIResponse = (query: string, context?: any): string => {
     // Championship-level AI response generation
     if (query.toLowerCase().includes('property') || query.toLowerCase().includes('parcel')) {
-      return `🏡 **Property Analysis Complete**\n\nI've analyzed 847 comparable properties in your jurisdiction using quantum-enhanced valuation algorithms.\n\n**Key Insights:**\n• Market trend: +3.2% (last 6 months)\n• Valuation accuracy: 99.7%\n• IAAO compliance: ✓ Certified\n• Outliers detected: 2 properties flagged for review\n\n**Recommended Actions:**\n1. Review flagged properties (Parcels P-8842, P-9103)\n2. Update cost factors based on market analysis\n3. Generate assessment roll with AI validation\n\nWould you like me to execute any of these actions?`;
+      return `🏡 **Property Analysis Complete**\n\nI've analyzed 847 comparable properties in your jurisdiction using quantum-enhanced valuation algorithms.\n\n**Key Insights:**\n• Market trend: +3.2% (last 6 months)\n• Valuation accuracy: 99.7%\n• IAAO compliance: ✓ Certified\n• Outliers detected: 2 properties flagged for review\n\n**Recommended Actions:**\n1. Review flagged properties (Parcels #8842, #9103)\n2. Update cost factors based on market analysis\n3. Generate assessment roll with AI validation\n\nWould you like me to execute any of these actions?`;
     }
 
     if (query.toLowerCase().includes('compliance') || query.toLowerCase().includes('audit')) {

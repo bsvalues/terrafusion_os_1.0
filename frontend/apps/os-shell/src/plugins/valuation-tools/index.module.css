@@ -1,13 +1,9 @@
 .root {
-  /* Phase 79 – valuation-tools local HS anchors */
-  --tf-val-text-hs: 210 29%;
-  --tf-val-purple-hs: 283 39%;
-
   padding: 16px;
-  border: 1px solid hsl(var(--tf-neutral-hs) 88%);
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   margin: 12px 0;
-  background: hsl(var(--tf-neutral-hs) 98%);
+  background: #f9f9f9;
 }
 
 .header {
@@ -19,13 +15,13 @@
 .title {
   font-size: 18px;
   font-weight: 700;
-  color: hsl(var(--tf-val-text-hs) 24%);
+  color: #2c3e50;
   margin-bottom: 4px;
 }
 
 .subtitle {
   font-size: 14px;
-  color: hsl(var(--tf-neutral-hs) 53%);
+  color: #7f8c8d;
   font-style: italic;
 }
 
@@ -35,7 +31,7 @@
   gap: 8px;
   margin-bottom: 16px;
   font-size: 13px;
-  color: hsl(var(--tf-neutral-hs) 33%);
+  color: #555;
 }
 
 .controls {
@@ -54,7 +50,7 @@
 .label {
   font-weight: 600;
   font-size: 13px;
-  color: hsl(var(--tf-val-text-hs) 24%);
+  color: #2c3e50;
 }
 
 .input,
@@ -83,12 +79,12 @@
 }
 
 .button:hover:not(:disabled) {
-  background: hsl(var(--tf-red-hs) 46%);
+  background: #c0392b;
 }
 
 .buttonSecondary {
   padding: 8px 16px;
-  background: hsl(var(--tf-val-purple-hs) 53%);
+  background: #9b59b6;
   color: white;
   border: none;
   border-radius: 4px;
@@ -98,18 +94,18 @@
 }
 
 .buttonSecondary:hover:not(:disabled) {
-  background: hsl(var(--tf-val-purple-hs) 47%);
+  background: #8e44ad;
 }
 
 .button:disabled,
 .buttonSecondary:disabled {
-  background: hsl(var(--tf-neutral-hs) 62%);
+  background: #95a5a6;
   cursor: not-allowed;
 }
 
 .results {
-  background: hsl(var(--tf-neutral-hs) 94%);
-  border: 1px solid hsl(var(--tf-neutral-hs) 76%);
+  background: #ecf0f1;
+  border: 1px solid #bdc3c7;
   border-radius: 4px;
   padding: 12px;
 }
@@ -117,7 +113,7 @@
 .resultsTitle {
   font-weight: 600;
   margin-bottom: 8px;
-  color: hsl(var(--tf-val-text-hs) 24%);
+  color: #2c3e50;
 }
 
 .resultsData {
@@ -126,7 +122,7 @@
   background: white;
   padding: 8px;
   border-radius: 3px;
-  border: 1px solid hsl(var(--tf-neutral-hs) 85%);
+  border: 1px solid #d5dbdb;
   overflow-x: auto;
   max-height: 200px;
   overflow-y: auto;

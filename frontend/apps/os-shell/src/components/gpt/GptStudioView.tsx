@@ -215,7 +215,7 @@ export default function GptStudioView() {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        background: 'hsl(var(--tf-blue-hs) / 10% / 0.95)',
+        background: 'hsl(var(--tf-bg) / 0.95)',
         borderRadius: '12px',
         overflow: 'hidden',
       }}
@@ -224,8 +224,8 @@ export default function GptStudioView() {
       <header
         style={{
           padding: '1.5rem 2rem',
-          background: 'linear-gradient(135deg, hsl(var(--tf-cyan-hs) / 50% / 0.1), hsl(var(--tf-blue-hs) / 50% / 0.1))',
-          borderBottom: '2px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+          background: 'linear-gradient(135deg, hsl(var(--tf-accent) / 0.1), hsl(var(--tf-accent-2) / 0.1))',
+          borderBottom: '2px solid hsl(var(--tf-accent) / 0.3)',
           display: 'flex',
           alignItems: 'center',
           gap: '1rem',
@@ -235,8 +235,8 @@ export default function GptStudioView() {
           <button
             onClick={handleBackToList}
             style={{
-              background: 'hsl(var(--tf-cyan-hs) / 50% / 0.1)',
-              border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+              background: 'hsl(var(--tf-accent) / 0.1)',
+              border: '1px solid hsl(var(--tf-accent) / 0.3)',
               borderRadius: '8px',
               padding: '0.5rem 1rem',
               color: 'var(--tf-quantum-cyan)',
@@ -262,7 +262,7 @@ export default function GptStudioView() {
             style={{
               margin: '0.25rem 0 0',
               fontSize: '0.9rem',
-              color: 'hsl(var(--tf-cyan-hs) / 50% / 0.7)',
+              color: 'hsl(var(--tf-accent) / 0.7)',
             }}
           >
             {state.selectedGpt
@@ -329,7 +329,7 @@ export default function GptStudioView() {
               <button
                 onClick={() => window.location.reload()}
                 style={{
-                  background: 'hsl(var(--tf-red-hs) / 53% / 0.2)',
+                  background: 'hsl(var(--tf-error) / 0.2)',
                   border: '1px solid var(--error-red)',
                   borderRadius: '8px',
                   padding: '0.5rem 1rem',
@@ -373,8 +373,8 @@ export default function GptStudioView() {
                   key={gpt.id}
                   onClick={() => handleSelectGpt(gpt)}
                   style={{
-                    background: 'hsl(var(--tf-cyan-hs) / 50% / 0.05)',
-                    border: '2px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
+                    background: 'hsl(var(--tf-accent) / 0.05)',
+                    border: '2px solid hsl(var(--tf-accent) / 0.2)',
                     borderRadius: '12px',
                     padding: '1.5rem',
                     textAlign: 'left',
@@ -382,12 +382,12 @@ export default function GptStudioView() {
                     transition: 'all 0.3s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'hsl(var(--tf-cyan-hs) / 50% / 0.1)';
-                    e.currentTarget.style.borderColor = 'hsl(var(--tf-cyan-hs) / 50% / 0.5)';
+                    e.currentTarget.style.background = 'hsl(var(--tf-accent) / 0.1)';
+                    e.currentTarget.style.borderColor = 'hsl(var(--tf-accent) / 0.5)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'hsl(var(--tf-cyan-hs) / 50% / 0.05)';
-                    e.currentTarget.style.borderColor = 'hsl(var(--tf-cyan-hs) / 50% / 0.2)';
+                    e.currentTarget.style.background = 'hsl(var(--tf-accent) / 0.05)';
+                    e.currentTarget.style.borderColor = 'hsl(var(--tf-accent) / 0.2)';
                   }}
                 >
                   <div
@@ -415,7 +415,7 @@ export default function GptStudioView() {
                     style={{
                       margin: '0 0 1rem',
                       fontSize: '0.85rem',
-                      color: 'hsl(var(--tf-neutral-hs) / 100% / 0.7)',
+                      color: 'hsl(var(--tf-text) / 0.7)',
                       lineHeight: '1.5',
                     }}
                   >
@@ -431,7 +431,7 @@ export default function GptStudioView() {
                     <span
                       style={{
                         fontSize: '0.75rem',
-                        background: 'hsl(var(--tf-green-hs) / 50% / 0.2)',
+                        background: 'hsl(var(--tf-success) / 0.2)',
                         color: 'var(--tf-accent-success)',
                         padding: '0.25rem 0.5rem',
                         borderRadius: '4px',
@@ -443,7 +443,7 @@ export default function GptStudioView() {
                       <span
                         style={{
                           fontSize: '0.75rem',
-                          background: 'hsl(var(--tf-blue-hs) / 50% / 0.2)',
+                          background: 'hsl(var(--tf-accent-2) / 0.2)',
                           color: 'var(--tf-network-blue)',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '4px',
@@ -456,7 +456,7 @@ export default function GptStudioView() {
                       <span
                         style={{
                           fontSize: '0.75rem',
-                          background: 'hsl(var(--tf-amber-hs) / 50% / 0.2)',
+                          background: 'hsl(var(--tf-warning) / 0.2)',
                           color: 'var(--warning-amber)',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '4px',
@@ -499,7 +499,7 @@ export default function GptStudioView() {
                   style={{
                     textAlign: 'center',
                     padding: '3rem',
-                    color: 'hsl(var(--tf-neutral-hs) / 100% / 0.5)',
+                    color: 'hsl(var(--tf-text) / 0.5)',
                   }}
                 >
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
@@ -531,11 +531,11 @@ export default function GptStudioView() {
                       background:
                         msg.role === 'user'
                           ? 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-quantum-cyan))'
-                          : 'hsl(var(--tf-cyan-hs) / 50% / 0.1)',
+                          : 'hsl(var(--tf-accent) / 0.1)',
                       color: msg.role === 'user' ? 'var(--tf-void-black)' : 'var(--tf-text-primary)fff',
                       border:
                         msg.role === 'assistant'
-                          ? '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)'
+                          ? '1px solid hsl(var(--tf-accent) / 0.3)'
                           : 'none',
                     }}
                   >
@@ -573,8 +573,8 @@ export default function GptStudioView() {
                     style={{
                       padding: '1rem 1.25rem',
                       borderRadius: '12px',
-                      background: 'hsl(var(--tf-cyan-hs) / 50% / 0.1)',
-                      border: '1px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+                      background: 'hsl(var(--tf-accent) / 0.1)',
+                      border: '1px solid hsl(var(--tf-accent) / 0.3)',
                       color: 'var(--tf-quantum-cyan)',
                     }}
                   >
@@ -592,8 +592,8 @@ export default function GptStudioView() {
             <div
               style={{
                 padding: '1rem 1.5rem',
-                borderTop: '2px solid hsl(var(--tf-cyan-hs) / 50% / 0.2)',
-                background: 'hsl(var(--tf-neutral-hs) / 4% / 0.3)',
+                borderTop: '2px solid hsl(var(--tf-accent) / 0.2)',
+                background: 'hsl(var(--tf-bg) / 0.3)',
               }}
             >
               {state.error && (
@@ -601,8 +601,8 @@ export default function GptStudioView() {
                   style={{
                     marginBottom: '0.75rem',
                     padding: '0.5rem 1rem',
-                    background: 'hsl(var(--tf-red-hs) / 53% / 0.1)',
-                    border: '1px solid hsl(var(--tf-red-hs) / 53% / 0.3)',
+                    background: 'hsl(var(--tf-error) / 0.1)',
+                    border: '1px solid hsl(var(--tf-error) / 0.3)',
                     borderRadius: '8px',
                     color: 'var(--error-red)',
                     fontSize: '0.85rem',
@@ -625,8 +625,8 @@ export default function GptStudioView() {
                   style={{
                     flex: 1,
                     padding: '0.875rem 1rem',
-                    background: 'hsl(var(--tf-cyan-hs) / 50% / 0.05)',
-                    border: '2px solid hsl(var(--tf-cyan-hs) / 50% / 0.3)',
+                    background: 'hsl(var(--tf-accent) / 0.05)',
+                    border: '2px solid hsl(var(--tf-accent) / 0.3)',
                     borderRadius: '8px',
                     color: 'var(--tf-text-primary)fff',
                     fontSize: '1rem',
@@ -644,13 +644,13 @@ export default function GptStudioView() {
                     padding: '0.875rem 1.5rem',
                     background:
                       state.isSending || !state.inputValue.trim()
-                        ? 'hsl(var(--tf-cyan-hs) / 50% / 0.2)'
+                        ? 'hsl(var(--tf-accent) / 0.2)'
                         : 'linear-gradient(135deg, var(--tf-quantum-cyan), var(--tf-network-blue))',
                     border: 'none',
                     borderRadius: '8px',
                     color:
                       state.isSending || !state.inputValue.trim()
-                        ? 'hsl(var(--tf-cyan-hs) / 50% / 0.5)'
+                        ? 'hsl(var(--tf-accent) / 0.5)'
                         : 'var(--tf-void-black)',
                     fontSize: '1rem',
                     fontWeight: 'bold',

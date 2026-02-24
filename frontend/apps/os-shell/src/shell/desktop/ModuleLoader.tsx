@@ -34,21 +34,21 @@ const NotFoundState: React.FC<{ moduleId: string }> = ({ moduleId }) => (
     role='alert'
     className='w-full h-full flex flex-col items-center justify-center p-6'
     style={{
-      background: 'linear-gradient(135deg, hsl(var(--tf-neutral-hs) 5% / 0.95) 0%, hsl(var(--tf-neutral-hs) 8% / 0.9) 100%)',
+      background: 'linear-gradient(135deg, rgba(10, 14, 26, 0.95) 0%, rgba(20, 24, 36, 0.9) 100%)',
     }}
   >
     {/* Warning icon */}
     <div
       className='w-16 h-16 rounded-full flex items-center justify-center mb-4'
       style={{
-        background: 'hsl(var(--tf-amber-hs) 50% / 0.15)',
-        border: '1px solid hsl(var(--tf-amber-hs) 50% / 0.3)',
-        boxShadow: '0 0 30px hsl(var(--tf-amber-hs) 50% / 0.2)',
+        background: 'rgba(255, 170, 0, 0.15)',
+        border: '1px solid rgba(255, 170, 0, 0.3)',
+        boxShadow: '0 0 30px rgba(255, 170, 0, 0.2)',
       }}
     >
       <svg
         className='w-8 h-8'
-        style={{ color: 'hsl(var(--tf-amber-hs) 50%)' }}
+        style={{ color: '#FFAA00' }}
         fill='none'
         stroke='currentColor'
         viewBox='0 0 24 24'
@@ -64,7 +64,7 @@ const NotFoundState: React.FC<{ moduleId: string }> = ({ moduleId }) => (
     </div>
 
     {/* Title */}
-    <h3 className='text-lg font-light mb-2' style={{ color: 'hsl(var(--tf-amber-hs) 50%)' }}>
+    <h3 className='text-lg font-light mb-2' style={{ color: '#FFAA00' }}>
       Module Not Found
     </h3>
 
@@ -74,9 +74,9 @@ const NotFoundState: React.FC<{ moduleId: string }> = ({ moduleId }) => (
       <code
         className='px-2 py-0.5 rounded'
         style={{
-          color: 'hsl(var(--tf-cyan-hs) 50%)',
-          background: 'hsl(var(--tf-cyan-hs) 50% / 0.1)',
-          border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.2)',
+          color: '#00E5FF',
+          background: 'rgba(0, 229, 255, 0.1)',
+          border: '1px solid rgba(0, 229, 255, 0.2)',
         }}
       >
         {moduleId || '(empty)'}

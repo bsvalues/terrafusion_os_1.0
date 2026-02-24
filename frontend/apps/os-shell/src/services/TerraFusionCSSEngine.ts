@@ -221,8 +221,8 @@ export class TerraFusionCSSEngine {
       },
       {
         condition: 'performance.fps >= 55',
-        trueValue: 'hsl(var(--tf-green-hs) 60%)',
-        falseValue: 'hsl(var(--tf-red-hs) 60%)',
+        trueValue: 'hsl(120 100% 60%)',
+        falseValue: 'hsl(0 100% 60%)',
         property: 'color',
         selector: '.tf-fps-indicator',
       }

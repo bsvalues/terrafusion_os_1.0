@@ -1,44 +1,49 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 /**
- * Leak Guard: terrafusion-quantum-excellence.css
- * Blocks regression of raw hex/rgba colors back into the tokenized file.
+ * CSS Leak Guard – prevents raw rgba/hex from re-entering
+ * terrafusion-quantum-excellence.css.
  *
- * This file should contain ZERO raw hex or rgba — all colors use
- * hsl(var(--tf-*)) tokens.
+ * This is a file-specific guard that runs in the Jest unit-test pass
+ * so regressions are caught immediately during local dev and CI.
  */
 
-const CSS_PATH = resolve(__dirname, '../../../styles/terrafusion-quantum-excellence.css');
+const CSS_PATH = resolve(
+  __dirname,
+  '../../../styles/terrafusion-quantum-excellence.css',
+);
 
-function stripComments(input: string): string {
-  return input.replace(/\/\*[\s\S]*?\*\//g, '');
-}
+const css = readFileSync(CSS_PATH, 'utf8');
 
-function stripUrls(input: string): string {
-  return input.replace(/\burl\(\s*(['"]?)[\s\S]*?\1\s*\)/g, 'url(…)');
-}
+// Matches rgba(...), rgb(...), hsla(...), hsl(...) NOT preceded by [A-Za-z0-9]
+const COLOR_FN_RE = /(?<![0-9A-Za-z])(?:rgba?|hsla?)\([^)]*\)/g;
+// Token-safe pattern: hsl(var(--tf-*) ...) or var(--tf-*)
+const ALLOW_TOKEN_RE =
+  /(?:hsl|hsla)\(\s*var\(--tf-[a-z0-9-]+\)|var\(--tf-[a-z0-9-]+\)/;
+// Raw hex: #abc, #aabbcc, #aabbccdd
+const RAW_HEX_RE = /#[0-9a-fA-F]{3,8}\b/g;
 
-function findAll(pattern: RegExp, text: string): string[] {
-  const hits: string[] = [];
-  for (const m of text.matchAll(pattern)) hits.push(m[0]);
-  return hits;
-}
-
-describe('Leak guard — terrafusion-quantum-excellence.css', () => {
-  const css = stripUrls(stripComments(readFileSync(CSS_PATH, 'utf8')));
-
-  it('contains no raw rgba/rgb/hex color literals', () => {
-    const rgbHits = findAll(/\brgba?\(\s*[^)]+\)/g, css);
-    const hexHits = findAll(/#[0-9a-fA-F]{3,8}\b/g, css);
-
-    expect([...rgbHits, ...hexHits]).toEqual([]);
+describe('terrafusion-quantum-excellence.css leak guard', () => {
+  it('has no raw rgba/hsl calls outside hsl(var(--tf-*)) pattern', () => {
+    const violations: string[] = [];
+    let match: RegExpExecArray | null;
+    while ((match = COLOR_FN_RE.exec(css)) !== null) {
+      if (!ALLOW_TOKEN_RE.test(match[0])) {
+        const line = css.substring(0, match.index).split('\n').length;
+        violations.push(`L${line}: ${match[0]}`);
+      }
+    }
+    expect(violations).toEqual([]);
   });
 
-  it('every hsl() call is token-based (var(--tf-*))', () => {
-    const allHsl = findAll(/\bhsla?\([^)]+\)/g, css);
-    const nonToken = allHsl.filter(h => !h.includes('var(--tf-'));
-
-    expect(nonToken).toEqual([]);
+  it('has no raw hex color values', () => {
+    const violations: string[] = [];
+    let match: RegExpExecArray | null;
+    while ((match = RAW_HEX_RE.exec(css)) !== null) {
+      const line = css.substring(0, match.index).split('\n').length;
+      violations.push(`L${line}: ${match[0]}`);
+    }
+    expect(violations).toEqual([]);
   });
 });

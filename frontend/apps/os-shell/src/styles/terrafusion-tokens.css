@@ -4,34 +4,34 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ═══ FOUNDATION COLORS (Derived from LUMIN BRIDGE) ═══ */
-  --tf-quantum-cyan: hsl(var(--tf-accent)); /* Terra-Cyan - The Consciousness Color */
-  --tf-void-black: hsl(var(--tf-bg)); /* Terra-Midnight - The Void */
-  --tf-network-blue: hsl(var(--tf-accent-2)); /* Terra-Blue - The Network (brand exact) */
-  --tf-transcend-highlight: hsl(var(--tf-transcend)); /* Transcendence Accent */
-  --tf-accent-success: hsl(var(--tf-success)); /* Success Green */
-  --tf-accent-cyan: hsl(var(--tf-dark-cyan)); /* Darker Cyan */
-  --tf-error-red: hsl(var(--tf-error)); /* Error Red */
-  --tf-warning-amber: hsl(var(--tf-warning)); /* Warning Amber */
-  --tf-info-purple: hsl(var(--tf-info)); /* Info Purple */
-  --tf-surface-darker: hsl(var(--tf-surface-2)); /* Surface Darker */
-  --tf-surface-dark: hsl(var(--tf-dark)); /* Surface Dark (gray-900) */
-  --tf-bg-void: hsl(var(--tf-black)); /* Pure Void */
-  --tf-bg-surface: hsl(var(--tf-surface)); /* Surface Background */
-  --tf-text-primary: hsl(var(--tf-text)); /* Primary Text */
-  --tf-text-secondary: hsl(var(--tf-slate-300)); /* Secondary Text (gray-300) */
+  /* ═══ FOUNDATION COLORS (THE ACTUAL HEX VALUES) ═══ */
+  --tf-quantum-cyan: #00ffff; /* Terra-Cyan - The Consciousness Color */
+  --tf-void-black: #0a0e1a; /* Terra-Midnight - The Void */
+  --tf-network-blue: #0080ff; /* Terra-Blue - The Network (brand exact) */
+  --tf-transcend-highlight: #00ffee; /* Transcendence Accent */
+  --tf-accent-success: #00ff88; /* Success Green */
+  --tf-accent-cyan: #00cccc; /* Darker Cyan */
+  --tf-error-red: #ff4444; /* Error Red */
+  --tf-warning-amber: #ffaa00; /* Warning Amber */
+  --tf-info-purple: #8844ff; /* Info Purple */
+  --tf-surface-darker: #141824; /* Surface Darker */
+  --tf-surface-dark: #0f172a; /* Surface Dark (gray-900) */
+  --tf-bg-void: #000000; /* Pure Void */
+  --tf-bg-surface: #1e293b; /* Surface Background */
+  --tf-text-primary: #ffffff; /* Primary Text */
+  --tf-text-secondary: #cbd5e1; /* Secondary Text (gray-300) */
 
   /* ═══ PRIMARY COLORS ═══ */
   --terra-cyan: var(--tf-quantum-cyan); /* Primary - The Consciousness */
   --terra-midnight: var(--tf-void-black); /* Background - The Void */
   --terra-blue: var(--tf-network-blue); /* Secondary - The Network */
-  --terra-slate: hsl(var(--tf-surface)); /* Surface - The Foundation */
+  --terra-slate: #1e293b; /* Surface - The Foundation */
 
   /* ═══ SEMANTIC COLORS ═══ */
-  --success-green: var(--tf-accent-success); /* Validation & Success */
-  --warning-amber: var(--tf-warning-amber); /* Caution & Processing */
-  --error-red: var(--tf-error-red); /* Alerts & Critical */
-  --info-purple: var(--tf-info-purple); /* Information & Insights */
+  --success-green: #00ff88; /* Validation & Success */
+  --warning-amber: #ffaa00; /* Caution & Processing */
+  --error-red: #ff4444; /* Alerts & Critical */
+  --info-purple: #8844ff; /* Information & Insights */
 
   /* ═══ GRADIENTS ═══ */
   --gradient-primary: linear-gradient(
@@ -39,34 +39,29 @@
     var(--tf-quantum-cyan) 0%,
     var(--tf-network-blue) 100%
   );
-  --gradient-dark: linear-gradient(135deg, var(--tf-void-black) 0%, var(--tf-bg-surface) 100%);
-  --gradient-aurora: linear-gradient(
-    90deg,
-    var(--tf-quantum-cyan),
-    var(--tf-accent-success),
-    var(--tf-info-purple)
-  );
+  --gradient-dark: linear-gradient(135deg, var(--tf-void-black) 0%, #1e293b 100%);
+  --gradient-aurora: linear-gradient(90deg, var(--tf-quantum-cyan), #00ff88, #8844ff);
   --gradient-quantum: linear-gradient(
     45deg,
     var(--tf-quantum-cyan) 0%,
     var(--tf-network-blue) 25%,
-    var(--tf-info-purple) 50%,
-    var(--tf-accent-success) 75%,
+    #8844ff 50%,
+    #00ff88 75%,
     var(--tf-quantum-cyan) 100%
   );
 
   /* ═══ NEUTRALS ═══ */
-  --gray-50: hsl(var(--tf-light-surface));
-  --gray-100: hsl(var(--tf-slate-100));
-  --gray-200: hsl(var(--tf-light-border));
-  --gray-300: var(--tf-text-secondary);
-  --gray-400: hsl(var(--tf-muted));
-  --gray-500: hsl(var(--tf-light-muted));
-  --gray-600: hsl(var(--tf-slate-600));
-  --gray-700: hsl(var(--tf-slate-700));
-  --gray-800: hsl(var(--tf-surface));
-  --gray-900: hsl(var(--tf-dark));
-  --gray-950: hsl(var(--tf-slate-950));
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+  --gray-950: #020617;
 
   /* ═══ TYPOGRAPHY SCALE (Golden Ratio φ = 1.618) ═══ */
   --text-xs: 0.618rem; /* 9.888px */
@@ -110,9 +105,12 @@
   --duration-slow: 500ms;
   --duration-quantum: 800ms;
 
+  /* HS Channel Anchor (file-local, pure-black for ambient shadows) */
+  --tf-tokens-black-hs: 0 0%;
+
   /* ═══ ELEVATION & SHADOWS ═══ */
-  --shadow-sm: 0 1px 2px hsl(var(--tf-black) / 0.05);
-  --shadow-md: 0 4px 6px hsl(var(--tf-black) / 0.1);
+  --shadow-sm: 0 1px 2px hsl(var(--tf-tokens-black-hs) 0% / 0.05);
+  --shadow-md: 0 4px 6px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
   --shadow-lg: 0 10px 30px hsl(var(--tf-accent) / 0.2);
   --shadow-glow: 0 0 40px hsl(var(--tf-accent) / 0.4);
   --shadow-quantum:
@@ -146,54 +144,24 @@
   /* ═══ LUMIN BRIDGE (consumed by @terrafusion/ui primitives) ═══
      HSL channel values — used as hsl(var(--tf-bg) / <alpha>).
      Derived from the foundation hex tokens above.                   */
-  --tf-bg: 225 44% 7%; /* void-black                      */
-  --tf-surface: 217 33% 17%; /* terra-slate                      */
-  --tf-surface-2: 225 29% 11%; /* surface-darker                   */
+  --tf-bg: 225 44% 7%; /* #0a0e1a  (void-black)          */
+  --tf-surface: 217 33% 17%; /* #1e293b  (terra-slate)         */
+  --tf-surface-2: 225 29% 11%; /* #141824  (surface-darker)      */
   --tf-border: 220 18% 24%; /* muted slate (not accent!)      */
-  --tf-text: 0 0% 100%; /* text-primary                     */
-  --tf-muted: 215 20% 65%; /* gray-400                          */
-  --tf-accent: 180 100% 50%; /* quantum-cyan                     */
-  --tf-accent-2: 210 100% 50%; /* network-blue                     */
-  --tf-success: 152 100% 50%; /* accent-success                   */
-  --tf-error: 0 100% 63%; /* error-red                         */
-  --tf-warning: 40 100% 50%; /* warning-amber                    */
-  --tf-anim-blue: 207 100% 50%; /* animation system-blue          */
-  --tf-anim-green: 120 100% 50%; /* animation pure-green           */
-  --tf-indigo: 234 85% 66%; /* AI assistant accent               */
-  --tf-purple: 271 37% 46%; /* AI gradient pair                  */
-  --tf-black: 0 0% 0%; /* pure-void (shadows)               */
-  --tf-info: 262 100% 63.3%; /* info-purple                       */
-  --tf-dark: 222 47% 11%; /* surface-dark / gray-900           */
-
-  /* ─── BRIDGE COMPLETION (Phase 14 — zero irreducible hex) ─── */
-  --tf-transcend: 176 100% 50%; /* transcend-highlight              */
-  --tf-dark-cyan: 180 100% 40%; /* accent-cyan                     */
-  --tf-slate-300: 213 27% 84%; /* text-secondary                  */
-  --tf-slate-100: 210 40% 96%; /* gray-100                        */
-  --tf-slate-600: 215 19% 35%; /* gray-600                        */
-  --tf-slate-700: 215 25% 27%; /* gray-700                        */
-  --tf-slate-950: 229 84% 5%; /* gray-950                        */
-
-  /* ─── LIGHT-THEME BRIDGE (Lane C: DataScience / TerraLevy) ─── */
-  --tf-brand-blue: 217 91% 60%; /* blue-500  (brand primary)      */
-  --tf-brand-blue-dark: 224 76% 48%; /* blue-700  (gradient darker)    */
-  --tf-light-border: 214 32% 91%; /* slate-200 (light border)       */
-  --tf-light-muted: 215 16% 47%; /* slate-500 (secondary text)     */
-  --tf-light-surface: 210 40% 98%; /* slate-50  (light surface)      */
-
-  /* ─── DARK-THEME BRIDGE (Lane D: Workflow Designer) ─── */
-  --tf-sky-blue-hs: 200 100% 50%; /* sky-blue accent                */
-  --tf-navy-border-hs: 240 33% 30%; /* dark border                    */
-  --tf-deep-navy-hs: 233 59% 15%; /* deep backdrop                  */
-  --tf-transcend-green-hs: 160 100% 50%; /* consciousness transcendent     */
-  --tf-clarity-blue-hs: 204 100% 50%; /* clarity/brand blue             */
-
+  --tf-text: 0 0% 100%; /* #ffffff  (text-primary)        */
+  --tf-muted: 215 20% 65%; /* #94a3b8  (gray-400)            */
+  --tf-accent: 180 100% 50%; /* #00ffff  (quantum-cyan)        */
+  --tf-accent-2: 210 100% 50%; /* #0080ff  (network-blue)        */
+  --tf-success: 152 100% 50%; /* #00ff88  (accent-success)      */
+  --tf-error: 0 100% 63%; /* #ff4444  (error-red)            */
+  --tf-warning: 40 100% 50%; /* #ffaa00  (warning-amber)       */
+  --tf-info: 264 100% 63%; /* #8844ff  (info-purple)          */
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px hsl(var(--tf-accent) / 0.2); /* shadow-lg    */
 
   /* ═══ GLASSMORPHISM (Brand Kit Exact) ═══ */
-  --glass-bg: hsl(var(--tf-bg) / 0.6);
+  --glass-bg: hsl(var(--tf-surface-2) / 0.6);
   --glass-bg-light: hsl(var(--tf-surface) / 0.5);
   --glass-border: hsl(var(--tf-accent) / 0.2);
   --glass-border-hover: hsl(var(--tf-accent) / 0.4);
@@ -201,7 +169,7 @@
   --glass-backdrop: saturate(180%) blur(20px);
 
   /* Card System */
-  --card-bg: hsl(var(--tf-bg) / 0.6);
+  --card-bg: hsl(var(--tf-surface-2) / 0.6);
   --card-border: 1px solid hsl(var(--tf-accent) / 0.2);
   --card-radius: 1rem;
   --card-hover-shadow: 0 0 30px hsl(var(--tf-accent) / 0.1);
@@ -248,7 +216,7 @@
   :root {
     /* Enhanced contrast for dark mode */
     --terra-cyan: var(--tf-quantum-cyan);
-    --terra-midnight: var(--tf-bg-void);
+    --terra-midnight: #000000;
     --glass-bg: hsl(var(--tf-bg) / 0.5);
     --glass-border: hsl(var(--tf-accent) / 0.3);
   }

@@ -96,7 +96,7 @@ export const AxiomFSWindow = ({ windowId, metadata }: Props) => {
 
             {/* 2. Taxonomy Tags */}
             <div className='flex flex-wrap gap-2 mb-10'>
-              <span className='rounded bg-[var(--tf-surface-highlight)] px-3 py-1 text-[10px] font-bold text-[var(--tf-transcend-cyan)] border border-[var(--tf-transcend-cyan)]/20 shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.1)]'>
+              <span className='rounded bg-[var(--tf-surface-highlight)] px-3 py-1 text-[10px] font-bold text-[var(--tf-transcend-cyan)] border border-[var(--tf-transcend-cyan)]/20 shadow-[0_0_10px_rgba(0,255,238,0.1)]'>
                 {activeObject.type.toUpperCase()}
               </span>
               <span

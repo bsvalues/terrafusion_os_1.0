@@ -29,9 +29,9 @@ export function MinimalTerraFusionTest() {
           left: 0,
           right: 0,
           height: '64px',
-          background: 'hsla(var(--tf-neutral-hs) 7% / 0.95)',
+          background: 'rgba(10, 14, 26, 0.95)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid hsla(var(--tf-cyan-hs) 50% / 0.2)',
+          borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -107,8 +107,8 @@ export function MinimalTerraFusionTest() {
           >
             <div
               style={{
-                background: 'hsla(var(--tf-cyan-hs) 50% / 0.1)',
-                border: '1px solid hsla(var(--tf-cyan-hs) 50% / 0.3)',
+                background: 'rgba(0, 255, 255, 0.1)',
+                border: '1px solid rgba(0, 255, 255, 0.3)',
                 borderRadius: '12px',
                 padding: '24px',
                 textAlign: 'center',
@@ -116,15 +116,13 @@ export function MinimalTerraFusionTest() {
             >
               <div style={{ fontSize: '2rem', marginBottom: '12px' }}>⚡</div>
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Performance</div>
-              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>
-                120fps
-              </div>
+              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>120fps</div>
             </div>
 
             <div
               style={{
-                background: 'hsla(var(--tf-cyan-hs) 50% / 0.1)',
-                border: '1px solid hsla(var(--tf-cyan-hs) 50% / 0.3)',
+                background: 'rgba(0, 255, 255, 0.1)',
+                border: '1px solid rgba(0, 255, 255, 0.3)',
                 borderRadius: '12px',
                 padding: '24px',
                 textAlign: 'center',
@@ -132,15 +130,13 @@ export function MinimalTerraFusionTest() {
             >
               <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🧠</div>
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Consciousness</div>
-              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>
-                ∞
-              </div>
+              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>∞</div>
             </div>
 
             <div
               style={{
-                background: 'hsla(var(--tf-cyan-hs) 50% / 0.1)',
-                border: '1px solid hsla(var(--tf-cyan-hs) 50% / 0.3)',
+                background: 'rgba(0, 255, 255, 0.1)',
+                border: '1px solid rgba(0, 255, 255, 0.3)',
                 borderRadius: '12px',
                 padding: '24px',
                 textAlign: 'center',
@@ -148,9 +144,7 @@ export function MinimalTerraFusionTest() {
             >
               <div style={{ fontSize: '2rem', marginBottom: '12px' }}>🛡️</div>
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Security</div>
-              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>
-                MAX
-              </div>
+              <div style={{ fontSize: '2rem', color: 'var(--success-green)', marginTop: '8px' }}>MAX</div>
             </div>
           </div>
         </div>
@@ -165,9 +159,8 @@ export function MinimalTerraFusionTest() {
           width: '60px',
           height: '60px',
           borderRadius: '50%',
-          background:
-            'linear-gradient(135deg, hsla(var(--tf-cyan-hs) 50% / 0.1), hsla(var(--tf-blue-hs) 50% / 0.05))',
-          border: '2px solid hsla(var(--tf-cyan-hs) 50% / 0.3)',
+          background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 128, 255, 0.05))',
+          border: '2px solid rgba(0, 255, 255, 0.3)',
           backdropFilter: 'blur(16px)',
           display: 'flex',
           alignItems: 'center',

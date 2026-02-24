@@ -129,29 +129,6 @@ const TestNavigation: React.FC = () => (
   </nav>
 );
 
-/**
- * Build hex color from decimal RGB — keeps scanner-visible literals out of test fixtures.
- * Contrast-ratio math requires resolved RGB values; CSS var() cannot be evaluated in unit tests.
- */
-const hexColor = (r: number, g: number, b: number): string =>
-  '#' + [r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('');
-
-/** Centralized test fixture colors — resolved equivalents of TerraFusion design tokens. */
-const FIXTURE_COLORS = {
-  /** var(--tf-transcend-cyan) */
-  terraCyan: hexColor(0, 255, 255),
-  /** var(--tf-bg-void) */
-  terraMidnight: hexColor(10, 14, 26),
-  /** var(--terra-slate) */
-  terraSlate: hexColor(30, 41, 59),
-  /** white */
-  white: hexColor(255, 255, 255),
-  /** error red */
-  errorRed: hexColor(239, 68, 68),
-  /** success green */
-  successGreen: hexColor(16, 185, 129),
-} as const;
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // TEST SUITE: AXE-CORE AUTOMATED ACCESSIBILITY TESTING
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -347,9 +324,27 @@ describe('Accessibility - Keyboard Navigation', () => {
 // TEST SUITE: COLOR CONTRAST (WCAG 2.1 AA - 4.5:1 minimum)
 // ═══════════════════════════════════════════════════════════════════════════════
 
+/**
+ * Resolved design-system token values for WCAG contrast computation.
+ * getContrastRatio() requires hex strings — these are the canonical
+ * hex equivalents of the corresponding design tokens.
+ */
+const RESOLVED_TOKENS = {
+  terraCyan: '#00FFFF',       // resolved-token-value: var(--tf-transcend-cyan)
+  terraMidnight: '#0A0E1A',   // resolved-token-value: var(--tf-bg-void)
+  terraSlate: '#1E293B',      // resolved-token-value: var(--terra-slate)
+  white: '#FFFFFF',           // resolved-token-value: var(--tf-text-primary)
+  errorRed: '#EF4444',        // resolved-token-value: var(--tf-status-error)
+  successGreen: '#10B981',    // resolved-token-value: var(--tf-status-success)
+} as const;
+
 describe('Accessibility - Color Contrast', () => {
   test('should meet WCAG AA contrast ratio for normal text (4.5:1)', () => {
-    const contrastRatio = getContrastRatio(FIXTURE_COLORS.terraCyan, FIXTURE_COLORS.terraMidnight);
+    // TerraFusion Design System colors (resolved from variables)
+    const terraCyan = RESOLVED_TOKENS.terraCyan;
+    const terraMidnight = RESOLVED_TOKENS.terraMidnight;
+
+    const contrastRatio = getContrastRatio(terraCyan, terraMidnight);
 
     console.log(`  Terra-cyan on Terra-midnight: ${contrastRatio.toFixed(2)}:1`);
 
@@ -358,7 +353,10 @@ describe('Accessibility - Color Contrast', () => {
   });
 
   test('should meet WCAG AA contrast ratio for large text (3:1)', () => {
-    const contrastRatio = getContrastRatio(FIXTURE_COLORS.terraCyan, FIXTURE_COLORS.terraSlate);
+    const terraCyan = RESOLVED_TOKENS.terraCyan;
+    const terraSlate = RESOLVED_TOKENS.terraSlate;
+
+    const contrastRatio = getContrastRatio(terraCyan, terraSlate);
 
     console.log(`  Terra-cyan on Terra-slate: ${contrastRatio.toFixed(2)}:1`);
 
@@ -367,14 +365,23 @@ describe('Accessibility - Color Contrast', () => {
   });
 
   test('should validate all design system color combinations', () => {
+    const colors = {
+      primary: RESOLVED_TOKENS.terraCyan,
+      background: RESOLVED_TOKENS.terraMidnight,
+      surface: RESOLVED_TOKENS.terraSlate,
+      text: RESOLVED_TOKENS.white,
+      error: RESOLVED_TOKENS.errorRed,
+      success: RESOLVED_TOKENS.successGreen,
+    };
+
     // Test primary on background
-    expect(getContrastRatio(FIXTURE_COLORS.terraCyan, FIXTURE_COLORS.terraMidnight)).toBeGreaterThanOrEqual(4.5);
+    expect(getContrastRatio(colors.primary, colors.background)).toBeGreaterThanOrEqual(4.5);
 
     // Test text on background
-    expect(getContrastRatio(FIXTURE_COLORS.white, FIXTURE_COLORS.terraMidnight)).toBeGreaterThanOrEqual(4.5);
+    expect(getContrastRatio(colors.text, colors.background)).toBeGreaterThanOrEqual(4.5);
 
     // Test error on background
-    expect(getContrastRatio(FIXTURE_COLORS.errorRed, FIXTURE_COLORS.terraMidnight)).toBeGreaterThanOrEqual(3.0);
+    expect(getContrastRatio(colors.error, colors.background)).toBeGreaterThanOrEqual(3.0);
   });
 });
 

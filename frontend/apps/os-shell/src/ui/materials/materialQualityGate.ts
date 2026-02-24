@@ -289,7 +289,7 @@ function getLuminance(r: number, g: number, b: number): number {
  * Parse a CSS color string to RGB.
  */
 function parseColor(color: string): { r: number; g: number; b: number } | null {
-  // Handle color functions with r, g, b, a components
+  // Handle rgba(r, g, b, a)
   const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
   if (rgbaMatch) {
     return {
@@ -338,10 +338,10 @@ export function getGlassTextColor(glassVariant: 'dark' | 'light'): string {
   // These colors are pre-validated to meet WCAG AA contrast on glass
   if (glassVariant === 'dark') {
     // Light text on dark glass
-    return 'hsl(var(--tf-neutral-hs) 100%)'; // Pure white
+    return '#ffffff'; // Pure white
   } else {
     // Dark text on light glass
-    return 'hsl(var(--tf-neutral-hs) 4%)'; // Near black
+    return '#0a0a0a'; // Near black
   }
 }
 

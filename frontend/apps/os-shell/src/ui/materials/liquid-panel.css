@@ -29,17 +29,17 @@
 
   /* Default glass tokens (dark theme) */
   --liquid-blur: 12px;
-  --liquid-bg: hsl(var(--tf-bg) / 0.75);
-  --liquid-border: hsl(var(--tf-text) / 0.08);
-  --liquid-shadow: inset 0 1px 0 hsl(var(--tf-text) / 0.05);
-  --liquid-glow: hsl(var(--tf-accent) / 0.1);
+  --liquid-bg: rgba(10, 15, 25, 0.75);
+  --liquid-border: rgba(255, 255, 255, 0.08);
+  --liquid-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --liquid-glow: rgba(6, 182, 212, 0.1);
 
   background: var(--liquid-bg);
   border: 1px solid var(--liquid-border);
   box-shadow: var(--liquid-shadow);
 
   /* Ensure text contrast */
-  color: hsl(var(--tf-text) / 0.95);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* ============================================================================
@@ -48,7 +48,7 @@
 
 /* LOW: Static fallback - no backdrop-filter */
 .liquid-panel--static {
-  --liquid-bg: hsl(var(--tf-bg) / 0.95);
+  --liquid-bg: rgba(10, 15, 25, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -96,23 +96,23 @@
 
 /* Shell: Infrastructure layer (navigation, sidebars) */
 .liquid-panel--shell {
-  --liquid-bg: hsl(var(--tf-bg) / 0.85);
-  --liquid-border: hsl(var(--tf-text) / 0.06);
-  --liquid-glow: hsl(var(--tf-accent) / 0.15);
+  --liquid-bg: rgba(5, 10, 20, 0.85);
+  --liquid-border: rgba(255, 255, 255, 0.06);
+  --liquid-glow: rgba(6, 182, 212, 0.15);
 }
 
 /* Infrastructure: Secondary containers */
 .liquid-panel--infrastructure {
-  --liquid-bg: hsl(var(--tf-bg) / 0.7);
-  --liquid-border: hsl(var(--tf-text) / 0.08);
-  --liquid-glow: hsl(var(--tf-accent) / 0.08);
+  --liquid-bg: rgba(15, 20, 30, 0.7);
+  --liquid-border: rgba(255, 255, 255, 0.08);
+  --liquid-glow: rgba(6, 182, 212, 0.08);
 }
 
 /* Interactive: Clickable surfaces (cards, buttons) */
 .liquid-panel--interactive {
-  --liquid-bg: hsl(var(--tf-surface-2) / 0.6);
-  --liquid-border: hsl(var(--tf-text) / 0.1);
-  --liquid-glow: hsl(var(--tf-accent) / 0.1);
+  --liquid-bg: rgba(20, 25, 40, 0.6);
+  --liquid-border: rgba(255, 255, 255, 0.1);
+  --liquid-glow: rgba(6, 182, 212, 0.1);
 
   /* Interaction states - NO idle animation */
   transition:
@@ -121,23 +121,23 @@
 }
 
 .liquid-panel--interactive:hover {
-  --liquid-border: hsl(var(--tf-accent) / 0.3);
+  --liquid-border: rgba(6, 182, 212, 0.3);
   box-shadow:
     var(--liquid-shadow),
     0 0 20px -5px var(--liquid-glow);
 }
 
 .liquid-panel--interactive:focus-within {
-  --liquid-border: hsl(var(--tf-accent) / 0.5);
-  outline: 2px solid hsl(var(--tf-accent) / 0.3);
+  --liquid-border: rgba(6, 182, 212, 0.5);
+  outline: 2px solid rgba(6, 182, 212, 0.3);
   outline-offset: 2px;
 }
 
 /* Signal: Feedback/notification surfaces */
 .liquid-panel--signal {
-  --liquid-bg: hsl(var(--tf-accent) / 0.15);
-  --liquid-border: hsl(var(--tf-accent) / 0.3);
-  --liquid-glow: hsl(var(--tf-accent) / 0.2);
+  --liquid-bg: rgba(6, 182, 212, 0.15);
+  --liquid-border: rgba(6, 182, 212, 0.3);
+  --liquid-glow: rgba(6, 182, 212, 0.2);
 }
 
 /* ============================================================================
@@ -177,7 +177,7 @@
   background: linear-gradient(
     110deg,
     transparent 30%,
-    hsl(var(--tf-text) / 0.03) 50%,
+    rgba(255, 255, 255, 0.03) 50%,
     transparent 70%
   );
   transform: translateX(-100%);
@@ -218,11 +218,11 @@
    ============================================================================ */
 
 .liquid-panel[data-theme='light'] {
-  --liquid-bg: hsl(var(--tf-text) / 0.8);
-  --liquid-border: hsl(var(--tf-black) / 0.08);
-  --liquid-shadow: inset 0 1px 0 hsl(var(--tf-text) / 0.9);
-  --liquid-glow: hsl(var(--tf-accent) / 0.15);
-  color: hsl(var(--tf-black) / 0.9);
+  --liquid-bg: rgba(255, 255, 255, 0.8);
+  --liquid-border: rgba(0, 0, 0, 0.08);
+  --liquid-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --liquid-glow: rgba(6, 182, 212, 0.15);
+  color: rgba(0, 0, 0, 0.9);
 }
 
 /* ============================================================================
@@ -235,7 +235,7 @@
     -webkit-backdrop-filter: none;
     background: white;
     color: black;
-    border: 1px solid hsl(var(--tf-slate-300));
+    border: 1px solid #ccc;
     box-shadow: none;
   }
 }

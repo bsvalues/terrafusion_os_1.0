@@ -245,17 +245,19 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
         <span>{state.phase === 'validating' ? 'Validating...' : 'Executing...'}</span>
         <style>{`
           .policy-gate-loading {
+            --tf-rpg-gray-hs: 220 12%;
+            --tf-rpg-blue-hs: 217 91%;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             padding: 1rem;
-            color: hsl(var(--tf-neutral-hs) 46%);
+            color: hsl(var(--tf-rpg-gray-hs) 46%);
           }
           .spinner {
             width: 20px;
             height: 20px;
-            border: 2px solid hsl(var(--tf-neutral-hs) 91%);
-            border-top-color: hsl(var(--tf-blue-hs) 60%);
+            border: 2px solid hsl(var(--tf-rpg-gray-hs) 91%);
+            border-top-color: hsl(var(--tf-rpg-blue-hs) 60%);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
           }
@@ -278,6 +280,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
         </div>
         <style>{`
           .policy-gate-error {
+            --tf-rpg-gray-hs: 220 12%;
             padding: 1rem;
           }
           .error-actions {
@@ -287,13 +290,13 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
           }
           .btn-back {
             padding: 0.5rem 1rem;
-            border: 1px solid hsl(var(--tf-neutral-hs) 85%);
+            border: 1px solid hsl(var(--tf-rpg-gray-hs) 84%);
             border-radius: 6px;
             background: white;
             cursor: pointer;
           }
           .btn-back:hover {
-            background: hsl(var(--tf-neutral-hs) 96%);
+            background: hsl(var(--tf-rpg-gray-hs) 96%);
           }
         `}</style>
       </div>
@@ -328,10 +331,14 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
           </div>
           <style>{`
             .policy-gate-violations {
+              --tf-rpg-gray-hs: 220 12%;
+              --tf-rpg-amber-hs: 43 96%;
+              --tf-rpg-amber-deep-hs: 26 90%;
+              --tf-rpg-amber-dark-hs: 23 83%;
               padding: 1.5rem;
               background: white;
               border-radius: 8px;
-              border: 1px solid hsl(var(--tf-amber-hs) 56%);
+              border: 1px solid hsl(var(--tf-rpg-amber-hs) 56%);
               max-width: 500px;
               margin: 1rem auto;
             }
@@ -343,12 +350,12 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
             }
             .violations-header h3 {
               margin: 0;
-              color: hsl(var(--tf-amber-hs) 37%);
+              color: hsl(var(--tf-rpg-amber-deep-hs) 37%);
             }
             .violations-list {
               margin: 0 0 1.5rem 0;
               padding-left: 1.5rem;
-              color: hsl(var(--tf-amber-hs) 31%);
+              color: hsl(var(--tf-rpg-amber-dark-hs) 31%);
             }
             .violations-list li {
               margin: 0.5rem 0;
@@ -360,7 +367,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
             }
             .btn-cancel {
               padding: 0.5rem 1rem;
-              border: 1px solid hsl(var(--tf-neutral-hs) 85%);
+              border: 1px solid hsl(var(--tf-rpg-gray-hs) 84%);
               border-radius: 6px;
               background: white;
               cursor: pointer;
@@ -369,7 +376,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
               padding: 0.5rem 1rem;
               border: none;
               border-radius: 6px;
-              background: hsl(var(--tf-neutral-hs) 66%);
+              background: hsl(var(--tf-rpg-gray-hs) 65%);
               color: white;
               cursor: not-allowed;
               opacity: 0.5;

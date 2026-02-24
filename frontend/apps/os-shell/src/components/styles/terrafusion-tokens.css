@@ -4,25 +4,19 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Token Definition HS Anchors (non-canonical hues) */
-  --tf-tokens-slate-hs: 217 33%;    /* slate — brand surface */
-  --tf-tokens-success-hs: 152 100%; /* 152° — success green */
-  --tf-tokens-warning-hs: 40 100%;  /* 40° — warning amber */
-  --tf-tokens-info-hs: 262 100%;    /* 262° — info purple */
-
   /* Core Brand Colors */
   --terra-cyan: var(--tf-quantum-cyan);
   --terra-midnight: var(--tf-void-black);
   --terra-blue: var(--tf-network-blue);
-  --terra-slate: hsl(var(--tf-tokens-slate-hs) 17%);
-  --terra-accent: hsl(var(--tf-green-hs) 50%);
+  --terra-slate: #1e293b;
+  --terra-accent: #00ffaa;
   --terra-transcend: var(--tf-transcend-highlight);
 
   /* Semantic Colors */
-  --success-green: hsl(var(--tf-tokens-success-hs) 50%);
-  --warning-amber: hsl(var(--tf-tokens-warning-hs) 50%);
-  --error-red: hsl(var(--tf-red-hs) 63%);
-  --info-purple: hsl(var(--tf-tokens-info-hs) 63%);
+  --success-green: #00ff88;
+  --warning-amber: #ffaa00;
+  --error-red: #ff4444;
+  --info-purple: #8844ff;
 
   /* Gradient Definitions */
   --gradient-primary: linear-gradient(135deg, var(--terra-cyan) 0%, var(--terra-blue) 100%);
@@ -67,16 +61,16 @@
   --duration-slow: 500ms;
 
   /* Elevation & Shadows */
-  --shadow-sm: 0 1px 2px hsl(var(--tf-neutral-hs) 0% / 0.05);
-  --shadow-md: 0 4px 6px hsl(var(--tf-neutral-hs) 0% / 0.1);
-  --shadow-lg: 0 10px 30px hsl(var(--tf-cyan-hs) 50% / 0.2);
-  --shadow-glow: 0 0 40px hsl(var(--tf-cyan-hs) 50% / 0.4);
-  --shadow-quantum: 0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.3);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 30px rgba(0, 255, 255, 0.2);
+  --shadow-glow: 0 0 40px rgba(0, 255, 255, 0.4);
+  --shadow-quantum: 0 0 20px rgba(0, 255, 255, 0.3);
 
   /* Glass Morphism */
-  --glass-bg: hsl(var(--tf-tokens-slate-hs) 17% / 0.3);
-  --glass-border: hsl(var(--tf-cyan-hs) 50% / 0.2);
-  --glass-shadow: 0 8px 32px hsl(var(--tf-neutral-hs) 0% / 0.37);
+  --glass-bg: rgba(30, 41, 59, 0.3);
+  --glass-border: rgba(0, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
   --blur-amount: blur(16px);
 
   /* Border Radius */

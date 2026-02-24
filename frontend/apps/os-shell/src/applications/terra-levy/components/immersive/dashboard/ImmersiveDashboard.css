@@ -3,7 +3,7 @@
   position: relative;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, hsl(var(--tf-neutral-hs) / 10%) 0%, var(--tf-surface-darker) 50%, var(--tf-surface-darker) 100%);
+  background: linear-gradient(135deg, hsl(var(--tf-bg)) 0%, var(--tf-surface-darker) 50%, var(--tf-surface-darker) 100%);
   overflow: hidden;
   font-family: 'Quantum UI', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -20,7 +20,7 @@
 .loading-text {
   margin-top: 20px;
   font-size: 18px;
-  color: hsl(var(--tf-blue-hs) / 50%);
+  color: hsl(var(--tf-accent-2));
   animation: pulse 2s ease-in-out infinite;
 }
 
@@ -30,7 +30,7 @@
   left: 20px;
   display: flex;
   align-items: center;
-  background: hsl(var(--tf-green-hs) / 50% / 0.1);
+  background: hsl(var(--tf-success) / 0.1);
   border: 1px solid var(--success-green);
   border-radius: 20px;
   padding: 10px 15px;
@@ -51,11 +51,11 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background: hsl(var(--tf-blue-hs) / 50% / 0.1);
-  border: 1px solid hsl(var(--tf-blue-hs) / 50%);
+  background: hsl(var(--tf-accent-2) / 0.1);
+  border: 1px solid hsl(var(--tf-accent-2));
   border-radius: 20px;
   padding: 10px 15px;
-  color: hsl(var(--tf-blue-hs) / 50%);
+  color: hsl(var(--tf-accent-2));
   font-size: 14px;
 }
 
@@ -66,7 +66,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  background: hsl(var(--tf-blue-hs) / 16% / 0.9);
+  background: hsl(var(--tf-surface) / 0.9);
   border: 1px solid var(--success-green);
   border-radius: 10px;
   padding: 20px;
@@ -98,7 +98,7 @@
   background: var(--success-green);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 0 10px hsl(var(--tf-green-hs) / 50% / 0.5);
+  box-shadow: 0 0 10px hsl(var(--tf-success) / 0.5);
 }
 
 .visualization-toggles {
@@ -109,10 +109,10 @@
 .quantum-toggle,
 .ai-toggle {
   padding: 8px 16px;
-  background: hsl(var(--tf-blue-hs) / 50% / 0.1);
-  border: 1px solid hsl(var(--tf-blue-hs) / 50%);
+  background: hsl(var(--tf-accent-2) / 0.1);
+  border: 1px solid hsl(var(--tf-accent-2));
   border-radius: 20px;
-  color: hsl(var(--tf-blue-hs) / 50%);
+  color: hsl(var(--tf-accent-2));
   font-size: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -122,22 +122,22 @@
 
 .quantum-toggle:hover,
 .ai-toggle:hover {
-  background: hsl(var(--tf-blue-hs) / 50% / 0.2);
-  box-shadow: 0 0 15px hsl(var(--tf-blue-hs) / 50% / 0.3);
+  background: hsl(var(--tf-accent-2) / 0.2);
+  box-shadow: 0 0 15px hsl(var(--tf-accent-2) / 0.3);
 }
 
 .quantum-toggle.active {
-  background: hsl(var(--tf-amber-hs) / 50% / 0.2);
+  background: hsl(var(--tf-warning) / 0.2);
   border-color: var(--tf-accent-orange);
   color: var(--tf-accent-orange);
-  box-shadow: 0 0 20px hsl(var(--tf-amber-hs) / 50% / 0.4);
+  box-shadow: 0 0 20px hsl(var(--tf-warning) / 0.4);
 }
 
 .ai-toggle.active {
-  background: hsl(var(--tf-green-hs) / 50% / 0.2);
+  background: hsl(var(--tf-success) / 0.2);
   border-color: var(--success-green);
   color: var(--success-green);
-  box-shadow: 0 0 20px hsl(var(--tf-green-hs) / 50% / 0.4);
+  box-shadow: 0 0 20px hsl(var(--tf-success) / 0.4);
 }
 
 .performance-metrics {
@@ -147,13 +147,13 @@
   transform: translateX(50%);
   display: flex;
   gap: 20px;
-  background: hsl(var(--tf-blue-hs) / 16% / 0.8);
-  border: 1px solid hsl(var(--tf-blue-hs) / 50%);
+  background: hsl(var(--tf-surface) / 0.8);
+  border: 1px solid hsl(var(--tf-accent-2));
   border-radius: 20px;
   padding: 10px 20px;
   backdrop-filter: blur(10px);
   font-size: 12px;
-  color: hsl(var(--tf-blue-hs) / 50%);
+  color: hsl(var(--tf-accent-2));
 }
 
 .fps-counter,
@@ -202,15 +202,15 @@
 
 @keyframes quantumGlow {
   0% {
-    box-shadow: 0 0 5px hsl(var(--tf-green-hs) / 50% / 0.3);
+    box-shadow: 0 0 5px hsl(var(--tf-success) / 0.3);
   }
   50% {
     box-shadow:
-      0 0 20px hsl(var(--tf-green-hs) / 50% / 0.6),
-      0 0 30px hsl(var(--tf-blue-hs) / 50% / 0.3);
+      0 0 20px hsl(var(--tf-success) / 0.6),
+      0 0 30px hsl(var(--tf-accent-2) / 0.3);
   }
   100% {
-    box-shadow: 0 0 5px hsl(var(--tf-green-hs) / 50% / 0.3);
+    box-shadow: 0 0 5px hsl(var(--tf-success) / 0.3);
   }
 }
 

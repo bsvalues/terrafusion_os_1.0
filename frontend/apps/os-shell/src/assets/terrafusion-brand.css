@@ -3,24 +3,24 @@
 /* Brand Color Palette */
 :root {
   /* Primary TerraFusion Colors */
-  --tf-primary: hsl(var(--tf-dark-cyan)); /* Cyan gradient start */
-  --tf-secondary: hsl(var(--tf-dark-cyan) / 0.67); /* Teal gradient end */
-  --tf-dark: hsl(var(--tf-bg)); /* Background navy */
+  --tf-primary: #00ced1; /* Cyan gradient start */
+  --tf-secondary: #008b8b; /* Teal gradient end */
+  --tf-dark: #0a1628; /* Background navy */
   --tf-accent: var(--tf-quantum-cyan); /* Glow/highlight */
-  --tf-trust-blue: hsl(var(--tf-clarity-blue-hs) / 0.75); /* Government trust */
-  --tf-success-green: hsl(var(--tf-success)); /* Operational status */
-  --tf-transcend-cyan: hsl(var(--tf-transcend)); /* Transcendence theme */
+  --tf-trust-blue: #0077be; /* Government trust */
+  --tf-success-green: #4caf50; /* Operational status */
+  --tf-transcend-cyan: #40e0d0; /* Transcendence theme */
 
   /* Metallic Gradients */
-  --tf-metallic: linear-gradient(135deg, hsl(var(--tf-indigo)) 0%, hsl(var(--tf-purple)) 100%);
-  --tf-holographic: linear-gradient(45deg, hsl(var(--tf-dark-cyan)), hsl(var(--tf-sky-blue-hs)), hsl(var(--tf-clarity-blue-hs) / 0.75), hsl(var(--tf-transcend)));
-  --tf-chrome: linear-gradient(135deg, hsl(var(--tf-slate-300)) 0%, hsl(var(--tf-neutral-hs) 50%) 50%, hsl(var(--tf-slate-300)) 100%);
+  --tf-metallic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --tf-holographic: linear-gradient(45deg, #00ced1, #48cae4, #0077be, #40e0d0);
+  --tf-chrome: linear-gradient(135deg, #c0c0c0 0%, #808080 50%, #c0c0c0 100%);
 
   /* Neumorphic Effects */
   --tf-emboss-light:
-    inset -2px -2px 4px hsl(var(--tf-text) / 0.1), inset 2px 2px 4px hsl(var(--tf-black) / 0.3);
+    inset -2px -2px 4px rgba(255, 255, 255, 0.1), inset 2px 2px 4px rgba(0, 0, 0, 0.3);
   --tf-emboss-dark:
-    inset 2px 2px 4px hsl(var(--tf-black) / 0.5), inset -2px -2px 4px hsl(var(--tf-text) / 0.05);
+    inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.05);
 }
 
 /* TerraFusion Logo Components */
@@ -31,7 +31,7 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px hsl(var(--tf-transcend) / 0.5);
+  text-shadow: 0 0 20px rgba(64, 224, 208, 0.5);
 }
 
 .tf-logo-embossed {
@@ -50,7 +50,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, transparent, hsl(var(--tf-text) / 0.1), transparent);
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   transform: rotate(45deg);
   animation: shine 3s infinite;
 }
@@ -79,8 +79,8 @@
   justify-content: center;
   position: relative;
   box-shadow:
-    0 0 20px hsl(var(--tf-accent) / 0.3),
-    inset 0 0 20px hsl(var(--tf-accent) / 0.1);
+    0 0 20px rgba(0, 206, 209, 0.3),
+    inset 0 0 20px rgba(0, 206, 209, 0.1);
 }
 
 .tf-seal-badge::before {
@@ -111,27 +111,27 @@
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 4px 12px hsl(var(--tf-black) / 0.3),
-    inset 0 1px 0 hsl(var(--tf-text) / 0.1);
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
 
 .tf-square-badge:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 8px 25px hsl(var(--tf-accent) / 0.4),
-    inset 0 1px 0 hsl(var(--tf-text) / 0.2);
+    0 8px 25px rgba(0, 206, 209, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Browser Interface Design */
 .tf-browser-mockup {
-  background: hsl(var(--tf-slate-700));
+  background: #2d3748;
   border-radius: 8px 8px 0 0;
   padding: 8px 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 2px 10px hsl(var(--tf-black) / 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .tf-browser-dots {
@@ -146,13 +146,13 @@
 }
 
 .tf-browser-dot.close {
-  background: hsl(var(--tf-error));
+  background: #ff5f56;
 }
 .tf-browser-dot.minimize {
-  background: hsl(var(--tf-warning));
+  background: #ffbd2e;
 }
 .tf-browser-dot.maximize {
-  background: hsl(var(--tf-success));
+  background: #27ca3f;
 }
 
 /* Meme-Ready Templates */
@@ -185,11 +185,11 @@
 
 @keyframes tokenGlow {
   from {
-    box-shadow: 0 0 20px hsl(var(--tf-transcend) / 0.3);
+    box-shadow: 0 0 20px rgba(64, 224, 208, 0.3);
     filter: brightness(1);
   }
   to {
-    box-shadow: 0 0 40px hsl(var(--tf-transcend) / 0.6);
+    box-shadow: 0 0 40px rgba(64, 224, 208, 0.6);
     filter: brightness(1.1);
   }
 }
@@ -229,7 +229,7 @@
 
 .tf-glitch::before {
   animation: glitch-1 0.5s infinite;
-  color: hsl(var(--tf-error));
+  color: #ff0000;
   z-index: -1;
 }
 
@@ -332,8 +332,8 @@
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   :root {
-    --tf-primary: hsl(var(--tf-text));
-    --tf-secondary: hsl(var(--tf-text));
-    --tf-accent: hsl(var(--tf-text));
+    --tf-primary: #ffffff;
+    --tf-secondary: #ffffff;
+    --tf-accent: #ffffff;
   }
 }

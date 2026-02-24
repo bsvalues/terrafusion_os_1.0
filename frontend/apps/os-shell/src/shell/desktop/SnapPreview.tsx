@@ -76,7 +76,7 @@ export const SnapPreview: React.FC<SnapPreviewProps> = ({
         'rounded-lg',
 
         // Shadow for depth
-        'shadow-[0_0_20px_hsl(var(--tf-cyan-hs)_50%_/_0.3)]',
+        'shadow-[0_0_20px_rgba(0,255,238,0.3)]',
 
         // Animation
         'transition-all duration-200 ease-out',

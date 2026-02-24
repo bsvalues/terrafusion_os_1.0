@@ -9,10 +9,10 @@
 
 import React, { useCallback, useMemo, useState } from 'react';
 import type {
-    ExplainResponseV2,
-    ExplainSegment,
-    ExplainSourceAttribution,
-    ExplainStep,
+  ExplainResponseV2,
+  ExplainSegment,
+  ExplainSourceAttribution,
+  ExplainStep,
 } from '../../api/explainApi';
 
 // ═══════════════════════════════════════════════════════════════
@@ -226,7 +226,7 @@ export const ExplainPanel: React.FC<ExplainPanelProps> = ({
     <aside
       className={`
         tf-explain-panel fixed bottom-4 right-4 z-50 rounded-2xl border border-slate-700/60
-        bg-slate-950/95 p-4 shadow-[0_20px_60px_hsl(var(--tf-neutral-hs)_0%_/_0.75)] backdrop-blur-xl
+        bg-slate-950/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.75)] backdrop-blur-xl
         ${isV2 ? 'w-[32rem] max-w-[calc(100vw-2rem)]' : 'w-96 max-w-[calc(100vw-2rem)]'}
       `}
       role='complementary'

@@ -1,3 +1,8 @@
+/* HS Channel Anchors (file-local, OSStatusBadge palette) */
+:root {
+  --tf-sb-emerald-hs: 158 64%;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -30,7 +35,7 @@
 }
 .dot.connected {
   background: var(--tf-status-teal-light);
-  box-shadow: 0 0 6px 2px hsl(var(--tf-green-hs) 52% / 0.6);
+  box-shadow: 0 0 6px 2px hsl(var(--tf-sb-emerald-hs) 52% / 0.6);
 }
 .dot.connecting {
   background: var(--tf-status-blue-light);

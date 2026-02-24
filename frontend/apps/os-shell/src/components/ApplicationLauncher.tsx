@@ -211,11 +211,11 @@ const ApplicationLauncher: React.FC = () => {
       {/* Package Info */}
       <div
         style={{
-          background: 'hsl(var(--tf-neutral-hs) 100% / 0.05)',
+          background: 'rgba(255, 255, 255, 0.05)',
           padding: '20px',
           borderRadius: '8px',
           marginBottom: '30px',
-          border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.3)',
+          border: '1px solid rgba(0, 210, 255, 0.3)',
         }}
       >
         <div
@@ -293,26 +293,26 @@ const ApplicationLauncher: React.FC = () => {
           <div
             key={app.id}
             style={{
-              background: 'hsl(var(--tf-neutral-hs) 100% / 0.05)',
-              border: `1px solid ${launchedApps.has(app.id) ? 'var(--tf-accent-success)' : 'hsl(var(--tf-cyan-hs) 50% / 0.3)'}`,
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: `1px solid ${launchedApps.has(app.id) ? 'var(--tf-accent-success)' : 'rgba(0, 210, 255, 0.3)'}`,
               borderRadius: '12px',
               padding: '20px',
               transition: 'all 0.3s ease',
               cursor: 'pointer',
               transform: launchedApps.has(app.id) ? 'translateY(-2px)' : 'translateY(0)',
-              boxShadow: launchedApps.has(app.id) ? '0 10px 30px hsl(var(--tf-green-hs) 50% / 0.3)' : 'none',
+              boxShadow: launchedApps.has(app.id) ? '0 10px 30px rgba(0, 255, 170, 0.3)' : 'none',
             }}
             onMouseEnter={(e) => {
               if (!launchedApps.has(app.id)) {
                 e.currentTarget.style.transform = 'translateY(-5px)';
                 e.currentTarget.style.borderColor = 'var(--tf-transcend-cyan)';
-                e.currentTarget.style.boxShadow = '0 10px 30px hsl(var(--tf-cyan-hs) 50% / 0.3)';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 210, 255, 0.3)';
               }
             }}
             onMouseLeave={(e) => {
               if (!launchedApps.has(app.id)) {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'hsl(var(--tf-cyan-hs) 50% / 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(0, 210, 255, 0.3)';
                 e.currentTarget.style.boxShadow = 'none';
               }
             }}
@@ -345,7 +345,7 @@ const ApplicationLauncher: React.FC = () => {
             <div
               style={{
                 fontSize: '0.9rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'rgba(255, 255, 255, 0.7)',
                 marginBottom: '15px',
                 lineHeight: 1.4,
               }}
@@ -357,10 +357,10 @@ const ApplicationLauncher: React.FC = () => {
             <div
               style={{
                 fontSize: '0.85rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.5)',
+                color: 'rgba(255, 255, 255, 0.5)',
                 marginBottom: '15px',
                 fontFamily: 'monospace',
-                background: 'hsl(var(--tf-neutral-hs) 0% / 0.3)',
+                background: 'rgba(0, 0, 0, 0.3)',
                 padding: '8px',
                 borderRadius: '4px',
               }}
@@ -418,7 +418,7 @@ const ApplicationLauncher: React.FC = () => {
             </div>
             <div
               style={{
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'rgba(255, 255, 255, 0.7)',
               }}
             >
               Government Modules
@@ -437,7 +437,7 @@ const ApplicationLauncher: React.FC = () => {
             </div>
             <div
               style={{
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'rgba(255, 255, 255, 0.7)',
               }}
             >
               Active AI Agents
@@ -456,7 +456,7 @@ const ApplicationLauncher: React.FC = () => {
             </div>
             <div
               style={{
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'rgba(255, 255, 255, 0.7)',
               }}
             >
               Harris PACS Parcels
@@ -475,7 +475,7 @@ const ApplicationLauncher: React.FC = () => {
             </div>
             <div
               style={{
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'rgba(255, 255, 255, 0.7)',
               }}
             >
               Modules Launched

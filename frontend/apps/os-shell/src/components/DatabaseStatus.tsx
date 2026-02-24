@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { databaseAPI } from '../services/api';
 interface DatabaseStatusData {
   isConnected: boolean;
@@ -36,9 +36,7 @@ const DatabaseStatus: React.FC = () => {
           lastUpdate: response.database?.lastUpdate ?? new Date().toISOString(),
           harrisSync: {
             status: response.database?.harrisSync?.status ?? 'active',
-            parcels:
-              response.database?.harrisSync?.parcels ??
-              (await DynamicPropertyService.GetPropertyCountAsync('benton')),
+            parcels: response.database?.harrisSync?.parcels ?? await DynamicPropertyService.GetPropertyCountAsync("benton"),
             lastSync: response.database?.harrisSync?.lastSync ?? new Date().toISOString(),
           },
           performance: {
@@ -105,7 +103,7 @@ const DatabaseStatus: React.FC = () => {
   return (
     <div
       style={{
-        background: 'hsl(var(--tf-neutral-hs) 100% / 0.05)',
+        background: 'rgba(255, 255, 255, 0.05)',
         border: `1px solid ${status.isConnected ? 'var(--tf-accent-success)' : 'var(--error-red)'}`,
         borderRadius: '12px',
         padding: '1.5rem',
@@ -124,9 +122,7 @@ const DatabaseStatus: React.FC = () => {
         </h3>
         <div
           style={{
-            background: status.isConnected
-              ? 'hsl(var(--tf-green-hs) 50% / 0.2)'
-              : 'hsl(var(--tf-red-hs) 63% / 0.2)',
+            background: status.isConnected ? 'rgba(0, 255, 170, 0.2)' : 'rgba(255, 68, 68, 0.2)',
             color: status.isConnected ? 'var(--tf-accent-success)' : 'var(--error-red)',
             padding: '0.3rem 0.8rem',
             borderRadius: '15px',
@@ -154,7 +150,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+              color: 'rgba(255, 255, 255, 0.7)',
             }}
           >
             Total Modules
@@ -175,7 +171,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+              color: 'rgba(255, 255, 255, 0.7)',
             }}
           >
             Active Modules
@@ -196,7 +192,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+              color: 'rgba(255, 255, 255, 0.7)',
             }}
           >
             Harris Parcels
@@ -217,7 +213,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+              color: 'rgba(255, 255, 255, 0.7)',
             }}
           >
             Response Time
@@ -240,10 +236,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color:
-                status.harrisSync.status === 'active'
-                  ? 'var(--tf-accent-success)'
-                  : 'var(--warning-amber)',
+              color: status.harrisSync.status === 'active' ? 'var(--tf-accent-success)' : 'var(--warning-amber)',
             }}
           >
             {status.harrisSync.status.toUpperCase()}
@@ -252,7 +245,7 @@ const DatabaseStatus: React.FC = () => {
         <div
           style={{
             fontSize: '0.8rem',
-            color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+            color: 'rgba(255, 255, 255, 0.7)',
           }}
         >
           Last sync: {new Date(status.harrisSync.lastSync).toLocaleString()}
@@ -286,8 +279,7 @@ const DatabaseStatus: React.FC = () => {
         <div className='text-center'>
           <div
             style={{
-              color:
-                status.performance.errors === 0 ? 'var(--tf-accent-success)' : 'var(--error-red)',
+              color: status.performance.errors === 0 ? 'var(--tf-accent-success)' : 'var(--error-red)',
               fontWeight: 'bold',
             }}
           >

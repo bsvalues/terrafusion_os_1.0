@@ -30,44 +30,44 @@ interface TerraSphereIconProps {
 const VARIANT_COLORS: Record<TerraSphereIconVariant, { ring: string; core: string; glow: string }> =
   {
     assessment: {
-      ring: 'hsl(var(--tf-indigo) / 0.4)', // indigo-400
-      core: 'hsl(var(--tf-indigo))',
-      glow: 'hsl(var(--tf-indigo) / 0.6)',
+      ring: 'rgba(129, 140, 248, 0.4)', // indigo-400
+      core: '#818cf8',
+      glow: 'rgba(129, 140, 248, 0.6)',
     },
     records: {
-      ring: 'hsl(var(--tf-cyan-hs) 50% / 0.4)', // cyan
-      core: 'hsl(var(--tf-cyan-hs) 50%)',
-      glow: 'hsl(var(--tf-cyan-hs) 50% / 0.6)',
+      ring: 'rgba(0, 229, 255, 0.4)', // cyan
+      core: '#00e5ff',
+      glow: 'rgba(0, 229, 255, 0.6)',
     },
     tax: {
-      ring: 'hsl(var(--tf-success) / 0.4)', // emerald-400
-      core: 'hsl(var(--tf-success))',
-      glow: 'hsl(var(--tf-success) / 0.6)',
+      ring: 'rgba(52, 211, 153, 0.4)', // emerald-400
+      core: '#34d399',
+      glow: 'rgba(52, 211, 153, 0.6)',
     },
     mapping: {
-      ring: 'hsl(var(--tf-brand-blue) / 0.4)', // blue-500
-      core: 'hsl(var(--tf-brand-blue))',
-      glow: 'hsl(var(--tf-brand-blue) / 0.6)',
+      ring: 'rgba(59, 130, 246, 0.4)', // blue-500
+      core: '#3b82f6',
+      glow: 'rgba(59, 130, 246, 0.6)',
     },
     analytics: {
-      ring: 'hsl(var(--tf-amber-hs) 56% / 0.4)', // amber-400
-      core: 'hsl(var(--tf-amber-hs) 56%)',
-      glow: 'hsl(var(--tf-amber-hs) 56% / 0.6)',
+      ring: 'rgba(251, 191, 36, 0.4)', // amber-400
+      core: '#fbbf24',
+      glow: 'rgba(251, 191, 36, 0.6)',
     },
     ai: {
-      ring: 'hsl(var(--tf-purple) / 0.4)', // fuchsia-400
-      core: 'hsl(var(--tf-purple))',
-      glow: 'hsl(var(--tf-purple) / 0.6)',
+      ring: 'rgba(232, 121, 249, 0.4)', // fuchsia-400
+      core: '#e879f9',
+      glow: 'rgba(232, 121, 249, 0.6)',
     },
     system: {
-      ring: 'hsl(var(--tf-neutral-hs) 100% / 0.25)',
-      core: 'hsl(var(--tf-neutral-hs) 91%)',
-      glow: 'hsl(var(--tf-neutral-hs) 100% / 0.4)',
+      ring: 'rgba(255, 255, 255, 0.25)',
+      core: '#e2e8f0',
+      glow: 'rgba(255, 255, 255, 0.4)',
     },
     default: {
-      ring: 'hsl(var(--tf-cyan-hs) 50% / 0.3)',
-      core: 'hsl(var(--tf-cyan-hs) 50%)',
-      glow: 'hsl(var(--tf-cyan-hs) 50% / 0.5)',
+      ring: 'rgba(0, 229, 255, 0.3)',
+      core: '#00e5ff',
+      glow: 'rgba(0, 229, 255, 0.5)',
     },
   };
 
@@ -146,7 +146,7 @@ export const TerraSphereIcon: React.FC<TerraSphereIconProps> = ({
           {glyph && (
             <div
               style={{
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.9)',
+                color: 'rgba(255,255,255,0.9)',
                 filter: `drop-shadow(0 0 4px ${colors.core})`,
                 display: 'flex',
                 alignItems: 'center',

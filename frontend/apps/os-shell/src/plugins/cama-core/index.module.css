@@ -1,3 +1,10 @@
+/* HS Channel Anchors (file-local, cama-core palette) */
+:root {
+  --tf-cm-dark-hs: 0 0%;
+  --tf-cm-blue-hs: 204 100%;
+  --tf-cm-blue-dark-hs: 206 100%;
+}
+
 .root {
   padding: 10px;
   border: 1px solid var(--gray-200);
@@ -7,7 +14,7 @@
 .title {
   font-weight: 700;
   margin-bottom: 6px;
-  color: hsl(var(--tf-neutral-hs) 20%);
+  color: hsl(var(--tf-cm-dark-hs) 20%);
 }
 .meta {
   opacity: 0.8;
@@ -17,12 +24,12 @@
 .meta button {
   margin-right: 8px;
   padding: 4px 8px;
-  background: hsl(var(--tf-blue-hs) 40%);
+  background: hsl(var(--tf-cm-blue-hs) 40%);
   color: white;
   border: none;
   border-radius: 3px;
   cursor: pointer;
 }
 .meta button:hover {
-  background: hsl(var(--tf-blue-hs) 31%);
+  background: hsl(var(--tf-cm-blue-dark-hs) 31%);
 }

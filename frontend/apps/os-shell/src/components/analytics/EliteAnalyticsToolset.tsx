@@ -477,7 +477,7 @@ export function EliteAnalyticsToolset() {
                     key={j}
                     className='matrix-cell'
                     style={{
-                      backgroundColor: `hsl(var(--tf-quantum-cyan-hs) / ${Math.abs(value) * 0.6})`,
+                      backgroundColor: `rgba(0, 255, 255, ${Math.abs(value) * 0.6})`,
                       color: Math.abs(value) > 0.5 ? 'var(--tf-void-black)' : 'var(--tf-quantum-cyan)',
                     }}
                     title={`Correlation: ${value.toFixed(3)}`}

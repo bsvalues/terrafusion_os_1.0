@@ -33,9 +33,6 @@ const config = {
     '^@terrafusion/ui$': '<rootDir>/../packages/ui/src/index.ts',
     '^@assets/(.*)$': '<rootDir>/apps/os-shell/src/assets/$1',
 
-    // Shared tooling
-    '^@tools/ui-tokens/(.*)$': '<rootDir>/../tools/ui-tokens/$1',
-
     // Mock static assets
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg|webp)$': '<rootDir>/apps/os-shell/src/__mocks__/fileMock.ts',
@@ -45,7 +42,7 @@ const config = {
   // Transform files with ts-jest and import.meta handling
   transform: {
     '^.+\\.tsx?$': [
-      'ts-jest',
+      './jest-import-meta-transformer.cjs',
       {
         useESM: true,
         tsconfig: {

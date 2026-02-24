@@ -23,36 +23,36 @@
 .excellence-header {
   padding: 2rem;
   border-radius: 1rem;
-  border: 1px solid hsl(var(--tf-accent) / 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.2);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  background: linear-gradient(135deg, hsl(var(--tf-accent) / 0.05), hsl(var(--tf-accent-2) / 0.03));
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(0, 128, 255, 0.03));
 }
 
 .quantum-metric-card {
   padding: 1.5rem;
   border-radius: 0.75rem;
-  border: 1px solid hsl(var(--tf-accent) / 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.2);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  background: linear-gradient(135deg, hsl(var(--tf-surface) / 0.4), hsl(var(--tf-accent) / 0.02));
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(0, 255, 255, 0.02));
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .quantum-metric-card:hover {
   transform: translateY(-0.25rem);
-  border-color: hsl(var(--tf-accent) / 0.4);
-  box-shadow: 0 20px 40px hsl(var(--tf-accent) / 0.1);
+  border-color: rgba(0, 255, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 255, 255, 0.1);
 }
 
 .terra-glass {
-  background: hsl(var(--tf-text) / 0.1);
+  background: rgba(255, 255, 255, 0.1);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  border: 1px solid hsl(var(--tf-accent) / 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.2);
   border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px hsl(var(--tf-black) / 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .quantum-progress-bar[data-width='100'] {
@@ -105,31 +105,31 @@
 
 /* Elite status indicators */
 .status-transcendent {
-  color: hsl(var(--tf-success));
-  border-color: hsl(var(--tf-success) / 0.3);
-  background-color: hsl(var(--tf-success) / 0.1);
-  box-shadow: 0 0 20px hsl(var(--tf-success) / 0.3);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+  background-color: rgba(74, 222, 128, 0.1);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
 }
 
 .status-championship {
   color: var(--tf-status-blue-light);
-  border-color: hsl(var(--tf-accent-2) / 0.3);
-  background-color: hsl(var(--tf-accent-2) / 0.1);
-  box-shadow: 0 0 20px hsl(var(--tf-accent-2) / 0.3);
+  border-color: rgba(96, 165, 250, 0.3);
+  background-color: rgba(96, 165, 250, 0.1);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
 
 .status-elite {
-  color: hsl(var(--tf-info));
-  border-color: hsl(var(--tf-info) / 0.3);
-  background-color: hsl(var(--tf-info) / 0.1);
-  box-shadow: 0 0 20px hsl(var(--tf-info) / 0.3);
+  color: #a78bfa;
+  border-color: rgba(167, 139, 250, 0.3);
+  background-color: rgba(167, 139, 250, 0.1);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
 }
 
 .status-optimal {
-  color: hsl(var(--tf-accent));
-  border-color: hsl(var(--tf-accent) / 0.3);
-  background-color: hsl(var(--tf-accent) / 0.1);
-  box-shadow: 0 0 20px hsl(var(--tf-accent) / 0.3);
+  color: #22d3ee;
+  border-color: rgba(34, 211, 238, 0.3);
+  background-color: rgba(34, 211, 238, 0.1);
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
 }
 
 /* Government excellence animations */
@@ -163,15 +163,15 @@
 .elite-system-card {
   padding: 0.75rem;
   border-radius: 0.5rem;
-  border: 1px solid hsl(var(--tf-accent) / 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(135deg, hsl(var(--tf-bg) / 0.8), hsl(var(--tf-surface) / 0.3));
+  background: linear-gradient(135deg, rgba(10, 14, 26, 0.8), rgba(30, 41, 59, 0.3));
 }
 
 .elite-system-card:hover {
-  border-color: hsl(var(--tf-accent) / 0.4);
+  border-color: rgba(0, 255, 255, 0.4);
   transform: scale(1.05);
-  box-shadow: 0 10px 25px hsl(var(--tf-accent) / 0.1);
+  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.1);
 }
 
 /* Transcendent mode notification */
@@ -181,9 +181,9 @@
 
 @keyframes transcendent-glow {
   0% {
-    box-shadow: 0 0 20px hsl(var(--tf-success) / 0.3);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
   }
   100% {
-    box-shadow: 0 0 30px hsl(var(--tf-success) / 0.6);
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
   }
 }

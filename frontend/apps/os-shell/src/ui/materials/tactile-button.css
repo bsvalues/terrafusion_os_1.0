@@ -37,11 +37,11 @@
   transform-origin: center;
 
   /* Default tokens */
-  --tactile-bg: hsl(var(--tf-cyan-hs) 43%);
-  --tactile-text: hsl(var(--tf-black) / 0.9);
+  --tactile-bg: hsl(var(--tf-accent) / 1);
+  --tactile-text: hsl(var(--tf-bg) / 0.9);
   --tactile-border: transparent;
-  --tactile-shadow: 0 2px 8px hsl(var(--tf-cyan-hs) 43% / 0.25);
-  --tactile-focus-ring: hsl(var(--tf-cyan-hs) 43% / 0.5);
+  --tactile-shadow: 0 2px 8px hsl(var(--tf-accent) / 0.25);
+  --tactile-focus-ring: hsl(var(--tf-accent) / 0.5);
 
   background: var(--tactile-bg);
   color: var(--tactile-text);
@@ -87,68 +87,68 @@
 
 /* Primary: Cyber cyan, high contrast */
 .tactile-button--primary {
-  --tactile-bg: hsl(var(--tf-cyan-hs) 43%);
-  --tactile-text: hsl(var(--tf-black) / 0.9);
-  --tactile-shadow: 0 2px 12px hsl(var(--tf-cyan-hs) 43% / 0.3);
+  --tactile-bg: hsl(var(--tf-accent) / 1);
+  --tactile-text: hsl(var(--tf-bg) / 0.9);
+  --tactile-shadow: 0 2px 12px hsl(var(--tf-accent) / 0.3);
 }
 
 .tactile-button--primary:hover:not(:disabled) {
-  --tactile-bg: hsl(var(--tf-cyan-hs) 47%);
-  --tactile-shadow: 0 4px 16px hsl(var(--tf-cyan-hs) 43% / 0.4);
+  --tactile-bg: hsl(var(--tf-accent) / 1);
+  --tactile-shadow: 0 4px 16px hsl(var(--tf-accent) / 0.4);
 }
 
 .tactile-button--primary:active:not(:disabled) {
-  --tactile-bg: hsl(var(--tf-cyan-hs) 38%);
+  --tactile-bg: hsl(var(--tf-accent) / 1);
 }
 
 /* Secondary: Outlined */
 .tactile-button--secondary {
   --tactile-bg: transparent;
-  --tactile-text: hsl(var(--tf-cyan-hs) 43%);
-  --tactile-border: hsl(var(--tf-cyan-hs) 43% / 0.5);
+  --tactile-text: hsl(var(--tf-accent) / 1);
+  --tactile-border: hsl(var(--tf-accent) / 0.5);
   --tactile-shadow: none;
 }
 
 .tactile-button--secondary:hover:not(:disabled) {
-  --tactile-bg: hsl(var(--tf-cyan-hs) 43% / 0.1);
-  --tactile-border: hsl(var(--tf-cyan-hs) 43% / 0.8);
+  --tactile-bg: hsl(var(--tf-accent) / 0.1);
+  --tactile-border: hsl(var(--tf-accent) / 0.8);
 }
 
 .tactile-button--secondary:active:not(:disabled) {
-  --tactile-bg: hsl(var(--tf-cyan-hs) 43% / 0.15);
+  --tactile-bg: hsl(var(--tf-accent) / 0.15);
 }
 
 /* Ghost: Minimal */
 .tactile-button--ghost {
   --tactile-bg: transparent;
-  --tactile-text: hsl(var(--tf-neutral-hs) 100% / 0.8);
+  --tactile-text: hsl(var(--tf-text) / 0.8);
   --tactile-border: transparent;
   --tactile-shadow: none;
 }
 
 .tactile-button--ghost:hover:not(:disabled) {
-  --tactile-bg: hsl(var(--tf-neutral-hs) 100% / 0.08);
-  --tactile-text: hsl(var(--tf-neutral-hs) 100%);
+  --tactile-bg: hsl(var(--tf-text) / 0.08);
+  --tactile-text: hsl(var(--tf-text) / 1);
 }
 
 .tactile-button--ghost:active:not(:disabled) {
-  --tactile-bg: hsl(var(--tf-neutral-hs) 100% / 0.12);
+  --tactile-bg: hsl(var(--tf-text) / 0.12);
 }
 
 /* Danger: Red accent */
 .tactile-button--danger {
-  --tactile-bg: hsl(var(--tf-red-hs) 60%);
-  --tactile-text: hsl(var(--tf-neutral-hs) 100%);
-  --tactile-shadow: 0 2px 12px hsl(var(--tf-red-hs) 60% / 0.25);
+  --tactile-bg: hsl(var(--tf-error) / 1);
+  --tactile-text: hsl(var(--tf-text) / 1);
+  --tactile-shadow: 0 2px 12px hsl(var(--tf-error) / 0.25);
 }
 
 .tactile-button--danger:hover:not(:disabled) {
-  --tactile-bg: hsl(var(--tf-red-hs) 66%);
-  --tactile-shadow: 0 4px 16px hsl(var(--tf-red-hs) 60% / 0.35);
+  --tactile-bg: hsl(var(--tf-error) / 1);
+  --tactile-shadow: 0 4px 16px hsl(var(--tf-error) / 0.35);
 }
 
 .tactile-button--danger:active:not(:disabled) {
-  --tactile-bg: hsl(var(--tf-red-hs) 55%);
+  --tactile-bg: hsl(var(--tf-error) / 1);
 }
 
 /* ============================================================================
@@ -271,7 +271,7 @@
   .tactile-button {
     background: white;
     color: black;
-    border: 1px solid hsl(var(--tf-neutral-hs) 80%);
+    border: 1px solid hsl(var(--tf-muted) / 1);
     box-shadow: none;
   }
 }

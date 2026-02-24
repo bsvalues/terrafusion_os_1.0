@@ -18,19 +18,19 @@ function LoadingOverlay({ moduleName }: { moduleName: string }) {
       className='absolute inset-0 flex flex-col items-center justify-center z-10'
       style={{
         background:
-          'linear-gradient(135deg, hsl(var(--tf-bg) / 0.98) 0%, hsl(var(--tf-surface) / 0.95) 100%)',
+          'linear-gradient(135deg, hsl(var(--tf-bg) / 0.98) 0%, hsl(var(--tf-bg) / 0.95) 100%)',
       }}
     >
       {/* Quantum spinner */}
       <div
         className='w-12 h-12 rounded-full animate-spin mb-4'
         style={{
-          border: '3px solid hsl(var(--tf-cyan-hs) 50% / 0.15)',
-          borderTopColor: 'hsl(var(--tf-cyan-hs) 50%)',
-          boxShadow: '0 0 30px hsl(var(--tf-cyan-hs) 50% / 0.3)',
+          border: '3px solid hsl(var(--tf-accent) / 0.15)',
+          borderTopColor: 'hsl(var(--tf-accent) / 1)',
+          boxShadow: '0 0 30px hsl(var(--tf-accent) / 0.3)',
         }}
       />
-      <p className='text-sm' style={{ color: 'hsl(var(--tf-cyan-hs) 50% / 0.8)' }}>
+      <p className='text-sm' style={{ color: 'hsl(var(--tf-accent) / 0.8)' }}>
         Loading {moduleName}...
       </p>
     </div>
@@ -54,16 +54,16 @@ function ErrorOverlay({
       className='absolute inset-0 flex flex-col items-center justify-center z-10 p-6'
       style={{
         background:
-          'linear-gradient(135deg, hsl(var(--tf-bg) / 0.98) 0%, hsl(var(--tf-surface) / 0.95) 100%)',
+          'linear-gradient(135deg, hsl(var(--tf-bg) / 0.98) 0%, hsl(var(--tf-bg) / 0.95) 100%)',
       }}
     >
       {/* Warning icon */}
       <div
         className='w-16 h-16 rounded-full flex items-center justify-center mb-4'
         style={{
-          background: 'hsl(var(--tf-red-hs) 50% / 0.15)',
-          border: '1px solid hsl(var(--tf-red-hs) 50% / 0.3)',
-          boxShadow: '0 0 30px hsl(var(--tf-red-hs) 50% / 0.2)',
+          background: 'hsl(var(--tf-error) / 0.15)',
+          border: '1px solid hsl(var(--tf-error) / 0.3)',
+          boxShadow: '0 0 30px hsl(var(--tf-error) / 0.2)',
         }}
       >
         <svg
@@ -95,9 +95,9 @@ function ErrorOverlay({
       <div
         className='px-3 py-1.5 rounded-lg mb-5 font-mono text-xs'
         style={{
-          background: 'hsl(var(--tf-cyan-hs) 50% / 0.1)',
-          border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.2)',
-          color: 'hsl(var(--tf-cyan-hs) 50%)',
+          background: 'hsl(var(--tf-accent) / 0.1)',
+          border: '1px solid hsl(var(--tf-accent) / 0.2)',
+          color: 'hsl(var(--tf-accent) / 1)',
         }}
       >
         {url}
@@ -109,15 +109,15 @@ function ErrorOverlay({
           onClick={onRetry}
           className='px-4 py-2 rounded-lg text-sm font-medium transition-all'
           style={{
-            background: 'hsl(var(--tf-cyan-hs) 50% / 0.15)',
-            border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.3)',
-            color: 'hsl(var(--tf-cyan-hs) 50%)',
+            background: 'hsl(var(--tf-accent) / 0.15)',
+            border: '1px solid hsl(var(--tf-accent) / 0.3)',
+            color: 'hsl(var(--tf-accent) / 1)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'hsl(var(--tf-cyan-hs) 50% / 0.25)';
+            e.currentTarget.style.background = 'hsl(var(--tf-accent) / 0.25)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'hsl(var(--tf-cyan-hs) 50% / 0.15)';
+            e.currentTarget.style.background = 'hsl(var(--tf-accent) / 0.15)';
           }}
         >
           Retry
@@ -128,8 +128,8 @@ function ErrorOverlay({
           rel='noopener noreferrer'
           className='px-4 py-2 rounded-lg text-sm font-medium transition-all text-white/60 hover:text-white/80'
           style={{
-            background: 'hsl(var(--tf-neutral-hs) 100% / 0.05)',
-            border: '1px solid hsl(var(--tf-neutral-hs) 100% / 0.1)',
+            background: 'hsl(var(--tf-text) / 0.05)',
+            border: '1px solid hsl(var(--tf-text) / 0.1)',
           }}
         >
           Open in Browser
@@ -148,8 +148,8 @@ function SentinelWarningBanner() {
     <div
       className='absolute top-0 left-0 right-0 z-20 flex items-center justify-between gap-3 px-4 py-2 text-xs'
       style={{
-        background: 'hsl(var(--tf-red-hs) 50% / 0.15)',
-        borderBottom: '1px solid hsl(var(--tf-red-hs) 50% / 0.3)',
+        background: 'hsl(var(--tf-error) / 0.15)',
+        borderBottom: '1px solid hsl(var(--tf-error) / 0.3)',
         backdropFilter: 'blur(8px)',
       }}
     >
@@ -162,8 +162,8 @@ function SentinelWarningBanner() {
         onClick={openPanel}
         className='px-2 py-0.5 rounded text-red-300 hover:text-white transition'
         style={{
-          background: 'hsl(var(--tf-red-hs) 50% / 0.2)',
-          border: '1px solid hsl(var(--tf-red-hs) 50% / 0.3)',
+          background: 'hsl(var(--tf-error) / 0.2)',
+          border: '1px solid hsl(var(--tf-error) / 0.3)',
         }}
       >
         View Status

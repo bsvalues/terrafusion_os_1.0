@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
 
 interface SystemMetrics {
   uptime: string;
@@ -96,7 +96,7 @@ const SystemDiagnostics: React.FC = () => {
           display: 'block',
           textAlign: 'center',
           mt: 1,
-          color: 'hsl(var(--tf-neutral-hs) 100% / 0.5)',
+          color: 'rgba(255, 255, 255, 0.5)',
           fontSize: '0.6rem',
         }}
       >

@@ -9,19 +9,19 @@ Government. Transcended. | Turn Complexity into Clarity.
 :root {
   /* Official Brand Colors - Direct from tf-brand-config.json */
   --tf-primary: var(--tf-network-blue);
-  --tf-primary-dark: hsl(var(--tf-blue-hs) / 40%);
-  --tf-accent: hsl(var(--tf-green-hs) / 50%);
-  --tf-accent-dark: hsl(var(--tf-green-hs) / 40%);
+  --tf-primary-dark: hsl(var(--tf-accent-2) / 0.8);
+  --tf-accent: hsl(var(--tf-success));
+  --tf-accent-dark: hsl(var(--tf-success) / 0.8);
   --tf-transcend: var(--tf-transcend-highlight);
-  --tf-dark: hsl(var(--tf-neutral-hs) / 6%);
-  --tf-dark-lighter: hsl(var(--tf-neutral-hs) / 16%);
-  --tf-light: hsl(var(--tf-neutral-hs) / 100%);
+  --tf-dark: hsl(var(--tf-bg));
+  --tf-dark-lighter: hsl(var(--tf-surface));
+  --tf-light: hsl(var(--tf-text));
   --tf-gray: var(--gray-400);
   --tf-gray-light: var(--gray-300);
   --tf-error: var(--tf-error-red);
   --tf-success: var(--success-green);
   --tf-warning: var(--warning-amber);
-  --tf-clarity: hsl(var(--tf-cyan-hs) / 94%);
+  --tf-clarity: hsl(var(--tf-accent) / 0.15);
 
   /* Official Brand Gradients */
   --tf-gradient-hero: linear-gradient(
@@ -33,8 +33,8 @@ Government. Transcended. | Turn Complexity into Clarity.
   --tf-gradient-dark: linear-gradient(180deg, var(--tf-dark) 0%, var(--tf-void-black) 100%);
   --tf-gradient-glass: linear-gradient(
     135deg,
-    hsl(var(--tf-cyan-hs) / 50% / 0.1) 0%,
-    hsl(var(--tf-blue-hs) / 50% / 0.05) 100%
+    hsl(var(--tf-accent) / 0.1) 0%,
+    hsl(var(--tf-accent-2) / 0.05) 100%
   );
   --tf-gradient-transcendence: linear-gradient(
     135deg,
@@ -80,20 +80,16 @@ Government. Transcended. | Turn Complexity into Clarity.
   --tf-space-16: 4rem;
 
   /* Shadow System */
-  --tf-shadow-sm: 0 1px 2px hsl(var(--tf-neutral-hs) / 0% / 0.05);
-  --tf-shadow-md:
-    0 4px 6px hsl(var(--tf-neutral-hs) / 0% / 0.07), 0 2px 4px hsl(var(--tf-neutral-hs) / 0% / 0.06);
-  --tf-shadow-lg:
-    0 10px 15px hsl(var(--tf-neutral-hs) / 0% / 0.1),
-    0 4px 6px hsl(var(--tf-neutral-hs) / 0% / 0.05);
-  --tf-shadow-glow: 0 0 40px hsl(var(--tf-cyan-hs) / 50% / 0.3);
-  --tf-shadow-transcend:
-    0 0 60px hsl(var(--tf-cyan-hs) / 50% / 0.4), 0 0 100px hsl(var(--tf-blue-hs) / 50% / 0.2);
+  --tf-shadow-sm: 0 1px 2px hsl(var(--tf-bg) / 0.05);
+  --tf-shadow-md: 0 4px 6px hsl(var(--tf-bg) / 0.07), 0 2px 4px hsl(var(--tf-bg) / 0.06);
+  --tf-shadow-lg: 0 10px 15px hsl(var(--tf-bg) / 0.1), 0 4px 6px hsl(var(--tf-bg) / 0.05);
+  --tf-shadow-glow: 0 0 40px hsl(var(--tf-accent) / 0.3);
+  --tf-shadow-transcend: 0 0 60px hsl(var(--tf-accent) / 0.4), 0 0 100px hsl(var(--tf-accent-2) / 0.2);
 
   /* Glass Morphism */
-  --tf-glass-surface: hsl(var(--tf-neutral-hs) / 100% / 0.03);
-  --tf-glass-heavy: hsl(var(--tf-neutral-hs) / 100% / 0.08);
-  --tf-glass-border: hsl(var(--tf-cyan-hs) / 50% / 0.15);
+  --tf-glass-surface: hsl(var(--tf-text) / 0.03);
+  --tf-glass-heavy: hsl(var(--tf-text) / 0.08);
+  --tf-glass-border: hsl(var(--tf-accent) / 0.15);
   --tf-backdrop-blur: blur(20px);
   --tf-backdrop-blur-heavy: blur(40px);
 }
@@ -205,7 +201,7 @@ Government. Transcended. | Turn Complexity into Clarity.
   width: 100%;
   height: 100%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, hsl(var(--tf-cyan-hs) / 50% / 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, hsl(var(--tf-accent) / 0.3) 0%, transparent 70%);
   border-radius: 50%;
   animation: intelligenceRipple 0.6s var(--tf-ease-transcend);
   pointer-events: none;
@@ -259,7 +255,7 @@ Government. Transcended. | Turn Complexity into Clarity.
 }
 
 .tf-btn-transcend:hover {
-  box-shadow: 0 0 30px hsl(var(--tf-cyan-hs) / 50% / 0.5);
+  box-shadow: 0 0 30px hsl(var(--tf-accent) / 0.5);
 }
 
 /* Official Card Component */
@@ -296,7 +292,7 @@ Government. Transcended. | Turn Complexity into Clarity.
 .tf-input:focus {
   outline: none;
   border-color: var(--tf-primary);
-  box-shadow: 0 0 0 3px hsl(var(--tf-blue-hs) / 50% / 0.1);
+  box-shadow: 0 0 0 3px hsl(var(--tf-accent-2) / 0.1);
 }
 
 .tf-input:invalid {
@@ -346,8 +342,8 @@ Government. Transcended. | Turn Complexity into Clarity.
 /* Error Messages - Supportive Tone */
 .tf-error-message {
   color: var(--tf-error);
-  background: hsl(var(--tf-red-hs) / 50% / 0.05);
-  border: 1px solid hsl(var(--tf-red-hs) / 50% / 0.2);
+  background: hsl(var(--tf-error) / 0.05);
+  border: 1px solid hsl(var(--tf-error) / 0.2);
   border-radius: var(--tf-border-radius-md);
   padding: var(--tf-space-4);
 }
@@ -425,7 +421,7 @@ Government. Transcended. | Turn Complexity into Clarity.
   :root {
     --tf-primary: var(--tf-network-blue);
     --tf-transcend: var(--tf-accent-cyan);
-    --tf-accent: hsl(var(--tf-green-hs) / 33%);
+    --tf-accent: #00aa00; /* tf-allow-raw-color -- high-contrast a11y intentional */
   }
 
   .tf-card {
@@ -514,8 +510,8 @@ Government. Transcended. | Turn Complexity into Clarity.
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --tf-light: hsl(var(--tf-neutral-hs) / 100%);
-    --tf-dark: hsl(var(--tf-neutral-hs) / 0%);
-    --tf-glass-surface: hsl(var(--tf-neutral-hs) / 100% / 0.05);
+    --tf-light: hsl(var(--tf-text));
+    --tf-dark: hsl(var(--tf-bg));
+    --tf-glass-surface: hsl(var(--tf-text) / 0.05);
   }
 }

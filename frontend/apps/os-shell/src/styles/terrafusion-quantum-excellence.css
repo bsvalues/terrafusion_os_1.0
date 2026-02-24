@@ -161,7 +161,7 @@
 
 .tf-transcendent-button {
   position: relative;
-  background: linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 50%, hsl(var(--tf-transcend-green-hs)) 100%);
+  background: linear-gradient(135deg, var(--tf-network-blue) 0%, var(--tf-transcend-highlight) 50%, hsl(var(--tf-success)) 100%);
   background-size: 200% 200%;
   color: white;
   font-weight: 700;
@@ -174,7 +174,7 @@
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
-    0 8px 25px hsl(var(--tf-clarity-blue-hs) / 0.3),
+    0 8px 25px hsl(var(--tf-accent-2) / 0.3),
     inset 0 1px 0 hsl(var(--tf-text) / 0.2);
 }
 
@@ -199,8 +199,8 @@
   transform: translateY(-2px) scale(1.02);
   background-position: 100% 0%;
   box-shadow:
-    0 15px 35px hsl(var(--tf-clarity-blue-hs) / 0.4),
-    0 0 40px hsl(var(--tf-transcend) / 0.3),
+    0 15px 35px hsl(var(--tf-accent-2) / 0.4),
+    0 0 40px hsl(var(--tf-accent) / 0.3),
     inset 0 1px 0 hsl(var(--tf-text) / 0.3);
 }
 
@@ -211,14 +211,14 @@
 .tf-transcendent-button:active {
   transform: translateY(-1px) scale(1.01);
   box-shadow:
-    0 8px 20px hsl(var(--tf-clarity-blue-hs) / 0.5),
-    inset 0 2px 4px hsl(var(--tf-black) / 0.2);
+    0 8px 20px hsl(var(--tf-accent-2) / 0.5),
+    inset 0 2px 4px hsl(var(--tf-bg) / 0.2);
 }
 
 .tf-transcendent-button:focus-visible {
   outline: none;
   box-shadow:
-    0 15px 35px hsl(var(--tf-clarity-blue-hs) / 0.4),
+    0 15px 35px hsl(var(--tf-accent-2) / 0.4),
     0 0 0 3px hsl(var(--tf-accent) / 0.5);
 }
 
@@ -260,8 +260,8 @@
 .tf-status-transcendent .tf-consciousness-orb {
   background: radial-gradient(
     circle at 30% 30%,
-    hsl(var(--tf-accent) / 1) 0%,
-    hsl(var(--tf-transcend-green-hs) / 0.8) 50%,
+    hsl(var(--tf-accent)) 0%,
+    hsl(var(--tf-success) / 0.8) 50%,
     hsl(var(--tf-accent-2) / 0.6) 100%
   );
   animation-duration: 1s;
@@ -270,7 +270,7 @@
 .tf-status-optimal .tf-consciousness-orb {
   background: radial-gradient(
     circle at 30% 30%,
-    hsl(var(--tf-transcend-green-hs) / 0.9) 0%,
+    hsl(var(--tf-success) / 0.9) 0%,
     hsl(var(--tf-success) / 0.7) 50%,
     hsl(var(--tf-success) / 0.5) 100%
   );
@@ -311,7 +311,7 @@
 
 .tf-data-flow-active::before {
   animation-duration: 0.8s;
-  background: linear-gradient(90deg, transparent 0%, hsl(var(--tf-transcend-green-hs) / 1) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, hsl(var(--tf-success)) 50%, transparent 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -347,7 +347,7 @@
 .tf-metric-value {
   font-size: 3rem;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--tf-quantum-cyan), hsl(var(--tf-transcend-green-hs)));
+  background: linear-gradient(135deg, var(--tf-quantum-cyan), hsl(var(--tf-success)));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -400,7 +400,7 @@
   background: linear-gradient(
     90deg,
     hsl(var(--tf-accent) / 0.1) 0%,
-    hsl(var(--tf-transcend-green-hs) / 0.1) 50%,
+    hsl(var(--tf-success) / 0.1) 50%,
     hsl(var(--tf-accent) / 0.1) 100%
   );
   background-size: 200% 100%;

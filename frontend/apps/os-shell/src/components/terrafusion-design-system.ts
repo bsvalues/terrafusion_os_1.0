@@ -117,8 +117,8 @@ export const TerraFusionTheme = {
   },
 
   shadows: {
-    glow: '0 0 40px hsl(var(--tf-cyan-hs) 50% / 0.4)',
-    quantum: '0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.3), 0 0 40px hsl(var(--tf-blue-hs) 50% / 0.2)',
+    glow: '0 0 40px rgba(0, 255, 255, 0.4)',
+    quantum: '0 0 20px rgba(0, 255, 255, 0.3), 0 0 40px rgba(0, 128, 255, 0.2)',
   },
 } as const;
 

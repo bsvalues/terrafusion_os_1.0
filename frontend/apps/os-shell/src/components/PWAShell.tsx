@@ -418,7 +418,7 @@ const PWAShell: React.FC = () => {
           </h1>
           <p
             style={{
-              color: 'hsl(var(--tf-neutral-hs) 100% / 0.8)',
+              color: 'rgba(255,255,255,0.8)',
               fontSize: '1.2rem',
               marginBottom: '0.5rem',
             }}
@@ -428,7 +428,7 @@ const PWAShell: React.FC = () => {
 
           <p
             style={{
-              color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+              color: 'rgba(255,255,255,0.6)',
               fontSize: '1rem',
               marginBottom: '2rem',
             }}
@@ -439,7 +439,7 @@ const PWAShell: React.FC = () => {
             style={{
               width: '300px',
               height: '4px',
-              background: 'hsl(var(--tf-neutral-hs) 100% / 0.1)',
+              background: 'rgba(255,255,255,0.1)',
               borderRadius: '2px',
               margin: '0 auto',
               overflow: 'hidden',
@@ -542,7 +542,7 @@ const PWAShell: React.FC = () => {
         <div className='flex items-center gap-4'>
           <span
             style={{
-              color: 'hsl(var(--tf-neutral-hs) 100% / 0.8)',
+              color: 'rgba(255,255,255,0.8)',
             }}
           >
             {userName}
@@ -556,7 +556,7 @@ const PWAShell: React.FC = () => {
         {/* System Status Banner */}
         <div
           style={{
-            background: realDataConnected ? 'hsl(var(--tf-green-hs) 50% / 0.1)' : 'hsl(var(--tf-amber-hs) 50% / 0.1)',
+            background: realDataConnected ? 'rgba(0,255,170,0.1)' : 'rgba(255,165,0,0.1)',
             border: `1px solid ${realDataConnected ? 'var(--success-green)' : 'var(--warning-amber)'}`,
           }}
           className='text-center'
@@ -593,7 +593,7 @@ const PWAShell: React.FC = () => {
           </div>
           <div
             style={{
-              color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+              color: 'rgba(255,255,255,0.7)',
               fontSize: '0.8rem',
               marginTop: '0.5rem',
             }}
@@ -623,7 +623,7 @@ const PWAShell: React.FC = () => {
               onMouseEnter={(e) => {
                 if (module.enabled) {
                   e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px hsl(var(--tf-cyan-hs) 50% / 0.3)';
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,255,238,0.3)';
                   e.currentTarget.style.borderColor = 'var(--terra-cyan)';
                 }
               }}
@@ -631,7 +631,7 @@ const PWAShell: React.FC = () => {
                 if (module.enabled) {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.borderColor = 'hsl(var(--tf-cyan-hs) 50% / 0.2)';
+                  e.currentTarget.style.borderColor = 'rgba(0,255,238,0.2)';
                 }
               }}
               className='p-8'
@@ -666,7 +666,7 @@ const PWAShell: React.FC = () => {
 
               <p
                 style={{
-                  color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                  color: 'rgba(255,255,255,0.7)',
                   fontSize: '0.95rem',
                   lineHeight: 1.5,
                   margin: 0,

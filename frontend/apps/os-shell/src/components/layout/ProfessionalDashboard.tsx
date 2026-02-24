@@ -286,7 +286,7 @@ const ProfessionalDashboard: React.FC = () => {
           sx: {
             height: '90vh',
             background: 'linear-gradient(135deg, var(--tf-void-black), var(--tf-bg-surface))',
-            border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.2)',
+            border: '1px solid hsl(var(--tf-accent-2) / 0.2)',
             borderRadius: '16px',
           },
         }}
@@ -306,9 +306,9 @@ const ProfessionalDashboard: React.FC = () => {
               top: 16,
               color: 'white',
               zIndex: 1,
-              background: 'hsl(var(--tf-neutral-hs) 100% / 0.1)',
+              background: 'hsl(var(--tf-text) / 0.1)',
               '&:hover': {
-                background: 'hsl(var(--tf-neutral-hs) 100% / 0.2)',
+                background: 'hsl(var(--tf-text) / 0.2)',
               },
             }}
           >
@@ -399,7 +399,7 @@ const ProfessionalDashboard: React.FC = () => {
               variant='subtitle1'
               className='tf-subtitle tf-neural-sync'
               sx={{
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'hsl(var(--tf-text) / 0.7)',
                 mb: 2,
               }}
             >
@@ -459,7 +459,7 @@ const ProfessionalDashboard: React.FC = () => {
             <Typography
               variant='body2'
               sx={{
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'hsl(var(--tf-text) / 0.7)',
               }}
             >
               {currentTime.toLocaleDateString('en-US', {
@@ -501,7 +501,7 @@ const ProfessionalDashboard: React.FC = () => {
                     <Typography
                       variant='body2'
                       sx={{
-                        color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                        color: 'hsl(var(--tf-text) / 0.7)',
                       }}
                     >
                       Quantum Performance
@@ -542,7 +542,7 @@ const ProfessionalDashboard: React.FC = () => {
                     <Typography
                       variant='body2'
                       sx={{
-                        color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                        color: 'hsl(var(--tf-text) / 0.7)',
                       }}
                     >
                       {metric.label}
@@ -554,17 +554,17 @@ const ProfessionalDashboard: React.FC = () => {
                       sx={{
                         mt: 1,
                         background: metric.growth.startsWith('+')
-                          ? 'hsl(var(--tf-green-hs) 50% / 0.15)'
-                          : 'hsl(var(--tf-red-hs) 70% / 0.15)',
+                          ? 'hsl(var(--tf-success) / 0.15)'
+                          : 'hsl(var(--tf-error) / 0.15)',
                         color: metric.growth.startsWith('+') ? 'var(--tf-accent-success)' : 'var(--tf-error-light)',
-                        border: `1px solid ${metric.growth.startsWith('+') ? 'hsl(var(--tf-green-hs) 50% / 0.3)' : 'hsl(var(--tf-red-hs) 70% / 0.3)'}`,
+                        border: `1px solid ${metric.growth.startsWith('+') ? 'hsl(var(--tf-success) / 0.3)' : 'hsl(var(--tf-error) / 0.3)'}`,
                       }}
                     />
                   </Box>
                   <Avatar
                     className='tf-avatar tf-neural-sync'
                     sx={{
-                      background: `linear-gradient(135deg, ${metric.color}, hsl(var(--tf-neutral-hs) 100% / 0.1))`,
+                      background: `linear-gradient(135deg, ${metric.color}, hsl(var(--tf-text) / 0.1))`,
                     }}
                   >
                     <metric.icon />
@@ -603,7 +603,7 @@ const ProfessionalDashboard: React.FC = () => {
                   <Avatar
                     className='tf-avatar tf-neural-sync'
                     sx={{
-                      background: `linear-gradient(135deg, ${feature.color}, hsl(var(--tf-neutral-hs) 100% / 0.1))`,
+                      background: `linear-gradient(135deg, ${feature.color}, hsl(var(--tf-text) / 0.1))`,
                       boxShadow: `0 4px 20px ${feature.color}40`,
                     }}
                   >
@@ -630,7 +630,7 @@ const ProfessionalDashboard: React.FC = () => {
                 <Typography
                   variant='body2'
                   sx={{
-                    color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                    color: 'hsl(var(--tf-text) / 0.7)',
                     mb: 2,
                     flexGrow: 1,
                   }}
@@ -653,7 +653,7 @@ const ProfessionalDashboard: React.FC = () => {
                     <Typography
                       variant='caption'
                       sx={{
-                        color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                        color: 'hsl(var(--tf-text) / 0.6)',
                       }}
                     >
                       Usage
@@ -673,11 +673,11 @@ const ProfessionalDashboard: React.FC = () => {
                     variant='determinate'
                     value={feature.usage}
                     sx={{
-                      backgroundColor: 'hsl(var(--tf-neutral-hs) 100% / 0.1)',
+                      backgroundColor: 'hsl(var(--tf-text) / 0.1)',
                       borderRadius: '4px',
                       height: '6px',
                       '& .MuiLinearProgress-bar': {
-                        background: `linear-gradient(90deg, ${feature.color}, hsl(var(--tf-neutral-hs) 100% / 0.8))`,
+                        background: `linear-gradient(90deg, ${feature.color}, hsl(var(--tf-text) / 0.8))`,
                         borderRadius: '4px',
                       },
                     }}
@@ -835,7 +835,7 @@ const ProfessionalDashboard: React.FC = () => {
                     <Typography
                       variant='body2'
                       sx={{
-                        color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                        color: 'hsl(var(--tf-text) / 0.7)',
                         fontSize: '0.8rem',
                       }}
                     >
@@ -918,7 +918,7 @@ const ProfessionalDashboard: React.FC = () => {
                       <Typography
                         variant='body2'
                         sx={{
-                          color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                          color: 'hsl(var(--tf-text) / 0.7)',
                           fontSize: '0.8rem',
                         }}
                       >

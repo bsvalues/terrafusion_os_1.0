@@ -19,7 +19,7 @@ const Progress = React.forwardRef<HTMLDivElement, EliteProgressProps>(
     const variantClasses = {
       default: 'bg-terra-cyan',
       quantum:
-        'bg-gradient-to-r from-terra-cyan to-terra-blue shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.4)]',
+        'bg-gradient-to-r from-terra-cyan to-terra-blue shadow-[0_0_10px_rgba(0,255,255,0.4)]',
       success: 'bg-green-500',
       warning: 'bg-yellow-500',
       error: 'bg-red-500',

@@ -804,7 +804,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
             style={{
               padding: '0.75rem 1.5rem',
               background: isValidating
-                ? 'hsl(var(--tf-neutral-hs) 50% / 0.3)'
+                ? 'hsl(var(--tf-muted) / 0.3)'
                 : 'linear-gradient(135deg, var(--terra-cyan) 0%, var(--terra-blue) 100%)',
               border: 'none',
               borderRadius: '0.5rem',
@@ -830,7 +830,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
               fontSize: '0.875rem',
               fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 0 20px hsl(var(--tf-accent-2) / 0.3)',
+              boxShadow: '0 0 20px hsl(var(--tf-info) / 0.3)',
               transition: 'all 0.3s ease',
             }}
           >
@@ -1004,10 +1004,10 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                           fontWeight: 600,
                           background:
                             analysis.trend === 'Improving'
-                              ? 'hsl(var(--tf-anim-green) / 0.2)'
+                              ? 'hsl(var(--tf-success) / 0.2)'
                               : analysis.trend === 'Declining'
-                                ? 'hsl(var(--tf-red-hs) 50% / 0.2)'
-                                : 'hsl(var(--tf-amber-hs) 50% / 0.2)',
+                                ? 'hsl(var(--tf-error) / 0.2)'
+                                : 'hsl(var(--tf-warning) / 0.2)',
                           color:
                             analysis.trend === 'Improving'
                               ? 'var(--success-green)'
@@ -1179,7 +1179,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                     padding: '0.75rem',
                     background: 'hsl(var(--tf-bg) / 0.5)',
                     borderRadius: '0.5rem',
-                    border: `1px solid ${req.isMet ? 'hsl(var(--tf-anim-green) / 0.3)' : 'hsl(var(--tf-warning) / 0.3)'}`,
+                    border: `1px solid ${req.isMet ? 'hsl(var(--tf-success) / 0.3)' : 'hsl(var(--tf-warning) / 0.3)'}`,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -1264,10 +1264,10 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                         fontWeight: 600,
                         background:
                           rec.priority === 'High'
-                            ? 'hsl(var(--tf-red-hs) 50% / 0.2)'
+                            ? 'hsl(var(--tf-error) / 0.2)'
                             : rec.priority === 'Medium'
                               ? 'hsl(var(--tf-warning) / 0.2)'
-                              : 'hsl(var(--tf-amber-hs) 50% / 0.2)',
+                              : 'hsl(var(--tf-warning) / 0.2)',
                         color:
                           rec.priority === 'High'
                             ? 'var(--error-red)'
@@ -1474,7 +1474,7 @@ export const StatisticalValidationWorkbench: React.FC = () => {
                           background:
                             entry.certificationLevel === 'Championship'
                               ? 'var(--glass-border)'
-                              : 'hsl(var(--tf-neutral-hs) 50% / 0.2)',
+                              : 'hsl(var(--tf-muted) / 0.2)',
                           color:
                             entry.certificationLevel === 'Championship'
                               ? 'var(--terra-cyan)'

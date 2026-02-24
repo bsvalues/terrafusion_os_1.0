@@ -23,8 +23,8 @@ import { getOsFeatureById, WORKBENCH_FALLBACK_BASE } from '../../config/suiteReg
 import { useParcelContext } from '../../context/parcelContext';
 import { executeOsAction, type OsActionContext } from '../../services/osActions';
 import { LiquidPanel, TactileButton, useMaterialQuality } from '../../ui/materials';
-import { assertUniqueKeys } from '../../utils/assertUniqueKeys';
 import { Badge } from '../ui/badge';
+import { assertUniqueBy } from '../../utils/assertUniqueBy';
 import {
     DEFAULT_STANDALONE_META,
     isHandlerAction,
@@ -317,28 +317,6 @@ function ModuleCard({ module }: { module: StandaloneHomeModule }) {
 }
 
 // ============================================================================
-// Helpers
-// ============================================================================
-
-/**
- * Merge two action arrays, deduplicating by `id`.
- * When both arrays contain an action with the same id, the override wins.
- */
-function deduplicateActionsById(
-  base: StandaloneHomeAction[],
-  overrides: StandaloneHomeAction[]
-): StandaloneHomeAction[] {
-  const overrideIds = new Set(overrides.map((a) => a.id));
-  const merged = [...base.filter((a) => !overrideIds.has(a.id)), ...overrides];
-
-  if (import.meta.env.DEV) {
-    assertUniqueKeys(merged, (a) => a.id, 'ShellHeader primaryActions');
-  }
-
-  return merged;
-}
-
-// ============================================================================
 // Main Component
 // ============================================================================
 
@@ -375,11 +353,17 @@ export function StandaloneHomeShell({
       icon: featureDefinition?.icon ?? DEFAULT_STANDALONE_META.icon,
       ...registryMeta,
       ...metaOverrides,
-      // Merge actions arrays — deduplicate by id (overrides win)
-      primaryActions: deduplicateActionsById(
-        registryMeta.primaryActions ?? [],
-        metaOverrides?.primaryActions ?? []
-      ),
+      // Merge actions arrays (override-wins dedup by id)
+      primaryActions: (() => {
+        const byId = new Map<string, StandaloneHomeAction>();
+        for (const a of registryMeta.primaryActions ?? []) byId.set(a.id, a);
+        for (const a of metaOverrides?.primaryActions ?? []) byId.set(a.id, a);
+        const actions = [...byId.values()];
+        if (import.meta.env.DEV) {
+          assertUniqueBy(actions, (a) => a.id, 'ShellHeader primaryActions');
+        }
+        return actions;
+      })(),
       // Merge modules (prop overrides take precedence, or use registry)
       modules: metaOverrides?.modules ?? registryMeta.modules ?? [],
     };

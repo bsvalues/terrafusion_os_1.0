@@ -47,7 +47,7 @@ export const EliteBrainIcon: React.FC<EliteIconProps> = ({
   glow = false,
 }) => (
   <svg
-    className={cn(className, glow && 'drop-shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.6)]')}
+    className={cn(className, glow && 'drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]')}
     fill='none'
     stroke={color}
     strokeWidth={strokeWidth}
@@ -404,7 +404,7 @@ export const EliteMemoryIcon: React.FC<EliteIconProps> = ({
   glow = false,
 }) => (
   <svg
-    className={cn(className, glow && 'drop-shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.6)]')}
+    className={cn(className, glow && 'drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]')}
     viewBox='0 0 24 24'
     fill='none'
     stroke='currentColor'
@@ -425,7 +425,7 @@ export const EliteTrendingIcon: React.FC<EliteIconProps> = ({
   glow = false,
 }) => (
   <svg
-    className={cn(className, glow && 'drop-shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.6)]')}
+    className={cn(className, glow && 'drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]')}
     viewBox='0 0 24 24'
     fill='none'
     stroke='currentColor'
@@ -444,7 +444,7 @@ export const EliteMinimizeIcon: React.FC<EliteIconProps> = ({
   glow = false,
 }) => (
   <svg
-    className={cn(className, glow && 'drop-shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.6)]')}
+    className={cn(className, glow && 'drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]')}
     viewBox='0 0 24 24'
     fill='none'
     stroke='currentColor'
@@ -462,7 +462,7 @@ export const EliteMaximizeIcon: React.FC<EliteIconProps> = ({
   glow = false,
 }) => (
   <svg
-    className={cn(className, glow && 'drop-shadow-[0_0_10px_hsl(var(--tf-cyan-hs)_50%_/_0.6)]')}
+    className={cn(className, glow && 'drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]')}
     viewBox='0 0 24 24'
     fill='none'
     stroke='currentColor'

@@ -441,7 +441,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             fontWeight: 700,
             color: 'var(--terra-cyan)',
             marginBottom: '0.5rem',
-            textShadow: '0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.5)',
+            textShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
           }}
         >
           AI Swarm Management & Coordination
@@ -449,7 +449,7 @@ export const AISwarmManagementPanel: React.FC = () => {
         <p
           style={{
             fontSize: '1rem',
-            color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+            color: 'rgba(255, 255, 255, 0.7)',
             margin: 0,
           }}
         >
@@ -483,7 +483,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 fontSize: '0.75rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -506,7 +506,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 fontSize: '0.75rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -529,7 +529,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 fontSize: '0.75rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -558,7 +558,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 fontSize: '0.75rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -581,7 +581,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 fontSize: '0.75rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -610,7 +610,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 fontSize: '0.75rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -633,7 +633,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 fontSize: '0.75rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                color: 'rgba(255, 255, 255, 0.6)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -676,7 +676,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <label
               style={{
                 fontSize: '0.875rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'rgba(255, 255, 255, 0.7)',
                 display: 'block',
                 marginBottom: '0.5rem',
               }}
@@ -689,7 +689,7 @@ export const AISwarmManagementPanel: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                background: 'hsl(var(--tf-bg) / 0.8)',
+                background: 'rgba(10, 14, 26, 0.8)',
                 border: '1px solid var(--glass-border)',
                 borderRadius: '0.5rem',
                 color: 'white',
@@ -709,7 +709,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <label
               style={{
                 fontSize: '0.875rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'rgba(255, 255, 255, 0.7)',
                 display: 'block',
                 marginBottom: '0.5rem',
               }}
@@ -722,7 +722,7 @@ export const AISwarmManagementPanel: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                background: 'hsl(var(--tf-bg) / 0.8)',
+                background: 'rgba(10, 14, 26, 0.8)',
                 border: '1px solid var(--glass-border)',
                 borderRadius: '0.5rem',
                 color: 'white',
@@ -744,7 +744,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <label
               style={{
                 fontSize: '0.875rem',
-                color: 'hsl(var(--tf-neutral-hs) 100% / 0.7)',
+                color: 'rgba(255, 255, 255, 0.7)',
                 display: 'block',
                 marginBottom: '0.5rem',
               }}
@@ -776,8 +776,8 @@ export const AISwarmManagementPanel: React.FC = () => {
               gap: '0.5rem',
               cursor: 'pointer',
               padding: '0.5rem 1rem',
-              background: showConnections ? 'var(--glass-border)' : 'hsl(var(--tf-surface) / 0.5)',
-              border: showConnections ? '1px solid var(--terra-cyan)' : '1px solid hsl(var(--tf-neutral-hs) 100% / 0.1)',
+              background: showConnections ? 'var(--glass-border)' : 'rgba(30, 41, 59, 0.5)',
+              border: showConnections ? '1px solid var(--terra-cyan)' : '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '0.5rem',
               transition: 'all 0.3s ease',
             }}
@@ -821,7 +821,7 @@ export const AISwarmManagementPanel: React.FC = () => {
               fontSize: '0.875rem',
               fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 0 20px hsl(var(--tf-accent-2) / 0.3)',
+              boxShadow: '0 0 20px rgba(0, 128, 255, 0.3)',
               transition: 'all 0.3s ease',
             }}
           >
@@ -858,7 +858,7 @@ export const AISwarmManagementPanel: React.FC = () => {
         <div
           style={{
             height: '500px',
-            background: 'hsl(var(--tf-bg) / 0.5)',
+            background: 'rgba(10, 14, 26, 0.5)',
             borderRadius: '0.5rem',
             overflow: 'hidden',
             position: 'relative',
@@ -936,7 +936,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'hsl(var(--tf-bg) / 0.5)',
+                background: 'rgba(10, 14, 26, 0.5)',
                 borderRadius: '0.5rem',
                 border: '1px solid var(--glass-border)',
               }}
@@ -966,7 +966,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'hsl(var(--tf-bg) / 0.5)',
+                background: 'rgba(10, 14, 26, 0.5)',
                 borderRadius: '0.5rem',
                 border: '1px solid var(--glass-border)',
               }}
@@ -989,7 +989,7 @@ export const AISwarmManagementPanel: React.FC = () => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       fontSize: '0.75rem',
-                      color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                      color: 'rgba(255, 255, 255, 0.6)',
                     }}
                   >
                     <span>Frequency: {pattern.frequency}</span>
@@ -1003,9 +1003,9 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'hsl(var(--tf-bg) / 0.5)',
+                background: 'rgba(10, 14, 26, 0.5)',
                 borderRadius: '0.5rem',
-                border: '1px solid hsl(var(--tf-warning) / 0.2)',
+                border: '1px solid rgba(255, 165, 0, 0.2)',
               }}
             >
               <h4
@@ -1026,7 +1026,7 @@ export const AISwarmManagementPanel: React.FC = () => {
                   <div
                     style={{
                       fontSize: '0.75rem',
-                      color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                      color: 'rgba(255, 255, 255, 0.6)',
                       marginTop: '0.25rem',
                     }}
                   >
@@ -1043,9 +1043,9 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'hsl(var(--tf-bg) / 0.5)',
+                background: 'rgba(10, 14, 26, 0.5)',
                 borderRadius: '0.5rem',
-                border: '1px solid hsl(var(--tf-anim-green) / 0.2)',
+                border: '1px solid rgba(0, 255, 0, 0.2)',
               }}
             >
               <h4
@@ -1067,7 +1067,7 @@ export const AISwarmManagementPanel: React.FC = () => {
                   <div
                     style={{
                       fontSize: '0.75rem',
-                      color: 'hsl(var(--tf-neutral-hs) 100% / 0.6)',
+                      color: 'rgba(255, 255, 255, 0.6)',
                       marginTop: '0.25rem',
                     }}
                   >
@@ -1081,7 +1081,7 @@ export const AISwarmManagementPanel: React.FC = () => {
             <div
               style={{
                 padding: '1rem',
-                background: 'hsl(var(--tf-bg) / 0.5)',
+                background: 'rgba(10, 14, 26, 0.5)',
                 borderRadius: '0.5rem',
                 border: '1px solid var(--glass-border)',
               }}

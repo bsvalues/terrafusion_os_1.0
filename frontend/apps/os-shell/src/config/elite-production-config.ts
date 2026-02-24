@@ -106,10 +106,10 @@ const eliteCSSOptimizer = (): Plugin => ({
 
         // Optimize terra-cyan glow effects
         cssContent = cssContent.replace(
-          /box-shadow:\s*0\s+0\s+(\d+)px\s+hsl\(var\(--tf-cyan-hs\)\s+50%\s*\/\s*([0-9.]+)\)/g,
+          /box-shadow:\s*0\s+0\s+(\d+)px\s+rgba\(0,\s*255,\s*255,\s*([0-9.]+)\)/g,
           (match, size, opacity) => {
             const optimizedOpacity = Math.min(0.8, parseFloat(opacity));
-            return `box-shadow: 0 0 ${size}px hsl(var(--tf-cyan-hs) 50% / ${optimizedOpacity})`;
+            return `box-shadow: 0 0 ${size}px rgba(0, 255, 255, ${optimizedOpacity})`;
           }
         );
 

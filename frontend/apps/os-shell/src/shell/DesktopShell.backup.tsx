@@ -71,9 +71,9 @@ export const DesktopShell: React.FC = () => {
       <AppBar
         position='static'
         sx={{
-          background: 'hsla(var(--tf-neutral-hs) 8% / 0.9)',
+          background: 'hsl(var(--tf-bg) / 0.9)', // Terrafusion Deep Space with transparency
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid hsla(var(--tf-cyan-hs) 50% / 0.2)',
+          borderBottom: '1px solid hsl(var(--tf-accent) / 0.2)', // Terrafusion Transcend Cyan border
         }}
       >
         <Toolbar>
@@ -87,7 +87,7 @@ export const DesktopShell: React.FC = () => {
               background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))', // Terrafusion gradient
               color: 'var(--tf-bg-surface)',
               fontWeight: 'bold',
-              boxShadow: '0 0 20px hsla(var(--tf-cyan-hs) 50% / 0.4)',
+              boxShadow: '0 0 20px hsl(var(--tf-accent) / 0.4)', // Terrafusion glow
             }}
           >
             TF
@@ -161,16 +161,16 @@ export const DesktopShell: React.FC = () => {
               <Card
                 className='tf-card'
                 sx={{
-                  background: 'hsla(var(--tf-neutral-hs) 8% / 0.8)',
+                  background: 'hsl(var(--tf-bg) / 0.8)', // Terrafusion Deep Space
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid hsla(var(--tf-cyan-hs) 50% / 0.3)',
-                  boxShadow: '0 20px 40px hsla(var(--tf-neutral-hs) 7% / 0.8), 0 0 60px hsla(var(--tf-cyan-hs) 50% / 0.2)',
+                  border: '1px solid hsl(var(--tf-accent) / 0.3)', // Terrafusion Transcend Cyan border
+                  boxShadow: '0 20px 40px hsl(var(--tf-bg) / 0.8), 0 0 60px hsl(var(--tf-accent) / 0.2)', // Terrafusion shadows
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
                     borderColor: 'var(--tf-transcend-highlight)',
                     boxShadow:
-                      '0 25px 50px hsla(var(--tf-cyan-hs) 50% / 0.15), 0 0 80px hsla(var(--tf-cyan-hs) 50% / 0.4)',
+                      '0 25px 50px hsl(var(--tf-accent) / 0.15), 0 0 80px hsl(var(--tf-accent) / 0.4)',
                   },
                 }}
               >
@@ -191,7 +191,7 @@ export const DesktopShell: React.FC = () => {
                   <Typography
                     variant='body1'
                     sx={{
-                      color: 'hsla(var(--tf-neutral-hs) 100% / 0.9)',
+                      color: 'hsl(var(--tf-text) / 0.9)',
                       fontWeight: 500,
                     }}
                   >
@@ -211,9 +211,9 @@ export const DesktopShell: React.FC = () => {
             <Grid item xs={12} md={4}>
               <Card
                 sx={{
-                  background: 'hsla(var(--tf-neutral-hs) 100% / 0.1)',
+                  background: 'hsl(var(--tf-text) / 0.1)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid hsla(var(--tf-neutral-hs) 100% / 0.2)',
+                  border: '1px solid hsl(var(--tf-text) / 0.2)',
                 }}
               >
                 <CardContent>
@@ -258,7 +258,7 @@ export const DesktopShell: React.FC = () => {
         PaperProps={{
           sx: {
             width: 300,
-            background: 'hsla(var(--tf-neutral-hs) 0% / 0.9)',
+            background: 'hsl(var(--tf-bg) / 0.9)',
             backdropFilter: 'blur(10px)',
           },
         }}

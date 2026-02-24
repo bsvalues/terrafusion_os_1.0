@@ -378,10 +378,11 @@ const RecentsDropdown: React.FC<RecentsDropdownProps> = ({ recents, onSelect }) 
     <div
       data-testid='parcel-recents-dropdown'
       role='menu'
+      style={{ '--tf-pci-midnight-hs': '240 28%' } as React.CSSProperties}
       className={cn(
         'absolute top-full left-0 mt-1 z-50',
         'min-w-[180px] py-1 rounded-md shadow-lg',
-        'bg-[var(--tf-surface-2)] border border-white/10',
+        'bg-[hsl(var(--tf-pci-midnight-hs)_14%)] border border-white/10',
         'max-h-[200px] overflow-y-auto'
       )}
     >

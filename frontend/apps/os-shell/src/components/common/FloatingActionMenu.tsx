@@ -13,21 +13,21 @@ const StyledSpeedDial = styled(SpeedDial)(() => ({
     color: 'white',
     width: 64,
     height: 64,
-    boxShadow: '0 8px 32px hsl(var(--tf-cyan-hs) 50% / 0.4)',
+    boxShadow: '0 8px 32px rgba(0, 210, 255, 0.4)',
     '&:hover': {
       background: 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-cyan))',
-      boxShadow: '0 12px 40px hsl(var(--tf-cyan-hs) 50% / 0.6)',
+      boxShadow: '0 12px 40px rgba(0, 210, 255, 0.6)',
       transform: 'scale(1.1)',
     },
   },
   '& .MuiSpeedDialAction-fab': {
-    background: 'hsl(var(--tf-neutral-hs) 100% / 0.1)',
+    background: 'rgba(255, 255, 255, 0.1)',
     backdropFilter: 'blur(10px)',
-    border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.2)',
+    border: '1px solid rgba(0, 210, 255, 0.2)',
     color: 'white',
     '&:hover': {
-      background: 'hsl(var(--tf-cyan-hs) 50% / 0.2)',
-      border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.4)',
+      background: 'rgba(0, 210, 255, 0.2)',
+      border: '1px solid rgba(0, 210, 255, 0.4)',
       transform: 'scale(1.1)',
     },
   },
@@ -116,10 +116,10 @@ const FloatingActionMenu: React.FC<FloatingActionMenuProps> = ({
           }}
           sx={{
             '& .MuiSpeedDialAction-staticTooltip': {
-              background: 'hsl(var(--tf-neutral-hs) 0% / 0.8)',
+              background: 'rgba(0, 0, 0, 0.8)',
               color: 'white',
               backdropFilter: 'blur(10px)',
-              border: '1px solid hsl(var(--tf-cyan-hs) 50% / 0.2)',
+              border: '1px solid rgba(0, 210, 255, 0.2)',
               borderRadius: '8px',
             },
           }}

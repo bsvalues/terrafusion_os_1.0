@@ -120,7 +120,7 @@ export const QuantumLoader: React.FC = () => (
         width: '100%',
         height: '100%',
         borderRadius: '50%',
-        border: '3px solid hsl(var(--tf-cyan-hs) 50% / 0.3)',
+        border: '3px solid rgba(0, 255, 255, 0.3)',
         animation: 'quantum-pulse 1.5s ease-in-out infinite',
       }}
     />
@@ -130,7 +130,7 @@ export const QuantumLoader: React.FC = () => (
         width: '100%',
         height: '100%',
         borderRadius: '50%',
-        border: '3px solid hsl(var(--tf-cyan-hs) 50% / 0.5)',
+        border: '3px solid rgba(0, 255, 255, 0.5)',
         animation: 'quantum-pulse 1.5s ease-in-out 0.5s infinite',
       }}
     />
@@ -140,7 +140,7 @@ export const QuantumLoader: React.FC = () => (
         width: '100%',
         height: '100%',
         borderRadius: '50%',
-        border: '3px solid hsl(var(--tf-cyan-hs) 50% / 0.7)',
+        border: '3px solid rgba(0, 255, 255, 0.7)',
         animation: 'quantum-pulse 1.5s ease-in-out 1s infinite',
       }}
     />
@@ -176,7 +176,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       style={{
         width: '100%',
         height,
-        background: 'hsl(var(--tf-blue-hs) 17% / 0.5)',
+        background: 'rgba(30, 41, 59, 0.5)',
         borderRadius: '3px',
         overflow: 'hidden',
       }}
@@ -188,7 +188,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
           background: color,
           borderRadius: '3px',
           transition: 'width 0.3s ease',
-          boxShadow: '0 0 10px hsl(var(--tf-cyan-hs) 50% / 0.5)',
+          boxShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
         }}
       />
     </div>
@@ -234,7 +234,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
         cy={size / 2}
         r={radius}
         fill='none'
-        stroke='hsl(var(--tf-blue-hs) 17% / 0.3)'
+        stroke='rgba(30, 41, 59, 0.3)'
         strokeWidth={strokeWidth}
       />
       <circle
@@ -279,7 +279,7 @@ export const SkeletonPanel: React.FC<{ height?: string }> = ({ height = '400px' 
       width: '100%',
       height,
       background:
-        'linear-gradient(90deg, hsl(var(--tf-blue-hs) 17% / 0.3) 0%, hsl(var(--tf-blue-hs) 17% / 0.5) 50%, hsl(var(--tf-blue-hs) 17% / 0.3) 100%)',
+        'linear-gradient(90deg, rgba(30, 41, 59, 0.3) 0%, rgba(30, 41, 59, 0.5) 50%, rgba(30, 41, 59, 0.3) 100%)',
       backgroundSize: '200% 100%',
       animation: 'skeleton-shimmer 1.5s ease-in-out infinite',
       borderRadius: '12px',
@@ -301,17 +301,17 @@ export const SkeletonCard: React.FC = () => (
   <div
     style={{
       padding: '1.5rem',
-      background: 'hsl(var(--tf-blue-hs) 17% / 0.3)',
+      background: 'rgba(30, 41, 59, 0.3)',
       borderRadius: '12px',
       backdropFilter: 'blur(10px)',
-      border: '1px solid hsl(var(--tf-neutral-hs) 65% / 0.2)',
+      border: '1px solid rgba(148, 163, 184, 0.2)',
     }}
   >
     <div
       style={{
         width: '60%',
         height: '24px',
-        background: 'hsl(var(--tf-neutral-hs) 65% / 0.2)',
+        background: 'rgba(148, 163, 184, 0.2)',
         borderRadius: '4px',
         marginBottom: '1rem',
         animation: 'skeleton-pulse 1.5s ease-in-out infinite',
@@ -321,7 +321,7 @@ export const SkeletonCard: React.FC = () => (
       style={{
         width: '100%',
         height: '16px',
-        background: 'hsl(var(--tf-neutral-hs) 65% / 0.2)',
+        background: 'rgba(148, 163, 184, 0.2)',
         borderRadius: '4px',
         marginBottom: '0.5rem',
         animation: 'skeleton-pulse 1.5s ease-in-out 0.2s infinite',
@@ -331,7 +331,7 @@ export const SkeletonCard: React.FC = () => (
       style={{
         width: '80%',
         height: '16px',
-        background: 'hsl(var(--tf-neutral-hs) 65% / 0.2)',
+        background: 'rgba(148, 163, 184, 0.2)',
         borderRadius: '4px',
         animation: 'skeleton-pulse 1.5s ease-in-out 0.4s infinite',
       }}
@@ -353,7 +353,7 @@ export const SkeletonTable: React.FC<{ rows?: number; columns?: number }> = ({
 }) => (
   <div
     style={{
-      background: 'hsl(var(--tf-blue-hs) 17% / 0.3)',
+      background: 'rgba(30, 41, 59, 0.3)',
       borderRadius: '12px',
       overflow: 'hidden',
       backdropFilter: 'blur(10px)',
@@ -366,7 +366,7 @@ export const SkeletonTable: React.FC<{ rows?: number; columns?: number }> = ({
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
         gap: '1rem',
         padding: '1rem',
-        borderBottom: '1px solid hsl(var(--tf-neutral-hs) 65% / 0.2)',
+        borderBottom: '1px solid rgba(148, 163, 184, 0.2)',
       }}
     >
       {Array.from({ length: columns }).map((_, i) => (
@@ -374,7 +374,7 @@ export const SkeletonTable: React.FC<{ rows?: number; columns?: number }> = ({
           key={i}
           style={{
             height: '20px',
-            background: 'hsl(var(--tf-neutral-hs) 65% / 0.2)',
+            background: 'rgba(148, 163, 184, 0.2)',
             borderRadius: '4px',
             animation: `skeleton-pulse 1.5s ease-in-out ${i * 0.1}s infinite`,
           }}
@@ -391,7 +391,7 @@ export const SkeletonTable: React.FC<{ rows?: number; columns?: number }> = ({
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
           gap: '1rem',
           padding: '1rem',
-          borderBottom: rowIndex < rows - 1 ? '1px solid hsl(var(--tf-neutral-hs) 65% / 0.1)' : 'none',
+          borderBottom: rowIndex < rows - 1 ? '1px solid rgba(148, 163, 184, 0.1)' : 'none',
         }}
       >
         {Array.from({ length: columns }).map((_, colIndex) => (
@@ -399,7 +399,7 @@ export const SkeletonTable: React.FC<{ rows?: number; columns?: number }> = ({
             key={colIndex}
             style={{
               height: '16px',
-              background: 'hsl(var(--tf-neutral-hs) 65% / 0.15)',
+              background: 'rgba(148, 163, 184, 0.15)',
               borderRadius: '4px',
               animation: `skeleton-pulse 1.5s ease-in-out ${(rowIndex * columns + colIndex) * 0.05}s infinite`,
             }}

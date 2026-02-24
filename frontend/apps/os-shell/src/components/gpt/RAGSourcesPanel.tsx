@@ -245,7 +245,7 @@ export function RAGSourcesPanel({ chunks, defaultExpanded = true }: RAGSourcesPa
               e.stopPropagation();
               void handleExplainThisView();
             }}
-            className='rounded-full border border-fuchsia-500/50 bg-fuchsia-500/10 px-1.5 py-0.5 text-[0.55rem] text-fuchsia-300 transition-all hover:bg-fuchsia-500/20 hover:shadow-[0_0_8px_hsl(var(--tf-blue-hs)_60%_/_0.3)]'
+            className='rounded-full border border-fuchsia-500/50 bg-fuchsia-500/10 px-1.5 py-0.5 text-[0.55rem] text-fuchsia-300 transition-all hover:bg-fuchsia-500/20 hover:shadow-[0_0_8px_rgba(217,70,239,0.3)]'
             title='Explain this view'
           >
             ❓

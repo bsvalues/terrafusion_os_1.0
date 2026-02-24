@@ -1,9 +1,9 @@
 .root {
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, var(--tf-surface-darker) 0%, var(--tf-surface-darker) 50%, hsl(var(--tf-dark)) 100%);
+  background: linear-gradient(135deg, var(--tf-surface-darker) 0%, var(--tf-surface-darker) 50%, #0f3460 100%);
   border-radius: 12px;
-  color: hsl(var(--tf-light-border));
+  color: #e2e8f0;
   min-height: 500px;
 }
 
@@ -15,7 +15,7 @@
 .title {
   font-size: 28px;
   font-weight: bold;
-  background: linear-gradient(45deg, var(--tf-status-blue-light), hsl(var(--tf-accent-2)));
+  background: linear-gradient(45deg, var(--tf-status-blue-light), #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 8px;
@@ -32,10 +32,10 @@
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
-  background: hsl(var(--tf-surface) / 0.6);
+  background: rgba(30, 41, 59, 0.6);
   padding: 16px;
   border-radius: 8px;
-  border: 1px solid hsl(var(--tf-accent-2) / 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .controls {
@@ -54,16 +54,16 @@
 .label {
   font-size: 14px;
   font-weight: 600;
-  color: hsl(var(--tf-slate-300));
+  color: #cbd5e1;
 }
 
 .input,
 .select {
   padding: 12px;
-  border: 1px solid hsl(var(--tf-accent-2) / 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 6px;
-  background: hsl(var(--tf-surface) / 0.8);
-  color: hsl(var(--tf-light-border));
+  background: rgba(30, 41, 59, 0.8);
+  color: #e2e8f0;
   font-size: 14px;
   transition: all 0.2s ease;
 }
@@ -71,8 +71,8 @@
 .input:focus,
 .select:focus {
   outline: none;
-  border-color: hsl(var(--tf-accent-2));
-  box-shadow: 0 0 0 3px hsl(var(--tf-accent-2) / 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .actions {
@@ -83,7 +83,7 @@
 
 .button {
   padding: 12px 24px;
-  background: linear-gradient(45deg, hsl(var(--tf-accent-2)), hsl(var(--tf-accent-2) / 0.8));
+  background: linear-gradient(45deg, #3b82f6, #1d4ed8);
   color: white;
   border: none;
   border-radius: 6px;
@@ -94,9 +94,9 @@
 }
 
 .button:hover:not(:disabled) {
-  background: linear-gradient(45deg, hsl(var(--tf-accent-2) / 0.9), hsl(var(--tf-accent-2) / 0.7));
+  background: linear-gradient(45deg, #2563eb, #1e40af);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsl(var(--tf-accent-2) / 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .button:disabled {
@@ -107,7 +107,7 @@
 
 .buttonSecondary {
   padding: 12px 24px;
-  background: linear-gradient(45deg, hsl(var(--tf-slate-600)), hsl(var(--tf-slate-700)));
+  background: linear-gradient(45deg, #6b7280, #4b5563);
   color: white;
   border: none;
   border-radius: 6px;
@@ -118,13 +118,13 @@
 }
 
 .buttonSecondary:hover:not(:disabled) {
-  background: linear-gradient(45deg, hsl(var(--tf-slate-600) / 0.9), hsl(var(--tf-slate-700)));
+  background: linear-gradient(45deg, #5b6471, #374151);
   transform: translateY(-1px);
 }
 
 .results {
-  background: hsl(var(--tf-dark) / 0.8);
-  border: 1px solid hsl(var(--tf-accent-2) / 0.2);
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 8px;
   padding: 20px;
   margin-top: 20px;
@@ -146,8 +146,8 @@
 }
 
 .resultsData {
-  background: hsl(var(--tf-black) / 0.4);
-  border: 1px solid hsl(var(--tf-accent-2) / 0.1);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(59, 130, 246, 0.1);
   border-radius: 6px;
   padding: 16px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
@@ -159,8 +159,8 @@
 }
 
 .costCard {
-  background: hsl(var(--tf-surface) / 0.6);
-  border: 1px solid hsl(var(--tf-accent-2) / 0.2);
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
@@ -181,19 +181,19 @@
 .costAmount {
   font-size: 18px;
   font-weight: bold;
-  color: hsl(var(--tf-success));
+  color: #10b981;
 }
 
 .aiInsight {
-  background: linear-gradient(135deg, hsl(var(--tf-info) / 0.1), hsl(var(--tf-info) / 0.1));
-  border: 1px solid hsl(var(--tf-info) / 0.3);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+  border: 1px solid rgba(99, 102, 241, 0.3);
   border-radius: 8px;
   padding: 16px;
   margin-top: 16px;
 }
 
 .aiInsightTitle {
-  color: hsl(var(--tf-info));
+  color: #a78bfa;
   font-weight: 600;
   margin-bottom: 8px;
   display: flex;
@@ -218,7 +218,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: hsl(var(--tf-success));
+  background: #10b981;
   animation: pulse 2s infinite;
 }
 

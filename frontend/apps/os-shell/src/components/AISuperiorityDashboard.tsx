@@ -1,25 +1,25 @@
 import {
-    Badge,
-    Button,
-    Card,
-    CardBody,
-    CardHeader,
-    Progress,
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Progress,
 } from '@/components/terrafusion-design-system';
 import {
-    ArcElement,
-    BarElement,
-    CategoryScale,
-    Chart as ChartJS,
-    Filler,
-    Legend,
-    LinearScale,
-    LineElement,
-    PointElement,
-    Title,
-    Tooltip,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
 } from 'chart.js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 
 // Register Chart.js components
@@ -105,36 +105,6 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connection, setConnection] = useState<any>(null);
-
-  /**
-   * Resolve --tf-*-hs custom properties for canvas/Chart.js (which cannot use CSS var()).
-   * We avoid writing the color function name literally so the TDC scanner doesn't flag
-   * these runtime-resolved values.
-   */
-  const chartColors = useMemo(() => {
-    const resolve = (v: string) =>
-      typeof window !== 'undefined'
-        ? getComputedStyle(document.documentElement).getPropertyValue(v).trim()
-        : '0 0%';
-    const FN = ['hs', 'l'].join('');
-    const c = (hs: string, l: number, a?: number) =>
-      a !== undefined ? `${FN}(${hs} ${l}% / ${a})` : `${FN}(${hs} ${l}%)`;
-    const cyanHS = resolve('--tf-cyan-hs');
-    const redHS = resolve('--tf-red-hs');
-    const blueHS = resolve('--tf-blue-hs');
-    const amberHS = resolve('--tf-amber-hs');
-    return {
-      cyan06: c(cyanHS, 50, 0.6),
-      cyan1: c(cyanHS, 50),
-      cyan08: c(cyanHS, 50, 0.8),
-      red06: c(redHS, 69, 0.6),
-      red1: c(redHS, 69),
-      red08: c(redHS, 50, 0.8),
-      blue08: c(blueHS, 50, 0.8),
-      purple08: c(blueHS, 50, 0.8),
-      amber08: c(amberHS, 50, 0.8),
-    };
-  }, []);
 
   // Fetch demo data
   const fetchDemoData = useCallback(async () => {
@@ -258,8 +228,8 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
               demoData.terraFusionResults.memoryUsage * 100,
             ]
           : [],
-        backgroundColor: chartColors.cyan06,
-        borderColor: chartColors.cyan1,
+        backgroundColor: 'rgba(0, 255, 255, 0.6)',
+        borderColor: 'rgba(0, 255, 255, 1)',
         borderWidth: 2,
       },
       {
@@ -273,8 +243,8 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
               demoData.harrisPACSResults.memoryUsage * 100,
             ]
           : [],
-        backgroundColor: chartColors.red06,
-        borderColor: chartColors.red1,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 2,
       },
     ],
@@ -294,13 +264,13 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
             ]
           : [],
         backgroundColor: [
-          chartColors.cyan08,
-          chartColors.blue08,
-          chartColors.purple08,
-          chartColors.red08,
-          chartColors.amber08,
+          'rgba(0, 255, 255, 0.8)',
+          'rgba(0, 128, 255, 0.8)',
+          'rgba(128, 0, 255, 0.8)',
+          'rgba(255, 0, 128, 0.8)',
+          'rgba(255, 128, 0, 0.8)',
         ],
-        borderColor: chartColors.cyan1,
+        borderColor: 'rgba(0, 255, 255, 1)',
         borderWidth: 2,
       },
     ],

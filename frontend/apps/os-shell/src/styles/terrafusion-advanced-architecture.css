@@ -53,6 +53,10 @@ Government. Transcended. Beyond. | 1,008 AI Agents Demand Excellence.
     --tf-quantum-coherence: 0.97; /* AI system coherence level */
     --tf-neural-frequency: 1.618; /* Golden ratio for AI harmony */
 
+    /* File-local HS anchors for theme definitions */
+    --tf-neutral-hs: 0 0%;
+    --tf-dark-blue-hs: 222 47%;
+
     /* Dynamic Color Calculation using CSS calc() */
     --tf-primary-h: 207; /* Hue */
     --tf-primary-s: 100%; /* Saturation */
@@ -61,9 +65,6 @@ Government. Transcended. Beyond. | 1,008 AI Agents Demand Excellence.
     --tf-primary-hsl: var(--tf-primary-h) var(--tf-primary-s) var(--tf-primary-l);
     --tf-primary: hsl(var(--tf-primary-hsl));
     --tf-primary-alpha: hsl(var(--tf-primary-hsl) / 0.9);
-
-    /* Dark-surface hue/saturation anchor (local to this architecture file) */
-    --tf-dark-surface-hs: 222 47%;
 
     /* Algorithmic color variants */
     --tf-primary-darker: hsl(
@@ -139,8 +140,8 @@ Government. Transcended. Beyond. | 1,008 AI Agents Demand Excellence.
   }
 
   [data-theme='dark'] {
-    --tf-bg-primary: hsl(var(--tf-dark-surface-hs) 11%);
-    --tf-bg-secondary: hsl(var(--tf-dark-surface-hs) 16%);
+    --tf-bg-primary: hsl(var(--tf-dark-blue-hs) 11%);
+    --tf-bg-secondary: hsl(var(--tf-dark-blue-hs) 16%);
     --tf-text-primary: hsl(var(--tf-neutral-hs) 95%);
     --tf-text-secondary: hsl(var(--tf-neutral-hs) 65%);
   }
@@ -157,8 +158,8 @@ Government. Transcended. Beyond. | 1,008 AI Agents Demand Excellence.
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
-      --tf-bg-primary: hsl(var(--tf-dark-surface-hs) 11%);
-      --tf-bg-secondary: hsl(var(--tf-dark-surface-hs) 16%);
+      --tf-bg-primary: hsl(var(--tf-dark-blue-hs) 11%);
+      --tf-bg-secondary: hsl(var(--tf-dark-blue-hs) 16%);
       --tf-text-primary: hsl(var(--tf-neutral-hs) 95%);
       --tf-text-secondary: hsl(var(--tf-neutral-hs) 65%);
     }

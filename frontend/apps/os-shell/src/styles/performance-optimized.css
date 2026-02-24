@@ -1,7 +1,13 @@
-/* 
+/*
 🚀 TerraFusion Performance-Optimized CSS - PhD-Level Engineering
 Advanced CSS Performance, Critical Path Optimization, and Web Vitals Enhancement
 */
+
+/* HS Channel Anchors (file-local, performance-optimized palette) */
+:root {
+  --tf-po-neutral-hs: 0 0%;
+  --tf-po-gradient-hs: 218 32%;
+}
 
 /* ===== CRITICAL PERFORMANCE OPTIMIZATIONS ===== */
 
@@ -14,8 +20,8 @@ Advanced CSS Performance, Critical Path Optimization, and Web Vitals Enhancement
     -apple-system,
     sans-serif;
   line-height: 1.6;
-  color: hsl(var(--tf-neutral-hs) 100%);
-  background: linear-gradient(135deg, var(--tf-void-black) 0%, var(--tf-surface) 100%);
+  color: hsl(var(--tf-po-neutral-hs) 100%);
+  background: linear-gradient(135deg, var(--tf-void-black) 0%, hsl(var(--tf-po-gradient-hs) 15%) 100%);
   margin: 0;
   padding: 0;
 }
@@ -121,10 +127,10 @@ Advanced CSS Performance, Critical Path Optimization, and Web Vitals Enhancement
   /* Aspect ratio containers */
   aspect-ratio: 16 / 9;
   background:
-    linear-gradient(45deg, hsl(var(--tf-neutral-hs) 94%) 25%, transparent 25%),
-    linear-gradient(-45deg, hsl(var(--tf-neutral-hs) 94%) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, hsl(var(--tf-neutral-hs) 94%) 75%),
-    linear-gradient(-45deg, transparent 75%, hsl(var(--tf-neutral-hs) 94%) 75%);
+    linear-gradient(45deg, hsl(var(--tf-po-neutral-hs) 94%) 25%, transparent 25%),
+    linear-gradient(-45deg, hsl(var(--tf-po-neutral-hs) 94%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, hsl(var(--tf-po-neutral-hs) 94%) 75%),
+    linear-gradient(-45deg, transparent 75%, hsl(var(--tf-po-neutral-hs) 94%) 75%);
   background-size: 20px 20px;
   background-position:
     0 0,
@@ -218,7 +224,7 @@ Advanced CSS Performance, Critical Path Optimization, and Web Vitals Enhancement
   --primary-color: var(--tf-network-blue);
   --secondary-color: var(--tf-transcend-highlight);
   --border-radius: 8px;
-  --shadow: 0 4px 6px -1px hsl(var(--tf-neutral-hs) 0% / 0.1);
+  --shadow: 0 4px 6px -1px hsl(var(--tf-po-neutral-hs) 0% / 0.1);
 
   /* Use cached values */
   background-color: var(--primary-color);
@@ -260,7 +266,7 @@ Advanced CSS Performance, Critical Path Optimization, and Web Vitals Enhancement
   .responsive-performance {
     /* Enable more expensive styles on larger screens */
     backdrop-filter: blur(10px);
-    box-shadow: 0 25px 50px -12px hsl(var(--tf-neutral-hs) 0% / 0.25);
+    box-shadow: 0 25px 50px -12px hsl(var(--tf-po-neutral-hs) 0% / 0.25);
   }
 }
 
@@ -268,7 +274,7 @@ Advanced CSS Performance, Critical Path Optimization, and Web Vitals Enhancement
   .responsive-performance {
     /* Simpler styles for mobile performance */
     backdrop-filter: none;
-    box-shadow: 0 4px 6px -1px hsl(var(--tf-neutral-hs) 0% / 0.1);
+    box-shadow: 0 4px 6px -1px hsl(var(--tf-po-neutral-hs) 0% / 0.1);
   }
 }
 

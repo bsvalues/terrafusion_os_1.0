@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: hsl(var(--tf-bg) / 0.75);
+  background: rgba(10, 14, 26, 0.75);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -24,9 +24,9 @@
 .quantum-modal-overlay-quantum {
   background: radial-gradient(
     ellipse at center,
-    hsl(var(--tf-accent) / 0.1) 0%,
-    hsl(var(--tf-bg) / 0.8) 70%,
-    hsl(var(--tf-bg) / 0.95) 100%
+    rgba(0, 255, 255, 0.1) 0%,
+    rgba(10, 14, 26, 0.8) 70%,
+    rgba(10, 14, 26, 0.95) 100%
   );
 }
 
@@ -38,9 +38,9 @@
   right: 0;
   bottom: 0;
   background:
-    radial-gradient(circle at 20% 20%, hsl(var(--tf-accent) / 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, hsl(var(--tf-accent-2) / 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, hsl(var(--tf-accent) / 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0, 128, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
   animation: quantum-modal-aurora 8s ease-in-out infinite;
   pointer-events: none;
 }
@@ -60,13 +60,13 @@
   position: relative;
   width: 100%;
   max-height: 90vh;
-  background: linear-gradient(135deg, hsl(var(--tf-surface) / 0.95) 0%, hsl(var(--tf-dark) / 0.98) 100%);
-  border: 1px solid hsl(var(--tf-accent) / 0.2);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border: 1px solid rgba(0, 255, 255, 0.2);
   border-radius: 1rem;
   box-shadow:
-    0 25px 50px -12px hsl(var(--tf-black) / 0.5),
-    0 0 40px hsl(var(--tf-accent) / 0.1),
-    inset 0 1px 0 hsl(var(--tf-text) / 0.1);
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(0, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   overflow: hidden;
@@ -76,16 +76,16 @@
 .quantum-modal-quantum {
   background: linear-gradient(
     135deg,
-    hsl(var(--tf-surface) / 0.9) 0%,
-    hsl(var(--tf-dark) / 0.95) 50%,
-    hsl(var(--tf-bg) / 0.98) 100%
+    rgba(30, 41, 59, 0.9) 0%,
+    rgba(15, 23, 42, 0.95) 50%,
+    rgba(10, 14, 26, 0.98) 100%
   );
-  border: 1px solid hsl(var(--tf-accent) / 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
   box-shadow:
-    0 25px 50px -12px hsl(var(--tf-black) / 0.7),
-    0 0 60px hsl(var(--tf-accent) / 0.2),
-    0 0 20px hsl(var(--tf-accent) / 0.1),
-    inset 0 1px 0 hsl(var(--tf-accent) / 0.2);
+    0 25px 50px -12px rgba(0, 0, 0, 0.7),
+    0 0 60px rgba(0, 255, 255, 0.2),
+    0 0 20px rgba(0, 255, 255, 0.1),
+    inset 0 1px 0 rgba(0, 255, 255, 0.2);
 }
 
 .quantum-modal-quantum::before {
@@ -95,7 +95,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, hsl(var(--tf-accent) / 0.8) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.8) 50%, transparent 100%);
   animation: quantum-modal-pulse 2s ease-in-out infinite;
 }
 
@@ -117,8 +117,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 2rem 1rem;
-  border-bottom: 1px solid hsl(var(--tf-accent) / 0.1);
-  background: linear-gradient(135deg, hsl(var(--tf-accent) / 0.05) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, transparent 100%);
 }
 
 .quantum-modal-title-section {
@@ -155,12 +155,12 @@
 
 .quantum-modal-close:hover {
   color: var(--tf-quantum-cyan);
-  background: hsl(var(--tf-accent) / 0.1);
+  background: rgba(0, 255, 255, 0.1);
   transform: scale(1.05);
 }
 
 .quantum-modal-close:focus {
-  outline: 2px solid hsl(var(--tf-accent) / 0.5);
+  outline: 2px solid rgba(0, 255, 255, 0.5);
   outline-offset: 2px;
 }
 
@@ -169,7 +169,7 @@
   padding: 1.5rem 2rem;
   max-height: 60vh;
   overflow-y: auto;
-  color: hsl(var(--tf-light-border));
+  color: #e2e8f0;
   line-height: 1.6;
 }
 
@@ -179,25 +179,25 @@
 }
 
 .quantum-modal-body::-webkit-scrollbar-track {
-  background: hsl(var(--tf-surface) / 0.3);
+  background: rgba(30, 41, 59, 0.3);
   border-radius: 4px;
 }
 
 .quantum-modal-body::-webkit-scrollbar-thumb {
-  background: hsl(var(--tf-accent) / 0.3);
+  background: rgba(0, 255, 255, 0.3);
   border-radius: 4px;
-  border: 1px solid hsl(var(--tf-accent) / 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.1);
 }
 
 .quantum-modal-body::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--tf-accent) / 0.5);
+  background: rgba(0, 255, 255, 0.5);
 }
 
 /* Modal Footer */
 .quantum-modal-footer {
   padding: 1rem 2rem 1.5rem;
-  border-top: 1px solid hsl(var(--tf-accent) / 0.1);
-  background: linear-gradient(135deg, hsl(var(--tf-accent) / 0.02) 0%, transparent 100%);
+  border-top: 1px solid rgba(0, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.02) 0%, transparent 100%);
 }
 
 /* Size Variants */
@@ -223,27 +223,27 @@
 
 /* Color Variants */
 .border-terra-cyan\/20 {
-  border-color: hsl(var(--tf-accent) / 0.2);
+  border-color: rgba(0, 255, 255, 0.2);
 }
 
 .border-green-400\/30 {
-  border-color: hsl(var(--tf-success) / 0.3);
+  border-color: rgba(74, 222, 128, 0.3);
 }
 
 .border-yellow-400\/30 {
-  border-color: hsl(var(--tf-warning) / 0.3);
+  border-color: rgba(250, 204, 21, 0.3);
 }
 
 .border-red-400\/30 {
-  border-color: hsl(var(--tf-error) / 0.3);
+  border-color: rgba(248, 113, 113, 0.3);
 }
 
 .border-blue-400\/30 {
-  border-color: hsl(var(--tf-accent-2) / 0.3);
+  border-color: rgba(96, 165, 250, 0.3);
 }
 
 .text-green-400 {
-  color: hsl(var(--tf-success));
+  color: #4ade80;
 }
 
 .text-yellow-400 {
@@ -264,7 +264,7 @@
 }
 
 .quantum-modal *:focus {
-  outline: 2px solid hsl(var(--tf-accent) / 0.5);
+  outline: 2px solid rgba(0, 255, 255, 0.5);
   outline-offset: 2px;
   border-radius: 0.25rem;
 }
@@ -273,7 +273,7 @@
 @media (prefers-contrast: high) {
   .quantum-modal {
     border: 2px solid var(--tf-quantum-cyan);
-    background: hsl(var(--tf-bg) / 0.98);
+    background: rgba(10, 14, 26, 0.98);
   }
 
   .quantum-modal-header {
@@ -285,11 +285,11 @@
   }
 
   .quantum-modal-title {
-    color: hsl(var(--tf-text));
+    color: #ffffff;
   }
 
   .quantum-modal-body {
-    color: hsl(var(--tf-text));
+    color: #ffffff;
   }
 }
 

@@ -114,13 +114,13 @@ export function TerraFusionBrandEnhancementSystem({
     root.style.setProperty('--space-golden', '1.618rem');
 
     // Shadow System
-    root.style.setProperty('--shadow-glow', '0 0 40px hsl(var(--tf-accent) / 0.4)');
-    root.style.setProperty('--shadow-quantum', '0 0 20px hsl(var(--tf-accent) / 0.3)');
-    root.style.setProperty('--shadow-elevation', '0 10px 30px hsl(var(--tf-black) / 0.3)');
+    root.style.setProperty('--shadow-glow', '0 0 40px rgba(0, 255, 255, 0.4)');
+    root.style.setProperty('--shadow-quantum', '0 0 20px rgba(0, 255, 255, 0.3)');
+    root.style.setProperty('--shadow-elevation', '0 10px 30px rgba(0, 0, 0, 0.3)');
 
     // Glassmorphic System
-    root.style.setProperty('--glass-bg', 'hsl(var(--tf-surface) / 0.3)');
-    root.style.setProperty('--glass-border', 'hsl(var(--tf-accent) / 0.2)');
+    root.style.setProperty('--glass-bg', 'rgba(30, 41, 59, 0.3)');
+    root.style.setProperty('--glass-border', 'rgba(0, 255, 255, 0.2)');
     root.style.setProperty('--glass-blur', 'blur(10px)');
 
     // Border Radius System
@@ -145,12 +145,12 @@ export function TerraFusionBrandEnhancementSystem({
         0%, 100% {
           opacity: 1;
           transform: scale(1);
-          box-shadow: 0 0 20px hsl(var(--tf-accent) / 0.3);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         }
         50% {
           opacity: 0.8;
           transform: scale(1.05);
-          box-shadow: 0 0 40px hsl(var(--tf-accent) / 0.6);
+          box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
         }
       }
 
@@ -197,7 +197,7 @@ export function TerraFusionBrandEnhancementSystem({
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(90deg, transparent, hsl(var(--tf-accent) / 0.2), transparent);
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
         animation: terraQuantumFlow 3s ease-in-out infinite;
       }
 
@@ -205,9 +205,9 @@ export function TerraFusionBrandEnhancementSystem({
         background: linear-gradient(
           90deg,
           transparent 0%,
-          hsl(var(--tf-accent) / 0.1) 25%,
-          hsl(var(--tf-accent) / 0.2) 50%,
-          hsl(var(--tf-accent) / 0.1) 75%,
+          rgba(0, 255, 255, 0.1) 25%,
+          rgba(0, 255, 255, 0.2) 50%,
+          rgba(0, 255, 255, 0.1) 75%,
           transparent 100%
         );
         background-size: 200% 100%;
@@ -239,36 +239,36 @@ export function TerraFusionBrandEnhancementSystem({
         left: 0;
         right: 0;
         height: 1px;
-        background: linear-gradient(90deg, transparent, hsl(var(--tf-text) / 0.1), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
       }
 
       .terra-glass-card {
-        background: hsl(var(--tf-bg) / 0.6);
+        background: rgba(15, 23, 42, 0.6);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid hsl(var(--tf-accent) / 0.2);
+        border: 1px solid rgba(0, 255, 255, 0.2);
         border-radius: var(--radius-xl);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .terra-glass-card:hover {
-        border-color: hsl(var(--tf-accent) / 0.4);
+        border-color: rgba(0, 255, 255, 0.4);
         box-shadow: var(--shadow-quantum);
         transform: translateY(-2px);
       }
 
       .terra-glass-button {
-        background: hsl(var(--tf-accent) / 0.1);
+        background: rgba(0, 255, 255, 0.1);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        border: 1px solid hsl(var(--tf-accent) / 0.3);
+        border: 1px solid rgba(0, 255, 255, 0.3);
         color: var(--terra-cyan);
         transition: all 0.3s ease;
       }
 
       .terra-glass-button:hover {
-        background: hsl(var(--tf-accent) / 0.2);
-        box-shadow: 0 0 20px hsl(var(--tf-accent) / 0.4);
+        background: rgba(0, 255, 255, 0.2);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
         transform: translateY(-1px);
       }
     `;
@@ -351,7 +351,7 @@ export function TerraFusionBrandEnhancementSystem({
       }
 
       .btn-secondary:hover {
-        background: hsl(var(--tf-accent) / 0.1);
+        background: rgba(0, 255, 255, 0.1);
         box-shadow: var(--shadow-quantum);
         transform: translateY(-1px);
       }
@@ -372,8 +372,8 @@ export function TerraFusionBrandEnhancementSystem({
       .terra-input:focus {
         outline: none;
         border-color: var(--terra-cyan);
-        box-shadow: 0 0 0 3px hsl(var(--tf-accent) / 0.1);
-        background: hsl(var(--tf-accent) / 0.05);
+        box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+        background: rgba(0, 255, 255, 0.05);
       }
 
       /* TerraFusion Typography */
@@ -398,7 +398,7 @@ export function TerraFusionBrandEnhancementSystem({
       .terra-text {
         font-size: var(--text-base);
         line-height: 1.6;
-        color: hsl(var(--tf-text) / 0.8);
+        color: rgba(255, 255, 255, 0.8);
       }
 
       /* TerraFusion Status Indicators */
@@ -431,15 +431,15 @@ export function TerraFusionBrandEnhancementSystem({
       }
 
       .terra-badge-primary {
-        background: hsl(var(--tf-accent) / 0.2);
+        background: rgba(0, 255, 255, 0.2);
         color: var(--terra-cyan);
-        border: 1px solid hsl(var(--tf-accent) / 0.3);
+        border: 1px solid rgba(0, 255, 255, 0.3);
       }
 
       .terra-badge-success {
-        background: hsl(var(--tf-transcend-green-hs) / 0.2);
+        background: rgba(0, 255, 136, 0.2);
         color: var(--success-green);
-        border: 1px solid hsl(var(--tf-transcend-green-hs) / 0.3);
+        border: 1px solid rgba(0, 255, 136, 0.3);
       }
     `;
 
@@ -494,7 +494,7 @@ export function TerraFusionBrandEnhancementSystem({
             height: '8px',
             borderRadius: '50%',
             background: 'var(--success-green)',
-            boxShadow: '0 0 10px hsl(var(--tf-transcend-green-hs) / 0.5)',
+            boxShadow: '0 0 10px rgba(0, 255, 136, 0.5)',
           }}
           className='terra-quantum-pulse'
         />

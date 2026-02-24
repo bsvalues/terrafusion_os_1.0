@@ -3,6 +3,13 @@
    Advanced CSS animations for the TerraFusion logo
    ═══════════════════════════════════════════════════════════════ */
 
+/* HS Channel Anchors (file-local, TerraSphere palette) */
+:root {
+  --tf-ts-cyan-hs: 180 100%;
+  --tf-ts-blue-hs: 210 100%;
+  --tf-ts-purple-hs: 262 100%;
+}
+
 .terra-sphere-container {
   position: relative;
   display: inline-block;
@@ -12,7 +19,7 @@
 
 .terra-sphere-svg {
   display: block;
-  filter: drop-shadow(0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.3));
+  filter: drop-shadow(0 0 20px hsl(var(--tf-ts-cyan-hs) 50% / 0.3));
 }
 
 /* Sphere rotation animation */
@@ -74,7 +81,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, hsl(var(--tf-cyan-hs) 50% / 0.3) 50%, transparent 70%);
+  background: linear-gradient(45deg, transparent 30%, hsl(var(--tf-ts-cyan-hs) 50% / 0.3) 50%, transparent 70%);
   border-radius: 50%;
   animation: terra-shimmer-sweep 3s linear infinite;
   pointer-events: none;
@@ -82,7 +89,7 @@
 
 /* Variant-specific styles */
 .terra-sphere-glow .terra-sphere-svg {
-  filter: drop-shadow(0 0 30px hsl(var(--tf-cyan-hs) 50% / 0.5));
+  filter: drop-shadow(0 0 30px hsl(var(--tf-ts-cyan-hs) 50% / 0.5));
 }
 
 .terra-sphere-pulse .terra-sphere-main {
@@ -92,8 +99,8 @@
 }
 
 .terra-sphere-quantum .terra-sphere-svg {
-  filter: drop-shadow(0 0 20px hsl(var(--tf-cyan-hs) 50% / 0.4)) drop-shadow(0 0 40px hsl(var(--tf-blue-hs) 50% / 0.3))
-    drop-shadow(0 0 60px hsl(var(--tf-info) / 0.2));
+  filter: drop-shadow(0 0 20px hsl(var(--tf-ts-cyan-hs) 50% / 0.4)) drop-shadow(0 0 40px hsl(var(--tf-ts-blue-hs) 50% / 0.3))
+    drop-shadow(0 0 60px hsl(var(--tf-ts-purple-hs) 63% / 0.2));
 }
 
 .terra-sphere-static .terra-sphere-main,
@@ -242,7 +249,7 @@
   }
 
   .terra-sphere-svg {
-    filter: drop-shadow(0 0 10px hsl(var(--tf-cyan-hs) 50% / 0.5));
+    filter: drop-shadow(0 0 10px hsl(var(--tf-ts-cyan-hs) 50% / 0.5));
   }
 }
 

@@ -190,11 +190,11 @@ export function QuantumDesktopShell() {
   const getPerformanceGlow = () => {
     switch (desktopState.performanceMode) {
       case 'TRANSCENDENT':
-        return '0 0 40px hsl(var(--tf-cyan-hs) 50% / 0.6)';
+        return '0 0 40px rgba(0, 255, 255, 0.6)';
       case 'QUANTUM':
-        return '0 0 30px hsl(var(--tf-green-hs) 50% / 0.4)';
+        return '0 0 30px rgba(0, 255, 136, 0.4)';
       default:
-        return '0 0 20px hsl(var(--tf-amber-hs) 50% / 0.3)';
+        return '0 0 20px rgba(255, 170, 0, 0.3)';
     }
   };
 

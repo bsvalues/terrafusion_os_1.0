@@ -100,29 +100,29 @@ export const AIHealthStatusChip: React.FC<AIHealthStatusChipProps> = ({
     switch (level) {
       case 'healthy':
         return {
-          bg: 'hsl(var(--tf-green-hs) 50% / 0.15)',
-          border: 'hsl(var(--tf-green-hs) 50% / 0.5)',
+          bg: 'hsl(var(--tf-ahsc-green-hs) 50% / 0.15)',
+          border: 'hsl(var(--tf-ahsc-green-hs) 50% / 0.5)',
           text: 'var(--success-green)',
-          glow: '0 0 10px hsl(var(--tf-green-hs) 50% / 0.3)',
+          glow: '0 0 10px hsl(var(--tf-ahsc-green-hs) 50% / 0.3)',
         };
       case 'degraded':
         return {
-          bg: 'hsl(var(--tf-amber-hs) 50% / 0.15)',
-          border: 'hsl(var(--tf-amber-hs) 50% / 0.5)',
+          bg: 'hsl(var(--tf-ahsc-amber-hs) 50% / 0.15)',
+          border: 'hsl(var(--tf-ahsc-amber-hs) 50% / 0.5)',
           text: 'var(--tf-warning-amber)',
-          glow: '0 0 10px hsl(var(--tf-amber-hs) 50% / 0.3)',
+          glow: '0 0 10px hsl(var(--tf-ahsc-amber-hs) 50% / 0.3)',
         };
       case 'unhealthy':
         return {
-          bg: 'hsl(var(--tf-red-hs) 50% / 0.15)',
-          border: 'hsl(var(--tf-red-hs) 50% / 0.5)',
+          bg: 'hsl(var(--tf-ahsc-red-hs) 66% / 0.15)',
+          border: 'hsl(var(--tf-ahsc-red-hs) 66% / 0.5)',
           text: 'var(--tf-error-red)',
-          glow: '0 0 10px hsl(var(--tf-red-hs) 50% / 0.3)',
+          glow: '0 0 10px hsl(var(--tf-ahsc-red-hs) 66% / 0.3)',
         };
       default:
         return {
-          bg: 'hsl(var(--tf-neutral-hs) 50% / 0.15)',
-          border: 'hsl(var(--tf-neutral-hs) 50% / 0.5)',
+          bg: 'hsl(var(--tf-ahsc-gray-hs) 50% / 0.15)',
+          border: 'hsl(var(--tf-ahsc-gray-hs) 50% / 0.5)',
           text: 'var(--gray-400)',
           glow: 'none',
         };
@@ -199,7 +199,7 @@ export const AIHealthStatusChip: React.FC<AIHealthStatusChipProps> = ({
         <span
           style={{
             fontSize: '0.8rem',
-            color: 'hsl(var(--tf-cyan-hs) 50% / 0.7)',
+            color: 'hsl(var(--tf-ahsc-cyan-hs) 50% / 0.7)',
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
           }}
@@ -222,6 +222,13 @@ export const AIHealthStatusChip: React.FC<AIHealthStatusChipProps> = ({
       {/* Pulse animation styles */}
       <style>
         {`
+          :root {
+            --tf-ahsc-green-hs: 152 100%;
+            --tf-ahsc-amber-hs: 47 100%;
+            --tf-ahsc-red-hs: 0 100%;
+            --tf-ahsc-gray-hs: 0 0%;
+            --tf-ahsc-cyan-hs: 180 100%;
+          }
           @keyframes aiHealthPulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }

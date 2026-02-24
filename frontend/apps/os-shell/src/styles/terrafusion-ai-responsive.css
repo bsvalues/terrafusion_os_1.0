@@ -7,11 +7,6 @@ MIT PhD-Level Machine Learning CSS Architecture
 /* ===== AI SYSTEM INTEGRATION VARIABLES ===== */
 
 :root {
-  /* AI-Responsive HS Anchors (agent status + neural sync) */
-  --tf-ai-agent-active-hs: 120 100%;     /* 120° — active green */
-  --tf-ai-agent-processing-hs: 200 100%; /* 200° — processing blue */
-  --tf-ai-sync-teal-hs: 180 100%;        /* 180° — neural sync teal */
-
   /* AI Agent System Parameters */
   --tf-ai-total-agents: 1008;
   --tf-ai-active-agents: 987; /* Dynamic value from AI system */
@@ -124,8 +119,8 @@ MIT PhD-Level Machine Learning CSS Architecture
   /* Enhanced visual effects when user is calm */
   backdrop-filter: blur(20px) saturate(180%);
   box-shadow:
-    0 8px 32px hsl(var(--tf-cyan-hs) 50% / 0.2),
-    0 0 40px hsl(var(--tf-blue-hs) 50% / 0.1);
+    0 8px 32px rgba(0, 255, 238, 0.2),
+    0 0 40px rgba(0, 153, 255, 0.1);
 
   /* Full animation suite */
   animation:
@@ -143,7 +138,7 @@ MIT PhD-Level Machine Learning CSS Architecture
 .tf-stress-adaptive[data-stress='medium'] {
   /* Reduced visual complexity */
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px hsl(var(--tf-cyan-hs) 50% / 0.1);
+  box-shadow: 0 4px 16px rgba(0, 255, 238, 0.1);
 
   /* Simplified animations */
   animation: calm-pulse 3s ease infinite;
@@ -158,7 +153,7 @@ MIT PhD-Level Machine Learning CSS Architecture
 .tf-stress-adaptive[data-stress='high'] {
   /* Minimal visual distraction */
   backdrop-filter: none;
-  box-shadow: 0 2px 8px hsl(var(--tf-neutral-hs) 0% / 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background: var(--tf-bg-primary);
 
   /* No animations */
@@ -359,25 +354,25 @@ MIT PhD-Level Machine Learning CSS Architecture
 }
 
 .tf-ai-agent[data-status='active'] {
-  background: radial-gradient(circle, hsl(var(--tf-ai-agent-active-hs) 60%) 0%, hsl(var(--tf-ai-agent-active-hs) 40%) 100%);
-  box-shadow: 0 0 4px hsl(var(--tf-ai-agent-active-hs) 60%);
+  background: radial-gradient(circle, hsl(120 100% 60%) 0%, hsl(120 100% 40%) 100%);
+  box-shadow: 0 0 4px hsl(120 100% 60%);
   animation: agent-active-pulse 2s ease infinite;
 }
 
 .tf-ai-agent[data-status='processing'] {
-  background: radial-gradient(circle, hsl(var(--tf-ai-agent-processing-hs) 60%) 0%, hsl(var(--tf-ai-agent-processing-hs) 40%) 100%);
-  box-shadow: 0 0 6px hsl(var(--tf-ai-agent-processing-hs) 60%);
+  background: radial-gradient(circle, hsl(200 100% 60%) 0%, hsl(200 100% 40%) 100%);
+  box-shadow: 0 0 6px hsl(200 100% 60%);
   animation: agent-processing-spin 1s linear infinite;
 }
 
 .tf-ai-agent[data-status='idle'] {
-  background: radial-gradient(circle, hsl(var(--tf-neutral-hs) 60%) 0%, hsl(var(--tf-neutral-hs) 40%) 100%);
+  background: radial-gradient(circle, hsl(0 0% 60%) 0%, hsl(0 0% 40%) 100%);
   opacity: 0.5;
 }
 
 .tf-ai-agent[data-status='error'] {
-  background: radial-gradient(circle, hsl(var(--tf-red-hs) 60%) 0%, hsl(var(--tf-red-hs) 40%) 100%);
-  box-shadow: 0 0 8px hsl(var(--tf-red-hs) 60%);
+  background: radial-gradient(circle, hsl(0 100% 60%) 0%, hsl(0 100% 40%) 100%);
+  box-shadow: 0 0 8px hsl(0 100% 60%);
   animation: agent-error-flash 0.5s ease infinite alternate;
 }
 
@@ -396,7 +391,7 @@ MIT PhD-Level Machine Learning CSS Architecture
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent 0%, hsl(var(--tf-cyan-hs) 50% / 0.2) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 238, 0.2) 50%, transparent 100%);
   animation: prediction-hint calc(var(--tf-prediction-accuracy) * 5s) ease-in-out infinite;
 }
 
@@ -468,15 +463,15 @@ MIT PhD-Level Machine Learning CSS Architecture
 
 @keyframes neural-synchronization {
   0% {
-    box-shadow: 0 0 10px hsl(var(--tf-ai-agent-processing-hs) 50% / calc(var(--tf-neural-sync) * 0.3));
+    box-shadow: 0 0 10px hsl(200 100% 50% / calc(var(--tf-neural-sync) * 0.3));
   }
   50% {
     box-shadow:
-      0 0 20px hsl(var(--tf-ai-sync-teal-hs) 50% / calc(var(--tf-neural-sync) * 0.5)),
-      0 0 40px hsl(var(--tf-ai-agent-active-hs) 50% / calc(var(--tf-neural-sync) * 0.3));
+      0 0 20px hsl(180 100% 50% / calc(var(--tf-neural-sync) * 0.5)),
+      0 0 40px hsl(120 100% 50% / calc(var(--tf-neural-sync) * 0.3));
   }
   100% {
-    box-shadow: 0 0 10px hsl(var(--tf-ai-agent-processing-hs) 50% / calc(var(--tf-neural-sync) * 0.3));
+    box-shadow: 0 0 10px hsl(200 100% 50% / calc(var(--tf-neural-sync) * 0.3));
   }
 }
 
