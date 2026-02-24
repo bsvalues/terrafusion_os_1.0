@@ -108,6 +108,42 @@
   /* HS Channel Anchor (file-local, pure-black for ambient shadows) */
   --tf-tokens-black-hs: 0 0%;
 
+  /* ═══ SEMANTIC HS ANCHORS (Hue + Saturation only) ═══
+     Each anchor supplies H S so call-sites choose lightness and alpha:
+       hsl(var(--tf-<name>-hs) <L%>)
+       hsl(var(--tf-<name>-hs) <L%> / <alpha>)
+     Derived from the foundation hex tokens above.                     */
+  --tf-bg-surface-hs: 217 33%;       /* #1e293b  (bg-surface)          */
+  --tf-surface-dark-hs: 222 47%;     /* #0f172a  (surface-dark)        */
+  --tf-text-primary-hs: 0 0%;        /* #ffffff  (text-primary)        */
+  --tf-text-secondary-hs: 213 27%;   /* #cbd5e1  (text-secondary)      */
+  --tf-success-hs: 152 100%;         /* #00ff88  (accent-success)      */
+  --tf-error-hs: 0 100%;             /* #ff4444  (error-red)           */
+  --tf-warning-hs: 40 100%;          /* #ffaa00  (warning-amber)       */
+  --tf-info-hs: 264 100%;            /* #8844ff  (info-purple)         */
+  --tf-network-blue-hs: 210 100%;    /* #0080ff  (network-blue)        */
+  --tf-transcend-cyan-hs: 180 100%;  /* #00ffff  (quantum-cyan)        */
+  --tf-neutral-hs: 220 13%;          /* gray scale base                */
+
+  /* ═══ LIGHTNESS STEPS ═══
+     Reusable L values for consistent tonal hierarchy.
+     Usage: hsl(var(--tf-neutral-hs) var(--tf-l-20))                   */
+  --tf-l-0: 0%;
+  --tf-l-5: 5%;
+  --tf-l-10: 10%;
+  --tf-l-15: 15%;
+  --tf-l-20: 20%;
+  --tf-l-25: 25%;
+  --tf-l-30: 30%;
+  --tf-l-40: 40%;
+  --tf-l-50: 50%;
+  --tf-l-60: 60%;
+  --tf-l-70: 70%;
+  --tf-l-80: 80%;
+  --tf-l-90: 90%;
+  --tf-l-95: 95%;
+  --tf-l-100: 100%;
+
   /* ═══ ELEVATION & SHADOWS ═══ */
   --shadow-sm: 0 1px 2px hsl(var(--tf-tokens-black-hs) 0% / 0.05);
   --shadow-md: 0 4px 6px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
