@@ -42,6 +42,7 @@
     ]
   },
   "scripts": {
+    "prepare": "husky install",
     "tf": "node tools/tf.js",
     "tf:ship": "node tools/dev/tf-ship.mjs",
     "tf:slice": "node tools/dev/tf-slice.mjs",
