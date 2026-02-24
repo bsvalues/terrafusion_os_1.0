@@ -31,7 +31,7 @@ const EliteProgress: React.FC<EliteProgressProps> = ({
   const variantClasses = {
     default: 'bg-terra-cyan',
     quantum: 'bg-gradient-to-r from-terra-cyan via-purple-400 to-terra-cyan',
-    glow: 'bg-terra-cyan shadow-[0_0_10px_rgba(0,255,255,0.5)]',
+    glow: 'bg-terra-cyan shadow-[0_0_10px_hsl(var(--tf-transcend-cyan-hs)_50%_/_0.5)]',
   };
 
   return (

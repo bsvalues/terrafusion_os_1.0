@@ -252,13 +252,13 @@ export const TerraForgeProgressRing: React.FC<ProgressRingProps> = ({
   const offset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className={cn('relative inline-flex items-center justify-center', className)}>
+    <div className={cn('relative inline-flex items-center justify-center [--tf-slate-track-hs:215_25%]', className)}>
       <svg width={size} height={size} className='transform -rotate-90'>
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke='rgba(51, 65, 85, 0.3)'
+          stroke='hsl(var(--tf-slate-track-hs) 27% / 0.3)'
           strokeWidth={strokeWidth}
           fill='none'
         />

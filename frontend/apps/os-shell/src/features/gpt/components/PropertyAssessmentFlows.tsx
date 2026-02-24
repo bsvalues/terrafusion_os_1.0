@@ -205,7 +205,7 @@ export const PropertyAssessmentFlows: React.FC<PropertyAssessmentFlowsProps> = (
                       'group w-full rounded-xl px-2.5 py-2 text-left transition-all',
                       'border border-slate-800/60 bg-slate-900/60 backdrop-blur-sm',
                       'hover:border-emerald-500/50 hover:bg-slate-900/90',
-                      'hover:shadow-[0_8px_25px_rgba(52,211,153,0.25)]',
+                      '[--tf-emerald-glow-hs:158_64%] hover:shadow-[0_8px_25px_hsl(var(--tf-emerald-glow-hs)_52%_/_0.25)]',
                       'disabled:cursor-not-allowed disabled:opacity-50',
                       'focus:outline-none focus:ring-1 focus:ring-emerald-500/50',
                     ].join(' ')}

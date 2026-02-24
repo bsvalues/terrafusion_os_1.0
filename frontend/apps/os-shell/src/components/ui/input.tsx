@@ -11,7 +11,7 @@ export interface EliteInputProps extends React.ComponentProps<'input'> {
 const Input = React.forwardRef<HTMLInputElement, EliteInputProps>(
   ({ className, type, label, glow = false, error, ...props }, ref) => {
     const glowClasses = glow
-      ? 'focus:shadow-[0_0_15px_rgba(0,255,255,0.4)] focus:border-terra-cyan'
+      ? 'focus:shadow-[0_0_15px_hsl(var(--tf-transcend-cyan-hs)_50%_/_0.4)] focus:border-terra-cyan'
       : '';
     const errorClasses = error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : '';
 
