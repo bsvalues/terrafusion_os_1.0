@@ -31,14 +31,16 @@ function isCommandGovernanceMeta(v) {
     return intentOk && mutationOk && visibilityOk;
 }
 function normalizeDecision(d) {
-    if (d.allow)
+    if (d.allow === true)
         return { allow: true };
-    const reason = typeof d.reason === 'string' && d.reason.trim().length > 0
-        ? d.reason.trim()
+    // Narrow to denial branch explicitly for TS discriminated union compat
+    const denied = d;
+    const reason = typeof denied.reason === 'string' && denied.reason.trim().length > 0
+        ? denied.reason.trim()
         : 'Policy denied';
     return {
         allow: false,
         reason,
-        visibility: d.visibility ?? 'restricted',
+        visibility: denied.visibility ?? 'restricted',
     };
 }

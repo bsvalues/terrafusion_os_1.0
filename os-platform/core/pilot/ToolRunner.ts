@@ -14,6 +14,7 @@ import { traceService, TraceService } from '../trace/TraceService.js';
 import type {
   CommandGovernanceMeta,
   MutationClass,
+  PolicyDecision,
   PreflightPolicy,
 } from '../types/commandGovernance.js';
 import { createPreflight } from './ToolRunner.preflight.js';
@@ -295,13 +296,15 @@ export class ToolRunner {
       governance,
       requestedMutation: mutationFromRisk(tool.risk),
     });
-    if (!preflight.allow) {
+    if (preflight.allow !== true) {
+      // Narrow to denial branch for TS discriminated union compat
+      const denied = preflight as Extract<PolicyDecision, { allow: false }>;
       this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
-        summary: `Policy denied ${toolId}: ${preflight.reason}`,
+        summary: `Policy denied ${toolId}: ${denied.reason}`,
         errorCode: ErrorCodes.POLICY_DENIED,
         component: 'ToolRunner',
       });
-      return this.fail(correlationId, ErrorCodes.POLICY_DENIED, preflight.reason);
+      return this.fail(correlationId, ErrorCodes.POLICY_DENIED, denied.reason);
     }
 
     // Collect all enforcement violations

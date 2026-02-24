@@ -191,13 +191,15 @@ class ToolRunner {
             governance,
             requestedMutation: mutationFromRisk(tool.risk),
         });
-        if (!preflight.allow) {
+        if (preflight.allow !== true) {
+            // Narrow to denial branch for TS discriminated union compat
+            const denied = preflight;
             this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
-                summary: `Policy denied ${toolId}: ${preflight.reason}`,
+                summary: `Policy denied ${toolId}: ${denied.reason}`,
                 errorCode: exports.ErrorCodes.POLICY_DENIED,
                 component: 'ToolRunner',
             });
-            return this.fail(correlationId, exports.ErrorCodes.POLICY_DENIED, preflight.reason);
+            return this.fail(correlationId, exports.ErrorCodes.POLICY_DENIED, denied.reason);
         }
         // Collect all enforcement violations
         const violations = [

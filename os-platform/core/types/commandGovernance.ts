@@ -62,15 +62,17 @@ export function isCommandGovernanceMeta(v: unknown): v is CommandGovernanceMeta 
 }
 
 export function normalizeDecision(d: PolicyDecision): PolicyDecision {
-  if (d.allow) return { allow: true };
+  if (d.allow === true) return { allow: true };
 
-  const reason = typeof d.reason === 'string' && d.reason.trim().length > 0
-    ? d.reason.trim()
+  // Narrow to denial branch explicitly for TS discriminated union compat
+  const denied = d as Extract<PolicyDecision, { allow: false }>;
+  const reason = typeof denied.reason === 'string' && denied.reason.trim().length > 0
+    ? denied.reason.trim()
     : 'Policy denied';
 
   return {
     allow: false,
     reason,
-    visibility: d.visibility ?? 'restricted',
+    visibility: denied.visibility ?? 'restricted',
   };
 }
