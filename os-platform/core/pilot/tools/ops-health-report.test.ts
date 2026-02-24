@@ -6,10 +6,10 @@
 
 import { describe, expect, it } from 'vitest';
 import {
-  classify,
-  computeOpsHealthReport,
-  parseGitPorcelainZ,
-  type Exec,
+    classify,
+    computeOpsHealthReport,
+    parseGitPorcelainZ,
+    type Exec,
 } from './ops-health-report';
 
 describe('ops-health-report', () => {
@@ -23,10 +23,10 @@ describe('ops-health-report', () => {
     const { staged, unstaged, untracked } = classify(entries);
 
     expect(staged.map(e => e.path)).toContain(
-      'os-platform/core/tests/no-untracked-leak-guards.test.ts',
+      'os-platform/core/tests/no-untracked-leak-guards.test.ts'
     );
     expect(unstaged.map(e => e.path)).toContain(
-      'os-platform/core/tests/leak-guard-coverage-mapping.test.ts',
+      'os-platform/core/tests/leak-guard-coverage-mapping.test.ts'
     );
     expect(untracked.map(e => e.path)).toContain('pact/');
   });
@@ -50,8 +50,7 @@ describe('ops-health-report', () => {
       const key = `${cmd} ${args.join(' ')}`;
       if (key === 'git rev-parse HEAD') return 'cafebabe';
       if (key === 'git rev-parse --abbrev-ref HEAD') return 'feature/x';
-      if (key === 'git status --porcelain=v1 -z')
-        return 'A  some-random-place/secrets.txt\0';
+      if (key === 'git status --porcelain=v1 -z') return 'A  some-random-place/secrets.txt\0';
       return '';
     };
 

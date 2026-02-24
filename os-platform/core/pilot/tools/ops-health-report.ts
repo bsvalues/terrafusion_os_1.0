@@ -120,7 +120,9 @@ export function computeOpsHealthReport(opts?: {
   // Policy: pact/ should not appear as untracked noise.
   const pactUntracked = untracked.some(e => e.path === 'pact/' || e.path.startsWith('pact/'));
   if (pactUntracked) {
-    findings.push('Untracked pact/ detected (expected to be ignored via .gitignore in Phase 206A).');
+    findings.push(
+      'Untracked pact/ detected (expected to be ignored via .gitignore in Phase 206A).'
+    );
   }
 
   // Policy: staged items should be intentionally scoped.
@@ -129,7 +131,7 @@ export function computeOpsHealthReport(opts?: {
     findings.push(
       `Staged changes include paths outside allowlist: ${disallowedStaged
         .map(x => x.path)
-        .join(', ')}`,
+        .join(', ')}`
     );
   }
 
