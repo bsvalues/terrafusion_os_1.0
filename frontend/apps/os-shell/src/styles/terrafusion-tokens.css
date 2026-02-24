@@ -5,33 +5,33 @@
 
 :root {
   /* ═══ FOUNDATION COLORS (THE ACTUAL HEX VALUES) ═══ */
-  --tf-quantum-cyan: #00ffff; /* Terra-Cyan - The Consciousness Color */
-  --tf-void-black: #0a0e1a; /* Terra-Midnight - The Void */
-  --tf-network-blue: #0080ff; /* Terra-Blue - The Network (brand exact) */
-  --tf-transcend-highlight: #00ffee; /* Transcendence Accent */
-  --tf-accent-success: #00ff88; /* Success Green */
-  --tf-accent-cyan: #00cccc; /* Darker Cyan */
-  --tf-error-red: #ff4444; /* Error Red */
-  --tf-warning-amber: #ffaa00; /* Warning Amber */
-  --tf-info-purple: #8844ff; /* Info Purple */
-  --tf-surface-darker: #141824; /* Surface Darker */
-  --tf-surface-dark: #0f172a; /* Surface Dark (gray-900) */
-  --tf-bg-void: #000000; /* Pure Void */
-  --tf-bg-surface: #1e293b; /* Surface Background */
-  --tf-text-primary: #ffffff; /* Primary Text */
-  --tf-text-secondary: #cbd5e1; /* Secondary Text (gray-300) */
+  --tf-quantum-cyan: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50)); /* Terra-Cyan - The Consciousness Color */
+  --tf-void-black: hsl(var(--tf-surface-dark-hs) 7%); /* Terra-Midnight - The Void */
+  --tf-network-blue: hsl(var(--tf-network-blue-hs) var(--tf-l-50)); /* Terra-Blue - The Network (brand exact) */
+  --tf-transcend-highlight: hsl(var(--tf-transcend-cyan-hs) 47%); /* Transcendence Accent */
+  --tf-accent-success: hsl(var(--tf-success-hs) var(--tf-l-50)); /* Success Green */
+  --tf-accent-cyan: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-40)); /* Darker Cyan */
+  --tf-error-red: hsl(var(--tf-error-hs) var(--tf-l-60)); /* Error Red */
+  --tf-warning-amber: hsl(var(--tf-warning-hs) var(--tf-l-50)); /* Warning Amber */
+  --tf-info-purple: hsl(var(--tf-info-hs) var(--tf-l-60)); /* Info Purple */
+  --tf-surface-darker: hsl(var(--tf-surface-dark-hs) 11%); /* Surface Darker */
+  --tf-surface-dark: hsl(var(--tf-surface-dark-hs) var(--tf-l-10)); /* Surface Dark (gray-900) */
+  --tf-bg-void: hsl(var(--tf-text-primary-hs) var(--tf-l-0)); /* Pure Void */
+  --tf-bg-surface: hsl(var(--tf-bg-surface-hs) var(--tf-l-20)); /* Surface Background */
+  --tf-text-primary: hsl(var(--tf-text-primary-hs) var(--tf-l-100)); /* Primary Text */
+  --tf-text-secondary: hsl(var(--tf-text-secondary-hs) var(--tf-l-85)); /* Secondary Text (gray-300) */
 
   /* ═══ PRIMARY COLORS ═══ */
   --terra-cyan: var(--tf-quantum-cyan); /* Primary - The Consciousness */
   --terra-midnight: var(--tf-void-black); /* Background - The Void */
   --terra-blue: var(--tf-network-blue); /* Secondary - The Network */
-  --terra-slate: #1e293b; /* Surface - The Foundation */
+  --terra-slate: hsl(var(--tf-bg-surface-hs) var(--tf-l-20)); /* Surface - The Foundation */
 
   /* ═══ SEMANTIC COLORS ═══ */
-  --success-green: #00ff88; /* Validation & Success */
-  --warning-amber: #ffaa00; /* Caution & Processing */
-  --error-red: #ff4444; /* Alerts & Critical */
-  --info-purple: #8844ff; /* Information & Insights */
+  --success-green: hsl(var(--tf-success-hs) var(--tf-l-50)); /* Validation & Success */
+  --warning-amber: hsl(var(--tf-warning-hs) var(--tf-l-50)); /* Caution & Processing */
+  --error-red: hsl(var(--tf-error-hs) var(--tf-l-60)); /* Alerts & Critical */
+  --info-purple: hsl(var(--tf-info-hs) var(--tf-l-60)); /* Information & Insights */
 
   /* ═══ GRADIENTS ═══ */
   --gradient-primary: linear-gradient(
@@ -39,29 +39,29 @@
     var(--tf-quantum-cyan) 0%,
     var(--tf-network-blue) 100%
   );
-  --gradient-dark: linear-gradient(135deg, var(--tf-void-black) 0%, #1e293b 100%);
-  --gradient-aurora: linear-gradient(90deg, var(--tf-quantum-cyan), #00ff88, #8844ff);
+  --gradient-dark: linear-gradient(135deg, var(--tf-void-black) 0%, hsl(var(--tf-bg-surface-hs) var(--tf-l-20)) 100%);
+  --gradient-aurora: linear-gradient(90deg, var(--tf-quantum-cyan), hsl(var(--tf-success-hs) var(--tf-l-50)), hsl(var(--tf-info-hs) var(--tf-l-60)));
   --gradient-quantum: linear-gradient(
     45deg,
     var(--tf-quantum-cyan) 0%,
     var(--tf-network-blue) 25%,
-    #8844ff 50%,
-    #00ff88 75%,
+    hsl(var(--tf-info-hs) var(--tf-l-60)) 50%,
+    hsl(var(--tf-success-hs) var(--tf-l-50)) 75%,
     var(--tf-quantum-cyan) 100%
   );
 
   /* ═══ NEUTRALS ═══ */
-  --gray-50: #f8fafc;
-  --gray-100: #f1f5f9;
-  --gray-200: #e2e8f0;
-  --gray-300: #cbd5e1;
-  --gray-400: #94a3b8;
-  --gray-500: #64748b;
-  --gray-600: #475569;
-  --gray-700: #334155;
-  --gray-800: #1e293b;
-  --gray-900: #0f172a;
-  --gray-950: #020617;
+  --gray-50: hsl(var(--tf-neutral-hs) 98%);
+  --gray-100: hsl(var(--tf-neutral-hs) 96%);
+  --gray-200: hsl(var(--tf-neutral-hs) 91%);
+  --gray-300: hsl(var(--tf-text-secondary-hs) var(--tf-l-85));
+  --gray-400: hsl(var(--tf-neutral-hs) 65%);
+  --gray-500: hsl(var(--tf-neutral-hs) 47%);
+  --gray-600: hsl(var(--tf-neutral-hs) 35%);
+  --gray-700: hsl(var(--tf-neutral-hs) 27%);
+  --gray-800: hsl(var(--tf-bg-surface-hs) var(--tf-l-20));
+  --gray-900: hsl(var(--tf-surface-dark-hs) var(--tf-l-10));
+  --gray-950: hsl(var(--tf-neutral-hs) 5%);
 
   /* ═══ TYPOGRAPHY SCALE (Golden Ratio φ = 1.618) ═══ */
   --text-xs: 0.618rem; /* 9.888px */
@@ -180,18 +180,18 @@
   /* ═══ LUMIN BRIDGE (consumed by @terrafusion/ui primitives) ═══
      HSL channel values — used as hsl(var(--tf-bg) / <alpha>).
      Derived from the foundation hex tokens above.                   */
-  --tf-bg: 225 44% 7%; /* #0a0e1a  (void-black)          */
-  --tf-surface: 217 33% 17%; /* #1e293b  (terra-slate)         */
-  --tf-surface-2: 225 29% 11%; /* #141824  (surface-darker)      */
+  --tf-bg: 225 44% 7%; /* hsl(var(--tf-surface-dark-hs) 7%)  (void-black)          */
+  --tf-surface: 217 33% 17%; /* hsl(var(--tf-bg-surface-hs) var(--tf-l-20))  (terra-slate)         */
+  --tf-surface-2: 225 29% 11%; /* hsl(var(--tf-surface-dark-hs) 11%)  (surface-darker)      */
   --tf-border: 220 18% 24%; /* muted slate (not accent!)      */
-  --tf-text: 0 0% 100%; /* #ffffff  (text-primary)        */
-  --tf-muted: 215 20% 65%; /* #94a3b8  (gray-400)            */
-  --tf-accent: 180 100% 50%; /* #00ffff  (quantum-cyan)        */
-  --tf-accent-2: 210 100% 50%; /* #0080ff  (network-blue)        */
-  --tf-success: 152 100% 50%; /* #00ff88  (accent-success)      */
-  --tf-error: 0 100% 63%; /* #ff4444  (error-red)            */
-  --tf-warning: 40 100% 50%; /* #ffaa00  (warning-amber)       */
-  --tf-info: 264 100% 63%; /* #8844ff  (info-purple)          */
+  --tf-text: 0 0% 100%; /* hsl(var(--tf-text-primary-hs) var(--tf-l-100))  (text-primary)        */
+  --tf-muted: 215 20% 65%; /* hsl(var(--tf-neutral-hs) 65%)  (gray-400)            */
+  --tf-accent: 180 100% 50%; /* hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50))  (quantum-cyan)        */
+  --tf-accent-2: 210 100% 50%; /* hsl(var(--tf-network-blue-hs) var(--tf-l-50))  (network-blue)        */
+  --tf-success: 152 100% 50%; /* hsl(var(--tf-success-hs) var(--tf-l-50))  (accent-success)      */
+  --tf-error: 0 100% 63%; /* hsl(var(--tf-error-hs) var(--tf-l-60))  (error-red)            */
+  --tf-warning: 40 100% 50%; /* hsl(var(--tf-warning-hs) var(--tf-l-50))  (warning-amber)       */
+  --tf-info: 264 100% 63%; /* hsl(var(--tf-info-hs) var(--tf-l-60))  (info-purple)          */
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px hsl(var(--tf-accent) / 0.2); /* shadow-lg    */
@@ -252,7 +252,7 @@
   :root {
     /* Enhanced contrast for dark mode */
     --terra-cyan: var(--tf-quantum-cyan);
-    --terra-midnight: #000000;
+    --terra-midnight: hsl(var(--tf-text-primary-hs) var(--tf-l-0));
     --glass-bg: hsl(var(--tf-bg) / 0.5);
     --glass-border: hsl(var(--tf-accent) / 0.3);
   }
