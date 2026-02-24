@@ -108,6 +108,35 @@
   /* HS Channel Anchor (file-local, pure-black for ambient shadows) */
   --tf-tokens-black-hs: 0 0%;
 
+  /* HS anchor foundation for tokenized color migration (additive only). */
+  --tf-hs-neutral: 220 12%;
+  --tf-hs-primary: 215 90%;
+  --tf-hs-success: 145 55%;
+  --tf-hs-warning: 38 92%;
+  --tf-hs-danger: 0 84%;
+  --tf-hs-info: 200 85%;
+  --tf-hs-accent: 285 70%;
+  --tf-hs-muted: 220 10%;
+  --tf-hs-surface: 220 14%;
+  --tf-hs-border: 220 12%;
+  --tf-hs-overlay: 220 16%;
+
+  --tf-l-0: 0%;
+  --tf-l-5: 5%;
+  --tf-l-10: 10%;
+  --tf-l-15: 15%;
+  --tf-l-20: 20%;
+  --tf-l-25: 25%;
+  --tf-l-30: 30%;
+  --tf-l-40: 40%;
+  --tf-l-50: 50%;
+  --tf-l-60: 60%;
+  --tf-l-70: 70%;
+  --tf-l-80: 80%;
+  --tf-l-90: 90%;
+  --tf-l-95: 95%;
+  --tf-l-98: 98%;
+
   /* ═══ ELEVATION & SHADOWS ═══ */
   --shadow-sm: 0 1px 2px hsl(var(--tf-tokens-black-hs) 0% / 0.05);
   --shadow-md: 0 4px 6px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
