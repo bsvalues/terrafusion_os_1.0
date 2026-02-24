@@ -65,67 +65,43 @@ function extractStringConstants(source: string): Map<string, string> {
 }
 
 /**
- * Extracts the target file's relative path from the guard source.
- * Supports all known guard resolution patterns with constant-resolution:
- *
- * 1. path.resolve(__dirname, "../../..", <literal|CONST>)
- * 2. path.join(process.cwd(), <literal|CONST>)  /  path.join(repoRoot, <literal|CONST>)
- * 3. resolve(__dirname, ..., <literal|CONST>)    (destructured import)
- * 4. const rel = "frontend/..." (variable extracted, then used in path.join)
- * 5. assertNoRawColorLeaks("frontend/...")        (inline path, no label — target IS the path)
+ * Extracts the last argument to a path.resolve(__dirname, ..., <lastArg>) call.
+ * Supports the lastArg being:
+ *  - a string literal
+ *  - an identifier that resolves to a string literal via extractStringConstants()
  */
 function extractTargetRelPath(source: string, constants: Map<string, string>): string | null {
-  // Helper: resolve a last-arg capture (literal or identifier)
-  function resolveCapture(
-    m: RegExpMatchArray,
-    litGroup: number,
-    valGroup: number,
-    identGroup: number,
-  ): string | null {
-    const lit = m[valGroup] ?? null;
-    if (lit !== null) return lit.trim();
-    const ident = m[identGroup] ?? null;
-    if (!ident) return null;
-    const resolved = constants.get(ident);
-    return resolved ? resolved.trim() : null;
+  const normalizeTargetPath = (value: string): string => {
+    const trimmed = value.trim();
+    const marker = 'frontend/apps/os-shell/src/';
+    const markerIdx = trimmed.indexOf(marker);
+    return markerIdx >= 0 ? trimmed.slice(markerIdx) : trimmed;
+  };
+
+  const candidates = new Set<string>();
+
+  for (const value of constants.values()) {
+    if (value.includes('frontend/apps/os-shell/src/')) {
+      candidates.add(normalizeTargetPath(value));
+    }
   }
 
-  // Pattern 1: path.resolve(__dirname, "../../..", <target>)
-  const p1 = source.match(
-    /path\.resolve\(\s*__dirname\s*,[\s\S]*?,\s*(?:(["'`])([\s\S]*?)\1|([A-Za-z_$][\w$]*))\s*,?\s*\)/m,
+  for (const m of source.matchAll(/["'`]([^"'`]*frontend\/apps\/os-shell\/src\/[^"'`]*)["'`]/g)) {
+    const raw = (m[1] ?? '').trim();
+    if (raw) candidates.add(normalizeTargetPath(raw));
+  }
+
+  if (candidates.size === 0) return null;
+  if (candidates.size === 1) return [...candidates][0]!;
+
+  const pathLike = [...candidates].filter((value) =>
+    /\.[a-z0-9]+$/i.test(path.basename(value)),
   );
-  if (p1) {
-    const val = resolveCapture(p1, 1, 2, 3);
-    if (val) return val;
-  }
 
-  // Pattern 2: path.join(process.cwd(), <target>) or path.join(<var>, <target>)
-  const p2 = source.match(
-    /path\.join\(\s*(?:process\.cwd\(\)|[\w$]+)\s*,\s*(?:(["'`])([\s\S]*?)\1|([A-Za-z_$][\w$]*))\s*,?\s*\)/m,
-  );
-  if (p2) {
-    const val = resolveCapture(p2, 1, 2, 3);
-    if (val) return val;
-  }
+  if (pathLike.length === 1) return pathLike[0]!;
 
-  // Pattern 3: resolve(__dirname, ..., <target>)  (destructured import of path.resolve)
-  const p3 = source.match(
-    /\bresolve\(\s*__dirname\s*,[\s\S]*?,?\s*(?:(["'`])([\s\S]*?)\1|([A-Za-z_$][\w$]*))\s*,?\s*\)/m,
-  );
-  if (p3) {
-    const val = resolveCapture(p3, 1, 2, 3);
-    if (val) return val;
-  }
-
-  // Pattern 4: const rel = "frontend/..." (variable with frontend path)
-  const p4 = source.match(/\bconst\s+\w+\s*=\s*["'`](frontend\/[^"'`]+?)["'`]/m);
-  if (p4?.[1]) return p4[1];
-
-  // Pattern 5: assertNoRawColorLeaks("frontend/...")  (inline path as first arg, no label)
-  const p5 = source.match(/assertNoRawColorLeaks\(\s*["'`](frontend\/[^"'`]+?)["'`]\s*\)/m);
-  if (p5?.[1]) return p5[1];
-
-  return null;
+  pathLike.sort((a, b) => a.length - b.length);
+  return pathLike[0] ?? [...candidates][0]!;
 }
 
 /**
@@ -197,12 +173,9 @@ describe('Leak guard mutation resistance', () => {
       const targetBaseName = path.basename(targetRelPath);
       const labelValue = extractLabelValue(source, constants);
 
-      // Inline-path guards (assertNoRawColorLeaks("frontend/...")) have no label — exempt
-      const isInlinePath = /assertNoRawColorLeaks\(\s*["'`]frontend\//.test(source);
-
       parsed.push({ guardAbsPath, guardRelPath, targetRelPath, targetBaseName, labelValue });
 
-      if (!labelValue && !isInlinePath) {
+      if (!labelValue) {
         failures.push(
           [
             `Missing label in assertNoRawColorLeaks options object:`,
@@ -214,7 +187,7 @@ describe('Leak guard mutation resistance', () => {
         continue;
       }
 
-      if (labelValue && labelValue !== targetBaseName) {
+      if (labelValue !== targetBaseName) {
         failures.push(
           [
             `Label mismatch:`,
