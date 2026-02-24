@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+HOOK_DIR="$(dirname -- "$0")"
+if [ -f "$HOOK_DIR/_/husky.sh" ]; then
+  . "$HOOK_DIR/_/husky.sh"
+fi
 
 echo "🔒 TERRAFUSION OS: Pre-commit Quality Gate"
 
