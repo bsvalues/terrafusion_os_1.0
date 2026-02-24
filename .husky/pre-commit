@@ -3,6 +3,16 @@
 
 echo "🔒 TERRAFUSION OS: Pre-commit Quality Gate"
 
+# Gate 0: Lane check — refuse commits from wrong worktree
+TOPLEVEL="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+EXPECTED="$(cd "$(dirname -- "$0")/.." && pwd -P)"
+if [ -n "$TOPLEVEL" ] && [ "$TOPLEVEL" != "$EXPECTED" ]; then
+  echo "❌ Lane violation: committing from wrong worktree."
+  echo "   git toplevel: $TOPLEVEL"
+  echo "   expected:     $EXPECTED"
+  exit 1
+fi
+
 # Gate 1: UI Token Contract (Lumin design system — scoped Gen2 + ratchet)
 if command -v pnpm >/dev/null 2>&1; then
   echo "🎨 Running UI token contract audit (scoped + ratchet)..."
