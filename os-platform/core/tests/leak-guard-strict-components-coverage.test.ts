@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
 
 /**
  * Phase 203: Strict coverage (narrow root)

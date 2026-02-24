@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { describe, it } from 'vitest';
 import { assertNoRawColorLeaks } from '../../../tools/ui-tokens/leak-guard';
 
 describe('levy-core/index.module.css leak guard', () => {
