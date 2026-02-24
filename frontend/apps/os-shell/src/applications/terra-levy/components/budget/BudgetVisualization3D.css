@@ -3,8 +3,8 @@
   display: flex;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, #0a0a1a 0%, var(--tf-surface-darker) 50%, var(--tf-surface-darker) 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, hsl(var(--tf-surface-dark-hs) var(--tf-l-10)) 0%, var(--tf-surface-darker) 50%, var(--tf-surface-darker) 100%);
+  color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   font-family: 'Quantum UI', 'Segoe UI', sans-serif;
   overflow: hidden;
   position: relative;
@@ -13,19 +13,19 @@
 /* Control Panel */
 .budget-controls {
   width: 320px;
-  background: rgba(26, 26, 58, 0.95);
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.95);
   border-right: 2px solid var(--tf-network-blue);
   padding: 20px;
   overflow-y: auto;
   -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
-  box-shadow: 2px 0 20px rgba(0, 136, 255, 0.1);
+  box-shadow: 2px 0 20px hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.1);
   z-index: 10;
 }
 
 .control-section {
   margin-bottom: 25px;
-  border-bottom: 1px solid #333366;
+  border-bottom: 1px solid hsl(var(--tf-info-hs) var(--tf-l-30));
   padding-bottom: 20px;
 }
 
@@ -52,10 +52,10 @@
 }
 
 .view-buttons button {
-  background: rgba(16, 21, 62, 0.8);
-  border: 1px solid #333366;
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.8);
+  border: 1px solid hsl(var(--tf-info-hs) var(--tf-l-30));
   border-radius: 8px;
-  color: #ffffff;
+  color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   padding: 12px 15px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -66,15 +66,15 @@
 
 .view-buttons button:hover {
   border-color: var(--tf-network-blue);
-  background: rgba(0, 136, 255, 0.15);
+  background: hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.15);
   transform: translateX(3px);
 }
 
 .view-buttons button.active {
   border-color: var(--tf-network-blue);
-  background: rgba(0, 136, 255, 0.25);
-  box-shadow: 0 0 15px rgba(0, 136, 255, 0.3);
-  color: #00aaff;
+  background: hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.25);
+  box-shadow: 0 0 15px hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.3);
+  color: hsl(var(--tf-network-blue-hs) var(--tf-l-50));
 }
 
 /* Enhancement Controls */
@@ -89,8 +89,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(16, 21, 62, 0.8);
-  border: 1px solid #333366;
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.8);
+  border: 1px solid hsl(var(--tf-info-hs) var(--tf-l-30));
   border-radius: 8px;
   padding: 10px 12px;
   cursor: pointer;
@@ -100,7 +100,7 @@
 .quantum-toggle:hover,
 .sync-toggle:hover {
   border-color: var(--success-green);
-  background: rgba(0, 255, 136, 0.1);
+  background: hsl(var(--tf-success-hs) var(--tf-l-50) / 0.1);
 }
 
 .quantum-toggle input[type='checkbox'],
@@ -113,14 +113,14 @@
 .quantum-toggle span,
 .sync-toggle span {
   font-size: 12px;
-  color: #ffffff;
+  color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   cursor: pointer;
 }
 
 /* Category Details */
 .category-details {
-  background: rgba(16, 21, 62, 0.8);
-  border: 1px solid #333366;
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.8);
+  border: 1px solid hsl(var(--tf-info-hs) var(--tf-l-30));
   border-radius: 8px;
   padding: 15px;
 }
@@ -136,7 +136,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid #444466;
+  border-bottom: 1px solid hsl(var(--tf-info-hs) var(--tf-l-35));
   font-size: 12px;
 }
 
@@ -158,21 +158,21 @@
 .budget-canvas {
   flex: 1;
   position: relative;
-  background: radial-gradient(circle at center, rgba(0, 136, 255, 0.05) 0%, transparent 70%);
+  background: radial-gradient(circle at center, hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.05) 0%, transparent 70%);
 }
 
 /* HTML Overlays within 3D Scene */
 .budget-info-popup {
-  background: rgba(26, 26, 58, 0.95);
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.95);
   border: 1px solid var(--tf-network-blue);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 11px;
-  color: #ffffff;
+  color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   text-align: center;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 136, 255, 0.2);
+  box-shadow: 0 4px 15px hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.2);
   min-width: 80px;
 }
 
@@ -194,12 +194,12 @@
 }
 
 .jurisdiction-info {
-  background: rgba(170, 136, 255, 0.9);
+  background: hsl(var(--tf-info-hs) var(--tf-l-70) / 0.9);
   border: 1px solid var(--tf-accent-purple);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 10px;
-  color: #ffffff;
+  color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   text-align: center;
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -221,7 +221,7 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(26, 26, 58, 0.95);
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.95);
   border: 2px solid var(--success-green);
   border-radius: 15px;
   padding: 20px;
@@ -254,8 +254,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(16, 21, 62, 0.8);
-  border: 1px solid #333366;
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.8);
+  border: 1px solid hsl(var(--tf-info-hs) var(--tf-l-30));
   border-radius: 6px;
   padding: 10px 12px;
   transition: all 0.3s ease;
@@ -263,11 +263,11 @@
 
 .recommendation-item:hover {
   border-color: var(--success-green);
-  background: rgba(0, 255, 136, 0.1);
+  background: hsl(var(--tf-success-hs) var(--tf-l-50) / 0.1);
 }
 
 .recommendation-text {
-  color: #ffffff;
+  color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   font-size: 11px;
   flex: 1;
   margin-right: 10px;
@@ -275,10 +275,10 @@
 }
 
 .apply-recommendation {
-  background: linear-gradient(45deg, var(--success-green), #00cc66);
+  background: linear-gradient(45deg, var(--success-green), hsl(var(--tf-success-hs) var(--tf-l-40)));
   border: none;
   border-radius: 15px;
-  color: #000000;
+  color: hsl(var(--tf-text-primary-hs) var(--tf-l-0));
   font-weight: bold;
   padding: 6px 12px;
   cursor: pointer;
@@ -291,7 +291,7 @@
 
 .apply-recommendation:hover {
   transform: scale(1.05);
-  box-shadow: 0 3px 15px rgba(0, 255, 136, 0.4);
+  box-shadow: 0 3px 15px hsl(var(--tf-success-hs) var(--tf-l-50) / 0.4);
 }
 
 /* Performance Metrics */
@@ -302,7 +302,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(26, 26, 58, 0.95);
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.95);
   border: 2px solid var(--warning-amber);
   border-radius: 12px;
   padding: 15px;
@@ -316,8 +316,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(16, 21, 62, 0.8);
-  border: 1px solid #333366;
+  background: hsl(var(--tf-info-hs) var(--tf-l-15) / 0.8);
+  border: 1px solid hsl(var(--tf-info-hs) var(--tf-l-30));
   border-radius: 8px;
   padding: 10px;
   text-align: center;
@@ -355,15 +355,15 @@
 
 @keyframes quantumGlow {
   0% {
-    box-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+    box-shadow: 0 0 5px hsl(var(--tf-success-hs) var(--tf-l-50) / 0.3);
   }
   50% {
     box-shadow:
-      0 0 20px rgba(0, 255, 136, 0.6),
-      0 0 30px rgba(0, 255, 136, 0.3);
+      0 0 20px hsl(var(--tf-success-hs) var(--tf-l-50) / 0.6),
+      0 0 30px hsl(var(--tf-success-hs) var(--tf-l-50) / 0.3);
   }
   100% {
-    box-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+    box-shadow: 0 0 5px hsl(var(--tf-success-hs) var(--tf-l-50) / 0.3);
   }
 }
 
@@ -509,12 +509,12 @@
 /* Dark mode enhancements */
 @media (prefers-color-scheme: dark) {
   .budget-visualization-3d {
-    background: linear-gradient(135deg, #050510 0%, #0f0f1f 50%, #0b1628 100%);
+    background: linear-gradient(135deg, hsl(var(--tf-surface-dark-hs) var(--tf-l-5)) 0%, hsl(var(--tf-surface-dark-hs) 9%) 50%, hsl(var(--tf-surface-dark-hs) 10%) 100%);
   }
 
   .budget-info-popup,
   .jurisdiction-info {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 20px hsl(var(--tf-text-primary-hs) var(--tf-l-0) / 0.5);
   }
 }
 
@@ -524,7 +524,7 @@
   .ai-recommendations,
   .performance-metrics {
     border-width: 3px;
-    background: rgba(0, 0, 0, 0.9);
+    background: hsl(var(--tf-text-primary-hs) var(--tf-l-0) / 0.9);
   }
 
   .view-buttons button,
