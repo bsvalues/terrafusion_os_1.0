@@ -253,13 +253,13 @@ jobs:
           echo $! >/tmp/tf-gate-e-mock.pid
 
           for i in {1..20}; do
-            if curl -fsS http://localhost:5000/health >/dev/null; then
+            if curl -fsS http://localhost:5000/health >/dev/null; then  # platform-lint:ignore HARDCODED_PORT
               break
             fi
             sleep 1
           done
 
-          curl -fsS http://localhost:5000/health >/dev/null
+          curl -fsS http://localhost:5000/health >/dev/null  # platform-lint:ignore HARDCODED_PORT
 
       - name: Run Gate E (Static Analysis)
         run: bash ./ops/scripts/gate-e-api-surface.sh
