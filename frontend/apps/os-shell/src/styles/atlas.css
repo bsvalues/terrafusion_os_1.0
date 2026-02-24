@@ -28,8 +28,8 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  border: 2px solid rgba(0, 255, 255, 0.3);
-  background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 128, 255, 0.05));
+  border: 2px solid color-mix(in srgb, var(--tf-quantum-cyan) 30%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tf-quantum-cyan) 10%, transparent), color-mix(in srgb, var(--tf-network-blue) 5%, transparent));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   cursor: pointer;
@@ -42,8 +42,8 @@
 
 .atlas-orb:hover {
   transform: scale(1.1);
-  border-color: rgba(0, 255, 255, 0.5);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+  border-color: color-mix(in srgb, var(--tf-quantum-cyan) 50%, transparent);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--tf-quantum-cyan) 30%, transparent);
 }
 
 .atlas-orb-core {
@@ -62,14 +62,14 @@
   right: -2px;
   bottom: -2px;
   border-radius: 50%;
-  background: rgba(0, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--tf-quantum-cyan) 20%, transparent);
   animation: atlas-pulse 2s ease-in-out infinite;
 }
 
 .atlas-orb-icon {
   font-size: 24px;
   z-index: 2;
-  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--tf-quantum-cyan) 60%, transparent));
 }
 
 .atlas-orb-badge {
