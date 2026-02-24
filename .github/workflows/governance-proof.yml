@@ -43,7 +43,7 @@ jobs:
       - uses: actions/setup-node@v4
         if: steps.changes.outputs.governance == 'true'
         with:
-          node-version-file: '.nvmrc'
+          node-version: '20'
           cache: pnpm
 
       - name: Install
