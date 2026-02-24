@@ -1,5 +1,4 @@
 import { execFileSync } from 'node:child_process';
-import { describe, it } from 'vitest';
 
 function getRepoRoot(): string {
   const out = execFileSync('git', ['rev-parse', '--show-toplevel'], {

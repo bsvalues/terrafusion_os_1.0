@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { assertUniqueKeys } from '../../../frontend/apps/os-shell/src/utils/assertUniqueKeys';
 
 describe('assertUniqueKeys', () => {

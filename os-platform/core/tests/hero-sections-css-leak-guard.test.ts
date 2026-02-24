@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, it } from 'vitest';
 import { assertNoRawColorLeaks } from '../../../tools/ui-tokens/leak-guard';
 
 describe('HeroSections.css leak guard', () => {
