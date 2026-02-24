@@ -1,8 +1,8 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 import { fileURLToPath } from 'node:url';
+import path from 'path';
+import { defineConfig } from 'vite';
 
 // Anchor paths to config file location, not cwd (fixes dual-checkout scenarios)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,7 +27,7 @@ export default defineConfig({
       '**/.ai/**',
       '**/ULTIMATE_*/**',
       'tests/e2e/**/*.spec.ts',
-      'tests/**/*.spec.ts'
+      'tests/**/*.spec.ts',
     ],
     globals: true,
     environment: 'jsdom',
@@ -41,8 +41,8 @@ export default defineConfig({
           branches: 90,
           functions: 90,
           lines: 90,
-          statements: 90
-        }
+          statements: 90,
+        },
       },
       exclude: [
         'node_modules/',
@@ -54,8 +54,8 @@ export default defineConfig({
         '**/.next/**',
         '**/data/**',
         '**/postgres/**',
-        '**/from D/**'
-      ]
+        '**/from D/**',
+      ],
     },
     testTimeout: 10000,
     hookTimeout: 10000,
@@ -65,14 +65,14 @@ export default defineConfig({
     bail: 1,
     reporters: ['default', 'json'],
     outputFile: {
-      json: './test-results/vitest-results.json'
-    }
+      json: './test-results/vitest-results.json',
+    },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './frontend/src'),
       '@/tests': path.resolve(__dirname, './tests'),
-      '@/fixtures': path.resolve(__dirname, './tests/fixtures')
-    }
-  }
+      '@/fixtures': path.resolve(__dirname, './tests/fixtures'),
+    },
+  },
 });
