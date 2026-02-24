@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { Pact } from '@pact-foundation/pact';
-import fetch from 'node-fetch';
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 
 const provider = new Pact({

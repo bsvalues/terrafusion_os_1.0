@@ -1,0 +1,9 @@
+{
+  "contract": "ui-token-compliance.contract.json",
+  "version": "v1",
+  "ok": true,
+  "scannedFileCount": 842,
+  "violationCount": 0,
+  "violations": [],
+  "generatedAtIso": "2026-02-24T02:41:20.117Z"
+}

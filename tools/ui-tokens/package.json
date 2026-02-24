@@ -1,0 +1,14 @@
+{
+  "name": "@terrafusion/ui-tokens",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Centralized raw-color leak detection for TerraFusion UI token compliance",
+  "type": "module",
+  "main": "leak-guard.ts",
+  "scripts": {
+    "test": "vitest run --no-coverage"
+  },
+  "devDependencies": {
+    "vitest": "1.6.1"
+  }
+}
