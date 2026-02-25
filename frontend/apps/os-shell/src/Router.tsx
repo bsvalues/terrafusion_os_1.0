@@ -110,7 +110,13 @@ const Router: React.FC = () => {
                 <Route
                   path='/'
                   element={
-                    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
+                    <div
+                      style={{
+                        minHeight: '100vh',
+                        background: 'linear-gradient(135deg, hsl(var(--tf-bg)), hsl(var(--tf-surface-2)), hsl(var(--tf-surface)))',
+                        color: 'hsl(var(--tf-text))',
+                      }}
+                    >
                       <ShellHome />
                     </div>
                   }
