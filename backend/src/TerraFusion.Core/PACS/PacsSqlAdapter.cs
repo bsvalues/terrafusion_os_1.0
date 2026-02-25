@@ -727,6 +727,93 @@ namespace TerraFusion.Core.PACS
         }
 
         // ═══════════════════════════════════════════════════════════════
+        // SEARCH & STATS
+        // ═══════════════════════════════════════════════════════════════
+
+        public async Task<IReadOnlyList<PacsPropertySearchResult>> SearchPropertiesAsync(
+            string query,
+            int maxResults = 20,
+            CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            if (string.IsNullOrWhiteSpace(query))
+                return Array.Empty<PacsPropertySearchResult>();
+
+            if (maxResults < 1) maxResults = 1;
+            if (maxResults > 50) maxResults = 50;
+
+            // Sanitize for LIKE (escape SQL wildcards in user input)
+            var sanitized = query.Trim()
+                .Replace("[", "[[]")
+                .Replace("%", "[%]")
+                .Replace("_", "[_]");
+            var likePattern = $"%{sanitized}%";
+
+            try
+            {
+                await using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                // Search by geo_id, situs_addr, or owner_name via JOIN
+                var sql = $@"
+                    SELECT TOP (@MaxResults)
+                        p.prop_id   AS PropId,
+                        p.geo_id    AS GeoId,
+                        p.situs_addr AS SitusAddr,
+                        p.situs_city AS SitusCity,
+                        p.situs_zip  AS SitusZip,
+                        p.prop_type_cd AS PropTypeCd,
+                        p.assessed_val AS AssessedVal,
+                        p.market_val   AS MarketVal,
+                        o.owner_name   AS OwnerName
+                    FROM {ViewPropertyCore} p
+                    LEFT JOIN {ViewPropertyOwnership} o ON p.prop_id = o.prop_id
+                    WHERE p.geo_id      LIKE @Pattern
+                       OR p.situs_addr  LIKE @Pattern
+                       OR o.owner_name  LIKE @Pattern
+                    ORDER BY p.prop_id";
+
+                var results = await connection.QueryAsync<PacsPropertySearchResult>(
+                    sql, new { Pattern = likePattern, MaxResults = maxResults },
+                    commandTimeout: _commandTimeout);
+
+                return results.ToList();
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
+        public async Task<PacsStats> GetStatsAsync(CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            try
+            {
+                await using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync(cancellationToken);
+
+                var sql = $@"
+                    SELECT
+                        COUNT(*)          AS TotalProperties,
+                        SUM(assessed_val) AS TotalAssessedValue,
+                        SUM(market_val)   AS TotalMarketValue
+                    FROM {ViewPropertyCore}";
+
+                var stats = await connection.QueryFirstAsync<PacsStats>(
+                    sql, commandTimeout: _commandTimeout);
+
+                return stats;
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
         // PRIVATE HELPERS
         // ═══════════════════════════════════════════════════════════════
 

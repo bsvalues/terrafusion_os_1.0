@@ -66,6 +66,20 @@ namespace TerraFusion.Core.PACS
             int pageSize = 100,
             CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Searches properties by geo_id, address, or owner name (via ownership view JOIN).
+        /// Returns up to maxResults matches. Uses LIKE matching.
+        /// </summary>
+        Task<IReadOnlyList<PacsPropertySearchResult>> SearchPropertiesAsync(
+            string query,
+            int maxResults = 20,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets aggregate statistics from the PACS property core view.
+        /// </summary>
+        Task<PacsStats> GetStatsAsync(CancellationToken cancellationToken = default);
+
         // ═══════════════════════════════════════════════════════════════
         // OWNERSHIP QUERIES (via vw_TerraFusion_Property_Ownership)
         // ═══════════════════════════════════════════════════════════════
@@ -399,5 +413,32 @@ namespace TerraFusion.Core.PACS
             PacsErrorCodes.IndexMissing => "continue",
             _ => "fail_closed"
         };
+    }
+
+    /// <summary>
+    /// Lightweight search result from PACS property search.
+    /// Combines property core data + owner name for display.
+    /// </summary>
+    public sealed record PacsPropertySearchResult
+    {
+        public int PropId { get; init; }
+        public string GeoId { get; init; } = string.Empty;
+        public string? SitusAddr { get; init; }
+        public string? SitusCity { get; init; }
+        public string? SitusZip { get; init; }
+        public string? PropTypeCd { get; init; }
+        public decimal? AssessedVal { get; init; }
+        public decimal? MarketVal { get; init; }
+        public string? OwnerName { get; init; }
+    }
+
+    /// <summary>
+    /// Aggregate statistics from the PACS property core view.
+    /// </summary>
+    public sealed record PacsStats
+    {
+        public int TotalProperties { get; init; }
+        public decimal TotalAssessedValue { get; init; }
+        public decimal TotalMarketValue { get; init; }
     }
 }

@@ -290,9 +290,84 @@ public class PacsOpsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Search properties by address, owner, or parcel ID (geo_id).
+    /// Returns up to 20 matches via LIKE search across PACS views.
+    /// </summary>
+    [HttpGet("search")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SearchProperties(
+        [FromQuery] string q = "",
+        [FromQuery] int limit = 20,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(q) || q.Trim().Length < 2)
+            return Ok(new { items = Array.Empty<object>(), query = q });
+
+        if (limit > 50) limit = 50;
+        if (limit < 1) limit = 1;
+
+        try
+        {
+            var results = await _pacsAdapter.SearchPropertiesAsync(q.Trim(), limit, cancellationToken);
+            return Ok(new
+            {
+                items = results.Select(r => new
+                {
+                    propId = r.PropId,
+                    geoId = r.GeoId,
+                    address = FormatSearchAddress(r),
+                    ownerName = r.OwnerName ?? "N/A",
+                    assessedValue = r.AssessedVal ?? 0m,
+                    marketValue = r.MarketVal ?? 0m,
+                    propertyType = r.PropTypeCd ?? "Unknown",
+                }),
+                query = q.Trim(),
+                count = results.Count,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching PACS properties for query '{Query}'", q);
+            return StatusCode(503, new { error = "PACS search failed", details = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get aggregate PACS statistics (total properties, values).
+    /// </summary>
+    [HttpGet("stats")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var stats = await _pacsAdapter.GetStatsAsync(cancellationToken);
+            return Ok(new
+            {
+                totalProperties = stats.TotalProperties,
+                totalAssessedValue = stats.TotalAssessedValue,
+                totalMarketValue = stats.TotalMarketValue,
+                source = "pacs_oltp",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting PACS stats");
+            return StatusCode(503, new { error = "PACS stats failed", details = ex.Message });
+        }
+    }
+
     private static string FormatAddress(PacsPropertyCore p)
     {
         var parts = new[] { p.SitusAddr, p.SitusCity, "WA", p.SitusZip }
+            .Where(s => !string.IsNullOrWhiteSpace(s));
+        return string.Join(", ", parts);
+    }
+
+    private static string FormatSearchAddress(PacsPropertySearchResult r)
+    {
+        var parts = new[] { r.SitusAddr, r.SitusCity, "WA", r.SitusZip }
             .Where(s => !string.IsNullOrWhiteSpace(s));
         return string.Join(", ", parts);
     }
