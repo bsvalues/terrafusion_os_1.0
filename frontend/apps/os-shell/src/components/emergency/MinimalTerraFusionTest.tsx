@@ -29,9 +29,9 @@ export function MinimalTerraFusionTest() {
           left: 0,
           right: 0,
           height: '64px',
-          background: 'rgba(10, 14, 26, 0.95)',
+          background: 'hsl(var(--tf-neutral-hs) 7% / 0.95)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
+          borderBottom: '1px solid hsl(var(--tf-primary-hs) 50% / 0.2)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -107,8 +107,8 @@ export function MinimalTerraFusionTest() {
           >
             <div
               style={{
-                background: 'rgba(0, 255, 255, 0.1)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                background: 'hsl(var(--tf-primary-hs) 50% / 0.1)',
+                border: '1px solid hsl(var(--tf-primary-hs) 50% / 0.3)',
                 borderRadius: '12px',
                 padding: '24px',
                 textAlign: 'center',
@@ -121,8 +121,8 @@ export function MinimalTerraFusionTest() {
 
             <div
               style={{
-                background: 'rgba(0, 255, 255, 0.1)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                background: 'hsl(var(--tf-primary-hs) 50% / 0.1)',
+                border: '1px solid hsl(var(--tf-primary-hs) 50% / 0.3)',
                 borderRadius: '12px',
                 padding: '24px',
                 textAlign: 'center',
@@ -135,8 +135,8 @@ export function MinimalTerraFusionTest() {
 
             <div
               style={{
-                background: 'rgba(0, 255, 255, 0.1)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                background: 'hsl(var(--tf-primary-hs) 50% / 0.1)',
+                border: '1px solid hsl(var(--tf-primary-hs) 50% / 0.3)',
                 borderRadius: '12px',
                 padding: '24px',
                 textAlign: 'center',
@@ -159,8 +159,8 @@ export function MinimalTerraFusionTest() {
           width: '60px',
           height: '60px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 128, 255, 0.05))',
-          border: '2px solid rgba(0, 255, 255, 0.3)',
+          background: 'linear-gradient(135deg, hsl(var(--tf-primary-hs) 50% / 0.1), hsl(var(--tf-primary-hs) 45% / 0.05))',
+          border: '2px solid hsl(var(--tf-primary-hs) 50% / 0.3)',
           backdropFilter: 'blur(16px)',
           display: 'flex',
           alignItems: 'center',
