@@ -43,8 +43,10 @@ export interface LauncherItem {
   label: string;
   /** Short description */
   description: string;
-  /** Icon (emoji or icon name) */
-  icon: string;
+  /** Lucide icon name */
+  iconName: string;
+  /** Legacy icon field (deprecated, kept for test/backward compatibility) */
+  icon?: string;
   /** Navigation intent */
   intent: LauncherIntent;
   /** Route path (for navigation) */
@@ -72,23 +74,6 @@ export interface LauncherSection {
 // Constants
 // ============================================================================
 
-/**
- * Icon mapping for iconName → emoji.
- * TODO: Replace with Lucide icons in future.
- */
-const ICON_MAP: Record<string, string> = {
-  Hammer: '🔨',
-  Globe: '🗺️',
-  LayoutDashboard: '📊',
-  FileStack: '📁',
-  Bot: '🤖',
-  Compass: '🎮',
-  Activity: '🔍',
-  Settings: '⚙️',
-  FileText: '📄',
-  HelpCircle: '❓',
-};
-
 // ============================================================================
 // System Actions
 // ============================================================================
@@ -102,7 +87,8 @@ export const SYSTEM_ACTIONS: LauncherItem[] = [
     id: 'settings',
     label: 'Settings',
     description: 'System configuration',
-    icon: '⚙️',
+    iconName: 'Settings',
+    icon: 'Settings',
     intent: 'system',
     route: '/settings',
     keywords: ['settings', 'config', 'preferences', 'options'],
@@ -112,7 +98,8 @@ export const SYSTEM_ACTIONS: LauncherItem[] = [
     id: 'docs',
     label: 'Documentation',
     description: 'Help & guides',
-    icon: '📄',
+    iconName: 'FileText',
+    icon: 'FileText',
     intent: 'system',
     route: '/docs',
     keywords: ['documentation', 'help', 'guides', 'docs'],
@@ -150,7 +137,8 @@ export function getLauncherItems(): LauncherItem[] {
       id: suite.id,
       label: suite.displayName,
       description: suite.description,
-      icon: ICON_MAP[suite.iconName] || '📦',
+      iconName: suite.iconName || 'Activity',
+      icon: suite.iconName || 'Activity',
       intent,
       route,
       keywords: [
@@ -169,7 +157,8 @@ export function getLauncherItems(): LauncherItem[] {
     label: feature.displayName,
     // Description truth: prefer homeMeta.description when available (Slice 13)
     description: feature.homeMeta?.description ?? feature.description,
-    icon: ICON_MAP[feature.iconName] || '📦',
+    iconName: feature.iconName || 'Activity',
+    icon: feature.iconName || 'Activity',
     intent: 'standalone',
     route: feature.route!,
     keywords: [

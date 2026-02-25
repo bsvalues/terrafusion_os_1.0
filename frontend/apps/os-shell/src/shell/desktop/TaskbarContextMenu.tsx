@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { Maximize2, Minimize2, Minus, Pin, X } from 'lucide-react';
 import { useDesktopStore, type DesktopWindow } from '../../stores/desktopStore';
 import { ContextMenu, type ContextMenuItem } from './ContextMenu';
 
@@ -65,14 +66,14 @@ export const TaskbarContextMenu: React.FC<TaskbarContextMenuProps> = ({
     {
       id: 'restore',
       label: 'Restore',
-      icon: '🗖',
+      icon: <Minimize2 className='h-3.5 w-3.5' />,
       disabled: !isMaximized && !isMinimized,
       onClick: () => restoreWindow(window.id),
     },
     {
       id: 'minimize',
       label: 'Minimize',
-      icon: '🗕',
+      icon: <Minus className='h-3.5 w-3.5' />,
       disabled: isMinimized,
       onClick: () => minimizeWindow(window.id),
       shortcut: 'Win+↓',
@@ -80,7 +81,7 @@ export const TaskbarContextMenu: React.FC<TaskbarContextMenuProps> = ({
     {
       id: 'maximize',
       label: 'Maximize',
-      icon: '🗖',
+      icon: <Maximize2 className='h-3.5 w-3.5' />,
       disabled: isMaximized,
       onClick: () => maximizeWindow(window.id),
       shortcut: 'Win+↑',
@@ -93,7 +94,7 @@ export const TaskbarContextMenu: React.FC<TaskbarContextMenuProps> = ({
     {
       id: 'close',
       label: 'Close Window',
-      icon: '✖',
+      icon: <X className='h-3.5 w-3.5' />,
       onClick: () => closeWindow(window.id),
       shortcut: 'Alt+F4',
     },
@@ -105,7 +106,7 @@ export const TaskbarContextMenu: React.FC<TaskbarContextMenuProps> = ({
     {
       id: 'pin-to-start',
       label: 'Pin to Start',
-      icon: '📌',
+      icon: <Pin className='h-3.5 w-3.5' />,
       disabled: true, // Future feature - requires start menu integration
       onClick: () => {
         // TODO: Add to start menu pinned items
