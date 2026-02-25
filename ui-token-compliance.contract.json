@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 875,
-  "violationCount": 321,
+  "violationCount": 299,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -525,83 +525,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 32,
-      "column": 24,
-      "excerpt": "rgba(10, 14, 26, 0.95)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 34,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 110,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 111,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 124,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 125,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 138,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 139,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 162,
-      "column": 48,
-      "excerpt": "rgba(0, 255, 255, 0.1), rgba(0, 128, 255, 0.05))',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 162,
-      "column": 72,
-      "excerpt": "rgba(0, 128, 255, 0.05))',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\MinimalTerraFusionTest.tsx",
-      "line": 163,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\TerraFusionEmergencyTest.tsx",
       "line": 43,
       "column": 33,
@@ -760,83 +683,6 @@
       "line": 102,
       "column": 33,
       "excerpt": "rgba(0,0,0,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 215,
-      "column": 21,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 298,
-      "column": 66,
-      "excerpt": "rgba(0,255,170,0.3)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 336,
-      "column": 33,
-      "excerpt": "rgba(255,255,255,0.6)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 348,
-      "column": 29,
-      "excerpt": "rgba(255,255,255,0.8)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 397,
-      "column": 59,
-      "excerpt": "rgba(0,255,238,0.1)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 433,
-      "column": 30,
-      "excerpt": "rgba(0,0,0,0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 435,
-      "column": 36,
-      "excerpt": "rgba(0,255,238,0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 451,
-      "column": 54,
-      "excerpt": "rgba(0,255,238,0.2)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 487,
-      "column": 31,
-      "excerpt": "rgba(255,255,255,0.6)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 499,
-      "column": 27,
-      "excerpt": "rgba(255,255,255,0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Marketplace.tsx",
-      "line": 582,
-      "column": 27,
-      "excerpt": "rgba(255,255,255,0.7)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2253,5 +2099,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};"
     }
   ],
-  "generatedAtIso": "2026-02-25T17:42:12.457Z"
+  "generatedAtIso": "2026-02-25T17:59:48.980Z"
 }
