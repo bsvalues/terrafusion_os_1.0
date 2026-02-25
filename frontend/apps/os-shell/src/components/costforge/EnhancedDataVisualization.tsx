@@ -441,8 +441,8 @@ export const EnhancedDataVisualization: React.FC = () => {
                         <Tooltip
                           formatter={(value, name) => [`$${Number(value).toFixed(0)}`, 'Cost/SqFt']}
                           contentStyle={{
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            border: '1px solid rgba(0, 255, 238, 0.3)',
+                            backgroundColor: 'hsl(var(--tf-surface-dark-hs) 11% / 0.9)',
+                            border: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
                             borderRadius: '8px',
                             color: 'var(--tf-text-primary)',
                           }}
@@ -505,8 +505,8 @@ export const EnhancedDataVisualization: React.FC = () => {
                               : 'Confidence',
                         ]}
                         contentStyle={{
-                          backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                          border: '1px solid rgba(0, 255, 238, 0.3)',
+                          backgroundColor: 'hsl(var(--tf-surface-dark-hs) 11% / 0.9)',
+                          border: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
                           borderRadius: '8px',
                           color: 'var(--tf-text-primary)',
                         }}
@@ -575,8 +575,8 @@ export const EnhancedDataVisualization: React.FC = () => {
                           'Cost per SqFt',
                         ]}
                         contentStyle={{
-                          backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                          border: '1px solid rgba(0, 255, 238, 0.3)',
+                          backgroundColor: 'hsl(var(--tf-surface-dark-hs) 11% / 0.9)',
+                          border: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
                           borderRadius: '8px',
                           color: 'var(--tf-text-primary)',
                         }}
@@ -677,8 +677,8 @@ export const EnhancedDataVisualization: React.FC = () => {
                             'Amount',
                           ]}
                           contentStyle={{
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            border: '1px solid rgba(0, 255, 238, 0.3)',
+                            backgroundColor: 'hsl(var(--tf-surface-dark-hs) 11% / 0.9)',
+                            border: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
                             borderRadius: '8px',
                             color: 'var(--tf-text-primary)',
                           }}
@@ -788,8 +788,8 @@ export const EnhancedDataVisualization: React.FC = () => {
                       <YAxis stroke='var(--gray-400)' />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                          border: '1px solid rgba(0, 255, 238, 0.3)',
+                          backgroundColor: 'hsl(var(--tf-surface-dark-hs) 11% / 0.9)',
+                          border: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
                           borderRadius: '8px',
                           color: 'var(--tf-text-primary)',
                         }}
