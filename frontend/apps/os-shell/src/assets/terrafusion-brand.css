@@ -3,24 +3,24 @@
 /* Brand Color Palette */
 :root {
   /* Primary TerraFusion Colors */
-  --tf-primary: #00ced1; /* Cyan gradient start */
-  --tf-secondary: #008b8b; /* Teal gradient end */
-  --tf-dark: #0a1628; /* Background navy */
+  --tf-primary: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50)); /* Cyan gradient start */
+  --tf-secondary: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-30)); /* Teal gradient end */
+  --tf-dark: hsl(var(--tf-surface-dark-hs) var(--tf-l-10)); /* Background navy */
   --tf-accent: var(--tf-quantum-cyan); /* Glow/highlight */
-  --tf-trust-blue: #0077be; /* Government trust */
-  --tf-success-green: #4caf50; /* Operational status */
-  --tf-transcend-cyan: #40e0d0; /* Transcendence theme */
+  --tf-trust-blue: hsl(var(--tf-network-blue-hs) var(--tf-l-40)); /* Government trust */
+  --tf-success-green: hsl(var(--tf-success-hs) var(--tf-l-50)); /* Operational status */
+  --tf-transcend-cyan: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60)); /* Transcendence theme */
 
   /* Metallic Gradients */
-  --tf-metallic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --tf-holographic: linear-gradient(45deg, #00ced1, #48cae4, #0077be, #40e0d0);
-  --tf-chrome: linear-gradient(135deg, #c0c0c0 0%, #808080 50%, #c0c0c0 100%);
+  --tf-metallic: linear-gradient(135deg, hsl(var(--tf-network-blue-hs) var(--tf-l-60)) 0%, hsl(var(--tf-info-hs) var(--tf-l-45)) 100%);
+  --tf-holographic: linear-gradient(45deg, hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50)), hsl(var(--tf-network-blue-hs) var(--tf-l-65)), hsl(var(--tf-network-blue-hs) var(--tf-l-40)), hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60)));
+  --tf-chrome: linear-gradient(135deg, hsl(var(--tf-text-secondary-hs) var(--tf-l-80)) 0%, hsl(var(--tf-text-secondary-hs) var(--tf-l-50)) 50%, hsl(var(--tf-text-secondary-hs) var(--tf-l-80)) 100%);
 
   /* Neumorphic Effects */
   --tf-emboss-light:
-    inset -2px -2px 4px rgba(255, 255, 255, 0.1), inset 2px 2px 4px rgba(0, 0, 0, 0.3);
+    inset -2px -2px 4px hsl(var(--tf-text-primary-hs) var(--tf-l-100) / 0.1), inset 2px 2px 4px hsl(var(--tf-text-primary-hs) var(--tf-l-0) / 0.3);
   --tf-emboss-dark:
-    inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.05);
+    inset 2px 2px 4px hsl(var(--tf-text-primary-hs) var(--tf-l-0) / 0.5), inset -2px -2px 4px hsl(var(--tf-text-primary-hs) var(--tf-l-100) / 0.05);
 }
 
 /* TerraFusion Logo Components */
@@ -31,7 +31,7 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(64, 224, 208, 0.5);
+  text-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60) / 0.5);
 }
 
 .tf-logo-embossed {
@@ -50,7 +50,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(45deg, transparent, hsl(var(--tf-text-primary-hs) var(--tf-l-100) / 0.1), transparent);
   transform: rotate(45deg);
   animation: shine 3s infinite;
 }
@@ -79,8 +79,8 @@
   justify-content: center;
   position: relative;
   box-shadow:
-    0 0 20px rgba(0, 206, 209, 0.3),
-    inset 0 0 20px rgba(0, 206, 209, 0.1);
+    0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3),
+    inset 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1);
 }
 
 .tf-seal-badge::before {
@@ -111,27 +111,27 @@
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 4px 12px hsl(var(--tf-text-primary-hs) var(--tf-l-0) / 0.3),
+    inset 0 1px 0 hsl(var(--tf-text-primary-hs) var(--tf-l-100) / 0.1);
   transition: all 0.3s ease;
 }
 
 .tf-square-badge:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 8px 25px rgba(0, 206, 209, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 8px 25px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4),
+    inset 0 1px 0 hsl(var(--tf-text-primary-hs) var(--tf-l-100) / 0.2);
 }
 
 /* Browser Interface Design */
 .tf-browser-mockup {
-  background: #2d3748;
+  background: hsl(var(--tf-bg-surface-hs) var(--tf-l-25));
   border-radius: 8px 8px 0 0;
   padding: 8px 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 10px hsl(var(--tf-text-primary-hs) var(--tf-l-0) / 0.3);
 }
 
 .tf-browser-dots {
@@ -146,13 +146,13 @@
 }
 
 .tf-browser-dot.close {
-  background: #ff5f56;
+  background: hsl(var(--tf-error-hs) var(--tf-l-60));
 }
 .tf-browser-dot.minimize {
-  background: #ffbd2e;
+  background: hsl(var(--tf-warning-hs) var(--tf-l-50));
 }
 .tf-browser-dot.maximize {
-  background: #27ca3f;
+  background: hsl(var(--tf-success-hs) var(--tf-l-50));
 }
 
 /* Meme-Ready Templates */
@@ -185,11 +185,11 @@
 
 @keyframes tokenGlow {
   from {
-    box-shadow: 0 0 20px rgba(64, 224, 208, 0.3);
+    box-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60) / 0.3);
     filter: brightness(1);
   }
   to {
-    box-shadow: 0 0 40px rgba(64, 224, 208, 0.6);
+    box-shadow: 0 0 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60) / 0.6);
     filter: brightness(1.1);
   }
 }
@@ -229,7 +229,7 @@
 
 .tf-glitch::before {
   animation: glitch-1 0.5s infinite;
-  color: #ff0000;
+  color: hsl(var(--tf-error-hs) var(--tf-l-50));
   z-index: -1;
 }
 
@@ -332,8 +332,8 @@
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   :root {
-    --tf-primary: #ffffff;
-    --tf-secondary: #ffffff;
-    --tf-accent: #ffffff;
+    --tf-primary: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
+    --tf-secondary: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
+    --tf-accent: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   }
 }
