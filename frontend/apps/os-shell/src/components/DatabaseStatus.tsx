@@ -103,7 +103,7 @@ const DatabaseStatus: React.FC = () => {
   return (
     <div
       style={{
-        background: 'rgba(255, 255, 255, 0.05)',
+        background: 'hsl(var(--tf-text-primary-hs) 100% / 0.05)',
         border: `1px solid ${status.isConnected ? 'var(--tf-accent-success)' : 'var(--error-red)'}`,
         borderRadius: '12px',
         padding: '1.5rem',
@@ -122,7 +122,9 @@ const DatabaseStatus: React.FC = () => {
         </h3>
         <div
           style={{
-            background: status.isConnected ? 'rgba(0, 255, 170, 0.2)' : 'rgba(255, 68, 68, 0.2)',
+            background: status.isConnected
+              ? 'color-mix(in srgb, var(--tf-accent-success) 20%, transparent)'
+              : 'color-mix(in srgb, var(--error-red) 20%, transparent)',
             color: status.isConnected ? 'var(--tf-accent-success)' : 'var(--error-red)',
             padding: '0.3rem 0.8rem',
             borderRadius: '15px',
@@ -150,7 +152,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: 'rgba(255, 255, 255, 0.7)',
+              color: 'hsl(var(--tf-text-primary-hs) 100% / 0.7)',
             }}
           >
             Total Modules
@@ -171,7 +173,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: 'rgba(255, 255, 255, 0.7)',
+              color: 'hsl(var(--tf-text-primary-hs) 100% / 0.7)',
             }}
           >
             Active Modules
@@ -192,7 +194,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: 'rgba(255, 255, 255, 0.7)',
+              color: 'hsl(var(--tf-text-primary-hs) 100% / 0.7)',
             }}
           >
             Harris Parcels
@@ -213,7 +215,7 @@ const DatabaseStatus: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              color: 'rgba(255, 255, 255, 0.7)',
+              color: 'hsl(var(--tf-text-primary-hs) 100% / 0.7)',
             }}
           >
             Response Time
@@ -245,7 +247,7 @@ const DatabaseStatus: React.FC = () => {
         <div
           style={{
             fontSize: '0.8rem',
-            color: 'rgba(255, 255, 255, 0.7)',
+            color: 'hsl(var(--tf-text-primary-hs) 100% / 0.7)',
           }}
         >
           Last sync: {new Date(status.harrisSync.lastSync).toLocaleString()}
