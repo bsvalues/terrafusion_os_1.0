@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 875,
-  "violationCount": 386,
+  "violationCount": 373,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1742,62 +1742,6 @@
       "excerpt": "rgba(255, 180, 0, 0.6)'; // Amber warning"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 87,
-      "column": 34,
-      "excerpt": "#8B5CF6'] { /* tf-allow-raw-color -- data-viz selector */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 90,
-      "column": 34,
-      "excerpt": "#F59E0B'] { /* tf-allow-raw-color -- data-viz selector */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 93,
-      "column": 34,
-      "excerpt": "#EF4444'] { /* tf-allow-raw-color -- data-viz selector */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 96,
-      "column": 34,
-      "excerpt": "#10B981'] { /* tf-allow-raw-color -- data-viz selector */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 99,
-      "column": 34,
-      "excerpt": "#F97316'] { /* tf-allow-raw-color -- data-viz selector */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 100,
-      "column": 21,
-      "excerpt": "#f97316; /* tf-allow-raw-color -- data-viz, no semantic token */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 102,
-      "column": 34,
-      "excerpt": "#6366F1'] { /* tf-allow-raw-color -- data-viz selector */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\design\\terraforge-styles.css",
-      "line": 103,
-      "column": 21,
-      "excerpt": "#6366f1; /* tf-allow-raw-color -- data-viz, no semantic token */"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\design\\TerraForgeComponents.tsx",
       "line": 261,
@@ -2533,41 +2477,6 @@
       "excerpt": "#00aa00; /* tf-allow-raw-color -- high-contrast a11y intentional */"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 21,
-      "column": 22,
-      "excerpt": "#0077cc; /* tf-allow-raw-color -- theme source definition */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 22,
-      "column": 16,
-      "excerpt": "#00ffaa; /* tf-allow-raw-color -- theme source definition, circular */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 23,
-      "column": 21,
-      "excerpt": "#00cc88; /* tf-allow-raw-color -- theme source definition */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 33,
-      "column": 17,
-      "excerpt": "#e0f7ff; /* tf-allow-raw-color -- theme source definition */"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-theme.css",
-      "line": 408,
-      "column": 18,
-      "excerpt": "#00aa00; /* tf-allow-raw-color -- high-contrast a11y */"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\styles\\terrafusion-tokens.css",
       "line": 113,
@@ -2708,5 +2617,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};"
     }
   ],
-  "generatedAtIso": "2026-02-25T05:21:35.335Z"
+  "generatedAtIso": "2026-02-25T17:05:38.096Z"
 }
