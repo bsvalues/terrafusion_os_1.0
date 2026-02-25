@@ -11,7 +11,11 @@
 /* Navigation header effects */
 .quantum-nav-header {
   position: relative;
-  background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 128, 255, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.05) 0%,
+    hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.05) 100%
+  );
 }
 
 .quantum-nav-header::before {
@@ -21,7 +25,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.1) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1) 50%,
+    transparent 100%
+  );
   animation: quantum-header-sweep 4s linear infinite;
   pointer-events: none;
 }
@@ -39,7 +48,12 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.2) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2) 50%,
+    transparent 100%
+  );
   transition: left 0.5s ease;
   pointer-events: none;
 }
@@ -51,11 +65,11 @@
 /* Active item glow effect */
 .quantum-nav-item.terra-glow {
   position: relative;
-  background: rgba(0, 255, 255, 0.1);
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1);
+  border: 1px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
   box-shadow:
-    0 0 20px rgba(0, 255, 255, 0.2),
-    inset 0 0 20px rgba(0, 255, 255, 0.1);
+    0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2),
+    inset 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1);
 }
 
 .quantum-nav-item.terra-glow::after {
@@ -67,9 +81,9 @@
   bottom: 0;
   background: linear-gradient(
     45deg,
-    rgba(0, 255, 255, 0.1) 0%,
+    hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1) 0%,
     transparent 50%,
-    rgba(0, 255, 255, 0.1) 100%
+    hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1) 100%
   );
   animation: quantum-active-pulse 2s ease-in-out infinite;
   pointer-events: none;
@@ -120,25 +134,29 @@
 }
 
 .quantum-nav-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 255, 0.3);
+  background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
   border-radius: 2px;
 }
 
 .quantum-nav-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 255, 0.5);
+  background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.5);
 }
 
 /* Navigation footer status indicator */
 .quantum-nav-footer {
   position: relative;
-  background: linear-gradient(135deg, rgba(0, 255, 255, 0.02) 0%, rgba(0, 128, 255, 0.02) 100%);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.02) 0%,
+    hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.02) 100%
+  );
 }
 
 /* Breadcrumb styling */
 .quantum-breadcrumb {
   padding: 1rem;
-  background: rgba(30, 41, 59, 0.3);
-  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  background: hsl(var(--tf-bg-surface-hs) var(--tf-l-20) / 0.3);
+  border-bottom: 1px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
@@ -205,11 +223,11 @@
 /* High contrast mode */
 @media (prefers-contrast: high) {
   .quantum-nav-item {
-    border: 1px solid rgba(0, 255, 255, 0.5);
+    border: 1px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.5);
   }
 
   .quantum-nav-item:hover {
-    background: rgba(0, 255, 255, 0.2);
+    background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
   }
 
   .quantum-nav-item.terra-glow {
