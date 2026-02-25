@@ -2,10 +2,15 @@
   box-sizing: border-box;
 }
 
+:root {
+  --tf-index-surface-dark-hs: 222 47%;
+  --tf-index-slate-200-hs: 213 27%;
+}
+
 body {
   margin: 0;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: hsl(var(--tf-index-surface-dark-hs) 11%);
+  color: hsl(var(--tf-index-slate-200-hs) 91%);
 }
 
 #root {
