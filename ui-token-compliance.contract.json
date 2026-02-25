@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 875,
-  "violationCount": 399,
+  "violationCount": 386,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -2008,97 +2008,6 @@
       "excerpt": "rgba(255, 255, 255, 0.5)' }}>"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 3,
-      "column": 21,
-      "excerpt": "#e0e0e0;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 6,
-      "column": 15,
-      "excerpt": "#f8f9fa;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 18,
-      "column": 10,
-      "excerpt": "#2c3e50;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 24,
-      "column": 10,
-      "excerpt": "#7f8c8d;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 34,
-      "column": 10,
-      "excerpt": "#555;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 60,
-      "column": 15,
-      "excerpt": "#3498db;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 70,
-      "column": 15,
-      "excerpt": "#2980b9;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 74,
-      "column": 15,
-      "excerpt": "#95a5a6;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 79,
-      "column": 15,
-      "excerpt": "#ecf0f1;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 80,
-      "column": 21,
-      "excerpt": "#bdc3c7;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 88,
-      "column": 10,
-      "excerpt": "#2c3e50;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 92,
-      "column": 15,
-      "excerpt": "#34495e;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\plugins\\gis-core\\index.module.css",
-      "line": 113,
-      "column": 21,
-      "excerpt": "#d5dbdb;"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\providers\\TerraFusionExcellenceProvider.tsx",
       "line": 65,
@@ -2799,5 +2708,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};"
     }
   ],
-  "generatedAtIso": "2026-02-25T04:45:32.264Z"
+  "generatedAtIso": "2026-02-25T05:21:35.335Z"
 }
