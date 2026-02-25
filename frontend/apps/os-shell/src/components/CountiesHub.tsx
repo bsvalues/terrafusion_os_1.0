@@ -184,7 +184,7 @@ const CountiesHub: React.FC = () => {
         </h1>
         <p
           style={{
-            color: 'rgba(255,255,255,0.7)',
+            color: 'hsl(var(--tf-text) / 0.7)',
             fontSize: '1.1rem',
           }}
         >
@@ -227,7 +227,7 @@ const CountiesHub: React.FC = () => {
             </div>
             <div
               style={{
-                color: 'rgba(255,255,255,0.6)',
+                color: 'hsl(var(--tf-text) / 0.6)',
                 fontSize: '0.9rem',
                 marginTop: '0.5rem',
               }}
@@ -265,7 +265,7 @@ const CountiesHub: React.FC = () => {
               background:
                 filter === filterOption.key
                   ? 'linear-gradient(135deg, var(--tf-network-blue), var(--tf-transcend-highlight))'
-                  : 'rgba(0,153,255,0.1)',
+                  : 'hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.1)',
               color: filter === filterOption.key ? 'var(--tf-void-black)' : 'var(--tf-transcend-highlight)',
               transform: filter === filterOption.key ? 'scale(1.05)' : 'scale(1)',
             }}
@@ -290,9 +290,9 @@ const CountiesHub: React.FC = () => {
           <div
             key={county.id}
             style={{
-              background: 'rgba(0,0,0,0.6)',
+              background: 'hsl(var(--tf-tokens-black-hs) 0% / 0.6)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(0,255,238,0.2)',
+              border: '1px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2)',
               borderRadius: '20px',
               padding: '1.5rem',
               transition: 'all 0.3s ease',
@@ -308,7 +308,7 @@ const CountiesHub: React.FC = () => {
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
               e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.borderColor = 'rgba(0,255,238,0.2)';
+              e.currentTarget.style.borderColor = 'hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2)';
             }}
           >
             <div
@@ -336,12 +336,12 @@ const CountiesHub: React.FC = () => {
               <div
                 style={{
                   background:
-                    county.status === 'ready' ? 'rgba(0,255,136,0.1)' : 'rgba(255,170,0,0.1)',
+                    county.status === 'ready' ? 'hsl(var(--tf-success-hs) var(--tf-l-50) / 0.1)' : 'hsl(var(--tf-warning-hs) var(--tf-l-50) / 0.1)',
                   color: county.status === 'ready' ? 'var(--success-green)' : 'var(--warning-amber)',
                   border:
                     county.status === 'ready'
-                      ? '1px solid rgba(0,255,136,0.3)'
-                      : '1px solid rgba(255,170,0,0.3)',
+                      ? '1px solid hsl(var(--tf-success-hs) var(--tf-l-50) / 0.3)'
+                      : '1px solid hsl(var(--tf-warning-hs) var(--tf-l-50) / 0.3)',
                   animation:
                     county.status === 'analyzing' ? 'pulse 2s ease-in-out infinite' : 'none',
                 }}
@@ -374,7 +374,7 @@ const CountiesHub: React.FC = () => {
                 <div key={index} className='flex justify-between'>
                   <span
                     style={{
-                      color: 'rgba(255,255,255,0.6)',
+                      color: 'hsl(var(--tf-text) / 0.6)',
                     }}
                   >
                     {info.label}
@@ -392,7 +392,7 @@ const CountiesHub: React.FC = () => {
                   style={{
                     display: 'inline-block',
                     padding: '0.2rem 0.5rem',
-                    background: 'rgba(0,255,238,0.2)',
+                    background: 'hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2)',
                     borderRadius: '10px',
                     fontSize: '0.75rem',
                     color: 'var(--tf-transcend-highlight)',
@@ -424,7 +424,7 @@ const CountiesHub: React.FC = () => {
                 onClick={() => initiateMigration(county.id)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,255,238,0.4)';
+                  e.currentTarget.style.boxShadow = '0 10px 30px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'scale(1)';
@@ -437,7 +437,7 @@ const CountiesHub: React.FC = () => {
               <button
                 onClick={() => viewDetails(county.id)}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(0,255,238,0.1)';
+                  e.currentTarget.style.background = 'hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -505,7 +505,7 @@ const CountiesHub: React.FC = () => {
               </div>
               <div
                 style={{
-                  color: 'rgba(255,255,255,0.7)',
+                  color: 'hsl(var(--tf-text) / 0.7)',
                   fontSize: '0.9rem',
                 }}
               >
@@ -526,3 +526,4 @@ const CountiesHub: React.FC = () => {
   );
 };
 export default CountiesHub;
+
