@@ -30,9 +30,9 @@ export function QuantumDesktopShell() {
           left: 0,
           right: 0,
           height: '64px',
-          background: 'rgba(10, 14, 26, 0.95)',
+          background: 'hsl(var(--tf-surface-dark-hs) 7% / 0.95)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(0, 255, 255, 0.2)',
+          borderBottom: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.2)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -178,11 +178,11 @@ export function QuantumDesktopShell() {
               key={index}
               onClick={() => setCurrentModule(module.name)}
               style={{
-                background: 'rgba(0, 255, 255, 0.05)',
+                background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.05)',
                 border:
                   currentModule === module.name
-                    ? '2px solid rgba(0, 255, 255, 0.5)'
-                    : '1px solid rgba(0, 255, 255, 0.2)',
+                    ? '2px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)'
+                    : '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.2)',
                 borderRadius: '16px',
                 padding: '24px',
                 cursor: 'pointer',
@@ -191,7 +191,8 @@ export function QuantumDesktopShell() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 255, 255, 0.2)';
+                e.currentTarget.style.boxShadow =
+                  '0 10px 30px hsl(var(--tf-transcend-cyan-hs) 50% / 0.2)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
@@ -239,8 +240,8 @@ export function QuantumDesktopShell() {
               bottom: '24px',
               left: '50%',
               transform: 'translateX(-50%)',
-              background: 'rgba(0, 255, 255, 0.1)',
-              border: '1px solid rgba(0, 255, 255, 0.3)',
+              background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.1)',
+              border: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
               borderRadius: '12px',
               padding: '16px 24px',
               backdropFilter: 'blur(16px)',
