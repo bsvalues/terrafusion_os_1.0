@@ -114,13 +114,13 @@ export function TerraFusionBrandEnhancementSystem({
     root.style.setProperty('--space-golden', '1.618rem');
 
     // Shadow System
-    root.style.setProperty('--shadow-glow', '0 0 40px rgba(0, 255, 255, 0.4)');
-    root.style.setProperty('--shadow-quantum', '0 0 20px rgba(0, 255, 255, 0.3)');
-    root.style.setProperty('--shadow-elevation', '0 10px 30px rgba(0, 0, 0, 0.3)');
+    root.style.setProperty('--shadow-glow', '0 0 40px color-mix(in srgb, var(--tf-transcend-cyan) 40%, transparent)');
+    root.style.setProperty('--shadow-quantum', '0 0 20px color-mix(in srgb, var(--tf-transcend-cyan) 30%, transparent)');
+    root.style.setProperty('--shadow-elevation', '0 10px 30px color-mix(in srgb, hsl(var(--tf-text-primary-hs) 0%) 30%, transparent)');
 
     // Glassmorphic System
-    root.style.setProperty('--glass-bg', 'rgba(30, 41, 59, 0.3)');
-    root.style.setProperty('--glass-border', 'rgba(0, 255, 255, 0.2)');
+    root.style.setProperty('--glass-bg', 'color-mix(in srgb, hsl(var(--tf-surface-dark-hs) 17%) 30%, transparent)');
+    root.style.setProperty('--glass-border', 'color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent)');
     root.style.setProperty('--glass-blur', 'blur(10px)');
 
     // Border Radius System
@@ -145,12 +145,12 @@ export function TerraFusionBrandEnhancementSystem({
         0%, 100% {
           opacity: 1;
           transform: scale(1);
-          box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+          box-shadow: 0 0 20px color-mix(in srgb, var(--tf-transcend-cyan) 30%, transparent);
         }
         50% {
           opacity: 0.8;
           transform: scale(1.05);
-          box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+          box-shadow: 0 0 40px color-mix(in srgb, var(--tf-transcend-cyan) 60%, transparent);
         }
       }
 
@@ -197,7 +197,7 @@ export function TerraFusionBrandEnhancementSystem({
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent), transparent);
         animation: terraQuantumFlow 3s ease-in-out infinite;
       }
 
@@ -205,9 +205,9 @@ export function TerraFusionBrandEnhancementSystem({
         background: linear-gradient(
           90deg,
           transparent 0%,
-          rgba(0, 255, 255, 0.1) 25%,
-          rgba(0, 255, 255, 0.2) 50%,
-          rgba(0, 255, 255, 0.1) 75%,
+          color-mix(in srgb, var(--tf-transcend-cyan) 10%, transparent) 25%,
+          color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent) 50%,
+          color-mix(in srgb, var(--tf-transcend-cyan) 10%, transparent) 75%,
           transparent 100%
         );
         background-size: 200% 100%;
@@ -239,36 +239,36 @@ export function TerraFusionBrandEnhancementSystem({
         left: 0;
         right: 0;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, hsl(var(--tf-text-primary-hs) 100%) 10%, transparent), transparent);
       }
 
       .terra-glass-card {
-        background: rgba(15, 23, 42, 0.6);
+        background: color-mix(in srgb, hsl(var(--tf-surface-dark-hs) 11%) 60%, transparent);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(0, 255, 255, 0.2);
+        border: 1px solid color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent);
         border-radius: var(--radius-xl);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .terra-glass-card:hover {
-        border-color: rgba(0, 255, 255, 0.4);
+        border-color: color-mix(in srgb, var(--tf-transcend-cyan) 40%, transparent);
         box-shadow: var(--shadow-quantum);
         transform: translateY(-2px);
       }
 
       .terra-glass-button {
-        background: rgba(0, 255, 255, 0.1);
+        background: color-mix(in srgb, var(--tf-transcend-cyan) 10%, transparent);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 255, 255, 0.3);
+        border: 1px solid color-mix(in srgb, var(--tf-transcend-cyan) 30%, transparent);
         color: var(--terra-cyan);
         transition: all 0.3s ease;
       }
 
       .terra-glass-button:hover {
-        background: rgba(0, 255, 255, 0.2);
-        box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        background: color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent);
+        box-shadow: 0 0 20px color-mix(in srgb, var(--tf-transcend-cyan) 40%, transparent);
         transform: translateY(-1px);
       }
     `;
@@ -351,7 +351,7 @@ export function TerraFusionBrandEnhancementSystem({
       }
 
       .btn-secondary:hover {
-        background: rgba(0, 255, 255, 0.1);
+        background: color-mix(in srgb, var(--tf-transcend-cyan) 10%, transparent);
         box-shadow: var(--shadow-quantum);
         transform: translateY(-1px);
       }
@@ -372,8 +372,8 @@ export function TerraFusionBrandEnhancementSystem({
       .terra-input:focus {
         outline: none;
         border-color: var(--terra-cyan);
-        box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
-        background: rgba(0, 255, 255, 0.05);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--tf-transcend-cyan) 10%, transparent);
+        background: color-mix(in srgb, var(--tf-transcend-cyan) 5%, transparent);
       }
 
       /* TerraFusion Typography */
@@ -398,7 +398,7 @@ export function TerraFusionBrandEnhancementSystem({
       .terra-text {
         font-size: var(--text-base);
         line-height: 1.6;
-        color: rgba(255, 255, 255, 0.8);
+        color: color-mix(in srgb, hsl(var(--tf-text-primary-hs) 100%) 80%, transparent);
       }
 
       /* TerraFusion Status Indicators */
@@ -431,15 +431,15 @@ export function TerraFusionBrandEnhancementSystem({
       }
 
       .terra-badge-primary {
-        background: rgba(0, 255, 255, 0.2);
+        background: color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent);
         color: var(--terra-cyan);
-        border: 1px solid rgba(0, 255, 255, 0.3);
+        border: 1px solid color-mix(in srgb, var(--tf-transcend-cyan) 30%, transparent);
       }
 
       .terra-badge-success {
-        background: rgba(0, 255, 136, 0.2);
+        background: color-mix(in srgb, var(--tf-accent-success) 20%, transparent);
         color: var(--success-green);
-        border: 1px solid rgba(0, 255, 136, 0.3);
+        border: 1px solid color-mix(in srgb, var(--tf-accent-success) 30%, transparent);
       }
     `;
 
@@ -494,7 +494,7 @@ export function TerraFusionBrandEnhancementSystem({
             height: '8px',
             borderRadius: '50%',
             background: 'var(--success-green)',
-            boxShadow: '0 0 10px rgba(0, 255, 136, 0.5)',
+            boxShadow: '0 0 10px color-mix(in srgb, var(--tf-accent-success) 50%, transparent)',
           }}
           className='terra-quantum-pulse'
         />

@@ -156,9 +156,9 @@ export const ToolInvokePanel: React.FC = () => {
           max-width: 800px;
           margin: 2rem auto;
           padding: 2rem;
-          background: var(--surface-color, #ffffff);
+          background: var(--surface-color, hsl(var(--tf-text-primary-hs) 100%));
           border-radius: 8px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px color-mix(in srgb, hsl(var(--tf-text-primary-hs) 0%) 10%, transparent);
         }
 
         .panel-header {
@@ -167,32 +167,32 @@ export const ToolInvokePanel: React.FC = () => {
 
         .panel-header h2 {
           margin: 0 0 0.5rem 0;
-          color: var(--text-primary, #1a1a1a);
+          color: var(--text-primary, hsl(var(--tf-text-primary-hs) 10%));
         }
 
         .subtitle {
           margin: 0;
-          color: var(--text-secondary, #666);
+          color: var(--text-secondary, hsl(var(--tf-neutral-hs) 40%));
           font-size: 0.9rem;
         }
 
         .tool-card {
           padding: 1.5rem;
-          background: var(--surface-secondary, #f5f5f5);
+          background: var(--surface-secondary, hsl(var(--tf-neutral-hs) 96%));
           border-radius: 6px;
-          border: 1px solid var(--border-color, #e0e0e0);
+          border: 1px solid var(--border-color, hsl(var(--tf-neutral-hs) 88%));
           margin-bottom: 1.5rem;
         }
 
         .tool-card h3 {
           margin: 0 0 0.5rem 0;
           font-family: 'Courier New', monospace;
-          color: var(--text-primary, #1a1a1a);
+          color: var(--text-primary, hsl(var(--tf-text-primary-hs) 10%));
         }
 
         .tool-description {
           margin: 0.5rem 0;
-          color: var(--text-secondary, #666);
+          color: var(--text-secondary, hsl(var(--tf-neutral-hs) 40%));
         }
 
         .badge {
@@ -205,8 +205,8 @@ export const ToolInvokePanel: React.FC = () => {
         }
 
         .badge.read-only {
-          background: var(--success-light, #d4edda);
-          color: var(--success-dark, #155724);
+          background: var(--success-light, hsl(var(--tf-success-hs) 90%));
+          color: var(--success-dark, hsl(var(--tf-success-hs) 20%));
         }
 
         .invocation-controls {
@@ -215,7 +215,7 @@ export const ToolInvokePanel: React.FC = () => {
 
         .btn-primary {
           padding: 0.75rem 2rem;
-          background: var(--primary-color, #007bff);
+          background: var(--primary-color, hsl(var(--tf-network-blue-hs) 50%));
           color: white;
           border: none;
           border-radius: 4px;
@@ -226,11 +226,11 @@ export const ToolInvokePanel: React.FC = () => {
         }
 
         .btn-primary:hover:not(:disabled) {
-          background: var(--primary-hover, #0056b3);
+          background: var(--primary-hover, hsl(var(--tf-network-blue-hs) 35%));
         }
 
         .btn-primary:disabled {
-          background: var(--disabled-color, #cccccc);
+          background: var(--disabled-color, hsl(var(--tf-neutral-hs) 80%));
           cursor: not-allowed;
         }
 
@@ -239,7 +239,7 @@ export const ToolInvokePanel: React.FC = () => {
           align-items: center;
           gap: 1rem;
           padding: 1.5rem;
-          background: var(--info-light, #d1ecf1);
+          background: var(--info-light, hsl(var(--tf-network-blue-hs) 90%));
           border-radius: 6px;
           margin-top: 1rem;
         }
@@ -247,8 +247,8 @@ export const ToolInvokePanel: React.FC = () => {
         .spinner {
           width: 20px;
           height: 20px;
-          border: 3px solid var(--border-color, #e0e0e0);
-          border-top-color: var(--primary-color, #007bff);
+          border: 3px solid var(--border-color, hsl(var(--tf-neutral-hs) 88%));
+          border-top-color: var(--primary-color, hsl(var(--tf-network-blue-hs) 50%));
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
         }
@@ -260,9 +260,9 @@ export const ToolInvokePanel: React.FC = () => {
         .success-state {
           margin-top: 1.5rem;
           padding: 1.5rem;
-          background: var(--success-light, #d4edda);
+          background: var(--success-light, hsl(var(--tf-success-hs) 90%));
           border-radius: 6px;
-          border: 1px solid var(--success-border, #c3e6cb);
+          border: 1px solid var(--success-border, hsl(var(--tf-success-hs) 78%));
         }
 
         .result-header {
@@ -274,7 +274,7 @@ export const ToolInvokePanel: React.FC = () => {
 
         .result-header h3 {
           margin: 0;
-          color: var(--success-dark, #155724);
+          color: var(--success-dark, hsl(var(--tf-success-hs) 20%));
         }
 
         .correlation-id-badge {
@@ -284,23 +284,23 @@ export const ToolInvokePanel: React.FC = () => {
           padding: 0.5rem 1rem;
           background: white;
           border-radius: 4px;
-          border: 1px solid var(--border-color, #e0e0e0);
+          border: 1px solid var(--border-color, hsl(var(--tf-neutral-hs) 88%));
         }
 
         .correlation-id-badge .label {
           font-size: 0.85rem;
-          color: var(--text-secondary, #666);
+          color: var(--text-secondary, hsl(var(--tf-neutral-hs) 40%));
         }
 
         .correlation-id-badge code {
           font-family: 'Courier New', monospace;
-          color: var(--text-primary, #1a1a1a);
+          color: var(--text-primary, hsl(var(--tf-text-primary-hs) 10%));
           font-size: 0.9rem;
         }
 
         .btn-copy {
           padding: 0.25rem 0.75rem;
-          background: var(--primary-color, #007bff);
+          background: var(--primary-color, hsl(var(--tf-network-blue-hs) 50%));
           color: white;
           border: none;
           border-radius: 4px;
@@ -310,19 +310,19 @@ export const ToolInvokePanel: React.FC = () => {
         }
 
         .btn-copy:hover {
-          background: var(--primary-hover, #0056b3);
+          background: var(--primary-hover, hsl(var(--tf-network-blue-hs) 35%));
         }
 
         .result-content h4 {
           margin: 1rem 0 0.5rem 0;
-          color: var(--success-dark, #155724);
+          color: var(--success-dark, hsl(var(--tf-success-hs) 20%));
         }
 
         .result-output {
           background: white;
           padding: 1rem;
           border-radius: 4px;
-          border: 1px solid var(--border-color, #e0e0e0);
+          border: 1px solid var(--border-color, hsl(var(--tf-neutral-hs) 88%));
           overflow-x: auto;
           font-family: 'Courier New', monospace;
           font-size: 0.9rem;
@@ -331,14 +331,14 @@ export const ToolInvokePanel: React.FC = () => {
         .dev-trace-hint {
           margin-top: 1rem;
           padding: 1rem;
-          background: var(--info-light, #d1ecf1);
+          background: var(--info-light, hsl(var(--tf-network-blue-hs) 90%));
           border-radius: 4px;
         }
 
         .dev-trace-hint summary {
           cursor: pointer;
           font-weight: 600;
-          color: var(--info-dark, #0c5460);
+          color: var(--info-dark, hsl(var(--tf-transcend-cyan-hs) 18%));
         }
 
         .hint-content {
@@ -347,7 +347,7 @@ export const ToolInvokePanel: React.FC = () => {
 
         .hint-content p {
           margin: 0.5rem 0;
-          color: var(--text-secondary, #666);
+          color: var(--text-secondary, hsl(var(--tf-neutral-hs) 40%));
         }
 
         .trace-command {
