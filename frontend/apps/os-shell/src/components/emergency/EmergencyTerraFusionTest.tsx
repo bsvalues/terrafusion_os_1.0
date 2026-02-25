@@ -45,7 +45,7 @@ export function EmergencyTerraFusionTest() {
           backgroundClip: 'text',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          textShadow: '0 0 30px rgba(0, 255, 255, 0.5)',
+          textShadow: '0 0 30px hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)',
         }}
       >
         🏛️ TERRAFUSION OS - EMERGENCY DIAGNOSTIC
@@ -59,7 +59,7 @@ export function EmergencyTerraFusionTest() {
           padding: '1rem 2rem',
           border: '2px solid var(--tf-quantum-cyan)',
           borderRadius: '12px',
-          background: 'rgba(0, 255, 255, 0.1)',
+          background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.1)',
           backdropFilter: 'blur(10px)',
           textAlign: 'center',
         }}
@@ -86,16 +86,16 @@ export function EmergencyTerraFusionTest() {
           fontWeight: 'bold',
           cursor: 'pointer',
           transition: 'all 0.3s ease',
-          boxShadow: '0 4px 20px rgba(0, 255, 255, 0.3)',
+          boxShadow: '0 4px 20px hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
           marginBottom: '2rem',
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.transform = 'scale(1.05)';
-          e.currentTarget.style.boxShadow = '0 6px 30px rgba(0, 255, 255, 0.5)';
+          e.currentTarget.style.boxShadow = '0 6px 30px hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)';
         }}
         onMouseOut={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 255, 255, 0.3)';
+          e.currentTarget.style.boxShadow = '0 4px 20px hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)';
         }}
       >
         🧪 EXECUTE REACT MOUNT TEST
@@ -106,9 +106,9 @@ export function EmergencyTerraFusionTest() {
         style={{
           fontSize: '1rem',
           padding: '1rem',
-          border: '1px solid rgba(0, 255, 255, 0.3)',
+          border: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
           borderRadius: '8px',
-          background: 'rgba(0, 255, 255, 0.05)',
+          background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.05)',
           textAlign: 'center',
           maxWidth: '600px',
         }}
