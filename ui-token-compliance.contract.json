@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 875,
-  "violationCount": 347,
+  "violationCount": 321,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1049,97 +1049,6 @@
       "excerpt": "#ccc', padding: '12px', borderRadius: '4px' }}>"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 161,
-      "column": 25,
-      "excerpt": "#f59e0b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 162,
-      "column": 19,
-      "excerpt": "#f59e0b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 273,
-      "column": 36,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 336,
-      "column": 27,
-      "excerpt": "#0a0a0a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 418,
-      "column": 25,
-      "excerpt": "#f59e0b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 428,
-      "column": 19,
-      "excerpt": "#f59e0b'"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 436,
-      "column": 21,
-      "excerpt": "#f59e0b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 443,
-      "column": 21,
-      "excerpt": "#f59e0b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 457,
-      "column": 32,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 768,
-      "column": 31,
-      "excerpt": "#1a1a1a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 774,
-      "column": 32,
-      "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 347,
-      "column": 29,
-      "excerpt": "rgba(34, 197, 94, 0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\Alert.stories.tsx",
-      "line": 419,
-      "column": 29,
-      "excerpt": "rgba(245, 158, 11, 0.05)',"
-    },
-    {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\ui\\avatar.tsx",
       "line": 22,
@@ -1953,97 +1862,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 77,
-      "column": 24,
-      "excerpt": "rgba(11, 16, 32, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 79,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 238, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 93,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 238, 0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 167,
-      "column": 32,
-      "excerpt": "rgba(11, 16, 32, 0.8)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 169,
-      "column": 38,
-      "excerpt": "rgba(0, 255, 238, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 170,
-      "column": 43,
-      "excerpt": "rgba(10, 15, 28, 0.8), 0 0 60px rgba(0, 255, 238, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 170,
-      "column": 75,
-      "excerpt": "rgba(0, 255, 238, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 176,
-      "column": 36,
-      "excerpt": "rgba(0, 229, 255, 0.15), 0 0 80px rgba(0, 255, 238, 0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 176,
-      "column": 70,
-      "excerpt": "rgba(0, 255, 238, 0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 197,
-      "column": 31,
-      "excerpt": "rgba(255,255,255,0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 217,
-      "column": 32,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 219,
-      "column": 38,
-      "excerpt": "rgba(255,255,255,0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\DesktopShell.tsx",
-      "line": 264,
-      "column": 26,
-      "excerpt": "rgba(0,0,0,0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\shell\\ModuleLauncher.tsx",
       "line": 104,
       "column": 24,
@@ -2435,5 +2253,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};"
     }
   ],
-  "generatedAtIso": "2026-02-25T17:27:43.073Z"
+  "generatedAtIso": "2026-02-25T17:42:12.457Z"
 }
