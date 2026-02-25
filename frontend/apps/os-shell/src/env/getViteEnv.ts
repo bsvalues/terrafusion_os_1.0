@@ -1,25 +1,25 @@
 /**
  * Safe environment access that works in Vite (ESM), Jest (CJS), and Node.
- * Prevents "SyntaxError: Cannot use 'import.meta' outside a module" in Jest.
  *
  * Usage:
  * Instead of `import.meta.env.DEV`, use `getViteEnv().DEV`.
  */
-export function getViteEnv(): Record<string, any> {
-  // 1. Try Vite ESM context via dynamic evaluation
-  // This hides the 'import.meta' syntax from CJS parsers (Jest)
-  try {
-    const meta = new Function('return import.meta')();
-    if (meta && meta.env) {
-      // In development, freeze to prevent accidental mutation
-      if (meta.env.DEV) {
-        return Object.freeze({ ...meta.env });
-      }
-      return meta.env;
-    }
-  } catch {
-    // SyntaxError or ReferenceError expected in CJS/Node
+
+// Vite statically replaces import.meta.env at build time.
+// Capture it at module scope so it's always available and never blocked by CSP.
+let _viteEnv: Record<string, unknown> | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (import.meta?.env) {
+    _viteEnv = import.meta.env as unknown as Record<string, unknown>;
   }
+} catch {
+  // CJS/Node: import.meta not available
+}
+
+export function getViteEnv(): Record<string, any> {
+  // 1. Vite ESM (captured at module load — no eval/new Function)
+  if (_viteEnv) return _viteEnv;
 
   // 2. Fallback to process.env (Node/Jest/Electron)
   if (typeof process !== 'undefined' && process.env) {
