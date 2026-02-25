@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 875,
-  "violationCount": 488,
+  "violationCount": 456,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1022,118 +1022,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 14,
-      "column": 39,
-      "excerpt": "rgba(0, 255, 255, 0.05) 0%, rgba(0, 128, 255, 0.05) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 14,
-      "column": 67,
-      "excerpt": "rgba(0, 128, 255, 0.05) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 24,
-      "column": 54,
-      "excerpt": "rgba(0, 255, 255, 0.1) 50%, transparent 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 42,
-      "column": 54,
-      "excerpt": "rgba(0, 255, 255, 0.2) 50%, transparent 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 54,
-      "column": 15,
-      "excerpt": "rgba(0, 255, 255, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 55,
-      "column": 21,
-      "excerpt": "rgba(0, 255, 255, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 57,
-      "column": 14,
-      "excerpt": "rgba(0, 255, 255, 0.2),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 58,
-      "column": 20,
-      "excerpt": "rgba(0, 255, 255, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 70,
-      "column": 5,
-      "excerpt": "rgba(0, 255, 255, 0.1) 0%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 72,
-      "column": 5,
-      "excerpt": "rgba(0, 255, 255, 0.1) 100%"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 123,
-      "column": 15,
-      "excerpt": "rgba(0, 255, 255, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 128,
-      "column": 15,
-      "excerpt": "rgba(0, 255, 255, 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 134,
-      "column": 39,
-      "excerpt": "rgba(0, 255, 255, 0.02) 0%, rgba(0, 128, 255, 0.02) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 134,
-      "column": 67,
-      "excerpt": "rgba(0, 128, 255, 0.02) 100%);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 140,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\navigation\\QuantumNavigation.css",
-      "line": 141,
-      "column": 28,
-      "excerpt": "rgba(0, 255, 255, 0.1);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\playground\\PlaygroundTester.tsx",
       "line": 187,
       "column": 75,
@@ -2048,118 +1936,6 @@
       "line": 127,
       "column": 44,
       "excerpt": "rgba(251,113,133,0.4)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 231,
-      "column": 147,
-      "excerpt": "rgba(0,0,0,0.60)] backdrop-blur-xl'>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 234,
-      "column": 133,
-      "excerpt": "rgba(56,189,248,0.9)]'>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 267,
-      "column": 158,
-      "excerpt": "rgba(52,211,153,0.6)]'>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 281,
-      "column": 189,
-      "excerpt": "rgba(34,211,238,0.4)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 308,
-      "column": 191,
-      "excerpt": "rgba(217,70,239,0.4)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 320,
-      "column": 123,
-      "excerpt": "rgba(0,0,0,0.65)] backdrop-blur-xl'>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 346,
-      "column": 94,
-      "excerpt": "rgba(56,189,248,0.35)]',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 348,
-      "column": 77,
-      "excerpt": "rgba(56,189,248,0.85)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 354,
-      "column": 97,
-      "excerpt": "rgba(52,211,153,0.9)] group-hover:bg-sky-400/90' />"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 367,
-      "column": 125,
-      "excerpt": "rgba(0,0,0,0.65)] backdrop-blur-xl'>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 373,
-      "column": 133,
-      "excerpt": "rgba(0,0,0,0.75)] backdrop-blur-2xl'>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 393,
-      "column": 105,
-      "excerpt": "rgba(52,211,153,0.4)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 426,
-      "column": 125,
-      "excerpt": "rgba(56,189,248,0.65)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 427,
-      "column": 79,
-      "excerpt": "rgba(15,23,42,0.80)]',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 480,
-      "column": 160,
-      "excerpt": "rgba(0,0,0,0.75)] outline-none backdrop-blur-xl transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500/60 disabled:opacity-60'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\GptStudioView.tsx",
-      "line": 495,
-      "column": 169,
-      "excerpt": "rgba(56,189,248,0.8)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -3422,5 +3198,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};"
     }
   ],
-  "generatedAtIso": "2026-02-25T03:26:04.118Z"
+  "generatedAtIso": "2026-02-25T03:57:00.862Z"
 }
