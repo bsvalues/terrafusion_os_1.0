@@ -85,9 +85,9 @@ export function LegacyDeprecationBanner({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0.75rem 1rem',
-        backgroundColor: '#fef3c7', // amber-100
-        borderBottom: '1px solid #f59e0b', // amber-500
-        color: '#92400e', // amber-800
+        backgroundColor: 'hsl(var(--tf-warning-hs) 90%)', // warning-tint background
+        borderBottom: '1px solid hsl(var(--tf-warning-hs) 55%)', // warning boundary
+        color: 'hsl(var(--tf-warning-hs) 31%)', // warning text contrast
         fontFamily: 'system-ui, sans-serif',
         fontSize: '0.875rem',
       }}
@@ -99,7 +99,7 @@ export function LegacyDeprecationBanner({
           <code
             style={{
               fontSize: '0.75rem',
-              backgroundColor: 'rgba(0,0,0,0.1)',
+              backgroundColor: 'hsl(var(--tf-tokens-black-hs) 0% / 0.1)',
               padding: '0.125rem 0.25rem',
               borderRadius: '0.25rem',
             }}
@@ -114,7 +114,7 @@ export function LegacyDeprecationBanner({
           href='/os'
           onClick={handleUpgradeClick}
           style={{
-            color: '#92400e',
+            color: 'hsl(var(--tf-warning-hs) 31%)',
             fontWeight: 600,
             textDecoration: 'underline',
           }}
@@ -130,7 +130,7 @@ export function LegacyDeprecationBanner({
             border: 'none',
             cursor: 'pointer',
             padding: '0.25rem',
-            color: '#92400e',
+            color: 'hsl(var(--tf-warning-hs) 31%)',
             fontSize: '1rem',
           }}
         >
