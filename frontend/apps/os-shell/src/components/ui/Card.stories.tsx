@@ -139,7 +139,7 @@ export const CardGrid: Story = {
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
         gap: '24px',
         padding: '24px',
-        backgroundColor: '#0a0a0a',
+        backgroundColor: 'hsl(var(--tf-neutral-hs) 4%)',
         borderRadius: '12px',
       }}
     >
@@ -308,7 +308,7 @@ export const InteractiveCard: Story = {
         gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
         gap: '16px',
         padding: '24px',
-        backgroundColor: '#0a0a0a',
+        backgroundColor: 'hsl(var(--tf-neutral-hs) 4%)',
         borderRadius: '12px',
       }}
     >
@@ -319,7 +319,7 @@ export const InteractiveCard: Story = {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-4px)';
-          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 153, 255, 0.15)';
+          e.currentTarget.style.boxShadow = '0 8px 24px hsl(var(--tf-network-blue-hs) 50% / 0.15)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)';
@@ -358,7 +358,7 @@ export const InteractiveCard: Story = {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-4px)';
-          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 153, 255, 0.15)';
+          e.currentTarget.style.boxShadow = '0 8px 24px hsl(var(--tf-network-blue-hs) 50% / 0.15)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)';
@@ -396,7 +396,7 @@ export const InteractiveCard: Story = {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-4px)';
-          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 153, 255, 0.15)';
+          e.currentTarget.style.boxShadow = '0 8px 24px hsl(var(--tf-network-blue-hs) 50% / 0.15)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)';
@@ -1177,7 +1177,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -1205,7 +1205,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -1233,7 +1233,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -1261,7 +1261,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -1304,7 +1304,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-error-hs) 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -1332,7 +1332,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-error-hs) 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -1360,7 +1360,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-error-hs) 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -1388,7 +1388,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-error-hs) 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -1425,13 +1425,13 @@ export const UsageGuidelines: Story = {
         <h4 className='font-semibold'>Code Examples</h4>
         <div
           style={{
-            backgroundColor: '#1a1a1a',
+            backgroundColor: 'hsl(var(--tf-neutral-hs) 10%)',
             padding: '20px',
             borderRadius: '8px',
             fontFamily: '"Fira Code", monospace',
             fontSize: '13px',
             overflow: 'auto',
-            border: '1px solid #2a2a2a',
+            border: '1px solid hsl(var(--tf-neutral-hs) 16%)',
           }}
         >
           <pre
