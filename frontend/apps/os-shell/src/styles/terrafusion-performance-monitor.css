@@ -34,11 +34,11 @@ Real-Time Government-Grade System Reliability Metrics
   --tf-emergency-mode-threshold: 0.2;
 
   /* Real-Time Monitoring Colors */
-  --tf-status-optimal: hsl(120 70% 50%);
-  --tf-status-good: hsl(80 70% 50%);
-  --tf-status-warning: hsl(45 80% 55%);
-  --tf-status-critical: hsl(0 80% 55%);
-  --tf-status-emergency: hsl(320 80% 55%);
+  --tf-status-optimal: hsl(var(--tf-success-hs) 50%);
+  --tf-status-good: hsl(var(--tf-success-hs) 42%);
+  --tf-status-warning: hsl(var(--tf-warning-hs) 55%);
+  --tf-status-critical: hsl(var(--tf-error-hs) 55%);
+  --tf-status-emergency: hsl(var(--tf-info-hs) 63%);
 }
 
 /* ===== PERFORMANCE MONITORING HUD ===== */
@@ -49,10 +49,10 @@ Real-Time Government-Grade System Reliability Metrics
   top: 20px;
   right: 20px;
   width: 280px;
-  background: rgba(0, 0, 0, 0.9);
+  background: hsl(var(--tf-tokens-black-hs) 0% / 0.9);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 255, 238, 0.3);
+  border: 1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3);
   border-radius: 12px;
   padding: 16px;
   font-family: 'Cascadia Code', monospace;
@@ -74,33 +74,33 @@ Real-Time Government-Grade System Reliability Metrics
   margin: 8px 0;
   padding: 4px 8px;
   border-radius: 4px;
-  background: rgba(0, 255, 238, 0.05);
+  background: hsl(var(--tf-transcend-cyan-hs) 50% / 0.05);
   transition: background-color 0.3s ease;
 }
 
 .tf-performance-metric[data-status='optimal'] {
-  background: rgba(0, 255, 0, 0.1);
+  background: hsl(var(--tf-success-hs) 50% / 0.1);
   color: var(--tf-status-optimal);
 }
 
 .tf-performance-metric[data-status='good'] {
-  background: rgba(128, 255, 0, 0.1);
+  background: hsl(var(--tf-success-hs) 42% / 0.1);
   color: var(--tf-status-good);
 }
 
 .tf-performance-metric[data-status='warning'] {
-  background: rgba(255, 165, 0, 0.1);
+  background: hsl(var(--tf-warning-hs) 55% / 0.1);
   color: var(--tf-status-warning);
 }
 
 .tf-performance-metric[data-status='critical'] {
-  background: rgba(255, 0, 0, 0.1);
+  background: hsl(var(--tf-error-hs) 55% / 0.1);
   color: var(--tf-status-critical);
   animation: critical-alert 1s ease-in-out infinite;
 }
 
 .tf-performance-metric[data-status='emergency'] {
-  background: rgba(255, 0, 128, 0.1);
+  background: hsl(var(--tf-info-hs) 63% / 0.1);
   color: var(--tf-status-emergency);
   animation: emergency-alert 0.5s ease-in-out infinite;
 }
@@ -109,7 +109,7 @@ Real-Time Government-Grade System Reliability Metrics
 .tf-performance-bar {
   width: 60px;
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: hsl(var(--tf-text-primary-hs) 100% / 0.1);
   border-radius: 4px;
   overflow: hidden;
   position: relative;
@@ -144,7 +144,7 @@ Real-Time Government-Grade System Reliability Metrics
   text-align: center;
   padding: 8px;
   border-radius: 6px;
-  background: rgba(0, 255, 238, 0.05);
+  background: hsl(var(--tf-transcend-cyan-hs) 50% / 0.05);
   border: 1px solid transparent;
   transition: all 0.3s ease;
 }
@@ -169,9 +169,9 @@ Real-Time Government-Grade System Reliability Metrics
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
   box-shadow:
-    0 8px 32px rgba(0, 255, 238, 0.2),
-    0 0 60px rgba(0, 153, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 8px 32px hsl(var(--tf-transcend-cyan-hs) 50% / 0.2),
+    0 0 60px hsl(var(--tf-network-blue-hs) 50% / 0.1),
+    inset 0 1px 0 hsl(var(--tf-text-primary-hs) 100% / 0.1);
 
   /* Complex animations */
   animation:
@@ -189,8 +189,8 @@ Real-Time Government-Grade System Reliability Metrics
   -webkit-backdrop-filter: blur(15px) saturate(150%);
   backdrop-filter: blur(15px) saturate(150%);
   box-shadow:
-    0 6px 24px rgba(0, 255, 238, 0.15),
-    0 0 40px rgba(0, 153, 255, 0.08);
+    0 6px 24px hsl(var(--tf-transcend-cyan-hs) 50% / 0.15),
+    0 0 40px hsl(var(--tf-network-blue-hs) 50% / 0.08);
 
   /* Moderate animations */
   animation: good-performance-pulse 3s ease infinite;
@@ -202,7 +202,7 @@ Real-Time Government-Grade System Reliability Metrics
 .tf-perf-adaptive[data-performance='degraded'] {
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(0, 255, 238, 0.1);
+  box-shadow: 0 4px 16px hsl(var(--tf-transcend-cyan-hs) 50% / 0.1);
 
   /* Simplified animations */
   animation: degraded-performance-fade 4s ease infinite;
@@ -219,7 +219,7 @@ Real-Time Government-Grade System Reliability Metrics
   /* Minimal enhancements */
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
   background: var(--tf-fallback-background);
 
   /* No animations */
@@ -240,20 +240,20 @@ Real-Time Government-Grade System Reliability Metrics
   /* Absolute minimum styles */
   all: initial;
   display: block;
-  background: white;
-  color: black;
+  background: hsl(var(--tf-text-primary-hs) 100%);
+  color: hsl(var(--tf-tokens-black-hs) 0%);
   padding: 16px;
   font-family: sans-serif;
   font-size: 16px;
   line-height: 1.4;
-  border: 2px solid red;
+  border: 2px solid hsl(var(--tf-error-hs) 55%);
 
   /* Emergency message */
   &::before {
     content: 'EMERGENCY PERFORMANCE MODE - BASIC FUNCTIONALITY ONLY';
     display: block;
-    background: red;
-    color: white;
+    background: hsl(var(--tf-error-hs) 55%);
+    color: hsl(var(--tf-text-primary-hs) 100%);
     padding: 8px;
     margin: -16px -16px 16px -16px;
     font-weight: bold;
@@ -267,7 +267,7 @@ Real-Time Government-Grade System Reliability Metrics
   content: 'FPS: ' counter(fps-display);
   counter-reset: fps-display var(--tf-fps-current);
 
-  color: var(--tf-status-optimal, hsl(120 100% 60%));
+  color: var(--tf-status-optimal, hsl(var(--tf-success-hs) 60%));
 }
 
 /* Memory Usage Monitor */
@@ -280,7 +280,7 @@ Real-Time Government-Grade System Reliability Metrics
   counter-reset: memory-percent calc(var(--tf-memory-usage) * 100);
 
   background: var(--tf-status-optimal);
-  color: white;
+  color: hsl(var(--tf-text-primary-hs) 100%);
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 10px;
@@ -335,8 +335,8 @@ Real-Time Government-Grade System Reliability Metrics
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
+  background: hsl(var(--tf-tokens-black-hs) 0% / 0.9);
+  color: hsl(var(--tf-text-primary-hs) 100%);
   padding: 8px 12px;
   border-radius: 8px;
   font-family: monospace;
@@ -388,12 +388,12 @@ Real-Time Government-Grade System Reliability Metrics
   0%,
   100% {
     opacity: 1;
-    background-color: rgba(255, 0, 128, 0.1);
+    background-color: hsl(var(--tf-info-hs) 63% / 0.1);
     transform: scale(1);
   }
   50% {
     opacity: 0.8;
-    background-color: rgba(255, 0, 128, 0.3);
+    background-color: hsl(var(--tf-info-hs) 63% / 0.3);
     transform: scale(1.1);
   }
 }
@@ -402,13 +402,13 @@ Real-Time Government-Grade System Reliability Metrics
   0%,
   100% {
     box-shadow:
-      0 8px 32px rgba(0, 255, 238, 0.2),
-      0 0 60px rgba(0, 153, 255, 0.1);
+      0 8px 32px hsl(var(--tf-transcend-cyan-hs) 50% / 0.2),
+      0 0 60px hsl(var(--tf-network-blue-hs) 50% / 0.1);
   }
   50% {
     box-shadow:
-      0 12px 48px rgba(0, 255, 238, 0.3),
-      0 0 80px rgba(0, 153, 255, 0.2);
+      0 12px 48px hsl(var(--tf-transcend-cyan-hs) 50% / 0.3),
+      0 0 80px hsl(var(--tf-network-blue-hs) 50% / 0.2);
   }
 }
 
@@ -442,7 +442,7 @@ Real-Time Government-Grade System Reliability Metrics
   top: 50%;
   right: 20px;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.95);
+  background: hsl(var(--tf-tokens-black-hs) 0% / 0.95);
   color: lime;
   padding: 16px;
   border-radius: 8px;
@@ -477,8 +477,8 @@ Real-Time Government-Grade System Reliability Metrics
   top: -30px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 165, 0, 0.9);
-  color: black;
+  background: hsl(var(--tf-warning-hs) 55% / 0.9);
+  color: hsl(var(--tf-tokens-black-hs) 0%);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 10px;
@@ -517,25 +517,27 @@ Real-Time Government-Grade System Reliability Metrics
   .tf-performance-metric[data-status='critical'],
   .tf-performance-metric[data-status='emergency'] {
     animation: none;
-    background: rgba(255, 0, 0, 0.2);
+    background: hsl(var(--tf-error-hs) 55% / 0.2);
   }
 }
 
 /* High contrast performance indicators */
 @media (prefers-contrast: high) {
   .tf-performance-hud {
-    background: black;
-    border: 2px solid white;
-    color: white;
+    background: hsl(var(--tf-tokens-black-hs) 0%);
+    border: 2px solid hsl(var(--tf-text-primary-hs) 100%);
+    color: hsl(var(--tf-text-primary-hs) 100%);
   }
 
   .tf-performance-metric[data-status='critical'] {
-    background: red;
-    color: white;
+    background: hsl(var(--tf-error-hs) 55%);
+    color: hsl(var(--tf-text-primary-hs) 100%);
   }
 
   .tf-performance-metric[data-status='optimal'] {
-    background: green;
-    color: white;
+    background: hsl(var(--tf-success-hs) 50%);
+    color: hsl(var(--tf-text-primary-hs) 100%);
   }
 }
+
+
