@@ -18,9 +18,9 @@ CUTTING-EDGE FEATURES:
 :root {
   /* Official Brand Colors - Direct from Brand Kit */
   --tf-primary: var(--tf-network-blue);
-  --tf-primary-dark: #0077cc; /* tf-allow-raw-color -- theme source definition */
-  --tf-accent: #00ffaa; /* tf-allow-raw-color -- theme source definition, circular */
-  --tf-accent-dark: #00cc88; /* tf-allow-raw-color -- theme source definition */
+  --tf-primary-dark: hsl(var(--tf-network-blue-hs) 40%);
+  --tf-accent: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50));
+  --tf-accent-dark: hsl(var(--tf-success-hs) 40%);
   --tf-transcend: var(--tf-transcend-highlight);
   --tf-dark: hsl(var(--tf-bg));
   --tf-dark-lighter: hsl(var(--tf-surface));
@@ -30,7 +30,7 @@ CUTTING-EDGE FEATURES:
   --tf-error: var(--tf-error-red);
   --tf-success: var(--success-green);
   --tf-warning: var(--warning-amber);
-  --tf-clarity: #e0f7ff; /* tf-allow-raw-color -- theme source definition */
+  --tf-clarity: hsl(var(--tf-transcend-cyan-hs) 94%);
 
   /* Official Brand Gradients */
   --tf-gradient-hero: linear-gradient(
@@ -405,7 +405,7 @@ body {
   :root {
     --tf-primary: var(--tf-network-blue);
     --tf-transcend: var(--tf-accent-cyan);
-    --tf-accent: #00aa00; /* tf-allow-raw-color -- high-contrast a11y */
+    --tf-accent: hsl(var(--tf-success-hs) 33%);
   }
 
   .tf-card {
