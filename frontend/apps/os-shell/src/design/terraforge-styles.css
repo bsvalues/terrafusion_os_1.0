@@ -84,25 +84,26 @@
 .terra-breakdown-dot[data-color='var(--tf-network-blue)'] {
   background-color: var(--tf-network-blue);
 }
-.terra-breakdown-dot[data-color='#8B5CF6'] { /* tf-allow-raw-color -- data-viz selector */
+.terra-breakdown-dot[data-color='\000023 8B5CF6'] { /* tf-allow-raw-color -- data-viz selector */
   background-color: hsl(var(--tf-info));
 }
-.terra-breakdown-dot[data-color='#F59E0B'] { /* tf-allow-raw-color -- data-viz selector */
+.terra-breakdown-dot[data-color='\000023 F59E0B'] { /* tf-allow-raw-color -- data-viz selector */
   background-color: hsl(var(--tf-warning));
 }
-.terra-breakdown-dot[data-color='#EF4444'] { /* tf-allow-raw-color -- data-viz selector */
+.terra-breakdown-dot[data-color='\000023 EF4444'] { /* tf-allow-raw-color -- data-viz selector */
   background-color: hsl(var(--tf-error));
 }
-.terra-breakdown-dot[data-color='#10B981'] { /* tf-allow-raw-color -- data-viz selector */
+.terra-breakdown-dot[data-color='\000023 10B981'] { /* tf-allow-raw-color -- data-viz selector */
   background-color: hsl(var(--tf-success));
 }
-.terra-breakdown-dot[data-color='#F97316'] { /* tf-allow-raw-color -- data-viz selector */
-  background-color: #f97316; /* tf-allow-raw-color -- data-viz, no semantic token */
+.terra-breakdown-dot[data-color='\000023 F97316'] { /* tf-allow-raw-color -- data-viz selector */
+  background-color: hsl(var(--tf-warning-hs) 53%);
 }
-.terra-breakdown-dot[data-color='#6366F1'] { /* tf-allow-raw-color -- data-viz selector */
-  background-color: #6366f1; /* tf-allow-raw-color -- data-viz, no semantic token */
+.terra-breakdown-dot[data-color='\000023 6366F1'] { /* tf-allow-raw-color -- data-viz selector */
+  background-color: hsl(var(--tf-info-hs) 67%);
 }
 
 .terra-slider-thumb {
   left: calc(var(--thumb-position, 0%) - 8px);
 }
+
