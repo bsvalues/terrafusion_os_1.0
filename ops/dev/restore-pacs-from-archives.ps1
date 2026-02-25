@@ -1,143 +1,228 @@
 <#
 .SYNOPSIS
-  Restore PACS from data\benton archives into a local SQL Server container.
+  TerraFusion: Restore PACS clone from data\benton archives into Docker SQL Server.
 .DESCRIPTION
-  Assumptions:
-  - You have a PACS backup archive (RAR/ZIP) under data\benton
-  - You can extract it (7z recommended)
-  - You want SQL Server running in Docker with a persisted volume
+  Deterministic restore pipeline:
+  1) Verifies Docker engine is reachable
+  2) Extracts .rar/.zip/.7z archives using Docker (no local 7z needed)
+  3) Finds the largest .bak (or reports .mdf/.ldf)
+  4) Starts a fresh SQL Server 2022 container with persistent volumes
+  5) Copies .bak into the container
+  6) Runs RESTORE FILELISTONLY to discover logical file names
+  7) Restores database as pacs_oltp
+  8) Runs sanity query (SELECT 1 + database existence)
 
-  This script:
-  1) Verifies docker
-  2) Creates volumes
-  3) Starts SQL Server container
-  4) Gives you exact commands to copy in .bak and RESTORE
+  SAFE: Does not touch existing containers unless -RemoveExistingContainer is set.
+  SECURE: SA password must be provided via parameter. Never generated or echoed.
 
-  It does NOT perform RESTORE automatically because RESTORE requires
-  knowing logical file names. We keep it safe and deterministic.
-
-  SECURITY: SA password is read from environment variable TF_MSSQL_SA_PASSWORD.
-  If not set, the script prompts interactively. Secrets are never echoed or logged.
+  Usage:
+    pwsh -NoProfile -File ops/dev/restore-pacs-from-archives.ps1 `
+      -SaPassword "YourStr0ng!Pass" `
+      -RemoveExistingContainer -RemoveExistingVolumes
 #>
+
+param(
+  [Parameter(Mandatory=$true)]
+  [string]$SaPassword,
+  [string]$RepoRoot = (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)),
+  [string]$DataDirRelative = "data\benton",
+  [string]$ExtractDirName = "extracted",
+  [string]$ContainerName = "tf-mssql",
+  [string]$SqlImage = "mcr.microsoft.com/mssql/server:2022-latest",
+  [string]$DbName = "pacs_oltp",
+  [switch]$RemoveExistingContainer,
+  [switch]$RemoveExistingVolumes
+)
 
 $ErrorActionPreference = "Stop"
 
-function Assert-DockerUp {
+function Fail([string]$msg) { Write-Error $msg; exit 1 }
+function Info([string]$msg) { Write-Host $msg }
+
+# --- Preconditions ---
+try {
   $ver = docker version --format "{{.Server.Version}}" 2>&1
+  if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }
+  Info "Docker Engine: $ver"
+} catch {
+  Fail "Docker engine not reachable. Start Docker Desktop and re-run."
+}
+
+$DataDir = Join-Path $RepoRoot $DataDirRelative
+if (-not (Test-Path $DataDir)) { Fail "Data dir not found: $DataDir" }
+
+$ExtractDir = Join-Path $DataDir $ExtractDirName
+New-Item -ItemType Directory -Force -Path $ExtractDir | Out-Null
+
+if ($SaPassword.Length -lt 8) {
+  Fail "SA password must be at least 8 characters and meet SQL Server complexity requirements."
+}
+
+# --- Identify archives ---
+$archives = Get-ChildItem $DataDir -File -Force |
+  Where-Object { $_.Extension -in ".rar", ".zip", ".7z" -and $_.Length -gt 0 }
+if (-not $archives) { Fail "No non-empty archives found in $DataDir." }
+
+Info "`nArchives found:"
+$archives | Sort-Object Length -Descending |
+  Select-Object Name, @{N='GB';E={[math]::Round($_.Length/1GB,2)}}, LastWriteTime |
+  Format-Table -AutoSize
+
+# --- Extract using Docker (no local tools required) ---
+Info "Extracting archives via Docker..."
+Info "  Source: $DataDir"
+Info "  Target: $ExtractDir"
+
+foreach ($a in $archives) {
+  Info "`n  Extracting: $($a.Name) ($([math]::Round($a.Length/1GB,2)) GB)"
+
+  # Use unrar for .rar (handles RAR5 modern compression), 7z for .zip/.7z
+  # Single-line bash to avoid Windows CRLF breaking Linux shell
+  if ($a.Extension -eq ".rar") {
+    $bashCmd = "apt-get update -qq >/dev/null 2>&1 && apt-get install -qq -y unrar >/dev/null 2>&1 && unrar x -o+ '/data/$($a.Name)' /extract/"
+  } else {
+    $bashCmd = "apt-get update -qq >/dev/null 2>&1 && apt-get install -qq -y p7zip-full >/dev/null 2>&1 && 7z x '/data/$($a.Name)' -o/extract -y"
+  }
+  docker run --rm -v "${DataDir}:/data:ro" -v "${ExtractDir}:/extract" ubuntu:22.04 bash -c $bashCmd 2>&1 | ForEach-Object { Info "    $_" }
+
   if ($LASTEXITCODE -ne 0) {
-    throw "Docker engine not reachable. Ensure Docker Desktop engine is started."
+    Fail "Extraction failed for $($a.Name) (exit code $LASTEXITCODE)."
   }
-  Write-Host "Docker Engine: $ver"
 }
 
-function Require-Tool($name, $hint) {
-  $cmd = Get-Command $name -ErrorAction SilentlyContinue
-  if (-not $cmd) { throw "Missing tool: $name. $hint" }
-}
+# --- Find .bak ---
+Info "`nSearching for backup artifacts..."
+$bakFiles = Get-ChildItem $ExtractDir -Recurse -Force -File -ErrorAction SilentlyContinue |
+  Where-Object { $_.Extension -eq ".bak" }
+$mdfFiles = Get-ChildItem $ExtractDir -Recurse -Force -File -ErrorAction SilentlyContinue |
+  Where-Object { $_.Extension -in ".mdf", ".ndf" }
+$ldfFiles = Get-ChildItem $ExtractDir -Recurse -Force -File -ErrorAction SilentlyContinue |
+  Where-Object { $_.Extension -eq ".ldf" }
 
-Assert-DockerUp
-
-$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-$dataDir  = Join-Path $repoRoot "data\benton"
-
-if (-not (Test-Path $dataDir)) { throw "Not found: $dataDir" }
-
-Write-Host "Looking for PACS archives in: $dataDir"
-$archives = Get-ChildItem $dataDir -File -Force | Where-Object { $_.Extension -in ".rar", ".zip", ".7z" -and $_.Length -gt 0 }
-
-if (-not $archives) {
-  throw "No non-empty archives (.rar/.zip/.7z) found in $dataDir"
-}
-
-$archives | Sort-Object Length -Descending | Select-Object Name, @{N="SizeGB";E={[math]::Round($_.Length/1GB,2)}}, LastWriteTime | Format-Table -AutoSize
-
-Write-Host "Pick the archive that contains the SQL Server backup (.bak) or data files (.mdf/.ldf)."
-$extractDir = Join-Path $dataDir "extracted"
-Write-Host "Recommended extraction target: $extractDir"
-Write-Host ""
-
-# Check for extraction tools
-$sevenZip = Get-Command "7z" -ErrorAction SilentlyContinue
-if (-not $sevenZip) {
-  Write-Host "[WARN] 7z not found. Install 7-Zip and ensure '7z' is in PATH to extract .rar archives."
-  Write-Host "  Download: https://www.7-zip.org/"
-  Write-Host "  After install, add to PATH: C:\Program Files\7-Zip"
+$bak = $null
+if ($bakFiles) {
+  $bak = $bakFiles | Sort-Object Length -Descending | Select-Object -First 1
+  Info "Selected .bak: $($bak.Name) ($([math]::Round($bak.Length/1GB,2)) GB)"
+} elseif ($mdfFiles -and $ldfFiles) {
+  Info "Found MDF/LDF files (no .bak):"
+  $mdfFiles | ForEach-Object { Info "  MDF: $($_.FullName) ($([math]::Round($_.Length/1GB,2)) GB)" }
+  $ldfFiles | ForEach-Object { Info "  LDF: $($_.FullName) ($([math]::Round($_.Length/1GB,2)) GB)" }
+  Fail "Attach-from-MDF not supported by this script. Export a .bak and re-run."
 } else {
-  New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
-  Write-Host "Example extraction command (choose which archive):"
-  foreach ($a in $archives) {
-    Write-Host "  7z x `"$($a.FullName)`" -o`"$extractDir`" -y"
+  Info "`nExtracted contents:"
+  Get-ChildItem $ExtractDir -Recurse -Force -File |
+    Select-Object FullName, @{N='MB';E={[math]::Round($_.Length/1MB,1)}} |
+    Format-Table -AutoSize
+  Fail "No .bak, .mdf, or .ldf found after extraction."
+}
+
+# --- Container/Volume lifecycle ---
+$volData = "tf_mssql_data_pacs"
+
+$existing = docker ps -a --format "{{.Names}}" 2>$null | Select-String -SimpleMatch $ContainerName
+if ($existing) {
+  if ($RemoveExistingContainer) {
+    Info "`nRemoving existing container: $ContainerName"
+    docker rm -f $ContainerName 2>$null | Out-Null
+  } else {
+    Fail "Container '$ContainerName' already exists. Re-run with -RemoveExistingContainer to replace it."
   }
 }
 
-Write-Host ""
-
-# SA password: read from env or prompt (never generate weak passwords, never echo)
-$saPassword = $env:TF_MSSQL_SA_PASSWORD
-if (-not $saPassword) {
-  Write-Host "Set TF_MSSQL_SA_PASSWORD environment variable with your SQL Server SA password."
-  Write-Host "Requirements: 8+ chars, uppercase, lowercase, digit, special char."
-  Write-Host ""
-  Write-Host 'Example:  $env:TF_MSSQL_SA_PASSWORD = "YourStr0ng!Pass"'
-  Write-Host "Then re-run this script."
-  Write-Host ""
-  $securePass = Read-Host -Prompt "Or enter SA password now (will not be stored)" -AsSecureString
-  $saPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
-    [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePass)
-  )
-  if ($saPassword.Length -lt 8) { throw "SA password must be at least 8 characters." }
+if ($RemoveExistingVolumes) {
+  Info "Removing existing volumes: $volData"
+  docker volume rm $volData 2>$null | Out-Null
 }
-
-# Create volumes for SQL Server
-$volData = "tf_mssql_data"
-$volBak  = "tf_mssql_backup"
 
 docker volume create $volData 2>$null | Out-Null
-docker volume create $volBak  2>$null | Out-Null
-Write-Host "Volumes ready: $volData, $volBak"
 
-$containerName = "tf-mssql"
-$existing = docker ps -a --format "{{.Names}}" | Select-String -SimpleMatch $containerName
-if ($existing) {
-  Write-Host "Container '$containerName' already exists. Skipping creation."
-  Write-Host "To recreate: docker rm -f $containerName"
-} else {
-  docker run -d --name $containerName `
-    -e "ACCEPT_EULA=Y" `
-    -e "MSSQL_SA_PASSWORD=$saPassword" `
-    -p "1433:1433" `
-    -v "${volData}:/var/opt/mssql" `
-    -v "${volBak}:/var/opt/mssql/backup" `
-    "mcr.microsoft.com/mssql/server:2022-latest" | Out-Null
-  Write-Host "Started: $containerName (SQL Server 2022)"
+# --- Start SQL Server (mount extract dir as /backup read-only — no docker cp needed) ---
+Info "`nStarting SQL Server container: $ContainerName"
+docker run -d --name $ContainerName `
+  -e "ACCEPT_EULA=Y" `
+  -e "MSSQL_PID=Developer" `
+  -e "MSSQL_SA_PASSWORD=$SaPassword" `
+  -p "1433:1433" `
+  -v "${volData}:/var/opt/mssql" `
+  -v "${ExtractDir}:/backup:ro" `
+  $SqlImage 2>&1 | Out-Null
+
+if ($LASTEXITCODE -ne 0) { Fail "Failed to start SQL Server container." }
+
+# Wait for SQL Server to accept connections
+Info "Waiting for SQL Server to accept connections..."
+$sqlcmd = "/opt/mssql-tools18/bin/sqlcmd"
+$ready = $false
+for ($i = 1; $i -le 30; $i++) {
+  Start-Sleep -Seconds 3
+  $probe = docker exec $ContainerName $sqlcmd -S localhost -U sa -P $SaPassword -C -Q "SELECT 1" 2>$null
+  if ($LASTEXITCODE -eq 0) { $ready = $true; break }
+  Info "  Attempt $i/30..."
+}
+if (-not $ready) {
+  Info "`n--- Container Logs (last 50 lines) ---"
+  docker logs $ContainerName --tail 50
+  Fail "SQL Server did not accept connections within 90 seconds."
+}
+Info "SQL Server is ready."
+
+# --- RESTORE FILELISTONLY (backup mounted at /backup/) ---
+$bakPath = "/backup/$($bak.Name)"
+Info "`nReading logical file names (RESTORE FILELISTONLY)..."
+$filelist = docker exec $ContainerName $sqlcmd -S localhost -U sa -P $SaPassword -C -Q "SET NOCOUNT ON; RESTORE FILELISTONLY FROM DISK = N'$bakPath';" 2>&1
+if ($LASTEXITCODE -ne 0) {
+  Info ($filelist | Out-String)
+  Fail "RESTORE FILELISTONLY failed."
 }
 
-Write-Host ""
-Write-Host "============================================================"
-Write-Host "NEXT STEPS"
-Write-Host "============================================================"
-Write-Host ""
-Write-Host "1) Extract archive (if not done):"
-if ($sevenZip) {
-  Write-Host "   7z x `"$($archives[0].FullName)`" -o`"$extractDir`" -y"
-} else {
-  Write-Host "   Install 7-Zip, then: 7z x <archive> -o`"$extractDir`" -y"
+# Parse logical names from tabular output
+$lines = $filelist -split "`n" | Where-Object { $_.Trim().Length -gt 0 }
+$mdfRow = $lines | Where-Object { $_ -match "\.mdf" } | Select-Object -First 1
+$ldfRow = $lines | Where-Object { $_ -match "\.ldf" } | Select-Object -First 1
+
+if (-not $mdfRow -or -not $ldfRow) {
+  Info "`n--- FILELISTONLY raw output ---"
+  Info ($filelist | Out-String)
+  Fail "Could not parse logical file names. See raw output above."
 }
-Write-Host ""
-Write-Host "2) Copy .bak into container:"
-Write-Host "   docker cp `"$extractDir\YOUR_BACKUP.bak`" ${containerName}:/var/opt/mssql/backup/"
-Write-Host ""
-Write-Host "3) Discover logical file names (required for RESTORE):"
-Write-Host "   docker exec -it $containerName /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P `"`$env:TF_MSSQL_SA_PASSWORD`" -C -Q `"RESTORE FILELISTONLY FROM DISK = N'/var/opt/mssql/backup/YOUR_BACKUP.bak'`""
-Write-Host ""
-Write-Host "4) Restore (template -- replace logical names from step 3):"
-Write-Host "   docker exec -it $containerName /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P `"`$env:TF_MSSQL_SA_PASSWORD`" -C -Q `""
-Write-Host "     RESTORE DATABASE pacs_oltp"
-Write-Host "     FROM DISK = N'/var/opt/mssql/backup/YOUR_BACKUP.bak'"
-Write-Host "     WITH MOVE N'<LogicalDataName>' TO N'/var/opt/mssql/pacs_oltp.mdf',"
-Write-Host "          MOVE N'<LogicalLogName>'  TO N'/var/opt/mssql/pacs_oltp_log.ldf',"
-Write-Host "          RECOVERY, REPLACE`""
-Write-Host ""
-Write-Host "5) Wire TerraFusion adapter:"
-Write-Host "   Set connection string: Server=localhost,1433;Database=pacs_oltp;User Id=sa;Password=<secret>;TrustServerCertificate=True"
-Write-Host "   Update appsettings.Development.json or set env var PACS__ConnectionString"
+
+$logicalData = ($mdfRow.Trim() -split "\s+")[0]
+$logicalLog  = ($ldfRow.Trim() -split "\s+")[0]
+Info "  Logical data: $logicalData"
+Info "  Logical log:  $logicalLog"
+
+# --- RESTORE DATABASE ---
+$dataTarget = "/var/opt/mssql/${DbName}.mdf"
+$logTarget  = "/var/opt/mssql/${DbName}_log.ldf"
+
+Info "`nRestoring database '$DbName'..."
+$restore = docker exec $ContainerName $sqlcmd -S localhost -U sa -P $SaPassword -C -Q "
+RESTORE DATABASE [$DbName]
+FROM DISK = N'$bakPath'
+WITH MOVE N'$logicalData' TO N'$dataTarget',
+     MOVE N'$logicalLog'  TO N'$logTarget',
+     RECOVERY, REPLACE;" 2>&1
+
+if ($LASTEXITCODE -ne 0) {
+  Info ($restore | Out-String)
+  Fail "RESTORE DATABASE failed."
+}
+Info "Restore completed."
+
+# --- Sanity check ---
+Info "`nSanity check..."
+$check = docker exec $ContainerName $sqlcmd -S localhost -U sa -P $SaPassword -C -Q "SET NOCOUNT ON; SELECT name FROM sys.databases WHERE name = '$DbName'; SELECT 1 AS ok;" 2>&1
+if ($LASTEXITCODE -ne 0 -or $check -notmatch $DbName) {
+  Info ($check | Out-String)
+  Fail "Sanity check failed."
+}
+
+Info "`n============================================================"
+Info "SUCCESS: $DbName restored and verified."
+Info "============================================================"
+Info ""
+Info "Connection string for TerraFusion (PacsSqlAdapter reads ConnectionStrings:PacsConnection):"
+Info "  Server=localhost,1433;Database=$DbName;User Id=sa;Password=<secret>;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"
+Info ""
+Info "Set via environment variable:"
+Info '  $env:ConnectionStrings__PacsConnection = "Server=localhost,1433;Database=pacs_oltp;User Id=sa;Password=<secret>;TrustServerCertificate=True;Encrypt=True;Application Name=TerraFusion-OS;"'
