@@ -30,9 +30,9 @@ export function QuantumDesktopShell() {
           left: 0,
           right: 0,
           height: '64px',
-          background: 'hsl(var(--tf-surface-dark-hs) 7% / 0.95)',
+          background: 'color-mix(in srgb, var(--tf-surface-dark) 95%, transparent)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.2)',
+          borderBottom: '1px solid color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -178,11 +178,11 @@ export function QuantumDesktopShell() {
               key={index}
               onClick={() => setCurrentModule(module.name)}
               style={{
-                background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.05)',
+                background: 'color-mix(in srgb, var(--tf-transcend-cyan) 5%, transparent)',
                 border:
                   currentModule === module.name
-                    ? '2px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)'
-                    : '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.2)',
+                    ? '2px solid color-mix(in srgb, var(--tf-transcend-cyan) 50%, transparent)'
+                    : '1px solid color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent)',
                 borderRadius: '16px',
                 padding: '24px',
                 cursor: 'pointer',
@@ -192,7 +192,7 @@ export function QuantumDesktopShell() {
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
                 e.currentTarget.style.boxShadow =
-                  '0 10px 30px hsl(var(--tf-transcend-cyan-hs) 50% / 0.2)';
+                  '0 10px 30px color-mix(in srgb, var(--tf-transcend-cyan) 20%, transparent)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
@@ -240,8 +240,8 @@ export function QuantumDesktopShell() {
               bottom: '24px',
               left: '50%',
               transform: 'translateX(-50%)',
-              background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.1)',
-              border: '1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
+              background: 'color-mix(in srgb, var(--tf-transcend-cyan) 10%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--tf-transcend-cyan) 30%, transparent)',
               borderRadius: '12px',
               padding: '16px 24px',
               backdropFilter: 'blur(16px)',
@@ -258,3 +258,4 @@ export function QuantumDesktopShell() {
 }
 
 export default QuantumDesktopShell;
+
