@@ -26,9 +26,13 @@ pnpm -C frontend exec vite --host   # boots in ~2s → http://localhost:5173
 ```powershell
 cd backend
 dotnet build TerraFusion.sln         # 0 warnings, 0 errors
+$env:ASPNETCORE_ENVIRONMENT = "Development"   # REQUIRED for PACS connection
 dotnet run --project src/TerraFusion.API/TerraFusion.API.csproj
 # → http://localhost:5000/health returns 200
 ```
+
+> **Important:** The PACS connection string lives in `appsettings.Development.json`.
+> Without `ASPNETCORE_ENVIRONMENT=Development`, PACS endpoints return 500.
 
 ### Both at once
 ```powershell
@@ -129,6 +133,7 @@ cd frontend && pnpm exec tsc --noEmit       # Type-check
 
 # Backend
 cd backend && dotnet build TerraFusion.sln  # Build
+$env:ASPNETCORE_ENVIRONMENT = "Development"  # Required for PACS
 cd backend && dotnet run --project src/TerraFusion.API/TerraFusion.API.csproj
 
 # Tests
@@ -138,6 +143,8 @@ pnpm run test:governed                      # Type-check + phase83
 
 # PACS
 curl http://localhost:5000/ops/pacs/proof   # Contract proof (needs API + Docker)
+curl http://localhost:5000/ops/pacs/properties?page=1   # Paginated parcel list
+curl http://localhost:5000/ops/pacs/property/<geoId>    # Single parcel lookup
 curl http://localhost:5000/health           # API health
 ```
 

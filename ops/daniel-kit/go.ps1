@@ -150,7 +150,10 @@ if ($allPassed) {
     Write-Host "    • Read docs/daniel/01-pilot-one-pager.md" -ForegroundColor Gray
     Write-Host "    • For PACS data proof:  pwsh 0_restore.ps1 → 1 → 2 → 3" -ForegroundColor Gray
     Write-Host "    • Frontend dev server:  pnpm -C frontend exec vite --host" -ForegroundColor Gray
-    Write-Host "    • Backend API:          cd backend && dotnet run --project src/TerraFusion.API/TerraFusion.API.csproj" -ForegroundColor Gray
+    Write-Host "    • Backend API:          cd backend" -ForegroundColor Gray
+    Write-Host "                            `$env:ASPNETCORE_ENVIRONMENT = 'Development'" -ForegroundColor Gray
+    Write-Host "                            dotnet run --project src/TerraFusion.API/TerraFusion.API.csproj" -ForegroundColor Gray
+    Write-Host "      (ASPNETCORE_ENVIRONMENT=Development is required for PACS connection)" -ForegroundColor DarkGray
     exit 0
 } else {
     Write-Host "  $passCount/$totalCount passed. Fix failures above before continuing." -ForegroundColor Red
