@@ -15,8 +15,8 @@ Government Reliability Through Autonomous CSS Recovery
 
   /* Backup System Values */
   --tf-fallback-primary: var(--tf-network-blue);
-  --tf-fallback-background: #1a1a1a;
-  --tf-fallback-text: #ffffff;
+  --tf-fallback-background: hsl(var(--tf-surface-dark-hs) 10%);
+  --tf-fallback-text: hsl(var(--tf-text-primary-hs) 100%);
   --tf-fallback-spacing: 16px;
   --tf-fallback-font: -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -53,7 +53,10 @@ Government Reliability Through Autonomous CSS Recovery
   background: var(--tf-fallback-background);
 
   /* Enhanced gradient with fallback */
-  background: var(--tf-gradient-dark, linear-gradient(180deg, #0b1020 0%, var(--tf-void-black) 100%));
+  background: var(
+    --tf-gradient-dark,
+    linear-gradient(180deg, hsl(var(--tf-surface-dark-hs) 8%) 0%, var(--tf-void-black) 100%)
+  );
 
   /* Modern features with feature detection */
   @supports (background: color-mix(in srgb, red 50%, blue)) {
@@ -65,7 +68,7 @@ Government Reliability Through Autonomous CSS Recovery
     backdrop-filter: blur(20px);
   }
   @supports not (backdrop-filter: blur(10px)) {
-    background: rgba(11, 16, 32, 0.95);
+    background: hsl(var(--tf-surface-dark-hs) 8% / 0.95);
   }
 }
 
@@ -132,7 +135,7 @@ Government Reliability Through Autonomous CSS Recovery
   .tf-performance-adaptive {
     /* Reduced enhancement mode */
     backdrop-filter: blur(10px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
 
     /* Simplified animations */
     transition:
@@ -147,7 +150,7 @@ Government Reliability Through Autonomous CSS Recovery
     /* Minimal enhancement mode */
     backdrop-filter: none;
     background: var(--tf-fallback-background);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
 
     /* No animations */
     animation: none;
@@ -163,8 +166,16 @@ Government Reliability Through Autonomous CSS Recovery
     /* Load full resources */
     background-image:
       var(--tf-gradient-hero),
-      radial-gradient(circle at 20% 50%, rgba(0, 153, 255, 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 80% 50%, rgba(0, 255, 238, 0.2) 0%, transparent 50%);
+      radial-gradient(
+        circle at 20% 50%,
+        hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.3) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 50%,
+        hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2) 0%,
+        transparent 50%
+      );
 
     /* Full animation suite */
     animation:
@@ -317,8 +328,12 @@ Government Reliability Through Autonomous CSS Recovery
 /* CSS Error Recovery */
 .tf-error-boundary {
   /* Graceful error state */
-  background: linear-gradient(45deg, rgba(255, 0, 0, 0.1) 0%, rgba(255, 100, 100, 0.1) 100%);
-  border: 1px solid rgba(255, 0, 0, 0.3);
+  background: linear-gradient(
+    45deg,
+    hsl(var(--tf-error-hs) var(--tf-l-50) / 0.1) 0%,
+    hsl(var(--tf-error-hs) var(--tf-l-70) / 0.1) 100%
+  );
+  border: 1px solid hsl(var(--tf-error-hs) var(--tf-l-50) / 0.3);
   border-radius: var(--tf-space-1, 4px);
   padding: var(--tf-space-4, 16px);
 
@@ -353,7 +368,7 @@ Government Reliability Through Autonomous CSS Recovery
   background: color-mix(in srgb, var(--tf-primary) 90%, transparent);
 
   /* Level 2: Intermediate fallback */
-  background: rgba(0, 153, 255, 0.9);
+  background: hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.9);
 
   /* Level 3: Basic fallback */
   background: var(--tf-network-blue);
@@ -363,7 +378,7 @@ Government Reliability Through Autonomous CSS Recovery
     background: color-mix(in srgb, var(--tf-primary) 90%, transparent);
   }
   @supports not (color-mix(in srgb, red 50%, blue)) {
-    background: rgba(0, 153, 255, 0.9);
+    background: hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.9);
   }
 }
 
@@ -388,9 +403,9 @@ Government Reliability Through Autonomous CSS Recovery
   }
 
   @supports (backdrop-filter: blur(10px)) {
-    background: rgba(0, 153, 255, 0.1);
+    background: hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.1);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 153, 255, 0.3);
+    border: 1px solid hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.3);
   }
 
   @supports (container-type: inline-size) {
@@ -412,7 +427,7 @@ Government Reliability Through Autonomous CSS Recovery
   position: fixed;
   top: 10px;
   right: 10px;
-  background: rgba(0, 0, 0, 0.8);
+  background: hsl(var(--tf-tokens-black-hs) 0% / 0.8);
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
@@ -441,7 +456,7 @@ Government Reliability Through Autonomous CSS Recovery
     calc((1 - var(--tf-render-performance)) * 255) 0;
 
   /* Convert to actual color values */
-  background: hsl(calc(var(--tf-render-performance) * 120), 70%, 50%);
+  background: hsl(var(--tf-success-hs) var(--tf-l-50));
 }
 
 /* ===== SELF-HEALING UTILITIES ===== */
@@ -525,7 +540,7 @@ Government Reliability Through Autonomous CSS Recovery
 .tf-medium-performance {
   /* Reduced feature set */
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
