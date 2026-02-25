@@ -172,7 +172,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-text-primary-hs) 100% / 0.9)',
                 marginBottom: '24px',
                 maxWidth: '800px',
                 margin: '0 auto 24px',
@@ -194,7 +194,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-text-primary-hs) 100% / 0.9)',
                 marginBottom: '48px',
                 maxWidth: '800px',
                 margin: '0 auto 48px',
@@ -262,7 +262,7 @@ const ABTestingFramework: React.FC = () => {
                 <div
                   key={index}
                   style={{
-                    background: 'rgba(0, 255, 238, 0.1)',
+                    background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.1)',
                     padding: '20px',
                     borderRadius: '12px',
                     border: '1px solid var(--tf-transcend-highlight)',
@@ -280,7 +280,7 @@ const ABTestingFramework: React.FC = () => {
                   <div
                     style={{
                       fontSize: '14px',
-                      color: 'rgba(255, 255, 255, 0.7)',
+                      color: 'hsl(var(--tf-text-primary-hs) 100% / 0.7)',
                       marginTop: '5px',
                     }}
                   >
@@ -294,7 +294,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-text-primary-hs) 100% / 0.9)',
                 marginBottom: '48px',
                 maxWidth: '800px',
                 margin: '0 auto 48px',
@@ -331,7 +331,7 @@ const ABTestingFramework: React.FC = () => {
 
             <div
               style={{
-                background: 'rgba(255, 0, 0, 0.1)',
+                background: 'hsl(var(--tf-error-hs) 50% / 0.1)',
                 border: '2px solid var(--tf-error-red)',
                 padding: '15px 30px',
                 borderRadius: '50px',
@@ -350,7 +350,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-text-primary-hs) 100% / 0.9)',
                 marginBottom: '24px',
                 maxWidth: '800px',
                 margin: '0 auto 24px',
@@ -407,7 +407,7 @@ const ABTestingFramework: React.FC = () => {
               style={{
                 fontSize: 'clamp(18px, 3vw, 24px)',
                 fontWeight: 300,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'hsl(var(--tf-text-primary-hs) 100% / 0.9)',
                 marginBottom: '48px',
                 maxWidth: '800px',
                 margin: '0 auto 48px',
@@ -481,7 +481,7 @@ const ABTestingFramework: React.FC = () => {
           position: 'fixed',
           top: '20px',
           right: '20px',
-          background: 'rgba(26, 31, 58, 0.95)',
+          background: 'hsl(var(--tf-surface-dark-hs) 17% / 0.95)',
           padding: '20px',
           borderRadius: '12px',
           border: '1px solid var(--tf-transcend-highlight)',
@@ -549,7 +549,7 @@ const ABTestingFramework: React.FC = () => {
 
         <div
           style={{
-            background: 'rgba(0, 0, 0, 0.3)',
+            background: 'hsl(var(--tf-text-primary-hs) 0% / 0.3)',
             padding: '10px',
             borderRadius: '6px',
             fontSize: '12px',
