@@ -113,6 +113,11 @@ export default defineConfig(({ mode }) => {
           secure: false,
           ws: true, // WebSocket support for SignalR
         },
+        '/ops': {
+          target: process.env.VITE_API_URL || 'http://localhost:5000',
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
 

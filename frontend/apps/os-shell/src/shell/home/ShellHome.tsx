@@ -35,7 +35,7 @@ import {
     isWorkbenchSuite,
     type SuiteId,
 } from '../../config/suiteRegistry';
-import { useParcelContext } from '../../context/parcelContext';
+import { useParcelContext, useRecentParcels } from '../../context/parcelContext';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
@@ -322,33 +322,20 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
     [parcelContext?.parcelId]
   );
 
-  // Mock recent items (in production, this would come from a store)
-  const recentItems: RecentItem[] = [
-    {
-      id: '1',
-      type: 'parcel',
-      title: '12345-001',
-      subtitle: '123 Main St, Benton County',
-      timestamp: new Date(),
-      route: '/property/12345-001',
-    },
-    {
-      id: '2',
-      type: 'parcel',
-      title: '67890-002',
-      subtitle: '456 Oak Ave, Benton County',
-      timestamp: new Date(),
-      route: '/property/67890-002',
-    },
-    {
-      id: '3',
-      type: 'case',
-      title: 'APL-2026-0042',
-      subtitle: 'Valuation Appeal',
-      timestamp: new Date(),
-      route: '/suites/terraforge/appeal/APL-2026-0042',
-    },
-  ];
+  // Recent parcels from parcel context store (session-persisted)
+  const storedRecentParcels = useRecentParcels();
+  const recentItems: RecentItem[] = useMemo(
+    () =>
+      storedRecentParcels.map((parcelId, idx) => ({
+        id: String(idx),
+        type: 'parcel' as const,
+        title: parcelId,
+        subtitle: 'Benton County',
+        timestamp: new Date(),
+        route: `/property/${parcelId}`,
+      })),
+    [storedRecentParcels]
+  );
 
   const handleSearch = useCallback(
     (query: string) => {
