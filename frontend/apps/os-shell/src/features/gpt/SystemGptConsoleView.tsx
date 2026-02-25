@@ -393,10 +393,10 @@ export const SystemGptConsoleView: React.FC = () => {
       className='flex h-full w-full flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950/90 p-4 text-sm text-slate-50'
     >
       {/* Header */}
-      <div className='mb-4 flex items-center justify-between rounded-2xl border border-slate-800/60 bg-slate-900/70 px-4 py-3 shadow-[0_18px_45px_rgba(0,0,0,0.60)] backdrop-blur-xl'>
+      <div className='mb-4 flex items-center justify-between rounded-2xl border border-slate-800/60 bg-slate-900/70 px-4 py-3 shadow-[0_18px_45px_hsl(var(--tf-tokens-black-hs)_0%_/_0.60)] backdrop-blur-xl'>
         <div className='flex items-center gap-3'>
           {/* Control Center icon */}
-          <div className='relative h-8 w-8 rounded-full bg-gradient-to-br from-violet-400 via-fuchsia-400 to-pink-400 shadow-[0_0_25px_rgba(167,139,250,0.8)]'>
+          <div className='relative h-8 w-8 rounded-full bg-gradient-to-br from-violet-400 via-fuchsia-400 to-pink-400 shadow-[0_0_25px_hsl(var(--tf-info-hs)_60%_/_0.8)]'>
             <div className='absolute inset-[2px] rounded-full bg-slate-950/80 backdrop-blur' />
             <div className='absolute inset-[4px] flex items-center justify-center text-lg'>🎛️</div>
           </div>
@@ -453,8 +453,8 @@ export const SystemGptConsoleView: React.FC = () => {
             disabled={safeModeLoading || !diagnostics}
             className={`rounded-full border px-3 py-1 text-xs font-medium transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
               diagnostics?.mode === 'SafeMode'
-                ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 hover:shadow-[0_0_12px_rgba(16,185,129,0.4)]'
-                : 'border-rose-500/50 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 hover:shadow-[0_0_12px_rgba(244,63,94,0.4)]'
+                ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 hover:shadow-[0_0_12px_hsl(var(--tf-success-hs)_52%_/_0.4)]'
+                : 'border-rose-500/50 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 hover:shadow-[0_0_12px_hsl(var(--tf-error-hs)_60%_/_0.4)]'
             }`}
             title={
               diagnostics?.mode === 'SafeMode'
@@ -473,7 +473,7 @@ export const SystemGptConsoleView: React.FC = () => {
           <button
             onClick={() => void handleDownloadSnapshot()}
             disabled={downloading || !diagnostics}
-            className='rounded-full border border-sky-500/50 bg-sky-500/10 px-3 py-1 text-xs text-sky-300 transition-all hover:bg-sky-500/20 hover:shadow-[0_0_12px_rgba(14,165,233,0.4)] disabled:cursor-not-allowed disabled:opacity-50'
+            className='rounded-full border border-sky-500/50 bg-sky-500/10 px-3 py-1 text-xs text-sky-300 transition-all hover:bg-sky-500/20 hover:shadow-[0_0_12px_hsl(var(--tf-network-blue-hs)_61%_/_0.4)] disabled:cursor-not-allowed disabled:opacity-50'
             title='Download AI Health Snapshot (JSON)'
           >
             {downloading ? '⏳ Downloading…' : '📥 Download Snapshot'}
@@ -482,7 +482,7 @@ export const SystemGptConsoleView: React.FC = () => {
           {/* Explain This button */}
           <button
             onClick={() => void handleExplainThis()}
-            className='rounded-full border border-fuchsia-500/50 bg-fuchsia-500/10 px-3 py-1 text-xs text-fuchsia-300 transition-all hover:bg-fuchsia-500/20 hover:shadow-[0_0_12px_rgba(217,70,239,0.4)]'
+            className='rounded-full border border-fuchsia-500/50 bg-fuchsia-500/10 px-3 py-1 text-xs text-fuchsia-300 transition-all hover:bg-fuchsia-500/20 hover:shadow-[0_0_12px_hsl(var(--tf-info-hs)_60%_/_0.4)]'
             title='Explain this view'
           >
             ❓ Explain
@@ -1030,7 +1030,7 @@ export const SystemGptConsoleView: React.FC = () => {
       {/* Safe Mode Confirmation Dialog - Phase 17 */}
       {showSafeModeDialog && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm'>
-          <div className='w-full max-w-md rounded-2xl border border-rose-800/60 bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950/30 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.8)]'>
+          <div className='w-full max-w-md rounded-2xl border border-rose-800/60 bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950/30 p-6 shadow-[0_25px_60px_hsl(var(--tf-tokens-black-hs)_0%_/_0.8)]'>
             <div className='mb-4 flex items-center gap-3'>
               <div className='flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/20 text-2xl'>
                 🛑
