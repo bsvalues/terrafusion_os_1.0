@@ -85,6 +85,8 @@ public class PacsOpsController : ControllerBase
                     Version = ContractVersion,
                     ManifestSha256 = ComputeManifestHash()
                 },
+                DbName = connectionStatus.DatabaseName ?? "unknown",
+                Server = connectionStatus.ServerName ?? "unknown",
                 Databases = new DatabaseStatus
                 {
                     PacsOltp = proof.DatabaseConnection.Passed ? "reachable" : "unreachable",
@@ -262,6 +264,8 @@ public sealed class PacsProofResponse
 {
     public bool Enabled { get; init; }
     public ContractInfo Contract { get; init; } = new();
+    public string DbName { get; init; } = "unknown";
+    public string Server { get; init; } = "unknown";
     public DatabaseStatus Databases { get; init; } = new();
     public ViewStatus Views { get; init; } = new();
     public IndexStatus Indexes { get; init; } = new();
