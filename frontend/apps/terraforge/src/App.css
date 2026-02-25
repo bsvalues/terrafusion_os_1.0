@@ -1,11 +1,18 @@
 :root {
   color-scheme: dark;
+  --tf-app-surface-dark-hs: 222 47%;
+  --tf-app-slate-200-hs: 213 27%;
+  --tf-app-indigo-hs: 239 84%;
+  --tf-app-indigo-soft-hs: 230 94%;
+  --tf-app-indigo-bright-hs: 226 100%;
+  --tf-app-emerald-soft-hs: 152 76%;
+  --tf-app-white-hs: 0 0%;
 }
 
 .tf-root {
   min-height: 100vh;
-  background: #0f172a; /* slate-900 */
-  color: #e2e8f0; /* slate-200 */
+  background: hsl(var(--tf-app-surface-dark-hs) 11%);
+  color: hsl(var(--tf-app-slate-200-hs) 91%);
   padding: 32px;
   font-family:
     system-ui,
@@ -21,7 +28,7 @@
   gap: 16px;
   margin-bottom: 28px;
   padding-bottom: 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid hsl(var(--tf-app-white-hs) 100% / 0.08);
 }
 
 .tf-logo {
@@ -30,9 +37,9 @@
   width: 52px;
   height: 52px;
   border-radius: 16px;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.22);
-  color: #a5b4fc; /* indigo-200 */
+  background: hsl(var(--tf-app-indigo-hs) 67% / 0.1);
+  border: 1px solid hsl(var(--tf-app-indigo-hs) 67% / 0.22);
+  color: hsl(var(--tf-app-indigo-soft-hs) 81%);
 }
 
 .tf-title {
@@ -40,12 +47,12 @@
   font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: hsl(var(--tf-app-white-hs) 100%);
 }
 
 .tf-subtitle {
   margin: 4px 0 0;
-  color: rgba(226, 232, 240, 0.65);
+  color: hsl(var(--tf-app-slate-200-hs) 91% / 0.65);
   font-size: 14px;
 }
 
@@ -64,8 +71,8 @@
 .tf-card {
   border-radius: 18px;
   padding: 18px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: hsl(var(--tf-app-white-hs) 100% / 0.04);
+  border: 1px solid hsl(var(--tf-app-white-hs) 100% / 0.06);
   transition:
     border-color 120ms ease,
     transform 120ms ease;
@@ -74,7 +81,7 @@
 
 .tf-card:hover {
   transform: translateY(-1px);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: hsl(var(--tf-app-indigo-hs) 67% / 0.3);
 }
 
 .tf-cardTag {
@@ -90,28 +97,28 @@
 }
 
 .tf-indigo {
-  color: #c7d2fe;
+  color: hsl(var(--tf-app-indigo-bright-hs) 89%);
 }
 .tf-emerald {
-  color: #a7f3d0;
+  color: hsl(var(--tf-app-emerald-soft-hs) 80%);
 }
 
 .tf-cardBig {
   font-size: 22px;
   font-weight: 800;
-  color: #fff;
+  color: hsl(var(--tf-app-white-hs) 100%);
 }
 
 .tf-cardSmall {
   margin-top: 4px;
   font-size: 13px;
-  color: rgba(226, 232, 240, 0.55);
+  color: hsl(var(--tf-app-slate-200-hs) 91% / 0.55);
 }
 
 .tf-footer {
   margin-top: 26px;
   text-align: center;
   font-size: 11px;
-  color: rgba(226, 232, 240, 0.45);
+  color: hsl(var(--tf-app-slate-200-hs) 91% / 0.45);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
