@@ -403,7 +403,7 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: color-mix(in srgb, hsl(var(--tf-text-primary-hs) var(--tf-l-0)) 50%, transparent);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -411,9 +411,9 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .confirmation-modal {
-            background: white;
+            background: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px color-mix(in srgb, hsl(var(--tf-text-primary-hs) var(--tf-l-0)) 20%, transparent);
             min-width: 400px;
             max-width: 500px;
             max-height: 80vh;
@@ -421,15 +421,15 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .confirmation-modal.risk-write-low {
-            border-top: 4px solid #3b82f6;
+            border-top: 4px solid hsl(var(--tf-network-blue-hs) 48%);
           }
 
           .confirmation-modal.risk-write-high {
-            border-top: 4px solid #f59e0b;
+            border-top: 4px solid hsl(var(--tf-warning-hs) 50%);
           }
 
           .confirmation-modal.risk-irreversible {
-            border-top: 4px solid #ef4444;
+            border-top: 4px solid hsl(var(--tf-error-hs) 60%);
           }
 
           .modal-header {
@@ -437,7 +437,7 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             align-items: center;
             gap: 0.75rem;
             padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid hsl(var(--tf-neutral-hs) 91%);
           }
 
           .risk-icon {
@@ -460,18 +460,18 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .risk-badge.risk-write-low {
-            background: #dbeafe;
-            color: #1d4ed8;
+            background: hsl(var(--tf-network-blue-hs) 93%);
+            color: hsl(var(--tf-network-blue-hs) 48%);
           }
 
           .risk-badge.risk-write-high {
-            background: #fef3c7;
-            color: #b45309;
+            background: hsl(var(--tf-warning-hs) 89%);
+            color: hsl(var(--tf-warning-hs) 37%);
           }
 
           .risk-badge.risk-irreversible {
-            background: #fee2e2;
-            color: #b91c1c;
+            background: hsl(var(--tf-error-hs) 94%);
+            color: hsl(var(--tf-error-hs) 42%);
           }
 
           .modal-body {
@@ -486,7 +486,7 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             display: block;
             font-size: 1rem;
             font-family: monospace;
-            background: #f3f4f6;
+            background: hsl(var(--tf-neutral-hs) 96%);
             padding: 0.5rem 0.75rem;
             border-radius: 6px;
             margin-bottom: 0.5rem;
@@ -494,7 +494,7 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
 
           .tool-description {
             margin: 0.5rem 0 0 0;
-            color: #6b7280;
+            color: hsl(var(--tf-neutral-hs) 46%);
           }
 
           .reason-codes-section {
@@ -505,11 +505,11 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             display: block;
             font-weight: 600;
             margin-bottom: 0.75rem;
-            color: #374151;
+            color: hsl(var(--tf-neutral-hs) 27%);
           }
 
           .section-label .required {
-            color: #ef4444;
+            color: hsl(var(--tf-error-hs) 60%);
           }
 
           .reason-codes-grid {
@@ -520,9 +520,9 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
 
           .reason-code-option {
             padding: 0.75rem;
-            border: 2px solid #e5e7eb;
+            border: 2px solid hsl(var(--tf-neutral-hs) 91%);
             border-radius: 8px;
-            background: white;
+            background: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
             cursor: pointer;
             font-size: 0.875rem;
             font-weight: 500;
@@ -531,14 +531,14 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .reason-code-option:hover {
-            border-color: #3b82f6;
-            background: #eff6ff;
+            border-color: hsl(var(--tf-network-blue-hs) 48%);
+            background: hsl(var(--tf-network-blue-hs) 97%);
           }
 
           .reason-code-option.selected {
-            border-color: #3b82f6;
-            background: #3b82f6;
-            color: white;
+            border-color: hsl(var(--tf-network-blue-hs) 48%);
+            background: hsl(var(--tf-network-blue-hs) 48%);
+            color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
           }
 
           .supervisor-section {
@@ -549,9 +549,9 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             display: flex;
             gap: 0.75rem;
             padding: 1rem;
-            background: #fef3c7;
+            background: hsl(var(--tf-warning-hs) 89%);
             border-radius: 8px;
-            border: 1px solid #fbbf24;
+            border: 1px solid hsl(var(--tf-warning-hs) 56%);
           }
 
           .warning-icon {
@@ -560,13 +560,13 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
 
           .supervisor-warning strong {
             display: block;
-            color: #b45309;
+            color: hsl(var(--tf-warning-hs) 37%);
             margin-bottom: 0.25rem;
           }
 
           .supervisor-warning p {
             margin: 0.25rem 0;
-            color: #92400e;
+            color: hsl(var(--tf-warning-hs) 31%);
             font-size: 0.875rem;
           }
 
@@ -580,24 +580,24 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             justify-content: flex-end;
             gap: 0.75rem;
             padding: 1rem 1.5rem;
-            border-top: 1px solid #e5e7eb;
-            background: #f9fafb;
+            border-top: 1px solid hsl(var(--tf-neutral-hs) 91%);
+            background: hsl(var(--tf-neutral-hs) 98%);
             border-radius: 0 0 12px 12px;
           }
 
           .btn-cancel {
             padding: 0.625rem 1.25rem;
-            border: 1px solid #d1d5db;
+            border: 1px solid hsl(var(--tf-neutral-hs) 83%);
             border-radius: 6px;
-            background: white;
-            color: #374151;
+            background: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
+            color: hsl(var(--tf-neutral-hs) 27%);
             font-weight: 500;
             cursor: pointer;
             transition: all 0.15s;
           }
 
           .btn-cancel:hover:not(:disabled) {
-            background: #f3f4f6;
+            background: hsl(var(--tf-neutral-hs) 96%);
           }
 
           .btn-cancel:disabled {
@@ -615,30 +615,30 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .btn-confirm.risk-write-low {
-            background: #3b82f6;
-            color: white;
+            background: hsl(var(--tf-network-blue-hs) 48%);
+            color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
           }
 
           .btn-confirm.risk-write-low:hover:not(:disabled) {
-            background: #2563eb;
+            background: hsl(var(--tf-network-blue-hs) 55%);
           }
 
           .btn-confirm.risk-write-high {
-            background: #f59e0b;
-            color: white;
+            background: hsl(var(--tf-warning-hs) 50%);
+            color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
           }
 
           .btn-confirm.risk-write-high:hover:not(:disabled) {
-            background: #d97706;
+            background: hsl(var(--tf-warning-hs) 44%);
           }
 
           .btn-confirm.risk-irreversible {
-            background: #ef4444;
-            color: white;
+            background: hsl(var(--tf-error-hs) 60%);
+            color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
           }
 
           .btn-confirm.risk-irreversible:hover:not(:disabled) {
-            background: #dc2626;
+            background: hsl(var(--tf-error-hs) 50%);
           }
 
           .btn-confirm:disabled {
@@ -649,8 +649,8 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           .approval-section {
             margin-top: 1.5rem;
             padding: 1rem;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
+            background: hsl(var(--tf-error-hs) 97%);
+            border: 1px solid hsl(var(--tf-error-hs) 89%);
             border-radius: 8px;
           }
 
@@ -662,7 +662,7 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .approval-header strong {
-            color: #b91c1c;
+            color: hsl(var(--tf-error-hs) 42%);
           }
 
           .typed-phrase-section {
@@ -670,18 +670,18 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .typed-phrase-section code {
-            background: #fecaca;
+            background: hsl(var(--tf-error-hs) 89%);
             padding: 0.125rem 0.375rem;
             border-radius: 4px;
             font-size: 0.875rem;
-            color: #991b1b;
+            color: hsl(var(--tf-error-hs) 35%);
           }
 
           .phrase-input {
             width: 100%;
             margin-top: 0.5rem;
             padding: 0.75rem;
-            border: 2px solid #fca5a5;
+            border: 2px solid hsl(var(--tf-error-hs) 82%);
             border-radius: 6px;
             font-family: monospace;
             font-size: 0.875rem;
@@ -689,20 +689,20 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
 
           .phrase-input:focus {
             outline: none;
-            border-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+            border-color: hsl(var(--tf-error-hs) 60%);
+            box-shadow: 0 0 0 3px color-mix(in srgb, hsl(var(--tf-error-hs) 60%) 20%, transparent);
           }
 
           .phrase-input.valid {
-            border-color: #22c55e;
-            background: #f0fdf4;
+            border-color: hsl(var(--tf-success-hs) 45%);
+            background: hsl(var(--tf-success-hs) 97%);
           }
 
           .btn-generate-approval {
             width: 100%;
             padding: 0.75rem 1rem;
-            background: #dc2626;
-            color: white;
+            background: hsl(var(--tf-error-hs) 50%);
+            color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
             border: none;
             border-radius: 6px;
             font-weight: 600;
@@ -711,7 +711,7 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .btn-generate-approval:hover:not(:disabled) {
-            background: #b91c1c;
+            background: hsl(var(--tf-error-hs) 42%);
           }
 
           .btn-generate-approval:disabled {
@@ -723,8 +723,8 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             display: flex;
             gap: 0.5rem;
             padding: 0.75rem;
-            background: #fef3c7;
-            border: 1px solid #fbbf24;
+            background: hsl(var(--tf-warning-hs) 89%);
+            border: 1px solid hsl(var(--tf-warning-hs) 56%);
             border-radius: 6px;
             margin-top: 0.75rem;
           }
@@ -735,7 +735,7 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
 
           .token-error p {
             margin: 0;
-            color: #92400e;
+            color: hsl(var(--tf-warning-hs) 31%);
             font-size: 0.875rem;
           }
 
@@ -743,8 +743,8 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
             display: block;
             margin-top: 0.25rem;
             font-size: 0.75rem;
-            color: #b45309;
-            background: #fef9c3;
+            color: hsl(var(--tf-warning-hs) 37%);
+            background: hsl(var(--tf-warning-hs) 88%);
             padding: 0.125rem 0.5rem;
             border-radius: 4px;
           }
@@ -758,13 +758,13 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .token-status.valid {
-            background: #dcfce7;
-            border: 1px solid #22c55e;
+            background: hsl(var(--tf-success-hs) 93%);
+            border: 1px solid hsl(var(--tf-success-hs) 45%);
           }
 
           .token-status.expired {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
+            background: hsl(var(--tf-warning-hs) 89%);
+            border: 1px solid hsl(var(--tf-warning-hs) 50%);
           }
 
           .token-status .status-icon {
@@ -778,25 +778,25 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .token-status.valid p {
-            color: #15803d;
+            color: hsl(var(--tf-success-hs) 29%);
           }
 
           .token-status.expired p {
-            color: #b45309;
+            color: hsl(var(--tf-warning-hs) 37%);
           }
 
           .token-status small {
             display: block;
             font-size: 0.75rem;
-            color: #6b7280;
+            color: hsl(var(--tf-neutral-hs) 46%);
             font-family: monospace;
           }
 
           .btn-regenerate {
             margin-top: 0.5rem;
             padding: 0.5rem 1rem;
-            background: #f59e0b;
-            color: white;
+            background: hsl(var(--tf-warning-hs) 50%);
+            color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
             border: none;
             border-radius: 6px;
             font-weight: 500;
@@ -805,7 +805,7 @@ export const RiskConfirmationModal: React.FC<RiskConfirmationModalProps> = ({
           }
 
           .btn-regenerate:hover:not(:disabled) {
-            background: #d97706;
+            background: hsl(var(--tf-warning-hs) 44%);
           }
 
           .btn-regenerate:disabled {
