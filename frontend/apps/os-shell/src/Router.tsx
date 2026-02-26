@@ -3,15 +3,27 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
+import { CSSAmbientLayer } from './components/compositor/layers/CSSAmbientLayer';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
 
-// Loading component for Suspense fallback
+// Loading component for Suspense fallback — uses design tokens, not raw Tailwind
 const LoadingFallback = () => (
-  <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
+  <div
+    className='flex items-center justify-center min-h-screen'
+    style={{ background: 'hsl(var(--tf-bg))' }}
+  >
     <div className='text-center'>
-      <div className='inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mb-4'></div>
-      <p className='text-gray-300 text-lg'>Loading TerraFusion OS...</p>
+      <div
+        className='inline-block animate-spin rounded-full h-12 w-12 mb-4'
+        style={{
+          borderTop: '2px solid hsl(var(--tf-transcend-cyan-hs) 50%)',
+          borderBottom: '2px solid hsl(var(--tf-transcend-cyan-hs) 50%)',
+          borderLeft: '2px solid transparent',
+          borderRight: '2px solid transparent',
+        }}
+      />
+      <p style={{ color: 'hsl(var(--tf-muted))', fontSize: '1.1rem' }}>Loading TerraFusion OS...</p>
     </div>
   </div>
 );
@@ -106,12 +118,13 @@ const Router: React.FC = () => {
                 {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
                 <Route path='/login' element={<LoginPage />} />
 
-                {/* Phase 5: OS Landing Surface */}
+                {/* Phase 5: OS Landing Surface — ambient background matches Desktop */}
                 <Route
                   path='/'
                   element={
-                    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
-                      <ShellHome />
+                    <div className='relative min-h-screen overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
+                      <CSSAmbientLayer />
+                      <ShellHome className='relative z-10' />
                     </div>
                   }
                 />
@@ -186,7 +199,7 @@ const Router: React.FC = () => {
                     getViteEnv().DEV ? (
                       <LegacyMetricsViewer />
                     ) : (
-                      <div className='p-8 text-center text-gray-400'>
+                      <div className='p-8 text-center' style={{ color: 'hsl(var(--tf-muted))' }}>
                         Dev-only route. Not available in production.
                       </div>
                     )

@@ -446,8 +446,8 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
     <div
       className={className}
       style={{
-        minHeight: '100%',
-        padding: '0.75rem 1rem',
+        minHeight: '100vh',
+        padding: '0.75rem 1rem 4rem',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
@@ -678,48 +678,65 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
         </aside>
       </div>
 
-      {/* ─── Dock ─── */}
-      <LiquidPanel
-        variant='shell'
-        radius='xl'
+      {/* ─── Dock (macOS-style floating centered) ─── */}
+      {/* aria-hidden: dock is a visual mouse-shortcut bar; the suite grid above
+          provides the canonical accessible interface for screen readers & keyboard. */}
+      <nav
+        aria-hidden='true'
         style={{
-          padding: '0.4rem 0.65rem',
-          flexShrink: 0,
+          position: 'fixed',
+          bottom: '0.5rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 50,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.35rem',
-          alignSelf: 'center',
-          maxWidth: '36rem',
-          width: '100%',
+          gap: '0.25rem',
+          padding: '0.35rem 0.65rem',
+          height: '3rem',
+          borderRadius: '1rem',
+          background: 'hsl(var(--tf-bg) / 0.55)',
+          backdropFilter: 'saturate(180%) blur(24px)',
+          WebkitBackdropFilter: 'saturate(180%) blur(24px)',
+          border: '1px solid hsl(var(--tf-border) / 0.4)',
+          boxShadow: '0 8px 32px hsl(var(--tf-tokens-black-hs) 0% / 0.4), 0 0 0 0.5px hsl(var(--tf-border) / 0.2)',
+          maxWidth: 'calc(100vw - 2rem)',
         }}
       >
+        {/* Home button */}
+        <button
+          onClick={() => navigate('/desktop')}
+          tabIndex={-1}
+          title='Desktop'
+          className='flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-150 hover:bg-white/8 focus:outline-none'
+        >
+          <TerraSphere size={28} state='idle' />
+        </button>
+
+        {/* Divider */}
+        <div style={{ width: 1, height: 24, background: 'hsl(var(--tf-border) / 0.3)', flexShrink: 0 }} />
+
+        {/* Suite icons */}
         {suites.map((suite) => {
           const LucideIcon = getLucideIcon(SUITE_LUCIDE_MAP[suite.iconName] || suite.iconName);
           const variant = SUITE_SPHERE_VARIANT[suite.id] || 'default';
           return (
-            <TactileButton
+            <button
               key={`dock-${suite.id}`}
-              variant='ghost'
-              size='sm'
               onClick={() => launchSuite(suite)}
-              aria-label={`Launch ${suite.name}`}
+              tabIndex={-1}
               title={suite.name}
-              style={{
-                minWidth: '2.5rem',
-                justifyContent: 'center',
-                padding: '0.35rem',
-              }}
+              className='flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-150 hover:bg-white/8 focus:outline-none'
             >
               <TerraSphereIcon
                 size={28}
                 variant={variant}
                 glyph={<LucideIcon size={10} strokeWidth={2.5} />}
               />
-            </TactileButton>
+            </button>
           );
         })}
-      </LiquidPanel>
+      </nav>
     </div>
   );
 };
