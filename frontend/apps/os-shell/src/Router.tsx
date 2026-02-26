@@ -7,7 +7,7 @@ import { CSSAmbientLayer } from './components/compositor/layers/CSSAmbientLayer'
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
 
-// Loading component for Suspense fallback — uses design tokens, not raw Tailwind
+// Loading component for Suspense fallback — design tokens only (no raw Tailwind)
 const LoadingFallback = () => (
   <div
     className='flex items-center justify-center min-h-screen'
