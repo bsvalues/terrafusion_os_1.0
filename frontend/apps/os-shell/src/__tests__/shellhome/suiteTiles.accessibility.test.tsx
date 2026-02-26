@@ -39,10 +39,10 @@ jest.mock('../../context/parcelContext', () => ({
     setContext: jest.fn(),
     clearContext: jest.fn(),
   })),
-  useParcelContextStore: jest.fn(() => ({
-    context: null,
-    recentParcels: [],
-  })),
+  useParcelContextStore: jest.fn((selector?: (s: unknown) => unknown) => {
+    const state = { context: null, recentParcels: [] as string[] };
+    return selector ? selector(state) : state;
+  }),
   useRecentParcels: jest.fn(() => []),
 }));
 
