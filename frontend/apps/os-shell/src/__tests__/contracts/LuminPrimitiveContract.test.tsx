@@ -157,7 +157,7 @@ describe('Lumin Primitive Contract', () => {
     const chrome = screen.getByTestId('tf-window-chrome');
     const style = chrome.getAttribute('style') ?? '';
     // Shadow uses token-backed hsl
-    expect(style).toContain('hsl(var(--tf-accent)');
+    expect(style).toContain('hsl(var(--tf-bg)');
     // Border uses token-backed hsl
     expect(style).toContain('hsl(var(--tf-');
     // No raw rgba in inline style
@@ -188,7 +188,7 @@ describe('Lumin Primitive Contract', () => {
     const { unmount } = render(<Window window={mockWindow} />);
     const activeChrome = screen.getByTestId('tf-window-chrome');
     expect(activeChrome).toHaveStyle({
-      border: '1px solid hsl(var(--tf-accent) / 0.5)',
+      border: '0.5px solid hsl(var(--tf-text) / 0.12)',
     });
     unmount();
 
@@ -203,7 +203,7 @@ describe('Lumin Primitive Contract', () => {
     render(<Window window={mockWindow} />);
     const inactiveChrome = screen.getByTestId('tf-window-chrome');
     expect(inactiveChrome).toHaveStyle({
-      border: '1px solid hsl(var(--tf-border) / 0.5)',
+      border: '0.5px solid hsl(var(--tf-border) / 0.3)',
     });
   });
 

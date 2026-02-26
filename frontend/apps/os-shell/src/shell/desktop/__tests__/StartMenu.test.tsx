@@ -117,8 +117,8 @@ describe('StartMenu Component', () => {
       render(<StartMenu />);
 
       const startMenu = screen.getByRole('menu', { name: /start menu/i });
-      expect(startMenu).toHaveClass('bottom-14'); // Above 48px taskbar
-      expect(startMenu).toHaveClass('left-1');
+      expect(startMenu).toHaveClass('bottom-16'); // Above floating dock
+      expect(startMenu).toHaveClass('left-4');
     });
 
     it('uses glass morphism styling', () => {

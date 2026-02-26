@@ -118,9 +118,15 @@ const Router: React.FC = () => {
                 {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
                 <Route path='/login' element={<LoginPage />} />
 
-                {/* Phase 5: OS Landing Surface — ambient background matches Desktop */}
+                {/* Root: Desktop Shell — the OS experience (windows, dock, start menu) */}
+                <Route path='/' element={<App />} />
+
+                {/* Alias: /desktop renders the same Desktop shell */}
+                <Route path='/desktop' element={<App />} />
+
+                {/* Launchpad: Tahoe tile grid (suite navigation surface) */}
                 <Route
-                  path='/'
+                  path='/launchpad'
                   element={
                     <div className='relative min-h-screen overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
                       <CSSAmbientLayer />
@@ -128,9 +134,6 @@ const Router: React.FC = () => {
                     </div>
                   }
                 />
-
-                {/* Desktop Shell - Full Windows-like experience */}
-                <Route path='/desktop' element={<App />} />
 
                 {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
                 <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
