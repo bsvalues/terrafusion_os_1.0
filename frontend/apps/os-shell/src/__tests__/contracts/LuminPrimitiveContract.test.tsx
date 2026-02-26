@@ -103,8 +103,8 @@ describe('Lumin Primitive Contract', () => {
     const nav = screen.getByRole('navigation');
     expect(nav).toBeInTheDocument();
     const style = nav.getAttribute('style') ?? '';
-    // Background uses hsl(var(--tf-bg)) token
-    expect(style).toContain('hsl(var(--tf-bg)');
+    // Background uses hsl(var(--tf-surface-dark-hs)) token
+    expect(style).toContain('hsl(var(--tf-surface-dark-hs)');
     // Border uses hsl(var(--tf-border)) token (not accent)
     expect(style).toContain('hsl(var(--tf-border)');
     // No raw rgba in inline style
@@ -231,20 +231,15 @@ describe('Lumin Primitive Contract', () => {
     // Root uses token var for background
     expect(cls).toContain('var(--tf-void-black)');
 
-    // Gradient child uses token vars
-    const gradientDiv = layer.querySelector('[class*="bg-gradient"]');
-    expect(gradientDiv).not.toBeNull();
-    const gradientCls = gradientDiv!.getAttribute('class') ?? '';
-    expect(gradientCls).toContain('var(--tf-surface-dark)');
-    expect(gradientCls).toContain('var(--tf-surface)');
-    expect(gradientCls).toContain('var(--gray-950)');
-
-    // Vignette uses token var in inline style
+    // Gradient child uses token vars in inline styles (CSSAmbientLayer uses inline style gradients)
     const allDivs = layer.querySelectorAll('div');
-    const vignetteStyles = Array.from(allDivs)
+    const allStyles = Array.from(allDivs)
       .map((d) => d.getAttribute('style') ?? '')
       .join(' ');
-    expect(vignetteStyles).toContain('var(--tf-bg)');
+    expect(allStyles).toContain('var(--tf-surface-dark-hs)');
+
+    // Vignette uses token var in inline style
+    expect(allStyles).toContain('var(--tf-tokens-black-hs)');
   });
 
   it('WindowPeek contains no raw rgba() and uses token-backed shadows', () => {

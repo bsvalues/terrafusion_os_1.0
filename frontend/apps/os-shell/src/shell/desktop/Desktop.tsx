@@ -47,7 +47,7 @@ export interface DesktopProps {
 const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
   onOpenCommandPalette,
 }) => (
-  <div className='absolute top-3 left-1/2 -translate-x-1/2 z-[980] w-[min(96vw,1080px)] pointer-events-none'>
+  <div data-testid='desktop-top-system-bar' className='absolute top-3 left-1/2 -translate-x-1/2 z-[980] w-[min(96vw,1080px)] pointer-events-none'>
     <LiquidPanel
       variant='shell'
       className='pointer-events-auto flex items-center justify-between rounded-2xl px-4 py-2.5'
