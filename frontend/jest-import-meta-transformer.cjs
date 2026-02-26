@@ -49,6 +49,8 @@ module.exports = {
           .replace(/import\.meta\.env\.BASE_URL/g, '"/"')
           // Catch-all: any remaining VITE_ or uppercase env vars
           .replace(/import\.meta\.env\.[A-Z_]+/g, '""')
+          // Optional-chaining variant: import.meta?.env
+          .replace(/import\.meta\?\.env/g, '({})')
           // Bare import.meta.env object reference
           .replace(/import\.meta\.env/g, '({})');
 

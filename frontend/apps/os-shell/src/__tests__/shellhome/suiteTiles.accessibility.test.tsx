@@ -43,6 +43,7 @@ jest.mock('../../context/parcelContext', () => ({
     context: null,
     recentParcels: [],
   })),
+  useRecentParcels: jest.fn(() => []),
 }));
 
 // Mock stores
@@ -67,13 +68,16 @@ const renderShellHome = () => {
   );
 };
 
+/** Scope queries to the main stage area (excludes dock buttons) */
+const stageArea = () => within(screen.getByRole('main'));
+
 describe('Suite Tiles - Accessibility', () => {
   describe('Role, Name, and Description', () => {
     it('suite tiles have role=button', () => {
       renderShellHome();
 
       for (const suite of CONSTITUTIONAL_SUITES) {
-        const tile = screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') });
+        const tile = stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') });
         expect(tile).toBeInTheDocument();
       }
     });
@@ -94,11 +98,11 @@ describe('Suite Tiles - Accessibility', () => {
       renderShellHome();
 
       // Each suite should be findable by its display name
-      expect(screen.getByRole('button', { name: /terraforge/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /terraatlas/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /terradais/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /terradossier/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /terragpt/i })).toBeInTheDocument();
+      expect(stageArea().getByRole('button', { name: /terraforge/i })).toBeInTheDocument();
+      expect(stageArea().getByRole('button', { name: /terraatlas/i })).toBeInTheDocument();
+      expect(stageArea().getByRole('button', { name: /terradais/i })).toBeInTheDocument();
+      expect(stageArea().getByRole('button', { name: /terradossier/i })).toBeInTheDocument();
+      expect(stageArea().getByRole('button', { name: /terragpt/i })).toBeInTheDocument();
     });
 
     it('suite tiles have descriptions visible', () => {
@@ -118,7 +122,7 @@ describe('Suite Tiles - Accessibility', () => {
 
       // Get all suite tiles
       const tiles = CONSTITUTIONAL_SUITES.map((suite) =>
-        screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') })
+        stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') })
       );
 
       // Each tile should have tabIndex >= 0
@@ -131,7 +135,7 @@ describe('Suite Tiles - Accessibility', () => {
       const user = userEvent.setup();
       renderShellHome();
 
-      const firstTile = screen.getByRole('button', {
+      const firstTile = stageArea().getByRole('button', {
         name: new RegExp(CONSTITUTIONAL_SUITES[0].displayName, 'i'),
       });
 
@@ -147,7 +151,7 @@ describe('Suite Tiles - Accessibility', () => {
       const user = userEvent.setup();
       renderShellHome();
 
-      const firstTile = screen.getByRole('button', {
+      const firstTile = stageArea().getByRole('button', {
         name: new RegExp(CONSTITUTIONAL_SUITES[0].displayName, 'i'),
       });
 
@@ -180,7 +184,7 @@ describe('Suite Tiles - Accessibility', () => {
 
       // Get suite tiles in expected order
       const expectedOrder = CONSTITUTIONAL_SUITES.map((suite) =>
-        screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') })
+        stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') })
       );
 
       // Tab through and verify order is maintained
@@ -237,7 +241,7 @@ describe('Suite Tiles - Accessibility', () => {
       renderShellHome();
 
       for (const suite of CONSTITUTIONAL_SUITES) {
-        const tile = screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') });
+        const tile = stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') });
         // tabindex=0 means focusable and will show focus ring
         expect(tile).toHaveAttribute('tabindex', '0');
       }
@@ -259,7 +263,7 @@ describe('Suite Tiles - Accessibility', () => {
       renderShellHome();
 
       for (const suite of CONSTITUTIONAL_SUITES) {
-        const tile = screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') });
+        const tile = stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') });
 
         // Expect aria-label that includes intent
         const ariaLabel = tile.getAttribute('aria-label');
