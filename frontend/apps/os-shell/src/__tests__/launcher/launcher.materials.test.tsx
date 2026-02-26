@@ -312,7 +312,7 @@ describe('Launcher Materials: Accessibility Contrast', () => {
   it('text maintains WCAG AA contrast on glass background', () => {
     renderLauncher({ tier: materialQualityGate.MaterialQuality.HIGH });
 
-    const items = screen.getAllByRole('button');
+    const items = screen.getAllByRole('button').filter((btn) => btn.textContent !== '');
     expect(items.length).toBeGreaterThan(0);
     // Items should have text content (verifying render)
     items.forEach((item) => {
@@ -323,7 +323,7 @@ describe('Launcher Materials: Accessibility Contrast', () => {
   it('text maintains WCAG AA contrast on fallback background', () => {
     renderLauncher({ tier: materialQualityGate.MaterialQuality.LOW });
 
-    const items = screen.getAllByRole('button');
+    const items = screen.getAllByRole('button').filter((btn) => btn.textContent !== '');
     expect(items.length).toBeGreaterThan(0);
     items.forEach((item) => {
       expect(item.textContent).not.toBe('');

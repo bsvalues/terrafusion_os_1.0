@@ -8,10 +8,18 @@ import { getViteEnv } from './env/getViteEnv';
 
 // Loading component for Suspense fallback
 const LoadingFallback = () => (
-  <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
+  <div
+    className='flex items-center justify-center min-h-screen'
+    style={{ background: 'hsl(var(--tf-surface-dark-hs) 7%)' }}
+  >
     <div className='text-center'>
-      <div className='inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mb-4'></div>
-      <p className='text-gray-300 text-lg'>Loading TerraFusion OS...</p>
+      <div
+        className='inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 mb-4'
+        style={{ borderColor: 'hsl(var(--tf-transcend-cyan-hs) 53%)' }}
+      ></div>
+      <p className='text-lg' style={{ color: 'hsl(var(--tf-text-primary-hs) 100% / 0.86)' }}>
+        Loading TerraFusion OS...
+      </p>
     </div>
   </div>
 );
@@ -109,11 +117,7 @@ const Router: React.FC = () => {
                 {/* Phase 5: OS Landing Surface */}
                 <Route
                   path='/'
-                  element={
-                    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900'>
-                      <ShellHome />
-                    </div>
-                  }
+                  element={<ShellHome />}
                 />
 
                 {/* Desktop Shell - Full Windows-like experience */}

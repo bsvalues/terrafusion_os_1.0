@@ -10,6 +10,7 @@
 
 import { cn } from '@/lib/utils';
 import { Button } from '@terrafusion/ui';
+import { LayoutGrid } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ParcelContextIndicator } from '../../components/ParcelContext';
@@ -115,7 +116,7 @@ const TaskViewButton: React.FC<{ onClick: () => void; isOpen: boolean }> = ({
       )}
       title={t('taskbar.taskView')}
     >
-      <span className='text-xl'>🔲</span>
+      <LayoutGrid className='h-4 w-4 text-white/90' aria-hidden='true' />
     </button>
   );
 };
@@ -125,7 +126,7 @@ const SovereignDock: React.FC = () => {
 
   const handleNodeClick = (node: string) => {
     if (node === 'Files') {
-      openWindow('axiom-fs', 'AxiomFS', '🌀');
+      openWindow('axiom-fs', 'AxiomFS', 'Database');
     }
   };
 
@@ -378,22 +379,23 @@ export const Taskbar: React.FC<TaskbarProps> = ({
         aria-label={t('taskbar.ariaLabel')}
         className={cn(
           // Position
-          'fixed bottom-0 left-0 right-0 z-50',
+          'fixed bottom-0 left-1/2 -translate-x-1/2 z-50',
           // Size
           'h-12', // 48px
+          'w-[min(98vw,1120px)]',
           // Layout
-          'flex items-center px-1',
+          'flex items-center px-1 rounded-2xl mb-2',
           // Glass effect class for tests/consistency
           'backdrop-blur-xl',
           className
         )}
         style={{
-          // Immersive Glassmorphism — Lumin tokens only
-          background: 'hsl(var(--tf-bg) / 0.7)',
-          backdropFilter: 'saturate(200%) blur(30px)',
-          WebkitBackdropFilter: 'saturate(200%) blur(30px)',
-          borderTop: '1px solid hsl(var(--tf-border) / 0.5)',
-          boxShadow: 'var(--tf-shadow)',
+          // macOS-style floating dock treatment while preserving constitutional contracts
+          background: 'hsl(var(--tf-surface-dark-hs) 8% / 0.7)',
+          backdropFilter: 'saturate(185%) blur(26px)',
+          WebkitBackdropFilter: 'saturate(185%) blur(26px)',
+          border: '1px solid hsl(var(--tf-border) / 0.55)',
+          boxShadow: '0 10px 34px hsl(var(--tf-tokens-black-hs) 0% / 0.45)',
         }}
       >
         {/* Start Button */}

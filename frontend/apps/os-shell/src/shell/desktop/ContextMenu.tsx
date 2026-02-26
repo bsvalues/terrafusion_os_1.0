@@ -22,7 +22,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 export interface ContextMenuItem {
   id: string;
   label: string;
-  icon?: string;
+  icon?: React.ReactNode;
   disabled?: boolean;
   separator?: boolean;
   onClick?: () => void;
@@ -252,7 +252,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
           >
             <div className='flex items-center gap-2'>
               {item.icon && (
-                <span className='text-base' role='img' aria-hidden='true'>
+                <span className='text-base flex items-center justify-center' aria-hidden='true'>
                   {item.icon}
                 </span>
               )}
