@@ -432,17 +432,16 @@ namespace TerraFusion.AI.Services
 
         private async Task SimulateTaskCompletion(AgentState agent, TerraFusion.Core.DTOs.TaskRequest task)
         {
-            await Task.Delay(Random.Shared.Next(100, 500)); // Simulate work
+            await Task.Yield(); // Release caller without artificial delay
 
-            // Update agent state
+            // Update agent state after task completion
             agent.CurrentLoad = Math.Max(0, agent.CurrentLoad - 1);
             agent.TasksCompleted++;
             agent.Status = agent.CurrentLoad > 0 ? "active" : "idle";
             agent.LastHeartbeat = DateTime.UtcNow;
 
-            // Update success rate (simulated 95-99% success)
-            var taskSuccess = Random.Shared.NextDouble() > 0.05;
-            agent.SuccessRate = (agent.SuccessRate * (agent.TasksCompleted - 1) + (taskSuccess ? 1.0 : 0.0)) / agent.TasksCompleted;
+            // Task succeeded - maintain running success rate
+            agent.SuccessRate = (agent.SuccessRate * (agent.TasksCompleted - 1) + 1.0) / agent.TasksCompleted;
 
             Interlocked.Increment(ref _totalTasksCompleted);
         }
