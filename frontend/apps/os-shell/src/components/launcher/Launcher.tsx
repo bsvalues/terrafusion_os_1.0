@@ -14,7 +14,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { Pin, PinOff } from 'lucide-react';
+import { getLucideIcon } from '../../config/iconMap';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+import { TerraSphereIcon, type TerraSphereIconVariant } from '../../ui/brand/TerraSphereIcon';
 import { LiquidPanel, TactileButton } from '../../ui/materials';
 import { MaterialQuality, useMaterialQuality } from '../../ui/materials/materialQualityGate';
 import {
@@ -24,6 +27,12 @@ import {
     type LauncherItem,
     type LauncherSection
 } from './launcherModel';
+
+const INTENT_ICON_VARIANT: Record<LauncherItem['intent'], TerraSphereIconVariant> = {
+  workbench: 'assessment',
+  standalone: 'mapping',
+  system: 'system',
+};
 import { initPinsStore, usePinsStore } from './pinsStore';
 import { buildSectionsForEmptyQuery, rankItems, type RankingContext } from './ranking';
 import { initRecentsStore, useRecentsStore } from './recentsStore';
@@ -137,6 +146,7 @@ const LauncherItemButton: React.FC<{
   useTactile: boolean;
   prefersReducedMotion: boolean;
 }> = ({ item, isActive, isPinned, onTogglePin, onClick, useTactile, prefersReducedMotion }) => {
+  const Icon = getLucideIcon(item.iconName || item.icon || 'Activity');
   const intentBadge = getIntentBadgeText(item.intent);
 
   const buttonClasses = useTactile
@@ -150,7 +160,13 @@ const LauncherItemButton: React.FC<{
 
   const content = (
     <>
-      <span className='text-2xl mr-3'>{item.icon}</span>
+      <span className='mr-3' aria-hidden='true'>
+        <TerraSphereIcon
+          size={28}
+          variant={INTENT_ICON_VARIANT[item.intent]}
+          glyph={<Icon className='h-3 w-3' />}
+        />
+      </span>
       <div className='flex-1 min-w-0'>
         <div className='flex items-center gap-2'>
           <span className='launcher-item-label font-medium text-white truncate'>{item.label}</span>
@@ -178,7 +194,7 @@ const LauncherItemButton: React.FC<{
           aria-label={isPinned ? `Unpin ${item.label}` : `Pin ${item.label}`}
           aria-pressed={isPinned}
         >
-          {isPinned ? '📌' : '📍'}
+          {isPinned ? <PinOff className='h-3.5 w-3.5' /> : <Pin className='h-3.5 w-3.5' />}
         </TactileButton>
       ) : (
         <button
@@ -191,7 +207,7 @@ const LauncherItemButton: React.FC<{
           aria-label={isPinned ? `Unpin ${item.label}` : `Pin ${item.label}`}
           aria-pressed={isPinned}
         >
-          {isPinned ? '📌' : '📍'}
+          {isPinned ? <PinOff className='h-3.5 w-3.5' /> : <Pin className='h-3.5 w-3.5' />}
         </button>
       )}
     </>

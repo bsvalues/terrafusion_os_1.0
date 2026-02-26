@@ -11,15 +11,12 @@ import './utils/consoleErrorFilter';
 import Router from './Router';
 import { registerPWA } from './pwa';
 
-// ═══════════════════════════════════════════════════════════════
-// PHASE 9: Motion Kill-Switch (Stabilization)
-// In dev mode, disable animations by default to prevent screen jank.
-// Remove class to preview animations: document.documentElement.classList.remove('reduce-motion-force')
-// ═══════════════════════════════════════════════════════════════
-if (import.meta.env.DEV) {
+// Motion override is opt-in only.
+// Set VITE_FORCE_REDUCE_MOTION=1 to force reduced motion in development.
+if (import.meta.env.DEV && import.meta.env.VITE_FORCE_REDUCE_MOTION === '1') {
   document.documentElement.classList.add('reduce-motion-force');
   console.log(
-    '%c[TerraFusion] Motion reduced in dev mode. Run: document.documentElement.classList.remove("reduce-motion-force") to preview animations.',
+    '%c[TerraFusion] Forced reduced motion enabled (VITE_FORCE_REDUCE_MOTION=1).',
     'color: #00e5ff'
   );
 }

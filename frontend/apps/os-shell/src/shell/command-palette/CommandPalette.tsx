@@ -17,6 +17,7 @@
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Panel } from '@terrafusion/ui';
+import { getLucideIcon } from '../../config/iconMap';
 import { activateModule } from '../../orchestration/moduleActivation';
 import {
   useCommandPaletteStore,
@@ -25,6 +26,7 @@ import {
   type CommandCategory,
 } from '../../stores/commandPaletteStore';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { TerraSphereIcon, type TerraSphereIconVariant } from '../../ui/brand/TerraSphereIcon';
 
 // ============================================================================
 // Types
@@ -34,7 +36,8 @@ export interface CommandItem {
   id: string;
   label: string;
   description?: string;
-  icon: string;
+  iconName: string;
+  iconVariant?: TerraSphereIconVariant;
   category: CommandCategory;
   keywords?: string[];
   shortcut?: string;
@@ -61,16 +64,76 @@ function useCommandRegistry(): CommandItem[] {
     // Module Commands
     // ========================================================================
     const modules = [
-      { id: 'costforge', label: 'CostForge', icon: '💎', keywords: ['cost', 'property', 'assessment'] },
-      { id: 'terra-gaia', label: 'TerraGaia', icon: '🌍', keywords: ['earth', 'gis', 'map', 'geo'] },
-      { id: 'atlas-ai', label: 'ATLAS AI', icon: '🤖', keywords: ['ai', 'assistant', 'intelligence'] },
-      { id: 'reporting', label: 'Analytics', icon: '📈', keywords: ['reports', 'data', 'charts', 'analytics'] },
-      { id: 'marketplace', label: 'Marketplace', icon: '🏪', keywords: ['store', 'apps', 'plugins'] },
-      { id: 'counties', label: 'Counties Hub', icon: '🏛️', keywords: ['county', 'government', 'admin'] },
-      { id: 'government-architecture', label: 'Gov Architecture', icon: '🏗️', keywords: ['architecture', 'infrastructure'] },
-      { id: 'levy-calculator', label: 'Levy Calculator', icon: '📊', keywords: ['levy', 'tax', 'calculate'] },
-      { id: 'gis-viewer', label: 'GIS Viewer', icon: '🗺️', keywords: ['gis', 'map', 'parcels'] },
-      { id: 'document-manager', label: 'Documents', icon: '📁', keywords: ['files', 'documents', 'records'] },
+      {
+        id: 'costforge',
+        label: 'CostForge',
+        iconName: 'Calculator',
+        iconVariant: 'tax' as TerraSphereIconVariant,
+        keywords: ['cost', 'property', 'assessment'],
+      },
+      {
+        id: 'terra-gaia',
+        label: 'TerraGaia',
+        iconName: 'Globe',
+        iconVariant: 'mapping' as TerraSphereIconVariant,
+        keywords: ['earth', 'gis', 'map', 'geo'],
+      },
+      {
+        id: 'atlas-ai',
+        label: 'ATLAS AI',
+        iconName: 'Brain',
+        iconVariant: 'ai' as TerraSphereIconVariant,
+        keywords: ['ai', 'assistant', 'intelligence'],
+      },
+      {
+        id: 'reporting',
+        label: 'Analytics',
+        iconName: 'BarChart3',
+        iconVariant: 'analytics' as TerraSphereIconVariant,
+        keywords: ['reports', 'data', 'charts', 'analytics'],
+      },
+      {
+        id: 'marketplace',
+        label: 'Marketplace',
+        iconName: 'Briefcase',
+        iconVariant: 'default' as TerraSphereIconVariant,
+        keywords: ['store', 'apps', 'plugins'],
+      },
+      {
+        id: 'counties',
+        label: 'Counties Hub',
+        iconName: 'Building2',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['county', 'government', 'admin'],
+      },
+      {
+        id: 'government-architecture',
+        label: 'Gov Architecture',
+        iconName: 'Layers',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['architecture', 'infrastructure'],
+      },
+      {
+        id: 'levy-calculator',
+        label: 'Levy Calculator',
+        iconName: 'Calculator',
+        iconVariant: 'tax' as TerraSphereIconVariant,
+        keywords: ['levy', 'tax', 'calculate'],
+      },
+      {
+        id: 'gis-viewer',
+        label: 'GIS Viewer',
+        iconName: 'Map',
+        iconVariant: 'mapping' as TerraSphereIconVariant,
+        keywords: ['gis', 'map', 'parcels'],
+      },
+      {
+        id: 'document-manager',
+        label: 'Documents',
+        iconName: 'FileText',
+        iconVariant: 'records' as TerraSphereIconVariant,
+        keywords: ['files', 'documents', 'records'],
+      },
     ];
 
     modules.forEach((mod) => {
@@ -82,7 +145,8 @@ function useCommandRegistry(): CommandItem[] {
         id: `module:${mod.id}`,
         label: `Open ${mod.label}`,
         description: `Launch the ${mod.label} module`,
-        icon: mod.icon,
+        iconName: mod.iconName,
+        iconVariant: mod.iconVariant,
         category: 'modules',
         keywords: mod.keywords,
         shortcut: shortcut?.keys,
@@ -98,12 +162,48 @@ function useCommandRegistry(): CommandItem[] {
     // Settings Commands
     // ========================================================================
     const settingsTabs = [
-      { id: 'general', label: 'General Settings', icon: '⚙️', keywords: ['system', 'info', 'language'] },
-      { id: 'appearance', label: 'Appearance Settings', icon: '🎨', keywords: ['theme', 'dark', 'light'] },
-      { id: 'accessibility', label: 'Accessibility Settings', icon: '♿', keywords: ['contrast', 'motion', 'font'] },
-      { id: 'notifications', label: 'Notification Settings', icon: '🔔', keywords: ['alerts', 'toast', 'sound'] },
-      { id: 'shortcuts', label: 'Keyboard Shortcuts', icon: '⌨️', keywords: ['keyboard', 'hotkeys', 'bindings'] },
-      { id: 'about', label: 'About TerraFusion', icon: 'ℹ️', keywords: ['version', 'info', 'about'] },
+      {
+        id: 'general',
+        label: 'General Settings',
+        iconName: 'Settings',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['system', 'info', 'language'],
+      },
+      {
+        id: 'appearance',
+        label: 'Appearance Settings',
+        iconName: 'LayoutDashboard',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['theme', 'dark', 'light'],
+      },
+      {
+        id: 'accessibility',
+        label: 'Accessibility Settings',
+        iconName: 'Shield',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['contrast', 'motion', 'font'],
+      },
+      {
+        id: 'notifications',
+        label: 'Notification Settings',
+        iconName: 'Activity',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['alerts', 'toast', 'sound'],
+      },
+      {
+        id: 'shortcuts',
+        label: 'Keyboard Shortcuts',
+        iconName: 'Terminal',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['keyboard', 'hotkeys', 'bindings'],
+      },
+      {
+        id: 'about',
+        label: 'About TerraFusion',
+        iconName: 'FileText',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['version', 'info', 'about'],
+      },
     ];
 
     settingsTabs.forEach((tab) => {
@@ -111,7 +211,8 @@ function useCommandRegistry(): CommandItem[] {
         id: `settings:${tab.id}`,
         label: tab.label,
         description: `Open ${tab.label.toLowerCase()}`,
-        icon: tab.icon,
+        iconName: tab.iconName,
+        iconVariant: tab.iconVariant,
         category: 'settings',
         keywords: tab.keywords,
         shortcut: tab.id === 'shortcuts' ? 'Ctrl+,' : undefined,
@@ -132,14 +233,16 @@ function useCommandRegistry(): CommandItem[] {
       { 
         id: 'toggle-start', 
         label: 'Toggle Start Menu', 
-        icon: '🚀', 
+        iconName: 'LayoutDashboard', 
+        iconVariant: 'system' as TerraSphereIconVariant,
         shortcut: 'Ctrl+`',
         keywords: ['start', 'menu', 'launch'],
       },
       { 
         id: 'refresh', 
         label: 'Refresh Desktop', 
-        icon: '🔄', 
+        iconName: 'Activity',
+        iconVariant: 'system' as TerraSphereIconVariant,
         keywords: ['refresh', 'reload'],
       },
     ];
@@ -148,7 +251,8 @@ function useCommandRegistry(): CommandItem[] {
       commands.push({
         id: `action:${action.id}`,
         label: action.label,
-        icon: action.icon,
+        iconName: action.iconName,
+        iconVariant: action.iconVariant,
         category: 'actions',
         keywords: action.keywords,
         shortcut: action.shortcut,
@@ -238,38 +342,44 @@ const CommandItemRow: React.FC<CommandItemRowProps> = ({
   isSelected,
   searchQuery,
   onClick,
-}) => (
-  <button
-    role='option'
-    aria-selected={isSelected}
-    onClick={onClick}
-    className={cn(
-      'w-full flex items-center gap-3 px-4 py-3 text-left',
-      'transition-colors duration-100',
-      'focus:outline-none',
-      isSelected
-        ? 'bg-[var(--tf-transcend-highlight)]/10 text-white'
-        : 'text-white/80 hover:bg-white/5'
-    )}
-  >
-    <span className='text-xl flex-shrink-0'>{command.icon}</span>
-    <div className='flex-1 min-w-0'>
-      <div className='text-sm font-medium truncate'>
-        <HighlightedText text={command.label} query={searchQuery} />
-      </div>
-      {command.description && (
-        <div className='text-xs text-white/50 truncate'>
-          {command.description}
-        </div>
+}) => {
+  const Icon = getLucideIcon(command.iconName);
+
+  return (
+    <button
+      role='option'
+      aria-selected={isSelected}
+      onClick={onClick}
+      className={cn(
+        'w-full flex items-center gap-3 px-4 py-3 text-left',
+        'transition-colors duration-100',
+        'focus:outline-none',
+        isSelected
+          ? 'bg-[var(--tf-transcend-highlight)]/10 text-white'
+          : 'text-white/80 hover:bg-white/5'
       )}
-    </div>
-    {command.shortcut && (
-      <kbd className='px-2 py-1 text-xs bg-white/10 rounded text-white/60 font-mono'>
-        {command.shortcut}
-      </kbd>
-    )}
-  </button>
-);
+    >
+      <TerraSphereIcon
+        size={24}
+        variant={command.iconVariant ?? 'default'}
+        glyph={<Icon className='h-2.5 w-2.5' />}
+      />
+      <div className='flex-1 min-w-0'>
+        <div className='text-sm font-medium truncate'>
+          <HighlightedText text={command.label} query={searchQuery} />
+        </div>
+        {command.description && (
+          <div className='text-xs text-white/50 truncate'>{command.description}</div>
+        )}
+      </div>
+      {command.shortcut && (
+        <kbd className='px-2 py-1 text-xs bg-white/10 rounded text-white/60 font-mono'>
+          {command.shortcut}
+        </kbd>
+      )}
+    </button>
+  );
+};
 
 // ============================================================================
 // Main Component

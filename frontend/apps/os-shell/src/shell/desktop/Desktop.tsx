@@ -10,15 +10,19 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
+import { Building2, Command } from 'lucide-react';
 import { Launcher } from '../../components/launcher';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useIpcBridge } from '../../ipc/useIpcBridge';
 import { SentinelPanel } from '../../sentinel/SentinelPanel';
 import { useSentinelStore } from '../../sentinel/sentinelStore';
+import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
+import { LiquidPanel, TactileButton } from '../../ui/materials';
 import { AmbientCompositor } from '../ambient/AmbientCompositor';
 import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
@@ -39,6 +43,50 @@ export interface DesktopProps {
   /** Optional className for additional styling */
   className?: string;
 }
+
+const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
+  onOpenCommandPalette,
+}) => (
+  <div data-testid='desktop-top-system-bar' className='absolute top-3 left-1/2 -translate-x-1/2 z-[980] w-[min(96vw,1080px)] pointer-events-none'>
+    <LiquidPanel
+      variant='shell'
+      className='pointer-events-auto flex items-center justify-between rounded-2xl px-4 py-2.5'
+      style={{
+        borderColor: 'hsl(var(--tf-border) / 0.8)',
+        background: 'hsl(var(--tf-surface-dark-hs) 8% / 0.68)',
+      }}
+    >
+      <div className='flex items-center gap-3'>
+        <TerraSphereIcon size={28} variant='system' glyph={<Building2 className='h-3 w-3' />} />
+        <div>
+          <div
+            style={{
+              margin: 0,
+              fontSize: '0.9rem',
+              fontWeight: 650,
+              letterSpacing: '-0.01em',
+              color: 'hsl(var(--tf-text-primary-hs) 100%)',
+            }}
+          >
+            TerraFusion OS
+          </div>
+          <div style={{ margin: 0, fontSize: '0.68rem', color: 'hsl(var(--tf-muted))' }}>
+            Benton County · Tax Year 2026 · Assessor
+          </div>
+        </div>
+      </div>
+      <TactileButton
+        variant='ghost'
+        size='sm'
+        onClick={onOpenCommandPalette}
+        aria-label='Open command palette'
+        leftIcon={<Command className='h-3.5 w-3.5' />}
+      >
+        Command Palette
+      </TactileButton>
+    </LiquidPanel>
+  </div>
+);
 
 // ============================================================================
 // Desktop Component
@@ -79,6 +127,7 @@ export function Desktop({ className = '' }: DesktopProps) {
   useIpcBridge();
 
   const { panelOpen, setPanelOpen } = useSentinelStore();
+  const openCommandPalette = useCommandPaletteStore((state) => state.open);
   // Subscribe to Start Menu state
   const isStartMenuOpen = useStartMenuStore((state) => state.isOpen);
   const toggleStartMenu = useStartMenuStore((state) => state.toggle);
@@ -292,8 +341,11 @@ export function Desktop({ className = '' }: DesktopProps) {
       {/* Layer 0: Ambient Background - ALWAYS ON (CSS mode) */}
       <AmbientCompositor forcedMode='css' />
 
+      {/* Layer 0.75: Top System Bar */}
+      <DesktopTopSystemBar onOpenCommandPalette={openCommandPalette} />
+
       {/* Layer 0.5: Desktop Icons (Priority 3) */}
-      <DesktopIconGrid className='absolute top-4 left-4 z-[1]' />
+      <DesktopIconGrid className='absolute top-20 left-4 z-[1]' />
 
       {/* Layer 1-999: Windows */}
       <WindowManager />
