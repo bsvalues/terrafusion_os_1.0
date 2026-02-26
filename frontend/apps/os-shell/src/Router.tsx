@@ -124,6 +124,12 @@ const Router: React.FC = () => {
                   element={<LegacyRedirect to='/' legacyAppId='desktop.legacy-route' />}
                 />
 
+                {/* Legacy: /launchpad bookmarks redirect to root (ShellHome absorbed into Desktop) */}
+                <Route
+                  path='/launchpad'
+                  element={<LegacyRedirect to='/' legacyAppId='launchpad.legacy-route' />}
+                />
+
                 {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
                 <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
                   <Route index element={<PropertySummary />} />

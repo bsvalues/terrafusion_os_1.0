@@ -281,7 +281,7 @@ describe('Window Component', () => {
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals).toHaveStyle({
-        border: '1px solid hsl(var(--tf-accent) / 0.5)',
+        border: '0.5px solid hsl(var(--tf-text) / 0.12)',
       });
     });
 
@@ -299,7 +299,7 @@ describe('Window Component', () => {
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals).toHaveStyle({
-        border: '1px solid hsl(var(--tf-border) / 0.5)',
+        border: '0.5px solid hsl(var(--tf-border) / 0.3)',
       });
     });
 
@@ -495,7 +495,7 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
-      expect(windowVisuals.style.backdropFilter).toContain('blur(24px)');
+      expect(windowVisuals.style.backdropFilter).toContain('blur(28px)');
     });
 
     it('has rounded corners', () => {

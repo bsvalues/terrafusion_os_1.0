@@ -142,8 +142,8 @@ describe('Desktop Icons (Priority 3)', () => {
       await user.hover(icon);
 
       // Hover state is typically handled by Tailwind :hover pseudo-class
-      // We verify the hover classes are present
-      expect(icon).toHaveClass('hover:bg-white/10');
+      // macOS Tahoe dock uses bg-white/8 for unselected hover
+      expect(icon).toHaveClass('hover:bg-white/8');
     });
   });
 
@@ -181,8 +181,8 @@ describe('Desktop Icons (Priority 3)', () => {
       const forgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_ICONS[0].id}`);
       fireEvent.click(forgeIcon);
 
-      // Selected state should have a ring or background
-      expect(forgeIcon).toHaveClass('ring-2');
+      // Selected state: macOS Tahoe uses bg-white/20 with inset shadow (not ring-2)
+      expect(forgeIcon).toHaveClass('bg-white/20');
     });
   });
 

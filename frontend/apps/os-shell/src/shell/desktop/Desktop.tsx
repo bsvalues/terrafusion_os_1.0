@@ -22,7 +22,7 @@ import { useAltTabStore } from '../../stores/altTabStore';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
-import { LiquidPanel, TactileButton } from '../../ui/materials';
+import { TactileButton } from '../../ui/materials';
 import { AmbientCompositor } from '../ambient/AmbientCompositor';
 import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
@@ -47,44 +47,43 @@ export interface DesktopProps {
 const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
   onOpenCommandPalette,
 }) => (
-  <div data-testid='desktop-top-system-bar' className='absolute top-3 left-1/2 -translate-x-1/2 z-[980] w-[min(96vw,1080px)] pointer-events-none'>
-    <LiquidPanel
-      variant='shell'
-      className='pointer-events-auto flex items-center justify-between rounded-2xl px-4 py-2.5'
+  <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 z-[980] pointer-events-none'>
+    <div
+      className='pointer-events-auto flex items-center justify-between px-4 py-1'
       style={{
-        borderColor: 'hsl(var(--tf-border) / 0.8)',
-        background: 'hsl(var(--tf-surface-dark-hs) 8% / 0.68)',
+        background: 'hsl(var(--tf-surface-dark-hs) 6% / 0.55)',
+        backdropFilter: 'saturate(180%) blur(20px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(20px)',
+        borderBottom: '0.5px solid hsl(var(--tf-border) / 0.15)',
       }}
     >
-      <div className='flex items-center gap-3'>
-        <TerraSphereIcon size={28} variant='system' glyph={<Building2 className='h-3 w-3' />} />
-        <div>
-          <div
-            style={{
-              margin: 0,
-              fontSize: '0.9rem',
-              fontWeight: 650,
-              letterSpacing: '-0.01em',
-              color: 'hsl(var(--tf-text-primary-hs) 100%)',
-            }}
-          >
-            TerraFusion OS
-          </div>
-          <div style={{ margin: 0, fontSize: '0.68rem', color: 'hsl(var(--tf-muted))' }}>
-            Benton County · Tax Year 2026 · Assessor
-          </div>
-        </div>
+      <div className='flex items-center gap-2.5'>
+        <TerraSphereIcon size={20} variant='system' glyph={<Building2 className='h-2.5 w-2.5' />} />
+        <span
+          style={{
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            color: 'hsl(var(--tf-text-primary-hs) 95%)',
+          }}
+        >
+          TerraFusion OS
+        </span>
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text-primary-hs) 50%)' }}>
+          Benton County · Tax Year 2026
+        </span>
       </div>
       <TactileButton
         variant='ghost'
         size='sm'
         onClick={onOpenCommandPalette}
         aria-label='Open command palette'
-        leftIcon={<Command className='h-3.5 w-3.5' />}
+        leftIcon={<Command className='h-3 w-3' />}
+        style={{ fontSize: '0.75rem', opacity: 0.7 }}
       >
-        Command Palette
+        Search
       </TactileButton>
-    </LiquidPanel>
+    </div>
   </div>
 );
 
@@ -345,7 +344,7 @@ export function Desktop({ className = '' }: DesktopProps) {
       <DesktopTopSystemBar onOpenCommandPalette={openCommandPalette} />
 
       {/* Layer 0.5: Desktop Icons (Priority 3) */}
-      <DesktopIconGrid className='absolute top-20 left-4 z-[1]' />
+      <DesktopIconGrid className='absolute top-10 left-3 z-[1]' />
 
       {/* Layer 1-999: Windows */}
       <WindowManager />

@@ -12,38 +12,61 @@ namespace TerraFusion.AI.Services;
 public class AICommandService : IAICommandService
 {
     private readonly TerraFusionContext _context;
+    private readonly TerraFusion.Data.TerraFusionDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly ILogger<AICommandService> _logger;
 
-    public AICommandService(TerraFusionContext context, IMapper mapper, ILogger<AICommandService> logger)
+    public AICommandService(TerraFusionContext context, TerraFusion.Data.TerraFusionDbContext dbContext, IMapper mapper, ILogger<AICommandService> logger)
     {
         _context = context;
+        _dbContext = dbContext;
         _mapper = mapper;
         _logger = logger;
     }
 
     public async System.Threading.Tasks.Task<AISwarmStatusDto> GetSwarmStatusAsync()
     {
-        _logger.LogInformation("Getting AI swarm status");
+        _logger.LogInformation("Getting AI swarm status from database");
+
+        var allAgents = await _dbContext.AIAgents.ToListAsync();
+        var totalAgents = allAgents.Count;
+        var activeAgents = allAgents.Count(a => a.Status == "Active");
+        var idleAgents = allAgents.Count(a => a.Status == "Idle");
+        var busyAgents = allAgents.Count(a => a.Status == "Busy" || a.Status == "Processing");
+        var avgLoad = totalAgents > 0
+            ? allAgents.Average(a => a.PerformanceScore) * 100
+            : 0;
 
         var activeModels = await _context.AIModels
             .Where(m => m.Status == AIModelStatus.Active)
             .CountAsync();
 
-        var totalAgents = 1008; // Simulated swarm size
-        var activeAgents = (int)(totalAgents * 0.85); // 85% active
-        var idleAgents = totalAgents - activeAgents;
+        var agentStatuses = allAgents
+            .OrderByDescending(a => a.LastActiveAt)
+            .Take(20)
+            .Select(a => new TerraFusion.Abstractions.DTOs.AIAgentStatusDto
+            {
+                AgentId = a.Id.ToString(),
+                Name = a.Name,
+                Status = a.Status,
+                Type = a.Type,
+                CurrentTask = a.CurrentTask ?? "None",
+                LastActivity = a.LastActiveAt,
+                TasksCompleted = a.ProcessedTasks,
+                SuccessRate = a.PerformanceScore
+            })
+            .ToList();
 
         return new AISwarmStatusDto
         {
-            Status = "Active",
+            Status = totalAgents > 0 ? "Active" : "No Agents Registered",
             TotalAgents = totalAgents,
             ActiveAgents = activeAgents,
             IdleAgents = idleAgents,
-            BusyAgents = (int)(activeAgents * 0.6),
-            AverageLoad = 65.5,
+            BusyAgents = busyAgents,
+            AverageLoad = avgLoad,
             LastUpdate = DateTime.UtcNow,
-            AgentStatuses = GenerateAgentStatuses(20) // Show top 20 agents
+            AgentStatuses = agentStatuses
         };
     }
 
@@ -54,179 +77,305 @@ public class AICommandService : IAICommandService
         var commandId = Guid.NewGuid();
         var startTime = DateTime.UtcNow;
 
-        // Simulate command execution
-        await System.Threading.Tasks.Task.Delay(Random.Shared.Next(100, 1000));
+        // Find an available agent to execute the command
+        var availableAgent = await _dbContext.AIAgents
+            .Where(a => a.Status == "Active" || a.Status == "Idle")
+            .OrderBy(a => a.ProcessedTasks)
+            .FirstOrDefaultAsync();
+
+        Guid executingAgentId = Guid.Empty;
+        if (availableAgent != null)
+        {
+            availableAgent.Status = "Busy";
+            availableAgent.CurrentTask = command.Command;
+            availableAgent.LastActiveAt = DateTime.UtcNow;
+            executingAgentId = availableAgent.Id;
+        }
+
+        // Log command execution to audit trail
+        _dbContext.AuditLogs.Add(new AuditLog
+        {
+            Type = "AI_COMMAND",
+            Data = System.Text.Json.JsonSerializer.Serialize(new { command.Command, commandId }),
+            Timestamp = startTime,
+            Source = "AICommandService",
+            Severity = "Info"
+        });
+
+        await _dbContext.SaveChangesAsync();
 
         var executionTime = (DateTime.UtcNow - startTime).TotalMilliseconds;
-        var success = Random.Shared.NextDouble() > 0.05; // 95% success rate
+        var success = availableAgent != null;
+
+        // Mark agent as available again after execution
+        if (availableAgent != null)
+        {
+            availableAgent.Status = "Active";
+            availableAgent.CurrentTask = null;
+            availableAgent.ProcessedTasks++;
+            await _dbContext.SaveChangesAsync();
+        }
 
         return new TerraFusion.AI.DTOs.AICommandResultDto
         {
             CommandId = commandId,
             Success = success,
-            Message = success ? "Command executed successfully" : "Command execution failed",
-            Results = GenerateCommandResults(command),
+            Message = success ? $"Command executed by {availableAgent!.Name}" : "No available agents to execute command",
+            Results = await GenerateCommandResultsAsync(command),
             ExecutionTimeMs = executionTime,
             ExecutedAt = DateTime.UtcNow,
-            ExecutedByAgentId = Guid.NewGuid() // Generate a new agent ID since TargetAgentId is int type
+            ExecutedByAgentId = executingAgentId
         };
     }
 
     public async System.Threading.Tasks.Task<IEnumerable<AIAgentDto>> GetActiveAgentsAsync()
     {
-        await System.Threading.Tasks.Task.Delay(50); // Simulate data lookup
+        var dbAgents = await _dbContext.AIAgents
+            .Where(a => a.Status == "Active" || a.Status == "Busy" || a.Status == "Processing")
+            .OrderByDescending(a => a.LastActiveAt)
+            .Take(50)
+            .ToListAsync();
 
-        var agents = new List<AIAgentDto>();
-        var agentTypes = new[] { "PropertyAssessment", "Analytics", "Compliance", "DataValidation" };
-
-        for (int i = 0; i < 20; i++) // Return top 20 active agents
+        return dbAgents.Select(a => new AIAgentDto
         {
-            agents.Add(new AIAgentDto
-            {
-                Id = Guid.NewGuid(),
-                Name = $"Agent-{i + 1:D3}",
-                Type = agentTypes[i % agentTypes.Length],
-                Specialization = GetSpecialization(agentTypes[i % agentTypes.Length]),
-                Status = "Active",
-                LoadPercentage = Random.Shared.NextDouble() * 100,
-                TasksCompleted = Random.Shared.Next(100, 5000),
-                TasksFailed = Random.Shared.Next(0, 50),
-                AverageTaskTime = Random.Shared.NextDouble() * 1000 + 100,
-                CreatedAt = DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 365)),
-                LastActivity = DateTime.UtcNow.AddMinutes(-Random.Shared.Next(1, 60)),
-                Capabilities = GenerateCapabilities(agentTypes[i % agentTypes.Length])
-            });
-        }
-
-        return agents;
+            Id = a.Id,
+            Name = a.Name,
+            Type = a.Type,
+            Specialization = GetSpecialization(a.Type),
+            Status = a.Status,
+            LoadPercentage = a.PerformanceScore * 100,
+            TasksCompleted = a.ProcessedTasks,
+            TasksFailed = 0,
+            AverageTaskTime = 0,
+            CreatedAt = a.CreatedAt,
+            LastActivity = a.LastActiveAt,
+            Capabilities = GenerateCapabilities(a.Type)
+        });
     }
 
     public async System.Threading.Tasks.Task<AIAgentDto> GetAgentAsync(Guid agentId)
     {
-        await System.Threading.Tasks.Task.Delay(50);
+        var agent = await _dbContext.AIAgents.FindAsync(agentId);
+
+        if (agent == null)
+        {
+            return new AIAgentDto
+            {
+                Id = agentId,
+                Name = "Unknown",
+                Type = "Unknown",
+                Status = "NotFound"
+            };
+        }
 
         return new AIAgentDto
         {
-            Id = agentId,
-            Name = $"Agent-{agentId.ToString()[..8]}",
-            Type = "PropertyAssessment",
-            Specialization = "Residential Property Valuation",
-            Status = "Active",
-            LoadPercentage = Random.Shared.NextDouble() * 100,
-            TasksCompleted = Random.Shared.Next(1000, 10000),
-            TasksFailed = Random.Shared.Next(0, 100),
-            AverageTaskTime = Random.Shared.NextDouble() * 500 + 50,
-            CreatedAt = DateTime.UtcNow.AddDays(-Random.Shared.Next(30, 365)),
-            LastActivity = DateTime.UtcNow.AddMinutes(-Random.Shared.Next(1, 30)),
-            Capabilities = GenerateCapabilities("PropertyAssessment")
+            Id = agent.Id,
+            Name = agent.Name,
+            Type = agent.Type,
+            Specialization = GetSpecialization(agent.Type),
+            Status = agent.Status,
+            LoadPercentage = agent.PerformanceScore * 100,
+            TasksCompleted = agent.ProcessedTasks,
+            TasksFailed = 0,
+            AverageTaskTime = 0,
+            CreatedAt = agent.CreatedAt,
+            LastActivity = agent.LastActiveAt,
+            Capabilities = GenerateCapabilities(agent.Type)
         };
     }
 
     public async System.Threading.Tasks.Task<AISwarmMetricsDto> GetSwarmMetricsAsync()
     {
-        await System.Threading.Tasks.Task.Delay(100);
+        var agents = await _dbContext.AIAgents.ToListAsync();
+        var totalTasks = agents.Sum(a => a.ProcessedTasks);
+        var avgPerformance = agents.Count > 0 ? agents.Average(a => a.PerformanceScore) : 0;
 
-        var totalTasks = Random.Shared.Next(50000, 100000);
-        var completedTasks = (int)(totalTasks * 0.95);
-        var failedTasks = (int)(totalTasks * 0.02);
-        var activeTasks = totalTasks - completedTasks - failedTasks;
+        var recentMetrics = await _dbContext.PerformanceMetrics
+            .OrderByDescending(m => m.Timestamp)
+            .Take(100)
+            .ToListAsync();
 
         return new AISwarmMetricsDto
         {
             TotalTasks = totalTasks,
-            CompletedTasks = completedTasks,
-            FailedTasks = failedTasks,
-            ActiveTasks = activeTasks,
-            AverageTaskTime = Random.Shared.NextDouble() * 500 + 100,
-            SuccessRate = (double)completedTasks / totalTasks,
-            ThroughputPerMinute = Random.Shared.NextDouble() * 100 + 50,
+            CompletedTasks = (int)(totalTasks * avgPerformance),
+            FailedTasks = (int)(totalTasks * (1.0 - avgPerformance)),
+            ActiveTasks = agents.Count(a => a.Status == "Busy" || a.Status == "Processing"),
+            AverageTaskTime = recentMetrics.Count > 0 ? (double)recentMetrics.Average(m => m.Value) : 0,
+            SuccessRate = avgPerformance,
+            ThroughputPerMinute = agents.Count(a => a.Status == "Active") * avgPerformance * 10,
             MetricsDate = DateTime.UtcNow,
-            PerformanceMetrics = GeneratePerformanceMetrics()
+            PerformanceMetrics = await GeneratePerformanceMetricsAsync()
         };
     }
 
     public async System.Threading.Tasks.Task<bool> ScaleSwarmAsync(int targetAgentCount)
     {
-        _logger.LogInformation("Scaling swarm to {TargetCount} agents", targetAgentCount);
+        if (targetAgentCount < 0 || targetAgentCount > 10000)
+        {
+            _logger.LogWarning("Scale request rejected: {TargetCount} outside valid range [0, 10000]", targetAgentCount);
+            return false;
+        }
 
-        // Simulate scaling operation
-        await System.Threading.Tasks.Task.Delay(Random.Shared.Next(1000, 3000));
+        var currentCount = await _dbContext.AIAgents.CountAsync();
+        _logger.LogInformation("Scaling swarm from {Current} to {Target} agents", currentCount, targetAgentCount);
 
-        return targetAgentCount <= 10000; // Max 10,000 agents
+        if (targetAgentCount > currentCount)
+        {
+            var toCreate = targetAgentCount - currentCount;
+            var agentTypes = new[] { "PropertyAssessor", "DataProcessor", "Analyst", "ComplianceMonitor" };
+
+            for (int i = 0; i < toCreate; i++)
+            {
+                _dbContext.AIAgents.Add(new AIAgent
+                {
+                    Name = $"Agent-{currentCount + i + 1:D4}",
+                    Type = agentTypes[i % agentTypes.Length],
+                    Status = "Idle",
+                    ProcessedTasks = 0,
+                    PerformanceScore = 0.0,
+                    CreatedAt = DateTime.UtcNow,
+                    LastActiveAt = DateTime.UtcNow
+                });
+            }
+        }
+        else if (targetAgentCount < currentCount)
+        {
+            var toDeactivate = currentCount - targetAgentCount;
+            var idleAgents = await _dbContext.AIAgents
+                .Where(a => a.Status == "Idle" || a.Status == "Offline")
+                .OrderByDescending(a => a.CreatedAt)
+                .Take(toDeactivate)
+                .ToListAsync();
+
+            foreach (var agent in idleAgents)
+            {
+                agent.Status = "Offline";
+                agent.LastActiveAt = DateTime.UtcNow;
+            }
+        }
+
+        await _dbContext.SaveChangesAsync();
+        _logger.LogInformation("Swarm scaled to {Target} agents (was {Current})", targetAgentCount, currentCount);
+        return true;
     }
 
     public async System.Threading.Tasks.Task<bool> RestartAgentAsync(Guid agentId)
     {
-        _logger.LogInformation("Restarting agent {AgentId}", agentId);
+        var agent = await _dbContext.AIAgents.FindAsync(agentId);
+        if (agent == null)
+        {
+            _logger.LogWarning("Agent {AgentId} not found for restart", agentId);
+            return false;
+        }
 
-        // Simulate restart operation
-        await System.Threading.Tasks.Task.Delay(Random.Shared.Next(500, 2000));
+        var previousStatus = agent.Status;
+        agent.Status = "Active";
+        agent.CurrentTask = null;
+        agent.LastActiveAt = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
 
-        return Random.Shared.NextDouble() > 0.05; // 95% success rate
+        _logger.LogInformation("Agent {AgentId} ({Name}) restarted: {Previous} -> Active", agentId, agent.Name, previousStatus);
+        return true;
     }
 
     public async System.Threading.Tasks.Task<IEnumerable<AITaskDto>> GetActiveTasksAsync()
     {
-        await System.Threading.Tasks.Task.Delay(100);
+        var busyAgents = await _dbContext.AIAgents
+            .Where(a => a.CurrentTask != null && (a.Status == "Busy" || a.Status == "Processing"))
+            .OrderByDescending(a => a.LastActiveAt)
+            .Take(50)
+            .ToListAsync();
 
-        var tasks = new List<AITaskDto>();
-        var taskTypes = new[] { "PropertyAssessment", "DataValidation", "ReportGeneration", "ComplianceCheck" };
-
-        for (int i = 0; i < 15; i++) // Return 15 active tasks
+        return busyAgents.Select(a => new AITaskDto
         {
-            var createdAt = DateTime.UtcNow.AddMinutes(-Random.Shared.Next(1, 120));
-            var startedAt = createdAt.AddMinutes(Random.Shared.Next(1, 10));
-
-            tasks.Add(new AITaskDto
+            Id = a.Id,
+            Type = a.Type,
+            Description = a.CurrentTask ?? "Processing",
+            Status = "Running",
+            Priority = a.PerformanceScore > 0.8 ? "High" : a.PerformanceScore > 0.5 ? "Medium" : "Low",
+            AssignedAgentId = a.Id,
+            CreatedAt = a.LastActiveAt.AddMinutes(-5),
+            StartedAt = a.LastActiveAt,
+            Parameters = new Dictionary<string, object>
             {
-                Id = Guid.NewGuid(),
-                Type = taskTypes[i % taskTypes.Length],
-                Description = GenerateTaskDescription(taskTypes[i % taskTypes.Length]),
-                Status = "Running",
-                Priority = Random.Shared.NextDouble() switch
-                {
-                    < 0.2 => "High",
-                    < 0.7 => "Medium",
-                    _ => "Low"
-                },
-                AssignedAgentId = Guid.NewGuid(),
-                CreatedAt = createdAt,
-                StartedAt = startedAt,
-                Parameters = GenerateTaskParameters(taskTypes[i % taskTypes.Length])
-            });
-        }
-
-        return tasks;
+                ["agent_name"] = a.Name,
+                ["agent_type"] = a.Type,
+                ["county"] = a.AssignedCounty ?? "BENTON"
+            }
+        });
     }
 
     public async System.Threading.Tasks.Task<AITaskDto> AssignTaskAsync(AITaskAssignmentDto assignment)
     {
         _logger.LogInformation("Assigning task: {TaskType}", assignment.TaskType);
 
-        // Simulate System.Threading.Tasks.Task assignment
-        await System.Threading.Tasks.Task.Delay(Random.Shared.Next(100, 500));
+        // Find an available agent, preferring the requested one
+        AIAgent? agent = null;
+        if (assignment.PreferredAgentId.HasValue)
+        {
+            agent = await _dbContext.AIAgents.FindAsync(assignment.PreferredAgentId.Value);
+            if (agent != null && agent.Status != "Active" && agent.Status != "Idle")
+                agent = null; // preferred agent not available
+        }
+
+        agent ??= await _dbContext.AIAgents
+            .Where(a => a.Status == "Active" || a.Status == "Idle")
+            .OrderBy(a => a.ProcessedTasks)
+            .FirstOrDefaultAsync();
+
+        if (agent == null)
+        {
+            return new AITaskDto
+            {
+                Id = Guid.NewGuid(),
+                Type = assignment.TaskType,
+                Description = assignment.Description,
+                Status = "Queued",
+                Priority = assignment.Priority,
+                CreatedAt = DateTime.UtcNow,
+                Parameters = assignment.Parameters
+            };
+        }
+
+        agent.Status = "Busy";
+        agent.CurrentTask = $"{assignment.TaskType}: {assignment.Description}";
+        agent.LastActiveAt = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
 
         return new AITaskDto
         {
-            Id = Guid.NewGuid(),
+            Id = agent.Id,
             Type = assignment.TaskType,
             Description = assignment.Description,
             Status = "Assigned",
             Priority = assignment.Priority,
-            AssignedAgentId = assignment.PreferredAgentId ?? Guid.NewGuid(),
+            AssignedAgentId = agent.Id,
             CreatedAt = DateTime.UtcNow,
+            StartedAt = DateTime.UtcNow,
             Parameters = assignment.Parameters
         };
     }
 
     public async System.Threading.Tasks.Task<bool> CancelTaskAsync(Guid taskId)
     {
-        _logger.LogInformation("Cancelling System.Threading.Tasks.Task {TaskId}", taskId);
+        // taskId maps to agent ID for active tasks
+        var agent = await _dbContext.AIAgents.FindAsync(taskId);
+        if (agent == null || (agent.Status != "Busy" && agent.Status != "Processing"))
+        {
+            _logger.LogWarning("No active task found for ID {TaskId}", taskId);
+            return false;
+        }
 
-        // Simulate System.Threading.Tasks.Task cancellation
-        await System.Threading.Tasks.Task.Delay(Random.Shared.Next(100, 500));
+        var previousTask = agent.CurrentTask;
+        agent.Status = "Active";
+        agent.CurrentTask = null;
+        agent.LastActiveAt = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
 
-        return Random.Shared.NextDouble() > 0.1; // 90% success rate
+        _logger.LogInformation("Cancelled task '{Task}' on agent {AgentId}", previousTask, taskId);
+        return true;
     }
 
     public async System.Threading.Tasks.Task<IEnumerable<AIModelDto>> GetAllModelsAsync()
@@ -258,6 +407,7 @@ public class AICommandService : IAICommandService
     public async System.Threading.Tasks.Task<PredictionResultDto> RunPredictionAsync(PredictionInputDto input)
     {
         _logger.LogInformation("Running prediction with model {ModelId}", input.ModelId);
+        var startTime = DateTime.UtcNow;
 
         var model = await _context.AIModels.FindAsync(input.ModelId);
         if (model == null)
@@ -270,8 +420,32 @@ public class AICommandService : IAICommandService
             throw new InvalidOperationException($"AI Model {model.Name} is not active (Status: {model.Status})");
         }
 
-        // Simulate prediction processing
-        await System.Threading.Tasks.Task.Delay(Random.Shared.Next(100, 500));
+        // Generate prediction based on model type using real DB data
+        var predictionResult = model.Type switch
+        {
+            AIModelType.PropertyValuation => await GeneratePropertyValuationAsync(input.InputData),
+            AIModelType.CostPrediction => await GenerateCostPredictionAsync(input.InputData),
+            AIModelType.MarketAnalysis => await GenerateMarketAnalysisAsync(input.InputData),
+            AIModelType.RiskAssessment => await GenerateRiskAssessmentAsync(input.InputData),
+            AIModelType.ComplianceCheck => await GenerateComplianceCheckAsync(input.InputData),
+            _ => new Dictionary<string, object> { { "prediction", "Generic prediction result" } }
+        };
+
+        var processingTime = (DateTime.UtcNow - startTime).TotalMilliseconds;
+
+        // Record prediction metric
+        _dbContext.PerformanceMetrics.Add(new TerraFusion.Core.Entities.PerformanceMetric
+        {
+            MetricName = "PredictionsCount",
+            MetricType = "Prediction",
+            Value = 1,
+            Unit = "count",
+            Timestamp = DateTime.UtcNow,
+            Source = model.Name,
+            RelatedEntityType = "AIModel",
+            RelatedEntityId = model.Id
+        });
+        await _dbContext.SaveChangesAsync();
 
         var result = new PredictionResultDto
         {
@@ -280,23 +454,13 @@ public class AICommandService : IAICommandService
             InputData = input.InputData,
             PredictionId = Guid.NewGuid().ToString(),
             ProcessedAt = DateTime.UtcNow,
-            ProcessingTimeMs = Random.Shared.Next(50, 300),
-            Confidence = (decimal)(0.85 + (Random.Shared.NextDouble() * 0.14)) // 85-99% confidence
+            ProcessingTimeMs = processingTime,
+            Confidence = (decimal)model.Accuracy,
+            Result = predictionResult
         };
 
-        // Generate prediction based on model type
-        result.Result = model.Type switch
-        {
-            AIModelType.PropertyValuation => (Dictionary<string, object>)GeneratePropertyValuation(input.InputData),
-            AIModelType.CostPrediction => (Dictionary<string, object>)GenerateCostPrediction(input.InputData),
-            AIModelType.MarketAnalysis => (Dictionary<string, object>)GenerateMarketAnalysis(input.InputData),
-            AIModelType.RiskAssessment => (Dictionary<string, object>)GenerateRiskAssessment(input.InputData),
-            AIModelType.ComplianceCheck => (Dictionary<string, object>)GenerateComplianceCheck(input.InputData),
-            _ => new Dictionary<string, object> { { "prediction", "Generic prediction result" }, { "value", Random.Shared.Next(1000, 100000) } }
-        };
-
-        _logger.LogInformation("Prediction completed for model {ModelName} with confidence {Confidence:P2}",
-            model.Name, result.Confidence);
+        _logger.LogInformation("Prediction completed for model {ModelName} with confidence {Confidence:P2} in {Ms}ms",
+            model.Name, result.Confidence, processingTime);
 
         return result;
     }
@@ -318,43 +482,47 @@ public class AICommandService : IAICommandService
         model.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
-        var trainingStatus = new ModelTrainingStatusDto
+        // Record training start metric
+        _dbContext.PerformanceMetrics.Add(new TerraFusion.Core.Entities.PerformanceMetric
         {
-            ModelId = model.Id.GetHashCode(), // Convert Guid to int for compatibility
+            MetricName = "TrainingStarted",
+            MetricType = "Training",
+            Value = config.Epochs,
+            Unit = "epochs",
+            Timestamp = DateTime.UtcNow,
+            Source = model.Name,
+            RelatedEntityType = "AIModel",
+            RelatedEntityId = model.Id,
+            Metadata = System.Text.Json.JsonSerializer.Serialize(new { config.TrainingDataSize, config.BatchSize, config.Epochs })
+        });
+
+        // Log to audit trail
+        _dbContext.AuditLogs.Add(new AuditLog
+        {
+            Type = "AI_COMMAND:TrainModel",
+            Data = System.Text.Json.JsonSerializer.Serialize(new { config.ModelName, config.Epochs, config.TrainingDataSize }),
+            Timestamp = DateTime.UtcNow,
+            Source = "AICommandService",
+            Severity = "Info"
+        });
+
+        await _dbContext.SaveChangesAsync();
+
+        // Estimate completion based on dataset size and epochs
+        var estimatedMinutes = Math.Max(1, (config.TrainingDataSize / 10000.0) * config.Epochs * 0.5);
+
+        return new ModelTrainingStatusDto
+        {
+            ModelId = model.Id.GetHashCode(),
             ModelName = model.Name,
             Status = "Training",
             Progress = 0,
             StartedAt = DateTime.UtcNow,
-            EstimatedCompletionTime = DateTime.UtcNow.AddMinutes(Random.Shared.Next(5, 30)),
+            EstimatedCompletionTime = DateTime.UtcNow.AddMinutes(estimatedMinutes),
             TrainingDataSize = config.TrainingDataSize,
             Epochs = config.Epochs,
             BatchSize = config.BatchSize
         };
-
-        // Simulate training process (in real implementation, this would be async)
-        _ = System.Threading.Tasks.Task.Run(async () =>
-        {
-            for (int progress = 0; progress <= 100; progress += 10)
-            {
-                await System.Threading.Tasks.Task.Delay(1000); // Simulate training time
-                trainingStatus.Progress = progress;
-                _logger.LogDebug("Training progress for {ModelName}: {Progress}%", model.Name, progress);
-            }
-
-            // Complete training
-            model.Status = AIModelStatus.Active;
-            model.Accuracy = (decimal)(0.90f + (float)(Random.Shared.NextDouble() * 0.09)); // 90-99% accuracy
-            model.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-
-            trainingStatus.Status = "Completed";
-            trainingStatus.EndTime = DateTime.UtcNow;
-
-            _logger.LogInformation("Training completed for model {ModelName} with accuracy {Accuracy:P2}",
-                model.Name, model.Accuracy);
-        });
-
-        return trainingStatus;
     }
 
     public async System.Threading.Tasks.Task<AIModelHealthDto> GetModelHealthAsync(int modelId)
@@ -365,19 +533,32 @@ public class AICommandService : IAICommandService
             throw new ArgumentException($"AI Model with ID {modelId} not found");
         }
 
+        // Query real performance metrics for this model
+        var recentMetrics = await _dbContext.PerformanceMetrics
+            .Where(m => m.Source == model.Name || (m.RelatedEntityType == "AIModel" && m.RelatedEntityId == model.Id))
+            .OrderByDescending(m => m.Timestamp)
+            .Take(50)
+            .ToListAsync();
+
+        var cpuMetrics = recentMetrics.Where(m => m.MetricName == "CpuUsage").ToList();
+        var memMetrics = recentMetrics.Where(m => m.MetricName == "MemoryUsage").ToList();
+        var responseMetrics = recentMetrics.Where(m => m.MetricName == "ResponseTime").ToList();
+        var errorMetrics = recentMetrics.Where(m => m.MetricName == "ErrorRate").ToList();
+        var predictionMetrics = recentMetrics.Where(m => m.MetricName == "PredictionsCount").ToList();
+
         return new AIModelHealthDto
         {
-            ModelId = model.Id.GetHashCode(), // Convert Guid to int for compatibility
+            ModelId = model.Id.GetHashCode(),
             ModelName = model.Name,
-            Status = model.Status, // Use enum directly, not string
-            Accuracy = (decimal)model.Accuracy, // Convert double to decimal
+            Status = model.Status,
+            Accuracy = (decimal)model.Accuracy,
             LastUpdated = model.UpdatedAt,
             IsHealthy = model.Status == AIModelStatus.Active,
-            CpuUsage = Random.Shared.NextDouble() * 30, // 0-30% CPU
-            MemoryUsage = Random.Shared.NextInt64(50_000_000, 500_000_000), // 50-500MB
-            PredictionsToday = Random.Shared.Next(100, 1000),
-            ErrorRate = (decimal)(Random.Shared.NextDouble() * 0.05), // 0-5% error rate, convert to decimal
-            AverageResponseTime = Random.Shared.Next(50, 200) // 50-200ms
+            CpuUsage = cpuMetrics.Any() ? cpuMetrics.Average(m => m.Value) : 0,
+            MemoryUsage = memMetrics.Any() ? (long)memMetrics.Average(m => m.Value) : 0,
+            PredictionsToday = predictionMetrics.Any() ? (int)predictionMetrics.Sum(m => m.Value) : 0,
+            ErrorRate = errorMetrics.Any() ? (decimal)errorMetrics.Average(m => m.Value) : 0m,
+            AverageResponseTime = responseMetrics.Any() ? (decimal)responseMetrics.Average(m => m.Value) : 0m
         };
     }
 
@@ -395,107 +576,181 @@ public class AICommandService : IAICommandService
         return healthChecks;
     }
 
-    private static Dictionary<string, object> GeneratePropertyValuation(Dictionary<string, object> inputData)
+    private async System.Threading.Tasks.Task<Dictionary<string, object>> GeneratePropertyValuationAsync(Dictionary<string, object> inputData)
     {
         var sqft = inputData.ContainsKey("squareFootage") ? Convert.ToDouble(inputData["squareFootage"]) : 2000;
-        var baseValue = sqft * Random.Shared.Next(150, 300); // $150-300 per sqft
 
-        return new Dictionary<string, object>
+        // Query real assessment data for price-per-sqft from PropertyAssessments
+        var assessments = await _dbContext.PropertyAssessments
+            .Where(pa => pa.IsActive && pa.MarketValue > 0)
+            .ToListAsync();
+
+        double avgPricePerSqft = 200; // fallback
+        if (assessments.Any())
         {
-            { "estimatedValue", baseValue },
-            { "pricePerSqFt", baseValue / sqft },
-            { "marketTrend", Random.Shared.NextDouble() > 0.5 ? "increasing" : "stable" },
-            { "comparableProperties", Random.Shared.Next(5, 15) }
-        };
-    }
-
-    private static Dictionary<string, object> GenerateCostPrediction(Dictionary<string, object> inputData)
-    {
-        var baseCost = Random.Shared.Next(50000, 500000);
-        return new Dictionary<string, object>
-        {
-            { "estimatedCost", baseCost },
-            { "costBreakdown", new Dictionary<string, object>
-                {
-                    { "materials", baseCost * 0.4 },
-                    { "labor", baseCost * 0.35 },
-                    { "permits", baseCost * 0.05 },
-                    { "overhead", baseCost * 0.2 }
-                }
-            },
-            { "timeline", $"{Random.Shared.Next(30, 180)} days" }
-        };
-    }
-
-    private static Dictionary<string, object> GenerateMarketAnalysis(Dictionary<string, object> inputData)
-    {
-        return new Dictionary<string, object>
-        {
-            { "marketScore", Random.Shared.Next(60, 95) },
-            { "trendDirection", Random.Shared.NextDouble() > 0.3 ? "up" : "down" },
-            { "volatility", Random.Shared.NextDouble() * 0.3 }, // 0-30% volatility
-            { "recommendedAction", Random.Shared.NextDouble() > 0.5 ? "buy" : "hold" }
-        };
-    }
-
-    private static Dictionary<string, object> GenerateRiskAssessment(Dictionary<string, object> inputData)
-    {
-        return new Dictionary<string, object>
-        {
-            { "riskScore", Random.Shared.Next(1, 10) },
-            { "riskLevel", Random.Shared.NextDouble() switch
-                {
-                    < 0.3 => "low",
-                    < 0.7 => "medium",
-                    _ => "high"
-                }
-            },
-            { "factors", new[] { "market_conditions", "property_age", "location", "economic_indicators" } }
-        };
-    }
-
-    private static Dictionary<string, object> GenerateComplianceCheck(Dictionary<string, object> inputData)
-    {
-        return new Dictionary<string, object>
-        {
-            { "complianceScore", Random.Shared.Next(80, 100) },
-            { "violations", Random.Shared.Next(0, 3) },
-            { "status", Random.Shared.NextDouble() > 0.2 ? "compliant" : "needs_review" },
-            { "recommendations", new[] { "Update documentation", "Review zoning compliance" } }
-        };
-    }
-
-    private static List<TerraFusion.Abstractions.DTOs.AIAgentStatusDto> GenerateAgentStatuses(int count)
-    {
-        var statuses = new List<TerraFusion.Abstractions.DTOs.AIAgentStatusDto>();
-        var agentTypes = new[] { "PropertyAssessment", "Analytics", "Compliance", "DataValidation" };
-
-        for (int i = 0; i < count; i++)
-        {
-            statuses.Add(new TerraFusion.Abstractions.DTOs.AIAgentStatusDto
-            {
-                AgentId = Guid.NewGuid().ToString(), // Convert Guid to string for compatibility
-                Name = $"Agent-{i + 1:D3}",
-                Type = agentTypes[i % agentTypes.Length],
-                Status = Random.Shared.NextDouble() > 0.1 ? "Active" : "Idle",
-                LoadPercentage = (decimal)Random.Shared.NextDouble() * 100, // Convert double to decimal
-                TasksCompleted = Random.Shared.Next(100, 5000),
-                LastActivity = DateTime.UtcNow.AddMinutes(-Random.Shared.Next(1, 60))
-            });
+            var totalMarketValue = assessments.Sum(a => (double)a.MarketValue);
+            var count = assessments.Count;
+            avgPricePerSqft = totalMarketValue / (count * 1800.0); // avg sqft estimate
         }
 
-        return statuses;
+        var estimatedValue = sqft * avgPricePerSqft;
+        var marketTrend = assessments.Count > 10 ? "data_driven" : "insufficient_data";
+
+        return new Dictionary<string, object>
+        {
+            { "estimatedValue", estimatedValue },
+            { "pricePerSqFt", avgPricePerSqft },
+            { "marketTrend", marketTrend },
+            { "comparableProperties", assessments.Count },
+            { "dataSource", "PropertyAssessments" }
+        };
     }
 
-    private static Dictionary<string, object> GenerateCommandResults(TerraFusion.Core.DTOs.AICommandDto command)
+    private async System.Threading.Tasks.Task<Dictionary<string, object>> GenerateCostPredictionAsync(Dictionary<string, object> inputData)
     {
-        return command.Command.ToLower() switch
+        // Query real assessment data for cost baselines
+        var assessments = await _dbContext.PropertyAssessments
+            .Where(pa => pa.IsActive && pa.AssessedValue > 0)
+            .ToListAsync();
+
+        double avgAssessedValue = 250000; // fallback
+        if (assessments.Any())
         {
-            "status" => new Dictionary<string, object> { ["swarm_status"] = "active", ["agent_count"] = 1008 },
-            "scale" => new Dictionary<string, object> { ["new_agent_count"] = 1008 }, // Default count since Parameters is a JSON string
-            "restart" => new Dictionary<string, object> { ["restarted_agents"] = 1, ["success"] = true },
-            _ => new Dictionary<string, object> { ["result"] = "Command executed", ["timestamp"] = DateTime.UtcNow }
+            avgAssessedValue = assessments.Average(a => (double)a.AssessedValue);
+        }
+
+        return new Dictionary<string, object>
+        {
+            { "estimatedCost", avgAssessedValue },
+            { "costBreakdown", new Dictionary<string, object>
+                {
+                    { "materials", avgAssessedValue * 0.4 },
+                    { "labor", avgAssessedValue * 0.35 },
+                    { "permits", avgAssessedValue * 0.05 },
+                    { "overhead", avgAssessedValue * 0.2 }
+                }
+            },
+            { "sampleSize", assessments.Count },
+            { "dataSource", "PropertyAssessments" }
         };
+    }
+
+    private async System.Threading.Tasks.Task<Dictionary<string, object>> GenerateMarketAnalysisAsync(Dictionary<string, object> inputData)
+    {
+        // Compute market metrics from real assessment data
+        var assessments = await _dbContext.PropertyAssessments
+            .Where(pa => pa.IsActive && pa.MarketValue > 0 && pa.AssessedValue > 0)
+            .ToListAsync();
+
+        if (!assessments.Any())
+        {
+            return new Dictionary<string, object>
+            {
+                { "marketScore", 0 },
+                { "trendDirection", "no_data" },
+                { "volatility", 0.0 },
+                { "sampleSize", 0 }
+            };
+        }
+
+        var ratios = assessments.Select(a => (double)a.AssessedValue / (double)a.MarketValue).ToList();
+        var avgRatio = ratios.Average();
+        var stdDev = Math.Sqrt(ratios.Average(r => Math.Pow(r - avgRatio, 2)));
+        var volatility = avgRatio > 0 ? stdDev / avgRatio : 0;
+
+        // Market score: higher when assessed/market ratio is close to 1.0 and volatility is low
+        var marketScore = Math.Max(0, Math.Min(100, (int)(100 * (1 - Math.Abs(avgRatio - 1.0)) * (1 - volatility))));
+        var trendDirection = avgRatio > 1.02 ? "assessed_above_market" : avgRatio < 0.98 ? "assessed_below_market" : "stable";
+
+        return new Dictionary<string, object>
+        {
+            { "marketScore", marketScore },
+            { "trendDirection", trendDirection },
+            { "volatility", Math.Round(volatility, 4) },
+            { "avgAssessedToMarketRatio", Math.Round(avgRatio, 4) },
+            { "sampleSize", assessments.Count }
+        };
+    }
+
+    private async System.Threading.Tasks.Task<Dictionary<string, object>> GenerateRiskAssessmentAsync(Dictionary<string, object> inputData)
+    {
+        // Compute risk from data quality and agent health
+        var totalProperties = await _dbContext.Properties.CountAsync();
+        var propertiesWithAddress = await _dbContext.Properties
+            .Where(p => !string.IsNullOrEmpty(p.Address))
+            .CountAsync();
+
+        var dataCompleteness = totalProperties > 0 ? (double)propertiesWithAddress / totalProperties : 1.0;
+
+        var agents = await _dbContext.AIAgents.ToListAsync();
+        var agentHealth = agents.Count > 0 ? agents.Count(a => a.Status != "Offline" && a.Status != "Error") / (double)agents.Count : 1.0;
+
+        var riskScore = (int)Math.Max(1, Math.Min(10, 10 * (1 - (dataCompleteness + agentHealth) / 2)));
+        var riskLevel = riskScore <= 3 ? "low" : riskScore <= 6 ? "medium" : "high";
+
+        return new Dictionary<string, object>
+        {
+            { "riskScore", riskScore },
+            { "riskLevel", riskLevel },
+            { "dataCompleteness", Math.Round(dataCompleteness, 4) },
+            { "agentHealth", Math.Round(agentHealth, 4) },
+            { "factors", new[] { "data_completeness", "agent_availability", "system_health" } }
+        };
+    }
+
+    private async System.Threading.Tasks.Task<Dictionary<string, object>> GenerateComplianceCheckAsync(Dictionary<string, object> inputData)
+    {
+        // Compute compliance from real audit logs
+        var recentAuditCount = await _dbContext.AuditLogs
+            .Where(a => a.Timestamp > DateTime.UtcNow.AddDays(-30))
+            .CountAsync();
+
+        var failedAudits = await _dbContext.AuditLogs
+            .Where(a => a.Timestamp > DateTime.UtcNow.AddDays(-30) && a.ResponseStatusCode.HasValue && a.ResponseStatusCode >= 400)
+            .CountAsync();
+
+        var complianceScore = recentAuditCount > 0
+            ? (int)(100.0 * (recentAuditCount - failedAudits) / recentAuditCount)
+            : 100;
+
+        var status = complianceScore >= 95 ? "compliant" : complianceScore >= 80 ? "needs_review" : "non_compliant";
+
+        return new Dictionary<string, object>
+        {
+            { "complianceScore", complianceScore },
+            { "violations", failedAudits },
+            { "status", status },
+            { "auditedOperations", recentAuditCount },
+            { "dataSource", "AuditLogs" }
+        };
+    }
+
+    private async System.Threading.Tasks.Task<Dictionary<string, object>> GenerateCommandResultsAsync(TerraFusion.Core.DTOs.AICommandDto command)
+    {
+        var baseResults = new Dictionary<string, object> { ["command"] = command.Command, ["timestamp"] = DateTime.UtcNow };
+
+        switch (command.Command.ToLower())
+        {
+            case "status":
+                var totalAgents = await _dbContext.AIAgents.CountAsync();
+                var activeAgents = await _dbContext.AIAgents.CountAsync(a => a.Status == "Active" || a.Status == "Busy");
+                baseResults["swarm_status"] = activeAgents > 0 ? "active" : "idle";
+                baseResults["agent_count"] = totalAgents;
+                baseResults["active_count"] = activeAgents;
+                break;
+            case "scale":
+                baseResults["current_agent_count"] = await _dbContext.AIAgents.CountAsync();
+                break;
+            case "restart":
+                baseResults["restarted_agents"] = 1;
+                baseResults["success"] = true;
+                break;
+            default:
+                baseResults["result"] = "Command executed";
+                break;
+        }
+
+        return baseResults;
     }
 
     private static string GetSpecialization(string agentType)
@@ -530,15 +785,39 @@ public class AICommandService : IAICommandService
         };
     }
 
-    private static List<AIPerformanceMetricDto> GeneratePerformanceMetrics()
+    private async System.Threading.Tasks.Task<List<AIPerformanceMetricDto>> GeneratePerformanceMetricsAsync()
     {
-        return new List<AIPerformanceMetricDto>
+        var recentMetrics = await _dbContext.PerformanceMetrics
+            .Where(m => m.Timestamp > DateTime.UtcNow.AddHours(-1))
+            .ToListAsync();
+
+        var metricNames = new[] { "CpuUsage", "MemoryUsage", "ResponseTime", "ErrorRate" };
+        var results = new List<AIPerformanceMetricDto>();
+
+        foreach (var name in metricNames)
         {
-            new() { MetricName = "CPU Usage", Value = Random.Shared.NextDouble() * 80, Unit = "%", Timestamp = DateTime.UtcNow },
-            new() { MetricName = "Memory Usage", Value = Random.Shared.NextDouble() * 16, Unit = "GB", Timestamp = DateTime.UtcNow },
-            new() { MetricName = "Tasks Per Second", Value = Random.Shared.NextDouble() * 100, Unit = "tasks/sec", Timestamp = DateTime.UtcNow },
-            new() { MetricName = "Response Time", Value = Random.Shared.NextDouble() * 200 + 50, Unit = "ms", Timestamp = DateTime.UtcNow }
-        };
+            var matching = recentMetrics.Where(m => m.MetricName == name).ToList();
+            results.Add(new AIPerformanceMetricDto
+            {
+                MetricName = name,
+                Value = matching.Any() ? matching.Average(m => m.Value) : 0,
+                Unit = matching.FirstOrDefault()?.Unit ?? "unknown",
+                Timestamp = DateTime.UtcNow
+            });
+        }
+
+        // Add tasks-per-second from agent throughput
+        var agents = await _dbContext.AIAgents.ToListAsync();
+        var activeCount = agents.Count(a => a.Status == "Active" || a.Status == "Busy");
+        results.Add(new AIPerformanceMetricDto
+        {
+            MetricName = "ActiveAgents",
+            Value = activeCount,
+            Unit = "agents",
+            Timestamp = DateTime.UtcNow
+        });
+
+        return results;
     }
 
     private static string GenerateTaskDescription(string taskType)
@@ -572,181 +851,457 @@ public class AICommandService : IAICommandService
         };
     }
 
-    // Missing interface implementations
     public async System.Threading.Tasks.Task<AIModelDto> DeployModelAsync(int modelId)
     {
-        _logger.LogInformation($"Deploying model {modelId}");
-        await System.Threading.Tasks.Task.Delay(100); // Simulate deployment
-        return new AIModelDto { ModelId = modelId.ToString(), ModelName = $"Model_{modelId}", Status = AIModelStatus.Active };
+        _logger.LogInformation("Deploying model {ModelId}", modelId);
+
+        var model = await _context.AIModels.FindAsync(modelId);
+        if (model == null)
+        {
+            throw new ArgumentException($"AI Model with ID {modelId} not found");
+        }
+
+        model.Status = AIModelStatus.Active;
+        model.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        _dbContext.AuditLogs.Add(new AuditLog
+        {
+            Type = "AI_COMMAND:DeployModel",
+            Data = System.Text.Json.JsonSerializer.Serialize(new { modelId, model.Name }),
+            Timestamp = DateTime.UtcNow,
+            Source = "AICommandService",
+            Severity = "Info"
+        });
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation("Model {ModelName} deployed successfully", model.Name);
+        return _mapper.Map<AIModelDto>(model);
     }
 
     public async System.Threading.Tasks.Task<bool> UndeployModelAsync(int modelId)
     {
-        _logger.LogInformation($"Undeploying model {modelId}");
-        await System.Threading.Tasks.Task.Delay(100); // Simulate undeployment
+        _logger.LogInformation("Undeploying model {ModelId}", modelId);
+
+        var model = await _context.AIModels.FindAsync(modelId);
+        if (model == null)
+        {
+            _logger.LogWarning("Model {ModelId} not found for undeployment", modelId);
+            return false;
+        }
+
+        model.Status = AIModelStatus.Inactive;
+        model.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        _dbContext.AuditLogs.Add(new AuditLog
+        {
+            Type = "AI_COMMAND:UndeployModel",
+            Data = System.Text.Json.JsonSerializer.Serialize(new { modelId, model.Name }),
+            Timestamp = DateTime.UtcNow,
+            Source = "AICommandService",
+            Severity = "Info"
+        });
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation("Model {ModelName} undeployed", model.Name);
         return true;
     }
 
     public async System.Threading.Tasks.Task<IEnumerable<AIModelHealthDto>> GetAllModelHealthAsync()
     {
-        await System.Threading.Tasks.Task.Delay(50); // Simulate health check
-        return new List<AIModelHealthDto>
+        var models = await _context.AIModels.ToListAsync();
+        var healthChecks = new List<AIModelHealthDto>();
+
+        foreach (var model in models)
         {
-            new() { ModelId = 1, ModelName = "Model_1", IsHealthy = true },
-            new() { ModelId = 2, ModelName = "Model_2", IsHealthy = true },
-            new() { ModelId = 3, ModelName = "Model_3", IsHealthy = false }
-        };
+            var health = await GetModelHealthAsync(model.Id.GetHashCode());
+            healthChecks.Add(health);
+        }
+
+        return healthChecks;
     }
 
     public async System.Threading.Tasks.Task<PredictionResultDto> RunPredictionAsync(int modelId, PredictionInputDto input)
     {
-        _logger.LogInformation($"Running prediction with model {modelId}");
-        await System.Threading.Tasks.Task.Delay(100); // Simulate prediction
+        _logger.LogInformation("Running prediction with model {ModelId}", modelId);
+        var startTime = DateTime.UtcNow;
+
+        var model = await _context.AIModels.FindAsync(modelId);
+        if (model == null)
+        {
+            throw new ArgumentException($"AI Model with ID {modelId} not found");
+        }
+
+        var predictionResult = await GeneratePropertyValuationAsync(input.InputData ?? new Dictionary<string, object>());
+        var processingTime = DateTime.UtcNow - startTime;
+
+        // Record prediction metric
+        _dbContext.PerformanceMetrics.Add(new TerraFusion.Core.Entities.PerformanceMetric
+        {
+            MetricName = "PredictionsCount",
+            MetricType = "Prediction",
+            Value = 1,
+            Unit = "count",
+            Timestamp = DateTime.UtcNow,
+            Source = model.Name,
+            RelatedEntityType = "AIModel",
+            RelatedEntityId = model.Id
+        });
+        await _dbContext.SaveChangesAsync();
+
         return new PredictionResultDto
         {
-            ModelId = Guid.NewGuid(), // Use Guid for Core DTO
-            Predictions = new Dictionary<string, object> { ["predicted_value"] = "$425,000" },
-            Confidence = 0.87M, // Use decimal
-            ProcessingTime = TimeSpan.FromMilliseconds(95),
+            ModelId = model.Id,
+            Predictions = predictionResult,
+            Confidence = (decimal)model.Accuracy,
+            ProcessingTime = processingTime,
             Timestamp = DateTime.UtcNow
         };
     }
 
     public async System.Threading.Tasks.Task<BatchPredictionResultDto> RunBatchPredictionAsync(int modelId, IEnumerable<PredictionInputDto> inputs)
     {
-        _logger.LogInformation($"Running batch prediction with model {modelId} for {inputs.Count()} inputs");
-        await System.Threading.Tasks.Task.Delay(200); // Simulate batch processing
+        _logger.LogInformation("Running batch prediction with model {ModelId}", modelId);
+        var startTime = DateTime.UtcNow;
 
-        var results = inputs.Select((input, index) => new PredictionResultDto
+        var model = await _context.AIModels.FindAsync(modelId);
+        if (model == null)
         {
-            ModelId = Guid.NewGuid(),
-            Success = true,
-            Confidence = 0.80M + (index % 10) * 0.01M,
-            Results = new Dictionary<string, object> { ["prediction"] = $"Batch prediction {index + 1}" }
-        }).ToList();
+            throw new ArgumentException($"AI Model with ID {modelId} not found");
+        }
+
+        var inputList = inputs.ToList();
+        var results = new List<PredictionResultDto>();
+
+        foreach (var input in inputList)
+        {
+            var predictionResult = await GeneratePropertyValuationAsync(input.InputData ?? new Dictionary<string, object>());
+            results.Add(new PredictionResultDto
+            {
+                ModelId = model.Id,
+                Success = true,
+                Confidence = (decimal)model.Accuracy,
+                Results = predictionResult
+            });
+        }
+
+        // Record batch metric
+        _dbContext.PerformanceMetrics.Add(new TerraFusion.Core.Entities.PerformanceMetric
+        {
+            MetricName = "PredictionsCount",
+            MetricType = "Prediction",
+            Value = inputList.Count,
+            Unit = "count",
+            Timestamp = DateTime.UtcNow,
+            Source = model.Name,
+            RelatedEntityType = "AIModel",
+            RelatedEntityId = model.Id
+        });
+        await _dbContext.SaveChangesAsync();
 
         return new BatchPredictionResultDto
         {
             ModelId = modelId.ToString(),
             TotalPredictions = results.Count,
-            SuccessfulPredictions = results.Count,
+            SuccessfulPredictions = results.Count(r => r.Success),
             Results = results
         };
     }
 
     public async System.Threading.Tasks.Task<TerraFusion.AI.DTOs.AICommandStatsDto> GetAICommandStatsAsync()
     {
-        await System.Threading.Tasks.Task.Delay(50); // Simulate stats collection
+        var commandLogs = await _dbContext.AuditLogs
+            .Where(a => a.Type != null && a.Type.StartsWith("AI_COMMAND"))
+            .ToListAsync();
+
+        var totalCommands = commandLogs.Count;
+        var successful = commandLogs.Count(a => a.ResponseStatusCode == null || a.ResponseStatusCode < 400);
+        var avgResponseTime = commandLogs
+            .Where(a => a.DurationMs.HasValue)
+            .Select(a => (double)a.DurationMs!.Value)
+            .DefaultIfEmpty(0)
+            .Average();
+
+        var activeModels = await _context.AIModels
+            .CountAsync(m => m.Status == AIModelStatus.Active);
+
         return new TerraFusion.AI.DTOs.AICommandStatsDto
         {
-            TotalCommands = 1547,
-            SuccessfulCommands = 1523,
-            FailedCommands = 24,
-            AverageResponseTime = 125.5,
-            ActiveModels = 5,
+            TotalCommands = totalCommands,
+            SuccessfulCommands = successful,
+            FailedCommands = totalCommands - successful,
+            AverageResponseTime = avgResponseTime,
+            ActiveModels = activeModels,
             LastUpdated = DateTime.UtcNow
         };
     }
 
     public async System.Threading.Tasks.Task<bool> StartModelTrainingAsync(int modelId, TrainingConfigDto config)
     {
-        _logger.LogInformation($"Starting training for model {modelId}");
-        await System.Threading.Tasks.Task.Delay(150); // Simulate training start
+        _logger.LogInformation("Starting training for model {ModelId}", modelId);
+
+        var model = await _context.AIModels.FindAsync(modelId);
+        if (model == null)
+        {
+            _logger.LogWarning("Model {ModelId} not found for training", modelId);
+            return false;
+        }
+
+        model.Status = AIModelStatus.Training;
+        model.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        _dbContext.PerformanceMetrics.Add(new TerraFusion.Core.Entities.PerformanceMetric
+        {
+            MetricName = "TrainingStarted",
+            MetricType = "Training",
+            Value = config.Epochs,
+            Unit = "epochs",
+            Timestamp = DateTime.UtcNow,
+            Source = model.Name,
+            RelatedEntityType = "AIModel",
+            RelatedEntityId = model.Id
+        });
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation("Training started for model {ModelName}", model.Name);
         return true;
     }
 
     public async System.Threading.Tasks.Task<TerraFusion.AI.DTOs.TrainingStatusDto> GetTrainingStatusAsync(int modelId)
     {
-        await System.Threading.Tasks.Task.Delay(50); // Simulate status check
+        var model = await _context.AIModels.FindAsync(modelId);
+        if (model == null)
+        {
+            return new TerraFusion.AI.DTOs.TrainingStatusDto
+            {
+                ModelId = modelId,
+                Status = TerraFusion.AI.DTOs.TrainingStatus.NotStarted
+            };
+        }
+
+        // Query training metrics for this model
+        var trainingMetrics = await _dbContext.PerformanceMetrics
+            .Where(m => m.RelatedEntityType == "AIModel" && m.RelatedEntityId == model.Id && m.MetricName == "TrainingStarted")
+            .OrderByDescending(m => m.Timestamp)
+            .FirstOrDefaultAsync();
+
+        var status = model.Status switch
+        {
+            AIModelStatus.Training => TerraFusion.AI.DTOs.TrainingStatus.InProgress,
+            AIModelStatus.Active => TerraFusion.AI.DTOs.TrainingStatus.Completed,
+            _ => TerraFusion.AI.DTOs.TrainingStatus.NotStarted
+        };
+
+        var totalEpochs = trainingMetrics != null ? (int)trainingMetrics.Value : 20;
+
         return new TerraFusion.AI.DTOs.TrainingStatusDto
         {
             ModelId = modelId,
-            Status = TerraFusion.AI.DTOs.TrainingStatus.InProgress,
-            Progress = (double)0.65M,
-            EpochsCompleted = 13,
-            TotalEpochs = 20,
-            CurrentLoss = (double)0.0234M,
-            EstimatedTimeRemaining = TimeSpan.FromMinutes(8)
+            Status = status,
+            Progress = model.Status == AIModelStatus.Active ? 1.0 : model.Status == AIModelStatus.Training ? 0.5 : 0,
+            EpochsCompleted = model.Status == AIModelStatus.Active ? totalEpochs : (int)(totalEpochs * 0.5),
+            TotalEpochs = totalEpochs,
+            CurrentLoss = model.Status == AIModelStatus.Active ? 0.001 : 0.05,
+            EstimatedTimeRemaining = model.Status == AIModelStatus.Training ? TimeSpan.FromMinutes(5) : TimeSpan.Zero
         };
     }
 
     // Core IAICommandService interface implementations
     public async System.Threading.Tasks.Task<TerraFusion.Core.Interfaces.AICommandResult> ExecuteCommandAsync(string command, object parameters)
     {
-        _logger.LogInformation($"Executing AI command: {command}");
-        await System.Threading.Tasks.Task.Delay(100); // Simulate execution
+        _logger.LogInformation("Executing AI command: {Command}", command);
+        var startTime = DateTime.UtcNow;
+
+        // Find an available agent
+        var agent = await _dbContext.AIAgents
+            .Where(a => a.Status == "Active" || a.Status == "Idle")
+            .OrderBy(a => a.ProcessedTasks)
+            .FirstOrDefaultAsync();
+
+        if (agent != null)
+        {
+            agent.Status = "Busy";
+            agent.CurrentTask = command;
+            agent.LastActiveAt = DateTime.UtcNow;
+        }
+
+        // Log to audit trail
+        _dbContext.AuditLogs.Add(new AuditLog
+        {
+            Type = $"AI_COMMAND:{command}",
+            Data = System.Text.Json.JsonSerializer.Serialize(parameters),
+            Timestamp = startTime,
+            Source = "AICommandService",
+            Severity = "Info"
+        });
+
+        await _dbContext.SaveChangesAsync();
+        var executionTime = DateTime.UtcNow - startTime;
+
+        // Release agent
+        if (agent != null)
+        {
+            agent.Status = "Active";
+            agent.CurrentTask = null;
+            agent.ProcessedTasks++;
+            await _dbContext.SaveChangesAsync();
+        }
 
         return new TerraFusion.Core.Interfaces.AICommandResult
         {
             ExecutionId = Guid.NewGuid(),
-            Success = true,
-            Result = $"Command '{command}' executed successfully",
-            ExecutionTime = TimeSpan.FromMilliseconds(95),
+            Success = agent != null,
+            Result = agent != null ? $"Command '{command}' executed by {agent.Name}" : $"No available agents for '{command}'",
+            ExecutionTime = executionTime,
             ExecutedAt = DateTime.UtcNow
         };
     }
 
     public async System.Threading.Tasks.Task<IEnumerable<TerraFusion.Core.Interfaces.AICommandInfo>> GetAvailableCommandsAsync()
     {
-        await System.Threading.Tasks.Task.Delay(50); // Simulate data retrieval
+        // Build available commands from active models and agent capabilities
+        var activeModels = await _context.AIModels
+            .Where(m => m.Status == AIModelStatus.Active)
+            .ToListAsync();
 
-        return new List<TerraFusion.Core.Interfaces.AICommandInfo>
+        var commands = new List<TerraFusion.Core.Interfaces.AICommandInfo>
         {
-            new() { Name = "PropertyValuation", Description = "AI property valuation", Category = "Analysis", IsEnabled = true },
-            new() { Name = "MarketAnalysis", Description = "Market trend analysis", Category = "Analytics", IsEnabled = true },
-            new() { Name = "RiskAssessment", Description = "Risk assessment analysis", Category = "Finance", IsEnabled = true }
+            new() { Name = "status", Description = "Get AI swarm status", Category = "System", IsEnabled = true },
+            new() { Name = "scale", Description = "Scale agent swarm", Category = "System", IsEnabled = true },
+            new() { Name = "restart", Description = "Restart an agent", Category = "System", IsEnabled = true }
         };
+
+        // Add model-based commands for each active model
+        foreach (var model in activeModels)
+        {
+            var category = model.Type switch
+            {
+                AIModelType.PropertyValuation => "Analysis",
+                AIModelType.CostPrediction => "Finance",
+                AIModelType.MarketAnalysis => "Analytics",
+                AIModelType.RiskAssessment => "Finance",
+                AIModelType.ComplianceCheck => "Compliance",
+                _ => "General"
+            };
+
+            commands.Add(new TerraFusion.Core.Interfaces.AICommandInfo
+            {
+                Name = model.Name,
+                Description = $"{model.Type} prediction using {model.Name}",
+                Category = category,
+                IsEnabled = true
+            });
+        }
+
+        return commands;
     }
 
     public async System.Threading.Tasks.Task<IEnumerable<TerraFusion.Core.Interfaces.AICommandExecution>> GetCommandHistoryAsync(int limit = 100)
     {
-        await System.Threading.Tasks.Task.Delay(50); // Simulate data retrieval
+        var logs = await _dbContext.AuditLogs
+            .Where(a => a.Type != null && a.Type.StartsWith("AI_COMMAND"))
+            .OrderByDescending(a => a.Timestamp)
+            .Take(limit)
+            .ToListAsync();
 
-        return new List<TerraFusion.Core.Interfaces.AICommandExecution>
+        return logs.Select(log => new TerraFusion.Core.Interfaces.AICommandExecution
         {
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Command = "PropertyValuation",
-                Status = "Completed",
-                StartedAt = DateTime.UtcNow.AddMinutes(-10),
-                CompletedAt = DateTime.UtcNow.AddMinutes(-9),
-                Success = true,
-                UserId = "system"
-            }
-        }.Take(limit);
+            Id = log.Id,
+            Command = log.Type ?? "Unknown",
+            Status = (log.ResponseStatusCode == null || log.ResponseStatusCode < 400) ? "Completed" : "Failed",
+            StartedAt = log.Timestamp,
+            CompletedAt = log.DurationMs.HasValue ? log.Timestamp.AddMilliseconds(log.DurationMs.Value) : log.Timestamp,
+            Success = log.ResponseStatusCode == null || log.ResponseStatusCode < 400,
+            UserId = log.UserId ?? "system"
+        });
     }
 
     public async System.Threading.Tasks.Task<TerraFusion.Core.Interfaces.AICommandStatistics> GetCommandStatisticsAsync()
     {
-        await System.Threading.Tasks.Task.Delay(50); // Simulate data retrieval
+        var commandLogs = await _dbContext.AuditLogs
+            .Where(a => a.Type != null && a.Type.StartsWith("AI_COMMAND"))
+            .ToListAsync();
+
+        var total = commandLogs.Count;
+        var successful = commandLogs.Count(a => a.ResponseStatusCode == null || a.ResponseStatusCode < 400);
+        var avgTime = commandLogs
+            .Where(a => a.DurationMs.HasValue)
+            .Select(a => (double)a.DurationMs!.Value)
+            .DefaultIfEmpty(0)
+            .Average();
 
         return new TerraFusion.Core.Interfaces.AICommandStatistics
         {
-            TotalExecutions = 1547,
-            SuccessfulExecutions = 1523,
-            FailedExecutions = 24,
-            AverageExecutionTimeMs = 125.5,
-            SuccessRate = 0.985
+            TotalExecutions = total,
+            SuccessfulExecutions = successful,
+            FailedExecutions = total - successful,
+            AverageExecutionTimeMs = avgTime,
+            SuccessRate = total > 0 ? (double)successful / total : 0
         };
     }
 
     public async System.Threading.Tasks.Task<TerraFusion.Core.Interfaces.AICommandValidationResult> ValidateCommandAsync(string command, object parameters)
     {
-        await System.Threading.Tasks.Task.Delay(25); // Simulate validation
+        var errors = new List<string>();
+        var warnings = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(command))
+        {
+            errors.Add("Command cannot be empty");
+        }
+
+        // Check if agents are available
+        var availableAgents = await _dbContext.AIAgents
+            .CountAsync(a => a.Status == "Active" || a.Status == "Idle");
+
+        if (availableAgents == 0)
+        {
+            warnings.Add("No agents currently available; command will be queued");
+        }
 
         return new TerraFusion.Core.Interfaces.AICommandValidationResult
         {
-            IsValid = true,
-            Errors = new List<string>(),
-            Warnings = new List<string>()
+            IsValid = !errors.Any(),
+            Errors = errors,
+            Warnings = warnings
         };
     }
 
     public async System.Threading.Tasks.Task<bool> CancelCommandAsync(Guid executionId)
     {
-        _logger.LogInformation($"Cancelling command execution: {executionId}");
-        await System.Threading.Tasks.Task.Delay(50); // Simulate cancellation
+        _logger.LogInformation("Cancelling command execution: {ExecutionId}", executionId);
+
+        // Find the audit log entry for this execution
+        var auditLog = await _dbContext.AuditLogs
+            .Where(a => a.Type != null && a.Type.StartsWith("AI_COMMAND") && a.Data != null && a.Data.Contains(executionId.ToString()))
+            .FirstOrDefaultAsync();
+
+        if (auditLog == null)
+        {
+            _logger.LogWarning("No command execution found for ID {ExecutionId}", executionId);
+            return false;
+        }
+
+        // Find any busy agent working on this command and release it
+        var busyAgents = await _dbContext.AIAgents
+            .Where(a => a.Status == "Busy" || a.Status == "Processing")
+            .ToListAsync();
+
+        foreach (var agent in busyAgents)
+        {
+            agent.Status = "Active";
+            agent.CurrentTask = null;
+            agent.LastActiveAt = DateTime.UtcNow;
+        }
+
+        if (busyAgents.Any())
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+
+        _logger.LogInformation("Command {ExecutionId} cancelled, released {Count} agents", executionId, busyAgents.Count);
         return true;
     }
 }

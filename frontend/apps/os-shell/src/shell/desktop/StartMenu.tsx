@@ -558,14 +558,14 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
       role='menu'
       aria-label='Start Menu'
       className={cn(
-        // Position - bottom left, above taskbar
-        'fixed bottom-14 left-1 z-[60]',
+        // Position - bottom left, above taskbar dock
+        'fixed bottom-16 left-4 z-[60]',
         // Size
-        'w-[400px] h-[560px]',
+        'w-[380px] h-[540px]',
         // Layout
         'flex flex-col',
         // Override Panel defaults for start menu
-        '!p-0 !rounded-[1.5rem]',
+        '!p-0 !rounded-2xl',
         // Glass effect class for tests/consistency
         'backdrop-blur-xl',
         // Animation
@@ -573,9 +573,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
         className
       )}
       style={{
-        // Enhanced glassmorphism over Panel base
-        backdropFilter: 'saturate(200%) blur(30px)',
-        WebkitBackdropFilter: 'saturate(200%) blur(30px)',
+        // macOS Tahoe glassmorphism
+        background: 'hsl(var(--tf-surface-dark-hs) 8% / 0.72)',
+        backdropFilter: 'saturate(200%) blur(32px)',
+        WebkitBackdropFilter: 'saturate(200%) blur(32px)',
+        border: '0.5px solid hsl(var(--tf-text-primary-hs) 100% / 0.1)',
+        boxShadow: '0 24px 80px hsl(0 0% 0% / 0.5), 0 0 0 0.5px hsl(var(--tf-text-primary-hs) 100% / 0.06)',
       }}
     >
       {/* Search Section */}
