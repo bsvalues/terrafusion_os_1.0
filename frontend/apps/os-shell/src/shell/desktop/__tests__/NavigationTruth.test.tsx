@@ -185,15 +185,15 @@ describe('Navigation Truth Contracts', () => {
       const forgeIcon = screen.getByTestId('desktop-icon-forge');
 
       // Initially not selected
-      expect(forgeIcon).not.toHaveClass('ring-2');
+      expect(forgeIcon).toHaveAttribute('aria-selected', 'false');
 
       // Single click
       await act(async () => {
         fireEvent.click(forgeIcon);
       });
 
-      // Should be selected (has selection ring)
-      expect(forgeIcon).toHaveClass('ring-2');
+      // Should be selected
+      expect(forgeIcon).toHaveAttribute('aria-selected', 'true');
     });
 
     it('double_click_launches_and_navigates', async () => {
@@ -237,14 +237,14 @@ describe('Navigation Truth Contracts', () => {
         fireEvent.click(forgeIcon);
       });
 
-      expect(forgeIcon).toHaveClass('ring-2');
+      expect(forgeIcon).toHaveAttribute('aria-selected', 'true');
 
       // Click grid background
       await act(async () => {
         fireEvent.click(grid);
       });
 
-      expect(forgeIcon).not.toHaveClass('ring-2');
+      expect(forgeIcon).toHaveAttribute('aria-selected', 'false');
     });
   });
 
