@@ -101,15 +101,15 @@ export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModul
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card
         sx={{
-          background: 'rgba(255,255,255,0.1)',
+          background: 'color-mix(in srgb, var(--tf-text-primary) 10%, transparent)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255,255,255,0.2)',
+          border: '1px solid color-mix(in srgb, var(--tf-text-primary) 20%, transparent)',
           cursor: 'pointer',
           transition: 'all 0.3s ease',
           '&:hover': {
-            background: 'rgba(255,255,255,0.2)',
+            background: 'color-mix(in srgb, var(--tf-text-primary) 20%, transparent)',
             transform: 'translateY(-2px)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            boxShadow: '0 8px 32px color-mix(in srgb, var(--tf-text-primary) 30%, transparent)',
           },
         }}
         onClick={() => onModuleLaunch(module.id)}
@@ -118,10 +118,10 @@ export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModul
           <Box sx={{ mb: 2 }}>
             <IconButton
               sx={{
-                bgcolor: 'rgba(255,255,255,0.2)',
+                bgcolor: 'color-mix(in srgb, var(--tf-text-primary) 20%, transparent)',
                 color: 'white',
                 mb: 1,
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                '&:hover': { bgcolor: 'color-mix(in srgb, var(--tf-text-primary) 30%, transparent)' },
               }}
               size='large'
             >
@@ -134,7 +134,7 @@ export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModul
           </Typography>
 
           {module.description && (
-            <Typography variant='body2' sx={{ color: 'rgba(255,255,255,0.7)', mb: 1 }}>
+            <Typography variant='body2' sx={{ color: 'color-mix(in srgb, var(--tf-text-primary) 70%, transparent)', mb: 1 }}>
               {module.description}
             </Typography>
           )}
@@ -145,7 +145,7 @@ export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModul
             <Chip label={module.status} size='small' color={getStatusColor(module.status)} />
           </Box>
 
-          <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.5)' }}>
+          <Typography variant='caption' sx={{ color: 'color-mix(in srgb, var(--tf-text-primary) 50%, transparent)' }}>
             v{module.version}
           </Typography>
         </CardContent>
@@ -199,3 +199,4 @@ export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModul
     </Box>
   );
 };
+

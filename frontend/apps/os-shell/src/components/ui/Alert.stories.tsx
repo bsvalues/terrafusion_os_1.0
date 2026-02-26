@@ -158,8 +158,8 @@ export const WithIcons: Story = {
       {/* Warning Alert */}
       <Alert
         style={{
-          borderColor: '#f59e0b',
-          color: '#f59e0b',
+          borderColor: 'hsl(var(--tf-warning-hs) 56%)',
+          color: 'hsl(var(--tf-warning-hs) 56%)',
         }}
       >
         <svg
@@ -270,7 +270,7 @@ export const WithActions: Story = {
                 padding: '6px 12px',
                 fontSize: '14px',
                 backgroundColor: 'transparent',
-                border: '1px solid #2a2a2a',
+                border: '1px solid hsl(var(--tf-neutral-hs) 16%)',
                 borderRadius: '6px',
                 color: 'var(--tf-text-primary)',
                 cursor: 'pointer',
@@ -333,7 +333,7 @@ export const RealWorldExample: Story = {
       style={{
         maxWidth: '800px',
         padding: '24px',
-        backgroundColor: '#0a0a0a',
+        backgroundColor: 'hsl(var(--tf-neutral-hs) 4%)',
         borderRadius: '12px',
       }}
     >
@@ -344,7 +344,7 @@ export const RealWorldExample: Story = {
         style={{
           marginBottom: '24px',
           borderColor: 'var(--tf-success-green)',
-          backgroundColor: 'rgba(34, 197, 94, 0.05)',
+          backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.05)',
         }}
       >
         <svg
@@ -415,8 +415,8 @@ export const RealWorldExample: Story = {
       <Alert
         style={{
           marginBottom: '24px',
-          borderColor: '#f59e0b',
-          backgroundColor: 'rgba(245, 158, 11, 0.05)',
+          borderColor: 'hsl(var(--tf-warning-hs) 56%)',
+          backgroundColor: 'hsl(var(--tf-warning-hs) 56% / 0.05)',
         }}
       >
         <svg
@@ -425,7 +425,7 @@ export const RealWorldExample: Story = {
           height='16'
           viewBox='0 0 24 24'
           fill='none'
-          stroke='#f59e0b'
+          stroke='hsl(var(--tf-warning-hs) 56%)'
           strokeWidth='2'
         >
           <path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z' />
@@ -433,14 +433,14 @@ export const RealWorldExample: Story = {
         </svg>
         <AlertTitle
           style={{
-            color: '#f59e0b',
+            color: 'hsl(var(--tf-warning-hs) 56%)',
           }}
         >
           Careful!
         </AlertTitle>
         <AlertDescription
           style={{
-            color: '#f59e0b',
+            color: 'hsl(var(--tf-warning-hs) 56%)',
           }}
         >
           Changing your email address will require verification.
@@ -454,7 +454,7 @@ export const RealWorldExample: Story = {
             padding: '10px 16px',
             fontSize: '14px',
             backgroundColor: 'transparent',
-            border: '1px solid #2a2a2a',
+            border: '1px solid hsl(var(--tf-neutral-hs) 16%)',
             borderRadius: '6px',
             color: 'var(--tf-text-primary)',
             cursor: 'pointer',
@@ -517,7 +517,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -545,7 +545,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -573,7 +573,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -601,7 +601,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                backgroundColor: 'hsl(var(--tf-success-hs) 45% / 0.1)',
                 borderLeft: '3px solid var(--tf-success-green)',
                 borderRadius: '6px',
               }}
@@ -644,7 +644,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-danger-hs) 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -672,7 +672,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-danger-hs) 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -700,7 +700,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-danger-hs) 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -728,7 +728,7 @@ export const UsageGuidelines: Story = {
             <li
               style={{
                 padding: '16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                backgroundColor: 'hsl(var(--tf-danger-hs) 60% / 0.1)',
                 borderLeft: '3px solid var(--tf-accent-error)',
                 borderRadius: '6px',
               }}
@@ -765,13 +765,13 @@ export const UsageGuidelines: Story = {
         <h4 className='font-semibold'>Code Examples</h4>
         <div
           style={{
-            backgroundColor: '#1a1a1a',
+            backgroundColor: 'hsl(var(--tf-neutral-hs) 10%)',
             padding: '20px',
             borderRadius: '8px',
             fontFamily: '"Fira Code", monospace',
             fontSize: '13px',
             overflow: 'auto',
-            border: '1px solid #2a2a2a',
+            border: '1px solid hsl(var(--tf-neutral-hs) 16%)',
           }}
         >
           <pre

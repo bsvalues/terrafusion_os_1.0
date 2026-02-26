@@ -69,6 +69,9 @@ ARCHITECTURE OVERVIEW:
     --tf-secondary-harmonic: calc(var(--tf-primary-harmonic) + 120); /* Triadic */
     --tf-tertiary-harmonic: calc(var(--tf-primary-harmonic) + 240); /* Triadic */
     --tf-quantum-phase: 0deg; /* Animated hue rotation */
+    --tf-quantum-primary-hs: var(--tf-primary-harmonic) 60%;
+    --tf-quantum-secondary-hs: var(--tf-secondary-harmonic) 60%;
+    --tf-quantum-tertiary-hs: var(--tf-tertiary-harmonic) 60%;
 
     /* Adaptive scaling based on system performance */
     --tf-scale-factor: calc(
@@ -104,17 +107,17 @@ ARCHITECTURE OVERVIEW:
       var(--tf-gradient-dark),
       radial-gradient(
         circle at calc(20% + var(--tf-quantum-phase)) 50%,
-        hsla(var(--tf-primary-harmonic), 60%, 50%, 0.3) 0%,
+        hsl(var(--tf-quantum-primary-hs) 50% / 0.3) 0%,
         transparent 50%
       ),
       radial-gradient(
         circle at calc(80% - var(--tf-quantum-phase)) 50%,
-        hsla(var(--tf-secondary-harmonic), 60%, 50%, 0.2) 0%,
+        hsl(var(--tf-quantum-secondary-hs) 50% / 0.2) 0%,
         transparent 50%
       ),
       radial-gradient(
         circle at 50% calc(100% + var(--tf-quantum-phase)),
-        hsla(var(--tf-tertiary-harmonic), 60%, 50%, 0.2) 0%,
+        hsl(var(--tf-quantum-tertiary-hs) 50% / 0.2) 0%,
         transparent 50%
       );
 

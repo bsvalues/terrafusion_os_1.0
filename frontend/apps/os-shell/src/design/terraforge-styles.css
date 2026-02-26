@@ -106,3 +106,4 @@
 .terra-slider-thumb {
   left: calc(var(--thumb-position, 0%) - 8px);
 }
+

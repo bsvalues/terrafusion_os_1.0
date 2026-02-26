@@ -119,8 +119,8 @@ MIT PhD-Level Machine Learning CSS Architecture
   /* Enhanced visual effects when user is calm */
   backdrop-filter: blur(20px) saturate(180%);
   box-shadow:
-    0 8px 32px hsl(var(--tf-transcend-cyan-hs) 50% / 0.2),
-    0 0 40px hsl(var(--tf-network-blue-hs) 50% / 0.1);
+    0 8px 32px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2),
+    0 0 40px hsl(var(--tf-network-blue-hs) var(--tf-l-50) / 0.1);
 
   /* Full animation suite */
   animation:
@@ -138,7 +138,7 @@ MIT PhD-Level Machine Learning CSS Architecture
 .tf-stress-adaptive[data-stress='medium'] {
   /* Reduced visual complexity */
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px hsl(var(--tf-transcend-cyan-hs) 50% / 0.1);
+  box-shadow: 0 4px 16px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1);
 
   /* Simplified animations */
   animation: calm-pulse 3s ease infinite;
@@ -360,8 +360,11 @@ MIT PhD-Level Machine Learning CSS Architecture
 }
 
 .tf-ai-agent[data-status='processing'] {
-  background:
-    radial-gradient(circle, hsl(var(--tf-network-blue-hs) 60%) 0%, hsl(var(--tf-network-blue-hs) 40%) 100%);
+  background: radial-gradient(
+    circle,
+    hsl(var(--tf-network-blue-hs) 60%) 0%,
+    hsl(var(--tf-network-blue-hs) 40%) 100%
+  );
   box-shadow: 0 0 6px hsl(var(--tf-network-blue-hs) 60%);
   animation: agent-processing-spin 1s linear infinite;
 }
@@ -392,8 +395,12 @@ MIT PhD-Level Machine Learning CSS Architecture
   left: -100%;
   width: 100%;
   height: 100%;
-  background:
-    linear-gradient(90deg, transparent 0%, hsl(var(--tf-transcend-cyan-hs) 50% / 0.2) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2) 50%,
+    transparent 100%
+  );
   animation: prediction-hint calc(var(--tf-prediction-accuracy) * 5s) ease-in-out infinite;
 }
 
