@@ -1,16 +1,15 @@
 /**
- * TerraFusion OS Taskbar Component
+ * TerraFusion OS Dock
  *
- * Government-Grade Desktop Taskbar
- * Fixed position at bottom of screen with Start button, running apps, and system tray.
+ * macOS Tahoe-inspired floating centered dock with glass effect.
+ * Replaces the Windows 11-style full-width taskbar.
+ *
+ * Layout: [TerraSphere home] | [Running apps] | [System tray]
  *
  * @module shell/desktop/Taskbar
- * @see SUCCESS CRITERIA SC-2, Phase 7
  */
 
 import { cn } from '@/lib/utils';
-import { Button } from '@terrafusion/ui';
-import { LayoutGrid } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ParcelContextIndicator } from '../../components/ParcelContext';
@@ -28,10 +27,8 @@ import { NotificationBell, type Notification } from './NotificationBell';
 import { TaskbarContextMenu } from './TaskbarContextMenu';
 import { VirtualDesktopSwitcher } from './VirtualDesktopSwitcher';
 
-const SOVEREIGN_NODES = ['Files', 'Identity', 'Finance'];
-
 // ============================================================================
-// Default Demo Data
+// Default demo data
 // ============================================================================
 
 const defaultNotifications: Notification[] = [
@@ -46,29 +43,18 @@ const defaultNotifications: Notification[] = [
   {
     id: 'notif-2',
     title: 'AI Analysis Ready',
-    message: 'CostForge AI has finished analyzing the Q4 data. View results now.',
+    message: 'CostForge AI has finished analyzing the Q4 data.',
     type: 'info',
     timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
     read: false,
   },
-  {
-    id: 'notif-3',
-    title: 'System Update Available',
-    message: 'TerraFusion OS v2.1 is ready to install. Restart to apply updates.',
-    type: 'warning',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    read: true,
-  },
 ];
 
 // ============================================================================
-// Subcomponents
+// Dock Home Button (TerraSphere)
 // ============================================================================
 
-/**
- * TerraFusion Start Button
- */
-const StartButton: React.FC = () => {
+const DockHomeButton: React.FC = () => {
   const { t } = useTranslation();
   const { isOpen, toggle } = useStartMenuStore();
 
@@ -79,78 +65,24 @@ const StartButton: React.FC = () => {
       aria-expanded={isOpen}
       aria-haspopup='menu'
       className={cn(
-        // Base styles
         'flex items-center justify-center',
-        'w-12 h-10 rounded-md',
-        'transition-all duration-200 ease-out',
-        // Focus states
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
-        // Hover state
-        'hover:bg-white/10',
-        // Active/pressed state
-        isOpen && 'bg-white/15 shadow-[0_0_20px_hsl(var(--tf-accent)/0.3)]'
+        'w-10 h-10 rounded-lg',
+        'transition-all duration-150',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
+        'hover:bg-white/8',
+        isOpen && 'bg-white/12'
       )}
     >
-      {/* TerraSphere Logo */}
-      <TerraSphere size={32} state={isOpen ? 'processing' : 'idle'} />
+      <TerraSphere size={28} state={isOpen ? 'processing' : 'idle'} />
     </button>
   );
 };
 
-/**
- * Task View Button
- */
-const TaskViewButton: React.FC<{ onClick: () => void; isOpen: boolean }> = ({
-  onClick,
-  isOpen,
-}) => {
-  const { t } = useTranslation();
-  return (
-    <button
-      onClick={onClick}
-      aria-label={t('taskbar.taskView')}
-      aria-pressed={isOpen}
-      className={cn(
-        'flex items-center justify-center w-10 h-10 rounded-md transition-all hover:bg-white/10',
-        isOpen && 'bg-white/15'
-      )}
-      title={t('taskbar.taskView')}
-    >
-      <LayoutGrid className='h-4 w-4 text-white/90' aria-hidden='true' />
-    </button>
-  );
-};
+// ============================================================================
+// Dock App Button (running windows)
+// ============================================================================
 
-const SovereignDock: React.FC = () => {
-  const { openWindow } = useDesktopStore();
-
-  const handleNodeClick = (node: string) => {
-    if (node === 'Files') {
-      openWindow('axiom-fs', 'AxiomFS', 'Database');
-    }
-  };
-
-  return (
-    <div className='flex items-center gap-2 px-2 shrink-0'>
-      {SOVEREIGN_NODES.map((node) => (
-        <Button
-          key={node}
-          variant='ghost'
-          onClick={() => handleNodeClick(node)}
-          data-testid={`sovereign-launch-${node.toLowerCase()}`}
-          className='px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white/90'
-        >
-          {node}
-        </Button>
-      ))}
-    </div>
-  );
-};
-
-/**
- * Taskbar App Button for running windows
- */
-interface TaskbarAppButtonProps {
+interface DockAppButtonProps {
   windowId: string;
   title: string;
   icon: string;
@@ -162,7 +94,7 @@ interface TaskbarAppButtonProps {
   onMouseLeave: () => void;
 }
 
-const TaskbarAppButton: React.FC<TaskbarAppButtonProps> = ({
+const DockAppButton: React.FC<DockAppButtonProps> = ({
   windowId,
   title,
   icon,
@@ -176,63 +108,67 @@ const TaskbarAppButton: React.FC<TaskbarAppButtonProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const Icon = getLucideIcon(icon);
 
-  const handleMouseEnter = () => {
-    if (buttonRef.current) {
-      onMouseEnter(buttonRef.current.getBoundingClientRect());
-    }
-  };
-
   return (
     <button
       ref={buttonRef}
       onClick={onClick}
       onContextMenu={onContextMenu}
-      onMouseEnter={handleMouseEnter}
+      onMouseEnter={() => {
+        if (buttonRef.current) onMouseEnter(buttonRef.current.getBoundingClientRect());
+      }}
       onMouseLeave={onMouseLeave}
       aria-label={title}
       aria-pressed={isActive}
       data-minimized={isMinimized}
+      title={title}
       className={cn(
-        // Base styles
-        'flex items-center gap-2 px-3 h-10',
-        'max-w-[180px] min-w-[100px]',
-        'rounded-md',
-        'transition-all duration-150 ease-out',
-        // Text styles
-        'text-sm text-white/90 truncate',
-        // Focus states
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
-        // Hover state
-        'hover:bg-white/10',
-        // Active window indicator
-        isActive && [
-          'bg-white/15',
-          'border-b-2 border-[var(--tf-transcend-highlight)]',
-          'shadow-[0_2px_10px_hsl(var(--tf-accent)/0.3)]',
-        ],
-        // Minimized state (dimmed)
-        isMinimized && !isActive && 'opacity-60'
+        'relative flex items-center justify-center',
+        'w-10 h-10 rounded-lg',
+        'transition-all duration-150',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
+        'hover:bg-white/8',
+        isActive && 'bg-white/10',
+        isMinimized && !isActive && 'opacity-50'
       )}
     >
-      <div className='flex-shrink-0' role='img' aria-hidden='true'>
-        <TerraSphereIcon size={28} variant='default' glyph={<Icon className='h-3 w-3' />} />
-      </div>
-      <span className='truncate'>{title}</span>
+      <TerraSphereIcon size={28} variant='default' glyph={<Icon className='h-3 w-3' />} />
+      {/* Active indicator dot */}
+      {isActive && (
+        <div
+          className='absolute -bottom-0.5 left-1/2 -translate-x-1/2'
+          style={{
+            width: 4,
+            height: 4,
+            borderRadius: '50%',
+            background: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
+            boxShadow: '0 0 6px hsl(var(--tf-transcend-cyan-hs) 50% / 0.6)',
+          }}
+        />
+      )}
+      {/* Running indicator dot (not active) */}
+      {!isActive && !isMinimized && (
+        <div
+          className='absolute -bottom-0.5 left-1/2 -translate-x-1/2'
+          style={{
+            width: 3,
+            height: 3,
+            borderRadius: '50%',
+            background: 'hsl(var(--tf-neutral-hs) 60%)',
+          }}
+        />
+      )}
     </button>
   );
 };
 
-/**
- * Running Apps Section
- */
-const RunningAppsBar: React.FC = () => {
+// ============================================================================
+// Running Apps
+// ============================================================================
+
+const RunningApps: React.FC = () => {
   const { t } = useTranslation();
   const { windows, activeWindowId, focusWindow, currentDesktopId } = useDesktopStore();
-
-  // Window peek hover handlers
   const { handleMouseEnter: peekMouseEnter, handleMouseLeave: peekMouseLeave } = useWindowPeek();
-
-  // Context menu state
   const {
     isOpen: isContextMenuOpen,
     position: contextMenuPosition,
@@ -241,46 +177,37 @@ const RunningAppsBar: React.FC = () => {
   } = useContextMenu();
   const [contextMenuWindow, setContextMenuWindow] = useState<(typeof windows)[0] | null>(null);
 
-  const handleAppClick = (windowId: string) => {
-    focusWindow(windowId);
-  };
-
-  const handleAppContextMenu = (event: React.MouseEvent, window: (typeof windows)[0]) => {
-    handleContextMenu(event);
-    setContextMenuWindow(window);
-  };
-
-  const handlePeekEnter = (windowId: string, rect: DOMRect) => {
-    peekMouseEnter(windowId, rect);
-  };
-
   const visibleWindows = windows.filter((w) => w.desktopId === currentDesktopId);
+
+  if (visibleWindows.length === 0) return null;
 
   return (
     <>
       <div
         data-testid='running-apps'
-        className='flex items-center gap-1 flex-1 min-w-0 px-2'
+        className='flex items-center gap-0.5'
         role='group'
         aria-label={t('taskbar.runningApps')}
       >
         {visibleWindows.map((window) => (
-          <TaskbarAppButton
+          <DockAppButton
             key={window.id}
             windowId={window.id}
             title={window.title}
             icon={window.icon}
             isActive={window.id === activeWindowId}
             isMinimized={window.state === 'minimized'}
-            onClick={() => handleAppClick(window.id)}
-            onContextMenu={(e) => handleAppContextMenu(e, window)}
-            onMouseEnter={(rect) => handlePeekEnter(window.id, rect)}
+            onClick={() => focusWindow(window.id)}
+            onContextMenu={(e) => {
+              handleContextMenu(e);
+              setContextMenuWindow(window);
+            }}
+            onMouseEnter={(rect) => peekMouseEnter(window.id, rect)}
             onMouseLeave={peekMouseLeave}
           />
         ))}
       </div>
 
-      {/* Taskbar Context Menu */}
       {isContextMenuOpen && contextMenuWindow && (
         <TaskbarContextMenu
           window={contextMenuWindow}
@@ -292,9 +219,10 @@ const RunningAppsBar: React.FC = () => {
   );
 };
 
-/**
- * System Tray - Enhanced with AI Status, Health, Notifications, Clock
- */
+// ============================================================================
+// System Tray (compact)
+// ============================================================================
+
 interface SystemTrayProps {
   aiStatus?: AIStatus;
   notifications?: Notification[];
@@ -314,41 +242,26 @@ const SystemTray: React.FC<SystemTrayProps> = ({
   return (
     <div
       data-testid='system-tray'
-      className='flex items-center gap-1 border-l border-white/10 pl-3'
+      className='flex items-center gap-1'
       role='group'
       aria-label={t('taskbar.systemTray')}
     >
-      {/* Parcel Context (Slice 10: always visible) */}
       <ParcelContextIndicator compact />
-
-      {/* Divider */}
-      <div className='w-px h-6 bg-white/10 mx-1' />
-
-      {/* Backend Health (single source of truth) */}
       <SentinelChip variant='tray' />
-
-      {/* Agents Online */}
       <AIStatusIndicator status={aiStatus} />
-
-      {/* Divider */}
-      <div className='w-px h-6 bg-white/10 mx-1' />
-
-      {/* Notifications */}
       <NotificationBell
         notifications={notifications}
         onNotificationClick={onNotificationClick}
         onDismiss={onNotificationDismiss}
         onClearAll={onNotificationClearAll}
       />
-
-      {/* Clock */}
       <Clock />
     </div>
   );
 };
 
 // ============================================================================
-// Main Component
+// Main Dock Component
 // ============================================================================
 
 export interface TaskbarProps {
@@ -378,47 +291,36 @@ export const Taskbar: React.FC<TaskbarProps> = ({
         role='navigation'
         aria-label={t('taskbar.ariaLabel')}
         className={cn(
-          // Position
-          'fixed bottom-0 left-1/2 -translate-x-1/2 z-50',
-          // Size
-          'h-12', // 48px
-          'w-[min(98vw,1120px)]',
+          // Floating centered dock
+          'fixed bottom-2 left-1/2 -translate-x-1/2 z-50',
           // Layout
-          'flex items-center px-1 rounded-2xl mb-2',
-          // Glass effect class for tests/consistency
-          'backdrop-blur-xl',
+          'flex items-center gap-1 px-2 h-12',
+          // Glass effect
+          'rounded-2xl',
           className
         )}
         style={{
-          // macOS-style floating dock treatment while preserving constitutional contracts
-          background: 'hsl(var(--tf-surface-dark-hs) 8% / 0.7)',
-          backdropFilter: 'saturate(185%) blur(26px)',
-          WebkitBackdropFilter: 'saturate(185%) blur(26px)',
-          border: '1px solid hsl(var(--tf-border) / 0.55)',
-          boxShadow: '0 10px 34px hsl(var(--tf-tokens-black-hs) 0% / 0.45)',
+          background: 'hsl(var(--tf-bg) / 0.55)',
+          backdropFilter: 'saturate(180%) blur(24px)',
+          WebkitBackdropFilter: 'saturate(180%) blur(24px)',
+          border: '1px solid hsl(var(--tf-border) / 0.4)',
+          boxShadow: '0 8px 32px hsl(var(--tf-tokens-black-hs) 0% / 0.4), 0 0 0 0.5px hsl(var(--tf-border) / 0.2)',
+          maxWidth: 'calc(100vw - 2rem)',
         }}
       >
-        {/* Start Button */}
-        <StartButton />
-
-        {/* Task View Button */}
-        <div className='ml-1'>
-          <TaskViewButton
-            onClick={() => setIsTaskViewOpen(!isTaskViewOpen)}
-            isOpen={isTaskViewOpen}
-          />
-        </div>
+        {/* Home button */}
+        <DockHomeButton />
 
         {/* Divider */}
-        <div className='w-px h-8 bg-white/10 mx-1' />
+        <div style={{ width: 1, height: 24, background: 'hsl(var(--tf-border) / 0.3)', flexShrink: 0 }} />
 
-        {/* Sovereign Dock */}
-        <SovereignDock />
+        {/* Running apps */}
+        <RunningApps />
 
-        {/* Running Apps */}
-        <RunningAppsBar />
+        {/* Divider (only if running apps exist) */}
+        <div style={{ width: 1, height: 24, background: 'hsl(var(--tf-border) / 0.3)', flexShrink: 0 }} />
 
-        {/* System Tray */}
+        {/* System tray */}
         <SystemTray
           aiStatus={aiStatus}
           notifications={notifications}

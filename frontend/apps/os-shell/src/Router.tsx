@@ -3,23 +3,27 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
+import { CSSAmbientLayer } from './components/compositor/layers/CSSAmbientLayer';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
 
-// Loading component for Suspense fallback
+// Loading component for Suspense fallback — design tokens only (no raw Tailwind)
 const LoadingFallback = () => (
   <div
     className='flex items-center justify-center min-h-screen'
-    style={{ background: 'hsl(var(--tf-surface-dark-hs) 7%)' }}
+    style={{ background: 'hsl(var(--tf-bg))' }}
   >
     <div className='text-center'>
       <div
-        className='inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 mb-4'
-        style={{ borderColor: 'hsl(var(--tf-transcend-cyan-hs) 53%)' }}
-      ></div>
-      <p className='text-lg' style={{ color: 'hsl(var(--tf-text-primary-hs) 100% / 0.86)' }}>
-        Loading TerraFusion OS...
-      </p>
+        className='inline-block animate-spin rounded-full h-12 w-12 mb-4'
+        style={{
+          borderTop: '2px solid hsl(var(--tf-transcend-cyan-hs) 50%)',
+          borderBottom: '2px solid hsl(var(--tf-transcend-cyan-hs) 50%)',
+          borderLeft: '2px solid transparent',
+          borderRight: '2px solid transparent',
+        }}
+      />
+      <p style={{ color: 'hsl(var(--tf-muted))', fontSize: '1.1rem' }}>Loading TerraFusion OS...</p>
     </div>
   </div>
 );
@@ -114,10 +118,15 @@ const Router: React.FC = () => {
                 {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
                 <Route path='/login' element={<LoginPage />} />
 
-                {/* Phase 5: OS Landing Surface */}
+                {/* Phase 5: OS Landing Surface — ambient background matches Desktop */}
                 <Route
                   path='/'
-                  element={<ShellHome />}
+                  element={
+                    <div className='relative min-h-screen overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
+                      <CSSAmbientLayer />
+                      <ShellHome className='relative z-10' />
+                    </div>
+                  }
                 />
 
                 {/* Desktop Shell - Full Windows-like experience */}
@@ -190,7 +199,7 @@ const Router: React.FC = () => {
                     getViteEnv().DEV ? (
                       <LegacyMetricsViewer />
                     ) : (
-                      <div className='p-8 text-center text-gray-400'>
+                      <div className='p-8 text-center' style={{ color: 'hsl(var(--tf-muted))' }}>
                         Dev-only route. Not available in production.
                       </div>
                     )

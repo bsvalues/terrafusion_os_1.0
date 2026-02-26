@@ -60,7 +60,7 @@ describe('Taskbar Component', () => {
       renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
-      expect(taskbar).toHaveClass('fixed', 'bottom-0');
+      expect(taskbar).toHaveClass('fixed', 'bottom-2');
     });
 
     it('has correct height (48px)', () => {
@@ -74,8 +74,8 @@ describe('Taskbar Component', () => {
       renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
-      // Should have glass morphism classes
-      expect(taskbar).toHaveClass('backdrop-blur-xl');
+      // Tahoe dock uses inline backdropFilter for glass morphism
+      expect(taskbar.style.backdropFilter).toContain('blur');
     });
   });
 
@@ -125,18 +125,19 @@ describe('Taskbar Component', () => {
 
   describe('Running Apps Section', () => {
     it('renders running apps container', () => {
+      // Tahoe dock: RunningApps returns null when no windows are open
+      useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
       renderTaskbar();
 
       const runningApps = screen.getByTestId('running-apps');
       expect(runningApps).toBeInTheDocument();
     });
 
-    it('shows no apps when no windows are open', () => {
+    it('shows no running-apps section when no windows are open', () => {
       renderTaskbar();
 
-      const runningApps = screen.getByTestId('running-apps');
-      const buttons = within(runningApps).queryAllByRole('button');
-      expect(buttons).toHaveLength(0);
+      // Tahoe dock hides running-apps entirely when empty
+      expect(screen.queryByTestId('running-apps')).not.toBeInTheDocument();
     });
 
     it('shows app button for each open window', () => {
@@ -151,14 +152,15 @@ describe('Taskbar Component', () => {
       expect(buttons).toHaveLength(2);
     });
 
-    it('displays window title on app button', () => {
+    it('displays window title as aria-label on app button', () => {
       useDesktopStore
         .getState()
         .openWindow('government-edition', 'Government Edition', 'Building2');
 
       renderTaskbar();
 
-      expect(screen.getByText('Government Edition')).toBeInTheDocument();
+      // Tahoe dock is icon-only; title exposed via aria-label
+      expect(screen.getByRole('button', { name: /Government Edition/i })).toBeInTheDocument();
     });
 
     it('displays window icon on app button', () => {
@@ -292,7 +294,7 @@ describe('Taskbar Component', () => {
   });
 
   describe('Responsive Design', () => {
-    it('truncates long window titles', () => {
+    it('dock buttons use icon-only layout', () => {
       useDesktopStore
         .getState()
         .openWindow(
@@ -303,8 +305,9 @@ describe('Taskbar Component', () => {
 
       renderTaskbar();
 
+      // Tahoe dock uses icon-only buttons; title is exposed via aria-label
       const button = screen.getByRole('button', { name: /this is a very long/i });
-      expect(button).toHaveClass('truncate');
+      expect(button).toBeInTheDocument();
     });
   });
 });

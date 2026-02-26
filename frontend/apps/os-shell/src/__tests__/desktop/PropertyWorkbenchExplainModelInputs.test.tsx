@@ -39,20 +39,34 @@ describe('PropertyWorkbench explain_model_inputs action', () => {
     await waitFor(
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Loading property/i)).not.toBeInTheDocument();
       },
       { timeout: 5000 }
     );
   }
 
-  function mockTextResponse(payload: unknown): Response {
+  function mockTextResponse(payload: unknown, status = 200): Response {
     return {
+      ok: status >= 200 && status < 300,
+      status,
+      json: async () => payload,
       text: async () => JSON.stringify(payload),
     } as Response;
   }
 
+  const mockPropertyData = {
+    propId: 1, geoId: '12345-001', address: '123 Main St',
+    ownerName: 'Test', assessedValue: 250000, marketValue: 260000,
+    landValue: 100000, improvementValue: 150000, propertyType: 'Residential',
+    legalDescription: 'LOT 1', appraisalYear: 2024, lastModified: '2024-01-01', source: 'test',
+  };
+
   it('runs explain_model_inputs and renders normalized success fields', async () => {
     const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = String(input);
+      if (url.includes('/ops/pacs/property/')) {
+        return mockTextResponse(mockPropertyData);
+      }
       if (url.includes('/pilot/workbench/explain-model-inputs')) {
         return mockTextResponse({
           tool: 'terracanon-ping',
@@ -95,6 +109,9 @@ describe('PropertyWorkbench explain_model_inputs action', () => {
   it('renders failure and details for explain_model_inputs action', async () => {
     jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = String(input);
+      if (url.includes('/ops/pacs/property/')) {
+        return mockTextResponse(mockPropertyData);
+      }
       if (url.includes('/pilot/workbench/explain-model-inputs')) {
         return mockTextResponse({
           tool: 'terracanon-ping',

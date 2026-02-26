@@ -38,6 +38,7 @@ import {
   type WorkbenchSummarizeSalesCompsRationaleResponse,
 } from '../../api/workbenchSummarizeSalesCompsRationale';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
+import { usePropertyLookup } from '../../hooks/usePropertyLookup';
 
 // ============================================================================
 // Types
@@ -365,15 +366,22 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     [location.pathname, parcelId]
   );
 
-  // Mock property data (in production, fetch from API)
+  // Real PACS property data (falls back to parcelId-only stub while loading)
+  const { data: pacsData, loading: propertyLoading, error: propertyError } = usePropertyLookup(parcelId);
   const propertyData = useMemo(
     () => ({
-      parcelId: parcelId || 'Unknown',
-      address: '123 Main Street, Richland, WA 99352',
-      owner: 'John Doe',
-      assessedValue: 425000,
+      parcelId: pacsData?.geoId || parcelId || 'Unknown',
+      address: pacsData?.address || '',
+      owner: pacsData?.ownerName || '',
+      assessedValue: pacsData?.assessedValue ?? 0,
+      marketValue: pacsData?.marketValue ?? 0,
+      landValue: pacsData?.landValue ?? 0,
+      improvementValue: pacsData?.improvementValue ?? 0,
+      propertyType: pacsData?.propertyType || '',
+      legalDescription: pacsData?.legalDescription || '',
+      source: pacsData?.source || '',
     }),
-    [parcelId]
+    [pacsData, parcelId]
   );
 
   const handleBack = useCallback(() => {
@@ -482,6 +490,17 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
           >
             ← Back to Home
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (propertyLoading) {
+    return (
+      <div className='flex items-center justify-center min-h-screen bg-slate-900'>
+        <div className='text-center p-8'>
+          <div className='animate-spin h-8 w-8 border-4 border-cyan-400 border-t-transparent rounded-full mx-auto mb-4' />
+          <p className='text-white/60'>Loading property {parcelId}…</p>
         </div>
       </div>
     );

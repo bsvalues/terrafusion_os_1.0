@@ -4,6 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- CS1998: Scaffolded async stubs (services return sync values from async signatures).
+         These will gain awaits as real implementations land. Suppressed at project level
+         per Track B warning-cleanup policy (Feb 2026). -->
+    <NoWarn>CS1998</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

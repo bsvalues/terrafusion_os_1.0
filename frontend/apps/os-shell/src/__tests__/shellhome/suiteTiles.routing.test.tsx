@@ -56,6 +56,9 @@ const renderShellHome = () => {
   );
 };
 
+/** Scope queries to the main stage area (excludes dock buttons) */
+const stageArea = () => within(screen.getByRole('main'));
+
 describe('Suite Tiles - Routing Contract', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
@@ -72,7 +75,7 @@ describe('Suite Tiles - Routing Contract', () => {
 
       // Each constitutional suite should be present
       for (const suite of CONSTITUTIONAL_SUITES) {
-        const tile = screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') });
+        const tile = stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') });
         expect(tile).toBeInTheDocument();
 
         // Click should trigger navigation
@@ -88,7 +91,7 @@ describe('Suite Tiles - Routing Contract', () => {
 
       // Get all suite tiles (role=button with suite names)
       for (const suite of CONSTITUTIONAL_SUITES) {
-        const tile = screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') });
+        const tile = stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') });
         await user.click(tile);
 
         // Route should be defined and not just #
@@ -112,7 +115,7 @@ describe('Suite Tiles - Routing Contract', () => {
 
       for (const suite of workbenchSuites) {
         mockNavigate.mockClear();
-        const tile = screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') });
+        const tile = stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') });
         await user.click(tile);
 
         const lastCall = mockNavigate.mock.calls[mockNavigate.mock.calls.length - 1];
@@ -184,7 +187,7 @@ describe('Suite Tiles - Routing Contract', () => {
       renderShellHome();
 
       const allSuiteButtons = CONSTITUTIONAL_SUITES.map((suite) =>
-        screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') })
+        stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') })
       );
 
       for (const button of allSuiteButtons) {
@@ -226,7 +229,7 @@ describe('Suite Tiles - Routing Contract', () => {
       renderShellHome();
 
       for (const suite of CONSTITUTIONAL_SUITES) {
-        const tile = screen.getByRole('button', { name: new RegExp(suite.displayName, 'i') });
+        const tile = stageArea().getByRole('button', { name: new RegExp(suite.displayName, 'i') });
 
         // Expect data-intent attribute
         expect(tile).toHaveAttribute('data-intent');

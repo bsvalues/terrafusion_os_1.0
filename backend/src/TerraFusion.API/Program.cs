@@ -278,11 +278,12 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IAIEngineService, TerraFusi
 // Register TerraFusionSync integration service
 builder.Services.AddScoped<ITerraFusionSyncService, TerraFusionSyncIntegrationService>();
 
-// DISABLED: Marketplace is not part of core OS
-// builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
-
-// DISABLED: County deployment is not part of core OS
-// builder.Services.AddScoped<ICountyDeploymentService, CountyDeploymentService>();
+// RE-ENABLED: Required by MarketplaceController and TerraFusionMarketplaceController
+builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
+builder.Services.AddSingleton<IModuleRegistry, ModuleRegistry>();
+builder.Services.AddScoped<IHarrisPACSEnhancementBridge, HarrisPACSEnhancementBridge>();
+builder.Services.AddScoped<ITerraFusionMarketplace, TerraFusionMarketplace>();
+builder.Services.AddScoped<ICountyDeploymentService, CountyDeploymentService>();
 
 // Register unified orchestration service
 builder.Services.AddSingleton<IUnifiedOrchestrationService, UnifiedOrchestrationService>();
@@ -562,15 +563,14 @@ builder.Services.AddEnterpriseAgentCoordination();
 // 🏗️ Register Elite Development Pipeline System
 // Military-grade cross-workspace build coordination across 38 workspaces
 // Temporarily disabled to stabilize local runtime and verify endpoints.
-Console.WriteLine("🧪 Development Pipeline temporarily disabled for local runtime stabilization");
-// var disableDevPipeline = Environment.GetEnvironmentVariable("TF_DISABLE_DEV_PIPELINE");
-// var isDevPipelineDisabled = string.Equals(disableDevPipeline, "1", StringComparison.OrdinalIgnoreCase)
-//     || string.Equals(disableDevPipeline, "true", StringComparison.OrdinalIgnoreCase);
-// if (!isDevPipelineDisabled)
-// {
-//     // RE-ENABLED: DI lifetime issue FIXED with IServiceScopeFactory pattern
-//     builder.Services.AddDevelopmentPipeline();
-// }
+// RE-ENABLED: Required by DevelopmentPipelineController
+var disableDevPipeline = Environment.GetEnvironmentVariable("TF_DISABLE_DEV_PIPELINE");
+var isDevPipelineDisabled = string.Equals(disableDevPipeline, "1", StringComparison.OrdinalIgnoreCase)
+    || string.Equals(disableDevPipeline, "true", StringComparison.OrdinalIgnoreCase);
+if (!isDevPipelineDisabled)
+{
+    builder.Services.AddDevelopmentPipeline();
+}
 
 // Register TIER 5+ Multi-County Federation System
 builder.Services.AddScoped<IMultiCountyFederationService, MultiCountyFederationService>();
@@ -603,14 +603,22 @@ builder.Services.AddSignalR(options =>
 // Register Quantum Metrics Background Service for real-time broadcasting
 builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
 
-// Configure CORS properly
+// Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? new[]
+            {
+                $"http://localhost:{Environment.GetEnvironmentVariable("TF_FRONTEND_PORT") ?? "3102"}",
+                "http://localhost:5173",  // Vite dev server
+                "http://localhost:3000",  // Legacy frontend port
+            };
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 

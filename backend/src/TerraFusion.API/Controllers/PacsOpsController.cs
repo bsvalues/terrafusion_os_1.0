@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -85,6 +86,8 @@ public class PacsOpsController : ControllerBase
                     Version = ContractVersion,
                     ManifestSha256 = ComputeManifestHash()
                 },
+                DbName = connectionStatus.DatabaseName ?? "unknown",
+                Server = connectionStatus.ServerName ?? "unknown",
                 Databases = new DatabaseStatus
                 {
                     PacsOltp = proof.DatabaseConnection.Passed ? "reachable" : "unreachable",
@@ -200,6 +203,100 @@ public class PacsOpsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Look up a property by geo_id (parcel ID) from PACS.
+    /// Returns core property data + ownership from the contract views.
+    /// </summary>
+    [HttpGet("property/{geoId}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetProperty(string geoId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var property = await _pacsAdapter.GetPropertyByGeoIdAsync(geoId, cancellationToken);
+            if (property == null)
+                return NotFound(new { error = $"No property found for geo_id '{geoId}'" });
+
+            PacsPropertyOwnership? ownership = null;
+            try
+            {
+                ownership = await _pacsAdapter.GetOwnershipAsync(property.PropId, cancellationToken);
+            }
+            catch
+            {
+                // Ownership lookup is non-critical
+            }
+
+            return Ok(new
+            {
+                propId = property.PropId,
+                geoId = property.GeoId,
+                address = FormatAddress(property),
+                ownerName = ownership?.OwnerName ?? "N/A",
+                assessedValue = property.AssessedVal ?? 0m,
+                marketValue = property.MarketVal ?? 0m,
+                landValue = property.LandVal ?? 0m,
+                improvementValue = property.ImprvVal ?? 0m,
+                propertyType = property.PropTypeCd ?? "Unknown",
+                legalDescription = property.LegalDesc ?? "",
+                appraisalYear = property.ApprYear,
+                lastModified = property.LastModified,
+                source = "pacs_oltp",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error looking up property {GeoId}", geoId);
+            return StatusCode(503, new { error = "PACS lookup failed", details = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// List properties with pagination from PACS contract views.
+    /// </summary>
+    [HttpGet("properties")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ListProperties(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 25,
+        CancellationToken cancellationToken = default)
+    {
+        if (pageSize > 100) pageSize = 100;
+        if (page < 1) page = 1;
+
+        try
+        {
+            var result = await _pacsAdapter.GetPropertiesAsync(page, pageSize, cancellationToken);
+            return Ok(new
+            {
+                items = result.Items.Select(p => new
+                {
+                    propId = p.PropId,
+                    geoId = p.GeoId,
+                    address = FormatAddress(p),
+                    assessedValue = p.AssessedVal ?? 0m,
+                    marketValue = p.MarketVal ?? 0m,
+                    propertyType = p.PropTypeCd ?? "Unknown",
+                }),
+                page,
+                pageSize,
+                totalCount = result.TotalCount,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error listing PACS properties");
+            return StatusCode(503, new { error = "PACS listing failed", details = ex.Message });
+        }
+    }
+
+    private static string FormatAddress(PacsPropertyCore p)
+    {
+        var parts = new[] { p.SitusAddr, p.SitusCity, "WA", p.SitusZip }
+            .Where(s => !string.IsNullOrWhiteSpace(s));
+        return string.Join(", ", parts);
+    }
+
     private static string GetViewStatus(PacsContractProof proof, string viewName)
     {
         if (!proof.RequiredViews.Passed)
@@ -262,6 +359,8 @@ public sealed class PacsProofResponse
 {
     public bool Enabled { get; init; }
     public ContractInfo Contract { get; init; } = new();
+    public string DbName { get; init; } = "unknown";
+    public string Server { get; init; } = "unknown";
     public DatabaseStatus Databases { get; init; } = new();
     public ViewStatus Views { get; init; } = new();
     public IndexStatus Indexes { get; init; } = new();
