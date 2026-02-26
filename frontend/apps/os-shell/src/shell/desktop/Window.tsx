@@ -171,9 +171,9 @@ const WindowControlButton: React.FC<WindowControlButtonProps> = ({
   disabled = false,
 }) => {
   const colors = {
-    minimize: 'bg-yellow-500 hover:bg-yellow-400',
-    maximize: 'bg-green-500 hover:bg-green-400',
-    close: 'bg-red-500 hover:bg-red-400',
+    minimize: 'bg-[#FEBC2E] hover:bg-[#F5A623]',
+    maximize: 'bg-[#28C840] hover:bg-[#1AAB29]',
+    close: 'bg-[#FF5F57] hover:bg-[#E0443E]',
   };
 
   const icons = {
@@ -188,18 +188,17 @@ const WindowControlButton: React.FC<WindowControlButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'w-4 h-4 rounded-full',
+        'group/btn w-3 h-3 rounded-full',
         'flex items-center justify-center',
-        'text-[10px] font-bold text-white',
-        'opacity-70 hover:opacity-100', // Always visible for government-grade UX
-        'transition-all duration-150',
+        'transition-all duration-100',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
-        'hover:scale-110',
         colors[variant],
-        disabled && 'opacity-50 cursor-not-allowed'
+        disabled && 'opacity-30 cursor-not-allowed !bg-gray-500/50'
       )}
     >
-      <span>{icons[variant]}</span>
+      <span className='text-[8px] leading-none font-bold text-black/0 group-hover/btn:text-black/80 transition-colors select-none'>
+        {icons[variant]}
+      </span>
     </button>
   );
 };
@@ -267,9 +266,9 @@ const TitleBar: React.FC<TitleBarProps> = ({
       )}
       style={{
         background: isActive
-          ? 'linear-gradient(90deg, hsl(var(--tf-bg) / 0.9) 0%, hsl(var(--tf-surface-2) / 0.9) 50%, hsl(var(--tf-bg) / 0.9) 100%)'
-          : 'hsl(var(--tf-surface-2) / 0.8)',
-        borderBottom: '1px solid hsl(var(--tf-border) / 0.5)',
+          ? 'hsl(var(--tf-surface-2) / 0.6)'
+          : 'hsl(var(--tf-surface-2) / 0.45)',
+        borderBottom: '1px solid hsl(var(--tf-border) / 0.3)',
       }}
     >
       {/* Drag handle - covers most of title bar but NOT the controls */}
@@ -278,7 +277,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
         onDoubleClick={handleDoubleClick}
       />
 
-      {/* Window Controls (left) - NOT inside drag handle, so clicks work */}
+      {/* Window Controls (left) - macOS traffic lights: close, minimize, maximize */}
       <div
         className='group/controls flex items-center gap-2 relative z-50 pointer-events-auto'
         data-testid='window-controls'
@@ -530,23 +529,22 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             'transition-shadow duration-200'
           )}
           style={{
-            // Immersive Glassmorphism - lets the WebGL environment show through
-            background: 'hsl(var(--tf-bg) / 0.75)',
-            backdropFilter: 'saturate(180%) blur(24px)',
-            WebkitBackdropFilter: 'saturate(180%) blur(24px)',
+            // macOS Tahoe glassmorphism — translucent with depth
+            background: 'hsl(var(--tf-bg) / 0.68)',
+            backdropFilter: 'saturate(180%) blur(28px)',
+            WebkitBackdropFilter: 'saturate(180%) blur(28px)',
             border: isActive
-              ? '1px solid hsl(var(--tf-accent) / 0.5)'
-              : '1px solid hsl(var(--tf-border) / 0.5)',
+              ? '0.5px solid hsl(var(--tf-text) / 0.12)'
+              : '0.5px solid hsl(var(--tf-border) / 0.3)',
             boxShadow: isActive
               ? `
-                0 0 40px hsl(var(--tf-accent) / 0.25),
-                0 25px 50px hsl(var(--tf-bg) / 0.6),
-                inset 0 1px 0 hsl(var(--tf-text) / 0.1),
-                inset 0 -1px 0 hsl(var(--tf-bg) / 0.2)
+                0 24px 80px hsl(var(--tf-bg) / 0.55),
+                0 8px 24px hsl(var(--tf-bg) / 0.3),
+                inset 0 0.5px 0 hsl(var(--tf-text) / 0.08)
               `
               : `
-                0 15px 40px hsl(var(--tf-bg) / 0.5),
-                inset 0 1px 0 hsl(var(--tf-text) / 0.05)
+                0 12px 40px hsl(var(--tf-bg) / 0.4),
+                inset 0 0.5px 0 hsl(var(--tf-text) / 0.04)
               `,
           }}
         >

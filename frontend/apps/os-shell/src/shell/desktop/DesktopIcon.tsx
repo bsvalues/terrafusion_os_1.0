@@ -149,23 +149,24 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       aria-selected={isSelected}
       className={`
         flex flex-col items-center justify-center
-        w-20 h-24 p-2 rounded-lg cursor-pointer
-        select-none transition-all duration-150
-        hover:bg-white/10
-        ${isSelected ? 'bg-white/15 ring-2 ring-cyan-400/50' : ''}
+        w-[76px] h-[90px] p-1.5 rounded-xl cursor-pointer
+        select-none transition-all duration-200
+        ${isSelected
+          ? 'bg-white/20 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.25)]'
+          : 'hover:bg-white/8'}
       `.trim()}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
     >
       {/* TerraSphere Icon with embedded glyph */}
-      <div className='mb-1 relative' aria-hidden='true'>
-        <TerraSphereIcon size={48} variant={variant} glyph={<Icon className='h-4 w-4' />} />
-        {/* Wiring Status Badge - honest launcher UX */}
+      <div className='mb-1.5 relative' aria-hidden='true'>
+        <TerraSphereIcon size={56} variant={variant} glyph={<Icon className='h-5 w-5' />} />
+        {/* Wiring Status Badge - subtle, only visible on hover */}
         {badge && (
           <span
-            className={`absolute -top-1 -right-1 px-1 py-0.5 text-[8px] font-bold rounded
-                       ${badge.bg} ${badge.text} shadow-sm`}
+            className={`absolute -top-1 -right-1 px-1 py-0.5 text-[7px] font-semibold rounded
+                       ${badge.bg} ${badge.text} opacity-0 group-hover:opacity-100 transition-opacity`}
             title={`Status: ${wiringStatus}`}
           >
             {badge.label}
@@ -174,7 +175,10 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       </div>
 
       {/* Label */}
-      <span className='text-xs text-white text-center leading-tight line-clamp-2 drop-shadow-md'>
+      <span
+        className='text-[11px] text-white/90 text-center leading-tight line-clamp-2 font-medium'
+        style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}
+      >
         {name}
       </span>
     </div>
