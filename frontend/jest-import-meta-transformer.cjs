@@ -50,9 +50,9 @@ module.exports = {
           // Catch-all: any remaining VITE_ or uppercase env vars
           .replace(/import\.meta\.env\.[A-Z_]+/g, '""')
           // Optional-chaining variant: import.meta?.env
-          .replace(/import\.meta\?\.env/g, '({})')
+          .replace(/import\.meta\?\.env/g, '(process.env)')
           // Bare import.meta.env object reference
-          .replace(/import\.meta\.env/g, '({})');
+          .replace(/import\.meta\.env/g, '(process.env)');
 
         return inner.process(cleaned, sourcePath, options);
       },
