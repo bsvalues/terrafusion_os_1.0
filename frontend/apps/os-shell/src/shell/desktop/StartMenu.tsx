@@ -12,10 +12,12 @@
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Panel } from '@terrafusion/ui';
 import type { Category } from '../../config/generatedModules';
 import { getLucideIcon } from '../../config/iconMap';
+import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
@@ -418,6 +420,63 @@ const UserProfile: React.FC = () => {
 };
 
 // ============================================================================
+// Recent Parcels Section (absorbed from ShellHome)
+// ============================================================================
+
+const MapPinIcon = getLucideIcon('MapPin');
+
+/**
+ * RecentParcelsSection - Shows recently accessed parcels
+ * Absorbed from ShellHome's recent items feature.
+ *
+ * Split into gate + content components so useNavigate() is only called
+ * when parcels exist (avoids crash in tests without Router context).
+ */
+const RecentParcelsSection: React.FC = () => {
+  const recentParcels = useRecentParcels();
+  if (recentParcels.length === 0) return null;
+  return <RecentParcelsList parcels={recentParcels} />;
+};
+
+/** Inner component — only mounted when recent parcels exist. */
+const RecentParcelsList: React.FC<{ parcels: string[] }> = ({ parcels }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className='mt-2'>
+      <div
+        className='px-3 py-1.5 text-xs font-medium uppercase tracking-wider'
+        style={{ color: 'hsl(var(--tf-muted))' }}
+      >
+        Recent Parcels
+      </div>
+      <div className='space-y-0.5 max-h-[80px] overflow-y-auto'>
+        {parcels.slice(0, 3).map((parcelId) => (
+          <button
+            key={parcelId}
+            onClick={() => navigate(`/property/${parcelId}`)}
+            className={cn(
+              'w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left',
+              'transition-all duration-150',
+              'hover:bg-white/10'
+            )}
+          >
+            <TerraSphereIcon
+              size={20}
+              variant='mapping'
+              glyph={<MapPinIcon className='h-2 w-2' />}
+            />
+            <span className='text-xs truncate' style={{ color: 'hsl(var(--tf-text-primary-hs) 90%)' }}>
+              Parcel {parcelId}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
 // Main Component
 // ============================================================================
 
@@ -531,6 +590,9 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
 
         {/* Recent Apps - between Pinned and All Apps (SC-6.1) */}
         <RecentAppsSection onLaunch={handleLaunch} />
+
+        {/* Recent Parcels - absorbed from ShellHome */}
+        <RecentParcelsSection />
 
         {/* Divider */}
         <div className='h-px bg-white/10 my-2' />

@@ -59,7 +59,11 @@ const renderShellHome = () => {
 /** Scope queries to the main stage area (excludes dock buttons) */
 const stageArea = () => within(screen.getByRole('main'));
 
-describe('Suite Tiles - Routing Contract', () => {
+// DEPRECATED: ShellHome is no longer the canonical landing surface.
+// Desktop (App.tsx) is now rendered at /. ShellHome tiles are superseded
+// by DesktopIconGrid, StartMenu, and CommandPalette.
+// These tests are skipped pending removal of ShellHome.
+describe.skip('Suite Tiles - Routing Contract [DEPRECATED - ShellHome removed from /]', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
   });

@@ -87,7 +87,7 @@ function TestRouter({
   return (
     <MemoryRouter initialEntries={[{ pathname: initialRoute, state: initialState }]}>
       <Routes>
-        <Route path='/' element={<div data-testid='shell-home'>Shell Home</div>} />
+        <Route path='/' element={<div data-testid='desktop'>Desktop OS</div>} />
         <Route path='/pilot' element={<RealStandalonePilot />} />
         <Route path='/pilot/dashboard' element={<MockStandaloneHome name='Pilot Dashboard' />} />
         <Route path='/pilot/api' element={<MockStandaloneHome name='Pilot API Demo' />} />

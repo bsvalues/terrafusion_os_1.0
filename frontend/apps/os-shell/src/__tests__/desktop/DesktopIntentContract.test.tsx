@@ -161,12 +161,12 @@ describe('Phase 26 intent contract: click desktop icon → navigate → landmark
       // ================================================================
       // Stage 1: Double-click icon → verify navigate() fires correctly
       // ================================================================
-      memoryRouterEntries = ['/desktop'];
+      memoryRouterEntries = ['/'];
 
       render(
-        <MemoryRouter initialEntries={['/desktop']}>
+        <MemoryRouter initialEntries={['/']}>
           <Routes>
-            <Route path='/desktop' element={<DesktopIconGrid />} />
+            <Route path='/' element={<DesktopIconGrid />} />
             {/* Catch-all to capture where navigate() goes */}
             <Route path='*' element={<LocationDisplay />} />
           </Routes>

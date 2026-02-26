@@ -71,7 +71,11 @@ const renderShellHome = () => {
 /** Scope queries to the main stage area (excludes dock buttons) */
 const stageArea = () => within(screen.getByRole('main'));
 
-describe('Suite Tiles - Accessibility', () => {
+// DEPRECATED: ShellHome is no longer the canonical landing surface.
+// Desktop (App.tsx) is now rendered at /. ShellHome tiles are superseded
+// by DesktopIconGrid, StartMenu, and CommandPalette.
+// These tests are skipped pending removal of ShellHome.
+describe.skip('Suite Tiles - Accessibility [DEPRECATED - ShellHome removed from /]', () => {
   describe('Role, Name, and Description', () => {
     it('suite tiles have role=button', () => {
       renderShellHome();

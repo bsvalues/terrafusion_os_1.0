@@ -28,11 +28,11 @@ function LocationDisplay() {
 }
 
 // Render helper with router
-function renderWithRouter(ui: React.ReactElement, initialPath = '/desktop') {
+function renderWithRouter(ui: React.ReactElement, initialPath = '/') {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path='/desktop' element={ui} />
+        <Route path='/' element={ui} />
         <Route path='/property/:parcelId/:tab' element={<LocationDisplay />} />
         <Route path='/property/:parcelId' element={<LocationDisplay />} />
         <Route path='/pilot' element={<LocationDisplay />} />
@@ -207,7 +207,7 @@ describe('Navigation Truth Contracts', () => {
 
       // Should have navigated
       const location = screen.getByTestId('current-location');
-      expect(location.textContent).not.toBe('/desktop');
+      expect(location.textContent).not.toBe('/');
     });
 
     it('keyboard_enter_launches_selected_icon', async () => {

@@ -42,6 +42,13 @@ jest.mock('../../../stores/settingsStore', () => ({
   })),
 }));
 
+// CommandPalette uses useNavigate() for parcel search navigation
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
 // ============================================================================
 // Test Setup
 // ============================================================================

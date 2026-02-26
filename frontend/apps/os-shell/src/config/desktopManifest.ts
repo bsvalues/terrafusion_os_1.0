@@ -70,14 +70,15 @@ const FEATURE_CATEGORY: Record<string, Category> = {
 // ============================================================================
 
 function suiteToDesktopIcon(suite: SuiteDefinition): DesktopIconEntry {
-  const tabId = suite.workbenchTarget?.tabId ?? suite.id;
   return {
     id: suite.id,
     name: suite.displayName,
     iconName: suite.iconName,
     category: SUITE_CATEGORY[suite.id] ?? 'system',
-    route: `/property/${DEMO_PARCEL_ID}/${tabId}`,
-    wiringStatus: 'WB',
+    route: suite.workbenchTab
+      ? `/property/${DEMO_PARCEL_ID}/${suite.workbenchTarget?.tabId ?? suite.id}`
+      : `/${suite.id}`,
+    wiringStatus: suite.workbenchTab ? 'WB' : 'OS',
   };
 }
 
@@ -106,7 +107,7 @@ function featureToDesktopIcon(feature: OsFeatureDefinition): DesktopIconEntry {
  * This function is the ONLY source DesktopIconGrid should consume.
  */
 export function getDesktopIcons(): DesktopIconEntry[] {
-  const suiteIcons = CONSTITUTIONAL_SUITES.filter((s) => s.workbenchTab).map(suiteToDesktopIcon);
+  const suiteIcons = CONSTITUTIONAL_SUITES.map(suiteToDesktopIcon);
 
   const featureIcons = OS_FEATURES.filter((f) => f.route && f.status === 'live').map(
     featureToDesktopIcon
