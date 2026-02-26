@@ -244,8 +244,8 @@ describe('Ambient Layer Gating', () => {
       const container = screen.getByTestId('desktop-background');
       const html = container.innerHTML.toLowerCase();
 
-      // Should have gradient styling (inline style with background/radial-gradient)
-      expect(html).toContain('background');
+      // Should have gradient styling (uses inline radial-gradient, not Tailwind bg- classes)
+      expect(html).toContain('gradient');
     });
 
     it('fallback_is_visually_consistent_no_flash', () => {

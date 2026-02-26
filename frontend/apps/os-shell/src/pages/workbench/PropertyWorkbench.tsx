@@ -497,10 +497,21 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
   if (propertyLoading) {
     return (
-      <div className='flex items-center justify-center min-h-screen bg-slate-900'>
+      <div
+        className='flex items-center justify-center min-h-screen'
+        style={{ background: 'hsl(var(--tf-bg))' }}
+      >
         <div className='text-center p-8'>
-          <div className='animate-spin h-8 w-8 border-4 border-cyan-400 border-t-transparent rounded-full mx-auto mb-4' />
-          <p className='text-white/60'>Loading property {parcelId}…</p>
+          <div
+            className='animate-spin h-8 w-8 rounded-full mx-auto mb-4'
+            style={{
+              borderWidth: 4,
+              borderStyle: 'solid',
+              borderColor: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
+              borderTopColor: 'transparent',
+            }}
+          />
+          <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading property {parcelId}…</p>
         </div>
       </div>
     );
