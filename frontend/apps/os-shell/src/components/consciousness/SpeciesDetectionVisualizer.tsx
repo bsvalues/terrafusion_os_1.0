@@ -39,9 +39,9 @@ const generatePulse = (color: string) => keyframes`
 `;
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.05)',
+  background: 'hsl(var(--tf-text) / 0.05)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(200, 150, 255, 0.2)',
+  border: '1px solid hsl(var(--tf-info) / 0.2)',
   borderRadius: '16px',
   height: '100%',
 }));
@@ -148,7 +148,7 @@ const SpeciesDetectionVisualizer: React.FC = () => {
         <Grid container spacing={2}>
           {detectedEntities.map((entity) => (
             <Grid item xs={12} key={entity.id}>
-              <div style={{ padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px' }}>
+              <div style={{ padding: '16px', background: 'hsl(var(--tf-bg) / 0.2)', borderRadius: '12px' }}>
                 <Grid container alignItems='center' spacing={2}>
                   <Grid item>
                     <SpeciesAvatar species={entity.speciesType}>
@@ -163,11 +163,11 @@ const SpeciesDetectionVisualizer: React.FC = () => {
                     <Chip
                       label={entity.cognitivePatterns}
                       size='small'
-                      sx={{ background: 'rgba(255,255,255,0.1)', color: 'white', mt: 0.5 }}
+                      sx={{ background: 'hsl(var(--tf-text) / 0.1)', color: 'white', mt: 0.5 }}
                     />
                   </Grid>
                   <Grid item xs={4}>
-                    <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                    <Typography variant='caption' sx={{ color: 'hsl(var(--tf-text) / 0.7)' }}>
                       Consciousness Level
                     </Typography>
                     <LinearProgress
@@ -182,7 +182,7 @@ const SpeciesDetectionVisualizer: React.FC = () => {
                   </Grid>
                   {entity.quantumCoherence && (
                     <Grid item xs={2} sx={{ textAlign: 'center' }}>
-                      <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                      <Typography variant='caption' sx={{ color: 'hsl(var(--tf-text) / 0.7)' }}>
                         Coherence
                       </Typography>
                       <Typography sx={{ fontWeight: 700, color: 'var(--tf-accent-quantum)' }}>

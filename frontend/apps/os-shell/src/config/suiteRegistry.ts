@@ -152,7 +152,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     description: 'Property Valuation & Cost Analysis Engine',
     iconName: 'Hammer',
     route: '/forge',
-    color: '#ff6b35', // Forge orange
+    color: 'hsl(var(--tf-suite-forge))', // Forge orange
     status: 'wip',
     workbenchTab: true,
     workbenchTarget: { tabId: 'forge' },
@@ -164,7 +164,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     description: 'Geographic Intelligence & Parcel Mapping',
     iconName: 'Globe',
     route: '/atlas',
-    color: '#00e5ff', // Cyan
+    color: 'hsl(var(--tf-suite-atlas))', // Cyan
     status: 'wip',
     workbenchTab: true,
     workbenchTarget: { tabId: 'atlas' },
@@ -176,7 +176,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     description: 'Workflow Orchestration & Governance Dashboard',
     iconName: 'LayoutDashboard',
     route: '/dais',
-    color: '#a855f7', // Purple
+    color: 'hsl(var(--tf-suite-dais))', // Purple
     status: 'wip',
     workbenchTab: true,
     workbenchTarget: { tabId: 'dais' },
@@ -188,7 +188,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     description: 'Document Management & Record Archive',
     iconName: 'FileStack',
     route: '/dossier',
-    color: '#22c55e', // Green
+    color: 'hsl(var(--tf-suite-dossier))', // Green
     status: 'wip',
     workbenchTab: true,
     workbenchTarget: { tabId: 'dossier' },
@@ -200,7 +200,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     description: 'AI Assistant & Natural Language Interface',
     iconName: 'Bot',
     route: '/gpt',
-    color: '#3b82f6', // Blue
+    color: 'hsl(var(--tf-suite-gpt))', // Blue
     status: 'wip',
     workbenchTab: true,
     workbenchTarget: { tabId: 'pilot' }, // TerraGPT uses Pilot tab

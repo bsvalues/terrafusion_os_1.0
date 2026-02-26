@@ -152,7 +152,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
         w-[76px] h-[90px] p-1.5 rounded-xl cursor-pointer
         select-none transition-all duration-200
         ${isSelected
-          ? 'bg-white/20 shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.25)]'
+          ? 'bg-white/20 shadow-[inset_0_0_0_1.5px_hsl(var(--tf-text)_/_0.25)]'
           : 'hover:bg-white/8'}
       `.trim()}
       onClick={handleClick}
@@ -177,7 +177,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       {/* Label */}
       <span
         className='text-[11px] text-white/90 text-center leading-tight line-clamp-2 font-medium'
-        style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}
+        style={{ textShadow: '0 1px 3px hsl(var(--tf-bg) / 0.6)' }}
       >
         {name}
       </span>

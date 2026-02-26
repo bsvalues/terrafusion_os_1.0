@@ -57,12 +57,12 @@ export const setCSSVariables = (element: HTMLElement, performance: PerformanceMe
     performance.index > 0.8 ? 'translate3d(0,0,0)' : 'translateZ(0)'
   );
 
-  // Set status-based colors
+  // Set status-based colors (resolved from TF token anchors)
   const statusColors: Record<string, string> = {
-    active: 'hsl(120 100% 60%)',
-    processing: 'hsl(200 100% 60%)',
-    idle: 'hsl(0 0% 60%)',
-    error: 'hsl(0 100% 60%)',
+    active: 'hsl(var(--tf-success))',
+    processing: 'hsl(var(--tf-accent-2))',
+    idle: 'hsl(var(--tf-muted))',
+    error: 'hsl(var(--tf-error))',
   };
 
   root.setProperty('--tf-status-color', statusColors[performance.status] || statusColors.idle);

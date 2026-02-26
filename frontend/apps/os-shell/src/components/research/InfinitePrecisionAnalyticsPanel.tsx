@@ -344,7 +344,7 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
         <p
           style={{
             fontSize: '1rem',
-            color: 'rgba(255, 255, 255, 0.7)',
+            color: 'hsl(var(--tf-text) / 0.7)',
             margin: 0,
           }}
         >

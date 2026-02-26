@@ -96,7 +96,7 @@ const SystemDiagnostics: React.FC = () => {
           display: 'block',
           textAlign: 'center',
           mt: 1,
-          color: 'rgba(255, 255, 255, 0.5)',
+          color: 'hsl(var(--tf-text) / 0.5)',
           fontSize: '0.6rem',
         }}
       >

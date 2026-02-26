@@ -176,7 +176,7 @@ export function MultiUserCursor({
               color: 'var(--tf-void-black)',
               fontSize: '10px',
               padding: '2px 6px',
-              boxShadow: `0 2px 4px rgba(0, 0, 0, 0.2)`,
+              boxShadow: `0 2px 4px hsl(var(--tf-bg) / 0.2)`,
             }}
           >
             {userName}

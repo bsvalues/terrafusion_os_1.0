@@ -103,7 +103,7 @@ export const FederationDashboard: React.FC = () => {
               <path
                 d='M 40 0 L 0 0 0 40'
                 fill='none'
-                stroke='rgba(255,255,255,0.05)'
+                stroke='hsl(var(--tf-text) / 0.05)'
                 strokeWidth='1'
               />
             </pattern>
@@ -121,7 +121,7 @@ export const FederationDashboard: React.FC = () => {
                     y1={node.coordinates.y * 2 + 50}
                     x2={target.coordinates.x * 2 + 100}
                     y2={target.coordinates.y * 2 + 50}
-                    stroke='rgba(6, 182, 212, 0.2)'
+                    stroke='hsl(var(--tf-accent) / 0.2)'
                     strokeWidth='1'
                   />
                 );

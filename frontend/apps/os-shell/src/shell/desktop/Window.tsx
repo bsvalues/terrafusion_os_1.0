@@ -170,10 +170,15 @@ const WindowControlButton: React.FC<WindowControlButtonProps> = ({
   variant,
   disabled = false,
 }) => {
-  const colors = {
-    minimize: 'bg-[#FEBC2E] hover:bg-[#F5A623]',
-    maximize: 'bg-[#28C840] hover:bg-[#1AAB29]',
-    close: 'bg-[#FF5F57] hover:bg-[#E0443E]',
+  const tokenColors = {
+    minimize: 'hsl(var(--tf-wc-minimize))',
+    maximize: 'hsl(var(--tf-wc-maximize))',
+    close: 'hsl(var(--tf-wc-close))',
+  };
+  const tokenHoverColors = {
+    minimize: 'hsl(var(--tf-wc-minimize-hover))',
+    maximize: 'hsl(var(--tf-wc-maximize-hover))',
+    close: 'hsl(var(--tf-wc-close-hover))',
   };
 
   const icons = {
@@ -192,9 +197,19 @@ const WindowControlButton: React.FC<WindowControlButtonProps> = ({
         'flex items-center justify-center',
         'transition-all duration-100',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
-        colors[variant],
         disabled && 'opacity-30 cursor-not-allowed !bg-gray-500/50'
       )}
+      style={
+        disabled
+          ? undefined
+          : { backgroundColor: tokenColors[variant] }
+      }
+      onMouseEnter={(e) => {
+        if (!disabled) e.currentTarget.style.backgroundColor = tokenHoverColors[variant];
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled) e.currentTarget.style.backgroundColor = tokenColors[variant];
+      }}
     >
       <span className='text-[8px] leading-none font-bold text-black/0 group-hover/btn:text-black/80 transition-colors select-none'>
         {icons[variant]}

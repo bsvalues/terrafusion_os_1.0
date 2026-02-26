@@ -196,6 +196,21 @@
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px hsl(var(--tf-accent) / 0.2); /* shadow-lg    */
 
+  /* ═══ WINDOW CHROME (macOS traffic lights) ═══ */
+  --tf-wc-close: 2 100% 67%;
+  --tf-wc-close-hover: 3 72% 56%;
+  --tf-wc-minimize: 40 99% 59%;
+  --tf-wc-minimize-hover: 34 92% 55%;
+  --tf-wc-maximize: 131 67% 47%;
+  --tf-wc-maximize-hover: 131 74% 39%;
+
+  /* ═══ SUITE BRAND COLORS ═══ */
+  --tf-suite-forge: 18 100% 60%;      /* Forge orange  */
+  --tf-suite-atlas: 189 100% 50%;     /* Atlas cyan    */
+  --tf-suite-dais: 271 91% 65%;       /* Dais purple   */
+  --tf-suite-dossier: 142 71% 45%;    /* Dossier green */
+  --tf-suite-gpt: 217 92% 60%;        /* GPT blue      */
+
   /* ═══ GLASSMORPHISM (Brand Kit Exact) ═══ */
   --glass-bg: hsl(var(--tf-surface-2) / 0.6);
   --glass-bg-light: hsl(var(--tf-surface) / 0.5);

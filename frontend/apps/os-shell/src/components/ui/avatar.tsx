@@ -19,7 +19,7 @@ const Avatar = React.forwardRef<HTMLDivElement, EliteAvatarProps>(
     };
 
     const glowClasses = glow
-      ? 'shadow-[0_0_15px_rgba(0,255,255,0.5)] ring-2 ring-terra-cyan/30'
+      ? 'shadow-[0_0_15px_hsl(var(--tf-accent)_/_0.5)] ring-2 ring-terra-cyan/30'
       : '';
 
     return (
