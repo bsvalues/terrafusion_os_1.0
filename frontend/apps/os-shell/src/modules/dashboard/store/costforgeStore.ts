@@ -75,12 +75,54 @@ export const useCostforgeStore = create<CostforgeState>((set, get) => {
 
       set({ status: 'analyzing' });
 
-      // Token-driven delay (no magic numbers)
+      // Live mode: call CostForge API
+      if (!FEATURES.USE_MOCK_DATA) {
+        try {
+          const { default: api } = await import('../../../services/api');
+          const res = await api.post('/costforge/calculate', {
+            region: 'benton-wa',
+            buildingType: 'residential',
+          });
+
+          // If someone reset during the request, don't resurrect
+          if (get().status !== 'analyzing') return;
+
+          const data = res.data;
+          if (data?.totalCost) {
+            const projected = data.totalCost;
+            const current = state.metrics.assessedValue.current || projected;
+            const landVal = data.landValue || 0;
+            set({
+              status: 'ready',
+              metrics: {
+                assessedValue: {
+                  ...state.metrics.assessedValue,
+                  current,
+                  projected,
+                  delta: projected - current,
+                },
+                taxLiability: {
+                  ...state.metrics.taxLiability,
+                  current: state.metrics.taxLiability.current || landVal,
+                  projected: landVal || state.metrics.taxLiability.projected,
+                  delta:
+                    (landVal || state.metrics.taxLiability.projected) -
+                    (state.metrics.taxLiability.current || landVal),
+                },
+                grm: state.metrics.grm,
+              },
+            });
+            return;
+          }
+        } catch {
+          // API unavailable — fall through to token-driven delay fallback
+        }
+      }
+
+      // Token-driven delay (mock mode or API fallback)
+      if (get().status !== 'analyzing') return;
       const delayMs = (TF_TOKENS as any).motion?.analysisDelayMs ?? 1618;
-
       await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
-
-      // If someone reset during delay, don’t resurrect
       if (get().status !== 'analyzing') return;
 
       set({ status: 'ready' });

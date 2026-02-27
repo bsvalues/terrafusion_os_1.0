@@ -32,5 +32,5 @@ export const FEATURES: FeatureFlags = {
   ENABLE_SIMULATION_ENGINE: getEnvBool('VITE_ENABLE_SIMULATION_ENGINE', true),
   ENABLE_REDUCED_MOTION: getEnvBool('VITE_ENABLE_REDUCED_MOTION', false),
   ENABLE_DEBUG_OVERLAYS: getEnvBool('VITE_ENABLE_DEBUG_OVERLAYS', false),
-  USE_MOCK_DATA: getEnvBool('VITE_USE_MOCK_DATA', true), // Default to true for Demo Mode
+  USE_MOCK_DATA: getEnvBool('VITE_USE_MOCK_DATA', false), // Explicitly enable via VITE_USE_MOCK_DATA=true for demos
 };

@@ -12,6 +12,11 @@ import { act, renderHook } from '@testing-library/react';
 
 import { useCostforgeStore } from '../store/costforgeStore';
 
+// Tests run with mock data so initial metrics use GOLDEN_METRICS
+jest.mock('../../../config/features', () => ({
+  FEATURES: { USE_MOCK_DATA: true },
+}));
+
 // ============================================================================
 // Test Setup
 // ============================================================================
