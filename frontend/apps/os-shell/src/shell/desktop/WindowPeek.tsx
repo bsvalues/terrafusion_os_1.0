@@ -47,6 +47,11 @@ const MODULE_DESCRIPTIONS: Record<string, string> = {
   'document-manager': 'Document Management System',
   settings: 'System Preferences',
   'shortcuts-help': 'Keyboard Shortcuts Reference',
+  'suite-forge': 'CostForge Assessment Suite',
+  'suite-atlas': 'Atlas AI Intelligence Suite',
+  'suite-dais': 'DAIS Data Intelligence Suite',
+  'suite-dossier': 'Property Dossier Suite',
+  'suite-gpt': 'GPT Government Assistant',
 };
 
 // ============================================================================

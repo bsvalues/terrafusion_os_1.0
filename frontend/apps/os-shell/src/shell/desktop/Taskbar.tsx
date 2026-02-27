@@ -43,6 +43,7 @@ const DockHomeButton: React.FC = () => {
 
   return (
     <button
+      id='tf-start-button'
       onClick={toggle}
       aria-label={t('taskbar.startMenu')}
       aria-expanded={isOpen}

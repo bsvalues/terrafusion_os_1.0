@@ -35,6 +35,8 @@ const DESKTOP_ICONS = getDesktopIcons();
 // ============================================================================
 
 export interface DesktopIconGridProps {
+  /** Optional id for the container (skip-nav anchor) */
+  id?: string;
   /** Optional className for styling */
   className?: string;
 }
@@ -67,7 +69,7 @@ export interface DesktopIconGridProps {
  * <DesktopIconGrid className="absolute top-4 left-4" />
  * ```
  */
-export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = '' }) => {
+export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ id, className = '' }) => {
   const navigate = useNavigate();
 
   // Track selected icon
@@ -107,6 +109,7 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
 
   return (
     <div
+      id={id}
       data-testid='desktop-icon-grid'
       className={`
         grid grid-cols-3 gap-3 p-3
