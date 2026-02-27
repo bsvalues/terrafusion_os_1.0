@@ -5,14 +5,14 @@
  * Standalone route: /dais
  *
  * Modules:
- *   - Levy: Property tax levy calculation & analysis
- *   - PILT: Payment In Lieu of Taxes administration
+ *   - Levy: Property tax levy calculation & analysis (API-wired)
+ *   - PILT: Payment In Lieu of Taxes administration (API-wired, anonymous)
  *   - Certification: Assessment roll certification workflow
  *   - Appeals: BOE appeal tracking & scheduling
  *   - Permits: Building permit workflow (planned)
  */
 
-import { Suspense, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -23,10 +23,25 @@ import {
   Scale,
   HardHat,
   Calendar,
-  ClipboardList,
+  Wifi,
+  WifiOff,
+  Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  getPiltStatus,
+  getPiltDistricts,
+  getPiltReceipts,
+  type PiltStatus,
+  type PiltDistrict,
+  type PiltReceipt,
+} from '@/services/piltService';
+import {
+  calculateLevyRate,
+  type LevyCalculationResult,
+  type LevyMeasureRequest,
+} from '@/services/levyService';
 
 // ============================================================================
 // Module Definitions
@@ -134,6 +149,48 @@ function formatCurrency(value: number): string {
 // ============================================================================
 
 function LevyModule() {
+  const [calcResult, setCalcResult] = useState<LevyCalculationResult | null>(null);
+  const [calcLoading, setCalcLoading] = useState(false);
+  const [calcError, setCalcError] = useState<string | null>(null);
+
+  const DISTRICT_TYPES: Record<string, string> = {
+    '0001': 'county-regular',
+    '0100': 'city',
+    '0200': 'city',
+    '0300': 'city',
+    '0500': 'county-regular',
+    FD01: 'fire-district',
+    FD04: 'fire-district',
+    SD01: 'school-district',
+    SD02: 'school-district',
+  };
+
+  const handleCalculateRate = useCallback(
+    async (district: (typeof LEVY_DISTRICTS)[number]) => {
+      setCalcError(null);
+      setCalcLoading(true);
+      setCalcResult(null);
+      try {
+        const req: LevyMeasureRequest = {
+          districtId: district.code,
+          districtName: district.district,
+          assessedValue: district.collected / (district.rate / 1000),
+          budgetAmount: district.collected,
+          districtType: DISTRICT_TYPES[district.code] ?? 'county-regular',
+          measureType: 'regular',
+          countyCode: '005',
+        };
+        const result = await calculateLevyRate(req);
+        setCalcResult(result);
+      } catch {
+        setCalcError('Rate calculation unavailable — API offline or auth required');
+      } finally {
+        setCalcLoading(false);
+      }
+    },
+    [],
+  );
+
   return (
     <div className='p-6 space-y-6'>
       <div>
@@ -177,12 +234,12 @@ function LevyModule() {
         </Card>
       </div>
 
-      {/* District table */}
+      {/* District table with Calculate button */}
       <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
         <CardHeader>
           <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>Taxing Districts</CardTitle>
           <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-            2024 levy rates per $1,000 of assessed value
+            2024 levy rates per $1,000 of assessed value — click a district to calculate optimal rate via API
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -195,6 +252,7 @@ function LevyModule() {
                   <th className='text-right py-2 px-3' style={{ color: 'hsl(var(--tf-muted))' }}>Rate/$1000</th>
                   <th className='text-right py-2 px-3' style={{ color: 'hsl(var(--tf-muted))' }}>Collected</th>
                   <th className='text-right py-2 px-3' style={{ color: 'hsl(var(--tf-muted))' }}>Parcels</th>
+                  <th className='text-center py-2 px-3' style={{ color: 'hsl(var(--tf-muted))' }}>Analyze</th>
                 </tr>
               </thead>
               <tbody>
@@ -215,6 +273,23 @@ function LevyModule() {
                     <td className='py-2 px-3 text-right' style={{ color: 'hsl(var(--tf-muted))' }}>
                       {d.parcels.toLocaleString()}
                     </td>
+                    <td className='py-2 px-3 text-center'>
+                      <button
+                        onClick={() => handleCalculateRate(d)}
+                        disabled={calcLoading}
+                        className='px-3 py-1 rounded text-xs font-medium transition-colors hover:opacity-80 disabled:opacity-40'
+                        style={{
+                          background: 'hsl(var(--tf-suite-dais) / 0.15)',
+                          color: 'hsl(var(--tf-suite-dais))',
+                        }}
+                      >
+                        {calcLoading && calcResult === null ? (
+                          <Loader2 size={12} className='animate-spin inline' />
+                        ) : (
+                          'Calculate'
+                        )}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -222,56 +297,285 @@ function LevyModule() {
           </div>
         </CardContent>
       </Card>
+
+      {/* API Calculation Result */}
+      {calcError && (
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(30 90% 50% / 0.3)' }}>
+          <CardContent className='pt-6'>
+            <p className='text-sm' style={{ color: 'hsl(30 90% 60%)' }}>{calcError}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {calcResult && (
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-dais) / 0.4)' }}>
+          <CardHeader>
+            <div className='flex items-center justify-between'>
+              <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>
+                Rate Analysis: {calcResult.districtName}
+              </CardTitle>
+              <Badge
+                variant='outline'
+                style={{
+                  borderColor: calcResult.isCompliant ? 'hsl(140 70% 40%)' : 'hsl(0 70% 50%)',
+                  color: calcResult.isCompliant ? 'hsl(140 70% 50%)' : 'hsl(0 70% 60%)',
+                }}
+              >
+                {calcResult.isCompliant ? 'RCW Compliant' : 'Exceeds Limit'}
+              </Badge>
+            </div>
+            <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+              Calculated via TerraFusion Levy API — {calcResult.optimizationMethod}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+              <div>
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Base Rate</p>
+                <p className='text-lg font-mono font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  ${calcResult.baseRate.toFixed(4)}
+                </p>
+              </div>
+              <div>
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>AI Optimal Rate</p>
+                <p className='text-lg font-mono font-bold' style={{ color: 'hsl(var(--tf-suite-dais))' }}>
+                  ${calcResult.aiOptimalRate.toFixed(4)}
+                </p>
+              </div>
+              <div>
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Statutory Limit</p>
+                <p className='text-lg font-mono font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  ${calcResult.statutoryLimit.toFixed(4)}
+                </p>
+              </div>
+              <div>
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Confidence</p>
+                <p className='text-lg font-mono font-bold' style={{ color: 'hsl(140 70% 50%)' }}>
+                  {(calcResult.confidenceScore * 100).toFixed(1)}%
+                </p>
+              </div>
+              <div>
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Projected Revenue</p>
+                <p className='text-lg font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {formatCurrency(calcResult.projectedRevenue)}
+                </p>
+              </div>
+              <div>
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Risk Level</p>
+                <Badge
+                  variant='outline'
+                  style={{
+                    borderColor:
+                      calcResult.riskLevel === 'LOW'
+                        ? 'hsl(140 70% 40%)'
+                        : calcResult.riskLevel === 'MEDIUM'
+                          ? 'hsl(45 90% 50%)'
+                          : 'hsl(0 70% 50%)',
+                    color:
+                      calcResult.riskLevel === 'LOW'
+                        ? 'hsl(140 70% 50%)'
+                        : calcResult.riskLevel === 'MEDIUM'
+                          ? 'hsl(45 90% 60%)'
+                          : 'hsl(0 70% 60%)',
+                  }}
+                >
+                  {calcResult.riskLevel}
+                </Badge>
+              </div>
+              <div>
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Quantum Factor</p>
+                <p className='text-lg font-mono font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {calcResult.quantumFactor}
+                </p>
+              </div>
+            </div>
+            {calcResult.warnings.length > 0 && (
+              <div className='mt-4 p-3 rounded-lg' style={{ background: 'hsl(30 90% 50% / 0.08)' }}>
+                <p className='text-xs font-medium mb-1' style={{ color: 'hsl(30 90% 60%)' }}>
+                  Compliance Warnings
+                </p>
+                {calcResult.warnings.map((w, i) => (
+                  <p key={i} className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    {w}
+                  </p>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
 
 function PILTModule() {
+  const [apiStatus, setApiStatus] = useState<PiltStatus | null>(null);
+  const [apiDistricts, setApiDistricts] = useState<PiltDistrict[]>([]);
+  const [apiReceipts, setApiReceipts] = useState<PiltReceipt[]>([]);
+  const [isLive, setIsLive] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [status, distRes, rcptRes] = await Promise.all([
+          getPiltStatus(),
+          getPiltDistricts(),
+          getPiltReceipts(),
+        ]);
+        if (cancelled) return;
+        setApiStatus(status);
+        setApiDistricts(distRes.districts);
+        setApiReceipts(rcptRes.receipts);
+        setIsLive(true);
+      } catch {
+        // API unavailable — fall back to local data
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   const totalAcres = PILT_CATEGORIES.reduce((s, c) => s + c.acres, 0);
   const totalValue = PILT_CATEGORIES.reduce((s, c) => s + c.totalValue, 0);
 
   return (
     <div className='p-6 space-y-6'>
-      <div>
-        <h2
-          className='text-2xl font-semibold flex items-center gap-3'
-          style={{ color: 'hsl(var(--tf-fg))' }}
+      <div className='flex items-center justify-between'>
+        <div>
+          <h2
+            className='text-2xl font-semibold flex items-center gap-3'
+            style={{ color: 'hsl(var(--tf-fg))' }}
+          >
+            <Landmark style={{ color: 'hsl(var(--tf-suite-dais))' }} size={28} />
+            PILT Administration
+          </h2>
+          <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
+            Payment In Lieu of Taxes — Benton County
+          </p>
+        </div>
+        <Badge
+          variant='outline'
+          className='flex items-center gap-1.5'
+          style={{
+            borderColor: isLive ? 'hsl(140 70% 40%)' : 'hsl(var(--tf-border))',
+            color: isLive ? 'hsl(140 70% 50%)' : 'hsl(var(--tf-muted))',
+          }}
         >
-          <Landmark style={{ color: 'hsl(var(--tf-suite-dais))' }} size={28} />
-          PILT Administration
-        </h2>
-        <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Payment In Lieu of Taxes — Federal & State land values, Benton County
-        </p>
+          {loading ? (
+            <Loader2 size={12} className='animate-spin' />
+          ) : isLive ? (
+            <Wifi size={12} />
+          ) : (
+            <WifiOff size={12} />
+          )}
+          {loading ? 'Connecting…' : isLive ? 'Live' : 'Local'}
+        </Badge>
       </div>
 
+      {/* Summary cards — live API data when available */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
-            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Total Acreage</p>
+            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+              {isLive ? 'Total Payments' : 'Total Acreage'}
+            </p>
             <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {totalAcres.toLocaleString()}
+              {isLive ? formatCurrency(apiStatus!.totalPayments) : totalAcres.toLocaleString()}
             </p>
           </CardContent>
         </Card>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
-            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Total Assessed Value</p>
+            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+              {isLive ? 'Federal Acres' : 'Total Assessed Value'}
+            </p>
             <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {formatCurrency(totalValue)}
+              {isLive ? apiStatus!.federalAcres.toLocaleString() : formatCurrency(totalValue)}
             </p>
           </CardContent>
         </Card>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
-            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Categories</p>
+            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+              {isLive ? 'Fiscal Year' : 'Categories'}
+            </p>
             <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {PILT_CATEGORIES.length}
+              {isLive ? apiStatus!.fiscalYear : PILT_CATEGORIES.length}
             </p>
           </CardContent>
         </Card>
       </div>
 
+      {/* Live receipts */}
+      {isLive && apiReceipts.length > 0 && (
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+          <CardHeader>
+            <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>Federal Receipts</CardTitle>
+            <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+              PILT payments received — FY {apiStatus!.fiscalYear}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className='overflow-x-auto'>
+              <table className='w-full text-sm'>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid hsl(var(--tf-border))' }}>
+                    <th className='text-left py-2 px-3' style={{ color: 'hsl(var(--tf-muted))' }}>Source</th>
+                    <th className='text-right py-2 px-3' style={{ color: 'hsl(var(--tf-muted))' }}>Amount</th>
+                    <th className='text-right py-2 px-3' style={{ color: 'hsl(var(--tf-muted))' }}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {apiReceipts.map((r) => (
+                    <tr key={r.id} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.5)' }}>
+                      <td className='py-2 px-3' style={{ color: 'hsl(var(--tf-fg))' }}>{r.source}</td>
+                      <td className='py-2 px-3 text-right font-mono' style={{ color: 'hsl(var(--tf-suite-dais))' }}>
+                        {formatCurrency(r.amount)}
+                      </td>
+                      <td className='py-2 px-3 text-right'>
+                        <Badge variant='outline' style={{ borderColor: 'hsl(140 70% 40%)', color: 'hsl(140 70% 50%)' }}>
+                          {r.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Live districts */}
+      {isLive && apiDistricts.length > 0 && (
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+          <CardHeader>
+            <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>Receiving Districts</CardTitle>
+            <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+              Districts receiving PILT distributions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className='flex flex-wrap gap-3'>
+              {apiDistricts.map((d) => (
+                <div
+                  key={d.id}
+                  className='px-4 py-3 rounded-lg'
+                  style={{ background: 'hsl(var(--tf-border) / 0.3)' }}
+                >
+                  <p className='font-medium text-sm' style={{ color: 'hsl(var(--tf-fg))' }}>{d.name}</p>
+                  <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{d.type}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Land categories — always shown */}
       <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
         <CardHeader>
           <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>PILT Land Categories</CardTitle>
