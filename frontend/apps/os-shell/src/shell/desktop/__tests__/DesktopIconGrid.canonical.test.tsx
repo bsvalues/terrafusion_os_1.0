@@ -11,22 +11,21 @@
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { getDesktopIcons } from '../../../config/desktopManifest';
 
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-const mockActivateModule = vi.fn();
-vi.mock('../../../orchestration/moduleActivation', () => ({
+const mockActivateModule = jest.fn();
+jest.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
-const { DesktopIconGrid } = await import('../DesktopIconGrid');
+import { DesktopIconGrid } from '../DesktopIconGrid';
 
 const DESKTOP_ICONS = getDesktopIcons();
 

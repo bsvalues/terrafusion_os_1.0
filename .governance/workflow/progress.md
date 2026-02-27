@@ -6,7 +6,7 @@
 
 * **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions
 * **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-02-08 02:30
+* **Last Updated:** 2026-02-27 
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,9 +15,9 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 24.2.1: Policy Export/Import Deterministic Tests** ✅ COMPLETE |
-| **Phase** | Phase 3: Implementation Complete - All Tests Green |
-| **Task** | All core implementation + 29/29 tests deterministic and passing |
+| **Slice** | **Slice 25: Desktop Window Launch Test Repair** ✅ COMPLETE |
+| **Phase** | Phase 3: All Gates Pass — Zero Regressions |
+| **Task** | 4 test files repaired (vitest→Jest), tier0 268/268, tier1 54/54 |
 | **Status** | ✅ COMPLETE |
 | **Latest Commit** | `a3552e345` (Slice 24.2.1 complete - 29/29 tests, FileReader timing fixed) |
 
@@ -305,6 +305,40 @@
 
 ---
 
+## Slice 25: Desktop Window Launch Test Repair ✅ COMPLETE
+
+| Task | Description | Tests | Date |
+|------|-------------|-------|------|
+| ✅ 1 | Diagnosed root cause: 4 test files imported from `vitest` but runner is Jest | Investigation | 2026-02-27 |
+| ✅ 2 | Fixed NavigationTruth.test.tsx (vi→jest globals) | 16/16 PASS | 2026-02-27 |
+| ✅ 3 | Fixed DesktopIconGrid.canonical.test.tsx (vi→jest, removed top-level await) | 5/5 PASS | 2026-02-27 |
+| ✅ 4 | Fixed ModuleLoader.test.tsx (vi→jest globals) | 7/7 PASS | 2026-02-27 |
+| ✅ 5 | Fixed DesktopIntentContract.test.tsx (vi→jest globals) | 9/9 PASS | 2026-02-27 |
+| ✅ 6 | Verified all gates: tier0 268/268, tier1 54/54, type-check, phase83-tools 32/32 | Full suite | 2026-02-27 |
+
+**Problem:** PR #472 introduced `import { vi } from 'vitest'` in 4 desktop test files, but `frontend/apps/os-shell` uses Jest (via `frontend/jest.config.cjs`). All 4 suites failed with "Vitest cannot be imported in CommonJS module".
+
+**Solution:** Replaced vitest APIs with Jest equivalents in all 4 files:
+- `vi.fn()` → `jest.fn()`
+- `vi.mock()` → `jest.mock()`
+- `vi.importActual()` → `jest.requireActual()`
+- Removed `import { vi } from 'vitest'`
+- Removed top-level `await import()` (not valid in Jest CJS context)
+
+**Files Modified:**
+- `NavigationTruth.test.tsx` — 16 tests: suite icons call activateModule, OS icons navigate
+- `DesktopIconGrid.canonical.test.tsx` — 5 tests: manifest icons, activateModule for suites, navigate for features
+- `ModuleLoader.test.tsx` — 7 tests: module rendering, not-found state, edge cases
+- `DesktopIntentContract.test.tsx` — 9 tests: full intent chain (suite→activateModule, OS→navigate→landmark)
+
+**Test Evidence:**
+- **tier0:** 268 suites passed, 0 failed, 3865 tests total
+- **tier1:** 4 suites, 54/54 passed
+- **type-check:** PASS
+- **phase83-tools:** 32/32, 0 fail
+
+---
+
 ## Slice 24.2.1: Deterministic Export/Import Tests (ZERO BROKEN WINDOWS) ✅ COMPLETE
 
 | Task | Description | Commit | Tests | Date |
@@ -381,19 +415,18 @@
 
 ---
 
-## Test Results (latest run)
+## Test Results (latest run — Slice 25)
 
 | Suite | Passed | Failed | Skipped |
-|-------|--------|--------|---------|
+|-------|--------|--------|--------|
 | type-check | ✅ | 0 | - |
 | phase83-tools | 32 | 0 | - |
-| launcher tests | 57 | 0 | - |
-| ranking tests | 26 | 0 | - |
-| pins tests | 15 | 0 | - |
-| recents tests | 15 | 0 | - |
-| standalone contract | 0 | 0 | 14 (TDD) |
-| standalone nav | 0 | 0 | 7 (TDD) |
-| standalone a11y | 12 | 0 | 0 |
+| tier0 (full) | 3865 | 0 | 256 |
+| tier1 (a11y/routing) | 54 | 0 | 0 |
+| NavigationTruth | 16 | 0 | 0 |
+| DesktopIconGrid.canonical | 5 | 0 | 0 |
+| ModuleLoader | 7 | 0 | 0 |
+| DesktopIntentContract | 9 | 0 | 0 |
 | build | ✅ | - | - |
 
 ---
