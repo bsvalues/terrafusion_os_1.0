@@ -6,6 +6,7 @@
  * Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge → TerraForge
  *
  * ALL cost data is Benton County's OWN cost approach system.
+ * Matrix data: 42 entries (14 building types × 3 regions) from Harris PACS 9.0.
  */
 
 import { useCallback, useMemo, useState } from 'react';
@@ -17,21 +18,42 @@ import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { Hammer, Calculator, TrendingUp, BarChart3, DollarSign, Building2, MapPin } from 'lucide-react';
+import {
+  Hammer,
+  Calculator,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  DollarSign,
+  Building2,
+  MapPin,
+  Database,
+  Save,
+  Trash2,
+  ArrowRight,
+} from 'lucide-react';
 import {
   BUILDING_TYPES,
   QUALITY_LEVELS,
   CONDITION_OPTIONS,
   REGIONS,
   calculateCost,
+  getRegionalComparison,
+  getMatrixRegion,
+  saveScenario,
+  loadScenarios,
+  deleteScenario,
   type CostCalculationInput,
   type CostCalculationResult,
+  type CostScenario,
 } from '@/services/forgeService';
 
 function formatCurrency(value: number): string {
@@ -52,8 +74,16 @@ const CONFIDENCE_COLORS = {
   HIGH: 'bg-green-500/20 text-green-400 border-green-500/30',
 } as const;
 
+const CATEGORY_LABELS: Record<string, string> = {
+  residential: 'Residential',
+  commercial: 'Commercial',
+  industrial: 'Industrial',
+  institutional: 'Institutional',
+  agricultural: 'Agricultural',
+};
+
 const DEFAULT_INPUTS: CostCalculationInput = {
-  buildingType: 'RES',
+  buildingType: '100',
   quality: 'STD',
   condition: 'AVG',
   region: 'BC-RICHLAND',
@@ -69,30 +99,79 @@ const DEFAULT_INPUTS: CostCalculationInput = {
 export default function CostForgeModule() {
   const [inputs, setInputs] = useState<CostCalculationInput>(DEFAULT_INPUTS);
   const [showBreakdown, setShowBreakdown] = useState(true);
+  const [scenarios, setScenarios] = useState<CostScenario[]>(() => loadScenarios());
+  const [scenarioName, setScenarioName] = useState('');
+  const [compareId, setCompareId] = useState<string | null>(null);
 
   const result: CostCalculationResult = useMemo(() => calculateCost(inputs), [inputs]);
 
-  const updateInput = useCallback(<K extends keyof CostCalculationInput>(
-    key: K,
-    value: CostCalculationInput[K],
-  ) => {
-    setInputs((prev) => ({ ...prev, [key]: value }));
+  const regional = useMemo(
+    () => getRegionalComparison(inputs.buildingType),
+    [inputs.buildingType],
+  );
+
+  const currentMatrixRegion = useMemo(
+    () => getMatrixRegion(inputs.region),
+    [inputs.region],
+  );
+
+  const updateInput = useCallback(
+    <K extends keyof CostCalculationInput>(key: K, value: CostCalculationInput[K]) => {
+      setInputs((prev) => ({ ...prev, [key]: value }));
+    },
+    [],
+  );
+
+  const handleSaveScenario = useCallback(() => {
+    if (!scenarioName.trim()) return;
+    const s = saveScenario(scenarioName.trim(), inputs, result);
+    setScenarios((prev) => [...prev, s]);
+    setScenarioName('');
+  }, [scenarioName, inputs, result]);
+
+  const handleDeleteScenario = useCallback((id: string) => {
+    deleteScenario(id);
+    setScenarios((prev) => prev.filter((s) => s.id !== id));
+    setCompareId((prev) => (prev === id ? null : prev));
+  }, []);
+
+  const compareScenario = scenarios.find((s) => s.id === compareId);
+
+  // Group building types by category
+  const groupedTypes = useMemo(() => {
+    const groups: Record<string, typeof BUILDING_TYPES[number][]> = {};
+    for (const t of BUILDING_TYPES) {
+      if (!groups[t.category]) groups[t.category] = [];
+      groups[t.category].push(t);
+    }
+    return groups;
   }, []);
 
   return (
     <div className='p-6 space-y-6'>
       {/* Header */}
-      <div>
-        <h2
-          className='text-2xl font-semibold flex items-center gap-3'
-          style={{ color: 'hsl(var(--tf-fg))' }}
-        >
-          <Hammer style={{ color: 'hsl(var(--tf-suite-forge))' }} size={28} />
-          CostForge Calculator
-        </h2>
-        <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Benton County Cost Approach — 89,247 parcels • Matrix Year 2025
-        </p>
+      <div className='flex items-start justify-between'>
+        <div>
+          <h2
+            className='text-2xl font-semibold flex items-center gap-3'
+            style={{ color: 'hsl(var(--tf-fg))' }}
+          >
+            <Hammer style={{ color: 'hsl(var(--tf-suite-forge))' }} size={28} />
+            CostForge Calculator
+          </h2>
+          <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
+            Benton County Cost Approach — 89,247 parcels • Matrix Year 2025 • 14 building types × 3 regions
+          </p>
+        </div>
+        {result.matrixSource && (
+          <Badge
+            variant='outline'
+            className='flex items-center gap-1.5 bg-blue-500/10 text-blue-400 border-blue-500/30'
+          >
+            <Database size={12} />
+            Matrix #{result.matrixSource.sourceMatrixId} • {result.matrixSource.dataPoints} pts
+          </Badge>
+        )}
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
@@ -135,10 +214,15 @@ export default function CostForgeModule() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {BUILDING_TYPES.map((t) => (
-                        <SelectItem key={t.id} value={t.id}>
-                          {t.label} (${t.baseRate}/sqft)
-                        </SelectItem>
+                      {Object.entries(groupedTypes).map(([cat, types]) => (
+                        <SelectGroup key={cat}>
+                          <SelectLabel>{CATEGORY_LABELS[cat] ?? cat}</SelectLabel>
+                          {types.map((t) => (
+                            <SelectItem key={t.id} value={t.id}>
+                              [{t.code}] {t.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
                       ))}
                     </SelectContent>
                   </Select>
@@ -162,7 +246,7 @@ export default function CostForgeModule() {
                     <SelectContent>
                       {QUALITY_LEVELS.map((q) => (
                         <SelectItem key={q.id} value={q.id}>
-                          {q.label} (×{q.factor})
+                          {q.label} ({'\u00d7'}{q.factor})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -187,7 +271,7 @@ export default function CostForgeModule() {
                     <SelectContent>
                       {CONDITION_OPTIONS.map((c) => (
                         <SelectItem key={c.id} value={c.id}>
-                          {c.label} (×{c.factor})
+                          {c.label} ({'\u00d7'}{c.factor})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -202,6 +286,9 @@ export default function CostForgeModule() {
                   style={{ color: 'hsl(var(--tf-fg))' }}
                 >
                   <MapPin size={14} /> Region
+                  <span className='text-xs ml-2' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    (Matrix: {currentMatrixRegion})
+                  </span>
                 </Label>
                 <Select
                   value={inputs.region}
@@ -219,7 +306,7 @@ export default function CostForgeModule() {
                   <SelectContent>
                     {REGIONS.map((r) => (
                       <SelectItem key={r.id} value={r.id}>
-                        {r.label} (×{r.factor.toFixed(2)})
+                        {r.label} ({'\u00d7'}{r.factor.toFixed(2)}) — {r.matrixRegion}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -296,9 +383,9 @@ export default function CostForgeModule() {
                   className='flex justify-between text-xs'
                   style={{ color: 'hsl(var(--tf-muted))' }}
                 >
-                  <span>Simple (×0.80)</span>
-                  <span>Average (×1.00)</span>
-                  <span>Complex (×1.20)</span>
+                  <span>Simple ({'\u00d7'}0.80)</span>
+                  <span>Average ({'\u00d7'}1.00)</span>
+                  <span>Complex ({'\u00d7'}1.20)</span>
                 </div>
               </div>
 
@@ -345,32 +432,163 @@ export default function CostForgeModule() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Regional Comparison Card */}
+          {regional.eastern && regional.central && regional.western && (
+            <Card
+              style={{
+                background: 'hsl(var(--tf-card-bg))',
+                borderColor: 'hsl(var(--tf-border))',
+              }}
+            >
+              <CardHeader className='pb-2'>
+                <CardTitle
+                  className='text-sm flex items-center gap-2'
+                  style={{ color: 'hsl(var(--tf-fg))' }}
+                >
+                  <MapPin size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                  Regional Cost Comparison — {BUILDING_TYPES.find((t) => t.id === inputs.buildingType)?.label}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='space-y-3'>
+                {(['Eastern', 'Central', 'Western'] as const).map((region) => {
+                  const entry = regional[region.toLowerCase() as 'eastern' | 'central' | 'western'];
+                  if (!entry) return null;
+                  const isActive = currentMatrixRegion === region;
+                  const max = Math.max(
+                    regional.eastern?.baseCost ?? 0,
+                    regional.central?.baseCost ?? 0,
+                    regional.western?.baseCost ?? 0,
+                  );
+                  const pct = max > 0 ? (entry.baseCost / max) * 100 : 0;
+                  return (
+                    <div key={region} className='space-y-1'>
+                      <div className='flex justify-between text-sm'>
+                        <span
+                          style={{
+                            color: isActive ? 'hsl(var(--tf-suite-forge))' : 'hsl(var(--tf-muted))',
+                            fontWeight: isActive ? 600 : 400,
+                          }}
+                        >
+                          {region} {isActive && '(selected)'}
+                        </span>
+                        <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                          {formatCurrency(entry.baseCost)}
+                        </span>
+                      </div>
+                      <div
+                        className='h-2 rounded-full overflow-hidden'
+                        style={{ background: 'hsl(var(--tf-border))' }}
+                      >
+                        <div
+                          className='h-full rounded-full transition-all duration-500'
+                          style={{
+                            width: `${pct}%`,
+                            background: isActive
+                              ? 'hsl(var(--tf-suite-forge))'
+                              : 'hsl(var(--tf-muted) / 0.4)',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Save Scenario */}
+          <Card
+            style={{
+              background: 'hsl(var(--tf-card-bg))',
+              borderColor: 'hsl(var(--tf-border))',
+            }}
+          >
+            <CardContent className='pt-4'>
+              <div className='flex items-center gap-3'>
+                <Input
+                  placeholder='Scenario name...'
+                  value={scenarioName}
+                  onChange={(e) => setScenarioName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveScenario()}
+                  style={{
+                    background: 'hsl(var(--tf-bg))',
+                    borderColor: 'hsl(var(--tf-border))',
+                    color: 'hsl(var(--tf-fg))',
+                  }}
+                />
+                <Button
+                  onClick={handleSaveScenario}
+                  disabled={!scenarioName.trim()}
+                  size='sm'
+                  className='shrink-0'
+                >
+                  <Save size={14} className='mr-1.5' />
+                  Save
+                </Button>
+              </div>
+              {scenarios.length > 0 && (
+                <div className='mt-3 space-y-2'>
+                  <p className='text-xs font-medium' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Saved Scenarios ({scenarios.length})
+                  </p>
+                  {scenarios.map((s) => (
+                    <div
+                      key={s.id}
+                      className='flex items-center justify-between text-sm rounded-lg px-3 py-2'
+                      style={{
+                        background: compareId === s.id ? 'hsl(var(--tf-suite-forge) / 0.1)' : 'hsl(var(--tf-bg))',
+                        borderColor: compareId === s.id ? 'hsl(var(--tf-suite-forge) / 0.3)' : 'transparent',
+                        border: '1px solid',
+                      }}
+                    >
+                      <button
+                        onClick={() => setCompareId(compareId === s.id ? null : s.id)}
+                        className='flex-1 text-left'
+                      >
+                        <span style={{ color: 'hsl(var(--tf-fg))' }}>{s.name}</span>
+                        <span className='ml-2' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          {formatCurrency(s.result.rcnld)}
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteScenario(s.id)}
+                        className='p-1 rounded hover:bg-white/10 transition-colors'
+                      >
+                        <Trash2 size={14} style={{ color: 'hsl(var(--tf-muted))' }} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Results Panel */}
         <div className='space-y-4'>
-          {/* Total Value Card */}
+          {/* RCN Pipeline Card */}
           <Card
             style={{
               background: 'hsl(var(--tf-card-bg))',
               borderColor: 'hsl(var(--tf-suite-forge) / 0.3)',
             }}
           >
-            <CardContent className='pt-6'>
-              <div className='text-center space-y-2'>
+            <CardContent className='pt-6 space-y-4'>
+              <div className='text-center space-y-1'>
                 <DollarSign
-                  size={32}
+                  size={28}
                   className='mx-auto'
                   style={{ color: 'hsl(var(--tf-suite-forge))' }}
                 />
-                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Estimated Replacement Cost
+                <p className='text-xs uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  RCNLD (Final Value)
                 </p>
                 <p
                   className='text-3xl font-bold'
                   style={{ color: 'hsl(var(--tf-fg))' }}
                 >
-                  {formatCurrency(result.totalCost)}
+                  {formatCurrency(result.rcnld)}
                 </p>
                 <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
                   {formatCurrency(result.costPerSqFt)}/sqft
@@ -379,6 +597,68 @@ export default function CostForgeModule() {
                   {result.confidence} Confidence
                 </Badge>
               </div>
+
+              <Separator style={{ background: 'hsl(var(--tf-border))' }} />
+
+              {/* RCN Pipeline */}
+              <div className='space-y-2'>
+                <div className='flex items-center justify-between text-sm'>
+                  <span className='flex items-center gap-1.5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    <TrendingUp size={14} /> RCN (New)
+                  </span>
+                  <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(result.rcnNew)}</span>
+                </div>
+                <div className='flex items-center justify-center'>
+                  <ArrowRight size={14} style={{ color: 'hsl(var(--tf-muted))' }} />
+                </div>
+                <div className='flex items-center justify-between text-sm'>
+                  <span className='flex items-center gap-1.5' style={{ color: 'hsl(var(--tf-danger, 0 70% 60%))' }}>
+                    <TrendingDown size={14} /> Depreciation
+                  </span>
+                  <span style={{ color: 'hsl(var(--tf-danger, 0 70% 60%))' }}>
+                    -{formatCurrency(result.depreciation)}
+                  </span>
+                </div>
+                <div className='flex items-center justify-center'>
+                  <ArrowRight size={14} style={{ color: 'hsl(var(--tf-muted))' }} />
+                </div>
+                <div className='flex items-center justify-between text-sm font-semibold'>
+                  <span style={{ color: 'hsl(var(--tf-suite-forge))' }}>RCNLD</span>
+                  <span style={{ color: 'hsl(var(--tf-suite-forge))' }}>{formatCurrency(result.rcnld)}</span>
+                </div>
+              </div>
+
+              {/* Compare overlay */}
+              {compareScenario && (
+                <>
+                  <Separator style={{ background: 'hsl(var(--tf-border))' }} />
+                  <div className='space-y-1'>
+                    <p className='text-xs font-medium' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      vs. {compareScenario.name}
+                    </p>
+                    <div className='flex items-center justify-between text-sm'>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Saved RCNLD</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {formatCurrency(compareScenario.result.rcnld)}
+                      </span>
+                    </div>
+                    <div className='flex items-center justify-between text-sm font-semibold'>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Difference</span>
+                      <span
+                        style={{
+                          color:
+                            result.rcnld > compareScenario.result.rcnld
+                              ? 'hsl(var(--tf-success, 140 70% 50%))'
+                              : 'hsl(var(--tf-danger, 0 70% 60%))',
+                        }}
+                      >
+                        {result.rcnld > compareScenario.result.rcnld ? '+' : ''}
+                        {formatCurrency(result.rcnld - compareScenario.result.rcnld)}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -413,11 +693,11 @@ export default function CostForgeModule() {
                         value < 1
                           ? 'hsl(var(--tf-danger, 0 70% 60%))'
                           : value > 1
-                          ? 'hsl(var(--tf-success, 140 70% 50%))'
-                          : 'hsl(var(--tf-fg))',
+                            ? 'hsl(var(--tf-success, 140 70% 50%))'
+                            : 'hsl(var(--tf-fg))',
                     }}
                   >
-                    ×{value.toFixed(3)}
+                    {'\u00d7'}{value.toFixed(3)}
                   </span>
                 </div>
               ))}
@@ -437,7 +717,7 @@ export default function CostForgeModule() {
                   className='flex items-center gap-2'
                   style={{ color: 'hsl(var(--tf-fg))' }}
                 >
-                  <TrendingUp size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                  <Calculator size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
                   Cost Breakdown
                 </span>
                 <Switch checked={showBreakdown} onCheckedChange={setShowBreakdown} />
@@ -463,14 +743,58 @@ export default function CostForgeModule() {
                 ))}
                 <Separator style={{ background: 'hsl(var(--tf-border))' }} />
                 <div className='flex justify-between text-sm font-semibold'>
-                  <span style={{ color: 'hsl(var(--tf-fg))' }}>Total</span>
+                  <span style={{ color: 'hsl(var(--tf-fg))' }}>Total (RCNLD)</span>
                   <span style={{ color: 'hsl(var(--tf-suite-forge))' }}>
-                    {formatCurrency(result.totalCost)}
+                    {formatCurrency(result.rcnld)}
                   </span>
                 </div>
               </CardContent>
             )}
           </Card>
+
+          {/* Matrix Source Card */}
+          {result.matrixSource && (
+            <Card
+              style={{
+                background: 'hsl(var(--tf-card-bg))',
+                borderColor: 'hsl(var(--tf-border))',
+              }}
+            >
+              <CardHeader className='pb-2'>
+                <CardTitle
+                  className='text-sm flex items-center gap-2'
+                  style={{ color: 'hsl(var(--tf-fg))' }}
+                >
+                  <Database size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                  Matrix Provenance
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='space-y-1 text-sm'>
+                <div className='flex justify-between'>
+                  <span style={{ color: 'hsl(var(--tf-muted))' }}>Source Matrix ID</span>
+                  <span style={{ color: 'hsl(var(--tf-fg))' }}>#{result.matrixSource.sourceMatrixId}</span>
+                </div>
+                <div className='flex justify-between'>
+                  <span style={{ color: 'hsl(var(--tf-muted))' }}>Data Points</span>
+                  <span style={{ color: 'hsl(var(--tf-fg))' }}>{result.matrixSource.dataPoints.toLocaleString()}</span>
+                </div>
+                <div className='flex justify-between'>
+                  <span style={{ color: 'hsl(var(--tf-muted))' }}>Region</span>
+                  <span style={{ color: 'hsl(var(--tf-fg))' }}>{result.matrixSource.region}</span>
+                </div>
+                <div className='flex justify-between'>
+                  <span style={{ color: 'hsl(var(--tf-muted))' }}>Matrix Year</span>
+                  <span style={{ color: 'hsl(var(--tf-fg))' }}>{result.matrixSource.matrixYear}</span>
+                </div>
+                <div className='flex justify-between'>
+                  <span style={{ color: 'hsl(var(--tf-muted))' }}>Cost Range</span>
+                  <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                    {formatCurrency(result.matrixSource.minCost)} — {formatCurrency(result.matrixSource.maxCost)}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
