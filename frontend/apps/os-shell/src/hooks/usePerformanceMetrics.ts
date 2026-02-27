@@ -117,7 +117,7 @@ export interface PerformanceBaseline {
   environment: 'development' | 'staging' | 'production' | 'research';
 }
 
-const PERFORMANCE_BASE_URL = getViteEnv().VITE_PERFORMANCE_URL || 'http://localhost:3006';
+const PERFORMANCE_BASE_URL = getViteEnv().VITE_PERFORMANCE_URL || '';
 
 class PerformanceMetricsAPI {
   private baseURL: string;

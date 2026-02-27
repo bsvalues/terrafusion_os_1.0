@@ -63,7 +63,7 @@ interface ConsciousnessVisualizationData {
   timestamp: Date;
 }
 
-const EXPERIMENTS_BASE_URL = getViteEnv().VITE_EXPERIMENTS_URL || 'http://localhost:5010';
+const EXPERIMENTS_BASE_URL = getViteEnv().VITE_EXPERIMENTS_URL || '';
 
 /**
  * Elite Experiment Runs Hook

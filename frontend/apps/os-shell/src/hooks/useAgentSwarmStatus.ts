@@ -9,6 +9,9 @@
  */
 
 import { useState, useEffect } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
+
+const CONSCIOUSNESS_URL = getViteEnv().VITE_CONSCIOUSNESS_URL || `http://localhost:${getViteEnv().VITE_CONSCIOUSNESS_PORT || '3004'}`;
 
 interface AgentSwarmMetrics {
   agentCount: number;
@@ -64,7 +67,7 @@ export function useAgentSwarmStatus(
         // Phase 1: Try to connect to Consciousness service
         // Phase 2: Will use SignalR for real-time updates
         try {
-          const response = await fetch('http://localhost:3004/api/swarm/status', {
+          const response = await fetch(`${CONSCIOUSNESS_URL}/api/swarm/status`, {
             method: 'GET',
             headers: {
               'Accept': 'application/json'

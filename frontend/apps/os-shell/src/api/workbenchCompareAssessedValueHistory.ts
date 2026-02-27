@@ -27,7 +27,7 @@ export interface WorkbenchCompareAssessedValueHistoryInput {
   includeBreakdown?: boolean;
 }
 
-const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 
 function failureResponse(error: string): WorkbenchCompareAssessedValueHistoryResponse {
   return {

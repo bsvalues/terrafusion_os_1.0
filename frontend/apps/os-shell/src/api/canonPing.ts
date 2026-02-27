@@ -22,7 +22,7 @@ export interface CanonPingResponse {
   raw?: unknown;
 }
 
-const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 const DEFAULT_ECHO = 'hello';
 const MAX_ECHO_LENGTH = 160;
 

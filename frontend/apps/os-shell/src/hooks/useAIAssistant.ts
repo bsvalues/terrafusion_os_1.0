@@ -8,6 +8,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { getToken } from '../auth/authStorage';
+import { getApiBase } from '../lib/apiBase';
 
 interface AIMessage {
   id: string;
@@ -50,7 +51,7 @@ interface UseAIAssistantReturn {
 export const useAIAssistant = ({
   countyId,
   employeeRole,
-  apiBaseUrl = 'http://localhost:5000/api',
+  apiBaseUrl = getApiBase(),
 }: UseAIAssistantProps): UseAIAssistantReturn => {
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);

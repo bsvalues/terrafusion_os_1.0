@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { buildApiUrl } from '../lib/apiBase';
 
 interface BackendConnectionState {
   isConnected: boolean;
@@ -42,7 +43,6 @@ export const useBackendConnection = () => {
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
   const abortControllerRef = useRef<AbortController>();
 
-  const BACKEND_URL = 'http://localhost:5000';
   const MAX_RETRY_ATTEMPTS = 5;
   const RETRY_DELAY_BASE = 1000; // Start with 1 second
   const HEALTH_CHECK_INTERVAL = 5000; // Check every 5 seconds
@@ -66,7 +66,7 @@ export const useBackendConnection = () => {
     const startTime = performance.now();
 
     try {
-      const response = await fetch(`${BACKEND_URL}/health`, {
+      const response = await fetch(buildApiUrl('/health'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
 
 interface CostForgeAPIConfig {
   baseUrl: string;
@@ -350,7 +351,7 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
  * Backend Connection Hook with Auto-Reconnection
  * Government-grade reliability with autonomous recovery
  */
-export const useBackendConnection = (baseUrl: string = 'https://localhost:5000') => {
+export const useBackendConnection = (baseUrl: string = (getViteEnv().VITE_API_URL || '')) => {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
   const [lastConnectionCheck, setLastConnectionCheck] = useState<Date | null>(null);

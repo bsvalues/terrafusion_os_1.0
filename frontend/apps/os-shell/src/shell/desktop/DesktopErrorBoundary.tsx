@@ -23,6 +23,7 @@ interface DesktopErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
+  correlationId: string | null;
 }
 
 // ============================================================================
@@ -31,12 +32,14 @@ interface DesktopErrorBoundaryState {
 
 interface DesktopErrorFallbackProps {
   error: Error | null;
+  correlationId: string | null;
   onRestart: () => void;
   onClearAndRestart: () => void;
 }
 
 const DesktopErrorFallback: React.FC<DesktopErrorFallbackProps> = ({
   error,
+  correlationId,
   onRestart,
   onClearAndRestart,
 }) => {
@@ -120,6 +123,11 @@ const DesktopErrorFallback: React.FC<DesktopErrorFallbackProps> = ({
           'mt-3 p-4 rounded-lg',
           'bg-black/50 border border-white/10'
         )}>
+          {correlationId && (
+            <p className="text-[var(--tf-transcend-highlight)] text-xs font-mono mb-2">
+              Correlation ID: {correlationId}
+            </p>
+          )}
           <p className="text-red-400 text-sm font-mono mb-2">
             {error?.message || 'Unknown error'}
           </p>
@@ -131,7 +139,7 @@ const DesktopErrorFallback: React.FC<DesktopErrorFallbackProps> = ({
 
       {/* Footer */}
       <div className="absolute bottom-4 text-white/30 text-xs">
-        TerraFusion OS • Government-Grade Assessment Platform
+        TerraFusion OS • Government Operating System
       </div>
     </div>
   );
@@ -169,6 +177,7 @@ export class DesktopErrorBoundary extends Component<
       hasError: false,
       error: null,
       errorInfo: null,
+      correlationId: null,
     };
   }
 
@@ -177,14 +186,16 @@ export class DesktopErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // Log the catastrophic error
+    const correlationId = `ebnd-${crypto.randomUUID()}`;
+
+    // Log the catastrophic error with correlationId for trace-chain
     console.error(
-      '[DesktopErrorBoundary] CRITICAL: Unrecoverable error in TerraFusion OS:',
+      `[DesktopErrorBoundary] CRITICAL (${correlationId}):`,
       error,
       errorInfo
     );
 
-    this.setState({ errorInfo });
+    this.setState({ errorInfo, correlationId });
 
     // Could send to error reporting service
     // errorReporter.captureCriticalError(error, {
@@ -214,13 +225,14 @@ export class DesktopErrorBoundary extends Component<
   };
 
   render(): ReactNode {
-    const { hasError, error } = this.state;
+    const { hasError, error, correlationId } = this.state;
     const { children } = this.props;
 
     if (hasError) {
       return (
         <DesktopErrorFallback
           error={error}
+          correlationId={correlationId}
           onRestart={this.handleRestart}
           onClearAndRestart={this.handleClearAndRestart}
         />

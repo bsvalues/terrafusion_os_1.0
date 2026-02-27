@@ -21,7 +21,7 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
   const [error, setError] = useState<string | null>(null);
   const connectionRef = useRef<signalR.HubConnection | null>(null);
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || '';
   const fullHubUrl = `${API_BASE_URL}${hubUrl}`;
 
   const connect = async () => {
