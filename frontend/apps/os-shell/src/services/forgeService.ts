@@ -629,6 +629,222 @@ export function deleteAppeal(id: string): void {
 }
 
 // ============================================================================
+// Reconciliation Engine — USPAP-aligned final value opinion
+// Source: QUARANTINE/terraforge-suite/harness/src/approaches/reconcile.ts
+// ============================================================================
+
+export interface ApproachValue {
+  indicatedValue: number;
+  confidenceLevel: 'high' | 'medium' | 'low';
+  weight?: number;
+}
+
+export interface ApproachSummaryItem {
+  indicatedValue: number;
+  weight: number;
+  contributedValue: number;
+}
+
+export type ReconciliationMethod = 'weighted_average' | 'bracketed' | 'primary_approach';
+export type PropertyCategory = 'residential' | 'commercial' | 'industrial' | 'agricultural' | 'special_purpose';
+
+export interface ReconciliationInput {
+  subjectId: string;
+  effectiveDate: string;
+  approaches: {
+    sales?: ApproachValue;
+    income?: ApproachValue;
+    cost?: ApproachValue;
+  };
+  propertyType: PropertyCategory;
+  reconciliationMethod: ReconciliationMethod;
+  forcedWeights: boolean;
+}
+
+export interface ReconciliationOutput {
+  subjectId: string;
+  effectiveDate: string;
+  finalOpinionOfValue: number;
+  approachSummary: {
+    sales?: ApproachSummaryItem;
+    income?: ApproachSummaryItem;
+    cost?: ApproachSummaryItem;
+  };
+  reconciliationAnalysis: {
+    method: ReconciliationMethod;
+    valueRange: { min: number; max: number };
+    spreadPercentage: number;
+    primaryApproach?: 'sales' | 'income' | 'cost';
+    weightsNormalized: boolean;
+  };
+  qualityIndicators: {
+    confidenceLevel: 'high' | 'medium' | 'low';
+    warnings: string[];
+    approachAgreement: 'strong' | 'moderate' | 'weak';
+  };
+  generatedAt: string;
+}
+
+type ApproachKey = 'sales' | 'income' | 'cost';
+
+/** Default weight distribution based on property type (Benton County standards) */
+export const DEFAULT_RECONCILIATION_WEIGHTS: Record<PropertyCategory, Record<ApproachKey, number>> = {
+  residential: { sales: 0.6, income: 0.1, cost: 0.3 },
+  commercial: { sales: 0.3, income: 0.5, cost: 0.2 },
+  industrial: { sales: 0.25, income: 0.45, cost: 0.3 },
+  agricultural: { sales: 0.4, income: 0.4, cost: 0.2 },
+  special_purpose: { sales: 0.2, income: 0.2, cost: 0.6 },
+};
+
+const CONFIDENCE_MULTIPLIERS: Record<string, number> = { high: 1.0, medium: 0.75, low: 0.5 };
+
+export function runReconciliation(input: ReconciliationInput): ReconciliationOutput {
+  const { subjectId, effectiveDate, approaches, propertyType, reconciliationMethod, forcedWeights } = input;
+  const approachKeys = (Object.keys(approaches) as ApproachKey[]).filter(k => approaches[k]);
+  if (approachKeys.length === 0) throw new Error('At least one approach value required');
+
+  // Calculate weights
+  const defaults = DEFAULT_RECONCILIATION_WEIGHTS[propertyType] ?? DEFAULT_RECONCILIATION_WEIGHTS.residential;
+  const weights: Record<ApproachKey, number> = { sales: 0, income: 0, cost: 0 };
+
+  if (forcedWeights) {
+    for (const key of approachKeys) {
+      const approach = approaches[key];
+      if (approach?.weight !== undefined) weights[key] = approach.weight;
+    }
+  } else {
+    for (const key of approachKeys) {
+      const approach = approaches[key];
+      if (approach) {
+        const mult = CONFIDENCE_MULTIPLIERS[approach.confidenceLevel] ?? 1;
+        weights[key] = (defaults[key] ?? 0) * mult;
+      }
+    }
+  }
+
+  // Normalize to 1.0
+  const totalWeight = weights.sales + weights.income + weights.cost;
+  if (totalWeight > 0) {
+    for (const k of ['sales', 'income', 'cost'] as ApproachKey[]) {
+      weights[k] = Math.round((weights[k] / totalWeight) * 10000) / 10000;
+    }
+    const sum = weights.sales + weights.income + weights.cost;
+    if (sum !== 1) {
+      const largest = approachKeys.reduce((a, b) => (weights[a] > weights[b] ? a : b));
+      weights[largest] = Math.round((weights[largest] + (1 - sum)) * 10000) / 10000;
+    }
+  }
+
+  // Build summary
+  const approachSummary: ReconciliationOutput['approachSummary'] = {};
+  let totalWeightedValue = 0;
+  const values: number[] = [];
+  for (const key of approachKeys) {
+    const approach = approaches[key];
+    if (approach) {
+      const w = weights[key] ?? 0;
+      const contributed = Math.round(approach.indicatedValue * w);
+      approachSummary[key] = { indicatedValue: approach.indicatedValue, weight: w, contributedValue: contributed };
+      totalWeightedValue += contributed;
+      values.push(approach.indicatedValue);
+    }
+  }
+
+  // Final value
+  let finalOpinionOfValue: number;
+  switch (reconciliationMethod) {
+    case 'bracketed':
+      finalOpinionOfValue = Math.round((Math.min(...values) + Math.max(...values)) / 2);
+      break;
+    case 'primary_approach': {
+      let maxW = 0; let pVal = 0;
+      for (const k of approachKeys) { if ((weights[k] ?? 0) > maxW && approaches[k]) { maxW = weights[k]; pVal = approaches[k]!.indicatedValue; } }
+      finalOpinionOfValue = pVal;
+      break;
+    }
+    default:
+      finalOpinionOfValue = totalWeightedValue;
+  }
+
+  // Range stats
+  const minV = Math.min(...values);
+  const maxV = Math.max(...values);
+  const avg = values.reduce((a, b) => a + b, 0) / values.length;
+  const spreadPercentage = avg > 0 ? Math.round(((maxV - minV) / avg) * 10000) / 100 : 0;
+  let primaryApproach: ApproachKey | undefined;
+  let maxWeight = 0;
+  for (const k of approachKeys) { if ((weights[k] ?? 0) > maxWeight) { maxWeight = weights[k]; primaryApproach = k; } }
+
+  // Quality
+  const warnings: string[] = [];
+  let agreement: 'strong' | 'moderate' | 'weak' = 'strong';
+  if (spreadPercentage > 20) { warnings.push(`Large value spread (${spreadPercentage.toFixed(1)}%)`); agreement = 'weak'; }
+  else if (spreadPercentage > 10) { agreement = 'moderate'; }
+  if (approachKeys.length === 1) { warnings.push('Only one approach — limited reconciliation'); agreement = 'weak'; }
+  const lowCount = approachKeys.filter(k => approaches[k]?.confidenceLevel === 'low').length;
+  let confidenceLevel: 'high' | 'medium' | 'low' = 'high';
+  if (lowCount > 0 || agreement === 'weak') confidenceLevel = 'low';
+  else if (agreement === 'moderate') confidenceLevel = 'medium';
+
+  return {
+    subjectId, effectiveDate, finalOpinionOfValue, approachSummary,
+    reconciliationAnalysis: { method: reconciliationMethod, valueRange: { min: minV, max: maxV }, spreadPercentage, primaryApproach, weightsNormalized: true },
+    qualityIndicators: { confidenceLevel, warnings, approachAgreement: agreement },
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+// ============================================================================
+// Value Audit Trail (localStorage)
+// ============================================================================
+
+export type AuditAction = 'COST_CALCULATED' | 'INCOME_CALCULATED' | 'COMPS_ANALYZED' | 'RECONCILIATION_COMPLETED' | 'APPEAL_FILED' | 'APPEAL_DECIDED' | 'VALUE_CHANGED' | 'MANUAL_OVERRIDE';
+
+export interface ValuationAuditEntry {
+  id: string;
+  parcelId: string;
+  action: AuditAction;
+  timestamp: string;
+  userId: string;
+  previousValue: number | null;
+  newValue: number | null;
+  module: string;
+  details: Record<string, unknown>;
+  notes: string;
+}
+
+const AUDIT_KEY = 'forgeaudit-entries';
+
+export function appendAuditEntry(entry: Omit<ValuationAuditEntry, 'id' | 'timestamp'>): ValuationAuditEntry {
+  const record: ValuationAuditEntry = {
+    ...entry,
+    id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    timestamp: new Date().toISOString(),
+  };
+  const existing = loadAuditEntries();
+  existing.push(record);
+  localStorage.setItem(AUDIT_KEY, JSON.stringify(existing));
+  return record;
+}
+
+export function loadAuditEntries(): ValuationAuditEntry[] {
+  try {
+    const raw = localStorage.getItem(AUDIT_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function loadAuditEntriesForParcel(parcelId: string): ValuationAuditEntry[] {
+  return loadAuditEntries().filter(e => e.parcelId === parcelId);
+}
+
+export function clearAuditEntries(): void {
+  localStorage.removeItem(AUDIT_KEY);
+}
+
+// ============================================================================
 // Summary Stats
 // ============================================================================
 

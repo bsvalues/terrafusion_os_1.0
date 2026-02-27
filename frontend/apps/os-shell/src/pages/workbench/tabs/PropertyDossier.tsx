@@ -24,54 +24,37 @@ const DOCUMENT_CATEGORIES = [
   { id: 'deeds', label: 'Deeds & Titles', icon: '📜' },
   { id: 'permits', label: 'Permits', icon: '🏗️' },
   { id: 'correspondence', label: 'Correspondence', icon: '✉️' },
+  { id: 'assessments', label: 'Assessments', icon: '📊' },
+  { id: 'photos', label: 'Property Photos', icon: '📸' },
 ] as const;
 
-/** Mock document data - will be replaced with real API */
+/** Mock document data — comprehensive Benton County property dossier */
 interface DossierDocument {
   id: string;
   title: string;
   category: string;
   date: string;
   type: string;
+  pages?: number;
+  fileSize?: string;
+  source?: string;
 }
 
 const MOCK_DOCUMENTS: DossierDocument[] = [
-  { id: 'doc-001', title: 'Warranty Deed', category: 'deeds', date: '2019-03-15', type: 'deed' },
-  {
-    id: 'doc-002',
-    title: 'Title Insurance Policy',
-    category: 'deeds',
-    date: '2019-03-15',
-    type: 'title',
-  },
-  {
-    id: 'doc-003',
-    title: 'Building Permit #BP-2021-4521',
-    category: 'permits',
-    date: '2021-06-22',
-    type: 'permit',
-  },
-  {
-    id: 'doc-004',
-    title: 'Final Inspection Certificate',
-    category: 'permits',
-    date: '2021-11-30',
-    type: 'inspection',
-  },
-  {
-    id: 'doc-005',
-    title: 'Value Notice - 2024',
-    category: 'correspondence',
-    date: '2024-01-15',
-    type: 'notice',
-  },
-  {
-    id: 'doc-006',
-    title: 'Appeal Response',
-    category: 'correspondence',
-    date: '2024-03-20',
-    type: 'letter',
-  },
+  { id: 'doc-001', title: 'Warranty Deed', category: 'deeds', date: '2019-03-15', type: 'deed', pages: 4, fileSize: '245 KB', source: 'Benton County Recorder' },
+  { id: 'doc-002', title: 'Title Insurance Policy', category: 'deeds', date: '2019-03-15', type: 'title', pages: 12, fileSize: '890 KB', source: 'First American Title' },
+  { id: 'doc-003', title: 'Legal Description / Plat Map', category: 'deeds', date: '2019-03-10', type: 'plat', pages: 2, fileSize: '1.2 MB', source: 'Benton County Surveyor' },
+  { id: 'doc-004', title: 'Building Permit #BP-2021-4521', category: 'permits', date: '2021-06-22', type: 'permit', pages: 3, fileSize: '180 KB', source: 'Benton County Planning' },
+  { id: 'doc-005', title: 'Final Inspection Certificate', category: 'permits', date: '2021-11-30', type: 'inspection', pages: 1, fileSize: '95 KB', source: 'Benton County Building' },
+  { id: 'doc-006', title: 'Septic System Permit', category: 'permits', date: '2019-05-10', type: 'permit', pages: 2, fileSize: '150 KB', source: 'Benton-Franklin Health' },
+  { id: 'doc-007', title: 'Value Notice — 2024', category: 'correspondence', date: '2024-01-15', type: 'notice', pages: 2, fileSize: '120 KB', source: 'Assessor\'s Office' },
+  { id: 'doc-008', title: 'Appeal Response', category: 'correspondence', date: '2024-03-20', type: 'letter', pages: 3, fileSize: '175 KB', source: 'BOE Clerk' },
+  { id: 'doc-009', title: 'Exemption Application — Senior/Disabled', category: 'correspondence', date: '2023-09-01', type: 'application', pages: 4, fileSize: '210 KB', source: 'Taxpayer' },
+  { id: 'doc-010', title: 'Assessment Record — 2024', category: 'assessments', date: '2024-01-02', type: 'assessment', pages: 6, fileSize: '340 KB', source: 'CAMA System' },
+  { id: 'doc-011', title: 'Comparable Sales Report', category: 'assessments', date: '2023-12-15', type: 'comps', pages: 8, fileSize: '520 KB', source: 'Appraisal Staff' },
+  { id: 'doc-012', title: 'Cost Approach Worksheet', category: 'assessments', date: '2024-01-02', type: 'cost', pages: 3, fileSize: '190 KB', source: 'CAMA System' },
+  { id: 'doc-013', title: 'Front Exterior — Street View', category: 'photos', date: '2023-06-15', type: 'photo', pages: 1, fileSize: '2.4 MB', source: 'Field Inspection' },
+  { id: 'doc-014', title: 'Rear Exterior — Yard', category: 'photos', date: '2023-06-15', type: 'photo', pages: 1, fileSize: '1.8 MB', source: 'Field Inspection' },
 ];
 
 // InvocationRecord type imported from shared components
@@ -260,13 +243,55 @@ export const PropertyDossier: React.FC = () => {
                 </button>
               </div>
 
-              {/* Document Preview Placeholder */}
-              <div className='bg-black/20 rounded-lg p-8 text-center'>
-                <span className='text-4xl mb-4 block'>📄</span>
-                <p className='text-white/60'>Document preview would appear here</p>
-                <p className='text-white/40 text-sm mt-2'>
-                  Integration with document storage pending
-                </p>
+              {/* Document Preview Panel */}
+              <div className='bg-black/20 rounded-lg overflow-hidden'>
+                {/* Document metadata bar */}
+                <div className='flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10'>
+                  <div className='flex items-center gap-3 text-sm text-white/60'>
+                    <span>{selectedDoc.type.toUpperCase()}</span>
+                    {selectedDoc.pages && <span>• {selectedDoc.pages} page{selectedDoc.pages > 1 ? 's' : ''}</span>}
+                    {selectedDoc.fileSize && <span>• {selectedDoc.fileSize}</span>}
+                  </div>
+                  {selectedDoc.source && (
+                    <span className='text-xs text-white/40'>Source: {selectedDoc.source}</span>
+                  )}
+                </div>
+
+                {/* Content preview area */}
+                <div className='p-6'>
+                  {selectedDoc.type === 'photo' ? (
+                    <div className='bg-white/5 rounded-lg p-8 text-center'>
+                      <span className='text-6xl block mb-3'>📷</span>
+                      <p className='text-white/70 font-medium'>{selectedDoc.title}</p>
+                      <p className='text-white/40 text-sm mt-1'>
+                        Captured {selectedDoc.date} • {selectedDoc.fileSize}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className='space-y-3'>
+                      {/* Simulated document lines */}
+                      <div className='bg-white/5 rounded p-4 font-mono text-xs text-white/50 space-y-2'>
+                        <div className='text-white/80 text-sm font-sans font-semibold'>
+                          {selectedDoc.title}
+                        </div>
+                        <div className='border-b border-white/10 pb-2'>
+                          <span className='text-white/40'>Filed: </span>
+                          <span className='text-white/60'>{selectedDoc.date}</span>
+                          {selectedDoc.source && (
+                            <>
+                              <span className='text-white/40'> • From: </span>
+                              <span className='text-white/60'>{selectedDoc.source}</span>
+                            </>
+                          )}
+                        </div>
+                        <div className='text-white/30 italic'>
+                          Full document preview requires document storage integration.
+                          Use the Summarize button for an AI-generated summary.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ) : (

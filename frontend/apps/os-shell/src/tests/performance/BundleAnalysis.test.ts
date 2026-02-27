@@ -89,7 +89,7 @@ describe('Bundle Analysis - Size Targets (requires build artifacts)', () => {
 
     console.log(`  Total Bundle Size: ${formatBytes(totalGzipSize)} gzipped`);
 
-    const targetSize = 640 * 1024; // 640KB (raised from 560KB - Wave 2 vivified 5 constitutional suites: 14 new modules + API services)
+    const targetSize = 768 * 1024; // 768KB (raised from 640KB - Waves 3-7: Atlas 7, Dais 6, Dossier 6, Forge 6 + GPT modules = 25+ new modules)
     expect(totalGzipSize).toBeLessThan(targetSize);
   });
 
