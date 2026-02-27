@@ -14,8 +14,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StandaloneHomeShell } from '../components/standalone';
 import { ActionStreamModule } from '../components/Trace/ActionStreamModule';
 import { PolicyPanel } from '../components/Trace/PolicyPanel';
-import type { StoredTraceEvent, TelemetryStore } from '../services/telemetry';
-import { getTelemetryStore } from '../services/telemetry';
+import type { StoredTraceEvent, TelemetryStore } from '../services/telemetry/telemetryStore';
+import { getTelemetryStore } from '../services/telemetry/telemetryStore';
 
 export interface TraceHomeProps {
   /** Optional telemetry store for testing (defaults to singleton) */

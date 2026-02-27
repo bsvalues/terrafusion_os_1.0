@@ -36,7 +36,7 @@ export interface ActionStreamModuleProps {
   /** Optional class name */
   className?: string;
   /** Optional telemetry store for testing (defaults to singleton) */
-  telemetryStore?: ReturnType<typeof import('../../services/telemetry').getTelemetryStore>;
+  telemetryStore?: ReturnType<typeof import('../../services/telemetry/telemetryStore').getTelemetryStore>;
 }
 
 // ============================================================================
