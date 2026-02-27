@@ -2,23 +2,9 @@
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
   "ok": false,
-  "scannedFileCount": 874,
-  "violationCount": 186,
+  "scannedFileCount": 895,
+  "violationCount": 149,
   "violations": [
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\federation-dashboard\\FederationDashboard.tsx",
-      "line": 106,
-      "column": 25,
-      "excerpt": "rgba(255,255,255,0.05)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\federation-dashboard\\FederationDashboard.tsx",
-      "line": 124,
-      "column": 29,
-      "excerpt": "rgba(6, 182, 212, 0.2)'"
-    },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\components\\ai\\AIAssistantPanel.tsx",
@@ -49,258 +35,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\ConsciousnessEngine.tsx",
-      "line": 246,
-      "column": 34,
-      "excerpt": "rgba(0,255,255,0.6)]';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\ConsciousnessEngine.tsx",
-      "line": 248,
-      "column": 34,
-      "excerpt": "rgba(0,255,136,0.4)]';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ai\\ConsciousnessEngine.tsx",
-      "line": 250,
-      "column": 34,
-      "excerpt": "rgba(255,170,0,0.3)]';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\WebGLEffects.tsx",
-      "line": 420,
-      "column": 24,
-      "excerpt": "rgba(11, 16, 32, 0.8)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\brand\\WebGLEffects.tsx",
-      "line": 437,
-      "column": 24,
-      "excerpt": "rgba(11, 16, 32, 0.8)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\codex\\AdvancedCodexDashboard.tsx",
-      "line": 335,
-      "column": 49,
-      "excerpt": "rgba(0,255,255,0.3)] animate-pulse'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\codex\\AdvancedCodexDashboard.tsx",
-      "line": 337,
-      "column": 49,
-      "excerpt": "rgba(0,153,255,0.2)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\ExplainPanel.tsx",
-      "line": 229,
-      "column": 49,
-      "excerpt": "rgba(0,0,0,0.75)] backdrop-blur-xl"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\common\\SystemDiagnostics.tsx",
-      "line": 99,
-      "column": 19,
-      "excerpt": "rgba(255, 255, 255, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 42,
-      "column": 16,
-      "excerpt": "rgba(255, 255, 255, 0.05)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 44,
-      "column": 22,
-      "excerpt": "rgba(200, 150, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 151,
-      "column": 59,
-      "excerpt": "rgba(0,0,0,0.2)', borderRadius: '12px' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 166,
-      "column": 42,
-      "excerpt": "rgba(255,255,255,0.1)', color: 'white', mt: 0.5 }}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\consciousness\\SpeciesDetectionVisualizer.tsx",
-      "line": 170,
-      "column": 65,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\costforge\\EnhancedCostCalculator.tsx",
-      "line": 1395,
-      "column": 49,
-      "excerpt": "rgba(15, 23, 42, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\costforge\\EnhancedCostCalculator.tsx",
-      "line": 1428,
-      "column": 49,
-      "excerpt": "rgba(15, 23, 42, 0.9)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\elite\\EliteExperimentalResearchInterface.tsx",
-      "line": 618,
-      "column": 47,
-      "excerpt": "rgba(0, 255, 255, ${node.consciousnessLevel || 0.5})`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\TerraFusionEmergencyTest.tsx",
-      "line": 43,
-      "column": 33,
-      "excerpt": "rgba(0, 255, 255, 0.5)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\TerraFusionEmergencyTest.tsx",
-      "line": 57,
-      "column": 24,
-      "excerpt": "rgba(0, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\TerraFusionEmergencyTest.tsx",
-      "line": 77,
-      "column": 34,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\TerraFusionEmergencyTest.tsx",
-      "line": 81,
-      "column": 57,
-      "excerpt": "rgba(0, 255, 255, 0.5)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\emergency\\TerraFusionEmergencyTest.tsx",
-      "line": 85,
-      "column": 57,
-      "excerpt": "rgba(0, 255, 255, 0.3)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\gpt\\RAGSourcesPanel.tsx",
-      "line": 248,
-      "column": 191,
-      "excerpt": "rgba(217,70,239,0.3)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\icons\\EliteIcons.tsx",
-      "line": 50,
-      "column": 61,
-      "excerpt": "rgba(0,255,255,0.6)]')}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\icons\\EliteIcons.tsx",
-      "line": 407,
-      "column": 61,
-      "excerpt": "rgba(0,255,255,0.6)]')}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\icons\\EliteIcons.tsx",
-      "line": 428,
-      "column": 61,
-      "excerpt": "rgba(0,255,255,0.6)]')}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\icons\\EliteIcons.tsx",
-      "line": 447,
-      "column": 61,
-      "excerpt": "rgba(0,255,255,0.6)]')}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\icons\\EliteIcons.tsx",
-      "line": 465,
-      "column": 61,
-      "excerpt": "rgba(0,255,255,0.6)]')}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\playground\\PlaygroundTester.tsx",
-      "line": 187,
-      "column": 75,
-      "excerpt": "rgba(0,255,255,0.5)] hover:-translate-y-1'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\realtime\\MultiUserCursor.tsx",
-      "line": 179,
-      "column": 37,
-      "excerpt": "rgba(0, 0, 0, 0.2)`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 145,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.3) ${percentage}%,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 146,
-      "column": 15,
-      "excerpt": "rgba(30, 41, 59, 0.3) 100%)`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 684,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 699,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.5);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\ConsciousnessParameterTuningPanel.tsx",
-      "line": 706,
-      "column": 32,
-      "excerpt": "rgba(0, 255, 255, 0.8);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\research\\InfinitePrecisionAnalyticsPanel.tsx",
-      "line": 347,
-      "column": 21,
-      "excerpt": "rgba(255, 255, 255, 0.7)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\research\\QuantumResearchDashboard.tsx",
       "line": 461,
       "column": 19,
@@ -326,76 +60,6 @@
       "line": 127,
       "column": 28,
       "excerpt": "rgba(34, 211, 238, ${coherence * 0.2})`;"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\terrafusion-design-system.ts",
-      "line": 120,
-      "column": 21,
-      "excerpt": "rgba(0, 255, 255, 0.4)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\terrafusion-design-system.ts",
-      "line": 121,
-      "column": 24,
-      "excerpt": "rgba(0, 255, 255, 0.3), 0 0 40px rgba(0, 128, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\terrafusion-design-system.ts",
-      "line": 121,
-      "column": 57,
-      "excerpt": "rgba(0, 128, 255, 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\testing\\TerraFusionSystemCheck.tsx",
-      "line": 46,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Trace\\PolicyPanel\\PolicyPanel.tsx",
-      "line": 200,
-      "column": 54,
-      "excerpt": "#666', marginTop: '8px' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Trace\\PolicyPanel\\PolicyPanel.tsx",
-      "line": 209,
-      "column": 38,
-      "excerpt": "#ccc',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Trace\\PolicyPanel\\PolicyPanel.tsx",
-      "line": 221,
-      "column": 58,
-      "excerpt": "#666', marginTop: '4px' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\Trace\\PolicyPanel\\PolicyPanel.tsx",
-      "line": 239,
-      "column": 42,
-      "excerpt": "#ccc', padding: '12px', borderRadius: '4px' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\avatar.tsx",
-      "line": 22,
-      "column": 27,
-      "excerpt": "rgba(0,255,255,0.5)] ring-2 ring-terra-cyan/30'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\badge.tsx",
-      "line": 16,
-      "column": 132,
-      "excerpt": "rgba(0,255,255,0.4)]',"
     },
     {
       "kind": "RAW_HEX",
@@ -424,41 +88,6 @@
       "line": 646,
       "column": 32,
       "excerpt": "#2a2a2a',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\divider.tsx",
-      "line": 26,
-      "column": 53,
-      "excerpt": "rgba(0,255,255,0.3)]',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\divider.tsx",
-      "line": 27,
-      "column": 47,
-      "excerpt": "rgba(0,255,255,0.5)] animate-pulse',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\EliteProgress.tsx",
-      "line": 34,
-      "column": 43,
-      "excerpt": "rgba(0,255,255,0.5)]',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\input.tsx",
-      "line": 14,
-      "column": 33,
-      "excerpt": "rgba(0,255,255,0.4)] focus:border-terra-cyan'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\ui\\progress.tsx",
-      "line": 22,
-      "column": 74,
-      "excerpt": "rgba(0,255,255,0.4)]',"
     },
     {
       "kind": "RAW_HEX",
@@ -529,41 +158,6 @@
       "line": 112,
       "column": 47,
       "excerpt": "rgba(0, 255, 255, ${optimizedOpacity})`;"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 155,
-      "column": 13,
-      "excerpt": "#ff6b35', // Forge orange"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 167,
-      "column": 13,
-      "excerpt": "#00e5ff', // Cyan"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 179,
-      "column": 13,
-      "excerpt": "#a855f7', // Purple"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 191,
-      "column": 13,
-      "excerpt": "#22c55e', // Green"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\config\\suiteRegistry.ts",
-      "line": 203,
-      "column": 13,
-      "excerpt": "#3b82f6', // Blue"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -735,69 +329,6 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\TerraFlowDesignEngine.tsx",
-      "line": 45,
-      "column": 34,
-      "excerpt": "rgba(74, 224, 255, 0.8)'; // Terra Cyan"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\TerraFlowDesignEngine.tsx",
-      "line": 46,
-      "column": 33,
-      "excerpt": "rgba(65, 255, 179, 0.6)'; // Terra Green"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\TerraFlowDesignEngine.tsx",
-      "line": 47,
-      "column": 11,
-      "excerpt": "rgba(255, 180, 0, 0.6)'; // Amber warning"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\design\\TerraForgeComponents.tsx",
-      "line": 261,
-      "column": 19,
-      "excerpt": "rgba(51, 65, 85, 0.3)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\PropertyAssessmentFlows.tsx",
-      "line": 208,
-      "column": 49,
-      "excerpt": "rgba(52,211,153,0.25)]',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptAtlasPanel.tsx",
-      "line": 375,
-      "column": 31,
-      "excerpt": "rgba(0, 255, 255, 0.1) 1px, transparent 1px),"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptAtlasPanel.tsx",
-      "line": 376,
-      "column": 38,
-      "excerpt": "rgba(0, 255, 255, 0.1) 1px, transparent 1px)"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptPolicyPanel.tsx",
-      "line": 126,
-      "column": 47,
-      "excerpt": "rgba(52,211,153,0.5)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\features\\gpt\\components\\SystemGptPolicyPanel.tsx",
-      "line": 127,
-      "column": 44,
-      "excerpt": "rgba(251,113,133,0.4)]'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\globals.css",
       "line": 101,
       "column": 19,
@@ -812,353 +343,584 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\modules\\axiomfs\\AxiomFSWindow.tsx",
-      "line": 99,
-      "column": 198,
-      "excerpt": "rgba(0,255,238,0.1)]'>"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 303,
+      "column": 76,
+      "excerpt": "hsl(30 90% 50% / 0.3)' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\providers\\TerraFusionExcellenceProvider.tsx",
-      "line": 65,
-      "column": 30,
-      "excerpt": "rgba(0, 255, 255, 0.3)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 320,
+      "column": 58,
+      "excerpt": "hsl(140 70% 40%)' : 'hsl(0 70% 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\services\\QuantumModuleManager.ts",
-      "line": 337,
-      "column": 19,
-      "excerpt": "rgba(10, 14, 26, 0.95);"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 320,
+      "column": 79,
+      "excerpt": "hsl(0 70% 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\services\\QuantumModuleManager.ts",
-      "line": 338,
-      "column": 25,
-      "excerpt": "rgba(0, 255, 255, 0.3);"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\services\\TerraFusionCSSEngine.ts",
-      "line": 224,
-      "column": 21,
-      "excerpt": "hsl(120 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\services\\TerraFusionCSSEngine.ts",
-      "line": 225,
-      "column": 22,
-      "excerpt": "hsl(0 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DesktopIcon.tsx",
-      "line": 155,
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 321,
       "column": 52,
-      "excerpt": "rgba(255,255,255,0.25)]'"
+      "excerpt": "hsl(140 70% 50%)' : 'hsl(0 70% 60%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DesktopIcon.tsx",
-      "line": 180,
-      "column": 41,
-      "excerpt": "rgba(0,0,0,0.6)' }}"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 321,
+      "column": 73,
+      "excerpt": "hsl(0 70% 60%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\SnapPreview.tsx",
-      "line": 79,
-      "column": 27,
-      "excerpt": "rgba(0,255,238,0.3)]',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\WebGLBackground.tsx",
-      "line": 103,
-      "column": 60,
-      "excerpt": "#0A0E1A"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\WebGLBackground.tsx",
-      "line": 104,
-      "column": 60,
-      "excerpt": "#00E5FF"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\WebGLBackground.tsx",
-      "line": 105,
-      "column": 60,
-      "excerpt": "#0080FF"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\WebGLBackground.tsx",
-      "line": 106,
-      "column": 60,
-      "excerpt": "#00FF88"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 174,
-      "column": 20,
-      "excerpt": "#FEBC2E] hover:bg-[#F5A623]',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 174,
-      "column": 39,
-      "excerpt": "#F5A623]',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 175,
-      "column": 20,
-      "excerpt": "#28C840] hover:bg-[#1AAB29]',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 175,
-      "column": 39,
-      "excerpt": "#1AAB29]',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 176,
-      "column": 17,
-      "excerpt": "#FF5F57] hover:bg-[#E0443E]',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 176,
-      "column": 36,
-      "excerpt": "#E0443E]',"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 174,
-      "column": 16,
-      "excerpt": "bg-[#FEBC2E] hover:bg-[#F5A623]',"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 174,
-      "column": 35,
-      "excerpt": "bg-[#F5A623]',"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 175,
-      "column": 16,
-      "excerpt": "bg-[#28C840] hover:bg-[#1AAB29]',"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 175,
-      "column": 35,
-      "excerpt": "bg-[#1AAB29]',"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 176,
-      "column": 13,
-      "excerpt": "bg-[#FF5F57] hover:bg-[#E0443E]',"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
-      "line": 176,
-      "column": 32,
-      "excerpt": "bg-[#E0443E]',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 353,
+      "column": 77,
+      "excerpt": "hsl(140 70% 50%)' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 155,
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 370,
       "column": 28,
-      "excerpt": "rgba(0,0,0,0.4)',"
+      "excerpt": "hsl(140 70% 40%)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 160,
-      "column": 19,
-      "excerpt": "rgba(0,0,0,0.4)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 372,
+      "column": 30,
+      "excerpt": "hsl(45 90% 50%)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 161,
-      "column": 17,
-      "excerpt": "rgba(0,255,238,0.2), 0 8px 32px rgba(0,0,0,0.5)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 373,
+      "column": 30,
+      "excerpt": "hsl(0 70% 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 161,
-      "column": 49,
-      "excerpt": "rgba(0,0,0,0.5)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 376,
+      "column": 28,
+      "excerpt": "hsl(140 70% 50%)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 162,
-      "column": 17,
-      "excerpt": "rgba(0,255,238,0.2), 0 8px 32px rgba(0,0,0,0.5)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 378,
+      "column": 30,
+      "excerpt": "hsl(45 90% 60%)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\windowAnimations.ts",
-      "line": 162,
-      "column": 49,
-      "excerpt": "rgba(0,0,0,0.5)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 379,
+      "column": 30,
+      "excerpt": "hsl(0 70% 60%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\QuantumDesktopShell.tsx",
-      "line": 193,
-      "column": 26,
-      "excerpt": "rgba(0, 255, 255, 0.6)';"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 393,
+      "column": 74,
+      "excerpt": "hsl(30 90% 50% / 0.08)' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\QuantumDesktopShell.tsx",
-      "line": 195,
-      "column": 26,
-      "excerpt": "rgba(0, 255, 136, 0.4)';"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 394,
+      "column": 74,
+      "excerpt": "hsl(30 90% 60%)' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\QuantumDesktopShell.tsx",
-      "line": 197,
-      "column": 26,
-      "excerpt": "rgba(255, 170, 0, 0.3)';"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 539,
+      "column": 73,
+      "excerpt": "hsl(140 70% 40%)', color: 'hsl(140 70% 50%)' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SystemTray.tsx",
-      "line": 31,
-      "column": 22,
-      "excerpt": "rgba(0,0,0,0.9)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\DaisSuiteHome.tsx",
+      "line": 539,
+      "column": 100,
+      "excerpt": "hsl(140 70% 50%)' }}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 274,
+      "column": 21,
+      "excerpt": "#fff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 443,
+      "column": 80,
+      "excerpt": "#fff' }}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 487,
+      "column": 86,
+      "excerpt": "#fff' }}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 653,
+      "column": 86,
+      "excerpt": "#fff' }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SystemTray.tsx",
-      "line": 37,
-      "column": 31,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SystemTray.tsx",
-      "line": 43,
-      "column": 53,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\SystemTray.tsx",
-      "line": 57,
-      "column": 53,
-      "excerpt": "rgba(255,255,255,0.7)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
-      "line": 55,
-      "column": 14,
-      "excerpt": "hsl(120 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
-      "line": 56,
-      "column": 18,
-      "excerpt": "hsl(200 100% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
-      "line": 57,
-      "column": 12,
-      "excerpt": "hsl(0 0% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.js",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
       "line": 58,
-      "column": 13,
-      "excerpt": "hsl(0 100% 60%)',"
+      "column": 44,
+      "excerpt": "hsl(210 100% 55%)', icon: ChevronRight },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.ts",
-      "line": 62,
-      "column": 14,
-      "excerpt": "hsl(120 100% 60%)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 59,
+      "column": 50,
+      "excerpt": "hsl(38 92% 50%)', icon: Eye },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.ts",
-      "line": 63,
-      "column": 18,
-      "excerpt": "hsl(200 100% 60%)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 60,
+      "column": 44,
+      "excerpt": "hsl(262 83% 58%)', icon: Calendar },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.ts",
-      "line": 64,
-      "column": 12,
-      "excerpt": "hsl(0 0% 60%)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 285,
+      "column": 72,
+      "excerpt": "hsl(38 92% 50%)' },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-conditional-fix.ts",
-      "line": 65,
-      "column": 13,
-      "excerpt": "hsl(0 100% 60%)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 497,
+      "column": 50,
+      "excerpt": "hsl(0 84% 60% / 0.4)', color: 'hsl(0 84% 60%)' }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-in-js-bridge.ts",
-      "line": 78,
-      "column": 15,
-      "excerpt": "rgba(255, 255, 255, 0.03)', // tf-glass"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 497,
+      "column": 81,
+      "excerpt": "hsl(0 84% 60%)' }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-in-js-bridge.ts",
-      "line": 121,
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\AppealForgeModule.tsx",
+      "line": 521,
+      "column": 65,
+      "excerpt": "hsl(0 84% 60%)' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CompsForgeModule.tsx",
+      "line": 447,
+      "column": 38,
+      "excerpt": "hsl(var(--tf-success, 140 70% 50%))'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CompsForgeModule.tsx",
+      "line": 448,
+      "column": 38,
+      "excerpt": "hsl(var(--tf-danger, 0 70% 60%))',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CostForgeModule.tsx",
+      "line": 652,
+      "column": 80,
+      "excerpt": "hsl(var(--tf-danger, 0 70% 60%))' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CostForgeModule.tsx",
+      "line": 655,
+      "column": 42,
+      "excerpt": "hsl(var(--tf-danger, 0 70% 60%))' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CostForgeModule.tsx",
+      "line": 688,
       "column": 34,
-      "excerpt": "rgba(0, 153, 255, 0.3)',"
+      "excerpt": "hsl(var(--tf-success, 140 70% 50%))'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-in-js-bridge.ts",
-      "line": 124,
-      "column": 36,
-      "excerpt": "rgba(0, 255, 238, 0.4)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CostForgeModule.tsx",
+      "line": 689,
+      "column": 34,
+      "excerpt": "hsl(var(--tf-danger, 0 70% 60%))',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\css-in-js-bridge.ts",
-      "line": 229,
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CostForgeModule.tsx",
+      "line": 885,
+      "column": 44,
+      "excerpt": "hsl(140 70% 50%)' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CostForgeModule.tsx",
+      "line": 900,
+      "column": 34,
+      "excerpt": "hsl(140 70% 50%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\CostForgeModule.tsx",
+      "line": 901,
+      "column": 34,
+      "excerpt": "hsl(45 90% 55%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 130,
+      "column": 8,
+      "excerpt": "hsl(142 71% 45%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 132,
+      "column": 10,
+      "excerpt": "hsl(38 92% 50%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 133,
+      "column": 10,
+      "excerpt": "hsl(0 84% 60%)';"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 281,
       "column": 26,
-      "excerpt": "rgba(0, 255, 238, 0.2)',"
+      "excerpt": "hsl(142 71% 45%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 282,
+      "column": 26,
+      "excerpt": "hsl(38 92% 50%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 384,
+      "column": 24,
+      "excerpt": "hsl(142 71% 45% / 0.15)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 386,
+      "column": 26,
+      "excerpt": "hsl(38 92% 50% / 0.15)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 387,
+      "column": 26,
+      "excerpt": "hsl(0 84% 60% / 0.15)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 389,
+      "column": 24,
+      "excerpt": "hsl(142 71% 45%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 391,
+      "column": 26,
+      "excerpt": "hsl(38 92% 50%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 392,
+      "column": 26,
+      "excerpt": "hsl(0 84% 60%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 476,
+      "column": 53,
+      "excerpt": "hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 476,
+      "column": 74,
+      "excerpt": "hsl(0 84% 60%)' }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 505,
+      "column": 68,
+      "excerpt": "hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 505,
+      "column": 89,
+      "excerpt": "hsl(0 84% 60%)' }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 553,
+      "column": 41,
+      "excerpt": "hsl(38 92% 50% / 0.05)', borderColor: 'hsl(38 92% 50% / 0.3)' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 553,
+      "column": 80,
+      "excerpt": "hsl(38 92% 50% / 0.3)' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 557,
+      "column": 91,
+      "excerpt": "hsl(38 92% 50%)' }} />"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 558,
+      "column": 61,
+      "excerpt": "hsl(38 92% 50%)' }}>{w}</p>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 583,
+      "column": 50,
+      "excerpt": "hsl(142 71% 45%)' : 'hsl(38 92% 50%)' }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\IncomeForgeModule.tsx",
+      "line": 583,
+      "column": 71,
+      "excerpt": "hsl(38 92% 50%)' }}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 123,
+      "column": 59,
+      "excerpt": "#22c55e' : a === 'moderate' ? '#f59e0b' : '#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 123,
+      "column": 90,
+      "excerpt": "#f59e0b' : '#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 123,
+      "column": 102,
+      "excerpt": "#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 124,
+      "column": 58,
+      "excerpt": "#22c55e' : c === 'medium' ? '#f59e0b' : '#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 124,
+      "column": 87,
+      "excerpt": "#f59e0b' : '#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 124,
+      "column": 99,
+      "excerpt": "#ef4444';"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 362,
+      "column": 139,
+      "excerpt": "#3b82f6' }} />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 376,
+      "column": 140,
+      "excerpt": "#22c55e' }} />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 390,
+      "column": 141,
+      "excerpt": "#f59e0b' }} />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 442,
+      "column": 91,
+      "excerpt": "#f59e0b' }} />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 443,
+      "column": 64,
+      "excerpt": "#f59e0b' }}>{w}</span>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ReconciliationModule.tsx",
+      "line": 452,
+      "column": 76,
+      "excerpt": "#000' }}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 38,
+      "column": 74,
+      "excerpt": "#3b82f6' },"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 39,
+      "column": 78,
+      "excerpt": "#22c55e' },"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 40,
+      "column": 71,
+      "excerpt": "#8b5cf6' },"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 41,
+      "column": 77,
+      "excerpt": "#f59e0b' },"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 42,
+      "column": 63,
+      "excerpt": "#ef4444' },"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 43,
+      "column": 67,
+      "excerpt": "#06b6d4' },"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 44,
+      "column": 69,
+      "excerpt": "#ec4899' },"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 45,
+      "column": 77,
+      "excerpt": "#f97316' },"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 329,
+      "column": 68,
+      "excerpt": "#ef4444' }}>{fmt(selectedEntry.previousValue)}</span>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 335,
+      "column": 68,
+      "excerpt": "#22c55e' }}>{fmt(selectedEntry.newValue)}</span>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 341,
+      "column": 142,
+      "excerpt": "#22c55e' : '#ef4444' }}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ValueAuditModule.tsx",
+      "line": 341,
+      "column": 154,
+      "excerpt": "#ef4444' }}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\services\\dossierService.ts",
+      "line": 150,
+      "column": 41,
+      "excerpt": "#2026-042.pdf', type: 'appeal', parcelId: '104841000015200', uploadedBy: 'Property Owner', uploadedAt: '2026-03-01 16:45', size: '342 KB', s"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\services\\dossierService.ts",
+      "line": 161,
+      "column": 64,
+      "excerpt": "#2026-042', parcelId: '104841000015200', evidenceType: 'appeal-evidence', createdBy: 'Appraiser M. Lee', createdAt: '2026-03-01', integrity:"
     },
     {
       "kind": "RAW_HEX",
@@ -1285,28 +1047,7 @@
       "line": 292,
       "column": 13,
       "excerpt": "rgba(r, g, b, a)"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\metrics\\AxiomMetricCard.tsx",
-      "line": 35,
-      "column": 10,
-      "excerpt": "rgba(0, 255, 136, 0.1)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\metrics\\AxiomMetricCard.tsx",
-      "line": 37,
-      "column": 12,
-      "excerpt": "rgba(255, 68, 68, 0.1)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\ui\\metrics\\AxiomMetricCard.tsx",
-      "line": 38,
-      "column": 12,
-      "excerpt": "rgba(255, 255, 255, 0.1)'};"
     }
   ],
-  "generatedAtIso": "2026-02-26T06:41:49.555Z"
+  "generatedAtIso": "2026-02-27T05:46:13.303Z"
 }
