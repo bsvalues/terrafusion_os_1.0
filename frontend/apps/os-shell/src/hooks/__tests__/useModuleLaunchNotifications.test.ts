@@ -80,7 +80,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('useModuleLaunchNotifications', () => {
@@ -121,7 +121,7 @@ describe('useModuleLaunchNotifications', () => {
       const originalLaunch = useModuleRegistryStore.getState().launchModule;
       useModuleRegistryStore.setState({
         ...useModuleRegistryStore.getState(),
-        launchModule: jest.fn().mockRejectedValue(new Error('Network timeout')),
+        launchModule: vi.fn().mockRejectedValue(new Error('Network timeout')),
       });
 
       const { result } = renderHook(() => useModuleLaunchNotifications());
@@ -150,7 +150,7 @@ describe('useModuleLaunchNotifications', () => {
       const originalLaunch = useModuleRegistryStore.getState().launchModule;
       useModuleRegistryStore.setState({
         ...useModuleRegistryStore.getState(),
-        launchModule: jest.fn().mockRejectedValue(new Error('Failed')),
+        launchModule: vi.fn().mockRejectedValue(new Error('Failed')),
       });
 
       const { result } = renderHook(() => useModuleLaunchNotifications());

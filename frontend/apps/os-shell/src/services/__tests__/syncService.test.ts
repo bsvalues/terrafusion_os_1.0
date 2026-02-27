@@ -21,7 +21,7 @@ class MockBroadcastChannel {
 global.BroadcastChannel = MockBroadcastChannel as any;
 
 describe('SyncService', () => {
-  let postMessageSpy: jest.SpyInstance;
+  let postMessageSpy: vi.SpyInstance;
 
   beforeEach(() => {
     // Reset stores
@@ -29,14 +29,14 @@ describe('SyncService', () => {
     useNetworkStore.setState({ isOnline: true });
 
     // Spy on postMessage
-    postMessageSpy = jest.spyOn(MockBroadcastChannel.prototype, 'postMessage');
+    postMessageSpy = vi.spyOn(MockBroadcastChannel.prototype, 'postMessage');
 
     // Ensure init is called (idempotent)
     syncService.init();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should broadcast immediately when online', () => {

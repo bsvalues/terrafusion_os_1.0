@@ -23,7 +23,7 @@ import { useStartMenuStore } from '../../stores/startMenuStore';
 import { useWindowPeekStore } from '../../stores/windowPeekStore';
 
 // Mock react-rnd (same as Window.test.tsx)
-jest.mock('react-rnd', () => {
+vi.mock('react-rnd', () => {
   const React = require('react');
   return {
     Rnd: React.forwardRef(
@@ -84,7 +84,7 @@ describe('Lumin Primitive Contract', () => {
   });
 
   it('DesktopContextMenu renders with Lumin Panel material', () => {
-    render(<DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />);
+    render(<DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />);
 
     const menu = screen.getByRole('menu', { name: /desktop context menu/i });
     expect(menu).toBeInTheDocument();
@@ -284,7 +284,7 @@ describe('Lumin Primitive Contract', () => {
   });
 
   it('AIStatusPanel contains no raw rgba()/rgb()/#hex and uses --tf- tokens', () => {
-    render(<AIStatusPanel status={defaultAIStatus} onClose={jest.fn()} />);
+    render(<AIStatusPanel status={defaultAIStatus} onClose={vi.fn()} />);
 
     const panel = screen.getByTestId('ai-status-panel');
     const html = panel.outerHTML;
@@ -319,7 +319,7 @@ describe('Lumin Primitive Contract', () => {
     render(
       <NotificationPanel
         notifications={testNotifications}
-        onClose={jest.fn()}
+        onClose={vi.fn()}
       />
     );
 

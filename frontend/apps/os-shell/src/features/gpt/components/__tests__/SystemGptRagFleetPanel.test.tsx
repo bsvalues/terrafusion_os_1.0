@@ -13,18 +13,18 @@ import type { RagFleetReadiness } from '../../../../api/systemDiagnosticsApi';
 import { SystemGptRagFleetPanel } from '../SystemGptRagFleetPanel';
 
 // Mock the systemDiagnosticsApi module entirely (avoids import.meta.env issues)
-jest.mock('../../../../api/systemDiagnosticsApi', () => ({
-  fetchRagFleetReadiness: jest.fn(),
+vi.mock('../../../../api/systemDiagnosticsApi', () => ({
+  fetchRagFleetReadiness: vi.fn(),
 }));
 
 describe('SystemGptRagFleetPanel', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.restoreAllMocks();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════

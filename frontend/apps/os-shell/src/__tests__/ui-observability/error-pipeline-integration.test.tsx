@@ -181,7 +181,7 @@ describe('Error Pipeline Integration', () => {
 
   describe('Error Context Integration', () => {
     it('reports errors with correlationId to ErrorProvider', () => {
-      const handleError = jest.fn();
+      const handleError = vi.fn();
 
       render(
         <ErrorProvider>

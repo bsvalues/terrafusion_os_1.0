@@ -69,7 +69,7 @@ describe('Slider', () => {
     });
 
     it('handles value changes', () => {
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<Slider defaultValue={[50]} onValueChange={onValueChange} />);
 
       // Slider is interactive, onValueChange would be called on interaction
@@ -105,7 +105,7 @@ describe('Slider', () => {
     });
 
     it('prevents value changes when disabled', () => {
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<Slider defaultValue={[50]} disabled onValueChange={onValueChange} />);
 
       const slider = screen.getByRole('slider');
@@ -117,7 +117,7 @@ describe('Slider', () => {
   describe('Keyboard Navigation', () => {
     it('supports arrow key navigation (right/up)', async () => {
       const user = userEvent.setup();
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<Slider defaultValue={[50]} onValueChange={onValueChange} />);
 
       const slider = screen.getByRole('slider');
@@ -131,7 +131,7 @@ describe('Slider', () => {
 
     it('supports arrow key navigation (left/down)', async () => {
       const user = userEvent.setup();
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<Slider defaultValue={[50]} onValueChange={onValueChange} />);
 
       const slider = screen.getByRole('slider');
@@ -477,7 +477,7 @@ describe('Slider', () => {
     });
 
     it('works as controlled component', () => {
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<Slider value={[60]} onValueChange={onValueChange} />);
 
       const slider = screen.getByRole('slider');
@@ -485,7 +485,7 @@ describe('Slider', () => {
     });
 
     it('calls onValueChange when value changes', () => {
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<Slider defaultValue={[50]} onValueChange={onValueChange} />);
 
       // Component is rendered and ready to respond to value changes
@@ -493,7 +493,7 @@ describe('Slider', () => {
     });
 
     it('calls onValueCommit when interaction ends', () => {
-      const onValueCommit = jest.fn();
+      const onValueCommit = vi.fn();
       render(<Slider defaultValue={[50]} onValueCommit={onValueCommit} />);
 
       // Component is rendered and ready to respond to value commits

@@ -17,16 +17,16 @@ import * as pilotApi from '../../api/pilotApi';
 import { RiskPolicyGate } from '../../components/pilot/RiskPolicyGate';
 
 // Mock the pilotApi module
-jest.mock('../../api/pilotApi');
+vi.mock('../../api/pilotApi');
 
-const mockValidatePilotTool = pilotApi.validatePilotTool as jest.MockedFunction<
+const mockValidatePilotTool = pilotApi.validatePilotTool as vi.MockedFunction<
   typeof pilotApi.validatePilotTool
 >;
-const mockInvokeTool = pilotApi.invokeTool as jest.MockedFunction<typeof pilotApi.invokeTool>;
+const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
 
 describe('RiskPolicyGate', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('read_only tools', () => {
@@ -57,7 +57,7 @@ describe('RiskPolicyGate', () => {
         result: { toolId: 'registry.list_tools', output: '[]' },
       });
 
-      const onComplete = jest.fn();
+      const onComplete = vi.fn();
 
       // Act
       render(
@@ -65,7 +65,7 @@ describe('RiskPolicyGate', () => {
           toolId='registry.list_tools'
           params={{}}
           onComplete={onComplete}
-          onCancel={jest.fn()}
+          onCancel={vi.fn()}
         />
       );
 
@@ -119,8 +119,8 @@ describe('RiskPolicyGate', () => {
         <RiskPolicyGate
           toolId='forge.update_cost'
           params={{ costValue: 1000 }}
-          onComplete={jest.fn()}
-          onCancel={jest.fn()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
         />
       );
 
@@ -161,7 +161,7 @@ describe('RiskPolicyGate', () => {
         result: { toolId: 'forge.update_cost', output: '{"updated": true}' },
       });
 
-      const onComplete = jest.fn();
+      const onComplete = vi.fn();
 
       // Act
       render(
@@ -169,7 +169,7 @@ describe('RiskPolicyGate', () => {
           toolId='forge.update_cost'
           params={{ costValue: 1000 }}
           onComplete={onComplete}
-          onCancel={jest.fn()}
+          onCancel={vi.fn()}
         />
       );
 
@@ -217,14 +217,14 @@ describe('RiskPolicyGate', () => {
         },
       });
 
-      const onCancel = jest.fn();
+      const onCancel = vi.fn();
 
       // Act
       render(
         <RiskPolicyGate
           toolId='forge.update_cost'
           params={{}}
-          onComplete={jest.fn()}
+          onComplete={vi.fn()}
           onCancel={onCancel}
         />
       );
@@ -271,8 +271,8 @@ describe('RiskPolicyGate', () => {
         <RiskPolicyGate
           toolId='dais.approve_assessment'
           params={{ parcelId: 'P-123' }}
-          onComplete={jest.fn()}
-          onCancel={jest.fn()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
         />
       );
 
@@ -315,8 +315,8 @@ describe('RiskPolicyGate', () => {
         <RiskPolicyGate
           toolId='dais.approve_assessment'
           params={{ parcelId: 'P-123' }}
-          onComplete={jest.fn()}
-          onCancel={jest.fn()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
         />
       );
 
@@ -359,7 +359,7 @@ describe('RiskPolicyGate', () => {
         result: { toolId: 'dais.approve_assessment', output: '{"approved": true}' },
       });
 
-      const onComplete = jest.fn();
+      const onComplete = vi.fn();
 
       // Act
       render(
@@ -367,7 +367,7 @@ describe('RiskPolicyGate', () => {
           toolId='dais.approve_assessment'
           params={{ parcelId: 'P-123' }}
           onComplete={onComplete}
-          onCancel={jest.fn()}
+          onCancel={vi.fn()}
         />
       );
 
@@ -441,8 +441,8 @@ describe('RiskPolicyGate', () => {
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{}}
-          onComplete={jest.fn()}
-          onCancel={jest.fn()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
         />
       );
 
@@ -460,11 +460,11 @@ describe('RiskPolicyGate', () => {
       // Arrange
       mockValidatePilotTool.mockRejectedValue(new Error('Network error'));
 
-      const onCancel = jest.fn();
+      const onCancel = vi.fn();
 
       // Act
       render(
-        <RiskPolicyGate toolId='some.tool' params={{}} onComplete={jest.fn()} onCancel={onCancel} />
+        <RiskPolicyGate toolId='some.tool' params={{}} onComplete={vi.fn()} onCancel={onCancel} />
       );
 
       // Assert: Error should be displayed
@@ -511,8 +511,8 @@ describe('RiskPolicyGate', () => {
         <RiskPolicyGate
           toolId='forge.update_cost'
           params={{}}
-          onComplete={jest.fn()}
-          onCancel={jest.fn()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
         />
       );
 

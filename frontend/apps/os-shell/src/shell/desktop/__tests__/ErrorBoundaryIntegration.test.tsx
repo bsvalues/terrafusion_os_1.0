@@ -25,7 +25,7 @@ import { WindowErrorBoundary } from '../WindowErrorBoundary';
 // Suppress console.error for error boundary tests
 const originalError = console.error;
 beforeEach(() => {
-  console.error = jest.fn();
+  console.error = vi.fn();
 });
 
 afterEach(() => {
@@ -146,7 +146,7 @@ describe('Error Boundary Integration', () => {
 
   describe('Recovery Actions', () => {
     it('window reload callback is called with correct windowId', async () => {
-      const onReload = jest.fn();
+      const onReload = vi.fn();
 
       render(
         <WindowErrorBoundary windowId='test-123' moduleName='Test Module' onReload={onReload}>
@@ -160,7 +160,7 @@ describe('Error Boundary Integration', () => {
     });
 
     it('window close callback is called with correct windowId', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
 
       render(
         <WindowErrorBoundary windowId='test-456' moduleName='Test Module' onClose={onClose}>

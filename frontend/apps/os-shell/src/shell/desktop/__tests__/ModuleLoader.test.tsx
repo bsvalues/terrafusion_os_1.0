@@ -15,7 +15,7 @@ import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { ModuleLoader } from '../ModuleLoader';
 
 // Mock the ModuleRenderer to avoid lazy loading issues and focus on ModuleLoader logic
-jest.mock('../../../config/moduleComponents', () => ({
+vi.mock('../../../config/moduleComponents', () => ({
   ModuleRenderer: ({ module }: { module: { id: string } }) => (
     <div data-testid='mock-module-renderer'>Rendered: {module.id}</div>
   ),
@@ -45,7 +45,7 @@ beforeEach(() => {
     isInitialized: false,
     initError: null,
   });
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {

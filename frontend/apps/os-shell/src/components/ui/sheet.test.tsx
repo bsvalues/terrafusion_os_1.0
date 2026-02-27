@@ -321,7 +321,7 @@ describe('Sheet', () => {
     });
 
     it('calls onOpenChange when sheet opens', async () => {
-      const onOpenChange = jest.fn();
+      const onOpenChange = vi.fn();
       const user = userEvent.setup();
 
       render(
@@ -343,7 +343,7 @@ describe('Sheet', () => {
     });
 
     it('calls onOpenChange when sheet closes', async () => {
-      const onOpenChange = jest.fn();
+      const onOpenChange = vi.fn();
       const user = userEvent.setup();
 
       render(

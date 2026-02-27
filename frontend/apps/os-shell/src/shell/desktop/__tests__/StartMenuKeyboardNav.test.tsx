@@ -29,7 +29,7 @@ import { StartMenu } from '../StartMenu';
 // Clean up after each test
 afterEach(() => {
   cleanup();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 // Mock modules - USE REGISTERED MODULE IDs from MODULE_REGISTRY

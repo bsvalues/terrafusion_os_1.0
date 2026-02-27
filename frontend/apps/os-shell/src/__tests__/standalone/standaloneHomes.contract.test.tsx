@@ -50,7 +50,7 @@ describe('Standalone Homes Contract', () => {
   afterEach(() => {
     cleanup();
     resetMaterialQualityGate();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ==========================================================================

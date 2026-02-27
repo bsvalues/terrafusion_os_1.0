@@ -613,7 +613,7 @@ describe('Menubar', () => {
     // Skip: Focus management doesn't work reliably in jsdom for Radix menubar
     it.skip('activates menu item with Enter key', async () => {
       const user = userEvent.setup();
-      const onSelect = jest.fn();
+      const onSelect = vi.fn();
 
       render(
         <Menubar>
@@ -805,7 +805,7 @@ describe('Menubar', () => {
     it('toggles checkbox state on click', async () => {
       const user = userEvent.setup();
       let checked = false;
-      const onCheckedChange = jest.fn((value) => {
+      const onCheckedChange = vi.fn((value) => {
         checked = value;
       });
 
@@ -857,7 +857,7 @@ describe('Menubar', () => {
 
     it('selects radio item on click', async () => {
       const user = userEvent.setup();
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
 
       render(
         <Menubar>
@@ -911,7 +911,7 @@ describe('Menubar', () => {
 
     it('does not trigger onSelect for disabled items', async () => {
       const user = userEvent.setup();
-      const onSelect = jest.fn();
+      const onSelect = vi.fn();
 
       render(
         <Menubar>

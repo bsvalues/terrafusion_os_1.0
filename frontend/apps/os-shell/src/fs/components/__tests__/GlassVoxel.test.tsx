@@ -64,7 +64,7 @@ describe('GlassVoxel', () => {
   });
 
   test('click calls onSelect(id)', () => {
-    const handleSelect = jest.fn();
+    const handleSelect = vi.fn();
     render(<GlassVoxel object={MOCK_OBJECT} layout={MOCK_LAYOUT} onSelect={handleSelect} />);
     fireEvent.click(screen.getByRole('button'));
     expect(handleSelect).toHaveBeenCalledWith('test-1');

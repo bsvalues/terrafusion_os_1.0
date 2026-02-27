@@ -21,7 +21,7 @@ import { ErrorDisplay } from '../../components/errors/ErrorDisplay';
 // Mock clipboard API
 Object.assign(navigator, {
   clipboard: {
-    writeText: jest.fn(() => Promise.resolve()),
+    writeText: vi.fn(() => Promise.resolve()),
   },
 });
 
@@ -35,7 +35,7 @@ describe('ErrorDisplay - correlationId Contract', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('correlationId Display', () => {

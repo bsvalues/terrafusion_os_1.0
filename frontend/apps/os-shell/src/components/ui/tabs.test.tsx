@@ -418,7 +418,7 @@ describe('Tabs', () => {
 
     it('calls onValueChange when tab is clicked', async () => {
       const user = userEvent.setup();
-      const handleValueChange = jest.fn();
+      const handleValueChange = vi.fn();
 
       render(
         <Tabs defaultValue='tab1' onValueChange={handleValueChange}>
@@ -472,7 +472,7 @@ describe('Tabs', () => {
 
     it('maintains controlled state after multiple changes', async () => {
       const user = userEvent.setup();
-      const handleValueChange = jest.fn();
+      const handleValueChange = vi.fn();
 
       render(
         <Tabs defaultValue='tab1' onValueChange={handleValueChange}>

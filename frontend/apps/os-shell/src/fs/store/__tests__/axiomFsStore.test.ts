@@ -2,7 +2,7 @@ import { act } from '@testing-library/react';
 import { SovereignObject } from '../../types';
 import { useAxiomFsStore } from '../axiomFsStore';
 
-jest.mock('@/config/features', () => ({
+vi.mock('@/config/features', () => ({
   FEATURES: {
     ENABLE_AXIOM_FS: true,
     ENABLE_DASHBOARD: true,

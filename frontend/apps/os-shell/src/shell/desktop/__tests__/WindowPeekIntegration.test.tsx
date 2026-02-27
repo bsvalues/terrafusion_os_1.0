@@ -15,7 +15,7 @@ import { PEEK_DELAY_MS, useWindowPeekStore } from '../../../stores/windowPeekSto
 // ============================================================================
 
 beforeEach(() => {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
 
   act(() => {
     useWindowPeekStore.getState().hidePeek();
@@ -28,8 +28,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
+  vi.runOnlyPendingTimers();
+  vi.useRealTimers();
 });
 
 // ============================================================================
@@ -107,7 +107,7 @@ describe('WindowPeek Integration', () => {
 
       // After delay, show the peek
       act(() => {
-        jest.advanceTimersByTime(PEEK_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS);
         useWindowPeekStore.getState().showPeek('window-1', { x: 500, y: 700 });
       });
 

@@ -82,7 +82,7 @@ describe('Standalone Homes Accessibility', () => {
   afterEach(() => {
     cleanup();
     resetMaterialQualityGate();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ==========================================================================

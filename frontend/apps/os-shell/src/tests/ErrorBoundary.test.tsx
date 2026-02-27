@@ -9,12 +9,12 @@ import { useErrorHandler } from '../hooks/useErrorHandler';
 // Mock console.error to avoid noise in tests
 const originalError = console.error;
 beforeAll(() => {
-  console.error = jest.fn();
+  console.error = vi.fn();
 
   // Mock performance.now for deterministic testing
   let mockTime = 0;
   Object.defineProperty(global.performance, 'now', {
-    value: jest.fn(() => {
+    value: vi.fn(() => {
       mockTime += 1;
       return mockTime;
     }),
@@ -122,7 +122,7 @@ describe('Error Boundary System', () => {
     });
 
     it('should call onError callback when error occurs', () => {
-      const onErrorMock = jest.fn();
+      const onErrorMock = vi.fn();
 
       render(
         <ErrorBoundary onError={onErrorMock}>
@@ -225,7 +225,7 @@ describe('Error Boundary System', () => {
     });
 
     it('should auto-remove non-critical errors after timeout', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
 
       render(
         <ErrorProvider>
@@ -239,7 +239,7 @@ describe('Error Boundary System', () => {
 
       // Fast-forward time
       act(() => {
-        jest.advanceTimersByTime(10000); // 10 seconds
+        vi.advanceTimersByTime(10000); // 10 seconds
       });
 
       // Error should be auto-removed
@@ -247,7 +247,7 @@ describe('Error Boundary System', () => {
         expect(screen.getByTestId('error-count')).toHaveTextContent('0');
       });
 
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
   });
 
@@ -469,7 +469,7 @@ export const renderWithErrorProvider = (
 
 export const mockConsoleError = () => {
   const originalError = console.error;
-  console.error = jest.fn();
+  console.error = vi.fn();
   return () => {
     console.error = originalError;
   };

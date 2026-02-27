@@ -32,24 +32,24 @@ const CONSTITUTIONAL_VALUES = {
 // ============================================================================
 
 // Mock framer-motion to track animation usage
-const mockMotionDiv = jest.fn();
-jest.mock('framer-motion', () => ({
+const mockMotionDiv = vi.fn();
+vi.mock('framer-motion', () => ({
   motion: {
-    button: jest.fn(({ children, whileTap, whileHover, transition, ...props }) => {
+    button: vi.fn(({ children, whileTap, whileHover, transition, ...props }) => {
       mockMotionDiv({ whileTap, whileHover, transition });
       return <button {...props}>{children}</button>;
     }),
   },
-  useReducedMotion: jest.fn(),
+  useReducedMotion: vi.fn(),
 }));
 
 // Mock the quality gate
-jest.mock('../materialQualityGate', () => ({
-  useMaterialQuality: jest.fn(),
+vi.mock('../materialQualityGate', () => ({
+  useMaterialQuality: vi.fn(),
 }));
 
-const mockUseMaterialQuality = jest.requireMock('../materialQualityGate').useMaterialQuality;
-const mockUseReducedMotion = jest.requireMock('framer-motion').useReducedMotion;
+const mockUseMaterialQuality = vi.importMock('../materialQualityGate').useMaterialQuality;
+const mockUseReducedMotion = vi.importMock('framer-motion').useReducedMotion;
 
 // ============================================================================
 // TactileButton Tests
@@ -57,7 +57,7 @@ const mockUseReducedMotion = jest.requireMock('framer-motion').useReducedMotion;
 
 describe('TactileButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockMotionDiv.mockClear();
 
     // Default to full motion allowed
@@ -162,7 +162,7 @@ describe('TactileButton', () => {
 
   describe('Accessibility', () => {
     it('supports standard button props', async () => {
-      const onClick = jest.fn();
+      const onClick = vi.fn();
       const { TactileButton } = await import('../TactileButton');
 
       render(
@@ -188,7 +188,7 @@ describe('TactileButton', () => {
     });
 
     it('respects disabled state', async () => {
-      const onClick = jest.fn();
+      const onClick = vi.fn();
       const { TactileButton } = await import('../TactileButton');
 
       render(
@@ -208,8 +208,8 @@ describe('TactileButton', () => {
 
   describe('No Idle Animation', () => {
     it('does not animate when not interacted with', async () => {
-      const setIntervalSpy = jest.spyOn(global, 'setInterval');
-      const requestAnimationFrameSpy = jest.spyOn(window, 'requestAnimationFrame');
+      const setIntervalSpy = vi.spyOn(global, 'setInterval');
+      const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame');
 
       const { TactileButton } = await import('../TactileButton');
 

@@ -20,12 +20,12 @@ import * as materialQualityGate from '../../ui/materials/materialQualityGate';
 import { MaterialQuality } from '../../ui/materials/materialQualityGate';
 
 // Mock the quality gate
-jest.mock('../../ui/materials/materialQualityGate', () => ({
-  ...jest.requireActual('../../ui/materials/materialQualityGate'),
-  useMaterialQuality: jest.fn(),
+vi.mock('../../ui/materials/materialQualityGate', async () => ({
+  ...(await vi.importActual('../../ui/materials/materialQualityGate')),
+  useMaterialQuality: vi.fn(),
 }));
 
-const mockUseMaterialQuality = materialQualityGate.useMaterialQuality as jest.MockedFunction<
+const mockUseMaterialQuality = materialQualityGate.useMaterialQuality as vi.MockedFunction<
   typeof materialQualityGate.useMaterialQuality
 >;
 
@@ -42,7 +42,7 @@ const HIGH_QUALITY_STATE: materialQualityGate.MaterialQualityState = {
 
 describe('Workbench Regression Tests', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockUseMaterialQuality.mockReturnValue(HIGH_QUALITY_STATE);
   });
 

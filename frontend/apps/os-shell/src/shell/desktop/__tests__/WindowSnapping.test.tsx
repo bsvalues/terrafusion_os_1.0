@@ -55,7 +55,7 @@ beforeEach(() => {
     snapPreview: null,
   });
 
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {

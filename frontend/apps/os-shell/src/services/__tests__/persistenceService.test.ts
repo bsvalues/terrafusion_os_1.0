@@ -25,20 +25,20 @@ import {
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
       store[key] = value;
     }),
-    removeItem: jest.fn((key: string) => {
+    removeItem: vi.fn((key: string) => {
       delete store[key];
     }),
-    clear: jest.fn(() => {
+    clear: vi.fn(() => {
       store = {};
     }),
     get length() {
       return Object.keys(store).length;
     },
-    key: jest.fn((i: number) => Object.keys(store)[i] || null),
+    key: vi.fn((i: number) => Object.keys(store)[i] || null),
   };
 })();
 
@@ -46,7 +46,7 @@ const localStorageMock = (() => {
 beforeEach(() => {
   // Reset mock
   localStorageMock.clear();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   
   // Install mock
   Object.defineProperty(window, 'localStorage', {
@@ -56,7 +56,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 // Test data
@@ -356,7 +356,7 @@ describe('Persistence Service', () => {
 
   describe('Debounced Save', () => {
     it('debounces rapid saves', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
 
       persistenceService.saveDesktopStateDebounced(mockDesktopState);
       persistenceService.saveDesktopStateDebounced(mockDesktopState);
@@ -366,12 +366,12 @@ describe('Persistence Service', () => {
       expect(localStorageMock.setItem).not.toHaveBeenCalled();
 
       // Fast forward debounce time
-      jest.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
 
       // Now it should have saved once
       expect(localStorageMock.setItem).toHaveBeenCalledTimes(2); // desktop + version
 
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
   });
 });

@@ -25,15 +25,15 @@ const CONSTITUTIONAL_VALUES = {
 const mockMatchMedia = (matches: boolean) => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: jest.fn().mockImplementation((query: string) => ({
+    value: vi.fn().mockImplementation((query: string) => ({
       matches: query.includes('prefers-reduced-motion') ? matches : false,
       media: query,
       onchange: null,
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
     })),
   });
 };
@@ -44,7 +44,7 @@ const mockMatchMedia = (matches: boolean) => {
 
 describe('Material Quality Gate', () => {
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
     mockMatchMedia(false);
   });
 
@@ -84,7 +84,7 @@ describe('Material Quality Gate', () => {
   describe('Reduced Motion Compliance', () => {
     it('disables springs when prefers-reduced-motion is set', async () => {
       mockMatchMedia(true); // User prefers reduced motion
-      jest.resetModules();
+      vi.resetModules();
 
       const { getMaterialQuality } = await import('../materialQualityGate');
       const quality = getMaterialQuality();
@@ -96,7 +96,7 @@ describe('Material Quality Gate', () => {
 
     it('enables springs when motion is allowed', async () => {
       mockMatchMedia(false);
-      jest.resetModules();
+      vi.resetModules();
 
       const { getMaterialQuality } = await import('../materialQualityGate');
       const quality = getMaterialQuality();
@@ -107,7 +107,7 @@ describe('Material Quality Gate', () => {
 
     it('disables all looping animations in reduced motion', async () => {
       mockMatchMedia(true);
-      jest.resetModules();
+      vi.resetModules();
 
       const { getMaterialQuality } = await import('../materialQualityGate');
       const quality = getMaterialQuality();
@@ -139,8 +139,8 @@ describe('Material Quality Gate', () => {
 
   describe('No Pulse Guarantee', () => {
     it('quality gate does not schedule any intervals or RAF loops', async () => {
-      const setIntervalSpy = jest.spyOn(global, 'setInterval');
-      const requestAnimationFrameSpy = jest.spyOn(window, 'requestAnimationFrame');
+      const setIntervalSpy = vi.spyOn(global, 'setInterval');
+      const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame');
 
       const { getMaterialQuality, initMaterialQualityGate } =
         await import('../materialQualityGate');

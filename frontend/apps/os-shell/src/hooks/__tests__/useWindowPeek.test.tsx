@@ -20,15 +20,15 @@ import { useWindowPeek } from '../useWindowPeek';
 // ============================================================================
 
 beforeEach(() => {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
   act(() => {
     useWindowPeekStore.getState().hidePeek();
   });
 });
 
 afterEach(() => {
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
+  vi.runOnlyPendingTimers();
+  vi.useRealTimers();
 });
 
 // ============================================================================
@@ -92,7 +92,7 @@ describe('useWindowPeek', () => {
 
       // Advance time by delay
       act(() => {
-        jest.advanceTimersByTime(PEEK_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS);
       });
 
       expect(useWindowPeekStore.getState().isVisible).toBe(true);
@@ -109,7 +109,7 @@ describe('useWindowPeek', () => {
 
       // Advance time by less than delay
       act(() => {
-        jest.advanceTimersByTime(PEEK_DELAY_MS - 50);
+        vi.advanceTimersByTime(PEEK_DELAY_MS - 50);
       });
 
       expect(useWindowPeekStore.getState().isVisible).toBe(false);
@@ -121,7 +121,7 @@ describe('useWindowPeek', () => {
 
       act(() => {
         result.current.handleMouseEnter('window-1', buttonRect);
-        jest.advanceTimersByTime(PEEK_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS);
       });
 
       const position = useWindowPeekStore.getState().position;
@@ -145,13 +145,13 @@ describe('useWindowPeek', () => {
 
       // Leave before delay completes
       act(() => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
         result.current.handleMouseLeave();
       });
 
       // Advance past original delay
       act(() => {
-        jest.advanceTimersByTime(PEEK_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS);
       });
 
       // Should not have shown
@@ -177,7 +177,7 @@ describe('useWindowPeek', () => {
       // Show the peek first
       act(() => {
         result.current.handleMouseEnter('window-1', buttonRect);
-        jest.advanceTimersByTime(PEEK_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS);
       });
 
       expect(useWindowPeekStore.getState().isVisible).toBe(true);
@@ -185,7 +185,7 @@ describe('useWindowPeek', () => {
       // Leave
       act(() => {
         result.current.handleMouseLeave();
-        jest.advanceTimersByTime(PEEK_HIDE_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_HIDE_DELAY_MS);
       });
 
       expect(useWindowPeekStore.getState().isVisible).toBe(false);
@@ -198,7 +198,7 @@ describe('useWindowPeek', () => {
       // Show the peek first
       act(() => {
         result.current.handleMouseEnter('window-1', buttonRect);
-        jest.advanceTimersByTime(PEEK_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS);
       });
 
       // Leave
@@ -223,7 +223,7 @@ describe('useWindowPeek', () => {
       // Show peek
       act(() => {
         result.current.handleMouseEnter('window-1', buttonRect);
-        jest.advanceTimersByTime(PEEK_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS);
       });
 
       // Start leaving
@@ -233,13 +233,13 @@ describe('useWindowPeek', () => {
 
       // Re-enter before hide delay
       act(() => {
-        jest.advanceTimersByTime(50);
+        vi.advanceTimersByTime(50);
         result.current.handleMouseEnter('window-1', buttonRect);
       });
 
       // Advance past original hide delay
       act(() => {
-        jest.advanceTimersByTime(PEEK_HIDE_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_HIDE_DELAY_MS);
       });
 
       // Should still be pending or showing (not hidden)
@@ -255,7 +255,7 @@ describe('useWindowPeek', () => {
       // Hover window 1
       act(() => {
         result.current.handleMouseEnter('window-1', buttonRect1);
-        jest.advanceTimersByTime(PEEK_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS);
       });
 
       expect(useWindowPeekStore.getState().targetWindowId).toBe('window-1');
@@ -264,7 +264,7 @@ describe('useWindowPeek', () => {
       act(() => {
         result.current.handleMouseLeave();
         result.current.handleMouseEnter('window-2', buttonRect2);
-        jest.advanceTimersByTime(PEEK_DELAY_MS + PEEK_HIDE_DELAY_MS);
+        vi.advanceTimersByTime(PEEK_DELAY_MS + PEEK_HIDE_DELAY_MS);
       });
 
       expect(useWindowPeekStore.getState().targetWindowId).toBe('window-2');

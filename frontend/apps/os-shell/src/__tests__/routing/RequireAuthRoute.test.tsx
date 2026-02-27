@@ -37,7 +37,7 @@ function renderGuardedRoute(initialPath: string) {
 describe('RequireAuth / AuthGuard route guard', () => {
   beforeEach(() => {
     localStorage.clear();
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     delete process.env.VITE_USE_MOCK_DATA;
     delete process.env.VITE_DEV_PREVIEW_BYPASS_AUTH;
   });

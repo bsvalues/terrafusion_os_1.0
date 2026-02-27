@@ -16,12 +16,12 @@ import { makeWindow } from '../../test/factories/windowFactory';
 import { Desktop } from './Desktop';
 
 // Mock stores and hooks
-jest.mock('../../stores/desktopStore', () => {
-  const actual = jest.requireActual('../../stores/desktopStore');
+vi.mock('../../stores/desktopStore', async () => {
+  const actual = await vi.importActual('../../stores/desktopStore');
   return {
     ...actual,
-    useDesktopStore: jest.fn(),
-    useVirtualDesktops: jest.fn(() => ({
+    useDesktopStore: vi.fn(),
+    useVirtualDesktops: vi.fn(() => ({
       currentDesktopId: 'desktop-1',
       desktops: [
         { id: 'desktop-1', name: 'Desktop 1', order: 1 },
@@ -29,23 +29,23 @@ jest.mock('../../stores/desktopStore', () => {
         { id: 'desktop-3', name: 'Desktop 3', order: 3 },
         { id: 'desktop-4', name: 'Desktop 4', order: 4 },
       ],
-      addDesktop: jest.fn(),
-      removeDesktop: jest.fn(),
-      switchDesktop: jest.fn(),
+      addDesktop: vi.fn(),
+      removeDesktop: vi.fn(),
+      switchDesktop: vi.fn(),
     })),
   };
 });
 
-jest.mock('../../stores/altTabStore');
-jest.mock('../../stores/startMenuStore', () => ({
-  useStartMenuStore: jest.fn(() => ({
+vi.mock('../../stores/altTabStore');
+vi.mock('../../stores/startMenuStore', async () => ({
+  useStartMenuStore: vi.fn(() => ({
     isOpen: false,
-    toggle: jest.fn(),
-    close: jest.fn(),
+    toggle: vi.fn(),
+    close: vi.fn(),
   })),
 }));
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', async () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: { language: 'en' },
@@ -54,22 +54,22 @@ jest.mock('react-i18next', () => ({
 }));
 
 describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
-  let mockOpenAltTab: jest.Mock;
-  let mockNextAltTab: jest.Mock;
-  let mockPrevAltTab: jest.Mock;
-  let mockCommitAltTab: jest.Mock;
-  let mockCancelAltTab: jest.Mock;
-  let mockFocusWindow: jest.Mock;
+  let mockOpenAltTab: vi.Mock;
+  let mockNextAltTab: vi.Mock;
+  let mockPrevAltTab: vi.Mock;
+  let mockCommitAltTab: vi.Mock;
+  let mockCancelAltTab: vi.Mock;
+  let mockFocusWindow: vi.Mock;
 
   beforeEach(() => {
     // Setup Alt+Tab store mocks
-    mockOpenAltTab = jest.fn();
-    mockNextAltTab = jest.fn();
-    mockPrevAltTab = jest.fn();
-    mockCommitAltTab = jest.fn(() => 'win2');
-    mockCancelAltTab = jest.fn(() => 'win1');
+    mockOpenAltTab = vi.fn();
+    mockNextAltTab = vi.fn();
+    mockPrevAltTab = vi.fn();
+    mockCommitAltTab = vi.fn(() => 'win2');
+    mockCancelAltTab = vi.fn(() => 'win1');
 
-    (useAltTabStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useAltTabStore as unknown as vi.Mock).mockImplementation((selector) => {
       const state = {
         isOpen: false,
         candidateWindowIds: [],
@@ -84,8 +84,8 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
     });
 
     // Setup desktop store mocks with COMPLETE window objects
-    mockFocusWindow = jest.fn();
-    (useDesktopStore as unknown as jest.Mock).mockImplementation((selector) => {
+    mockFocusWindow = vi.fn();
+    (useDesktopStore as unknown as vi.Mock).mockImplementation((selector) => {
       const state = {
         windows: [
           makeWindow({ id: 'win1', zIndex: 3, title: 'Window 1', icon: '📄', state: 'normal' }),
@@ -98,33 +98,33 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
         nextZIndex: 10,
         snapPreview: null,
         // Window lifecycle actions
-        openWindow: jest.fn(),
-        closeWindow: jest.fn(),
-        minimizeWindow: jest.fn(),
-        maximizeWindow: jest.fn(),
-        restoreWindow: jest.fn(),
+        openWindow: vi.fn(),
+        closeWindow: vi.fn(),
+        minimizeWindow: vi.fn(),
+        maximizeWindow: vi.fn(),
+        restoreWindow: vi.fn(),
         focusWindow: mockFocusWindow,
-        updateWindowPosition: jest.fn(),
-        updateWindowSize: jest.fn(),
+        updateWindowPosition: vi.fn(),
+        updateWindowSize: vi.fn(),
         // Virtual desktop actions
-        addDesktop: jest.fn(),
-        removeDesktop: jest.fn(),
-        switchDesktop: jest.fn(),
-        nextDesktop: jest.fn(),
-        previousDesktop: jest.fn(),
-        moveWindowToDesktop: jest.fn(),
+        addDesktop: vi.fn(),
+        removeDesktop: vi.fn(),
+        switchDesktop: vi.fn(),
+        nextDesktop: vi.fn(),
+        previousDesktop: vi.fn(),
+        moveWindowToDesktop: vi.fn(),
         // Snap actions
-        detectSnapZone: jest.fn(),
-        setSnapPreview: jest.fn(),
-        clearSnapPreview: jest.fn(),
-        snapWindow: jest.fn(),
-        snapActiveWindowLeft: jest.fn(),
-        snapActiveWindowRight: jest.fn(),
+        detectSnapZone: vi.fn(),
+        setSnapPreview: vi.fn(),
+        clearSnapPreview: vi.fn(),
+        snapWindow: vi.fn(),
+        snapActiveWindowLeft: vi.fn(),
+        snapActiveWindowRight: vi.fn(),
         // Selectors
-        getWindowById: jest.fn(),
-        getActiveWindow: jest.fn(),
-        getNonMinimizedWindows: jest.fn(),
-        getWindowsSortedByZIndex: jest.fn(),
+        getWindowById: vi.fn(),
+        getActiveWindow: vi.fn(),
+        getNonMinimizedWindows: vi.fn(),
+        getWindowsSortedByZIndex: vi.fn(),
       };
       return selector ? selector(state) : state;
     });
@@ -151,7 +151,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   });
 
   it('should cycle forward on Tab when Alt+Tab is open', () => {
-    (useAltTabStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useAltTabStore as unknown as vi.Mock).mockImplementation((selector) => {
       const state = {
         isOpen: true,
         candidateWindowIds: ['win1', 'win2'],
@@ -170,7 +170,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   });
 
   it('should cycle backward on Shift+Tab when Alt+Tab is open', () => {
-    (useAltTabStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useAltTabStore as unknown as vi.Mock).mockImplementation((selector) => {
       const state = {
         isOpen: true,
         candidateWindowIds: ['win1', 'win2'],
@@ -197,7 +197,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   // Desktop just routes keyboard events to store actions
 
   it.skip('should commit Alt+Tab selection on Alt keyup when switcher is open', () => {
-    (useAltTabStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useAltTabStore as unknown as vi.Mock).mockImplementation((selector) => {
       const state = {
         isOpen: true,
         candidateWindowIds: ['win1', 'win2'],
@@ -224,7 +224,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   });
 
   it.skip('should cancel Alt+Tab on Escape when switcher is open', () => {
-    (useAltTabStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useAltTabStore as unknown as vi.Mock).mockImplementation((selector) => {
       const state = {
         isOpen: true,
         candidateWindowIds: ['win1', 'win2'],
@@ -266,7 +266,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   });
 
   it('should only show windows on currentDesktopId', () => {
-    (useDesktopStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useDesktopStore as unknown as vi.Mock).mockImplementation((selector) => {
       const state = {
         windows: [
           makeWindow({ id: 'win1', desktopId: 'desktop-1', zIndex: 3 }),
@@ -280,30 +280,30 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
         activeWindowId: 'win1',
         nextZIndex: 10,
         snapPreview: null,
-        openWindow: jest.fn(),
-        closeWindow: jest.fn(),
-        minimizeWindow: jest.fn(),
-        maximizeWindow: jest.fn(),
-        restoreWindow: jest.fn(),
-        focusWindow: jest.fn(),
-        updateWindowPosition: jest.fn(),
-        updateWindowSize: jest.fn(),
-        addDesktop: jest.fn(),
-        removeDesktop: jest.fn(),
-        switchDesktop: jest.fn(),
-        nextDesktop: jest.fn(),
-        previousDesktop: jest.fn(),
-        moveWindowToDesktop: jest.fn(),
-        detectSnapZone: jest.fn(),
-        setSnapPreview: jest.fn(),
-        clearSnapPreview: jest.fn(),
-        snapWindow: jest.fn(),
-        snapActiveWindowLeft: jest.fn(),
-        snapActiveWindowRight: jest.fn(),
-        getWindowById: jest.fn(),
-        getActiveWindow: jest.fn(),
-        getNonMinimizedWindows: jest.fn(),
-        getWindowsSortedByZIndex: jest.fn(),
+        openWindow: vi.fn(),
+        closeWindow: vi.fn(),
+        minimizeWindow: vi.fn(),
+        maximizeWindow: vi.fn(),
+        restoreWindow: vi.fn(),
+        focusWindow: vi.fn(),
+        updateWindowPosition: vi.fn(),
+        updateWindowSize: vi.fn(),
+        addDesktop: vi.fn(),
+        removeDesktop: vi.fn(),
+        switchDesktop: vi.fn(),
+        nextDesktop: vi.fn(),
+        previousDesktop: vi.fn(),
+        moveWindowToDesktop: vi.fn(),
+        detectSnapZone: vi.fn(),
+        setSnapPreview: vi.fn(),
+        clearSnapPreview: vi.fn(),
+        snapWindow: vi.fn(),
+        snapActiveWindowLeft: vi.fn(),
+        snapActiveWindowRight: vi.fn(),
+        getWindowById: vi.fn(),
+        getActiveWindow: vi.fn(),
+        getNonMinimizedWindows: vi.fn(),
+        getWindowsSortedByZIndex: vi.fn(),
       };
       return selector ? selector(state) : state;
     });
@@ -318,7 +318,7 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
   });
 
   it('should not open Alt+Tab when no eligible windows', () => {
-    (useDesktopStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useDesktopStore as unknown as vi.Mock).mockImplementation((selector) => {
       const state = {
         windows: [makeWindow({ id: 'win1', state: 'minimized' })],
         desktops: [{ id: 'desktop-1', name: 'Desktop 1', order: 1 }],
@@ -326,30 +326,30 @@ describe('Desktop - Alt+Tab Keyboard Integration (Priority 14)', () => {
         activeWindowId: null,
         nextZIndex: 10,
         snapPreview: null,
-        openWindow: jest.fn(),
-        closeWindow: jest.fn(),
-        minimizeWindow: jest.fn(),
-        maximizeWindow: jest.fn(),
-        restoreWindow: jest.fn(),
-        focusWindow: jest.fn(),
-        updateWindowPosition: jest.fn(),
-        updateWindowSize: jest.fn(),
-        addDesktop: jest.fn(),
-        removeDesktop: jest.fn(),
-        switchDesktop: jest.fn(),
-        nextDesktop: jest.fn(),
-        previousDesktop: jest.fn(),
-        moveWindowToDesktop: jest.fn(),
-        detectSnapZone: jest.fn(),
-        setSnapPreview: jest.fn(),
-        clearSnapPreview: jest.fn(),
-        snapWindow: jest.fn(),
-        snapActiveWindowLeft: jest.fn(),
-        snapActiveWindowRight: jest.fn(),
-        getWindowById: jest.fn(),
-        getActiveWindow: jest.fn(),
-        getNonMinimizedWindows: jest.fn(),
-        getWindowsSortedByZIndex: jest.fn(),
+        openWindow: vi.fn(),
+        closeWindow: vi.fn(),
+        minimizeWindow: vi.fn(),
+        maximizeWindow: vi.fn(),
+        restoreWindow: vi.fn(),
+        focusWindow: vi.fn(),
+        updateWindowPosition: vi.fn(),
+        updateWindowSize: vi.fn(),
+        addDesktop: vi.fn(),
+        removeDesktop: vi.fn(),
+        switchDesktop: vi.fn(),
+        nextDesktop: vi.fn(),
+        previousDesktop: vi.fn(),
+        moveWindowToDesktop: vi.fn(),
+        detectSnapZone: vi.fn(),
+        setSnapPreview: vi.fn(),
+        clearSnapPreview: vi.fn(),
+        snapWindow: vi.fn(),
+        snapActiveWindowLeft: vi.fn(),
+        snapActiveWindowRight: vi.fn(),
+        getWindowById: vi.fn(),
+        getActiveWindow: vi.fn(),
+        getNonMinimizedWindows: vi.fn(),
+        getWindowsSortedByZIndex: vi.fn(),
       };
       return selector ? selector(state) : state;
     });

@@ -20,8 +20,8 @@ import { useNetworkStore } from '../../../stores/networkStore';
 import { SystemHealthIndicator, SystemHealthPanel } from '../SystemHealthPanel';
 
 // Mock the network store
-jest.mock('../../../stores/networkStore', () => ({
-  useNetworkStore: jest.fn(),
+vi.mock('../../../stores/networkStore', () => ({
+  useNetworkStore: vi.fn(),
 }));
 
 // Mock health data
@@ -48,9 +48,9 @@ const mockCriticalStatus = {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   // Default to online
-  (useNetworkStore as unknown as jest.Mock).mockImplementation((selector) =>
+  (useNetworkStore as unknown as vi.Mock).mockImplementation((selector) =>
     selector({ isOnline: true })
   );
 });
@@ -154,7 +154,7 @@ describe('SystemHealthPanel', () => {
     });
 
     it('displays Offline status when network is down', () => {
-      (useNetworkStore as unknown as jest.Mock).mockImplementation((selector) =>
+      (useNetworkStore as unknown as vi.Mock).mockImplementation((selector) =>
         selector({ isOnline: false })
       );
       render(<SystemHealthPanel status={mockHealthStatus} onClose={() => {}} />);
@@ -219,7 +219,7 @@ describe('SystemHealthPanel', () => {
 
   describe('Close Behavior', () => {
     it('calls onClose when close button clicked', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<SystemHealthPanel status={mockHealthStatus} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('button', { name: /close/i }));
@@ -228,7 +228,7 @@ describe('SystemHealthPanel', () => {
     });
 
     it('calls onClose on Escape key', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<SystemHealthPanel status={mockHealthStatus} onClose={onClose} />);
 
       await userEvent.keyboard('{Escape}');

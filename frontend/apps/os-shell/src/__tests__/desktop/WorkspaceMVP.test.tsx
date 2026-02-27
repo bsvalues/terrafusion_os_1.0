@@ -15,33 +15,33 @@ import React from 'react';
 // Mocks — same pattern as CanonBentoCompliance
 // ---------------------------------------------------------------------------
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useNavigate: () => vi.fn(),
 }));
 
-jest.mock('../../components/standalone', () => ({
+vi.mock('../../components/standalone', async () => ({
   StandaloneHomeShell: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-jest.mock('../../canon/CanonModuleHost', () => ({
+vi.mock('../../canon/CanonModuleHost', async () => ({
   CanonModuleHost: () => <div data-testid='canon-module-host-stub' />,
 }));
 
-jest.mock('../../canon/useCanonLayout', () => ({
+vi.mock('../../canon/useCanonLayout', async () => ({
   useCanonLayout: () => [
     { leftPaneWidth: 250, rightPaneWidth: 750, inspectorOpen: false },
-    jest.fn(),
+    vi.fn(),
   ],
 }));
 
-jest.mock('../../canon/invokeWithPreflight', () => ({
-  invokeWithPreflight: jest.fn(),
+vi.mock('../../canon/invokeWithPreflight', async () => ({
+  invokeWithPreflight: vi.fn(),
 }));
 
-jest.mock('../../api/canonDoctor', () => ({ runCanonDoctor: jest.fn() }));
-jest.mock('../../api/canonGateFast', () => ({ runCanonGateFast: jest.fn() }));
-jest.mock('../../api/canonPing', () => ({ runCanonPing: jest.fn() }));
+vi.mock('../../api/canonDoctor', async () => ({ runCanonDoctor: vi.fn() }));
+vi.mock('../../api/canonGateFast', async () => ({ runCanonGateFast: vi.fn() }));
+vi.mock('../../api/canonPing', async () => ({ runCanonPing: vi.fn() }));
 
 // ---------------------------------------------------------------------------
 // Import under test

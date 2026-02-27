@@ -421,7 +421,7 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
   describe('User Workflow: Row Click', () => {
     it('should handle row click events', async () => {
       const user = userEvent.setup();
-      const handleRowClick = jest.fn();
+      const handleRowClick = vi.fn();
       render(<UserTable onRowClick={handleRowClick} />);
 
       const rows = screen.getAllByRole('row');

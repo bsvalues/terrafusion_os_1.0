@@ -10,14 +10,14 @@ import * as pilotApi from '../../api/pilotApi';
 import { ToolInvokePanel } from '../../components/pilot/ToolInvokePanel';
 
 // Mock the pilotApi module
-jest.mock('../../api/pilotApi');
+vi.mock('../../api/pilotApi');
 
 // Cast to Jest mock for type-safe mock access
-const mockInvokeTool = pilotApi.invokeTool as jest.MockedFunction<typeof pilotApi.invokeTool>;
+const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
 
 describe('ToolInvokePanel', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Read-Only Tool Invocation', () => {

@@ -92,7 +92,7 @@ beforeEach(() => {
     initError: null,
   });
 
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {

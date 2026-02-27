@@ -1,5 +1,5 @@
 // Create virtual module for @hookform/resolvers/zod since it's not installed
-jest.mock(
+vi.mock(
   '@hookform/resolvers/zod',
   () => ({
     zodResolver: () => async (data: unknown) => ({
@@ -17,16 +17,16 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
 // Mock the useCostForgeAPI hook
-const mockUseCostForgeAPI = jest.fn();
-jest.mock('@/hooks/useCostForgeAPI', () => ({
+const mockUseCostForgeAPI = vi.fn();
+vi.mock('@/hooks/useCostForgeAPI', () => ({
   useCostForgeAPI: () => mockUseCostForgeAPI(),
 }));
 
 // Mock react-hot-toast
-jest.mock('react-hot-toast', () => ({
+vi.mock('react-hot-toast', () => ({
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
@@ -50,7 +50,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
   let queryClient: QueryClient;
 
   const defaultMockAPI = {
-    calculateCost: jest.fn(),
+    calculateCost: vi.fn(),
     isConnected: true,
     connectionStatus: 'connected',
     performanceMetrics: {
@@ -76,7 +76,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const renderWithProviders = (component: React.ReactElement) => {
@@ -137,7 +137,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
 
       mockUseCostForgeAPI.mockReturnValue({
         ...defaultMockAPI,
-        calculateCost: jest.fn().mockResolvedValue(mockCalculateResult),
+        calculateCost: vi.fn().mockResolvedValue(mockCalculateResult),
       });
 
       renderWithProviders(<EnhancedCostCalculator />);
@@ -159,7 +159,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
     test('handles calculation errors with government-grade resilience', async () => {
       mockUseCostForgeAPI.mockReturnValue({
         ...defaultMockAPI,
-        calculateCost: jest.fn().mockRejectedValue(new Error('Calculation service unavailable')),
+        calculateCost: vi.fn().mockRejectedValue(new Error('Calculation service unavailable')),
       });
 
       renderWithProviders(<EnhancedCostCalculator />);
@@ -196,7 +196,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
 
         mockUseCostForgeAPI.mockReturnValue({
           ...defaultMockAPI,
-          calculateCost: jest.fn().mockResolvedValue(mockCalculateResult),
+          calculateCost: vi.fn().mockResolvedValue(mockCalculateResult),
         });
 
         renderWithProviders(<EnhancedCostCalculator />);
@@ -251,7 +251,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
     });
 
     test('triggers auto-reconnection on disconnection', async () => {
-      const reconnectSpy = jest.fn();
+      const reconnectSpy = vi.fn();
       mockUseCostForgeAPI.mockReturnValue({
         ...defaultMockAPI,
         isConnected: false,
@@ -270,10 +270,10 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
 
   describe('🏆 Government Compliance Features', () => {
     test('maintains audit trail for calculations', async () => {
-      const auditSpy = jest.fn();
+      const auditSpy = vi.fn();
       mockUseCostForgeAPI.mockReturnValue({
         ...defaultMockAPI,
-        calculateCost: jest.fn().mockResolvedValue({
+        calculateCost: vi.fn().mockResolvedValue({
           totalCost: 625000,
           auditTrail: {
             calculationId: 'calc_20251020_001',
@@ -420,7 +420,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
     test('recovers from network timeouts with autonomous healing', async () => {
       mockUseCostForgeAPI.mockReturnValue({
         ...defaultMockAPI,
-        calculateCost: jest.fn().mockRejectedValue({ code: 'TIMEOUT', message: 'Request timeout' }),
+        calculateCost: vi.fn().mockRejectedValue({ code: 'TIMEOUT', message: 'Request timeout' }),
       });
 
       renderWithProviders(<EnhancedCostCalculator />);
@@ -455,7 +455,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
 
   describe('📊 Performance & Optimization', () => {
     test('implements efficient re-rendering patterns', () => {
-      const renderSpy = jest.fn();
+      const renderSpy = vi.fn();
 
       const TestWrapper = () => {
         renderSpy();
@@ -473,7 +473,7 @@ describe.skip('EnhancedCostCalculator - Championship-Level Testing Suite', () =>
     });
 
     test('caches calculation results for performance optimization', async () => {
-      const calculateSpy = jest.fn().mockResolvedValue({
+      const calculateSpy = vi.fn().mockResolvedValue({
         totalCost: 500000,
         cached: true,
       });

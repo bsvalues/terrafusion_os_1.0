@@ -243,7 +243,7 @@ describe('Accessibility - Keyboard Navigation', () => {
 
   test('should activate buttons with Enter and Space keys', async () => {
     const user = userEvent.setup();
-    const handleClick = jest.fn();
+    const handleClick = vi.fn();
 
     render(<button onClick={handleClick}>Test Button</button>);
 
@@ -262,7 +262,7 @@ describe('Accessibility - Keyboard Navigation', () => {
   // Skip: Ctrl+key shortcuts don't work reliably in jsdom
   test.skip('should support keyboard shortcuts (Ctrl+1-5 for panel switching)', async () => {
     const user = userEvent.setup();
-    const handleShortcut = jest.fn();
+    const handleShortcut = vi.fn();
 
     const KeyboardShortcutHandler: React.FC = () => {
       React.useEffect(() => {
@@ -418,7 +418,7 @@ describe('Accessibility - Focus Management', () => {
       </div>
     );
 
-    const handleClose = jest.fn();
+    const handleClose = vi.fn();
     render(<Modal onClose={handleClose} />);
 
     const action1 = screen.getByText('Action 1');

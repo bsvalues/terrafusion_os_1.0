@@ -44,8 +44,8 @@ let mockTokenValue: string | null = 'auth-test-token';
 
 let memoryRouterEntries: string[] = ['/'];
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -54,20 +54,20 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-jest.mock('../../auth/authStorage', () => ({
+vi.mock('../../auth/authStorage', async () => ({
   getToken: () => mockTokenValue,
-  setToken: jest.fn(),
-  clearToken: jest.fn(),
+  setToken: vi.fn(),
+  clearToken: vi.fn(),
 }));
 
-jest.mock('../../auth/authBridge', () => ({
-  registerLogoutHandler: jest.fn(),
-  unregisterLogoutHandler: jest.fn(),
+vi.mock('../../auth/authBridge', async () => ({
+  registerLogoutHandler: vi.fn(),
+  unregisterLogoutHandler: vi.fn(),
 }));
 
 // Mock authAPI to prevent real network calls from LoginPage
-jest.mock('../../services/authAPI', () => ({
-  login: jest.fn().mockRejectedValue(new Error('mock: not called in test')),
+vi.mock('../../services/authAPI', async () => ({
+  login: vi.fn().mockRejectedValue(new Error('mock: not called in test')),
 }));
 
 import Router from '../../Router';

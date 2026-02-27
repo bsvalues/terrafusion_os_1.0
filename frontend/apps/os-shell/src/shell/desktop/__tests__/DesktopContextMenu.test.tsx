@@ -20,9 +20,9 @@ import userEvent from '@testing-library/user-event';
 // Mocks
 // ============================================================================
 
-const mockActivateModule = jest.fn().mockResolvedValue(undefined);
+const mockActivateModule = vi.fn().mockResolvedValue(undefined);
 
-jest.mock('../../../orchestration/moduleActivation', () => ({
+vi.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
@@ -35,7 +35,7 @@ describe('DesktopContextMenu', () => {
   const { DesktopContextMenu } = require('../DesktopContextMenu');
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ==========================================================================
@@ -45,7 +45,7 @@ describe('DesktopContextMenu', () => {
   describe('rendering', () => {
     it('renders menu when isOpen is true', () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       expect(screen.getByRole('menu')).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe('DesktopContextMenu', () => {
 
     it('does not render when isOpen is false', () => {
       render(
-        <DesktopContextMenu isOpen={false} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={false} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('DesktopContextMenu', () => {
 
     it('renders all menu items', () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       expect(screen.getByRole('menuitem', { name: /refresh/i })).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('DesktopContextMenu', () => {
   describe('position (SC-9.6)', () => {
     it('positions menu at cursor location', () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 150, y: 250 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 150, y: 250 }} onClose={vi.fn()} />
       );
 
       const menu = screen.getByRole('menu');
@@ -86,11 +86,11 @@ describe('DesktopContextMenu', () => {
 
     it('updates position when prop changes', () => {
       const { rerender } = render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       rerender(
-        <DesktopContextMenu isOpen={true} position={{ x: 300, y: 400 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 300, y: 400 }} onClose={vi.fn()} />
       );
 
       const menu = screen.getByRole('menu');
@@ -104,7 +104,7 @@ describe('DesktopContextMenu', () => {
 
   describe('menu actions', () => {
     it('Refresh action calls onClose', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('menuitem', { name: /refresh/i }));
@@ -113,7 +113,7 @@ describe('DesktopContextMenu', () => {
     });
 
     it('Display Settings opens settings module', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('menuitem', { name: /display settings/i }));
@@ -128,7 +128,7 @@ describe('DesktopContextMenu', () => {
     });
 
     it('About TerraFusion shows about dialog', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('menuitem', { name: /about terrafusion/i }));
@@ -143,7 +143,7 @@ describe('DesktopContextMenu', () => {
 
   describe('escape key (SC-9.5)', () => {
     it('Escape closes menu', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={onClose} />);
 
       await userEvent.keyboard('{Escape}');
@@ -158,7 +158,7 @@ describe('DesktopContextMenu', () => {
 
   describe('click outside (SC-9.4)', () => {
     it('click outside closes menu', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(
         <div>
           <div data-testid='outside'>Outside</div>
@@ -186,7 +186,7 @@ describe('DesktopContextMenu', () => {
   describe('accessibility (SC-9.7)', () => {
     it('has role="menu"', () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       expect(screen.getByRole('menu')).toBeInTheDocument();
@@ -194,7 +194,7 @@ describe('DesktopContextMenu', () => {
 
     it('has aria-label on menu', () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       expect(screen.getByRole('menu')).toHaveAttribute('aria-label', 'Desktop context menu');
@@ -202,7 +202,7 @@ describe('DesktopContextMenu', () => {
 
     it('menu items have role="menuitem"', () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       const menuItems = screen.getAllByRole('menuitem');
@@ -211,7 +211,7 @@ describe('DesktopContextMenu', () => {
 
     it('menu items have aria-labels', () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       const menuItems = screen.getAllByRole('menuitem');
@@ -222,7 +222,7 @@ describe('DesktopContextMenu', () => {
 
     it('first item receives focus on open', () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       const menuItems = screen.getAllByRole('menuitem');
@@ -237,7 +237,7 @@ describe('DesktopContextMenu', () => {
   describe('keyboard navigation', () => {
     it('Arrow Down moves focus to next item', async () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       const menuItems = screen.getAllByRole('menuitem');
@@ -250,7 +250,7 @@ describe('DesktopContextMenu', () => {
 
     it('Arrow Up moves focus to previous item', async () => {
       render(
-        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={jest.fn()} />
+        <DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={vi.fn()} />
       );
 
       const menuItems = screen.getAllByRole('menuitem');
@@ -263,7 +263,7 @@ describe('DesktopContextMenu', () => {
     });
 
     it('Enter activates focused item', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<DesktopContextMenu isOpen={true} position={{ x: 100, y: 200 }} onClose={onClose} />);
 
       await userEvent.keyboard('{Enter}');

@@ -3,8 +3,8 @@ import React from 'react';
 
 let memoryRouterEntries: string[] = ['/'];
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -13,19 +13,19 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-jest.mock('../../auth/authStorage', () => ({
+vi.mock('../../auth/authStorage', async () => ({
   getToken: () => 'workbench-test-token',
-  setToken: jest.fn(),
-  clearToken: jest.fn(),
+  setToken: vi.fn(),
+  clearToken: vi.fn(),
 }));
 
-jest.mock('../../auth/authBridge', () => ({
-  registerLogoutHandler: jest.fn(),
-  unregisterLogoutHandler: jest.fn(),
+vi.mock('../../auth/authBridge', async () => ({
+  registerLogoutHandler: vi.fn(),
+  unregisterLogoutHandler: vi.fn(),
 }));
 
 // Mock PACS property lookup so workbench doesn't block on real API fetch
-jest.mock('../../hooks/usePropertyLookup', () => ({
+vi.mock('../../hooks/usePropertyLookup', async () => ({
   usePropertyLookup: () => ({
     data: null,
     loading: false,
@@ -39,7 +39,7 @@ import Router from '../../Router';
 describe('PropertyWorkbench explain_model_inputs action', () => {
   afterEach(() => {
     cleanup();
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   async function renderWorkbenchRoute() {
@@ -72,7 +72,7 @@ describe('PropertyWorkbench explain_model_inputs action', () => {
   };
 
   it('runs explain_model_inputs and renders normalized success fields', async () => {
-    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
+    const fetchMock = vi.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = String(input);
       if (url.includes('/ops/pacs/property/')) {
         return mockTextResponse(mockPropertyData);
@@ -117,7 +117,7 @@ describe('PropertyWorkbench explain_model_inputs action', () => {
   });
 
   it('renders failure and details for explain_model_inputs action', async () => {
-    jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
+    vi.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = String(input);
       if (url.includes('/ops/pacs/property/')) {
         return mockTextResponse(mockPropertyData);
