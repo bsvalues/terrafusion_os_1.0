@@ -44,10 +44,10 @@ export interface DesktopIconEntry {
 // ============================================================================
 
 /**
- * Demo parcel ID for workbench routing.
- * In production, this would come from user's recent parcels.
+ * @deprecated No longer used — desktop icons route to suite homes, not hardcoded parcels.
+ * Retained for reference; will be removed in future cleanup.
  */
-const DEMO_PARCEL_ID = '1234567890';
+const _DEMO_PARCEL_ID = '1234567890';
 
 /** Category mapping for suites (keyed by canonical suite ID) */
 const SUITE_CATEGORY: Record<string, Category> = {
@@ -75,9 +75,7 @@ function suiteToDesktopIcon(suite: SuiteDefinition): DesktopIconEntry {
     name: suite.displayName,
     iconName: suite.iconName,
     category: SUITE_CATEGORY[suite.id] ?? 'system',
-    route: suite.workbenchTab
-      ? `/property/${DEMO_PARCEL_ID}/${suite.workbenchTarget?.tabId ?? suite.id}`
-      : `/${suite.id}`,
+    route: suite.route,
     wiringStatus: suite.workbenchTab ? 'WB' : 'OS',
   };
 }

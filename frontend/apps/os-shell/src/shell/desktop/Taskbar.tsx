@@ -28,27 +28,10 @@ import { TaskbarContextMenu } from './TaskbarContextMenu';
 import { VirtualDesktopSwitcher } from './VirtualDesktopSwitcher';
 
 // ============================================================================
-// Default demo data
+// Default notification state (empty — populated by real events at runtime)
 // ============================================================================
 
-const defaultNotifications: Notification[] = [
-  {
-    id: 'notif-1',
-    title: 'Assessment Complete',
-    message: 'Property assessment for 123 Main St has been completed successfully.',
-    type: 'success',
-    timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    read: false,
-  },
-  {
-    id: 'notif-2',
-    title: 'AI Analysis Ready',
-    message: 'CostForge AI has finished analyzing the Q4 data.',
-    type: 'info',
-    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    read: false,
-  },
-];
+const defaultNotifications: Notification[] = [];
 
 // ============================================================================
 // Dock Home Button (TerraSphere)

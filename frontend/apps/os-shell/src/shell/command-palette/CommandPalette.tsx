@@ -67,6 +67,41 @@ function useCommandRegistry(): CommandItem[] {
     // ========================================================================
     const modules = [
       {
+        id: 'suite-forge',
+        label: 'TerraForge',
+        iconName: 'Hammer',
+        iconVariant: 'assessment' as TerraSphereIconVariant,
+        keywords: ['forge', 'valuation', 'cost', 'assessment', 'property'],
+      },
+      {
+        id: 'suite-atlas',
+        label: 'TerraAtlas',
+        iconName: 'Globe',
+        iconVariant: 'mapping' as TerraSphereIconVariant,
+        keywords: ['atlas', 'map', 'gis', 'geographic', 'parcels'],
+      },
+      {
+        id: 'suite-dais',
+        label: 'TerraDais',
+        iconName: 'LayoutDashboard',
+        iconVariant: 'system' as TerraSphereIconVariant,
+        keywords: ['dais', 'workflow', 'governance', 'dashboard'],
+      },
+      {
+        id: 'suite-dossier',
+        label: 'TerraDossier',
+        iconName: 'FileStack',
+        iconVariant: 'records' as TerraSphereIconVariant,
+        keywords: ['dossier', 'document', 'records', 'archive'],
+      },
+      {
+        id: 'suite-gpt',
+        label: 'TerraGPT',
+        iconName: 'Brain',
+        iconVariant: 'ai' as TerraSphereIconVariant,
+        keywords: ['gpt', 'ai', 'assistant', 'chat', 'natural language'],
+      },
+      {
         id: 'costforge',
         label: 'CostForge',
         iconName: 'Calculator',

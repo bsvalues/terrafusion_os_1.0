@@ -54,7 +54,7 @@ export default function DossierSuiteHome() {
   const [activeModule, setActiveModule] = useState('documents');
 
   return (
-    <div className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div data-testid="suite-dossier-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Header */}
       <header style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }} className='backdrop-blur-xl'>
         <div className='max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4'>

@@ -146,10 +146,13 @@ describe('System Tray Integration', () => {
       expect(screen.getByTestId('notification-panel')).toBeInTheDocument();
     });
 
-    it('shows notification badge', () => {
-      renderWithRouter(<Taskbar />);
+    it('shows notification badge when notifications exist', () => {
+      const testNotifications = [
+        { id: '1', title: 'Test', message: 'msg', type: 'info' as const, timestamp: new Date().toISOString(), read: false },
+        { id: '2', title: 'Test2', message: 'msg2', type: 'success' as const, timestamp: new Date().toISOString(), read: false },
+      ];
+      renderWithRouter(<Taskbar notifications={testNotifications} />);
 
-      // Default notifications have 2 unread
       expect(screen.getByTestId('notification-badge')).toBeInTheDocument();
     });
   });
