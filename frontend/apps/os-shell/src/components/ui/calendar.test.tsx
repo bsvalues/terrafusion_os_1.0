@@ -103,7 +103,7 @@ describe.skip('Calendar', () => {
   describe.skip('Date Selection', () => {
     it('selects a date on click', async () => {
       const user = userEvent.setup();
-      const onSelect = vi.fn();
+      const onSelect = jest.fn();
       render(<Calendar selected={undefined} onSelect={onSelect} />);
 
       const dayButtons = screen
@@ -128,7 +128,7 @@ describe.skip('Calendar', () => {
 
     it('supports single date selection mode', async () => {
       const user = userEvent.setup();
-      const onSelect = vi.fn();
+      const onSelect = jest.fn();
       render(<Calendar mode='single' selected={undefined} onSelect={onSelect} />);
 
       const dayButtons = screen
@@ -363,7 +363,7 @@ describe.skip('Calendar', () => {
 
     it('renders today button in footer', async () => {
       const user = userEvent.setup();
-      const onSelect = vi.fn();
+      const onSelect = jest.fn();
       render(
         <Calendar
           selected={undefined}
@@ -440,7 +440,7 @@ describe.skip('Calendar', () => {
   describe.skip('Real-world Use Cases', () => {
     it('renders date picker for booking', () => {
       const today = new Date();
-      const onSelect = vi.fn();
+      const onSelect = jest.fn();
 
       render(
         <div>

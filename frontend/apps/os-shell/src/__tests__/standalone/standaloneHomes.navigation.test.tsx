@@ -117,7 +117,7 @@ describe('Standalone Homes Navigation', () => {
   afterEach(() => {
     cleanup();
     resetMaterialQualityGate();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ==========================================================================

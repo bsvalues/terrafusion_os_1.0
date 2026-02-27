@@ -10,8 +10,8 @@ import React from 'react';
 
 let memoryRouterEntries: string[] = ['/'];
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -20,15 +20,15 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../../auth/authStorage', async () => ({
+jest.mock('../../auth/authStorage', () => ({
   getToken: () => 'visual-contract-token',
-  setToken: vi.fn(),
-  clearToken: vi.fn(),
+  setToken: jest.fn(),
+  clearToken: jest.fn(),
 }));
 
-vi.mock('../../auth/authBridge', async () => ({
-  registerLogoutHandler: vi.fn(),
-  unregisterLogoutHandler: vi.fn(),
+jest.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: jest.fn(),
+  unregisterLogoutHandler: jest.fn(),
 }));
 
 import Router from '../../Router';
@@ -36,7 +36,7 @@ import Router from '../../Router';
 describe('P20 Canon Visual Contract', () => {
   afterEach(() => {
     cleanup();
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   async function renderCanonRoute() {
@@ -51,7 +51,7 @@ describe('P20 Canon Visual Contract', () => {
   }
 
   test('canon root has canon-shell class and contains header, devCockpit, suiteLauncher', async () => {
-    global.fetch = vi.fn(async () => ({
+    global.fetch = jest.fn(async () => ({
       text: async () => JSON.stringify({ overallOk: false }),
     })) as unknown as typeof fetch;
 
@@ -80,7 +80,7 @@ describe('P20 Canon Visual Contract', () => {
   });
 
   test('no .animate-pulse elements exist inside Canon', async () => {
-    global.fetch = vi.fn(async () => ({
+    global.fetch = jest.fn(async () => ({
       text: async () => JSON.stringify({ overallOk: false }),
     })) as unknown as typeof fetch;
 

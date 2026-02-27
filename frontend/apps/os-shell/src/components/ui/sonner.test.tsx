@@ -37,7 +37,7 @@ const ToastTrigger = ({ message, type = 'default' }: { message: string; type?: s
 describe('Sonner (Toast)', () => {
   beforeEach(() => {
     // Clear all toasts before each test
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Rendering', () => {
@@ -208,7 +208,7 @@ describe('Sonner (Toast)', () => {
     // Skip: Clicking action buttons causes hasPointerCapture error in jsdom
     it.skip('renders toast with action button', async () => {
       const user = userEvent.setup();
-      const actionFn = vi.fn();
+      const actionFn = jest.fn();
 
       render(
         <>
@@ -244,7 +244,7 @@ describe('Sonner (Toast)', () => {
     // Skip: Clicking cancel buttons causes hasPointerCapture error in jsdom
     it.skip('renders toast with cancel button', async () => {
       const user = userEvent.setup();
-      const cancelFn = vi.fn();
+      const cancelFn = jest.fn();
 
       render(
         <>
@@ -279,8 +279,8 @@ describe('Sonner (Toast)', () => {
 
     it('renders toast with both action and cancel buttons', async () => {
       const user = userEvent.setup();
-      const actionFn = vi.fn();
-      const cancelFn = vi.fn();
+      const actionFn = jest.fn();
+      const cancelFn = jest.fn();
 
       render(
         <>

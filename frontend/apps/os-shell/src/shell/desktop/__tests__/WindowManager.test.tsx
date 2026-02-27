@@ -21,7 +21,7 @@ import { WindowManager } from '../WindowManager';
 // ============================================================================
 
 // Mock Window component to simplify testing WindowManager logic
-vi.mock('../Window', () => ({
+jest.mock('../Window', () => ({
   Window: ({ window }: { window: DesktopWindow }) => (
     <div
       data-testid={`window-${window.id}`}
@@ -61,7 +61,7 @@ describe('WindowManager', () => {
 
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ============================================================================

@@ -45,7 +45,7 @@ const mockMetrics: Record<string, MetricsEntry> = {
 
 // Mock clipboard API
 const mockClipboard = {
-  writeText: vi.fn().mockResolvedValue(undefined),
+  writeText: jest.fn().mockResolvedValue(undefined),
 };
 
 describe('LegacyMetricsViewer', () => {

@@ -19,20 +19,20 @@ describe('AmbientCompositor Stability', () => {
   // Track RAF and interval usage
   let rafCalls: number;
   let intervalCalls: number;
-  let rafSpy: vi.SpyInstance;
-  let intervalSpy: vi.SpyInstance;
+  let rafSpy: jest.SpyInstance;
+  let intervalSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     rafCalls = 0;
     intervalCalls = 0;
 
-    rafSpy = vi.spyOn(global, 'requestAnimationFrame').mockImplementation((cb) => {
+    rafSpy = jest.spyOn(global, 'requestAnimationFrame').mockImplementation((cb) => {
       rafCalls++;
       return 0;
     });
 
-    intervalSpy = vi.spyOn(global, 'setInterval').mockImplementation((...args) => {
+    intervalSpy = jest.spyOn(global, 'setInterval').mockImplementation((...args) => {
       intervalCalls++;
       // Return a fake timer ID but don't actually run the interval
       return 999 as unknown as NodeJS.Timeout;
@@ -40,7 +40,7 @@ describe('AmbientCompositor Stability', () => {
   });
 
   afterEach(() => {
-    vi.useRealTimers();
+    jest.useRealTimers();
     cleanup();
     rafSpy.mockRestore();
     intervalSpy.mockRestore();
@@ -51,14 +51,14 @@ describe('AmbientCompositor Stability', () => {
       render(<AmbientCompositor forcedMode='css' />);
 
       await act(async () => {
-        vi.advanceTimersByTime(100);
+        jest.advanceTimersByTime(100);
       });
 
       const initialRafCalls = rafCalls;
 
       // Advance 10 seconds
       await act(async () => {
-        vi.advanceTimersByTime(10000);
+        jest.advanceTimersByTime(10000);
       });
 
       const rafGrowth = rafCalls - initialRafCalls;
@@ -72,7 +72,7 @@ describe('AmbientCompositor Stability', () => {
       render(<AmbientCompositor forcedMode='css' />);
 
       await act(async () => {
-        vi.advanceTimersByTime(100);
+        jest.advanceTimersByTime(100);
       });
 
       // FAIL CONDITION: No intervals should be started in CSS mode
@@ -112,7 +112,7 @@ describe('AmbientCompositor Stability', () => {
       render(<AmbientCompositor forcedMode='off' />);
 
       await act(async () => {
-        vi.advanceTimersByTime(10000);
+        jest.advanceTimersByTime(10000);
       });
 
       expect(rafCalls).toBe(0);
@@ -131,14 +131,14 @@ describe('AmbientCompositor Stability', () => {
       render(<TrackingWrapper />);
 
       await act(async () => {
-        vi.advanceTimersByTime(100);
+        jest.advanceTimersByTime(100);
       });
 
       const initialRenderCount = renderCount;
 
       // Advance 10 seconds
       await act(async () => {
-        vi.advanceTimersByTime(10000);
+        jest.advanceTimersByTime(10000);
       });
 
       const renderGrowth = renderCount - initialRenderCount;

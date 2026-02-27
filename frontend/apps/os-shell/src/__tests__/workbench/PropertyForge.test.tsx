@@ -11,9 +11,9 @@ import * as pilotApi from '../../api/pilotApi';
 import PropertyForge from '../../pages/workbench/tabs/PropertyForge';
 
 // Mock the pilotApi module
-vi.mock('../../api/pilotApi');
+jest.mock('../../api/pilotApi');
 
-const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
+const mockInvokeTool = pilotApi.invokeTool as jest.MockedFunction<typeof pilotApi.invokeTool>;
 
 // Test wrapper providing parcel context via outlet
 const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
@@ -37,7 +37,7 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 
 describe('PropertyForge', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Rendering', () => {

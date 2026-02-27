@@ -18,11 +18,11 @@ import { useStartMenuStore, type Module } from '../startMenuStore';
 import { persistenceService } from '../../services/persistenceService';
 
 // Mock persistence service
-vi.mock('../../services/persistenceService', () => ({
+jest.mock('../../services/persistenceService', () => ({
   persistenceService: {
-    addRecentModule: vi.fn(),
-    loadStartMenuState: vi.fn(() => null),
-    saveStartMenuState: vi.fn(),
+    addRecentModule: jest.fn(),
+    loadStartMenuState: jest.fn(() => null),
+    saveStartMenuState: jest.fn(),
   },
 }));
 
@@ -46,7 +46,7 @@ beforeEach(() => {
     focusedIndex: -1,
     focusedSection: 'search',
   });
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 describe('StartMenu Store - Recent Apps', () => {

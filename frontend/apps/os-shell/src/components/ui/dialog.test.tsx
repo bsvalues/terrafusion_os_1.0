@@ -236,7 +236,7 @@ describe('Dialog Component', () => {
 
     it('calls onOpenChange when dialog state changes', async () => {
       const user = userEvent.setup();
-      const onOpenChange = vi.fn();
+      const onOpenChange = jest.fn();
 
       render(
         <Dialog onOpenChange={onOpenChange}>
@@ -736,7 +736,7 @@ describe('Dialog Component', () => {
   describe('Form Integration', () => {
     it('handles form submission inside dialog', async () => {
       const user = userEvent.setup();
-      const onSubmit = vi.fn();
+      const onSubmit = jest.fn();
 
       function FormDialog() {
         const [open, setOpen] = useState(false);
@@ -798,7 +798,7 @@ describe('Dialog Component', () => {
 
     it('validates form inputs before submission', async () => {
       const user = userEvent.setup();
-      const onSubmit = vi.fn();
+      const onSubmit = jest.fn();
 
       function ValidatedFormDialog() {
         const [open, setOpen] = useState(false);
@@ -869,7 +869,7 @@ describe('Dialog Component', () => {
 
     it('prevents form submission via Enter key when appropriate', async () => {
       const user = userEvent.setup();
-      const onSubmit = vi.fn();
+      const onSubmit = jest.fn();
 
       render(
         <Dialog>

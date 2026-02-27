@@ -35,21 +35,21 @@ import {
 // Mock desktopStore
 // ============================================================================
 
-vi.mock('../../../stores/desktopStore', () => ({
+jest.mock('../../../stores/desktopStore', () => ({
   useDesktopStore: () => ({
     activeWindowId: 'test-window-1',
-    focusWindow: vi.fn(),
-    closeWindow: vi.fn(),
-    minimizeWindow: vi.fn(),
-    maximizeWindow: vi.fn(),
-    restoreWindow: vi.fn(),
-    updateWindowPosition: vi.fn(),
-    updateWindowSize: vi.fn(),
+    focusWindow: jest.fn(),
+    closeWindow: jest.fn(),
+    minimizeWindow: jest.fn(),
+    maximizeWindow: jest.fn(),
+    restoreWindow: jest.fn(),
+    updateWindowPosition: jest.fn(),
+    updateWindowSize: jest.fn(),
     // Snap-related mocks
-    detectSnapZone: vi.fn(),
-    setSnapPreview: vi.fn(),
-    clearSnapPreview: vi.fn(),
-    snapWindow: vi.fn(),
+    detectSnapZone: jest.fn(),
+    setSnapPreview: jest.fn(),
+    clearSnapPreview: jest.fn(),
+    snapWindow: jest.fn(),
   }),
 }));
 

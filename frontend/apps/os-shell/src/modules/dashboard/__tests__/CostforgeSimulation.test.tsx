@@ -63,11 +63,11 @@ describe('CostForge Simulation - Phase C4', () => {
 
   describe('state transitions', () => {
     beforeEach(() => {
-      vi.useFakeTimers();
+      jest.useFakeTimers();
     });
 
     afterEach(() => {
-      vi.useRealTimers();
+      jest.useRealTimers();
     });
 
     it('transitions from idle to analyzing on runAnalysis', async () => {
@@ -90,7 +90,7 @@ describe('CostForge Simulation - Phase C4', () => {
 
       // Fast-forward past the analysis delay (phi-based: 1618ms)
       await act(async () => {
-        vi.advanceTimersByTime(1618);
+        jest.advanceTimersByTime(1618);
       });
 
       expect(result.current.status).toBe('ready');
@@ -104,7 +104,7 @@ describe('CostForge Simulation - Phase C4', () => {
         result.current.runAnalysis();
       });
       await act(async () => {
-        vi.advanceTimersByTime(1618);
+        jest.advanceTimersByTime(1618);
       });
 
       expect(result.current.status).toBe('ready');
@@ -124,7 +124,7 @@ describe('CostForge Simulation - Phase C4', () => {
         result.current.runAnalysis();
       });
       await act(async () => {
-        vi.advanceTimersByTime(1618);
+        jest.advanceTimersByTime(1618);
       });
       act(() => {
         result.current.applyOptimization();
@@ -146,11 +146,11 @@ describe('CostForge Simulation - Phase C4', () => {
 
   describe('optimization commit', () => {
     beforeEach(() => {
-      vi.useFakeTimers();
+      jest.useFakeTimers();
     });
 
     afterEach(() => {
-      vi.useRealTimers();
+      jest.useRealTimers();
     });
 
     it('applyOptimization commits projected to current', async () => {
@@ -161,7 +161,7 @@ describe('CostForge Simulation - Phase C4', () => {
         result.current.runAnalysis();
       });
       await act(async () => {
-        vi.advanceTimersByTime(1618);
+        jest.advanceTimersByTime(1618);
       });
 
       const projectedBefore = result.current.metrics.assessedValue.projected;
@@ -181,7 +181,7 @@ describe('CostForge Simulation - Phase C4', () => {
         result.current.runAnalysis();
       });
       await act(async () => {
-        vi.advanceTimersByTime(1618);
+        jest.advanceTimersByTime(1618);
       });
 
       act(() => {
@@ -215,11 +215,11 @@ describe('CostForge Simulation - Phase C4', () => {
 
   describe('idempotency', () => {
     beforeEach(() => {
-      vi.useFakeTimers();
+      jest.useFakeTimers();
     });
 
     afterEach(() => {
-      vi.useRealTimers();
+      jest.useRealTimers();
     });
 
     it('runAnalysis is idempotent (only runs if idle)', async () => {

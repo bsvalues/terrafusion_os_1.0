@@ -15,8 +15,8 @@ import { render, screen } from '@testing-library/react';
 // ============================================================================
 
 // Mock activateModule
-vi.mock('../../../orchestration/moduleActivation', () => ({
-  activateModule: vi.fn().mockResolvedValue(undefined),
+jest.mock('../../../orchestration/moduleActivation', () => ({
+  activateModule: jest.fn().mockResolvedValue(undefined),
 }));
 
 // Mock startMenuStore
@@ -25,19 +25,19 @@ let mockPinnedModules: any[] = [];
 let mockAllModules: any[] = [];
 let mockRecentApps: any[] = [];
 
-vi.mock('../../../stores/startMenuStore', () => ({
-  useStartMenuStore: vi.fn((selector) => {
+jest.mock('../../../stores/startMenuStore', () => ({
+  useStartMenuStore: jest.fn((selector) => {
     const state = {
       isOpen: mockIsOpen,
       searchQuery: '',
       recentApps: mockRecentApps,
-      close: vi.fn(),
-      clearSearch: vi.fn(),
-      addRecentApp: vi.fn(),
+      close: jest.fn(),
+      clearSearch: jest.fn(),
+      addRecentApp: jest.fn(),
       getPinnedModules: () => mockPinnedModules,
       getFilteredModules: () => mockAllModules,
       getRecentModules: () => mockRecentApps,
-      setSearchQuery: vi.fn(),
+      setSearchQuery: jest.fn(),
     };
     return typeof selector === 'function' ? selector(state) : state;
   }),
@@ -46,8 +46,8 @@ vi.mock('../../../stores/startMenuStore', () => ({
 // Mock desktopStore - THIS IS THE KEY for open indicator
 let mockWindows: any[] = [];
 
-vi.mock('../../../stores/desktopStore', () => ({
-  useDesktopStore: vi.fn((selector) => {
+jest.mock('../../../stores/desktopStore', () => ({
+  useDesktopStore: jest.fn((selector) => {
     const state = {
       windows: mockWindows,
     };
@@ -107,7 +107,7 @@ describe('StartMenu Open Indicator (Phase 6)', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // --------------------------------------------------------------------------
@@ -334,14 +334,14 @@ describe('Recent Apps Open Indicator', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('shows indicator for running recent app', () => {
     mockRecentApps = [COSTFORGE_MODULE];
     mockWindows = [{ id: 'win-1', moduleId: 'costforge', state: 'normal' }];
 
-    render(<RecentAppsSection onLaunch={vi.fn()} />);
+    render(<RecentAppsSection onLaunch={jest.fn()} />);
 
     const indicator = screen.queryByTestId('running-indicator');
     expect(indicator).toBeInTheDocument();
@@ -351,7 +351,7 @@ describe('Recent Apps Open Indicator', () => {
     mockRecentApps = [COSTFORGE_MODULE];
     mockWindows = []; // No windows
 
-    render(<RecentAppsSection onLaunch={vi.fn()} />);
+    render(<RecentAppsSection onLaunch={jest.fn()} />);
 
     const indicator = screen.queryByTestId('running-indicator');
     expect(indicator).not.toBeInTheDocument();

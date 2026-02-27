@@ -33,7 +33,7 @@ import { getDesktopIcons, type DesktopIconEntry } from '../../config/desktopMani
  * Stage 1 uses real MemoryRouter directly (no mock needed).
  * Stage 2 uses the Phase 24/25 pattern: mock BrowserRouter → MemoryRouter.
  *
- * Since vi.mock is module-scoped and hoisted, we handle this by:
+ * Since jest.mock is module-scoped and hoisted, we handle this by:
  * - NOT mocking react-router-dom globally (Stage 1 needs the real one)
  * - Using a dynamic import of Router inside Stage 2 with manual mocking
  *
@@ -47,8 +47,8 @@ import { getDesktopIcons, type DesktopIconEntry } from '../../config/desktopMani
 
 let memoryRouterEntries: string[] = ['/'];
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -57,15 +57,15 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../../auth/authStorage', async () => ({
+jest.mock('../../auth/authStorage', () => ({
   getToken: () => 'smoke-test-token',
-  setToken: vi.fn(),
-  clearToken: vi.fn(),
+  setToken: jest.fn(),
+  clearToken: jest.fn(),
 }));
 
-vi.mock('../../auth/authBridge', async () => ({
-  registerLogoutHandler: vi.fn(),
-  unregisterLogoutHandler: vi.fn(),
+jest.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: jest.fn(),
+  unregisterLogoutHandler: jest.fn(),
 }));
 
 // Stage 1 imports (DesktopIconGrid uses navigate() from react-router-dom)

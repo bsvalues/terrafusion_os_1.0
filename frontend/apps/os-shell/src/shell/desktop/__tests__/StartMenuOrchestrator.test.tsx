@@ -17,24 +17,24 @@ import userEvent from '@testing-library/user-event';
 // ============================================================================
 
 // Mock activateModule from orchestration - THE canonical entry point
-const mockActivateModule = vi.fn().mockResolvedValue(undefined);
+const mockActivateModule = jest.fn().mockResolvedValue(undefined);
 
-vi.mock('../../../orchestration/moduleActivation', () => ({
+jest.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: mockActivateModule,
   default: mockActivateModule,
 }));
 
 // Mock startMenuStore
-const mockClose = vi.fn();
-const mockClearSearch = vi.fn();
-const mockAddRecentApp = vi.fn();
+const mockClose = jest.fn();
+const mockClearSearch = jest.fn();
+const mockAddRecentApp = jest.fn();
 let mockIsOpen = true;
 let mockPinnedModules: any[] = [];
 let mockAllModules: any[] = [];
 let mockRecentApps: any[] = [];
 
-vi.mock('../../../stores/startMenuStore', () => ({
-  useStartMenuStore: vi.fn((selector) => {
+jest.mock('../../../stores/startMenuStore', () => ({
+  useStartMenuStore: jest.fn((selector) => {
     const state = {
       isOpen: mockIsOpen,
       searchQuery: '',
@@ -43,7 +43,7 @@ vi.mock('../../../stores/startMenuStore', () => ({
       addRecentApp: mockAddRecentApp,
       getPinnedModules: () => mockPinnedModules,
       getFilteredModules: () => mockAllModules,
-      setSearchQuery: vi.fn(),
+      setSearchQuery: jest.fn(),
       recentApps: mockRecentApps,
     };
     return typeof selector === 'function' ? selector(state) : state;
@@ -51,12 +51,12 @@ vi.mock('../../../stores/startMenuStore', () => ({
 }));
 
 // Mock desktopStore - should NOT be called for launching
-const mockOpenWindow = vi.fn();
-const mockFocusWindow = vi.fn();
+const mockOpenWindow = jest.fn();
+const mockFocusWindow = jest.fn();
 const mockWindows: any[] = [];
 
-vi.mock('../../../stores/desktopStore', () => ({
-  useDesktopStore: vi.fn((selector) => {
+jest.mock('../../../stores/desktopStore', () => ({
+  useDesktopStore: jest.fn((selector) => {
     const state = {
       windows: mockWindows,
       openWindow: mockOpenWindow,
@@ -67,10 +67,10 @@ vi.mock('../../../stores/desktopStore', () => ({
 }));
 
 // Mock moduleRegistryStore - should NOT be called for launching
-const mockLaunchModule = vi.fn();
+const mockLaunchModule = jest.fn();
 
-vi.mock('../../../stores/moduleRegistryStore', () => ({
-  useModuleRegistryStore: vi.fn((selector) => {
+jest.mock('../../../stores/moduleRegistryStore', () => ({
+  useModuleRegistryStore: jest.fn((selector) => {
     const state = {
       launchModule: mockLaunchModule,
       isInitialized: true,
@@ -130,7 +130,7 @@ describe('StartMenu Orchestrator Integration (Phase 5)', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // --------------------------------------------------------------------------

@@ -3,8 +3,8 @@ import React from 'react';
 
 let memoryRouterEntries: string[] = ['/'];
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -13,15 +13,15 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../../auth/authStorage', async () => ({
+jest.mock('../../auth/authStorage', () => ({
   getToken: () => 'canon-ping-test-token',
-  setToken: vi.fn(),
-  clearToken: vi.fn(),
+  setToken: jest.fn(),
+  clearToken: jest.fn(),
 }));
 
-vi.mock('../../auth/authBridge', async () => ({
-  registerLogoutHandler: vi.fn(),
-  unregisterLogoutHandler: vi.fn(),
+jest.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: jest.fn(),
+  unregisterLogoutHandler: jest.fn(),
 }));
 
 import Router from '../../Router';
@@ -29,7 +29,7 @@ import Router from '../../Router';
 describe('TerraCanon ping panel', () => {
   afterEach(() => {
     cleanup();
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   async function renderCanonRoute() {
@@ -51,7 +51,7 @@ describe('TerraCanon ping panel', () => {
   }
 
   it('click -> request fires and normalized result renders', async () => {
-    const fetchMock = vi.spyOn(global, 'fetch').mockResolvedValue({
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue({
       text: async () =>
         JSON.stringify({
           tool: 'terracanon-ping',
@@ -91,7 +91,7 @@ describe('TerraCanon ping panel', () => {
   });
 
   it('renders failure message when backend returns overallOk=false', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValue({
+    jest.spyOn(global, 'fetch').mockResolvedValue({
       text: async () =>
         JSON.stringify({
           tool: 'terracanon-ping',
@@ -123,7 +123,7 @@ describe('TerraCanon ping panel', () => {
   });
 
   it('runs canon doctor and renders PASS status', async () => {
-    const fetchMock = vi.spyOn(global, 'fetch').mockImplementation(async (input) => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = String(input);
       if (url.includes('/pilot/canon/doctor')) {
         return mockTextResponse({
@@ -168,7 +168,7 @@ describe('TerraCanon ping panel', () => {
   });
 
   it('runs gatefast and renders failure with details', async () => {
-    const fetchMock = vi.spyOn(global, 'fetch').mockImplementation(async (input) => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = String(input);
       if (url.includes('/pilot/canon/gatefast')) {
         return mockTextResponse({
@@ -223,7 +223,7 @@ describe('TerraCanon ping panel', () => {
   });
 
   it('Run All runs Doctor -> GateFast -> Ping and stops on first failure', async () => {
-    const fetchMock = vi.spyOn(global, 'fetch').mockImplementation(async (input) => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = String(input);
 
       if (url.includes('/pilot/canon/doctor')) {

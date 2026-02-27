@@ -10,7 +10,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { ExplainPanel, ExplainPanelState } from '../ExplainPanel';
 
 describe('ExplainPanel', () => {
-  const mockOnClose = vi.fn();
+  const mockOnClose = jest.fn();
 
   beforeEach(() => {
     mockOnClose.mockClear();

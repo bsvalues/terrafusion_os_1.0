@@ -222,7 +222,7 @@ describe('Alert', () => {
     });
 
     it('renders dismiss button', () => {
-      const handleDismiss = vi.fn();
+      const handleDismiss = jest.fn();
       render(
         <Alert>
           <AlertDescription>Dismissible alert</AlertDescription>

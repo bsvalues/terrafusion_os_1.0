@@ -19,9 +19,9 @@ import {
 } from '../moduleLoaderStore';
 
 // Mock analytics to avoid side effects
-vi.mock('../../utils/analytics', () => ({
+jest.mock('../../utils/analytics', () => ({
   analytics: {
-    trackEvent: vi.fn(),
+    trackEvent: jest.fn(),
   },
 }));
 
@@ -38,7 +38,7 @@ const resetStore = () => {
 describe('moduleLoaderStore', () => {
   beforeEach(() => {
     resetStore();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ==========================================================================

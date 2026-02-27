@@ -40,7 +40,7 @@ describe('InvocationHistory', () => {
   beforeEach(() => {
     Object.assign(navigator, {
       clipboard: {
-        writeText: vi.fn().mockResolvedValue(undefined),
+        writeText: jest.fn().mockResolvedValue(undefined),
       },
     });
   });

@@ -23,7 +23,7 @@ import { Switch } from '../components/ui/switch';
 // Helper component for testing
 function ControlledSwitch({
   defaultChecked = false,
-  onCheckedChange = vi.fn(),
+  onCheckedChange = jest.fn(),
   disabled = false,
 }: {
   defaultChecked?: boolean;
@@ -89,7 +89,7 @@ describe('Switch Component', () => {
   describe('Toggle Interaction', () => {
     it('should toggle from unchecked to checked on click', async () => {
       const user = userEvent.setup();
-      const onCheckedChange = vi.fn();
+      const onCheckedChange = jest.fn();
       render(<ControlledSwitch onCheckedChange={onCheckedChange} />);
 
       const switchElement = screen.getByRole('switch');
@@ -100,7 +100,7 @@ describe('Switch Component', () => {
 
     it('should toggle from checked to unchecked on click', async () => {
       const user = userEvent.setup();
-      const onCheckedChange = vi.fn();
+      const onCheckedChange = jest.fn();
       render(<ControlledSwitch defaultChecked onCheckedChange={onCheckedChange} />);
 
       const switchElement = screen.getByRole('switch');
@@ -111,7 +111,7 @@ describe('Switch Component', () => {
 
     it('should toggle on Space key', async () => {
       const user = userEvent.setup();
-      const onCheckedChange = vi.fn();
+      const onCheckedChange = jest.fn();
       render(<ControlledSwitch onCheckedChange={onCheckedChange} />);
 
       const switchElement = screen.getByRole('switch');
@@ -123,7 +123,7 @@ describe('Switch Component', () => {
 
     it('should toggle on Enter key', async () => {
       const user = userEvent.setup();
-      const onCheckedChange = vi.fn();
+      const onCheckedChange = jest.fn();
       render(<ControlledSwitch onCheckedChange={onCheckedChange} />);
 
       const switchElement = screen.getByRole('switch');
@@ -158,7 +158,7 @@ describe('Switch Component', () => {
 
     it('should not toggle when disabled', async () => {
       const user = userEvent.setup();
-      const onCheckedChange = vi.fn();
+      const onCheckedChange = jest.fn();
       render(<ControlledSwitch disabled onCheckedChange={onCheckedChange} />);
 
       const switchElement = screen.getByRole('switch');
@@ -176,7 +176,7 @@ describe('Switch Component', () => {
 
     it('should not respond to keyboard when disabled', async () => {
       const user = userEvent.setup();
-      const onCheckedChange = vi.fn();
+      const onCheckedChange = jest.fn();
       render(<ControlledSwitch disabled onCheckedChange={onCheckedChange} />);
 
       const switchElement = screen.getByRole('switch');
@@ -246,7 +246,7 @@ describe('Switch Component', () => {
   // Category 5: Form Integration
   describe('Form Integration', () => {
     it('should work with form submission', async () => {
-      const handleSubmit = vi.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn((e) => e.preventDefault());
       const user = userEvent.setup();
 
       render(
@@ -313,12 +313,12 @@ describe('Switch Component', () => {
     });
 
     it('should sync with external state changes', () => {
-      const { rerender } = render(<Switch checked={false} onCheckedChange={vi.fn()} />);
+      const { rerender } = render(<Switch checked={false} onCheckedChange={jest.fn()} />);
 
       let switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'unchecked');
 
-      rerender(<Switch checked={true} onCheckedChange={vi.fn()} />);
+      rerender(<Switch checked={true} onCheckedChange={jest.fn()} />);
 
       switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'checked');
@@ -326,7 +326,7 @@ describe('Switch Component', () => {
 
     it('should call onCheckedChange with new state', async () => {
       const user = userEvent.setup();
-      const onCheckedChange = vi.fn();
+      const onCheckedChange = jest.fn();
       render(<Switch checked={false} onCheckedChange={onCheckedChange} />);
 
       const switchElement = screen.getByRole('switch');

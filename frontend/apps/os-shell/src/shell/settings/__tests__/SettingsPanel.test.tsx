@@ -25,12 +25,12 @@ import { SettingsPanel } from '../SettingsPanel';
 // Mocks
 // ============================================================================
 
-vi.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, fallback?: string) => fallback || key,
     i18n: {
       language: 'en',
-      changeLanguage: vi.fn(),
+      changeLanguage: jest.fn(),
     },
   }),
 }));

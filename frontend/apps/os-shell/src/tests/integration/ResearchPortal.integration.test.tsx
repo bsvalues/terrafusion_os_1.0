@@ -182,10 +182,10 @@ beforeAll(() => {
   // Mock localStorage
   Object.defineProperty(window, 'localStorage', {
     value: {
-      getItem: vi.fn(),
-      setItem: vi.fn(),
-      removeItem: vi.fn(),
-      clear: vi.fn(),
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
     },
     writable: true,
   });
@@ -193,7 +193,7 @@ beforeAll(() => {
 
 afterEach(() => {
   server.resetHandlers();
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterAll(() => {
@@ -370,7 +370,7 @@ describe('ResearchPortal - Cross-Panel Synchronization', () => {
 
 describe('ResearchPortal - Session Management', () => {
   test('should auto-save session every 30 seconds', async () => {
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     renderResearchPortal();
 
     await waitFor(() => {
@@ -378,14 +378,14 @@ describe('ResearchPortal - Session Management', () => {
     });
 
     // Fast-forward 30 seconds
-    vi.advanceTimersByTime(30000);
+    jest.advanceTimersByTime(30000);
 
     // Verify auto-save was triggered (check for API call)
     await waitFor(() => {
       expect(screen.getByText(/Auto-Save Active/i)).toBeInTheDocument();
     });
 
-    vi.useRealTimers();
+    jest.useRealTimers();
   });
 
   test('should toggle auto-save on/off', async () => {

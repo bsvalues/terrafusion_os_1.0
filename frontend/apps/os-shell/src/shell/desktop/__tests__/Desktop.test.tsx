@@ -23,19 +23,19 @@ import { Desktop } from '../Desktop';
 // ============================================================================
 
 // Mock child components to isolate Desktop logic
-vi.mock('../DesktopBackground', () => ({
+jest.mock('../DesktopBackground', () => ({
   DesktopBackground: () => <div data-testid='desktop-background'>Background</div>,
 }));
 
-vi.mock('../WindowManager', () => ({
+jest.mock('../WindowManager', () => ({
   WindowManager: () => <div data-testid='window-manager'>WindowManager</div>,
 }));
 
-vi.mock('../Taskbar', () => ({
+jest.mock('../Taskbar', () => ({
   Taskbar: () => <div data-testid='taskbar'>Taskbar</div>,
 }));
 
-vi.mock('../StartMenu', () => ({
+jest.mock('../StartMenu', () => ({
   StartMenu: () => <div data-testid='start-menu'>StartMenu</div>,
 }));
 
@@ -57,7 +57,7 @@ describe('Desktop', () => {
 
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ============================================================================
@@ -228,7 +228,7 @@ describe('Desktop', () => {
     });
 
     it('cleans up keyboard listener on unmount', () => {
-      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+      const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
 
       const { unmount } = render(<Desktop />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
       unmount();

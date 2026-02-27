@@ -23,8 +23,8 @@ const originalError = console.error;
 const originalWarn = console.warn;
 
 beforeEach(() => {
-  console.error = vi.fn();
-  console.warn = vi.fn();
+  console.error = jest.fn();
+  console.warn = jest.fn();
 
   // Clear stores
   errorTracker.clear();

@@ -360,7 +360,7 @@ describe('Command', () => {
 
     it('handles click events', async () => {
       const user = userEvent.setup();
-      const onSelect = vi.fn();
+      const onSelect = jest.fn();
 
       render(
         <Command>
@@ -611,7 +611,7 @@ describe('Command', () => {
 
     it('supports Enter to select item', async () => {
       const user = userEvent.setup();
-      const onSelect = vi.fn();
+      const onSelect = jest.fn();
       render(
         <Command>
           <CommandInput placeholder='Search...' />

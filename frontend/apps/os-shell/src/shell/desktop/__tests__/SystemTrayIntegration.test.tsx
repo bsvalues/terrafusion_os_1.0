@@ -36,30 +36,30 @@ const TaskbarWithPanels = () => {
 };
 
 // Mock stores
-vi.mock('../../../stores/desktopStore', () => ({
-  useDesktopStore: vi.fn(() => ({
+jest.mock('../../../stores/desktopStore', () => ({
+  useDesktopStore: jest.fn(() => ({
     windows: [],
     activeWindowId: null,
-    focusWindow: vi.fn(),
+    focusWindow: jest.fn(),
   })),
-  useVirtualDesktops: vi.fn(() => ({
+  useVirtualDesktops: jest.fn(() => ({
     currentDesktopId: 'desktop-1',
     desktops: [{ id: 'desktop-1', name: 'Desktop 1' }],
-    addDesktop: vi.fn(),
-    removeDesktop: vi.fn(),
-    switchDesktop: vi.fn(),
+    addDesktop: jest.fn(),
+    removeDesktop: jest.fn(),
+    switchDesktop: jest.fn(),
   })),
 }));
 
-vi.mock('../../../stores/startMenuStore', () => ({
-  useStartMenuStore: vi.fn(() => ({
+jest.mock('../../../stores/startMenuStore', () => ({
+  useStartMenuStore: jest.fn(() => ({
     isOpen: false,
-    toggle: vi.fn(),
+    toggle: jest.fn(),
   })),
 }));
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {

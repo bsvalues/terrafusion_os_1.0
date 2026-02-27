@@ -25,12 +25,12 @@ import { Clock } from '../Clock';
 const mockDate = new Date('2024-12-15T14:30:00');
 
 beforeEach(() => {
-  vi.useFakeTimers();
-  vi.setSystemTime(mockDate);
+  jest.useFakeTimers();
+  jest.setSystemTime(mockDate);
 });
 
 afterEach(() => {
-  vi.useRealTimers();
+  jest.useRealTimers();
   cleanup();
 });
 
@@ -89,7 +89,7 @@ describe('Clock', () => {
       const initialTime = screen.getByTestId('clock-time').textContent;
       
       // Advance by 1 minute
-      vi.advanceTimersByTime(60000);
+      jest.advanceTimersByTime(60000);
       
       await waitFor(() => {
         // Time should have updated (or stayed same if within same minute)

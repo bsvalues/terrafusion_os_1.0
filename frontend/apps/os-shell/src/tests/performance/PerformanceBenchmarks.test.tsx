@@ -43,7 +43,7 @@ const now = (() => {
 
 beforeAll(() => {
   // ensure writable performance.now in JSDOM/Jest
-  const mockNow = vi.fn(now);
+  const mockNow = jest.fn(now);
 
   if (typeof window !== 'undefined') {
     Object.defineProperty(window.performance, 'now', { value: mockNow, writable: true });
@@ -310,11 +310,11 @@ describe('Performance - Panel Switching', () => {
 
 describe('Performance - API Requests', () => {
   beforeEach(() => {
-    global.fetch = vi.fn();
+    global.fetch = jest.fn();
   });
 
   test('should complete API request within 50ms', async () => {
-    (global.fetch as vi.Mock).mockResolvedValue({
+    (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({ data: 'test' }),
     });
@@ -327,7 +327,7 @@ describe('Performance - API Requests', () => {
   });
 
   test('should handle concurrent API requests efficiently', async () => {
-    (global.fetch as vi.Mock).mockResolvedValue({
+    (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({ data: 'test' }),
     });
@@ -355,7 +355,7 @@ describe('Performance - API Requests', () => {
       return data;
     };
 
-    (global.fetch as vi.Mock).mockResolvedValue({
+    (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({ data: 'cached-response' }),
     });

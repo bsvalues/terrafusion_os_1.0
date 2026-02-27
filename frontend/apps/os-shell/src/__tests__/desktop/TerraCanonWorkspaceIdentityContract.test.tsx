@@ -43,8 +43,8 @@ import React from 'react';
 
 let memoryRouterEntries: string[] = ['/'];
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -53,15 +53,15 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../../auth/authStorage', async () => ({
+jest.mock('../../auth/authStorage', () => ({
   getToken: () => 'smoke-test-token',
-  setToken: vi.fn(),
-  clearToken: vi.fn(),
+  setToken: jest.fn(),
+  clearToken: jest.fn(),
 }));
 
-vi.mock('../../auth/authBridge', async () => ({
-  registerLogoutHandler: vi.fn(),
-  unregisterLogoutHandler: vi.fn(),
+jest.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: jest.fn(),
+  unregisterLogoutHandler: jest.fn(),
 }));
 
 import Router from '../../Router';

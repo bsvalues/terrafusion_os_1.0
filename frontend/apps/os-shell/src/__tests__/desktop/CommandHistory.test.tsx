@@ -10,8 +10,8 @@ import React from 'react';
 
 let memoryRouterEntries: string[] = ['/'];
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -20,15 +20,15 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../../auth/authStorage', async () => ({
+jest.mock('../../auth/authStorage', () => ({
   getToken: () => 'history-test-token',
-  setToken: vi.fn(),
-  clearToken: vi.fn(),
+  setToken: jest.fn(),
+  clearToken: jest.fn(),
 }));
 
-vi.mock('../../auth/authBridge', async () => ({
-  registerLogoutHandler: vi.fn(),
-  unregisterLogoutHandler: vi.fn(),
+jest.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: jest.fn(),
+  unregisterLogoutHandler: jest.fn(),
 }));
 
 import Router from '../../Router';
@@ -52,7 +52,7 @@ function doctorOk() {
 describe.skip('P18 Command History', () => {
   afterEach(() => {
     cleanup();
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   async function renderCanonRoute() {
@@ -82,7 +82,7 @@ describe.skip('P18 Command History', () => {
 
   test('run command → reopen palette → Recent section shows that command', async () => {
     let doctorCalls = 0;
-    global.fetch = vi.fn(async (url: string | URL | Request) => {
+    global.fetch = jest.fn(async (url: string | URL | Request) => {
       const u = String(url);
       if (u.includes('/pilot/canon/doctor')) {
         doctorCalls++;
@@ -119,7 +119,7 @@ describe.skip('P18 Command History', () => {
 
   test('Enter on empty input re-runs the most recent command', async () => {
     let doctorCalls = 0;
-    global.fetch = vi.fn(async (url: string | URL | Request) => {
+    global.fetch = jest.fn(async (url: string | URL | Request) => {
       const u = String(url);
       if (u.includes('/pilot/canon/doctor')) {
         doctorCalls++;

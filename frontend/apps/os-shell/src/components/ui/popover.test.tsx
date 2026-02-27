@@ -764,7 +764,7 @@ describe('Popover', () => {
 
     it('handles rich content with interactive elements', async () => {
       const user = userEvent.setup();
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>

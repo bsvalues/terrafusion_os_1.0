@@ -20,12 +20,12 @@ import { MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 // Mock lazy-loaded components
 // ShellHome deprecated — / now renders App (Desktop OS surface)
-vi.mock('../../App', () => ({
+jest.mock('../../App', () => ({
   __esModule: true,
   default: () => <div data-testid='desktop'>Desktop OS</div>,
 }));
 
-vi.mock('../../pages/workbench/PropertyWorkbench', () => ({
+jest.mock('../../pages/workbench/PropertyWorkbench', () => ({
   __esModule: true,
   default: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid='property-workbench'>
@@ -35,32 +35,32 @@ vi.mock('../../pages/workbench/PropertyWorkbench', () => ({
   ),
 }));
 
-vi.mock('../../pages/workbench/tabs/PropertySummary', () => ({
+jest.mock('../../pages/workbench/tabs/PropertySummary', () => ({
   __esModule: true,
   default: () => <div data-testid='property-summary'>PropertySummary</div>,
 }));
 
-vi.mock('../../pages/workbench/tabs/PropertyForge', () => ({
+jest.mock('../../pages/workbench/tabs/PropertyForge', () => ({
   __esModule: true,
   default: () => <div data-testid='property-forge'>PropertyForge</div>,
 }));
 
-vi.mock('../../pages/workbench/tabs/PropertyAtlas', () => ({
+jest.mock('../../pages/workbench/tabs/PropertyAtlas', () => ({
   __esModule: true,
   default: () => <div data-testid='property-atlas'>PropertyAtlas</div>,
 }));
 
-vi.mock('../../pages/workbench/tabs/PropertyDais', () => ({
+jest.mock('../../pages/workbench/tabs/PropertyDais', () => ({
   __esModule: true,
   default: () => <div data-testid='property-dais'>PropertyDais</div>,
 }));
 
-vi.mock('../../pages/workbench/tabs/PropertyDossier', () => ({
+jest.mock('../../pages/workbench/tabs/PropertyDossier', () => ({
   __esModule: true,
   default: () => <div data-testid='property-dossier'>PropertyDossier</div>,
 }));
 
-vi.mock('../../pages/workbench/tabs/PropertyPilot', () => ({
+jest.mock('../../pages/workbench/tabs/PropertyPilot', () => ({
   __esModule: true,
   default: () => <div data-testid='property-pilot'>PropertyPilot</div>,
 }));

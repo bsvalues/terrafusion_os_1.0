@@ -16,28 +16,28 @@ import userEvent from '@testing-library/user-event';
 import { RiskPolicyGate } from '../../components/pilot/RiskPolicyGate';
 
 // Mock pilotApi
-vi.mock('../../api/pilotApi', () => ({
-  validatePilotTool: vi.fn(),
-  invokeTool: vi.fn(),
-  requestApprovalToken: vi.fn(),
+jest.mock('../../api/pilotApi', () => ({
+  validatePilotTool: jest.fn(),
+  invokeTool: jest.fn(),
+  requestApprovalToken: jest.fn(),
 }));
 
 import { invokeTool, requestApprovalToken, validatePilotTool } from '../../api/pilotApi';
 
-const mockValidatePilotTool = validatePilotTool as vi.MockedFunction<typeof validatePilotTool>;
-const mockInvokeTool = invokeTool as vi.MockedFunction<typeof invokeTool>;
-const mockRequestApprovalToken = requestApprovalToken as vi.MockedFunction<
+const mockValidatePilotTool = validatePilotTool as jest.MockedFunction<typeof validatePilotTool>;
+const mockInvokeTool = invokeTool as jest.MockedFunction<typeof invokeTool>;
+const mockRequestApprovalToken = requestApprovalToken as jest.MockedFunction<
   typeof requestApprovalToken
 >;
 
 describe('RiskPolicyGate - Irreversible Tools', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.useFakeTimers();
+    jest.clearAllMocks();
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
+    jest.useRealTimers();
   });
 
   const mockIrreversibleValidation = {
@@ -75,8 +75,8 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
     it('cannot execute irreversible tool without an approval token', async () => {
       mockValidatePilotTool.mockResolvedValue(mockIrreversibleValidation);
 
-      const onComplete = vi.fn();
-      const onCancel = vi.fn();
+      const onComplete = jest.fn();
+      const onCancel = jest.fn();
 
       render(
         <RiskPolicyGate
@@ -110,8 +110,8 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -133,14 +133,14 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -176,14 +176,14 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
     it('requires reason code before allowing approval', async () => {
       mockValidatePilotTool.mockResolvedValue(mockIrreversibleValidation);
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -210,14 +210,14 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -262,15 +262,15 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         result: { toolId: 'dais.delete_assessment', output: 'Deleted' },
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-      const onComplete = vi.fn();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const onComplete = jest.fn();
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
           onComplete={onComplete}
-          onCancel={vi.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -321,14 +321,14 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -371,14 +371,14 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -404,7 +404,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
       });
 
       // Advance time past expiration
-      vi.advanceTimersByTime(15000);
+      jest.advanceTimersByTime(15000);
 
       // Confirm button should be disabled again
       await waitFor(() => {
@@ -429,14 +429,14 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -457,7 +457,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
       await user.click(screen.getByRole('button', { name: /generate.*approval/i }));
 
       // Advance time past expiration
-      vi.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(10000);
 
       // Regenerate button should appear
       await waitFor(() => {
@@ -475,14 +475,14 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-error-789',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -528,15 +528,15 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         },
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-      const onComplete = vi.fn();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const onComplete = jest.fn();
 
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
           params={{ assessmentId: 'A-123' }}
           onComplete={onComplete}
-          onCancel={vi.fn()}
+          onCancel={jest.fn()}
         />
       );
 
@@ -600,14 +600,14 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         result: { toolId: 'dais.approve_assessment', output: 'Approved' },
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       render(
         <RiskPolicyGate
           toolId='dais.approve_assessment'
           params={{ assessmentId: 'A-123' }}
-          onComplete={vi.fn()}
-          onCancel={vi.fn()}
+          onComplete={jest.fn()}
+          onCancel={jest.fn()}
         />
       );
 

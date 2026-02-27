@@ -338,7 +338,7 @@ describe('Integration: Tabs Navigation Workflow', () => {
   describe('State Management: Tabs', () => {
     it('should track active tab state', async () => {
       const user = userEvent.setup();
-      const handleTabChange = vi.fn();
+      const handleTabChange = jest.fn();
       render(<StatefulTabNavigation onTabChange={handleTabChange} />);
 
       // Initial state

@@ -3,22 +3,22 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 // Mock all API modules to avoid import.meta.env issues
-vi.mock('../../../api/explainApi', () => ({
-  explainContext: vi.fn(),
+jest.mock('../../../api/explainApi', () => ({
+  explainContext: jest.fn(),
 }));
 
 // Mock PropertyAssessmentFlows to avoid undefined errors
-vi.mock('../components/PropertyAssessmentFlows', () => ({
+jest.mock('../components/PropertyAssessmentFlows', () => ({
   PropertyAssessmentFlows: () => <div data-testid='mock-flows'>Mock Flows</div>,
 }));
 
-vi.mock('../../../api/gptClient', () => ({
-  getSystemGpts: vi.fn(),
-  createConversation: vi.fn(),
-  getMessages: vi.fn(),
-  sendMessage: vi.fn(),
-  getRagHealth: vi.fn().mockResolvedValue({ healthy: true }),
-  indexRagDataset: vi.fn(),
+jest.mock('../../../api/gptClient', () => ({
+  getSystemGpts: jest.fn(),
+  createConversation: jest.fn(),
+  getMessages: jest.fn(),
+  sendMessage: jest.fn(),
+  getRagHealth: jest.fn().mockResolvedValue({ healthy: true }),
+  indexRagDataset: jest.fn(),
 }));
 
 import * as gptClient from '../../../api/gptClient';
@@ -39,25 +39,25 @@ const mockConversation = {
 
 describe('GptStudioView Feature Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders GPT Suite header', () => {
-    (gptClient.getSystemGpts as vi.Mock).mockReturnValue(new Promise(() => {}));
+    (gptClient.getSystemGpts as jest.Mock).mockReturnValue(new Promise(() => {}));
     render(<GptStudioView />);
     expect(screen.getByText(/TerraFusion GPT Suite/i)).toBeInTheDocument();
   });
 
   it('shows loading state initially', () => {
-    (gptClient.getSystemGpts as vi.Mock).mockReturnValue(new Promise(() => {}));
+    (gptClient.getSystemGpts as jest.Mock).mockReturnValue(new Promise(() => {}));
     render(<GptStudioView />);
     expect(screen.getByText(/Loading GPTs/i)).toBeInTheDocument();
   });
 
   it('auto-selects PropertyAssessmentGPT and creates conversation', async () => {
-    (gptClient.getSystemGpts as vi.Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as vi.Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as vi.Mock).mockResolvedValue([]);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue([]);
 
     render(<GptStudioView />);
 
@@ -68,9 +68,9 @@ describe('GptStudioView Feature Tests', () => {
   });
 
   it('renders send button when conversation is active', async () => {
-    (gptClient.getSystemGpts as vi.Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as vi.Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as vi.Mock).mockResolvedValue([]);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue([]);
 
     render(<GptStudioView />);
 
@@ -80,9 +80,9 @@ describe('GptStudioView Feature Tests', () => {
   });
 
   it('renders textarea for message input', async () => {
-    (gptClient.getSystemGpts as vi.Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as vi.Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as vi.Mock).mockResolvedValue([]);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue([]);
 
     render(<GptStudioView />);
 
@@ -94,10 +94,10 @@ describe('GptStudioView Feature Tests', () => {
   });
 
   it('calls sendMessage when user sends a message', async () => {
-    (gptClient.getSystemGpts as vi.Mock).mockResolvedValue(mockGpts);
-    (gptClient.createConversation as vi.Mock).mockResolvedValue(mockConversation);
-    (gptClient.getMessages as vi.Mock).mockResolvedValue([]);
-    (gptClient.sendMessage as vi.Mock).mockResolvedValue({
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue(mockGpts);
+    (gptClient.createConversation as jest.Mock).mockResolvedValue(mockConversation);
+    (gptClient.getMessages as jest.Mock).mockResolvedValue([]);
+    (gptClient.sendMessage as jest.Mock).mockResolvedValue({
       id: 'assistant-1',
       role: 'Assistant',
       content: 'Stubbed assistant reply',
@@ -126,7 +126,7 @@ describe('GptStudioView Feature Tests', () => {
   });
 
   it('shows error state when API fails', async () => {
-    (gptClient.getSystemGpts as vi.Mock).mockRejectedValue(new Error('API unavailable'));
+    (gptClient.getSystemGpts as jest.Mock).mockRejectedValue(new Error('API unavailable'));
 
     render(<GptStudioView />);
 
@@ -136,7 +136,7 @@ describe('GptStudioView Feature Tests', () => {
   });
 
   it('shows empty state when no GPTs available', async () => {
-    (gptClient.getSystemGpts as vi.Mock).mockResolvedValue([]);
+    (gptClient.getSystemGpts as jest.Mock).mockResolvedValue([]);
 
     render(<GptStudioView />);
 

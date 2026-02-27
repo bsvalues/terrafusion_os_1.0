@@ -24,15 +24,15 @@ describe('Design Gates', () => {
 
     it('returns_css_mode_when_prefers_reduced_motion', () => {
       // Mock prefers-reduced-motion: reduce
-      window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      window.matchMedia = jest.fn().mockImplementation((query: string) => ({
         matches: query === '(prefers-reduced-motion: reduce)',
         media: query,
         onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
       }));
 
       const mode = resolveAmbientMode();
@@ -43,15 +43,15 @@ describe('Design Gates', () => {
 
     it('respects_gov_policy_no_gpu_by_default', () => {
       // Mock NO reduced motion preference
-      window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      window.matchMedia = jest.fn().mockImplementation((query: string) => ({
         matches: false,
         media: query,
         onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
       }));
 
       const mode = resolveAmbientMode();
@@ -61,15 +61,15 @@ describe('Design Gates', () => {
     });
 
     it('never_returns_webgl_with_gov_policy_no_gpu', () => {
-      window.matchMedia = vi.fn().mockImplementation(() => ({
+      window.matchMedia = jest.fn().mockImplementation(() => ({
         matches: false,
         media: '',
         onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
       }));
 
       const mode = resolveAmbientMode();
@@ -79,15 +79,15 @@ describe('Design Gates', () => {
     });
 
     it('mode_is_one_of_valid_types', () => {
-      window.matchMedia = vi.fn().mockImplementation(() => ({
+      window.matchMedia = jest.fn().mockImplementation(() => ({
         matches: false,
         media: '',
         onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
       }));
 
       const mode = resolveAmbientMode();
@@ -157,15 +157,15 @@ describe('Design Gates', () => {
       // Government environments should default to no GPU
       // to prevent WebGL-based fingerprinting and reduce attack surface
 
-      window.matchMedia = vi.fn().mockImplementation(() => ({
+      window.matchMedia = jest.fn().mockImplementation(() => ({
         matches: false,
         media: '',
         onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
       }));
 
       const mode = resolveAmbientMode();

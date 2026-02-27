@@ -22,7 +22,7 @@ import { Window } from '../Window';
 // ============================================================================
 
 // Mock react-rnd since it requires actual DOM measurements
-vi.mock('react-rnd', () => {
+jest.mock('react-rnd', () => {
   const React = require('react');
   return {
     Rnd: React.forwardRef(
@@ -74,7 +74,7 @@ describe('Window Component', () => {
 
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ============================================================================
@@ -556,7 +556,7 @@ describe('Window Component', () => {
   describe('Event Propagation', () => {
     it('stops propagation on close button click', async () => {
       const mockWindow = createMockWindow();
-      const windowClickHandler = vi.fn();
+      const windowClickHandler = jest.fn();
 
       act(() => {
         useDesktopStore.setState({
@@ -579,7 +579,7 @@ describe('Window Component', () => {
 
     it('stops propagation on minimize button click', async () => {
       const mockWindow = createMockWindow();
-      const windowClickHandler = vi.fn();
+      const windowClickHandler = jest.fn();
 
       act(() => {
         useDesktopStore.setState({

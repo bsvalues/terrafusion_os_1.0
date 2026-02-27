@@ -21,7 +21,7 @@ import { AxiomFSDetailPanel } from '../AxiomFSDetailPanel';
 // ============================================================================
 
 // Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', () => ({
+jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   motion: {
     aside: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
@@ -31,17 +31,17 @@ vi.mock('framer-motion', () => ({
 }));
 
 // Mock desktop store
-vi.mock('../../../stores/desktopStore', () => ({
-  useDesktopStore: vi.fn(),
+jest.mock('../../../stores/desktopStore', () => ({
+  useDesktopStore: jest.fn(),
 }));
 
 // Mock axiom fs store
-vi.mock('../../store/axiomFsStore', () => ({
-  useAxiomFsStore: vi.fn(),
+jest.mock('../../store/axiomFsStore', () => ({
+  useAxiomFsStore: jest.fn(),
 }));
 
-const mockOpenWindow = vi.fn();
-const mockSelectObject = vi.fn();
+const mockOpenWindow = jest.fn();
+const mockSelectObject = jest.fn();
 
 const createMockObject = (overrides?: Partial<SovereignObject>): SovereignObject => ({
   id: 'doc-001',
@@ -59,10 +59,10 @@ const createMockObject = (overrides?: Partial<SovereignObject>): SovereignObject
 
 describe('AxiomFSDetailPanel', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
 
     // Default desktop store mock
-    (useDesktopStore as unknown as vi.Mock).mockImplementation((selector) => {
+    (useDesktopStore as unknown as jest.Mock).mockImplementation((selector) => {
       const state = {
         openWindow: mockOpenWindow,
       };
@@ -76,7 +76,7 @@ describe('AxiomFSDetailPanel', () => {
 
   describe('rendering', () => {
     it('does not render when no object is selected', () => {
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: null,
         objects: new Map(),
         selectObject: mockSelectObject,
@@ -90,7 +90,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject();
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -104,7 +104,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject({ label: 'Test Property' });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -118,7 +118,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject({ type: 'ledger' });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -132,7 +132,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject({ status: 'verified' });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -146,7 +146,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject({ status: 'pending' });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -160,7 +160,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject({ status: 'anomaly' });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -176,7 +176,7 @@ describe('AxiomFSDetailPanel', () => {
       });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -190,7 +190,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject({ tags: ['important', 'review'] });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -205,7 +205,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject({ tags: [] });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -226,7 +226,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject();
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -242,7 +242,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject();
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -258,7 +258,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject({ label: 'Test Property' });
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -283,7 +283,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject();
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -304,7 +304,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject();
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,
@@ -318,7 +318,7 @@ describe('AxiomFSDetailPanel', () => {
       const mockObject = createMockObject();
       const objects = new Map([['doc-001', mockObject]]);
 
-      (useAxiomFsStore as unknown as vi.Mock).mockReturnValue({
+      (useAxiomFsStore as unknown as jest.Mock).mockReturnValue({
         selectedId: 'doc-001',
         objects,
         selectObject: mockSelectObject,

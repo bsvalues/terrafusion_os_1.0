@@ -1,6 +1,6 @@
 import { probeHealth } from '../sentinelProbe';
 
-const mockFetch = vi.fn() as vi.MockedFunction<typeof fetch>;
+const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 
 describe('probeHealth', () => {
   beforeEach(() => {

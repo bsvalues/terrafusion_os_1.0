@@ -4,10 +4,10 @@ import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 import { useDesktopStore } from '../../../stores/desktopStore';
 
 // Mock the openWindow action from desktopStore
-const mockOpenWindow = vi.fn();
+const mockOpenWindow = jest.fn();
 
 // Mock dependencies
-vi.mock('@/config/features', () => ({
+jest.mock('@/config/features', () => ({
   FEATURES: {
     ENABLE_AXIOM_FS: true,
     ENABLE_DASHBOARD: true,
@@ -18,7 +18,7 @@ vi.mock('@/config/features', () => ({
   },
 }));
 
-vi.mock('framer-motion', () => ({
+jest.mock('framer-motion', () => ({
   motion: {
     aside: ({ children, ...props }: any) => <aside {...props}>{children}</aside>,
   },

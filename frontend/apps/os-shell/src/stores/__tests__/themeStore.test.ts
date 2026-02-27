@@ -3,17 +3,17 @@ import { persistenceService } from '../../services/persistenceService';
 import { useThemeStore } from '../themeStore';
 
 // Mock persistence service
-vi.mock('../../services/persistenceService', () => ({
+jest.mock('../../services/persistenceService', () => ({
   persistenceService: {
-    saveThemeStateDebounced: vi.fn(),
-    loadThemeState: vi.fn().mockReturnValue(null),
+    saveThemeStateDebounced: jest.fn(),
+    loadThemeState: jest.fn().mockReturnValue(null),
   },
 }));
 
 describe('themeStore', () => {
   beforeEach(() => {
     useThemeStore.getState().reset();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Initial State', () => {
@@ -27,7 +27,7 @@ describe('themeStore', () => {
 
     it('loads from persistence on init', () => {
       // Setup mock return
-      (persistenceService.loadThemeState as vi.Mock).mockReturnValue({
+      (persistenceService.loadThemeState as jest.Mock).mockReturnValue({
         theme: 'dark',
         highContrast: true,
         reducedMotion: true,
@@ -104,15 +104,15 @@ describe('themeStore', () => {
       // Mock system preference
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: vi.fn().mockImplementation((query) => ({
+        value: jest.fn().mockImplementation((query) => ({
           matches: query === '(prefers-color-scheme: dark)',
           media: query,
           onchange: null,
-          addListener: vi.fn(), // deprecated
-          removeListener: vi.fn(), // deprecated
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
+          addListener: jest.fn(), // deprecated
+          removeListener: jest.fn(), // deprecated
+          addEventListener: jest.fn(),
+          removeEventListener: jest.fn(),
+          dispatchEvent: jest.fn(),
         })),
       });
 

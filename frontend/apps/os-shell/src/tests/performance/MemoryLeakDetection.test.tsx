@@ -196,48 +196,48 @@ describe('Memory Leak Detection - Event Listeners', () => {
 
 describe('Memory Leak Detection - Timers', () => {
   test('should cleanup intervals on unmount', () => {
-    vi.useFakeTimers();
+    jest.useFakeTimers();
 
     const { unmount } = render(<ComponentWithInterval />);
 
     // Fast-forward time
-    vi.advanceTimersByTime(5000);
+    jest.advanceTimersByTime(5000);
 
     unmount();
 
     // No more timer executions should happen
-    const timerCount = vi.getTimerCount();
+    const timerCount = jest.getTimerCount();
     expect(timerCount).toBe(0);
 
-    vi.useRealTimers();
+    jest.useRealTimers();
   });
 
   test('should cleanup timeouts on unmount', () => {
-    vi.useFakeTimers();
+    jest.useFakeTimers();
 
     const { unmount } = render(<ComponentWithTimeout />);
 
     unmount();
 
     // Timeout should be cleared
-    const timerCount = vi.getTimerCount();
+    const timerCount = jest.getTimerCount();
     expect(timerCount).toBe(0);
 
-    vi.useRealTimers();
+    jest.useRealTimers();
   });
 
   test('should not accumulate timers with repeated mount/unmount', () => {
-    vi.useFakeTimers();
+    jest.useFakeTimers();
 
     for (let i = 0; i < 50; i++) {
       const { unmount } = render(<ComponentWithInterval />);
       unmount();
     }
 
-    const timerCount = vi.getTimerCount();
+    const timerCount = jest.getTimerCount();
     expect(timerCount).toBe(0);
 
-    vi.useRealTimers();
+    jest.useRealTimers();
   });
 });
 

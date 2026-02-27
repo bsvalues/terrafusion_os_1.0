@@ -17,15 +17,15 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 // ============================================================================
 
 // Mock activateModule from orchestration
-const mockActivateModule = vi.fn().mockResolvedValue(undefined);
+const mockActivateModule = jest.fn().mockResolvedValue(undefined);
 
-vi.mock('../../orchestration/moduleActivation', () => ({
+jest.mock('../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
   default: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
 // Mock isModuleRegistered for unknown module tests
-const mockIsModuleRegistered = vi.fn((id: string) => {
+const mockIsModuleRegistered = jest.fn((id: string) => {
   const registered = ['costforge', 'terra-gaia', 'atlas-ai', 'marketplace'];
   // Normalize aliases for the check
   const aliases: Record<string, string> = {
@@ -36,9 +36,9 @@ const mockIsModuleRegistered = vi.fn((id: string) => {
   return registered.includes(canonical);
 });
 
-vi.mock('../../config/moduleComponents', () => ({
+jest.mock('../../config/moduleComponents', () => ({
   isModuleRegistered: (id: string) => mockIsModuleRegistered(id),
-  normalizeModuleId: vi.fn((id: string) => {
+  normalizeModuleId: jest.fn((id: string) => {
     const aliases: Record<string, string> = {
       'terrabuild': 'costforge',
       'assessment': 'costforge',
@@ -96,7 +96,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 // ============================================================================

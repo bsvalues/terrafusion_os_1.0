@@ -19,19 +19,19 @@ import { act, renderHook } from '@testing-library/react';
 // ============================================================================
 
 // Mock activateModule - THE canonical entry point
-const mockActivateModule = vi.fn().mockResolvedValue(undefined);
+const mockActivateModule = jest.fn().mockResolvedValue(undefined);
 
-vi.mock('../../orchestration/moduleActivation', () => ({
+jest.mock('../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
 // Mock startMenuStore
-const mockToggleStartMenu = vi.fn();
-const mockCloseStartMenu = vi.fn();
+const mockToggleStartMenu = jest.fn();
+const mockCloseStartMenu = jest.fn();
 let mockIsStartMenuOpen = false;
 
-vi.mock('../../stores/startMenuStore', () => ({
-  useStartMenuStore: vi.fn((selector) => {
+jest.mock('../../stores/startMenuStore', () => ({
+  useStartMenuStore: jest.fn((selector) => {
     const state = {
       isOpen: mockIsStartMenuOpen,
       toggle: mockToggleStartMenu,
@@ -42,12 +42,12 @@ vi.mock('../../stores/startMenuStore', () => ({
 }));
 
 // Mock commandPaletteStore
-const mockToggleCommandPalette = vi.fn();
-const mockCloseCommandPalette = vi.fn();
+const mockToggleCommandPalette = jest.fn();
+const mockCloseCommandPalette = jest.fn();
 let mockIsCommandPaletteOpen = false;
 
-vi.mock('../../stores/commandPaletteStore', () => ({
-  useCommandPaletteStore: vi.fn((selector) => {
+jest.mock('../../stores/commandPaletteStore', () => ({
+  useCommandPaletteStore: jest.fn((selector) => {
     const state = {
       isOpen: mockIsCommandPaletteOpen,
       toggle: mockToggleCommandPalette,
@@ -92,7 +92,7 @@ describe('useKeyboardShortcuts', () => {
   const { useKeyboardShortcuts } = require('../useKeyboardShortcuts');
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockIsStartMenuOpen = false;
     mockIsCommandPaletteOpen = false;
     // Reset document.activeElement to body

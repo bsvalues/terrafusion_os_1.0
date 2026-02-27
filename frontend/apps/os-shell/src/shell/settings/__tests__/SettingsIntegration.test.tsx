@@ -21,18 +21,18 @@ import { act, cleanup, render, screen, fireEvent } from '@testing-library/react'
 // ============================================================================
 
 // Mock activateModule
-const mockActivateModule = vi.fn();
-vi.mock('../../../orchestration/moduleActivation', () => ({
+const mockActivateModule = jest.fn();
+jest.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
 // Mock start menu store
-vi.mock('../../../stores/startMenuStore', () => ({
-  useStartMenuStore: vi.fn((selector) => {
+jest.mock('../../../stores/startMenuStore', () => ({
+  useStartMenuStore: jest.fn((selector) => {
     const state = {
       isOpen: false,
-      toggle: vi.fn(),
-      close: vi.fn(),
+      toggle: jest.fn(),
+      close: jest.fn(),
     };
     return selector ? selector(state) : state;
   }),
@@ -43,7 +43,7 @@ vi.mock('../../../stores/startMenuStore', () => ({
 // ============================================================================
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
@@ -153,7 +153,7 @@ describe('Settings Integration', () => {
       // Import the component
       const { DesktopContextMenu } = await import('../../desktop/DesktopContextMenu');
 
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       render(
         <DesktopContextMenu
           isOpen={true}

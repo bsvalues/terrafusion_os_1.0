@@ -50,38 +50,38 @@ const MockTabWithContext: React.FC<{ tabName: string }> = ({ tabName }) => {
 };
 
 // Lazy-load mocks
-vi.mock('../tabs/PropertySummary', () => ({
+jest.mock('../tabs/PropertySummary', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='summary' />,
 }));
 
-vi.mock('../tabs/PropertyForge', () => ({
+jest.mock('../tabs/PropertyForge', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='forge' />,
 }));
 
-vi.mock('../tabs/PropertyAtlas', () => ({
+jest.mock('../tabs/PropertyAtlas', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='atlas' />,
 }));
 
-vi.mock('../tabs/PropertyDais', () => ({
+jest.mock('../tabs/PropertyDais', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='dais' />,
 }));
 
-vi.mock('../tabs/PropertyDossier', () => ({
+jest.mock('../tabs/PropertyDossier', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='dossier' />,
 }));
 
-vi.mock('../tabs/PropertyPilot', () => ({
+jest.mock('../tabs/PropertyPilot', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='pilot' />,
 }));
 
 // Mock ErrorBoundary
-vi.mock('../../../components/errors/ErrorBoundary', () => ({
+jest.mock('../../../components/errors/ErrorBoundary', () => ({
   ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
@@ -124,7 +124,7 @@ const renderWorkbench = (initialRoute: string = '/property/12345-001') => {
 
 describe('WorkbenchTabBar', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Tab Order Constitutional Invariants', () => {

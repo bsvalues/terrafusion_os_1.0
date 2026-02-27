@@ -26,8 +26,8 @@ import { getDesktopIcons } from '../../config/desktopManifest';
 // Mutable entries array — set per-test to control initial route.
 let memoryRouterEntries: string[] = ['/'];
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -37,16 +37,16 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock auth to be authenticated — bypasses AuthGuard redirect to /login.
-vi.mock('../../auth/authStorage', async () => ({
+jest.mock('../../auth/authStorage', () => ({
   getToken: () => 'smoke-test-token',
-  setToken: vi.fn(),
-  clearToken: vi.fn(),
+  setToken: jest.fn(),
+  clearToken: jest.fn(),
 }));
 
 // Mock authBridge to avoid registration side effects.
-vi.mock('../../auth/authBridge', async () => ({
-  registerLogoutHandler: vi.fn(),
-  unregisterLogoutHandler: vi.fn(),
+jest.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: jest.fn(),
+  unregisterLogoutHandler: jest.fn(),
 }));
 
 // Top-level import — Router.tsx uses getViteEnv() (not import.meta directly),

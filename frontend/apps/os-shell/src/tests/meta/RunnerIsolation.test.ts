@@ -1,8 +1,10 @@
-describe('Runner Isolation (Vitest)', () => {
-  test('should be running in Vitest environment', () => {
-    // Confirm vitest globals are available (globals: true in vitest.config.ts)
+describe('Runner Isolation (Jest)', () => {
+  test('should not be running in Vitest environment', () => {
+    // Ensure we haven't accidentally leaked Vitest globals into Jest
     // @ts-ignore
-    expect(globalThis.vi).toBeDefined();
+    expect(globalThis.vitest).toBeUndefined();
+    // @ts-ignore
+    expect(globalThis.vi).toBeUndefined();
   });
 
   test('should be running in JSDOM', () => {

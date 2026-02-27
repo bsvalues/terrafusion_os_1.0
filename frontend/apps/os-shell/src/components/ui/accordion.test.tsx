@@ -507,7 +507,7 @@ describe('Accordion', () => {
     });
 
     it('calls onValueChange when item is toggled in single mode', async () => {
-      const handleValueChange = vi.fn();
+      const handleValueChange = jest.fn();
       const user = userEvent.setup();
 
       render(
@@ -528,7 +528,7 @@ describe('Accordion', () => {
     });
 
     it('calls onValueChange when item is toggled in multiple mode', async () => {
-      const handleValueChange = vi.fn();
+      const handleValueChange = jest.fn();
       const user = userEvent.setup();
 
       render(

@@ -115,7 +115,7 @@ describe('Input Component', () => {
     });
 
     it('triggers onChange handler', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Input onChange={handleChange} />);
       const input = screen.getByRole('textbox');
 
@@ -126,7 +126,7 @@ describe('Input Component', () => {
     });
 
     it('triggers onFocus handler', async () => {
-      const handleFocus = vi.fn();
+      const handleFocus = jest.fn();
       render(<Input onFocus={handleFocus} />);
       const input = screen.getByRole('textbox');
 
@@ -136,7 +136,7 @@ describe('Input Component', () => {
     });
 
     it('triggers onBlur handler', async () => {
-      const handleBlur = vi.fn();
+      const handleBlur = jest.fn();
       render(<Input onBlur={handleBlur} />);
       const input = screen.getByRole('textbox');
 
@@ -258,7 +258,7 @@ describe('Input Component', () => {
 
   describe('Form Integration', () => {
     it('can be submitted in a form', async () => {
-      const handleSubmit = vi.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn((e) => e.preventDefault());
       render(
         <form onSubmit={handleSubmit}>
           <Input name='username' />

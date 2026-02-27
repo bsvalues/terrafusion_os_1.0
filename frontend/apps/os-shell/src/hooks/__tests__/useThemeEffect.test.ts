@@ -16,15 +16,15 @@ describe('useThemeEffect', () => {
       matches: false,
       media: '',
       onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
     };
 
     originalMatchMedia = window.matchMedia;
-    window.matchMedia = vi.fn().mockReturnValue(mediaQueryList);
+    window.matchMedia = jest.fn().mockReturnValue(mediaQueryList);
   });
 
   afterEach(() => {

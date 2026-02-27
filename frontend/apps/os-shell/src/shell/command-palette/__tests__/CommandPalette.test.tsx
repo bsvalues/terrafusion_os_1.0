@@ -28,13 +28,13 @@ import { CommandPalette } from '../CommandPalette';
 // Mocks
 // ============================================================================
 
-const mockActivateModule = vi.fn();
-vi.mock('../../../orchestration/moduleActivation', async () => ({
+const mockActivateModule = jest.fn();
+jest.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
-vi.mock('../../../stores/settingsStore', async () => ({
-  useSettingsStore: vi.fn(() => ({
+jest.mock('../../../stores/settingsStore', () => ({
+  useSettingsStore: jest.fn(() => ({
     keyboardShortcuts: [
       { id: 'open-costforge', action: 'Open CostForge', keys: 'Ctrl+1', category: 'modules' },
       { id: 'open-settings', action: 'Open Settings', keys: 'Ctrl+,', category: 'navigation' },
@@ -43,9 +43,9 @@ vi.mock('../../../stores/settingsStore', async () => ({
 }));
 
 // CommandPalette uses useNavigate() for parcel search navigation
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }));
 
@@ -54,7 +54,7 @@ vi.mock('react-router-dom', async () => ({
 // ============================================================================
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
   act(() => {
     useCommandPaletteStore.setState({
       isOpen: false,

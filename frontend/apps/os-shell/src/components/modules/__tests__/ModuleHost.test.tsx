@@ -16,14 +16,14 @@ import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { ModuleHost } from '../ModuleHost';
 
 // Mock analytics
-vi.mock('../../../utils/analytics', () => ({
+jest.mock('../../../utils/analytics', () => ({
   analytics: {
-    trackEvent: vi.fn(),
+    trackEvent: jest.fn(),
   },
 }));
 
 // Mock moduleComponents to avoid lazy loading complexity
-vi.mock('../../../config/moduleComponents', () => ({
+jest.mock('../../../config/moduleComponents', () => ({
   normalizeModuleId: (id: string) => {
     const aliases: Record<string, string> = {
       terrabuild: 'costforge',
@@ -79,7 +79,7 @@ const resetStore = () => {
 describe('ModuleHost', () => {
   beforeEach(() => {
     resetStore();
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -248,7 +248,7 @@ describe('ModuleHost', () => {
 
   describe('onClose callback', () => {
     it('calls onClose when provided in error state', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       const failingModuleId = 'failing-close-test-module';
 
       useModuleLoaderStore.setState({

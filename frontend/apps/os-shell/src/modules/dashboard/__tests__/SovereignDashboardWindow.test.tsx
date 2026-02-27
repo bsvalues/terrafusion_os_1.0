@@ -16,7 +16,7 @@ import { SovereignDashboardWindow } from '../SovereignDashboardWindow';
 // ============================================================================
 
 // Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', () => ({
+jest.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
     span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
@@ -26,7 +26,7 @@ vi.mock('framer-motion', () => ({
 }));
 
 // Mock the CostforgeAnalysisWidget to isolate dashboard tests
-vi.mock('../components/CostforgeAnalysisWidget', () => ({
+jest.mock('../components/CostforgeAnalysisWidget', () => ({
   CostforgeAnalysisWidget: () => <div data-testid='costforge-widget'>CostForge Widget Mock</div>,
 }));
 

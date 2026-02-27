@@ -21,14 +21,14 @@ import { ToastContainer } from '../ToastContainer';
 
 // Reset store before each test
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
   act(() => {
     useNotificationStore.getState().clearAll();
   });
 });
 
 afterEach(() => {
-  vi.useRealTimers();
+  jest.useRealTimers();
   cleanup();
 });
 
@@ -132,7 +132,7 @@ describe('ToastContainer', () => {
 
   describe('Toast Dismissal', () => {
     it('removes toast when dismiss clicked', async () => {
-      vi.useRealTimers();
+      jest.useRealTimers();
       render(<ToastContainer />);
 
       act(() => {
@@ -168,7 +168,7 @@ describe('ToastContainer', () => {
       expect(screen.getByText('Auto Dismiss')).toBeInTheDocument();
 
       act(() => {
-        vi.advanceTimersByTime(3000);
+        jest.advanceTimersByTime(3000);
       });
 
       expect(screen.queryByText('Auto Dismiss')).not.toBeInTheDocument();

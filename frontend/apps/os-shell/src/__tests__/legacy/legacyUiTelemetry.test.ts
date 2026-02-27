@@ -25,7 +25,7 @@ beforeEach(() => {
   jest
     .spyOn(Storage.prototype, 'getItem')
     .mockImplementation((key: string) => mockSessionStorage[key] ?? null);
-  vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
+  jest.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
     mockSessionStorage[key] = value;
   });
 
@@ -33,13 +33,13 @@ beforeEach(() => {
   resetLegacyUiMetrics();
 
   // Mock Date.now for time-based rate limiting
-  vi.useFakeTimers();
-  vi.setSystemTime(new Date('2026-02-05T12:00:00Z'));
+  jest.useFakeTimers();
+  jest.setSystemTime(new Date('2026-02-05T12:00:00Z'));
 });
 
 afterEach(() => {
-  vi.restoreAllMocks();
-  vi.useRealTimers();
+  jest.restoreAllMocks();
+  jest.useRealTimers();
 });
 
 describe('legacyUiTelemetry', () => {
@@ -129,7 +129,7 @@ describe('legacyUiTelemetry', () => {
       });
 
       // Advance time beyond rate limit window (5 minutes)
-      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+      jest.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
       // Should emit again
       const result = emitLegacyUiHit({
@@ -181,7 +181,7 @@ describe('legacyUiTelemetry', () => {
       });
 
       // Advance time
-      vi.advanceTimersByTime(60 * 1000);
+      jest.advanceTimersByTime(60 * 1000);
 
       emitLegacyUiHit({
         legacyAppId: 'agg.test',

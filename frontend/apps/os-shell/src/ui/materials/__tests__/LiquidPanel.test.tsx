@@ -31,8 +31,8 @@ const CONSTITUTIONAL_VALUES = {
 // ============================================================================
 
 // Mock the quality gate to control test conditions
-vi.mock('../materialQualityGate', () => ({
-  useMaterialQuality: vi.fn(),
+jest.mock('../materialQualityGate', () => ({
+  useMaterialQuality: jest.fn(),
   MaterialQuality: {
     LOW: 'low',
     MEDIUM: 'medium',
@@ -40,7 +40,7 @@ vi.mock('../materialQualityGate', () => ({
   },
 }));
 
-const mockUseMaterialQuality = vi.importMock('../materialQualityGate').useMaterialQuality;
+const mockUseMaterialQuality = jest.requireMock('../materialQualityGate').useMaterialQuality;
 
 // ============================================================================
 // LiquidPanel Tests
@@ -48,7 +48,7 @@ const mockUseMaterialQuality = vi.importMock('../materialQualityGate').useMateri
 
 describe('LiquidPanel', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     // Default to high quality
     mockUseMaterialQuality.mockReturnValue({
       tier: 'high',
@@ -218,8 +218,8 @@ describe('LiquidPanel', () => {
     });
 
     it('does not schedule intervals or RAF loops', async () => {
-      const setIntervalSpy = vi.spyOn(global, 'setInterval');
-      const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame');
+      const setIntervalSpy = jest.spyOn(global, 'setInterval');
+      const requestAnimationFrameSpy = jest.spyOn(window, 'requestAnimationFrame');
 
       const { LiquidPanel } = await import('../LiquidPanel');
 

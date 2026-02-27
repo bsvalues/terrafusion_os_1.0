@@ -20,12 +20,12 @@ import * as ambientPolicy from '../../shell/ambient/ambientPolicy';
 // Mocks
 // ============================================================================
 
-vi.mock('../../shell/ambient/ambientPolicy', async () => ({
-  ...(await vi.importActual('../../shell/ambient/ambientPolicy')),
-  resolveAmbientMode: vi.fn(),
+jest.mock('../../shell/ambient/ambientPolicy', () => ({
+  ...jest.requireActual('../../shell/ambient/ambientPolicy'),
+  resolveAmbientMode: jest.fn(),
 }));
 
-const mockResolveAmbientMode = ambientPolicy.resolveAmbientMode as vi.MockedFunction<
+const mockResolveAmbientMode = ambientPolicy.resolveAmbientMode as jest.MockedFunction<
   typeof ambientPolicy.resolveAmbientMode
 >;
 
@@ -35,7 +35,7 @@ const mockResolveAmbientMode = ambientPolicy.resolveAmbientMode as vi.MockedFunc
 
 describe('Ambient Layer Gating', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     // Default to CSS mode
     mockResolveAmbientMode.mockReturnValue('css');
   });

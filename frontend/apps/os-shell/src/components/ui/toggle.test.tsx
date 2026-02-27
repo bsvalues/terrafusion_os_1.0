@@ -98,7 +98,7 @@ describe('Toggle', () => {
     });
 
     it('calls onPressedChange when clicked', async () => {
-      const onPressedChange = vi.fn();
+      const onPressedChange = jest.fn();
       const user = userEvent.setup();
 
       render(<Toggle onPressedChange={onPressedChange}>Toggle</Toggle>);
@@ -109,7 +109,7 @@ describe('Toggle', () => {
     });
 
     it('calls onPressedChange with false when unpressing', async () => {
-      const onPressedChange = vi.fn();
+      const onPressedChange = jest.fn();
       const user = userEvent.setup();
 
       render(
@@ -210,7 +210,7 @@ describe('Toggle', () => {
     });
 
     it('does not toggle when disabled', async () => {
-      const onPressedChange = vi.fn();
+      const onPressedChange = jest.fn();
       const user = userEvent.setup();
 
       render(
@@ -273,7 +273,7 @@ describe('Toggle', () => {
     });
 
     it('calls onPressedChange on Space key', async () => {
-      const onPressedChange = vi.fn();
+      const onPressedChange = jest.fn();
       const user = userEvent.setup();
 
       render(<Toggle onPressedChange={onPressedChange}>Toggle</Toggle>);
@@ -287,7 +287,7 @@ describe('Toggle', () => {
     });
 
     it('calls onPressedChange on Enter key', async () => {
-      const onPressedChange = vi.fn();
+      const onPressedChange = jest.fn();
       const user = userEvent.setup();
 
       render(<Toggle onPressedChange={onPressedChange}>Toggle</Toggle>);
@@ -301,7 +301,7 @@ describe('Toggle', () => {
     });
 
     it('does not toggle on other keys', async () => {
-      const onPressedChange = vi.fn();
+      const onPressedChange = jest.fn();
       const user = userEvent.setup();
 
       render(<Toggle onPressedChange={onPressedChange}>Toggle</Toggle>);

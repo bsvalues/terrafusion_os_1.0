@@ -23,7 +23,7 @@ import { WindowManager } from '../WindowManager';
 // Suppress console.error for error boundary tests
 const originalError = console.error;
 beforeEach(() => {
-  console.error = vi.fn();
+  console.error = jest.fn();
 
   // Reset stores
   act(() => {

@@ -33,7 +33,7 @@ const renderWithRouter = (ui: React.ReactElement) => {
 // ============================================================================
 
 // Mock i18n
-vi.mock('react-i18next', () => ({
+jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       // Map of translations
@@ -68,14 +68,14 @@ vi.mock('react-i18next', () => ({
 // ============================================================================
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
   act(() => {
     useNotificationStore.getState().clearAll();
   });
 });
 
 afterEach(() => {
-  vi.useRealTimers();
+  jest.useRealTimers();
   cleanup();
 });
 
@@ -144,7 +144,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
     });
 
     it('shows notification in panel when opened', async () => {
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithRouter(<TaskbarWithNotifications />);
 
       act(() => {
@@ -167,7 +167,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
 
   describe('dismissing notifications (SC-10.3)', () => {
     it('dismissing notification removes from store', async () => {
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithRouter(<TaskbarWithNotifications />);
 
       // Add notification
@@ -204,7 +204,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
 
   describe('clear all (SC-10.4)', () => {
     it('clear all button removes all notifications from store', async () => {
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithRouter(<TaskbarWithNotifications />);
 
       // Add multiple notifications
@@ -233,7 +233,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
     });
 
     it('badge disappears after clear all', async () => {
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithRouter(<TaskbarWithNotifications />);
 
       act(() => {
@@ -261,7 +261,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
 
   describe('reactive updates (SC-10.5)', () => {
     it('badge updates when notification marked as read', async () => {
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithRouter(<TaskbarWithNotifications />);
 
       // Add notification
@@ -286,7 +286,7 @@ describe('Taskbar ↔ Notification Store Integration', () => {
     });
 
     it('clicking notification marks it as read', async () => {
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithRouter(<TaskbarWithNotifications />);
 
       act(() => {
@@ -326,7 +326,7 @@ describe('Notification Type Styling', () => {
     ['warning', '🟡'],
     ['error', '🔴'],
   ])('displays %s notification with correct styling', async (type) => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     renderWithRouter(<TaskbarWithNotifications />);
 
     act(() => {

@@ -106,7 +106,7 @@ describe('RadioGroup', () => {
     });
 
     it('calls onValueChange when selection changes', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       const user = userEvent.setup();
 
       render(
@@ -216,7 +216,7 @@ describe('RadioGroup', () => {
     });
 
     it('does not call onValueChange for disabled items', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       const user = userEvent.setup();
 
       render(
@@ -312,7 +312,7 @@ describe('RadioGroup', () => {
     });
 
     it('submits selected value with form', async () => {
-      const handleSubmit = vi.fn((e) => {
+      const handleSubmit = jest.fn((e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         return Object.fromEntries(formData);

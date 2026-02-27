@@ -13,8 +13,8 @@ import api from '../api';
 // and mocking the HTTP layer underneath.
 
 // Mock axios adapter to simulate HTTP responses
-vi.mock('axios', async () => {
-  const realAxios = await vi.importActual('axios');
+jest.mock('axios', () => {
+  const realAxios = jest.requireActual('axios');
   const instance = realAxios.create();
   // Preserve interceptors from the real module
   return {
@@ -27,7 +27,7 @@ vi.mock('axios', async () => {
 describe('api.ts auth bridge integration', () => {
   beforeEach(() => {
     localStorage.clear();
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
     authBridge.unregisterLogoutHandler();
   });
 
@@ -48,7 +48,7 @@ describe('api.ts auth bridge integration', () => {
   });
 
   it('authBridge_logout_guards_against_duplicate_calls', () => {
-    const handler = vi.fn();
+    const handler = jest.fn();
     authBridge.registerLogoutHandler(handler);
 
     // First call should go through
@@ -72,7 +72,7 @@ describe('api.ts auth bridge integration', () => {
     // There is NO authBridge.logout call for 403.
 
     // We verify the bridge is not called for a 403-like scenario
-    const handler = vi.fn();
+    const handler = jest.fn();
     authBridge.registerLogoutHandler(handler);
 
     // Simulate what would happen: nothing calls logout for 403
@@ -99,8 +99,8 @@ describe('api.ts auth bridge integration', () => {
     process.env.VITE_USE_MOCK_DATA = 'true';
     process.env.VITE_DEV_PREVIEW_BYPASS_AUTH = 'false';
 
-    const logoutSpy = vi.spyOn(authBridge, 'logout');
-    const inFlightSpy = vi.spyOn(authBridge, 'isLogoutInFlight').mockReturnValue(false);
+    const logoutSpy = jest.spyOn(authBridge, 'logout');
+    const inFlightSpy = jest.spyOn(authBridge, 'isLogoutInFlight').mockReturnValue(false);
 
     const rejected = (api.interceptors.response as any).handlers.find(
       (h: { rejected?: unknown }) => typeof h.rejected === 'function'

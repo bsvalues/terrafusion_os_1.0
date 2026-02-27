@@ -61,7 +61,7 @@ describe('Checkbox', () => {
   describe('User Interactions', () => {
     it('calls onCheckedChange when clicked', async () => {
       const user = userEvent.setup();
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Checkbox onCheckedChange={handleChange} data-testid='checkbox' />);
       const checkbox = screen.getByTestId('checkbox');
 
@@ -73,7 +73,7 @@ describe('Checkbox', () => {
 
     it('toggles checked state on click', async () => {
       const user = userEvent.setup();
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Checkbox onCheckedChange={handleChange} data-testid='checkbox' />);
       const checkbox = screen.getByTestId('checkbox');
 
@@ -88,7 +88,7 @@ describe('Checkbox', () => {
 
     it('toggles checked state with Space key', async () => {
       const user = userEvent.setup();
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Checkbox onCheckedChange={handleChange} data-testid='checkbox' />);
       const checkbox = screen.getByTestId('checkbox');
 
@@ -101,7 +101,7 @@ describe('Checkbox', () => {
 
     it('does not toggle when disabled', async () => {
       const user = userEvent.setup();
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Checkbox disabled onCheckedChange={handleChange} data-testid='checkbox' />);
       const checkbox = screen.getByTestId('checkbox');
 
@@ -112,7 +112,7 @@ describe('Checkbox', () => {
 
     it('does not respond to keyboard when disabled', async () => {
       const user = userEvent.setup();
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Checkbox disabled onCheckedChange={handleChange} data-testid='checkbox' />);
       const checkbox = screen.getByTestId('checkbox');
 
@@ -215,7 +215,7 @@ describe('Checkbox', () => {
 
     it('submits form data when checked (controlled)', async () => {
       const user = userEvent.setup();
-      const handleSubmit = vi.fn((e) => {
+      const handleSubmit = jest.fn((e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         return Object.fromEntries(formData);
@@ -249,7 +249,7 @@ describe('Checkbox', () => {
 
     it('works with label element', async () => {
       const user = userEvent.setup();
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(
         <label htmlFor='my-checkbox'>
           <span>Accept Terms</span>
@@ -276,7 +276,7 @@ describe('Checkbox', () => {
 
     it('calls onCheckedChange but does not auto-update when controlled', async () => {
       const user = userEvent.setup();
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Checkbox checked={false} onCheckedChange={handleChange} data-testid='checkbox' />);
       const checkbox = screen.getByTestId('checkbox');
 

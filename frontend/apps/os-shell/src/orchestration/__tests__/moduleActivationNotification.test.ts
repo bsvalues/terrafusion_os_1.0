@@ -20,22 +20,22 @@ import { activateModule } from '../moduleActivation';
 // Mocks
 // ============================================================================
 
-vi.mock('../../config/moduleComponents', () => ({
+jest.mock('../../config/moduleComponents', () => ({
   normalizeModuleId: (id: string) => id,
   isModuleRegistered: (id: string) => ['costforge', 'terra-gaia', 'atlas-ai'].includes(id),
 }));
 
-vi.mock('../../stores/moduleLoaderStore', () => ({
+jest.mock('../../stores/moduleLoaderStore', () => ({
   useModuleLoaderStore: {
     getState: () => ({
-      loadModule: vi.fn().mockResolvedValue(undefined),
+      loadModule: jest.fn().mockResolvedValue(undefined),
     }),
   },
 }));
 
-vi.mock('../../services/telemetry', () => ({
+jest.mock('../../services/telemetry', () => ({
   telemetry: {
-    trackEvent: vi.fn(),
+    trackEvent: jest.fn(),
   },
 }));
 
@@ -44,7 +44,7 @@ vi.mock('../../services/telemetry', () => ({
 // ============================================================================
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
   act(() => {
     useNotificationStore.getState().clearAll();
     useDesktopStore.getState().closeAllWindows?.() || 
@@ -53,7 +53,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 // ============================================================================

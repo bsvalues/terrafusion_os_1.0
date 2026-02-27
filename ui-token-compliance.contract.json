@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 847,
-  "violationCount": 198,
+  "violationCount": 199,
   "violations": [
     {
       "kind": "RAW_HEX",
@@ -38,14 +38,14 @@
       "file": "frontend\\apps\\os-shell\\src\\components\\PacsProofCard.tsx",
       "line": 121,
       "column": 31,
-      "excerpt": "hsl(var(--tf-accent-danger, 0 84% 60%))', fontSize: '0.65rem' }}>"
+      "excerpt": "hsl(var(--tf-accent-danger, 0 84% 60%))', fontSize: '0.65rem' }}>\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\PacsProofCard.tsx",
       "line": 126,
       "column": 31,
-      "excerpt": "hsl(var(--tf-accent-warning, 38 92% 55%))', fontSize: '0.65rem' }}>"
+      "excerpt": "hsl(var(--tf-accent-warning, 38 92% 55%))', fontSize: '0.65rem' }}>\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -59,21 +59,21 @@
       "file": "frontend\\apps\\os-shell\\src\\components\\SystemHealthPanel.tsx",
       "line": 37,
       "column": 15,
-      "excerpt": "hsl(var(--tf-accent-success, 142 76% 42%))';"
+      "excerpt": "hsl(var(--tf-accent-success, 142 76% 42%))';\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\SystemHealthPanel.tsx",
       "line": 39,
       "column": 15,
-      "excerpt": "hsl(var(--tf-accent-warning, 38 92% 55%))';"
+      "excerpt": "hsl(var(--tf-accent-warning, 38 92% 55%))';\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\components\\SystemHealthPanel.tsx",
       "line": 41,
       "column": 15,
-      "excerpt": "hsl(var(--tf-accent-danger, 0 84% 60%))';"
+      "excerpt": "hsl(var(--tf-accent-danger, 0 84% 60%))';\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -647,35 +647,35 @@
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GPTAnalyticsModule.tsx",
       "line": 146,
       "column": 64,
-      "excerpt": "hsl(142 71% 45%)' }} />"
+      "excerpt": "hsl(142 71% 45%)' }} />\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GPTAnalyticsModule.tsx",
       "line": 148,
       "column": 66,
-      "excerpt": "hsl(0 84% 60%)' }} />"
+      "excerpt": "hsl(0 84% 60%)' }} />\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GPTAnalyticsModule.tsx",
       "line": 152,
       "column": 53,
-      "excerpt": "hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}"
+      "excerpt": "hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GPTAnalyticsModule.tsx",
       "line": 152,
       "column": 74,
-      "excerpt": "hsl(0 84% 60%)' }}"
+      "excerpt": "hsl(0 84% 60%)' }}\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GPTAnalyticsModule.tsx",
       "line": 198,
       "column": 89,
-      "excerpt": "hsl(142 71% 45%)' }} />}"
+      "excerpt": "hsl(142 71% 45%)' }} />}\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -829,14 +829,14 @@
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\LayerWorksModule.tsx",
       "line": 286,
       "column": 112,
-      "excerpt": "hsl(38 92% 50%)' }} />"
+      "excerpt": "hsl(38 92% 50%)' }} />\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\LayerWorksModule.tsx",
       "line": 288,
       "column": 66,
-      "excerpt": "hsl(38 92% 50%)' }}>Processing...</span>"
+      "excerpt": "hsl(38 92% 50%)' }}>Processing...</span>\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -948,161 +948,161 @@
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraExportModule.tsx",
       "line": 79,
       "column": 20,
-      "excerpt": "hsl(142 71% 45% / 0.15)', fg: 'hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },"
+      "excerpt": "hsl(142 71% 45% / 0.15)', fg: 'hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraExportModule.tsx",
       "line": 82,
       "column": 18,
-      "excerpt": "hsl(0 84% 60% / 0.15)', fg: 'hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },"
+      "excerpt": "hsl(0 84% 60% / 0.15)', fg: 'hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraExportModule.tsx",
       "line": 82,
       "column": 47,
-      "excerpt": "hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },"
+      "excerpt": "hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraExportModule.tsx",
       "line": 82,
       "column": 73,
-      "excerpt": "hsl(0 84% 60% / 0.3)' },"
+      "excerpt": "hsl(0 84% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
       "line": 71,
       "column": 20,
-      "excerpt": "hsl(142 71% 45% / 0.15)', fg: 'hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },"
+      "excerpt": "hsl(142 71% 45% / 0.15)', fg: 'hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
       "line": 74,
       "column": 18,
-      "excerpt": "hsl(0 84% 60% / 0.15)', fg: 'hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },"
+      "excerpt": "hsl(0 84% 60% / 0.15)', fg: 'hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
       "line": 74,
       "column": 47,
-      "excerpt": "hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },"
+      "excerpt": "hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
       "line": 74,
       "column": 73,
-      "excerpt": "hsl(0 84% 60% / 0.3)' },"
+      "excerpt": "hsl(0 84% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 111,
       "column": 18,
-      "excerpt": "hsl(38 92% 50% / 0.15)', fg: 'hsl(38 92% 50%)', border: 'hsl(38 92% 50% / 0.3)' },"
+      "excerpt": "hsl(38 92% 50% / 0.15)', fg: 'hsl(38 92% 50%)', border: 'hsl(38 92% 50% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 111,
       "column": 48,
-      "excerpt": "hsl(38 92% 50%)', border: 'hsl(38 92% 50% / 0.3)' },"
+      "excerpt": "hsl(38 92% 50%)', border: 'hsl(38 92% 50% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 111,
       "column": 75,
-      "excerpt": "hsl(38 92% 50% / 0.3)' },"
+      "excerpt": "hsl(38 92% 50% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 112,
       "column": 20,
-      "excerpt": "hsl(280 65% 60% / 0.15)', fg: 'hsl(280 65% 60%)', border: 'hsl(280 65% 60% / 0.3)' },"
+      "excerpt": "hsl(280 65% 60% / 0.15)', fg: 'hsl(280 65% 60%)', border: 'hsl(280 65% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 112,
       "column": 51,
-      "excerpt": "hsl(280 65% 60%)', border: 'hsl(280 65% 60% / 0.3)' },"
+      "excerpt": "hsl(280 65% 60%)', border: 'hsl(280 65% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 112,
       "column": 79,
-      "excerpt": "hsl(280 65% 60% / 0.3)' },"
+      "excerpt": "hsl(280 65% 60% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 113,
       "column": 22,
-      "excerpt": "hsl(142 71% 45% / 0.15)', fg: 'hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },"
+      "excerpt": "hsl(142 71% 45% / 0.15)', fg: 'hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 113,
       "column": 53,
-      "excerpt": "hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },"
+      "excerpt": "hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 113,
       "column": 81,
-      "excerpt": "hsl(142 71% 45% / 0.3)' },"
+      "excerpt": "hsl(142 71% 45% / 0.3)' },\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraQueryModule.tsx",
       "line": 277,
       "column": 62,
-      "excerpt": "hsl(142 71% 45%)' }} />"
+      "excerpt": "hsl(142 71% 45%)' }} />\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraSketchModule.tsx",
       "line": 223,
       "column": 60,
-      "excerpt": "hsl(142 71% 45%)' }} />"
+      "excerpt": "hsl(142 71% 45%)' }} />\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraSketchModule.tsx",
       "line": 225,
       "column": 61,
-      "excerpt": "hsl(0 84% 60%)' }} />"
+      "excerpt": "hsl(0 84% 60%)' }} />\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraSketchModule.tsx",
       "line": 243,
       "column": 101,
-      "excerpt": "hsl(38 92% 50% / 0.1)' }}>"
+      "excerpt": "hsl(38 92% 50% / 0.1)' }}>\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraSketchModule.tsx",
       "line": 244,
       "column": 61,
-      "excerpt": "hsl(38 92% 50%)' }} className='mt-0.5 shrink-0' />"
+      "excerpt": "hsl(38 92% 50%)' }} className='mt-0.5 shrink-0' />\r"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraSketchModule.tsx",
       "line": 245,
       "column": 59,
-      "excerpt": "hsl(38 92% 50%)' }}>{w}</p>"
+      "excerpt": "hsl(38 92% 50%)' }}>{w}</p>\r"
     },
     {
       "kind": "RAW_HEX",
@@ -1191,22 +1191,36 @@
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\TraceHome.tsx",
+      "line": 232,
+      "column": 34,
+      "excerpt": "hsl(0 70% 30%)'\r"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\TraceHome.tsx",
       "line": 345,
       "column": 36,
-      "excerpt": "hsl(0 70% 65%)', marginBottom: '0.5rem' }}>Recent Errors</h4>"
+      "excerpt": "hsl(0 70% 65%)', marginBottom: '0.5rem' }}>Recent Errors</h4>\r"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 122,
+      "line": 121,
       "column": 71,
       "excerpt": "#1a472a' />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 123,
+      "line": 122,
       "column": 51,
+      "excerpt": "#1f5a2f' />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 123,
+      "column": 52,
       "excerpt": "#1f5a2f' />"
     },
     {
@@ -1214,82 +1228,75 @@
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
       "line": 124,
       "column": 52,
-      "excerpt": "#1f5a2f' />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 125,
-      "column": 52,
       "excerpt": "#245634' />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 162,
+      "line": 161,
       "column": 47,
       "excerpt": "#f59e0b' />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 163,
+      "line": 162,
       "column": 61,
       "excerpt": "#f59e0b' strokeWidth='1' opacity='0.6' />"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 114,
+      "line": 113,
       "column": 61,
       "excerpt": "rgba(255,255,255,0.05)' strokeWidth='0.5' />"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 133,
+      "line": 132,
       "column": 19,
       "excerpt": "rgba(59, 130, 246, 0.15)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 134,
+      "line": 133,
       "column": 21,
       "excerpt": "rgba(59, 130, 246, 0.4)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 144,
+      "line": 143,
       "column": 19,
       "excerpt": "rgba(168, 85, 247, 0.1)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 145,
+      "line": 144,
       "column": 21,
       "excerpt": "rgba(168, 85, 247, 0.3)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 155,
+      "line": 154,
       "column": 19,
       "excerpt": "rgba(34, 211, 238, 0.15)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 156,
+      "line": 155,
       "column": 21,
       "excerpt": "rgba(34, 211, 238, 0.8)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 167,
+      "line": 166,
       "column": 98,
       "excerpt": "rgba(0,0,0,0.4)' }}>"
     },
@@ -1392,5 +1399,5 @@
       "excerpt": "rgba(r, g, b, a)"
     }
   ],
-  "generatedAtIso": "2026-02-27T16:11:27.113Z"
+  "generatedAtIso": "2026-02-27T15:03:16.349Z"
 }

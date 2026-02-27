@@ -14,11 +14,11 @@
 // ============================================================================
 
 // Mock desktopStore
-const mockOpenWindow = vi.fn().mockReturnValue('window-123');
-const mockFocusWindow = vi.fn();
-const mockGetWindows = vi.fn().mockReturnValue([]);
+const mockOpenWindow = jest.fn().mockReturnValue('window-123');
+const mockFocusWindow = jest.fn();
+const mockGetWindows = jest.fn().mockReturnValue([]);
 
-vi.mock('../../stores/desktopStore', () => ({
+jest.mock('../../stores/desktopStore', () => ({
   useDesktopStore: {
     getState: () => ({
       windows: mockGetWindows(),
@@ -29,10 +29,10 @@ vi.mock('../../stores/desktopStore', () => ({
 }));
 
 // Mock moduleLoaderStore
-const mockLoadModule = vi.fn().mockResolvedValue(undefined);
-const mockGetLoadState = vi.fn().mockReturnValue({ status: 'idle' });
+const mockLoadModule = jest.fn().mockResolvedValue(undefined);
+const mockGetLoadState = jest.fn().mockReturnValue({ status: 'idle' });
 
-vi.mock('../../stores/moduleLoaderStore', () => ({
+jest.mock('../../stores/moduleLoaderStore', () => ({
   useModuleLoaderStore: {
     getState: () => ({
       loadModule: mockLoadModule,
@@ -42,7 +42,7 @@ vi.mock('../../stores/moduleLoaderStore', () => ({
 }));
 
 // Mock moduleComponents (normalizeModuleId, isModuleRegistered)
-const mockNormalizeModuleId = vi.fn((id: string) => {
+const mockNormalizeModuleId = jest.fn((id: string) => {
   const aliases: Record<string, string> = {
     terrabuild: 'costforge',
     assessment: 'costforge',
@@ -50,20 +50,20 @@ const mockNormalizeModuleId = vi.fn((id: string) => {
   return aliases[id] || id;
 });
 
-const mockIsModuleRegistered = vi.fn((id: string) => {
+const mockIsModuleRegistered = jest.fn((id: string) => {
   const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
   return registry.includes(id);
 });
 
-vi.mock('../../config/moduleComponents', () => ({
+jest.mock('../../config/moduleComponents', () => ({
   normalizeModuleId: mockNormalizeModuleId,
   isModuleRegistered: mockIsModuleRegistered,
 }));
 
 // Mock telemetry
-const mockTrackEvent = vi.fn();
+const mockTrackEvent = jest.fn();
 
-vi.mock('../../services/telemetry', () => ({
+jest.mock('../../services/telemetry', () => ({
   telemetry: {
     trackEvent: mockTrackEvent,
   },
@@ -116,7 +116,7 @@ describe('moduleActivation', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // --------------------------------------------------------------------------

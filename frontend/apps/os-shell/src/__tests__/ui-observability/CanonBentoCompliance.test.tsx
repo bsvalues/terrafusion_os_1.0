@@ -22,43 +22,43 @@ import React from 'react';
 // ---------------------------------------------------------------------------
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useNavigate: () => vi.fn(),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
 }));
 
 // StandaloneHomeShell — pass-through wrapper (no shell chrome in tests)
-vi.mock('../../components/standalone', async () => ({
+jest.mock('../../components/standalone', () => ({
   StandaloneHomeShell: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // CanonModuleHost — invisible in layout tests
-vi.mock('../../canon/CanonModuleHost', async () => ({
+jest.mock('../../canon/CanonModuleHost', () => ({
   CanonModuleHost: () => <div data-testid='canon-module-host-stub' />,
 }));
 
 // useCanonLayout — default layout
-vi.mock('../../canon/useCanonLayout', async () => ({
+jest.mock('../../canon/useCanonLayout', () => ({
   useCanonLayout: () => [
     { leftPaneWidth: 250, rightPaneWidth: 750, inspectorOpen: false },
-    vi.fn(),
+    jest.fn(),
   ],
 }));
 
 // invokeWithPreflight — stub
-vi.mock('../../canon/invokeWithPreflight', async () => ({
-  invokeWithPreflight: vi.fn(),
+jest.mock('../../canon/invokeWithPreflight', () => ({
+  invokeWithPreflight: jest.fn(),
 }));
 
 // Canon API calls — stubs
-vi.mock('../../api/canonDoctor', async () => ({
-  runCanonDoctor: vi.fn(),
+jest.mock('../../api/canonDoctor', () => ({
+  runCanonDoctor: jest.fn(),
 }));
-vi.mock('../../api/canonGateFast', async () => ({
-  runCanonGateFast: vi.fn(),
+jest.mock('../../api/canonGateFast', () => ({
+  runCanonGateFast: jest.fn(),
 }));
-vi.mock('../../api/canonPing', async () => ({
-  runCanonPing: vi.fn(),
+jest.mock('../../api/canonPing', () => ({
+  runCanonPing: jest.fn(),
 }));
 
 // ---------------------------------------------------------------------------

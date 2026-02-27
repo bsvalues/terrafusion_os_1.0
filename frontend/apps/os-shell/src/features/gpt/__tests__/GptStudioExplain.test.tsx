@@ -9,18 +9,18 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 // Mock the API module BEFORE importing the component
-vi.mock('../../../api/explainApi', () => ({
-  explainContext: vi.fn(),
+jest.mock('../../../api/explainApi', () => ({
+  explainContext: jest.fn(),
 }));
 
 // Mock PropertyAssessmentFlows to avoid undefined errors
-vi.mock('../components/PropertyAssessmentFlows', () => ({
+jest.mock('../components/PropertyAssessmentFlows', () => ({
   PropertyAssessmentFlows: () => <div data-testid='mock-flows'>Mock Flows</div>,
 }));
 
 // Mock the GPT client to avoid network calls and import.meta.env issues
-vi.mock('../../../api/gptClient', () => ({
-  getSystemGpts: vi.fn().mockResolvedValue([
+jest.mock('../../../api/gptClient', () => ({
+  getSystemGpts: jest.fn().mockResolvedValue([
     {
       key: 'PropertyAssessmentGPT',
       name: 'Property Assessment GPT',
@@ -32,30 +32,30 @@ vi.mock('../../../api/gptClient', () => ({
       enabled: true,
     },
   ]),
-  createConversation: vi.fn().mockResolvedValue({
+  createConversation: jest.fn().mockResolvedValue({
     id: 'test-conv-123',
     gptKey: 'PropertyAssessmentGPT',
     messages: [],
   }),
-  getMessages: vi.fn().mockResolvedValue([]),
-  getRagHealth: vi.fn().mockResolvedValue({
+  getMessages: jest.fn().mockResolvedValue([]),
+  getRagHealth: jest.fn().mockResolvedValue({
     indexed: true,
     embeddingCount: 100,
     documentCount: 5,
     healthy: true,
   }),
-  sendMessage: vi.fn(),
-  indexRagDataset: vi.fn(),
+  sendMessage: jest.fn(),
+  indexRagDataset: jest.fn(),
 }));
 
 import { explainContext } from '../../../api/explainApi';
 import { GptStudioView } from '../GptStudioView';
 
-const mockExplainContext = explainContext as vi.MockedFunction<typeof explainContext>;
+const mockExplainContext = explainContext as jest.MockedFunction<typeof explainContext>;
 
 describe('GptStudioView Explain Button', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════

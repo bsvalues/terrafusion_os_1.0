@@ -17,7 +17,7 @@ import { useContextMenu } from '../useContextMenu';
 
 describe('useContextMenu Hook', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // ==========================================================================
@@ -158,7 +158,7 @@ describe('useContextMenu Hook', () => {
       const { result } = renderHook(() => useContextMenu());
 
       const mockEvent = {
-        preventDefault: vi.fn(),
+        preventDefault: jest.fn(),
         clientX: 250,
         clientY: 350,
       } as unknown as React.MouseEvent;
@@ -176,7 +176,7 @@ describe('useContextMenu Hook', () => {
       const { result } = renderHook(() => useContextMenu<{ moduleId: string }>());
 
       const mockEvent = {
-        preventDefault: vi.fn(),
+        preventDefault: jest.fn(),
         clientX: 100,
         clientY: 200,
       } as unknown as React.MouseEvent;
@@ -261,8 +261,8 @@ describe('useContextMenu Hook', () => {
 
   describe('cleanup', () => {
     it('cleans up event listeners on unmount', () => {
-      const addSpy = vi.spyOn(document, 'addEventListener');
-      const removeSpy = vi.spyOn(document, 'removeEventListener');
+      const addSpy = jest.spyOn(document, 'addEventListener');
+      const removeSpy = jest.spyOn(document, 'removeEventListener');
 
       const { result, unmount } = renderHook(() => useContextMenu());
 

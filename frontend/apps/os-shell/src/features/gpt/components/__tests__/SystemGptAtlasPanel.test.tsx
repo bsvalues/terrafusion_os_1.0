@@ -13,23 +13,23 @@ import type { SystemGptAtlasResponse } from '../../../../api/systemDiagnosticsAp
 import { SystemGptAtlasPanel } from '../SystemGptAtlasPanel';
 
 // Mock the systemDiagnosticsApi module entirely (avoids import.meta.env issues)
-const mockFetchSystemGptAtlas = vi.fn();
-vi.mock('../../../../api/systemDiagnosticsApi', () => ({
+const mockFetchSystemGptAtlas = jest.fn();
+jest.mock('../../../../api/systemDiagnosticsApi', () => ({
   fetchSystemGptAtlas: (...args: any[]) => mockFetchSystemGptAtlas(...args),
 }));
 
 describe('SystemGptAtlasPanel', () => {
-  const mockOnCountySelect = vi.fn();
+  const mockOnCountySelect = jest.fn();
 
   beforeEach(() => {
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     mockOnCountySelect.mockClear();
     mockFetchSystemGptAtlas.mockClear();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
-    vi.restoreAllMocks();
+    jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════

@@ -85,7 +85,7 @@ describe('Toast (Sonner)', () => {
       toast('Message', {
         action: {
           label: 'Undo',
-          onClick: vi.fn(),
+          onClick: jest.fn(),
         },
       });
 
@@ -96,7 +96,7 @@ describe('Toast (Sonner)', () => {
 
     // Skip: Sonner action button click handling is flaky in jsdom due to hasPointerCapture
     it.skip('calls action onClick when button is clicked', async () => {
-      const onClick = vi.fn();
+      const onClick = jest.fn();
       const user = userEvent.setup();
 
       render(<Toaster />);
@@ -126,7 +126,7 @@ describe('Toast (Sonner)', () => {
       toast('Message', {
         action: {
           label: 'Undo',
-          onClick: vi.fn(),
+          onClick: jest.fn(),
         },
       });
 
@@ -150,7 +150,7 @@ describe('Toast (Sonner)', () => {
       toast('Message', {
         cancel: {
           label: 'Cancel',
-          onClick: vi.fn(),
+          onClick: jest.fn(),
         },
       });
 
@@ -161,7 +161,7 @@ describe('Toast (Sonner)', () => {
 
     // Skip: Sonner cancel button click handling is flaky in jsdom due to hasPointerCapture
     it.skip('calls cancel onClick when button is clicked', async () => {
-      const onClick = vi.fn();
+      const onClick = jest.fn();
       const user = userEvent.setup();
 
       render(<Toaster />);
@@ -329,7 +329,7 @@ describe('Toast (Sonner)', () => {
     });
 
     it('action button is keyboard accessible', async () => {
-      const onClick = vi.fn();
+      const onClick = jest.fn();
       const user = userEvent.setup();
 
       render(<Toaster />);
@@ -535,7 +535,7 @@ describe('Toast (Sonner)', () => {
       toast('Message', {
         action: {
           label: 'Undo',
-          onClick: vi.fn(),
+          onClick: jest.fn(),
         },
       });
 

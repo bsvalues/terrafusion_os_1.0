@@ -6,11 +6,11 @@ import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { Desktop } from '../Desktop';
 
 // Mock the components to avoid full rendering complexity
-vi.mock('../../../fs/AxiomFSSurface', () => ({
+jest.mock('../../../fs/AxiomFSSurface', () => ({
   AxiomFSSurface: () => <div data-testid='axiomfs-surface'>AxiomFS Surface</div>,
 }));
 
-vi.mock('../../../ui/brand/TFSpiralIris', () => ({
+jest.mock('../../../ui/brand/TFSpiralIris', () => ({
   TFSpiralIris: () => <div data-testid='tf-spiral-iris'>Iris</div>,
 }));
 

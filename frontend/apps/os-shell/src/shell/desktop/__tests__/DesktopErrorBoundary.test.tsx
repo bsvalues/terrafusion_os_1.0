@@ -20,7 +20,7 @@ import { DesktopErrorBoundary } from '../DesktopErrorBoundary';
 // Suppress console.error for error boundary tests
 const originalError = console.error;
 beforeEach(() => {
-  console.error = vi.fn();
+  console.error = jest.fn();
 });
 
 afterEach(() => {
@@ -130,7 +130,7 @@ describe('DesktopErrorBoundary', () => {
     it.skip('restart button triggers page reload', async () => {
       // Mock window.location.reload using delete+assign pattern
       const originalLocation = window.location;
-      const reloadMock = vi.fn();
+      const reloadMock = jest.fn();
       // @ts-expect-error - deleting location for mock
       delete window.location;
       window.location = { ...originalLocation, reload: reloadMock } as Location;
@@ -161,12 +161,12 @@ describe('DesktopErrorBoundary', () => {
     it.skip('clear data button clears localStorage', async () => {
       // Store original localStorage
       const originalClear = window.localStorage.clear.bind(window.localStorage);
-      const clearMock = vi.fn();
+      const clearMock = jest.fn();
       window.localStorage.clear = clearMock;
 
       // Mock window.location.reload using delete+assign pattern
       const originalLocation = window.location;
-      const reloadMock = vi.fn();
+      const reloadMock = jest.fn();
       // @ts-expect-error - deleting location for mock
       delete window.location;
       window.location = { ...originalLocation, reload: reloadMock } as Location;

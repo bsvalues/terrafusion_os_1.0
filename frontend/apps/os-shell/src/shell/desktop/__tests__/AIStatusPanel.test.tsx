@@ -37,7 +37,7 @@ const mockAIStatus = {
 };
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
@@ -168,7 +168,7 @@ describe('AIStatusPanel', () => {
 
   describe('Close Behavior', () => {
     it('calls onClose when close button clicked', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       render(<AIStatusPanel status={mockAIStatus} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('button', { name: /close/i }));
@@ -177,7 +177,7 @@ describe('AIStatusPanel', () => {
     });
 
     it('calls onClose on Escape key', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       render(<AIStatusPanel status={mockAIStatus} onClose={onClose} />);
 
       await userEvent.keyboard('{Escape}');
@@ -186,7 +186,7 @@ describe('AIStatusPanel', () => {
     });
 
     it('calls onClose when clicking outside', async () => {
-      const onClose = vi.fn();
+      const onClose = jest.fn();
       render(
         <div data-testid='outside' style={{ padding: '100px' }}>
           <AIStatusPanel status={mockAIStatus} onClose={onClose} />
