@@ -334,8 +334,8 @@ class QuantumModuleManagerService {
       left: 10%;
       width: 80%;
       height: 80%;
-      background: rgba(10, 14, 26, 0.95);
-      border: 1px solid rgba(0, 255, 255, 0.3);
+      background: hsl(var(--tf-bg) / 0.95);
+      border: 1px solid hsl(var(--tf-accent) / 0.3);
       border-radius: 12px;
       backdrop-filter: blur(10px);
       z-index: 1000;

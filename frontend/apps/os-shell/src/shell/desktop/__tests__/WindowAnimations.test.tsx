@@ -153,7 +153,7 @@ describe('Window Animation Variants', () => {
     it('should have subtle shadow when unfocused', () => {
       expect(windowFocusVariants.unfocused).toEqual({
         scale: 1,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+        boxShadow: '0 8px 32px hsl(var(--tf-bg) / 0.4)',
       });
     });
 

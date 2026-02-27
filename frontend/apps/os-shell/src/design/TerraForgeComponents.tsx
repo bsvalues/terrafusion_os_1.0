@@ -258,7 +258,7 @@ export const TerraForgeProgressRing: React.FC<ProgressRingProps> = ({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke='rgba(51, 65, 85, 0.3)'
+          stroke='hsl(var(--tf-border) / 0.3)'
           strokeWidth={strokeWidth}
           fill='none'
         />

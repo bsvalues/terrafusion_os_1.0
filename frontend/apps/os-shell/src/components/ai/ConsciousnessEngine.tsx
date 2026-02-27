@@ -243,11 +243,11 @@ export function ConsciousnessIndicator() {
   const getLevelGlow = () => {
     switch (consciousness.level) {
       case 'TRANSCENDENT':
-        return 'shadow-[0_0_20px_rgba(0,255,255,0.6)]';
+        return 'shadow-[0_0_20px_hsl(var(--tf-accent)_/_0.6)]';
       case 'AWARE':
-        return 'shadow-[0_0_15px_rgba(0,255,136,0.4)]';
+        return 'shadow-[0_0_15px_hsl(var(--tf-success)_/_0.4)]';
       default:
-        return 'shadow-[0_0_10px_rgba(255,170,0,0.3)]';
+        return 'shadow-[0_0_10px_hsl(var(--tf-warning)_/_0.3)]';
     }
   };
 

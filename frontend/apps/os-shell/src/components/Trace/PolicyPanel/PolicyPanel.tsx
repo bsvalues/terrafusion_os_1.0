@@ -197,7 +197,7 @@ function PolicyPanel_DISABLED() {
       <div style={{ marginBottom: '16px' }}>
         <strong>Active Rules ({rules.length}):</strong>
         {rules.length === 0 ? (
-          <div style={{ fontStyle: 'italic', color: '#666', marginTop: '8px' }}>
+          <div style={{ fontStyle: 'italic', color: 'hsl(var(--tf-muted))', marginTop: '8px' }}>
             No active policy rules — all actions allowed
           </div>
         ) : (
@@ -206,7 +206,7 @@ function PolicyPanel_DISABLED() {
               <li
                 key={rule.id}
                 style={{
-                  border: '1px solid #ccc',
+                  border: '1px solid hsl(var(--tf-border))',
                   padding: '8px',
                   marginBottom: '8px',
                   borderRadius: '4px',
@@ -218,7 +218,7 @@ function PolicyPanel_DISABLED() {
                   {rule.suiteId && ` suiteId=${rule.suiteId}`}
                   {rule.surface && ` surface=${rule.surface}`}
                 </div>
-                <div style={{ fontSize: '0.9em', color: '#666', marginTop: '4px' }}>
+                <div style={{ fontSize: '0.9em', color: 'hsl(var(--tf-muted))', marginTop: '4px' }}>
                   {rule.reason}
                 </div>
                 <button
@@ -236,7 +236,7 @@ function PolicyPanel_DISABLED() {
 
       {/* Add Rule Form */}
       {isAddingRule ? (
-        <div style={{ border: '1px solid #ccc', padding: '12px', borderRadius: '4px' }}>
+        <div style={{ border: '1px solid hsl(var(--tf-border))', padding: '12px', borderRadius: '4px' }}>
           <div style={{ marginBottom: '8px' }}>
             <label htmlFor='actionId' style={{ display: 'block', marginBottom: '4px' }}>
               Action ID (optional):

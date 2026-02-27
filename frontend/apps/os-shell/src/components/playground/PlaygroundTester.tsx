@@ -184,7 +184,7 @@ export const PlaygroundTester: React.FC = () => {
           className={`px-8 py-3 rounded-full font-semibold uppercase transition-all duration-300 ${
             isRunning
               ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              : 'terra-gradient-quantum text-white hover:shadow-[0_0_30px_rgba(0,255,255,0.5)] hover:-translate-y-1'
+              : 'terra-gradient-quantum text-white hover:shadow-[0_0_30px_hsl(var(--tf-accent)_/_0.5)] hover:-translate-y-1'
           }`}
         >
           {isRunning ? '⏳ Running Tests...' : '🚀 Run All Tests'}

@@ -372,8 +372,8 @@ export function SystemGptAtlasPanel({
           className='absolute inset-0 opacity-10'
           style={{
             backgroundImage: `
-              linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px)
+              linear-gradient(hsl(var(--tf-accent) / 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, hsl(var(--tf-accent) / 0.1) 1px, transparent 1px)
             `,
             backgroundSize: '40px 40px',
           }}

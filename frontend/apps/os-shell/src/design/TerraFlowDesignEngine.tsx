@@ -42,9 +42,9 @@ export const terraDepth = {
 
 // Revolutionary Color Synchronization System
 export const getTerraGlow = (confidence: number): string => {
-  if (confidence > 0.95) return 'rgba(74, 224, 255, 0.8)'; // Terra Cyan
-  if (confidence > 0.7) return 'rgba(65, 255, 179, 0.6)'; // Terra Green
-  return 'rgba(255, 180, 0, 0.6)'; // Amber warning
+  if (confidence > 0.95) return 'hsl(var(--tf-accent) / 0.8)'; // Terra Cyan
+  if (confidence > 0.7) return 'hsl(var(--tf-success) / 0.6)'; // Terra Green
+  return 'hsl(var(--tf-warning) / 0.6)'; // Amber warning
 };
 
 /**

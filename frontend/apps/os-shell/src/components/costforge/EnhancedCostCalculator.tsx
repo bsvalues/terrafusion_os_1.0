@@ -1392,8 +1392,8 @@ export const EnhancedCostCalculator: React.FC = () => {
                               name,
                             ]}
                             contentStyle={{
-                              backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                              border: '1px solid rgba(0, 255, 238, 0.3)',
+                              backgroundColor: 'hsl(var(--tf-surface) / 0.9)',
+                              border: '1px solid hsl(var(--tf-accent) / 0.3)',
                               borderRadius: '8px',
                               color: 'var(--tf-text-primary)',
                             }}
@@ -1425,8 +1425,8 @@ export const EnhancedCostCalculator: React.FC = () => {
                               name,
                             ]}
                             contentStyle={{
-                              backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                              border: '1px solid rgba(0, 255, 238, 0.3)',
+                              backgroundColor: 'hsl(var(--tf-surface) / 0.9)',
+                              border: '1px solid hsl(var(--tf-accent) / 0.3)',
                               borderRadius: '8px',
                               color: 'var(--tf-text-primary)',
                             }}

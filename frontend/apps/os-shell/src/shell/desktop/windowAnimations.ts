@@ -152,14 +152,14 @@ export const windowRestoreVariants: Variants = {
 export const windowFocusVariants: Variants = {
   unfocused: {
     scale: 1,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+    boxShadow: '0 8px 32px hsl(var(--tf-bg) / 0.4)',
   },
   focused: {
     scale: 1,
     boxShadow: [
-      '0 8px 32px rgba(0,0,0,0.4)',
-      '0 0 30px rgba(0,255,238,0.2), 0 8px 32px rgba(0,0,0,0.5)',
-      '0 0 30px rgba(0,255,238,0.2), 0 8px 32px rgba(0,0,0,0.5)',
+      '0 8px 32px hsl(var(--tf-bg) / 0.4)',
+      '0 0 30px hsl(var(--tf-accent) / 0.2), 0 8px 32px hsl(var(--tf-bg) / 0.5)',
+      '0 0 30px hsl(var(--tf-accent) / 0.2), 0 8px 32px hsl(var(--tf-bg) / 0.5)',
     ],
   },
 };
