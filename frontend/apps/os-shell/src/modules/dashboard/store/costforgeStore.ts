@@ -2,7 +2,6 @@ import { TF_TOKENS } from '@/ui/theme/tokens';
 import { create } from 'zustand';
 import { FEATURES } from '../../../config/features';
 import { GOLDEN_METRICS } from '../../../data/goldenParcel';
-import api from '../../../services/api';
 
 export type OptimizationStatus = 'idle' | 'analyzing' | 'ready' | 'optimized';
 
@@ -77,6 +76,7 @@ export const useCostforgeStore = create<CostforgeState>((set, get) => {
       set({ status: 'analyzing' });
 
       try {
+        const { default: api } = await import('../../../services/api');
         const res = await api.post('/costforge/calculate', {
           region: 'benton-wa',
           buildingType: 'residential',
@@ -89,6 +89,7 @@ export const useCostforgeStore = create<CostforgeState>((set, get) => {
         if (data?.totalCost) {
           const projected = data.totalCost;
           const current = state.metrics.assessedValue.current || projected;
+          const landVal = data.landValue || 0;
           set({
             status: 'ready',
             metrics: {
@@ -100,9 +101,9 @@ export const useCostforgeStore = create<CostforgeState>((set, get) => {
               },
               taxLiability: {
                 ...state.metrics.taxLiability,
-                current: state.metrics.taxLiability.current || data.landValue ?? 0,
-                projected: data.landValue ?? state.metrics.taxLiability.projected,
-                delta: (data.landValue ?? state.metrics.taxLiability.projected) - (state.metrics.taxLiability.current || data.landValue ?? 0),
+                current: state.metrics.taxLiability.current || landVal,
+                projected: landVal || state.metrics.taxLiability.projected,
+                delta: (landVal || state.metrics.taxLiability.projected) - (state.metrics.taxLiability.current || landVal),
               },
               grm: state.metrics.grm,
             },
