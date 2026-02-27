@@ -1,10 +1,10 @@
 {
   "contract": "ui-token-ratchet.contract.json",
   "version": "v1",
-  "ok": false,
-  "scopeHash": "e2187676ae870298",
-  "baselineViolationCount": 149,
-  "currentViolationCount": 152,
-  "delta": -3,
-  "generatedAtIso": "2026-02-27T05:57:52.190Z"
+  "ok": true,
+  "scopeHash": "72828f4076972d33",
+  "baselineViolationCount": 152,
+  "currentViolationCount": 183,
+  "delta": -31,
+  "generatedAtIso": "2026-02-27T06:30:45.988Z"
 }

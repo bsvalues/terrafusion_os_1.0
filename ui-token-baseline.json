@@ -1,7 +1,7 @@
 {
   "contract": "ui-token-baseline.json",
   "version": "v1",
-  "scopeHash": "e2187676ae870298",
-  "violationCount": 152,
-  "generatedAtIso": "2026-02-27T05:46:35.260Z"
+  "scopeHash": "72828f4076972d33",
+  "violationCount": 183,
+  "generatedAtIso": "2026-02-27T06:30:45.988Z"
 }
