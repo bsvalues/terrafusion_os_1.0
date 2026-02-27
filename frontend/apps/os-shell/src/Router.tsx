@@ -4,7 +4,14 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
+import { CSSAmbientLayer } from './components/compositor/layers/CSSAmbientLayer';
 import { getViteEnv } from './env/getViteEnv';
+
+// CSS imports — design tokens must load for ShellHome route
+import './styles/terrafusion-tokens.css';
+import './styles/terrafusion-brand.css';
+import './styles/terrafusion-os.css';
+import './App.css';
 
 // Loading component for Suspense fallback — design tokens only (no raw Tailwind)
 const LoadingFallback = () => (
@@ -28,8 +35,10 @@ const LoadingFallback = () => (
 );
 
 // Lazy load route components for code splitting
-// Desktop Shell - the ONE canonical OS surface
+// Desktop Shell - OS windowed surface
 const App = lazy(() => import('./App'));
+// Shell Home - Primary OS landing surface with suite tiles, search, system health
+const ShellHome = lazy(() => import('./shell/home/ShellHome'));
 // Property Workbench - Parcel-context hub (Tier-0 OS Surface)
 const PropertyWorkbench = lazy(() => import('./pages/workbench/PropertyWorkbench'));
 const PropertySummary = lazy(() => import('./pages/workbench/tabs/PropertySummary'));
@@ -105,16 +114,24 @@ const Router: React.FC = () => {
                 {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
                 <Route path='/login' element={<LoginPage />} />
 
-                {/* TerraFusion OS Desktop — the ONE canonical surface */}
+                {/* TerraFusion OS Desktop — the real OS surface with windows, taskbar, start menu */}
                 <Route path='/' element={<App />} />
 
-                {/* Legacy: /desktop bookmarks redirect to root with telemetry */}
+                {/* Shell Home — alternative tile-based launcher (accessible via /home) */}
                 <Route
-                  path='/desktop'
-                  element={<LegacyRedirect to='/' legacyAppId='desktop.legacy-route' />}
+                  path='/home'
+                  element={
+                    <div className='relative min-h-screen overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
+                      <CSSAmbientLayer />
+                      <ShellHome className='relative z-10' />
+                    </div>
+                  }
                 />
 
-                {/* Legacy: /launchpad bookmarks redirect to root (ShellHome absorbed into Desktop) */}
+                {/* Legacy: /desktop still works */}
+                <Route path='/desktop' element={<App />} />
+
+                {/* Legacy: /launchpad bookmarks redirect to home */}
                 <Route
                   path='/launchpad'
                   element={<LegacyRedirect to='/' legacyAppId='launchpad.legacy-route' />}

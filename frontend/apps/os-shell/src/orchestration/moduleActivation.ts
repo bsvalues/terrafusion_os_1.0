@@ -88,6 +88,7 @@ function getModuleDisplayName(moduleId: string): string {
   const displayNames: Record<string, string> = {
     'costforge': 'CostForge',
     'terra-gaia': 'TerraGaia',
+    'federation-dashboard': 'TerraDais',
     'levy-calculator': 'Levy Calculator',
     'gis-viewer': 'GIS Viewer',
     'document-manager': 'Documents',
@@ -110,6 +111,7 @@ function getModuleIcon(moduleId: string): string {
   const icons: Record<string, string> = {
     'costforge': '💎',
     'terra-gaia': '🌍',
+    'federation-dashboard': '🏛️',
     'levy-calculator': '📊',
     'gis-viewer': '🗺️',
     'document-manager': '📁',
