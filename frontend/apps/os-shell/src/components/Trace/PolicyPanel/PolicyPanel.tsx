@@ -11,27 +11,8 @@
  * @see Slice 23: Policy UI for Visual Rule Management
  */
 
-/**
- * PolicyPanel - Policy configuration UI (experimental)
- * @note TEMPORARILY DISABLED: emitTrace function not yet implemented in osActions
- * @see https://github.com/bsvalues/terrafusion_os_1.0/issues/TBD
- * 
- * TODO: Restore when osActions exports emitTrace or equivalent trace function
- */
-
-export function PolicyPanel() {
-  return (
-    <div className="p-4 bg-yellow-100 dark:bg-yellow-900 rounded">
-      <strong>PolicyPanel temporarily disabled</strong>
-      <p>Missing osActions.emitTrace function - pending implementation</p>
-    </div>
-  );
-}
-
-/* DISABLED CODE - Restore when emitTrace is available
-
 import { useCallback, useEffect, useState } from 'react';
-import { resetActionPolicy, setActionPolicy } from '../../../services/osActions';
+import { emitTrace, resetActionPolicy, setActionPolicy } from '../../../services/osActions';
 import { compilePolicyRules, type PolicyRule } from '../../../services/policyEngine';
 import { createPolicyStore } from '../../../services/policyStore';
 
@@ -60,11 +41,10 @@ function hashRules(rules: PolicyRule[]): string {
 }
 
 // ============================================================================
-// PolicyPanel Component (ORIGINAL - DISABLED)
+// PolicyPanel Component
 // ============================================================================
 
-// export function PolicyPanel() {
-function PolicyPanel_DISABLED() {
+export function PolicyPanel() {
   const [rules, setRules] = useState<PolicyRule[]>([]);
   const [isAddingRule, setIsAddingRule] = useState(false);
   const [formError, setFormError] = useState<string>('');
@@ -116,7 +96,7 @@ function PolicyPanel_DISABLED() {
       effect: 'deny',
       ...(actionId && { actionId }),
       ...(suiteId && { suiteId }),
-      ...(surface && { surface: surface as any }),
+      ...(surface && { surface: surface as PolicyRule['surface'] }),
       reason: reason || 'No reason provided',
     };
 
