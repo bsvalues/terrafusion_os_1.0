@@ -19,6 +19,7 @@ export const useSystemHealth = () => {
     data: systemHealth,
     isLoading,
     error,
+    refetch,
   } = useQuery<SystemHealth>('systemHealth', systemAPI.getSystemHealth, {
     refetchInterval: 5000, // Update every 5 seconds
     staleTime: 1000, // Consider data stale after 1 second
@@ -36,9 +37,15 @@ export const useSystemHealth = () => {
     lastUpdated: new Date().toISOString(),
   };
 
+  const resolved = systemHealth || defaultHealth;
+
   return {
-    systemHealth: systemHealth || defaultHealth,
+    systemHealth: resolved,
+    // Aliases used by ShellHome
+    health: resolved,
     isLoading,
+    loading: isLoading,
     error,
+    refresh: refetch,
   };
 };
