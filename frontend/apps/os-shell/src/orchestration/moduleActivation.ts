@@ -88,6 +88,7 @@ function getModuleDisplayName(moduleId: string): string {
   const displayNames: Record<string, string> = {
     'costforge': 'CostForge',
     'terra-gaia': 'TerraGaia',
+    'federation-dashboard': 'TerraDais',
     'levy-calculator': 'Levy Calculator',
     'gis-viewer': 'GIS Viewer',
     'document-manager': 'Documents',
@@ -97,8 +98,14 @@ function getModuleDisplayName(moduleId: string): string {
     'counties': 'Counties Hub',
     'government-architecture': 'Architecture',
     'settings': 'Settings',
+    // Constitutional Suite Homes
+    'suite-forge': 'TerraForge',
+    'suite-atlas': 'TerraAtlas',
+    'suite-dais': 'TerraDais',
+    'suite-dossier': 'TerraDossier',
+    'suite-gpt': 'TerraGPT',
   };
-  
+
   return displayNames[moduleId] ?? moduleId;
 }
 
@@ -110,6 +117,7 @@ function getModuleIcon(moduleId: string): string {
   const icons: Record<string, string> = {
     'costforge': '💎',
     'terra-gaia': '🌍',
+    'federation-dashboard': '🏛️',
     'levy-calculator': '📊',
     'gis-viewer': '🗺️',
     'document-manager': '📁',
@@ -119,8 +127,14 @@ function getModuleIcon(moduleId: string): string {
     'counties': '🏛️',
     'government-architecture': '🏗️',
     'settings': '⚙️',
+    // Constitutional Suite Homes
+    'suite-forge': '🔨',
+    'suite-atlas': '🗺️',
+    'suite-dais': '⚖️',
+    'suite-dossier': '📋',
+    'suite-gpt': '🧠',
   };
-  
+
   return icons[moduleId] ?? '📦';
 }
 

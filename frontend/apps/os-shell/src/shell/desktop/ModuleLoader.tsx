@@ -9,7 +9,9 @@
  */
 
 import React from 'react';
+import { isModuleRegistered, normalizeModuleId } from '../../config/moduleComponents';
 import { ModuleRenderer } from '../../config/moduleComponents';
+import type { ModuleDefinition } from '../../stores/moduleRegistryStore';
 import { useModuleRegistryStore } from '../../stores/moduleRegistryStore';
 
 // ============================================================================
@@ -102,15 +104,36 @@ const NotFoundState: React.FC<{ moduleId: string }> = ({ moduleId }) => (
  * - Full integration with OS state
  */
 export const ModuleLoader: React.FC<ModuleLoaderProps> = ({ moduleId, metadata }) => {
-  // Get module from registry store
-  const module = useModuleRegistryStore((state) => state.getModuleById(moduleId));
+  const canonical = normalizeModuleId(moduleId);
 
-  // Module not found in registry
+  // Try dynamic store first (gen2 modules registered at startup)
+  const storeModule = useModuleRegistryStore((state) => state.getModuleById(canonical));
+
+  // Fallback: hardcoded MODULE_REGISTRY in moduleComponents.tsx
+  // (costforge, atlas-ai, terra-gaia, federation-dashboard, etc.)
+  const module: ModuleDefinition | undefined = storeModule ?? (
+    isModuleRegistered(canonical)
+      ? {
+          id: canonical,
+          name: canonical,
+          displayName: canonical,
+          description: '',
+          icon: '',
+          category: 'system',
+          tier: 'Tier1',
+          status: 'active',
+          version: '1.0.0',
+          launchPath: '/',
+          isCore: false,
+          priority: 0,
+        }
+      : undefined
+  );
+
   if (!module) {
     return <NotFoundState moduleId={moduleId} />;
   }
 
-  // Render the module component directly
   return (
     <div
       data-testid='module-loader'

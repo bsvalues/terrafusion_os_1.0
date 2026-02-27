@@ -22,50 +22,41 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { vi, describe, it, expect, afterEach } from 'vitest';
 import { getDesktopIcons, type DesktopIconEntry } from '../../config/desktopManifest';
 
 // ============================================================================
 // Stage 2 Mocks — for rendering the full Router at the navigated path
 // ============================================================================
 
-/**
- * We need a SEPARATE mock scope for Stage 2 (full Router render).
- * Stage 1 uses real MemoryRouter directly (no mock needed).
- * Stage 2 uses the Phase 24/25 pattern: mock BrowserRouter → MemoryRouter.
- *
- * Since jest.mock is module-scoped and hoisted, we handle this by:
- * - NOT mocking react-router-dom globally (Stage 1 needs the real one)
- * - Using a dynamic import of Router inside Stage 2 with manual mocking
- *
- * Actually, since DesktopIconGrid imports useNavigate from react-router-dom,
- * and Router also imports from react-router-dom, we need a unified approach.
- *
- * Solution: mock BrowserRouter → MemoryRouter (like Phase 24), but control
- * initialEntries. Stage 1 renders DesktopIconGrid with a LocationDisplay
- * at a catch-all route. Stage 2 re-renders Router at the navigated path.
- */
-
 let memoryRouterEntries: string[] = ['/'];
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  const ActualMemoryRouter = actual.MemoryRouter;
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
-      <actual.MemoryRouter initialEntries={memoryRouterEntries}>{children}</actual.MemoryRouter>
+      <ActualMemoryRouter initialEntries={memoryRouterEntries}>{children}</ActualMemoryRouter>
     ),
   };
 });
 
-jest.mock('../../auth/authStorage', () => ({
+vi.mock('../../auth/authStorage', () => ({
   getToken: () => 'smoke-test-token',
-  setToken: jest.fn(),
-  clearToken: jest.fn(),
+  setToken: vi.fn(),
+  clearToken: vi.fn(),
 }));
 
-jest.mock('../../auth/authBridge', () => ({
-  registerLogoutHandler: jest.fn(),
-  unregisterLogoutHandler: jest.fn(),
+vi.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: vi.fn(),
+  unregisterLogoutHandler: vi.fn(),
+}));
+
+// Mock activateModule (suite icons now open windows instead of navigating)
+const mockActivateModule = vi.fn();
+vi.mock('../../orchestration/moduleActivation', () => ({
+  activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
 // Stage 1 imports (DesktopIconGrid uses navigate() from react-router-dom)
@@ -137,25 +128,60 @@ function assertLandmark(route: string) {
 // Tests
 // ============================================================================
 
+// Suite IDs that now open as windows (not navigate)
+const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
+
 describe('Phase 26 intent contract: click desktop icon → navigate → landmark renders', () => {
   afterEach(() => {
     cleanup();
+    mockActivateModule.mockClear();
   });
 
   const icons = getDesktopIcons();
 
-  const testableIcons = icons.filter((icon) => {
+  // OS feature icons still navigate (pilot, trace, canon)
+  const navigatingIcons = icons.filter((icon) => {
+    if (SUITE_IDS.has(icon.id)) return false; // Suites open windows now
     const r = icon.route;
     if (!r || typeof r !== 'string') return false;
     if (isExternal(r)) return false;
     return true;
   });
 
+  // Suite icons that activate modules
+  const suiteIcons = icons.filter((icon) => SUITE_IDS.has(icon.id));
+
   it('has testable desktop icons', () => {
-    expect(testableIcons.length).toBeGreaterThan(0);
+    expect(navigatingIcons.length + suiteIcons.length).toBeGreaterThan(0);
   });
 
-  it.each(testableIcons)(
+  // Suite icons: verify they call activateModule (open as window)
+  it.each(suiteIcons)(
+    '$name ($id): double-click → activates module window',
+    (icon: DesktopIconEntry) => {
+      memoryRouterEntries = ['/'];
+
+      render(
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route path='/' element={<DesktopIconGrid />} />
+            <Route path='*' element={<LocationDisplay />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      const iconEl = screen.getByTestId(`desktop-icon-${icon.id}`);
+      expect(iconEl).toBeInTheDocument();
+
+      fireEvent.doubleClick(iconEl);
+
+      // Suite icons open windowed modules via activateModule
+      expect(mockActivateModule).toHaveBeenCalledWith(icon.id, { source: 'desktop' });
+    }
+  );
+
+  // OS feature icons: verify they navigate to standalone routes with landmarks
+  it.each(navigatingIcons)(
     '$name ($id): double-click → navigates to $route → landmark appears',
     async (icon: DesktopIconEntry) => {
       // ================================================================
@@ -176,7 +202,7 @@ describe('Phase 26 intent contract: click desktop icon → navigate → landmark
       const iconEl = screen.getByTestId(`desktop-icon-${icon.id}`);
       expect(iconEl).toBeInTheDocument();
 
-      // Double-click to launch (DesktopIconGrid calls navigate(route))
+      // Double-click to launch (OS features call navigate(route))
       fireEvent.doubleClick(iconEl);
 
       // Verify navigation occurred to the expected route

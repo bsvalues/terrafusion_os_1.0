@@ -15,6 +15,7 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDesktopIcons } from '../../config/desktopManifest';
+import { activateModule } from '../../orchestration/moduleActivation';
 import { DesktopIcon } from './DesktopIcon';
 
 // ============================================================================
@@ -48,7 +49,7 @@ export interface DesktopIconGridProps {
  * Features:
  * - Fixed grid layout
  * - Single icon selection
- * - Double-click to navigate to suite route
+ * - Double-click opens module as window (suites) or navigates (OS features)
  * - Keyboard navigation
  * - Click outside to deselect
  *
@@ -77,12 +78,19 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
     setSelectedId(id);
   }, []);
 
-  // Handle icon launch (double click) - Navigate to suite route
-  // Desktop icon IDs are suite/feature IDs (forge, atlas, dais, dossier, gpt,
-  // pilot, trace, canon), NOT windowing module IDs (costforge, atlas-ai, etc.).
-  // They map to workbench tabs or standalone pages via desktopManifest routes.
+  // Handle icon launch (double click) - Open suite home or OS feature.
+  // Suite icons (forge, atlas, dais, dossier, gpt) open suite HOME PAGES as windows.
+  // OS feature icons (pilot, trace, canon) navigate to standalone pages.
   const handleLaunch = useCallback(
     (id: string) => {
+      // Suite IDs open their full suite home inside a Desktop window
+      const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
+      if (SUITE_IDS.has(id)) {
+        // activateModule will normalize 'forge' → 'suite-forge' via MODULE_ALIASES
+        activateModule(id, { source: 'desktop' });
+        return;
+      }
+      // OS features → navigate to their standalone page
       const icon = DESKTOP_ICONS.find((i) => i.id === id);
       if (icon?.route) navigate(icon.route);
     },

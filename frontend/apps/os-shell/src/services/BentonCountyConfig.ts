@@ -47,7 +47,7 @@ export interface BentonCountyConfig {
   };
 }
 
-class BentonCountyConfigService {
+export class BentonCountyConfigService {
   private static instance: BentonCountyConfigService;
   private config: BentonCountyConfig;
 
