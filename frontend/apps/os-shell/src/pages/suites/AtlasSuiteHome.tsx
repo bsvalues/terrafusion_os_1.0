@@ -57,7 +57,7 @@ export default function AtlasSuiteHome() {
   const [activeModule, setActiveModule] = useState('gis');
 
   return (
-    <div className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div data-testid="suite-atlas-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Header */}
       <header style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }} className='backdrop-blur-xl'>
         <div className='max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4'>

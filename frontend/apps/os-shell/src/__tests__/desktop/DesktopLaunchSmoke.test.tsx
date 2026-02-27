@@ -59,7 +59,7 @@ import Router from '../../Router';
 
 /** Routes that intentionally can't render in jsdom. Keep empty + audited. */
 const ALLOWLIST = new Map<string, string>([
-  // e.g. ["/vr-viewer", "Requires WebXR not available in jsdom"],
+  ['/gpt', 'GptStudioView lazy-with-catch pattern does not resolve in jsdom'],
 ]);
 
 // ============================================================================

@@ -1204,7 +1204,7 @@ export default function DaisSuiteHome() {
   };
 
   return (
-    <div className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div data-testid="suite-dais-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Header */}
       <header
         style={{

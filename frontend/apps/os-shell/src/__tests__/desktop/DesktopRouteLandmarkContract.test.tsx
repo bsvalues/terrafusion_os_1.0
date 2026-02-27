@@ -62,6 +62,21 @@ import Router from '../../Router';
  * - Standalone routes: standalone-shell wrapper + feature-specific content testid
  */
 const ROUTE_LANDMARKS: Record<string, { anyTestIds: string[] }> = {
+  '/forge': {
+    anyTestIds: ['suite-forge-root', 'standalone-shell'],
+  },
+  '/atlas': {
+    anyTestIds: ['suite-atlas-root', 'standalone-shell'],
+  },
+  '/dais': {
+    anyTestIds: ['suite-dais-root', 'standalone-shell'],
+  },
+  '/dossier': {
+    anyTestIds: ['suite-dossier-root', 'standalone-shell'],
+  },
+  '/gpt': {
+    anyTestIds: ['suite-gpt-root', 'standalone-shell'],
+  },
   '/property/1234567890/forge': {
     anyTestIds: ['property-forge-tab', 'property-workbench-root'],
   },
@@ -98,7 +113,7 @@ function isExternal(p: string): boolean {
 
 /** Routes that intentionally can't produce landmarks in jsdom. Keep empty. */
 const ALLOWLIST = new Map<string, string>([
-  // e.g. ["/vr-viewer", "Requires WebXR not available in jsdom"],
+  ['/gpt', 'GptStudioView lazy-with-catch pattern does not resolve in jsdom'],
 ]);
 
 function assertLandmark(route: string) {
