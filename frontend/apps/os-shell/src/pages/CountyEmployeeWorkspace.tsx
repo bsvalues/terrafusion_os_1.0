@@ -118,8 +118,80 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
         return (
           <Card className='terra-glass'>
             <CardContent className='p-6'>
-              <h2 className='text-2xl font-bold text-white mb-4'>Settings</h2>
-              <p className='text-slate-400'>System configuration and preferences coming soon...</p>
+              <h2 className='text-2xl font-bold text-white mb-6'>Settings</h2>
+
+              {/* Profile Section */}
+              <div className='space-y-6'>
+                <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
+                  <h3 className='text-white font-semibold mb-3 flex items-center gap-2'>
+                    <User className='w-4 h-4' /> Profile
+                  </h3>
+                  <div className='grid grid-cols-2 gap-4 text-sm'>
+                    <div>
+                      <span className='text-slate-400'>County</span>
+                      <p className='text-white'>{countyId.charAt(0).toUpperCase() + countyId.slice(1)} County</p>
+                    </div>
+                    <div>
+                      <span className='text-slate-400'>Department</span>
+                      <p className='text-white'>{department}</p>
+                    </div>
+                    <div>
+                      <span className='text-slate-400'>Role</span>
+                      <p className='text-white'>County Assessor</p>
+                    </div>
+                    <div>
+                      <span className='text-slate-400'>Session</span>
+                      <p className='text-green-400'>Active</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notification Preferences */}
+                <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
+                  <h3 className='text-white font-semibold mb-3 flex items-center gap-2'>
+                    <Bell className='w-4 h-4' /> Notifications
+                  </h3>
+                  <div className='space-y-3'>
+                    {[
+                      { label: 'Workflow completions', defaultOn: true },
+                      { label: 'AI insight alerts', defaultOn: true },
+                      { label: 'System health warnings', defaultOn: true },
+                      { label: 'PACS sync notifications', defaultOn: false },
+                    ].map((pref) => (
+                      <label key={pref.label} className='flex items-center justify-between cursor-pointer'>
+                        <span className='text-white/70 text-sm'>{pref.label}</span>
+                        <input
+                          type='checkbox'
+                          defaultChecked={pref.defaultOn}
+                          onChange={() => {}}
+                          className='rounded border-white/20 bg-white/10 text-blue-500 focus:ring-blue-500/30'
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Display Preferences */}
+                <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
+                  <h3 className='text-white font-semibold mb-3 flex items-center gap-2'>
+                    <Settings className='w-4 h-4' /> Display
+                  </h3>
+                  <div className='space-y-3'>
+                    <div className='flex items-center justify-between'>
+                      <span className='text-white/70 text-sm'>Theme</span>
+                      <span className='text-white/50 text-sm bg-white/10 px-3 py-1 rounded-lg'>Dark (System)</span>
+                    </div>
+                    <div className='flex items-center justify-between'>
+                      <span className='text-white/70 text-sm'>Sidebar density</span>
+                      <span className='text-white/50 text-sm bg-white/10 px-3 py-1 rounded-lg'>Comfortable</span>
+                    </div>
+                    <div className='flex items-center justify-between'>
+                      <span className='text-white/70 text-sm'>Map default zoom</span>
+                      <span className='text-white/50 text-sm bg-white/10 px-3 py-1 rounded-lg'>County</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         );
