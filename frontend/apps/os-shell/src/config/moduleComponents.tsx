@@ -31,7 +31,6 @@ export const MODULE_ALIASES: Record<string, string> = {
   // Short aliases
   gaia: 'terra-gaia',
   ai: 'atlas-ai',
-  atlas: 'atlas-ai',
   analytics: 'reporting',
   reports: 'reporting',
   levy: 'levy-calculator',
@@ -50,6 +49,18 @@ export const MODULE_ALIASES: Record<string, string> = {
   dashboard: 'sovereign-dashboard',
   'doc-viewer': 'sovereign-dashboard',
   'document-viewer': 'sovereign-dashboard',
+
+  // Constitutional Suite Home aliases (desktop icons use these)
+  forge: 'suite-forge',
+  atlas: 'suite-atlas',
+  dais: 'suite-dais',
+  dossier: 'suite-dossier',
+  gpt: 'suite-gpt',
+  terraforge: 'suite-forge',
+  terraatlas: 'suite-atlas',
+  terradais: 'suite-dais',
+  terradossier: 'suite-dossier',
+  terragpt: 'suite-gpt',
 };
 
 /**
@@ -87,6 +98,12 @@ export const MODULE_REGISTRY = new Set<string>([
   'plugin-manager',
   'axiom-fs',
   'sovereign-dashboard', // Phase C3: Sovereign Dashboard
+  // Constitutional Suite Homes (render inside Desktop windows)
+  'suite-forge',
+  'suite-atlas',
+  'suite-dais',
+  'suite-dossier',
+  'suite-gpt',
 ]);
 
 /**
@@ -173,6 +190,15 @@ const SovereignDashboardWindow = lazy(() =>
 );
 
 // ============================================================================
+// Constitutional Suite Home Pages (render inside Desktop windows)
+// ============================================================================
+const ForgeSuiteHome = lazy(() => import('../pages/suites/ForgeSuiteHome'));
+const AtlasSuiteHome = lazy(() => import('../pages/suites/AtlasSuiteHome'));
+const DaisSuiteHome = lazy(() => import('../pages/suites/DaisSuiteHome'));
+const DossierSuiteHome = lazy(() => import('../pages/suites/DossierSuiteHome'));
+const GptSuiteHome = lazy(() => import('../pages/suites/GptSuiteHome'));
+
+// ============================================================================
 // Module Entries (lazy components for bespoke modules)
 // ============================================================================
 
@@ -194,6 +220,12 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'plugin-manager': { Component: PluginManager },
   'axiom-fs': { Component: AxiomFSWindow },
   'sovereign-dashboard': { Component: SovereignDashboardWindow },
+  // Constitutional Suite Homes
+  'suite-forge': { Component: ForgeSuiteHome },
+  'suite-atlas': { Component: AtlasSuiteHome },
+  'suite-dais': { Component: DaisSuiteHome },
+  'suite-dossier': { Component: DossierSuiteHome },
+  'suite-gpt': { Component: GptSuiteHome },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
@@ -484,6 +516,45 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
                 | undefined
             }
           />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // CONSTITUTIONAL SUITE HOMES (render full suite inside Desktop window)
+    // ========================================================================
+
+    case 'suite-forge':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <ForgeSuiteHome />
+        </Suspense>
+      );
+
+    case 'suite-atlas':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <AtlasSuiteHome />
+        </Suspense>
+      );
+
+    case 'suite-dais':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <DaisSuiteHome />
+        </Suspense>
+      );
+
+    case 'suite-dossier':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <DossierSuiteHome />
+        </Suspense>
+      );
+
+    case 'suite-gpt':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <GptSuiteHome />
         </Suspense>
       );
 

@@ -98,8 +98,14 @@ function getModuleDisplayName(moduleId: string): string {
     'counties': 'Counties Hub',
     'government-architecture': 'Architecture',
     'settings': 'Settings',
+    // Constitutional Suite Homes
+    'suite-forge': 'TerraForge',
+    'suite-atlas': 'TerraAtlas',
+    'suite-dais': 'TerraDais',
+    'suite-dossier': 'TerraDossier',
+    'suite-gpt': 'TerraGPT',
   };
-  
+
   return displayNames[moduleId] ?? moduleId;
 }
 
@@ -121,8 +127,14 @@ function getModuleIcon(moduleId: string): string {
     'counties': '🏛️',
     'government-architecture': '🏗️',
     'settings': '⚙️',
+    // Constitutional Suite Homes
+    'suite-forge': '🔨',
+    'suite-atlas': '🗺️',
+    'suite-dais': '⚖️',
+    'suite-dossier': '📋',
+    'suite-gpt': '🧠',
   };
-  
+
   return icons[moduleId] ?? '📦';
 }
 

@@ -32,9 +32,7 @@ import './App.css';
 import { MODULES } from './config/modules';
 import { useSyncIntegration } from './hooks/useSyncIntegration';
 import { installShellIpcBridge } from './ipc/shellIpcBridge';
-import { activateModule } from './orchestration/moduleActivation';
 import { DesktopWithErrorBoundary } from './shell/desktop';
-import { useDesktopStore } from './stores/desktopStore';
 import { useModuleRegistryStore } from './stores/moduleRegistryStore';
 import { useStartMenuStore } from './stores/startMenuStore';
 
@@ -90,18 +88,6 @@ function App() {
     console.log('🚀 TerraFusion OS initialized');
     console.log(`📦 ${MODULES.length} modules registered`);
     console.log('📡 IPC bridge installed');
-
-    // Auto-launch key modules on first boot so Desktop isn't empty
-    const { windows } = useDesktopStore.getState();
-    if (windows.length === 0) {
-      // Small delay to let registry settle, then open CostForge as the hero window
-      setTimeout(() => {
-        activateModule('costforge', {
-          source: 'system',
-          showNotification: false,
-        });
-      }, 300);
-    }
 
     return () => {
       cleanupIpc();

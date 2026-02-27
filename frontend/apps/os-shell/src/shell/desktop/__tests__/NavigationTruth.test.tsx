@@ -13,12 +13,19 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React, { act } from 'react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import {
     CONSTITUTIONAL_SUITES,
     OS_FEATURES,
     isConstitutionalSuite,
 } from '../../../config/suiteRegistry';
+
+const mockActivateModule = vi.fn();
+vi.mock('../../../orchestration/moduleActivation', () => ({
+  activateModule: (...args: unknown[]) => mockActivateModule(...args),
+}));
+
 import { DesktopIconGrid } from '../DesktopIconGrid';
 
 // Test helper to capture navigation
@@ -43,45 +50,38 @@ function renderWithRouter(ui: React.ReactElement, initialPath = '/') {
 }
 
 describe('Navigation Truth Contracts', () => {
+  beforeEach(() => mockActivateModule.mockClear());
+
   describe('Desktop Icon Grid Routing', () => {
-    it('suite_icons_route_to_workbench_tabs_not_wip_homes', () => {
+    it('suite_icons_exist_on_desktop', () => {
       renderWithRouter(<DesktopIconGrid />);
 
-      // Constitutional suites should route to /property/:parcelId/:tab
+      // Constitutional suites should be present as desktop icons
       const forgeIcon = screen.getByTestId('desktop-icon-forge');
       const atlasIcon = screen.getByTestId('desktop-icon-atlas');
       const daisIcon = screen.getByTestId('desktop-icon-dais');
       const dossierIcon = screen.getByTestId('desktop-icon-dossier');
 
-      // Each icon should exist and have WB wiring status
       expect(forgeIcon).toBeInTheDocument();
       expect(atlasIcon).toBeInTheDocument();
       expect(daisIcon).toBeInTheDocument();
       expect(dossierIcon).toBeInTheDocument();
-
-      // Verify WB badges are present (honest wiring)
-      expect(forgeIcon.textContent).toContain('WB');
-      expect(atlasIcon.textContent).toContain('WB');
-      expect(daisIcon.textContent).toContain('WB');
-      expect(dossierIcon.textContent).toContain('WB');
     });
 
-    it('forge_icon_navigates_to_workbench_forge_tab', async () => {
+    it('forge_icon_activates_module_on_double_click', async () => {
       renderWithRouter(<DesktopIconGrid />);
 
       const forgeIcon = screen.getByTestId('desktop-icon-forge');
 
-      // Double-click to launch
       await act(async () => {
         fireEvent.doubleClick(forgeIcon);
       });
 
-      // Should navigate to Workbench with forge tab
-      const location = screen.getByTestId('current-location');
-      expect(location.textContent).toMatch(/\/property\/\d+\/forge/);
+      // Suite icons open windowed modules via activateModule
+      expect(mockActivateModule).toHaveBeenCalledWith('forge', { source: 'desktop' });
     });
 
-    it('atlas_icon_navigates_to_workbench_atlas_tab', async () => {
+    it('atlas_icon_activates_module_on_double_click', async () => {
       renderWithRouter(<DesktopIconGrid />);
 
       const atlasIcon = screen.getByTestId('desktop-icon-atlas');
@@ -90,11 +90,10 @@ describe('Navigation Truth Contracts', () => {
         fireEvent.doubleClick(atlasIcon);
       });
 
-      const location = screen.getByTestId('current-location');
-      expect(location.textContent).toMatch(/\/property\/\d+\/atlas/);
+      expect(mockActivateModule).toHaveBeenCalledWith('atlas', { source: 'desktop' });
     });
 
-    it('dais_icon_navigates_to_workbench_dais_tab', async () => {
+    it('dais_icon_activates_module_on_double_click', async () => {
       renderWithRouter(<DesktopIconGrid />);
 
       const daisIcon = screen.getByTestId('desktop-icon-dais');
@@ -103,11 +102,10 @@ describe('Navigation Truth Contracts', () => {
         fireEvent.doubleClick(daisIcon);
       });
 
-      const location = screen.getByTestId('current-location');
-      expect(location.textContent).toMatch(/\/property\/\d+\/dais/);
+      expect(mockActivateModule).toHaveBeenCalledWith('dais', { source: 'desktop' });
     });
 
-    it('dossier_icon_navigates_to_workbench_dossier_tab', async () => {
+    it('dossier_icon_activates_module_on_double_click', async () => {
       renderWithRouter(<DesktopIconGrid />);
 
       const dossierIcon = screen.getByTestId('desktop-icon-dossier');
@@ -116,8 +114,7 @@ describe('Navigation Truth Contracts', () => {
         fireEvent.doubleClick(dossierIcon);
       });
 
-      const location = screen.getByTestId('current-location');
-      expect(location.textContent).toMatch(/\/property\/\d+\/dossier/);
+      expect(mockActivateModule).toHaveBeenCalledWith('dossier', { source: 'desktop' });
     });
 
     it('pilot_icon_navigates_to_standalone_pilot_route', async () => {
@@ -196,7 +193,7 @@ describe('Navigation Truth Contracts', () => {
       expect(forgeIcon).toHaveAttribute('aria-selected', 'true');
     });
 
-    it('double_click_launches_and_navigates', async () => {
+    it('double_click_launches_suite_as_window', async () => {
       renderWithRouter(<DesktopIconGrid />);
 
       const forgeIcon = screen.getByTestId('desktop-icon-forge');
@@ -205,12 +202,11 @@ describe('Navigation Truth Contracts', () => {
         fireEvent.doubleClick(forgeIcon);
       });
 
-      // Should have navigated
-      const location = screen.getByTestId('current-location');
-      expect(location.textContent).not.toBe('/');
+      // Suite icons activate module (opens window in Desktop)
+      expect(mockActivateModule).toHaveBeenCalledWith('forge', { source: 'desktop' });
     });
 
-    it('keyboard_enter_launches_selected_icon', async () => {
+    it('keyboard_enter_launches_selected_suite_icon', async () => {
       renderWithRouter(<DesktopIconGrid />);
 
       const forgeIcon = screen.getByTestId('desktop-icon-forge');
@@ -221,9 +217,8 @@ describe('Navigation Truth Contracts', () => {
         fireEvent.keyDown(forgeIcon, { key: 'Enter' });
       });
 
-      // Should have navigated
-      const location = screen.getByTestId('current-location');
-      expect(location.textContent).toMatch(/\/property\/\d+\/forge/);
+      // Suite icons activate module via keyboard
+      expect(mockActivateModule).toHaveBeenCalledWith('forge', { source: 'desktop' });
     });
 
     it('clicking_grid_background_deselects_icon', async () => {

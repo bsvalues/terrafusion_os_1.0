@@ -78,22 +78,16 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
     setSelectedId(id);
   }, []);
 
-  // Handle icon launch (double click) - Open module window in Desktop shell.
-  // Suite icons (forge, atlas, dais, dossier, gpt) open as windowed modules.
+  // Handle icon launch (double click) - Open suite home or OS feature.
+  // Suite icons (forge, atlas, dais, dossier, gpt) open suite HOME PAGES as windows.
   // OS feature icons (pilot, trace, canon) navigate to standalone pages.
   const handleLaunch = useCallback(
     (id: string) => {
-      // Suite ID → canonical module ID (opens as window)
-      const SUITE_TO_MODULE: Record<string, string> = {
-        forge: 'costforge',
-        atlas: 'atlas-ai',
-        dais: 'federation-dashboard',
-        dossier: 'document-manager',
-        gpt: 'terra-gaia',
-      };
-      const moduleId = SUITE_TO_MODULE[id];
-      if (moduleId) {
-        activateModule(moduleId, { source: 'desktop' });
+      // Suite IDs open their full suite home inside a Desktop window
+      const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
+      if (SUITE_IDS.has(id)) {
+        // activateModule will normalize 'forge' → 'suite-forge' via MODULE_ALIASES
+        activateModule(id, { source: 'desktop' });
         return;
       }
       // OS features → navigate to their standalone page

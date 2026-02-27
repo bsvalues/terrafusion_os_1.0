@@ -3,27 +3,38 @@
  *
  * Verifies that the desktop icon grid renders icons derived from
  * the canonical suite registry (not hardcoded). Tests the component
- * consumes getDesktopIcons() and navigates correctly on interaction.
+ * consumes getDesktopIcons() and activates modules correctly on interaction.
+ *
+ * Updated: Suite icons now call activateModule() to open windows,
+ * OS feature icons still use navigate() for standalone pages.
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { getDesktopIcons } from '../../../config/desktopManifest';
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { DesktopIconGrid } = require('../DesktopIconGrid');
+const mockActivateModule = vi.fn();
+vi.mock('../../../orchestration/moduleActivation', () => ({
+  activateModule: (...args: unknown[]) => mockActivateModule(...args),
+}));
+
+const { DesktopIconGrid } = await import('../DesktopIconGrid');
 
 const DESKTOP_ICONS = getDesktopIcons();
 
 describe('DesktopIconGrid canonical behavior (Phase 22)', () => {
-  beforeEach(() => mockNavigate.mockClear());
+  beforeEach(() => {
+    mockNavigate.mockClear();
+    mockActivateModule.mockClear();
+  });
 
   it('renders the correct number of icons from manifest', () => {
     render(<DesktopIconGrid />, {
@@ -44,16 +55,42 @@ describe('DesktopIconGrid canonical behavior (Phase 22)', () => {
     }
   });
 
-  it('navigates to manifest route on double-click', () => {
+  it('suite icons call activateModule on double-click', () => {
     render(<DesktopIconGrid />, {
       wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
     });
 
-    const first = DESKTOP_ICONS[0];
-    const el = screen.getByTestId(`desktop-icon-${first.id}`);
+    // Find a suite icon (forge, atlas, dais, dossier, or gpt)
+    const suiteIcon = DESKTOP_ICONS.find((d) =>
+      ['forge', 'atlas', 'dais', 'dossier', 'gpt'].includes(d.id)
+    );
+    if (!suiteIcon) return;
+
+    const el = screen.getByTestId(`desktop-icon-${suiteIcon.id}`);
     fireEvent.doubleClick(el);
 
-    expect(mockNavigate).toHaveBeenCalledWith(first.route);
+    // Suite icons activate module (opens window), not navigate
+    expect(mockActivateModule).toHaveBeenCalledWith(suiteIcon.id, { source: 'desktop' });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('OS feature icons navigate on double-click', () => {
+    render(<DesktopIconGrid />, {
+      wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+    });
+
+    // Find an OS feature icon (pilot, trace, canon)
+    const osIcon = DESKTOP_ICONS.find((d) =>
+      ['pilot', 'trace', 'canon'].includes(d.id)
+    );
+    if (!osIcon) return;
+
+    const el = screen.getByTestId(`desktop-icon-${osIcon.id}`);
+    fireEvent.doubleClick(el);
+
+    // OS features navigate to standalone routes
+    expect(mockNavigate).toHaveBeenCalledWith(osIcon.route);
+    expect(mockActivateModule).not.toHaveBeenCalled();
   });
 
   it('no hardcoded IDs outside desktopManifest', () => {
