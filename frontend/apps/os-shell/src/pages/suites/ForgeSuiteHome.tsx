@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 
 const CostForgeModule = lazy(() => import('./modules/CostForgeModule'));
+const CompsForgeModule = lazy(() => import('./modules/CompsForgeModule'));
 
 interface ForgeModuleDef {
   id: string;
@@ -48,8 +49,8 @@ const FORGE_MODULES: ForgeModuleDef[] = [
     id: 'comps',
     label: 'CompsForge',
     icon: BarChart3,
-    status: 'planned',
-    description: 'Sales comparison approach with comparable analysis',
+    status: 'active',
+    description: 'Sales comparison approach with paired adjustments',
   },
   {
     id: 'income',
@@ -191,7 +192,8 @@ export default function ForgeSuiteHome() {
         <main className='flex-1 min-w-0'>
           <Suspense fallback={<ModuleLoading />}>
             {activeModule === 'costforge' && <CostForgeModule />}
-            {activeModule !== 'costforge' && (
+            {activeModule === 'comps' && <CompsForgeModule />}
+            {activeModule !== 'costforge' && activeModule !== 'comps' && (
               <div className='p-6 flex items-center justify-center min-h-[400px]'>
                 <div className='text-center space-y-3'>
                   <Hammer
