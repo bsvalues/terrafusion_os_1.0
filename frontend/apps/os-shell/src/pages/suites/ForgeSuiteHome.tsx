@@ -6,11 +6,13 @@
  *
  * Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge → TerraForge
  *
- * Modules:
+ * Modules (ALL 6 ACTIVE):
  *   - CostForge: Benton County Cost Approach calculator
- *   - CompsForge: Sales comparison analysis (planned)
- *   - IncomeForge: Income approach analysis (planned)
- *   - AppealForge: BOE appeal preparation (planned)
+ *   - CompsForge: Sales comparison analysis
+ *   - IncomeForge: Income approach (direct capitalization)
+ *   - AppealForge: BOE appeal preparation & defense
+ *   - Reconciliation: Three-approach value reconciliation
+ *   - Value Audit: FISMA-compliant valuation audit trail
  */
 
 import { lazy, Suspense, useState } from 'react';
@@ -27,6 +29,11 @@ import {
 } from 'lucide-react';
 
 const CostForgeModule = lazy(() => import('./modules/CostForgeModule'));
+const CompsForgeModule = lazy(() => import('./modules/CompsForgeModule'));
+const IncomeForgeModule = lazy(() => import('./modules/IncomeForgeModule'));
+const AppealForgeModule = lazy(() => import('./modules/AppealForgeModule'));
+const ReconciliationModule = lazy(() => import('./modules/ReconciliationModule'));
+const ValueAuditModule = lazy(() => import('./modules/ValueAuditModule'));
 
 interface ForgeModuleDef {
   id: string;
@@ -48,36 +55,36 @@ const FORGE_MODULES: ForgeModuleDef[] = [
     id: 'comps',
     label: 'CompsForge',
     icon: BarChart3,
-    status: 'planned',
-    description: 'Sales comparison approach with comparable analysis',
+    status: 'active',
+    description: 'Sales comparison approach with paired adjustments',
   },
   {
     id: 'income',
     label: 'IncomeForge',
     icon: TrendingUp,
-    status: 'planned',
-    description: 'Income approach for commercial/rental properties',
+    status: 'active',
+    description: 'Income approach — direct capitalization for commercial properties',
   },
   {
     id: 'appeal',
     label: 'AppealForge',
     icon: Gavel,
-    status: 'planned',
-    description: 'BOE appeal packet preparation and defense builder',
+    status: 'active',
+    description: 'BOE appeal preparation, evidence packets, and defense builder',
   },
   {
     id: 'reconcile',
     label: 'Reconciliation',
     icon: Scale,
-    status: 'planned',
-    description: 'Three-approach reconciliation and final value opinion',
+    status: 'active',
+    description: 'Three-approach reconciliation and final opinion of value',
   },
   {
     id: 'audit',
     label: 'Value Audit',
     icon: FileSearch,
-    status: 'planned',
-    description: 'Audit trail for valuation changes and approvals',
+    status: 'active',
+    description: 'FISMA-compliant audit trail for valuation changes',
   },
 ];
 
@@ -191,7 +198,12 @@ export default function ForgeSuiteHome() {
         <main className='flex-1 min-w-0'>
           <Suspense fallback={<ModuleLoading />}>
             {activeModule === 'costforge' && <CostForgeModule />}
-            {activeModule !== 'costforge' && (
+            {activeModule === 'comps' && <CompsForgeModule />}
+            {activeModule === 'income' && <IncomeForgeModule />}
+            {activeModule === 'appeal' && <AppealForgeModule />}
+            {activeModule === 'reconcile' && <ReconciliationModule />}
+            {activeModule === 'audit' && <ValueAuditModule />}
+            {!['costforge', 'comps', 'income', 'appeal', 'reconcile', 'audit'].includes(activeModule) && (
               <div className='p-6 flex items-center justify-center min-h-[400px]'>
                 <div className='text-center space-y-3'>
                   <Hammer

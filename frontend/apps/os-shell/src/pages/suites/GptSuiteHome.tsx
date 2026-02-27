@@ -30,6 +30,21 @@ const GPTManagementDashboard = lazy(() =>
     default: () => <GptPlaceholder module='GPT Management' />,
   }))
 );
+const GPTBuilderModule = lazy(() =>
+  import('./modules/GPTBuilderModule').catch(() => ({
+    default: () => <GptPlaceholder module='GPT Builder' />,
+  }))
+);
+const GPTAnalyticsModule = lazy(() =>
+  import('./modules/GPTAnalyticsModule').catch(() => ({
+    default: () => <GptPlaceholder module='GPT Analytics' />,
+  }))
+);
+const RAGDatasetsModule = lazy(() =>
+  import('./modules/RAGDatasetsModule').catch(() => ({
+    default: () => <GptPlaceholder module='RAG Datasets' />,
+  }))
+);
 
 function GptPlaceholder({ module }: { module: string }) {
   return (
@@ -54,9 +69,9 @@ const GPT_MODULES: GptModuleDef[] = [
   { id: 'studio', label: 'GPT Studio', icon: MessageSquare, status: 'active', description: 'Interactive chat with AI assistants' },
   { id: 'marketplace', label: 'GPT Marketplace', icon: Store, status: 'active', description: 'Browse, install, and rate GPT configurations' },
   { id: 'management', label: 'GPT Management', icon: Settings, status: 'active', description: 'Dashboard for GPT usage, statistics, and configuration' },
-  { id: 'builder', label: 'GPT Builder', icon: Wrench, status: 'planned', description: 'Create custom GPT configurations with RAG' },
-  { id: 'analytics', label: 'GPT Analytics', icon: BarChart3, status: 'planned', description: 'Usage analytics and cost tracking' },
-  { id: 'rag', label: 'RAG Datasets', icon: Database, status: 'planned', description: 'Manage knowledge bases for RAG-enabled GPTs' },
+  { id: 'builder', label: 'GPT Builder', icon: Wrench, status: 'active', description: 'Create custom GPT configurations with RAG' },
+  { id: 'analytics', label: 'GPT Analytics', icon: BarChart3, status: 'active', description: 'Usage analytics and cost tracking' },
+  { id: 'rag', label: 'RAG Datasets', icon: Database, status: 'active', description: 'Manage knowledge bases for RAG-enabled GPTs' },
 ];
 
 function ModuleLoading() {
@@ -143,13 +158,9 @@ export default function GptSuiteHome() {
             {activeModule === 'studio' && <GptStudioView />}
             {activeModule === 'marketplace' && <GPTMarketplace />}
             {activeModule === 'management' && <GPTManagementDashboard />}
-            {!['studio', 'marketplace', 'management'].includes(activeModule) && (
-              <div className='p-6 flex items-center justify-center min-h-[400px]'>
-                <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Module under development
-                </p>
-              </div>
-            )}
+            {activeModule === 'builder' && <GPTBuilderModule />}
+            {activeModule === 'analytics' && <GPTAnalyticsModule />}
+            {activeModule === 'rag' && <RAGDatasetsModule />}
           </Suspense>
         </main>
       </div>

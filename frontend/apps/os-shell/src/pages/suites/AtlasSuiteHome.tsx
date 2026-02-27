@@ -4,10 +4,14 @@
  * Constitutional Suite: atlas (Article I)
  * Standalone route: /atlas
  *
- * Modules:
+ * Modules (ALL 7 ACTIVE):
  *   - TerraGIS: Parcel boundaries, aerial, zoning overlays
- *   - ParcelLens: Detailed parcel inspection
- *   - LayerWorks: Layer management & analysis
+ *   - ParcelLens: Detailed parcel inspection with measurement tools
+ *   - LayerWorks: Advanced layer management & spatial analysis
+ *   - TerraSketch: Parcel geometry editing tools
+ *   - TerraPrint: Map printing & PDF export
+ *   - TerraExport: GIS data export (Shapefile, GeoJSON, KML)
+ *   - TerraQuery: SQL-like spatial queries across county data
  */
 
 import { lazy, Suspense, useState } from 'react';
@@ -15,6 +19,12 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Globe, Map, Search, Layers, Crosshair, Printer, Download, Database } from 'lucide-react';
 
 const GISModule = lazy(() => import('./modules/GISModule'));
+const ParcelLensModule = lazy(() => import('./modules/ParcelLensModule'));
+const LayerWorksModule = lazy(() => import('./modules/LayerWorksModule'));
+const TerraSketchModule = lazy(() => import('./modules/TerraSketchModule'));
+const TerraPrintModule = lazy(() => import('./modules/TerraPrintModule'));
+const TerraExportModule = lazy(() => import('./modules/TerraExportModule'));
+const TerraQueryModule = lazy(() => import('./modules/TerraQueryModule'));
 
 interface AtlasModuleDef {
   id: string;
@@ -26,12 +36,12 @@ interface AtlasModuleDef {
 
 const ATLAS_MODULES: AtlasModuleDef[] = [
   { id: 'gis', label: 'TerraGIS', icon: Map, status: 'active', description: 'Full GIS viewer with parcel boundaries, aerial imagery, and overlays' },
-  { id: 'parcel-lens', label: 'ParcelLens', icon: Search, status: 'planned', description: 'Detailed parcel inspection with measurement tools' },
-  { id: 'layer-works', label: 'LayerWorks', icon: Layers, status: 'planned', description: 'Advanced layer management and spatial analysis' },
-  { id: 'terra-sketch', label: 'TerraSketch', icon: Crosshair, status: 'planned', description: 'Parcel sketch and geometry editing tools' },
-  { id: 'terra-print', label: 'TerraPrint', icon: Printer, status: 'planned', description: 'Map printing and PDF export for field work' },
-  { id: 'terra-export', label: 'TerraExport', icon: Download, status: 'planned', description: 'GIS data export (Shapefile, GeoJSON, KML)' },
-  { id: 'terra-query', label: 'TerraQuery', icon: Database, status: 'planned', description: 'SQL-like spatial queries across county data' },
+  { id: 'parcel-lens', label: 'ParcelLens', icon: Search, status: 'active', description: 'Detailed parcel inspection with measurement tools' },
+  { id: 'layer-works', label: 'LayerWorks', icon: Layers, status: 'active', description: 'Advanced layer management and spatial analysis' },
+  { id: 'terra-sketch', label: 'TerraSketch', icon: Crosshair, status: 'active', description: 'Parcel sketch and geometry editing tools' },
+  { id: 'terra-print', label: 'TerraPrint', icon: Printer, status: 'active', description: 'Map printing and PDF export for field work' },
+  { id: 'terra-export', label: 'TerraExport', icon: Download, status: 'active', description: 'GIS data export (Shapefile, GeoJSON, KML)' },
+  { id: 'terra-query', label: 'TerraQuery', icon: Database, status: 'active', description: 'SQL-like spatial queries across county data' },
 ];
 
 function ModuleLoading() {
@@ -116,13 +126,12 @@ export default function AtlasSuiteHome() {
         <main className='flex-1 min-w-0'>
           <Suspense fallback={<ModuleLoading />}>
             {activeModule === 'gis' && <GISModule />}
-            {activeModule !== 'gis' && (
-              <div className='p-6 flex items-center justify-center min-h-[400px]'>
-                <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Module under development
-                </p>
-              </div>
-            )}
+            {activeModule === 'parcel-lens' && <ParcelLensModule />}
+            {activeModule === 'layer-works' && <LayerWorksModule />}
+            {activeModule === 'terra-sketch' && <TerraSketchModule />}
+            {activeModule === 'terra-print' && <TerraPrintModule />}
+            {activeModule === 'terra-export' && <TerraExportModule />}
+            {activeModule === 'terra-query' && <TerraQueryModule />}
           </Suspense>
         </main>
       </div>

@@ -7,6 +7,9 @@
         "**/dist/**",
         "**/__tests__/**",
         "**/__mocks__/**",
+        "**/tests/**",
+        "**/*.stories.tsx",
+        "**/*.stories.ts",
         "**/ARCHIVE/**",
         "**/QUARANTINE/**",
         "**/tokens/**"

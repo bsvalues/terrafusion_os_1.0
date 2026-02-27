@@ -4,10 +4,13 @@
  * Constitutional Suite: dossier (Article I)
  * Standalone route: /dossier
  *
- * Modules:
+ * Modules (ALL 6 ACTIVE):
  *   - Documents: File repository with search & type filtering
  *   - Evidence: Chain-of-custody evidence viewer
- *   - Defense Packets, Photo Manager (planned)
+ *   - Defense Packets: BOE appeal defense packet assembly
+ *   - Chain of Custody: Full custody chain with hash verification
+ *   - Photo Manager: Geotagged property photos
+ *   - Deep Search: Full-text search across all content
  */
 
 import { lazy, Suspense, useState } from 'react';
@@ -16,6 +19,10 @@ import { ArrowLeft, FileStack, FolderOpen, Shield, Link2, Camera, Package, FileS
 
 const DocumentsModule = lazy(() => import('./modules/DocumentsModule'));
 const EvidenceModule = lazy(() => import('./modules/EvidenceModule'));
+const DefensePacketsModule = lazy(() => import('./modules/DefensePacketsModule'));
+const ChainOfCustodyModule = lazy(() => import('./modules/ChainOfCustodyModule'));
+const PhotoManagerModule = lazy(() => import('./modules/PhotoManagerModule'));
+const DeepSearchModule = lazy(() => import('./modules/DeepSearchModule'));
 
 interface DossierModuleDef {
   id: string;
@@ -28,10 +35,10 @@ interface DossierModuleDef {
 const DOSSIER_MODULES: DossierModuleDef[] = [
   { id: 'documents', label: 'Document Manager', icon: FolderOpen, status: 'active', description: 'File repository with search, type filtering, custody chain' },
   { id: 'evidence', label: 'Evidence Viewer', icon: Shield, status: 'active', description: 'Chain-of-custody evidence registry and timeline' },
-  { id: 'defense', label: 'Defense Packets', icon: Package, status: 'planned', description: 'BOE appeal defense packet assembly' },
-  { id: 'chain', label: 'Chain of Custody', icon: Link2, status: 'planned', description: 'Full custody chain explorer with hash verification' },
-  { id: 'photos', label: 'Photo Manager', icon: Camera, status: 'planned', description: 'Geotagged property photos with metadata' },
-  { id: 'search', label: 'Deep Search', icon: FileSearch, status: 'planned', description: 'Full-text search across all documents and evidence' },
+  { id: 'defense', label: 'Defense Packets', icon: Package, status: 'active', description: 'BOE appeal defense packet assembly' },
+  { id: 'chain', label: 'Chain of Custody', icon: Link2, status: 'active', description: 'Full custody chain explorer with hash verification' },
+  { id: 'photos', label: 'Photo Manager', icon: Camera, status: 'active', description: 'Geotagged property photos with metadata' },
+  { id: 'search', label: 'Deep Search', icon: FileSearch, status: 'active', description: 'Full-text search across all documents and evidence' },
 ];
 
 function ModuleLoading() {
@@ -117,7 +124,11 @@ export default function DossierSuiteHome() {
           <Suspense fallback={<ModuleLoading />}>
             {activeModule === 'documents' && <DocumentsModule />}
             {activeModule === 'evidence' && <EvidenceModule />}
-            {!['documents', 'evidence'].includes(activeModule) && (
+            {activeModule === 'defense' && <DefensePacketsModule />}
+            {activeModule === 'chain' && <ChainOfCustodyModule />}
+            {activeModule === 'photos' && <PhotoManagerModule />}
+            {activeModule === 'search' && <DeepSearchModule />}
+            {!['documents', 'evidence', 'defense', 'chain', 'photos', 'search'].includes(activeModule) && (
               <div className='p-6 flex items-center justify-center min-h-[400px]'>
                 <p style={{ color: 'hsl(var(--tf-muted))' }}>
                   Module under development
