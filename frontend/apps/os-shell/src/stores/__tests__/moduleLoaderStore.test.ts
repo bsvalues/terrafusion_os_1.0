@@ -51,7 +51,7 @@ describe('moduleLoaderStore', () => {
 
       expect(result.current.normalizeModuleId('terrabuild')).toBe('costforge');
       expect(result.current.normalizeModuleId('terra-build')).toBe('costforge');
-      expect(result.current.normalizeModuleId('property-assessment')).toBe('costforge');
+      expect(result.current.normalizeModuleId('assessment')).toBe('costforge');
     });
 
     it('returns normalized lowercase ID for unknown modules', () => {
@@ -86,7 +86,7 @@ describe('moduleLoaderStore', () => {
       const { result } = renderHook(() => useModuleLoaderActions());
 
       expect(result.current.isModuleRegistered('terrabuild')).toBe(true);
-      expect(result.current.isModuleRegistered('property-assessment')).toBe(true);
+      expect(result.current.isModuleRegistered('assessment')).toBe(true);
     });
 
     it('returns false for unregistered modules', () => {

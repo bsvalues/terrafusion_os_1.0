@@ -292,7 +292,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
         aria-label={t('taskbar.ariaLabel')}
         className={cn(
           // Floating centered dock
-          'fixed bottom-2 left-1/2 -translate-x-1/2 z-50',
+          'fixed bottom-2 left-1/2 -translate-x-1/2 z-[1000]',
           // Layout
           'flex items-center gap-1 px-2 h-12',
           // Glass effect

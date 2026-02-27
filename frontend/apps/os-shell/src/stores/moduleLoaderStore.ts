@@ -13,6 +13,7 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { normalizeModuleId as canonicalNormalize, isModuleRegistered as canonicalIsRegistered } from '../config/moduleComponents';
 import { analytics } from '../utils/analytics';
 
 // ============================================================================
@@ -47,28 +48,8 @@ interface LoadingPromiseEntry {
   startTime: number;
 }
 
-// Module alias mapping (e.g., terrabuild -> costforge)
-const MODULE_ALIASES: Record<string, string> = {
-  terrabuild: 'costforge',
-  'terra-build': 'costforge',
-  'property-assessment': 'costforge',
-  // Add more aliases as needed
-};
-
-// Registered module IDs (modules that have components)
-const REGISTERED_MODULES = new Set([
-  'costforge',
-  'terra-gaia',
-  'levy-calculator',
-  'gis-viewer',
-  'document-manager',
-  'reporting',
-  'atlas-ai',
-  'marketplace',
-  'counties',
-  'government-architecture',
-  'settings',
-]);
+// MODULE_ALIASES and MODULE_REGISTRY are now imported from the canonical source:
+// config/moduleComponents.tsx (single source of truth, no duplication)
 
 // ============================================================================
 // Store State
@@ -152,13 +133,11 @@ export const useModuleLoaderStore = create<ModuleLoaderState>()(
       // ========================================================================
 
       normalizeModuleId: (moduleId: string): string => {
-        const normalized = moduleId.toLowerCase().trim();
-        return MODULE_ALIASES[normalized] || normalized;
+        return canonicalNormalize(moduleId);
       },
 
       isModuleRegistered: (moduleId: string): boolean => {
-        const normalized = get().normalizeModuleId(moduleId);
-        return REGISTERED_MODULES.has(normalized);
+        return canonicalIsRegistered(moduleId);
       },
 
       // ========================================================================

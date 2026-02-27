@@ -109,7 +109,7 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
     <div
       data-testid='desktop-icon-grid'
       className={`
-        grid grid-cols-3 gap-x-1 gap-y-3 p-3
+        grid grid-cols-3 gap-3 p-3
         ${className}
       `.trim()}
       onClick={handleBackgroundClick}

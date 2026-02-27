@@ -129,7 +129,7 @@ describe('Desktop Store', () => {
       });
 
       const { windows } = useDesktopStore.getState();
-      expect(windows[0].size).toEqual({ width: 800, height: 600 });
+      expect(windows[0].size).toEqual({ width: 1024, height: 700 });
     });
   });
 

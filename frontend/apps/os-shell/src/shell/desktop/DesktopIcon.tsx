@@ -148,7 +148,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       aria-pressed={isSelected}
       aria-selected={isSelected}
       className={`
-        flex flex-col items-center justify-center
+        group flex flex-col items-center justify-center
         w-[76px] h-[90px] p-1.5 rounded-xl cursor-pointer
         select-none transition-all duration-200
         ${isSelected

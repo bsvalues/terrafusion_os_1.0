@@ -138,7 +138,7 @@ export const ModuleLoader: React.FC<ModuleLoaderProps> = ({ moduleId, metadata }
     <div
       data-testid='module-loader'
       data-module-id={moduleId}
-      className='w-full h-full overflow-auto'
+      className='w-full h-full overflow-hidden'
       style={{
         background: 'transparent',
       }}

@@ -189,7 +189,7 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
       aria-label={`Context menu for ${module.name}`}
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
       className={cn(
-        'fixed z-[100]',
+        'fixed z-[1020]',
         'min-w-[180px]',
         'bg-[var(--tf-bg-surface)]/98 backdrop-blur-xl',
         'border border-white/10 rounded-lg',
