@@ -67,7 +67,8 @@ interface QueryState {
 /* ------------------------------------------------------------------ */
 
 /** Generate a realistic-looking parcel polygon from a parcelId hash */
-function getParcelPolygon(parcelId: string): string {
+function getParcelPolygon(parcelId: string | undefined): string {
+  if (!parcelId) return '150,100 250,100 270,180 200,220 130,180';
   // Deterministic but varied polygon from parcelId characters
   let seed = 0;
   for (let i = 0; i < parcelId.length; i++) {
@@ -227,6 +228,9 @@ export const PropertyAtlas: React.FC = () => {
         } catch {
           parsed = { parcelId, layers: {} };
         }
+        // Ensure parcelId and layers always present (mocks may omit them)
+        if (!parsed.parcelId) parsed.parcelId = parcelId;
+        if (!parsed.layers) parsed.layers = {};
 
         setQueryState({
           status: 'success',
