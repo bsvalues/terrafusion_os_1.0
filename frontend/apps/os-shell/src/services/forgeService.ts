@@ -451,6 +451,184 @@ export function deleteScenario(id: string): void {
 }
 
 // ============================================================================
+// Income Approach Engine (Direct Capitalization)
+// ============================================================================
+
+export interface IncomeExpenses {
+  taxes: number;
+  insurance: number;
+  utilities: number;
+  maintenance: number;
+  management: number;
+  reserves: number;
+  other: number;
+}
+
+export interface IncomeInput {
+  propertyType: string;
+  region: string;
+  potentialGrossIncome: number;
+  vacancyRate: number;
+  otherIncome: number;
+  expenses: IncomeExpenses;
+  capRate: number;
+  capRateSource: 'market_extraction' | 'band_of_investment' | 'provided';
+  comparables: Array<{ id: string; salePrice: number; noi: number; extractedRate: number }>;
+}
+
+export interface IncomeResult {
+  potentialGrossIncome: number;
+  vacancyLoss: number;
+  otherIncome: number;
+  effectiveGrossIncome: number;
+  totalExpenses: number;
+  expenseBreakdown: IncomeExpenses;
+  netOperatingIncome: number;
+  capRate: number;
+  indicatedValue: number;
+  expenseRatio: number;
+  confidence: 'LOW' | 'MEDIUM' | 'HIGH';
+  capRateSupport: 'strong' | 'moderate' | 'weak';
+  warnings: string[];
+}
+
+export function calculateIncome(input: IncomeInput): IncomeResult {
+  const pgi = input.potentialGrossIncome;
+  const vacancyLoss = Math.round(pgi * input.vacancyRate);
+  const egi = pgi - vacancyLoss + input.otherIncome;
+  const totalExpenses = Object.values(input.expenses).reduce((s, v) => s + v, 0);
+  const noi = egi - totalExpenses;
+  const expenseRatio = egi > 0 ? totalExpenses / egi : 0;
+  const indicatedValue = input.capRate > 0 ? Math.round(noi / input.capRate) : 0;
+
+  const warnings: string[] = [];
+  let confidence: 'LOW' | 'MEDIUM' | 'HIGH' = 'HIGH';
+
+  if (expenseRatio < 0.3) {
+    warnings.push(`Expense ratio ${(expenseRatio * 100).toFixed(1)}% below typical 30-50% range`);
+    confidence = 'MEDIUM';
+  } else if (expenseRatio > 0.5) {
+    warnings.push(`Expense ratio ${(expenseRatio * 100).toFixed(1)}% above typical 30-50% range`);
+    confidence = 'MEDIUM';
+  }
+
+  if (noi <= 0) {
+    warnings.push('Net operating income is zero or negative');
+    confidence = 'LOW';
+  }
+
+  if (totalExpenses === 0 && pgi > 0) {
+    warnings.push('No operating expenses provided');
+    confidence = 'LOW';
+  }
+
+  let capRateSupport: 'strong' | 'moderate' | 'weak' = 'weak';
+  if (input.comparables.length >= 3) capRateSupport = 'strong';
+  else if (input.comparables.length >= 1) capRateSupport = 'moderate';
+  else if (input.capRateSource === 'provided') {
+    warnings.push('Cap rate provided without market extraction support');
+  }
+
+  return {
+    potentialGrossIncome: pgi,
+    vacancyLoss,
+    otherIncome: input.otherIncome,
+    effectiveGrossIncome: egi,
+    totalExpenses,
+    expenseBreakdown: input.expenses,
+    netOperatingIncome: noi,
+    capRate: input.capRate,
+    indicatedValue,
+    expenseRatio: Math.round(expenseRatio * 10000) / 10000,
+    confidence,
+    capRateSupport,
+    warnings,
+  };
+}
+
+export function extractCapRate(comps: Array<{ salePrice: number; noi: number }>): number {
+  if (comps.length === 0) return 0;
+  const rates = comps.map((c) => c.noi / c.salePrice);
+  return rates.reduce((a, b) => a + b, 0) / rates.length;
+}
+
+// Benton County market cap rates by property type (2025 survey)
+export const MARKET_CAP_RATES: Record<string, { low: number; mid: number; high: number }> = {
+  '200': { low: 0.055, mid: 0.065, high: 0.075 },
+  '300': { low: 0.065, mid: 0.075, high: 0.085 },
+  '310': { low: 0.060, mid: 0.070, high: 0.080 },
+  '400': { low: 0.070, mid: 0.080, high: 0.090 },
+  '450': { low: 0.065, mid: 0.075, high: 0.085 },
+  '500': { low: 0.075, mid: 0.085, high: 0.095 },
+  '510': { low: 0.080, mid: 0.090, high: 0.100 },
+};
+
+// ============================================================================
+// BOE Appeal Tracking
+// ============================================================================
+
+export type AppealStatus = 'DRAFT' | 'SUBMITTED' | 'UNDER_REVIEW' | 'SCHEDULED' | 'HEARD' | 'DECIDED' | 'WITHDRAWN';
+export type AppealType = 'VALUATION' | 'CLASSIFICATION' | 'EXEMPTION';
+export type AppealDecision = 'GRANTED' | 'DENIED' | 'PARTIAL' | 'PENDING';
+
+export interface AppealEvidence {
+  id: string;
+  type: 'comparable_sale' | 'appraisal' | 'photo' | 'repair_estimate' | 'income_statement' | 'other';
+  title: string;
+  description: string;
+  addedAt: string;
+}
+
+export interface AppealRecord {
+  id: string;
+  parcelId: string;
+  appealType: AppealType;
+  status: AppealStatus;
+  filedDate: string;
+  hearingDate: string | null;
+  decision: AppealDecision;
+  currentValue: number;
+  requestedValue: number;
+  finalValue: number | null;
+  evidence: AppealEvidence[];
+  notes: string;
+  createdAt: string;
+}
+
+const APPEALS_KEY = 'appealforge-appeals';
+
+export function saveAppeal(appeal: Omit<AppealRecord, 'id' | 'createdAt'>): AppealRecord {
+  const record: AppealRecord = {
+    ...appeal,
+    id: `appeal-${Date.now()}`,
+    createdAt: new Date().toISOString(),
+  };
+  const existing = loadAppeals();
+  existing.push(record);
+  localStorage.setItem(APPEALS_KEY, JSON.stringify(existing));
+  return record;
+}
+
+export function loadAppeals(): AppealRecord[] {
+  try {
+    const raw = localStorage.getItem(APPEALS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function updateAppeal(id: string, updates: Partial<AppealRecord>): void {
+  const appeals = loadAppeals().map((a) => (a.id === id ? { ...a, ...updates } : a));
+  localStorage.setItem(APPEALS_KEY, JSON.stringify(appeals));
+}
+
+export function deleteAppeal(id: string): void {
+  const existing = loadAppeals().filter((a) => a.id !== id);
+  localStorage.setItem(APPEALS_KEY, JSON.stringify(existing));
+}
+
+// ============================================================================
 // Summary Stats
 // ============================================================================
 

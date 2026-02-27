@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import api from '@/services/api';
 import {
   Hammer,
   Calculator,
@@ -39,6 +40,10 @@ import {
   Save,
   Trash2,
   ArrowRight,
+  Wifi,
+  WifiOff,
+  Loader2,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   BUILDING_TYPES,
@@ -115,12 +120,44 @@ export default function CostForgeModule() {
     [inputs.region],
   );
 
+  const [apiResult, setApiResult] = useState<{ totalCost: number; method: string } | null>(null);
+  const [apiLoading, setApiLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const updateInput = useCallback(
     <K extends keyof CostCalculationInput>(key: K, value: CostCalculationInput[K]) => {
       setInputs((prev) => ({ ...prev, [key]: value }));
+      setApiResult(null);
+      setApiError(null);
     },
     [],
   );
+
+  const verifyViaApi = useCallback(async () => {
+    setApiLoading(true);
+    setApiError(null);
+    try {
+      const res = await api.post('/costforge/calculate', {
+        parcelNumber: 'COSTFORGE-VERIFY',
+        buildingType: inputs.buildingType,
+        quality: inputs.quality,
+        condition: inputs.condition,
+        yearBuilt: inputs.yearBuilt,
+        squareFeet: inputs.squareFeet,
+        stories: inputs.stories,
+        region: inputs.region,
+      });
+      setApiResult({
+        totalCost: res.data.totalCost ?? res.data.rcnld ?? 0,
+        method: res.data.method ?? 'governed',
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'API unavailable';
+      setApiError(msg);
+    } finally {
+      setApiLoading(false);
+    }
+  }, [inputs]);
 
   const handleSaveScenario = useCallback(() => {
     if (!scenarioName.trim()) return;
@@ -795,6 +832,88 @@ export default function CostForgeModule() {
               </CardContent>
             </Card>
           )}
+
+          {/* Governed API Verification */}
+          <Card
+            style={{
+              background: 'hsl(var(--tf-card-bg))',
+              borderColor: apiResult
+                ? 'hsl(140 70% 40% / 0.4)'
+                : apiError
+                  ? 'hsl(0 70% 50% / 0.4)'
+                  : 'hsl(var(--tf-border))',
+            }}
+          >
+            <CardHeader className='pb-2'>
+              <CardTitle
+                className='text-sm flex items-center justify-between'
+                style={{ color: 'hsl(var(--tf-fg))' }}
+              >
+                <span className='flex items-center gap-2'>
+                  <ShieldCheck size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                  Governed API
+                </span>
+                {apiResult ? (
+                  <Wifi size={14} style={{ color: 'hsl(140 70% 50%)' }} />
+                ) : apiError ? (
+                  <WifiOff size={14} style={{ color: 'hsl(var(--tf-muted))' }} />
+                ) : null}
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Verify local calculation against TerraFusion API
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <Button
+                onClick={verifyViaApi}
+                disabled={apiLoading}
+                size='sm'
+                className='w-full'
+                variant='outline'
+              >
+                {apiLoading ? (
+                  <Loader2 size={14} className='mr-1.5 animate-spin' />
+                ) : (
+                  <ShieldCheck size={14} className='mr-1.5' />
+                )}
+                {apiLoading ? 'Verifying…' : 'Verify via API'}
+              </Button>
+              {apiResult && (
+                <div className='space-y-1 text-sm'>
+                  <div className='flex justify-between'>
+                    <span style={{ color: 'hsl(var(--tf-muted))' }}>API Value</span>
+                    <span style={{ color: 'hsl(140 70% 50%)' }}>
+                      {formatCurrency(apiResult.totalCost)}
+                    </span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span style={{ color: 'hsl(var(--tf-muted))' }}>Method</span>
+                    <span style={{ color: 'hsl(var(--tf-fg))' }}>{apiResult.method}</span>
+                  </div>
+                  {apiResult.totalCost > 0 && (
+                    <div className='flex justify-between'>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Variance</span>
+                      <span
+                        style={{
+                          color:
+                            Math.abs(result.rcnld - apiResult.totalCost) / result.rcnld < 0.05
+                              ? 'hsl(140 70% 50%)'
+                              : 'hsl(45 90% 55%)',
+                        }}
+                      >
+                        {((Math.abs(result.rcnld - apiResult.totalCost) / result.rcnld) * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+              {apiError && (
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  API offline or auth required — local calculation remains authoritative
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

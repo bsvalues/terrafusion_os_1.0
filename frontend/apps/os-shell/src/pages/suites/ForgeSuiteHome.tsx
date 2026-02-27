@@ -8,9 +8,9 @@
  *
  * Modules:
  *   - CostForge: Benton County Cost Approach calculator
- *   - CompsForge: Sales comparison analysis (planned)
- *   - IncomeForge: Income approach analysis (planned)
- *   - AppealForge: BOE appeal preparation (planned)
+ *   - CompsForge: Sales comparison analysis
+ *   - IncomeForge: Income approach (direct capitalization)
+ *   - AppealForge: BOE appeal preparation & defense
  */
 
 import { lazy, Suspense, useState } from 'react';
@@ -28,6 +28,8 @@ import {
 
 const CostForgeModule = lazy(() => import('./modules/CostForgeModule'));
 const CompsForgeModule = lazy(() => import('./modules/CompsForgeModule'));
+const IncomeForgeModule = lazy(() => import('./modules/IncomeForgeModule'));
+const AppealForgeModule = lazy(() => import('./modules/AppealForgeModule'));
 
 interface ForgeModuleDef {
   id: string;
@@ -56,15 +58,15 @@ const FORGE_MODULES: ForgeModuleDef[] = [
     id: 'income',
     label: 'IncomeForge',
     icon: TrendingUp,
-    status: 'planned',
-    description: 'Income approach for commercial/rental properties',
+    status: 'active',
+    description: 'Income approach — direct capitalization for commercial properties',
   },
   {
     id: 'appeal',
     label: 'AppealForge',
     icon: Gavel,
-    status: 'planned',
-    description: 'BOE appeal packet preparation and defense builder',
+    status: 'active',
+    description: 'BOE appeal preparation, evidence packets, and defense builder',
   },
   {
     id: 'reconcile',
@@ -193,7 +195,9 @@ export default function ForgeSuiteHome() {
           <Suspense fallback={<ModuleLoading />}>
             {activeModule === 'costforge' && <CostForgeModule />}
             {activeModule === 'comps' && <CompsForgeModule />}
-            {activeModule !== 'costforge' && activeModule !== 'comps' && (
+            {activeModule === 'income' && <IncomeForgeModule />}
+            {activeModule === 'appeal' && <AppealForgeModule />}
+            {!['costforge', 'comps', 'income', 'appeal'].includes(activeModule) && (
               <div className='p-6 flex items-center justify-center min-h-[400px]'>
                 <div className='text-center space-y-3'>
                   <Hammer
