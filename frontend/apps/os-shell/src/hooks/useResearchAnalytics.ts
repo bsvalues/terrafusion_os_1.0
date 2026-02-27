@@ -113,7 +113,7 @@ export interface ModelTrainingRequest {
   };
 }
 
-const ANALYTICS_BASE_URL = getViteEnv().VITE_ANALYTICS_URL || 'http://localhost:3005';
+const ANALYTICS_BASE_URL = getViteEnv().VITE_ANALYTICS_URL || '';
 
 class ResearchAnalyticsAPI {
   private baseURL: string;

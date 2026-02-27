@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
 
 interface ServiceInfo {
   version: string;
@@ -49,7 +50,8 @@ export function useQuantumAnalyticsStatus(
         setError(null);
 
         // Phase 1: Check if service is running on port 3005
-        const response = await fetch('http://localhost:3005/health', {
+        const analyticsBase = getViteEnv().VITE_ANALYTICS_URL || '';
+        const response = await fetch(`${analyticsBase}/health`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json'

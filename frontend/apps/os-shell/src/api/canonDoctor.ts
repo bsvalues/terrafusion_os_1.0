@@ -13,7 +13,7 @@ export interface CanonDoctorResponse {
   raw?: unknown;
 }
 
-const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 
 function failureResponse(error: string): CanonDoctorResponse {
   return {

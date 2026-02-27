@@ -8,6 +8,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { getToken } from '../auth/authStorage';
+import { getApiBase } from '../lib/apiBase';
 
 interface PropertyData {
   parcelId: string;
@@ -56,7 +57,7 @@ interface UsePropertyAnalysisReturn {
 
 export const usePropertyAnalysis = ({
   countyId,
-  apiBaseUrl = 'http://localhost:5000/api',
+  apiBaseUrl = getApiBase(),
   autoRefresh = false,
   refreshInterval = 60000,
 }: UsePropertyAnalysisProps): UsePropertyAnalysisReturn => {

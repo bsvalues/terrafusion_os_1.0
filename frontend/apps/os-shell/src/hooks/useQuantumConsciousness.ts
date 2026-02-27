@@ -114,7 +114,7 @@ export interface OptimizationRequest {
   };
 }
 
-const CONSCIOUSNESS_BASE_URL = getViteEnv().VITE_CONSCIOUSNESS_URL || 'http://localhost:3004';
+const CONSCIOUSNESS_BASE_URL = getViteEnv().VITE_CONSCIOUSNESS_URL || `http://localhost:${getViteEnv().VITE_CONSCIOUSNESS_PORT || '3004'}`;
 const SIGNALR_HUB_URL = `${CONSCIOUSNESS_BASE_URL}/hubs/consciousness`;
 
 class QuantumConsciousnessAPI {
