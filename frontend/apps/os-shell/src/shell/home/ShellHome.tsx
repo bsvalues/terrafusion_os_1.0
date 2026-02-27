@@ -410,11 +410,8 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
         route: `/modules/${app.id}`,
       }));
     }
-    // Fallback for empty state
-    return [
-      { id: 'rec-1', title: '12345-001', subtitle: 'Benton County parcel', route: '/property/12345-001' },
-      { id: 'rec-2', title: '67890-002', subtitle: 'Benton County parcel', route: '/property/67890-002' },
-    ];
+    // Empty state — no hardcoded parcels; user should search
+    return [];
   }, [storedRecentParcels, recentApps]);
 
   const actionContext: OsActionContext = useMemo(
@@ -599,31 +596,37 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
               >
                 Recent
               </h2>
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-2'>
-                {recentItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => openRecent(item)}
-                    className='text-left'
-                    style={{
-                      width: '100%',
-                      border: '1px solid hsl(var(--tf-border) / 0.4)',
-                      background: 'hsl(var(--tf-surface-dark-hs) 10% / 0.4)',
-                      color: 'hsl(var(--tf-text))',
-                      borderRadius: '0.75rem',
-                      padding: '0.65rem 0.75rem',
-                      backdropFilter: 'blur(10px)',
-                      WebkitBackdropFilter: 'blur(10px)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <div style={{ fontWeight: 600, fontSize: '0.82rem' }}>{item.title}</div>
-                    <div style={{ marginTop: '0.15rem', fontSize: '0.68rem', color: 'hsl(var(--tf-muted))' }}>
-                      {item.subtitle}
-                    </div>
-                  </button>
-                ))}
-              </div>
+              {recentItems.length > 0 ? (
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-2'>
+                  {recentItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => openRecent(item)}
+                      className='text-left'
+                      style={{
+                        width: '100%',
+                        border: '1px solid hsl(var(--tf-border) / 0.4)',
+                        background: 'hsl(var(--tf-surface-dark-hs) 10% / 0.4)',
+                        color: 'hsl(var(--tf-text))',
+                        borderRadius: '0.75rem',
+                        padding: '0.65rem 0.75rem',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <div style={{ fontWeight: 600, fontSize: '0.82rem' }}>{item.title}</div>
+                      <div style={{ marginTop: '0.15rem', fontSize: '0.68rem', color: 'hsl(var(--tf-muted))' }}>
+                        {item.subtitle}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontSize: '0.78rem', color: 'hsl(var(--tf-muted))', padding: '0.5rem 0' }}>
+                  Search for a parcel to start building your history.
+                </p>
+              )}
             </section>
           </LiquidPanel>
         </main>
