@@ -57,22 +57,14 @@ const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
 // Suite Wrappers (Phase 5: MWUX Slices)
 const TerraPrimeSuite = lazy(() => import('./pages/suites/TerraPrimeSuite'));
 
-// Suite Home Pages (Phase 9: Constitutional Suite Routes)
-const ForgeHome = lazy(() =>
-  import('./pages/suites/SuiteHome').then((m) => ({ default: m.ForgeHome }))
-);
-const AtlasHome = lazy(() =>
-  import('./pages/suites/SuiteHome').then((m) => ({ default: m.AtlasHome }))
-);
+// Suite Home Pages (Phase 9 → Wave 2: Vivified Constitutional Suite Routes)
+const ForgeHome = lazy(() => import('./pages/suites/ForgeSuiteHome'));
+const AtlasHome = lazy(() => import('./pages/suites/AtlasSuiteHome'));
 const DaisHome = lazy(() =>
   import('./pages/suites/SuiteHome').then((m) => ({ default: m.DaisHome }))
 );
-const DossierHome = lazy(() =>
-  import('./pages/suites/SuiteHome').then((m) => ({ default: m.DossierHome }))
-);
-const GptHome = lazy(() =>
-  import('./pages/suites/SuiteHome').then((m) => ({ default: m.GptHome }))
-);
+const DossierHome = lazy(() => import('./pages/suites/DossierSuiteHome'));
+const GptHome = lazy(() => import('./pages/suites/GptSuiteHome'));
 
 // GovernanceLock - Pilot Console (single choke point UI)
 const PilotConsole = lazy(() => import('./pages/PilotConsole'));
