@@ -13,6 +13,8 @@
 import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Globe, Map, Search, Layers, Crosshair, Printer, Download, Database } from 'lucide-react';
+import { usePacsConnection } from '@/hooks/usePacsConnection';
+import { PacsStatusBadge } from '@/components/PacsStatusBadge';
 
 const GISModule = lazy(() => import('./modules/GISModule'));
 
@@ -45,6 +47,7 @@ function ModuleLoading() {
 export default function AtlasSuiteHome() {
   const navigate = useNavigate();
   const [activeModule, setActiveModule] = useState('gis');
+  const { status: pacsStatus, loading: pacsLoading } = usePacsConnection();
 
   return (
     <div className='min-h-screen' style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -63,6 +66,9 @@ export default function AtlasSuiteHome() {
           <div>
             <h1 className='text-xl font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>TerraAtlas</h1>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Geographic Intelligence & Parcel Mapping</p>
+          </div>
+          <div className='ml-auto'>
+            <PacsStatusBadge status={pacsStatus} loading={pacsLoading} />
           </div>
         </div>
       </header>

@@ -25,6 +25,8 @@ import {
   FileSearch,
   Gavel,
 } from 'lucide-react';
+import { usePacsConnection } from '@/hooks/usePacsConnection';
+import { PacsStatusBadge } from '@/components/PacsStatusBadge';
 
 const CostForgeModule = lazy(() => import('./modules/CostForgeModule'));
 
@@ -92,6 +94,7 @@ function ModuleLoading() {
 export default function ForgeSuiteHome() {
   const navigate = useNavigate();
   const [activeModule, setActiveModule] = useState('costforge');
+  const { status: pacsStatus, loading: pacsLoading } = usePacsConnection();
 
   return (
     <div className='min-h-screen' style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -123,6 +126,9 @@ export default function ForgeSuiteHome() {
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
               Property Valuation & Cost Analysis Engine
             </p>
+          </div>
+          <div className='ml-auto'>
+            <PacsStatusBadge status={pacsStatus} loading={pacsLoading} />
           </div>
         </div>
       </header>

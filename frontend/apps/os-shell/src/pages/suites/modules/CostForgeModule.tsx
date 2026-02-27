@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { Hammer, Calculator, TrendingUp, BarChart3, DollarSign, Building2, MapPin } from 'lucide-react';
+import { Hammer, TrendingUp, BarChart3, DollarSign, Building2, MapPin, Search, Database, Loader2 } from 'lucide-react';
 import {
   BUILDING_TYPES,
   QUALITY_LEVELS,
@@ -33,6 +33,7 @@ import {
   type CostCalculationInput,
   type CostCalculationResult,
 } from '@/services/forgeService';
+import { pacsService, type PacsPropertyDetail } from '@/services/pacsService';
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -69,6 +70,10 @@ const DEFAULT_INPUTS: CostCalculationInput = {
 export default function CostForgeModule() {
   const [inputs, setInputs] = useState<CostCalculationInput>(DEFAULT_INPUTS);
   const [showBreakdown, setShowBreakdown] = useState(true);
+  const [pacsGeoId, setPacsGeoId] = useState('');
+  const [pacsLoading, setPacsLoading] = useState(false);
+  const [pacsProperty, setPacsProperty] = useState<PacsPropertyDetail | null>(null);
+  const [pacsError, setPacsError] = useState('');
 
   const result: CostCalculationResult = useMemo(() => calculateCost(inputs), [inputs]);
 
@@ -78,6 +83,21 @@ export default function CostForgeModule() {
   ) => {
     setInputs((prev) => ({ ...prev, [key]: value }));
   }, []);
+
+  const lookupParcel = useCallback(async () => {
+    const geoId = pacsGeoId.trim();
+    if (!geoId) return;
+    setPacsLoading(true);
+    setPacsError('');
+    setPacsProperty(null);
+    const property = await pacsService.getProperty(geoId);
+    setPacsLoading(false);
+    if (!property) {
+      setPacsError(`No parcel found for "${geoId}"`);
+      return;
+    }
+    setPacsProperty(property);
+  }, [pacsGeoId]);
 
   return (
     <div className='p-6 space-y-6'>
@@ -94,6 +114,81 @@ export default function CostForgeModule() {
           Benton County Cost Approach — 89,247 parcels • Matrix Year 2025
         </p>
       </div>
+
+      {/* PACS Parcel Lookup */}
+      <Card
+        style={{
+          background: 'hsl(var(--tf-card-bg))',
+          borderColor: 'hsl(var(--tf-border))',
+        }}
+      >
+        <CardContent className='pt-4 pb-4'>
+          <div className='flex items-center gap-3'>
+            <Database size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+            <span className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+              PACS Parcel Lookup
+            </span>
+            <div className='flex-1 flex items-center gap-2'>
+              <Input
+                placeholder='Enter Geo ID (e.g. 104841000002000)'
+                value={pacsGeoId}
+                onChange={(e) => setPacsGeoId(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && lookupParcel()}
+                className='max-w-xs'
+                style={{
+                  background: 'hsl(var(--tf-bg))',
+                  borderColor: 'hsl(var(--tf-border))',
+                  color: 'hsl(var(--tf-fg))',
+                }}
+              />
+              <Button
+                size='sm'
+                onClick={lookupParcel}
+                disabled={pacsLoading || !pacsGeoId.trim()}
+                style={{
+                  background: 'hsl(var(--tf-suite-forge))',
+                  color: 'hsl(var(--tf-bg))',
+                }}
+              >
+                {pacsLoading ? (
+                  <Loader2 size={14} className='animate-spin' />
+                ) : (
+                  <Search size={14} />
+                )}
+                <span className='ml-1'>Lookup</span>
+              </Button>
+            </div>
+          </div>
+          {pacsError && (
+            <p className='text-sm mt-2' style={{ color: 'hsl(var(--tf-danger, 0 70% 60%))' }}>
+              {pacsError}
+            </p>
+          )}
+          {pacsProperty && (
+            <div
+              className='mt-3 p-3 rounded-md grid grid-cols-2 md:grid-cols-4 gap-3 text-sm'
+              style={{ background: 'hsl(var(--tf-bg))', border: '1px solid hsl(var(--tf-suite-forge) / 0.3)' }}
+            >
+              <div>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Address</span>
+                <p style={{ color: 'hsl(var(--tf-fg))' }}>{pacsProperty.address}</p>
+              </div>
+              <div>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Owner</span>
+                <p style={{ color: 'hsl(var(--tf-fg))' }}>{pacsProperty.ownerName}</p>
+              </div>
+              <div>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Market Value</span>
+                <p style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(pacsProperty.marketValue)}</p>
+              </div>
+              <div>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Improvement Value</span>
+                <p style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(pacsProperty.improvementValue)}</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         {/* Input Panel */}
