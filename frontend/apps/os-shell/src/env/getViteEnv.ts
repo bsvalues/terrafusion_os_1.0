@@ -19,7 +19,9 @@ try {
 
 export function getViteEnv(): Record<string, any> {
   // 1. Vite ESM (captured at module load — no eval/new Function)
-  if (_viteEnv) return _viteEnv;
+  // Guard: Jest's import-meta transformer replaces `import.meta?.env` with `({})`,
+  // which is truthy but empty. Skip it so we fall back to process.env in tests.
+  if (_viteEnv && Object.keys(_viteEnv).length > 0) return _viteEnv;
 
   // 2. Fallback to process.env (Node/Jest/Electron)
   if (typeof process !== 'undefined' && process.env) {

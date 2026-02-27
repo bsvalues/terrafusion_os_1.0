@@ -78,12 +78,13 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ className = ''
   }, []);
 
   // Handle icon launch (double click) - Navigate to suite route
+  // Desktop icon IDs are suite/feature IDs (forge, atlas, dais, dossier, gpt,
+  // pilot, trace, canon), NOT windowing module IDs (costforge, atlas-ai, etc.).
+  // They map to workbench tabs or standalone pages via desktopManifest routes.
   const handleLaunch = useCallback(
     (id: string) => {
       const icon = DESKTOP_ICONS.find((i) => i.id === id);
-      if (icon?.route) {
-        navigate(icon.route);
-      }
+      if (icon?.route) navigate(icon.route);
     },
     [navigate]
   );

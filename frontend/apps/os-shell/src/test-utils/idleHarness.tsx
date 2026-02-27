@@ -60,9 +60,9 @@ export function renderDesktopRoute(): IdleHarnessResult {
 
   // Render Desktop route
   const renderResult = render(
-    <MemoryRouter initialEntries={['/desktop']}>
+    <MemoryRouter initialEntries={['/']}>
       <Routes>
-        <Route path='/desktop' element={<Desktop />} />
+        <Route path='/' element={<Desktop />} />
       </Routes>
     </MemoryRouter>
   );

@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
-import { CSSAmbientLayer } from './components/compositor/layers/CSSAmbientLayer';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
 
@@ -29,9 +28,7 @@ const LoadingFallback = () => (
 );
 
 // Lazy load route components for code splitting
-// Shell Home - OS Landing Surface (Phase 5)
-const ShellHome = lazy(() => import('./shell/home/ShellHome'));
-// Desktop Shell - Full Windows-like experience
+// Desktop Shell - the ONE canonical OS surface
 const App = lazy(() => import('./App'));
 // Property Workbench - Parcel-context hub (Tier-0 OS Surface)
 const PropertyWorkbench = lazy(() => import('./pages/workbench/PropertyWorkbench'));
@@ -118,21 +115,19 @@ const Router: React.FC = () => {
                 {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
                 <Route path='/login' element={<LoginPage />} />
 
-                {/* Root: Desktop Shell — the OS experience (windows, dock, start menu) */}
+                {/* TerraFusion OS Desktop — the ONE canonical surface */}
                 <Route path='/' element={<App />} />
 
-                {/* Alias: /desktop renders the same Desktop shell */}
-                <Route path='/desktop' element={<App />} />
+                {/* Legacy: /desktop bookmarks redirect to root with telemetry */}
+                <Route
+                  path='/desktop'
+                  element={<LegacyRedirect to='/' legacyAppId='desktop.legacy-route' />}
+                />
 
-                {/* Launchpad: Tahoe tile grid (suite navigation surface) */}
+                {/* Legacy: /launchpad bookmarks redirect to root (ShellHome absorbed into Desktop) */}
                 <Route
                   path='/launchpad'
-                  element={
-                    <div className='relative min-h-screen overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
-                      <CSSAmbientLayer />
-                      <ShellHome className='relative z-10' />
-                    </div>
-                  }
+                  element={<LegacyRedirect to='/' legacyAppId='launchpad.legacy-route' />}
                 />
 
                 {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}

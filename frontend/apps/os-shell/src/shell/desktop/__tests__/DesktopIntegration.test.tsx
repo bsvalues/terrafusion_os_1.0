@@ -26,7 +26,7 @@ import { DesktopWithErrorBoundary } from '../Desktop';
  * which uses useNavigate() for module launch routing.
  */
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <MemoryRouter initialEntries={['/desktop']}>{children}</MemoryRouter>
+  <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
 );
 
 // Suppress console.error for error boundary tests

@@ -24,6 +24,16 @@ jest.mock('../../auth/authBridge', () => ({
   unregisterLogoutHandler: jest.fn(),
 }));
 
+// Mock PACS property lookup so workbench doesn't block on real API fetch
+jest.mock('../../hooks/usePropertyLookup', () => ({
+  usePropertyLookup: () => ({
+    data: null,
+    loading: false,
+    error: null,
+    refetch: undefined,
+  }),
+}));
+
 import Router from '../../Router';
 
 describe('PropertyWorkbench summarize_sales_comps_rationale action', () => {

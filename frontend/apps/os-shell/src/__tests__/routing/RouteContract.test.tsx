@@ -1,10 +1,10 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS - ROUTE CONTRACT TESTS
- * Phase 5: Landing + Workbench Route Verification
+ * Unified OS Surface: Desktop + Workbench Route Verification
  *
- * Tests the Phase 5 route architecture contract:
- * - / renders ShellHome
+ * Tests the unified route architecture contract:
+ * - / renders Desktop OS (App.tsx)
  * - /property/:parcelId renders PropertyWorkbench with tabs
  * - /modules/* redirects to /
  * - Missing parcelId shows safe error
@@ -19,10 +19,10 @@ import React, { Suspense, lazy } from 'react';
 import { MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 // Mock lazy-loaded components
-jest.mock('../../shell/home/ShellHome', () => ({
+// ShellHome deprecated — / now renders App (Desktop OS surface)
+jest.mock('../../App', () => ({
   __esModule: true,
-  default: () => <div data-testid='shell-home'>ShellHome</div>,
-  ShellHome: () => <div data-testid='shell-home'>ShellHome</div>,
+  default: () => <div data-testid='desktop'>Desktop OS</div>,
 }));
 
 jest.mock('../../pages/workbench/PropertyWorkbench', () => ({
@@ -67,7 +67,7 @@ jest.mock('../../pages/workbench/tabs/PropertyPilot', () => ({
 
 // Simple test router that mirrors the production routes
 const TestRouter: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
-  const ShellHome = lazy(() => import('../../shell/home/ShellHome'));
+  const App = lazy(() => import('../../App'));
   const PropertyWorkbench = lazy(() => import('../../pages/workbench/PropertyWorkbench'));
   const PropertySummary = lazy(() => import('../../pages/workbench/tabs/PropertySummary'));
   const PropertyForge = lazy(() => import('../../pages/workbench/tabs/PropertyForge'));
@@ -80,7 +80,7 @@ const TestRouter: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
     <MemoryRouter initialEntries={[initialRoute]}>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          <Route path='/' element={<ShellHome />} />
+          <Route path='/' element={<App />} />
           <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
             <Route index element={<PropertySummary />} />
             <Route path='forge' element={<PropertyForge />} />
@@ -98,22 +98,22 @@ const TestRouter: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
   );
 };
 
-describe('Route Contract - Phase 5 Architecture', () => {
-  describe('ShellHome (/ route)', () => {
-    it('renders ShellHome at root path', async () => {
+describe('Route Contract - Unified OS Surface', () => {
+  describe('Desktop (/ route)', () => {
+    it('renders Desktop OS at root path', async () => {
       render(<TestRouter initialRoute='/' />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('shell-home')).toBeInTheDocument();
+        expect(screen.getByTestId('desktop')).toBeInTheDocument();
       });
     });
 
-    it('ShellHome is the canonical landing surface', async () => {
+    it('Desktop is the canonical landing surface', async () => {
       render(<TestRouter initialRoute='/' />);
 
       await waitFor(() => {
-        // ShellHome should render, not PropertyWorkbench
-        expect(screen.getByTestId('shell-home')).toBeInTheDocument();
+        // Desktop should render, not PropertyWorkbench
+        expect(screen.getByTestId('desktop')).toBeInTheDocument();
         expect(screen.queryByTestId('property-workbench')).not.toBeInTheDocument();
       });
     });
@@ -182,7 +182,7 @@ describe('Route Contract - Phase 5 Architecture', () => {
       render(<TestRouter initialRoute='/modules/property-workbench' />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('shell-home')).toBeInTheDocument();
+        expect(screen.getByTestId('desktop')).toBeInTheDocument();
       });
     });
 
@@ -190,7 +190,7 @@ describe('Route Contract - Phase 5 Architecture', () => {
       render(<TestRouter initialRoute='/modules/property-workbench/some/path' />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('shell-home')).toBeInTheDocument();
+        expect(screen.getByTestId('desktop')).toBeInTheDocument();
       });
     });
 
@@ -198,7 +198,7 @@ describe('Route Contract - Phase 5 Architecture', () => {
       render(<TestRouter initialRoute='/modules/some-legacy-module' />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('shell-home')).toBeInTheDocument();
+        expect(screen.getByTestId('desktop')).toBeInTheDocument();
       });
     });
 
@@ -206,7 +206,7 @@ describe('Route Contract - Phase 5 Architecture', () => {
       render(<TestRouter initialRoute='/modules/costforge-ai/dashboard' />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('shell-home')).toBeInTheDocument();
+        expect(screen.getByTestId('desktop')).toBeInTheDocument();
       });
     });
   });
@@ -220,11 +220,11 @@ describe('Route Contract - Phase 5 Architecture', () => {
       });
     });
 
-    it('/property/:parcelId never renders ShellHome', async () => {
+    it('/property/:parcelId never renders Desktop', async () => {
       render(<TestRouter initialRoute='/property/12345-001' />);
 
       await waitFor(() => {
-        expect(screen.queryByTestId('shell-home')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('desktop')).not.toBeInTheDocument();
       });
     });
   });

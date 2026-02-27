@@ -17,7 +17,7 @@ import { persist } from 'zustand/middleware';
 // Types
 // ============================================================================
 
-export type CommandCategory = 'modules' | 'settings' | 'shortcuts' | 'actions';
+export type CommandCategory = 'modules' | 'settings' | 'shortcuts' | 'actions' | 'navigation';
 
 export interface CommandItem {
   id: string;

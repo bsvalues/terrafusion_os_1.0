@@ -183,9 +183,9 @@ describe('Phase 29 contract: auth boundary intent — unauthenticated redirects,
       }
     );
 
-    it('unauthenticated access to /desktop → login-page renders', async () => {
+    it('unauthenticated access to / → login-page renders', async () => {
       mockTokenValue = null;
-      memoryRouterEntries = ['/desktop'];
+      memoryRouterEntries = ['/'];
 
       render(<Router />);
 

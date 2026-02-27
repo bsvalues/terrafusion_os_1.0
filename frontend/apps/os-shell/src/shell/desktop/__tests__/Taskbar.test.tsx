@@ -60,6 +60,7 @@ describe('Taskbar Component', () => {
       renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
+      // macOS Tahoe floating dock: bottom-2 (not bottom-0)
       expect(taskbar).toHaveClass('fixed', 'bottom-2');
     });
 
@@ -74,7 +75,7 @@ describe('Taskbar Component', () => {
       renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
-      // Tahoe dock uses inline backdropFilter for glass morphism
+      // macOS Tahoe dock uses inline backdropFilter style instead of Tailwind class
       expect(taskbar.style.backdropFilter).toContain('blur');
     });
   });
@@ -124,8 +125,7 @@ describe('Taskbar Component', () => {
   });
 
   describe('Running Apps Section', () => {
-    it('renders running apps container', () => {
-      // Tahoe dock: RunningApps returns null when no windows are open
+    it('renders running apps container when windows exist', () => {
       useDesktopStore.getState().openWindow('module-1', 'Module 1', 'BarChart3');
       renderTaskbar();
 
@@ -133,11 +133,12 @@ describe('Taskbar Component', () => {
       expect(runningApps).toBeInTheDocument();
     });
 
-    it('shows no running-apps section when no windows are open', () => {
+    it('hides running apps section when no windows are open', () => {
       renderTaskbar();
 
-      // Tahoe dock hides running-apps entirely when empty
-      expect(screen.queryByTestId('running-apps')).not.toBeInTheDocument();
+      // macOS Tahoe dock: RunningApps returns null when empty
+      const runningApps = screen.queryByTestId('running-apps');
+      expect(runningApps).not.toBeInTheDocument();
     });
 
     it('shows app button for each open window', () => {
@@ -159,8 +160,9 @@ describe('Taskbar Component', () => {
 
       renderTaskbar();
 
-      // Tahoe dock is icon-only; title exposed via aria-label
-      expect(screen.getByRole('button', { name: /Government Edition/i })).toBeInTheDocument();
+      // macOS Tahoe dock: icon-only buttons with aria-label for accessibility
+      const button = screen.getByRole('button', { name: /government edition/i });
+      expect(button).toBeInTheDocument();
     });
 
     it('displays window icon on app button', () => {
@@ -294,7 +296,7 @@ describe('Taskbar Component', () => {
   });
 
   describe('Responsive Design', () => {
-    it('dock buttons use icon-only layout', () => {
+    it('dock buttons use fixed icon size regardless of title length', () => {
       useDesktopStore
         .getState()
         .openWindow(
@@ -305,9 +307,9 @@ describe('Taskbar Component', () => {
 
       renderTaskbar();
 
-      // Tahoe dock uses icon-only buttons; title is exposed via aria-label
+      // macOS Tahoe dock: icon-only buttons with fixed w-10 h-10 size
       const button = screen.getByRole('button', { name: /this is a very long/i });
-      expect(button).toBeInTheDocument();
+      expect(button).toHaveClass('w-10', 'h-10');
     });
   });
 });

@@ -2,8 +2,8 @@
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
   "ok": false,
-  "scannedFileCount": 875,
-  "violationCount": 172,
+  "scannedFileCount": 874,
+  "violationCount": 186,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -806,7 +806,7 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\index.tsx",
-      "line": 23,
+      "line": 20,
       "column": 13,
       "excerpt": "#00e5ff'"
     },
@@ -854,6 +854,20 @@
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DesktopIcon.tsx",
+      "line": 155,
+      "column": 52,
+      "excerpt": "rgba(255,255,255,0.25)]'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DesktopIcon.tsx",
+      "line": 180,
+      "column": 41,
+      "excerpt": "rgba(0,0,0,0.6)' }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\SnapPreview.tsx",
       "line": 79,
       "column": 27,
@@ -886,6 +900,90 @@
       "line": 106,
       "column": 60,
       "excerpt": "#00FF88"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 174,
+      "column": 20,
+      "excerpt": "#FEBC2E] hover:bg-[#F5A623]',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 174,
+      "column": 39,
+      "excerpt": "#F5A623]',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 175,
+      "column": 20,
+      "excerpt": "#28C840] hover:bg-[#1AAB29]',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 175,
+      "column": 39,
+      "excerpt": "#1AAB29]',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 176,
+      "column": 17,
+      "excerpt": "#FF5F57] hover:bg-[#E0443E]',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 176,
+      "column": 36,
+      "excerpt": "#E0443E]',"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 174,
+      "column": 16,
+      "excerpt": "bg-[#FEBC2E] hover:bg-[#F5A623]',"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 174,
+      "column": 35,
+      "excerpt": "bg-[#F5A623]',"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 175,
+      "column": 16,
+      "excerpt": "bg-[#28C840] hover:bg-[#1AAB29]',"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 175,
+      "column": 35,
+      "excerpt": "bg-[#1AAB29]',"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 176,
+      "column": 13,
+      "excerpt": "bg-[#FF5F57] hover:bg-[#E0443E]',"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Window.tsx",
+      "line": 176,
+      "column": 32,
+      "excerpt": "bg-[#E0443E]',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1210,5 +1308,5 @@
       "excerpt": "rgba(255, 255, 255, 0.1)'};"
     }
   ],
-  "generatedAtIso": "2026-02-25T22:35:17.771Z"
+  "generatedAtIso": "2026-02-26T06:41:49.555Z"
 }

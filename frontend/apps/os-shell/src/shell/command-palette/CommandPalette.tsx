@@ -16,6 +16,7 @@
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Panel } from '@terrafusion/ui';
 import { getLucideIcon } from '../../config/iconMap';
 import { activateModule } from '../../orchestration/moduleActivation';
@@ -391,6 +392,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
   const { close, setSearchQuery } = useCommandPaletteStore();
   const commands = useCommandRegistry();
 
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -398,6 +400,25 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
 
   // Filter commands based on query
   const filteredCommands = useMemo(() => filterCommands(commands, query), [commands, query]);
+
+  // Dynamic parcel search command — when query is all digits, offer "Go to Parcel"
+  const parcelCommand = useMemo((): CommandItem | null => {
+    const trimmed = query.trim();
+    if (!trimmed || !/^\d+$/.test(trimmed)) return null;
+    return {
+      id: `nav:parcel:${trimmed}`,
+      label: `Go to Parcel ${trimmed}`,
+      description: 'Open property workbench for this parcel',
+      iconName: 'MapPin',
+      iconVariant: 'mapping',
+      category: 'navigation',
+      keywords: ['parcel', 'property'],
+      action: () => {
+        navigate(`/property/${trimmed}`);
+        close();
+      },
+    };
+  }, [query, navigate, close]);
 
   // Get recent commands
   const recentCommands = useMemo(() => {
@@ -410,11 +431,17 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
   // Group items by category
   const groupedItems = useMemo(() => {
     const groups: Record<string, CommandItem[]> = {
+      navigation: [],
       recent: [],
       modules: [],
       settings: [],
       actions: [],
     };
+
+    // Add dynamic parcel search command at the top
+    if (parcelCommand) {
+      groups.navigation.push(parcelCommand);
+    }
 
     // Add recent items
     if (!query.trim() && recentCommands.length > 0) {
@@ -424,23 +451,23 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
     // Add filtered items to their categories (excluding items already in recent)
     const recentIds = new Set(recentCommandIds);
     const itemsToGroup = query.trim() ? filteredCommands : commands;
-    
+
     itemsToGroup.forEach((item) => {
       // Skip if already in recent section (when not searching)
       if (!query.trim() && recentIds.has(item.id)) return;
-      
+
       if (groups[item.category]) {
         groups[item.category].push(item);
       }
     });
 
     return groups;
-  }, [filteredCommands, commands, query, recentCommands, recentCommandIds]);
+  }, [filteredCommands, commands, query, recentCommands, recentCommandIds, parcelCommand]);
 
   // Flat list for keyboard navigation
   const flatList = useMemo(() => {
     const result: CommandItem[] = [];
-    ['recent', 'modules', 'settings', 'actions'].forEach((cat) => {
+    ['navigation', 'recent', 'modules', 'settings', 'actions'].forEach((cat) => {
       result.push(...(groupedItems[cat] || []));
     });
     return result;
@@ -504,6 +531,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
   if (!isOpen) return null;
 
   const categoryLabels: Record<string, string> = {
+    navigation: 'Navigate',
     recent: 'Recent',
     modules: 'Modules',
     settings: 'Settings',
@@ -576,7 +604,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
               <p className='text-sm'>No results found</p>
             </div>
           ) : (
-            ['recent', 'modules', 'settings', 'actions'].map((category) => {
+            ['navigation', 'recent', 'modules', 'settings', 'actions'].map((category) => {
               const items = groupedItems[category] || [];
               if (items.length === 0) return null;
 
