@@ -2,8 +2,8 @@
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
   "ok": false,
-  "scannedFileCount": 846,
-  "violationCount": 183,
+  "scannedFileCount": 847,
+  "violationCount": 199,
   "violations": [
     {
       "kind": "RAW_HEX",
@@ -1189,6 +1189,118 @@
       "excerpt": "#ef4444' }}>"
     },
     {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\TraceHome.tsx",
+      "line": 232,
+      "column": 34,
+      "excerpt": "hsl(0 70% 30%)'\r"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\TraceHome.tsx",
+      "line": 345,
+      "column": 36,
+      "excerpt": "hsl(0 70% 65%)', marginBottom: '0.5rem' }}>Recent Errors</h4>\r"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 121,
+      "column": 71,
+      "excerpt": "#1a472a' />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 122,
+      "column": 51,
+      "excerpt": "#1f5a2f' />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 123,
+      "column": 52,
+      "excerpt": "#1f5a2f' />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 124,
+      "column": 52,
+      "excerpt": "#245634' />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 161,
+      "column": 47,
+      "excerpt": "#f59e0b' />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 162,
+      "column": 61,
+      "excerpt": "#f59e0b' strokeWidth='1' opacity='0.6' />"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 113,
+      "column": 61,
+      "excerpt": "rgba(255,255,255,0.05)' strokeWidth='0.5' />"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 132,
+      "column": 19,
+      "excerpt": "rgba(59, 130, 246, 0.15)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 133,
+      "column": 21,
+      "excerpt": "rgba(59, 130, 246, 0.4)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 143,
+      "column": 19,
+      "excerpt": "rgba(168, 85, 247, 0.1)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 144,
+      "column": 21,
+      "excerpt": "rgba(168, 85, 247, 0.3)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 154,
+      "column": 19,
+      "excerpt": "rgba(34, 211, 238, 0.15)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 155,
+      "column": 21,
+      "excerpt": "rgba(34, 211, 238, 0.8)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 166,
+      "column": 98,
+      "excerpt": "rgba(0,0,0,0.4)' }}>"
+    },
+    {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\services\\dossierService.ts",
       "line": 150,
@@ -1287,5 +1399,5 @@
       "excerpt": "rgba(r, g, b, a)"
     }
   ],
-  "generatedAtIso": "2026-02-27T06:30:45.984Z"
+  "generatedAtIso": "2026-02-27T15:03:16.349Z"
 }
