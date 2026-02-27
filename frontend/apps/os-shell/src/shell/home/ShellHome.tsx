@@ -40,6 +40,7 @@ import { SystemHealthPanel } from '../../components/SystemHealthPanel';
 import { PacsProofCard } from '../../components/PacsProofCard';
 import { PropertySearchWidget } from '../../components/PropertySearchWidget';
 import { useParcelContextActions } from '../../context/parcelContext';
+import { BentonCountyConfigService } from '../../services/BentonCountyConfig';
 
 // ============================================================================
 // Icon + variant mapping (replaces emoji ICON_MAP)
@@ -372,6 +373,19 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
   const { setFromRoute } = useParcelContextActions();
   const { health, loading: healthLoading, refresh: refreshHealth } = useSystemHealth();
 
+  // Context pills from county config + dynamic year
+  const contextPills = useMemo(() => {
+    const county = BentonCountyConfigService.getInstance().getCountyInfo();
+    const deployment = BentonCountyConfigService.getInstance().getDeploymentInfo();
+    const taxYear = new Date().getFullYear();
+    const role = deployment.mode === 'demo' ? 'Demo' : 'Assessor';
+    return [
+      { label: county.name, accent: false },
+      { label: `Tax Year ${taxYear}`, accent: false },
+      { label: role, accent: true },
+    ];
+  }, []);
+
   const suites = useMemo(
     () => buildSuiteCards(parcelContext?.parcelId ?? null),
     [parcelContext?.parcelId]
@@ -494,26 +508,26 @@ export const ShellHome: React.FC<ShellHomeProps> = ({ className = '' }) => {
 
           {/* Right: Context pills + command palette */}
           <div className='flex items-center gap-2' aria-label='System context'>
-            {['Benton County', 'Tax Year 2026', 'Assessor'].map((label, i) => (
+            {contextPills.map((pill, i) => (
               <span
-                key={label}
+                key={pill.label}
                 style={{
                   fontSize: '0.68rem',
                   fontWeight: 500,
                   borderRadius: '999px',
                   padding: '0.2rem 0.55rem',
-                  border: `1px solid ${i === 2
+                  border: `1px solid ${pill.accent
                     ? 'hsl(var(--tf-success-hs) 52% / 0.4)'
                     : 'hsl(var(--tf-border) / 0.5)'}`,
-                  background: i === 2
+                  background: pill.accent
                     ? 'hsl(var(--tf-success-hs) 52% / 0.12)'
                     : 'hsl(var(--tf-surface-dark-hs) 10% / 0.4)',
-                  color: i === 2
+                  color: pill.accent
                     ? 'hsl(var(--tf-success-hs) 52%)'
                     : 'hsl(var(--tf-text))',
                 }}
               >
-                {label}
+                {pill.label}
               </span>
             ))}
             <TactileButton variant='secondary' size='sm' onClick={openCommandPalette}>
