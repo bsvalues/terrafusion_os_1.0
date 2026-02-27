@@ -153,7 +153,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     iconName: 'Hammer',
     route: '/forge',
     color: 'hsl(var(--tf-suite-forge))', // Forge orange
-    status: 'wip',
+    status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'forge' },
   },
@@ -165,7 +165,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     iconName: 'Globe',
     route: '/atlas',
     color: 'hsl(var(--tf-suite-atlas))', // Cyan
-    status: 'wip',
+    status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'atlas' },
   },
@@ -177,7 +177,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     iconName: 'LayoutDashboard',
     route: '/dais',
     color: 'hsl(var(--tf-suite-dais))', // Purple
-    status: 'wip',
+    status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'dais' },
   },
@@ -189,7 +189,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     iconName: 'FileStack',
     route: '/dossier',
     color: 'hsl(var(--tf-suite-dossier))', // Green
-    status: 'wip',
+    status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'dossier' },
   },
@@ -201,7 +201,7 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     iconName: 'Bot',
     route: '/gpt',
     color: 'hsl(var(--tf-suite-gpt))', // Blue
-    status: 'wip',
+    status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'pilot' }, // TerraGPT uses Pilot tab
   },
