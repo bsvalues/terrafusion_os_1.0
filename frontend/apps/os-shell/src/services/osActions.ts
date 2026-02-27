@@ -103,6 +103,7 @@ export interface OsActionPolicy {
 
 export const OS_ACTION_EVENT_NAME = 'terratrace:os_action';
 export const OS_ACTION_BLOCKED_EVENT_NAME = 'terratrace:os_action_blocked';
+export const OS_TRACE_EVENT_NAME = 'terratrace:custom';
 
 // ============================================================================
 // Clock Injection (for deterministic testing)
@@ -296,6 +297,27 @@ function emitBlockedTrace(
   };
 
   window.dispatchEvent(new CustomEvent(OS_ACTION_BLOCKED_EVENT_NAME, { detail: event }));
+}
+
+// ============================================================================
+// Public Generic Trace Emission
+// ============================================================================
+
+/**
+ * Generic trace event structure for non-action traces (e.g., policy changes)
+ */
+export interface OsTraceEvent {
+  type: string;
+  timestamp: number;
+  payload: Record<string, unknown>;
+}
+
+/**
+ * Emit a generic TerraTrace custom event for audit purposes.
+ * Used by PolicyPanel and other non-action-dispatch components.
+ */
+export function emitTrace(event: OsTraceEvent): void {
+  window.dispatchEvent(new CustomEvent(OS_TRACE_EVENT_NAME, { detail: event }));
 }
 
 // ============================================================================

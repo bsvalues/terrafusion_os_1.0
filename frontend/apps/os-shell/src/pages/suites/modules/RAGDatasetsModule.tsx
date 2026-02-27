@@ -5,7 +5,7 @@
  * Owns: Dataset CRUD, document ingestion, embedding status, chunk preview.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -40,6 +40,7 @@ import {
   Layers,
   Eye,
 } from 'lucide-react';
+import api from '@/services/api';
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                       */
@@ -199,6 +200,9 @@ export default function RAGDatasetsModule() {
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredDatasets = DATASETS.filter((ds) => {
     if (filterStatus !== 'all' && ds.status !== filterStatus) return false;
@@ -217,8 +221,29 @@ export default function RAGDatasetsModule() {
   const readyCount = DATASETS.filter((ds) => ds.status === 'ready').length;
 
   const handleUpload = useCallback(() => {
-    // Placeholder — would trigger file picker + ingest API
-    alert('Document upload coming soon — will use /api/gpt/rag/ingest endpoint');
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      await api.post('/gpt/rag/ingest', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setUploading(false);
+      // Reset input so the same file can be selected again
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   }, []);
 
   return (
@@ -234,11 +259,25 @@ export default function RAGDatasetsModule() {
             Knowledge bases powering RAG-enabled GPTs
           </p>
         </div>
-        <Button onClick={handleUpload} style={{ background: 'hsl(var(--tf-suite-gpt))', color: 'white' }}>
-          <Upload size={16} className="mr-2" />
-          Ingest Documents
+        <Button onClick={handleUpload} disabled={uploading} style={{ background: 'hsl(var(--tf-suite-gpt))', color: 'white' }}>
+          {uploading ? <RefreshCw size={16} className="mr-2 animate-spin" /> : <Upload size={16} className="mr-2" />}
+          {uploading ? 'Ingesting…' : 'Ingest Documents'}
         </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.txt,.md,.csv,.json,.docx"
+          className="hidden"
+          onChange={handleFileSelected}
+        />
       </div>
+
+      {uploadError && (
+        <div className="flex items-center gap-2 p-3 rounded-lg text-sm" style={{ background: 'hsl(var(--tf-accent-danger) / 0.1)', color: 'hsl(var(--tf-accent-danger))' }}>
+          <AlertTriangle size={14} />
+          {uploadError}
+        </div>
+      )}
 
       {/* Summary cards */}
       <div className="grid grid-cols-4 gap-4">
