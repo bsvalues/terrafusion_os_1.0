@@ -33,9 +33,10 @@ function resetStore() {
   useParcelContextStore.setState({ context: null, recentParcels: [] });
   try {
     sessionStorage.removeItem('tf:parcel-context');
+    localStorage.removeItem('tf:recent-parcels');
     sessionStorage.removeItem('tf:recent-parcels');
   } catch {
-    // Session storage might be unavailable
+    // Storage might be unavailable
   }
 }
 
@@ -174,11 +175,11 @@ describe('Parcel Context Recents (MRU)', () => {
   // ==========================================================================
 
   describe('persistence', () => {
-    it('persists recents to session storage', () => {
+    it('persists recents to localStorage', () => {
       recordRecentParcel('P-001');
       recordRecentParcel('P-002');
 
-      const stored = sessionStorage.getItem('tf:recent-parcels');
+      const stored = localStorage.getItem('tf:recent-parcels');
       expect(stored).not.toBeNull();
 
       const parsed = JSON.parse(stored!);
@@ -186,9 +187,9 @@ describe('Parcel Context Recents (MRU)', () => {
       expect(parsed).toContain('P-001');
     });
 
-    it('restores recents from session storage on init', () => {
+    it('restores recents from localStorage on init', () => {
       // Simulate stored recents
-      sessionStorage.setItem('tf:recent-parcels', JSON.stringify(['P-A', 'P-B', 'P-C']));
+      localStorage.setItem('tf:recent-parcels', JSON.stringify(['P-A', 'P-B', 'P-C']));
 
       // Reset and reinitialize store (simulating page reload)
       useParcelContextStore.setState({
@@ -230,7 +231,7 @@ describe('Parcel Context Recents (MRU)', () => {
 // Helper to test restoration (exported from parcelContext in actual impl)
 function restoreRecentsFromSession(): string[] {
   try {
-    const stored = sessionStorage.getItem('tf:recent-parcels');
+    const stored = localStorage.getItem('tf:recent-parcels');
     if (stored) {
       return JSON.parse(stored);
     }

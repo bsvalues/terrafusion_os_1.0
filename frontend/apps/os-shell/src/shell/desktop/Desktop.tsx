@@ -47,7 +47,7 @@ export interface DesktopProps {
 const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
   onOpenCommandPalette,
 }) => (
-  <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 z-[980] pointer-events-none'>
+  <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 z-[1050] pointer-events-none'>
     <div
       className='pointer-events-auto flex items-center justify-between px-4 py-1'
       style={{

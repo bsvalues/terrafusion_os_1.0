@@ -1,6 +1,4 @@
 /**
- * @vitest-environment jsdom
- *
  * TerraFusion OS Module Registry Store Tests
  *
  * Comprehensive test suite for the Zustand store managing module registry.

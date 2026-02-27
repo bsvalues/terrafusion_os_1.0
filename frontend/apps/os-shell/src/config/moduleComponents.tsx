@@ -29,6 +29,9 @@ export const MODULE_ALIASES: Record<string, string> = {
   assessment: 'costforge',
 
   // Short aliases
+  // LEGACY: terra-gaia is the legacy TerraGaia AI module.
+  // suite-gpt is the constitutional TerraGPT suite home.
+  // Both coexist intentionally until suite-gpt achieves feature parity.
   gaia: 'terra-gaia',
   ai: 'atlas-ai',
   analytics: 'reporting',

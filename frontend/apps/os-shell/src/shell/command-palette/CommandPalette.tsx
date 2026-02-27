@@ -28,6 +28,7 @@ import {
 } from '../../stores/commandPaletteStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { TerraSphereIcon, type TerraSphereIconVariant } from '../../ui/brand/TerraSphereIcon';
+import { useParcelSearch } from './useParcelSearch';
 
 // ============================================================================
 // Types
@@ -398,6 +399,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
+  // API-backed parcel search (address/owner queries)
+  const { results: parcelSearchResults, isLoading: isParcelSearchLoading } = useParcelSearch(query, isOpen);
+
   // Filter commands based on query
   const filteredCommands = useMemo(() => filterCommands(commands, query), [commands, query]);
 
@@ -420,6 +424,23 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
     };
   }, [query, navigate, close]);
 
+  // Convert API parcel search results into CommandItems
+  const parcelSearchCommands = useMemo((): CommandItem[] => {
+    return parcelSearchResults.map((r) => ({
+      id: `search:parcel:${r.parcelNumber}`,
+      label: `${r.address}`,
+      description: `${r.parcelNumber} — ${r.ownerName}`,
+      iconName: 'MapPin',
+      iconVariant: 'mapping' as TerraSphereIconVariant,
+      category: 'navigation' as CommandCategory,
+      keywords: ['parcel', 'property', 'search'],
+      action: () => {
+        navigate(`/property/${r.parcelNumber}`);
+        close();
+      },
+    }));
+  }, [parcelSearchResults, navigate, close]);
+
   // Get recent commands
   const recentCommands = useMemo(() => {
     if (query.trim()) return []; // Don't show recent when searching
@@ -438,9 +459,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
       actions: [],
     };
 
-    // Add dynamic parcel search command at the top
+    // Add dynamic parcel search command at the top (digits-only shortcut)
     if (parcelCommand) {
       groups.navigation.push(parcelCommand);
+    }
+
+    // Add API-backed parcel search results below the digits shortcut
+    if (parcelSearchCommands.length > 0) {
+      groups.navigation.push(...parcelSearchCommands);
     }
 
     // Add recent items
@@ -462,7 +488,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
     });
 
     return groups;
-  }, [filteredCommands, commands, query, recentCommands, recentCommandIds, parcelCommand]);
+  }, [filteredCommands, commands, query, recentCommands, recentCommandIds, parcelCommand, parcelSearchCommands]);
 
   // Flat list for keyboard navigation
   const flatList = useMemo(() => {
@@ -580,9 +606,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
               'flex-1 bg-transparent text-white placeholder-white/40',
               'text-sm outline-none'
             )}
+            role='combobox'
+            aria-expanded={isOpen}
+            aria-autocomplete='list'
             aria-label='Search commands'
             autoComplete='off'
           />
+          {isParcelSearchLoading && (
+            <span data-testid='parcel-search-loading' className='text-xs text-white/40 animate-pulse'>Searching…</span>
+          )}
           <kbd className='px-2 py-1 text-xs bg-white/10 rounded text-white/40'>
             esc
           </kbd>

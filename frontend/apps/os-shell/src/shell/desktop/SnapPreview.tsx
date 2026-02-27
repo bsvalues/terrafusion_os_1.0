@@ -67,7 +67,7 @@ export const SnapPreview: React.FC<SnapPreviewProps> = ({
       className={cn(
         // Base styles
         'fixed pointer-events-none',
-        'z-[999]', // Above windows, below taskbar
+        'z-[1040]', // Above windows, below system bar
 
         // TerraFusion brand styling
         'border-2 border-[var(--tf-transcend-highlight)]/60',

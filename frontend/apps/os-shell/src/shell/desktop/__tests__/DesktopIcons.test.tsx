@@ -28,6 +28,11 @@ jest.mock('react-router-dom', () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
+const mockActivateModule = jest.fn();
+jest.mock('../../../orchestration/moduleActivation', () => ({
+  activateModule: (...args: unknown[]) => mockActivateModule(...args),
+}));
+
 // ============================================================================
 // Constants — derived from canonical desktopManifest (Phase 22)
 // ============================================================================
@@ -42,7 +47,11 @@ const DESKTOP_ICONS = getDesktopIcons();
 
 function resetAllMocks() {
   mockNavigate.mockClear();
+  mockActivateModule.mockClear();
 }
+
+// Suite IDs that now use activateModule instead of navigate
+const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
 
 // ============================================================================
 // Tests
@@ -95,31 +104,41 @@ describe('Desktop Icons (Priority 3)', () => {
   // --------------------------------------------------------------------------
 
   describe('double-click launch (SC-8.2)', () => {
-    it('double-click on icon navigates to route', async () => {
+    it('double-click on suite icon activates module', async () => {
       render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const forgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_ICONS[0].id}`);
       fireEvent.doubleClick(forgeIcon);
 
-      expect(mockNavigate).toHaveBeenCalledWith(DESKTOP_ICONS[0].route);
+      // Suite icons open windowed modules via activateModule
+      if (SUITE_IDS.has(DESKTOP_ICONS[0].id)) {
+        expect(mockActivateModule).toHaveBeenCalledWith(DESKTOP_ICONS[0].id, { source: 'desktop' });
+      } else {
+        expect(mockNavigate).toHaveBeenCalledWith(DESKTOP_ICONS[0].route);
+      }
     });
 
-    it('double-click on second icon navigates to its route', async () => {
+    it('double-click on second icon activates module or navigates', async () => {
       render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const icon = screen.getByTestId(`desktop-icon-${DESKTOP_ICONS[1].id}`);
       fireEvent.doubleClick(icon);
 
-      expect(mockNavigate).toHaveBeenCalledWith(DESKTOP_ICONS[1].route);
+      if (SUITE_IDS.has(DESKTOP_ICONS[1].id)) {
+        expect(mockActivateModule).toHaveBeenCalledWith(DESKTOP_ICONS[1].id, { source: 'desktop' });
+      } else {
+        expect(mockNavigate).toHaveBeenCalledWith(DESKTOP_ICONS[1].route);
+      }
     });
 
-    it('single click does NOT navigate', async () => {
+    it('single click does NOT navigate or activate', async () => {
       render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const forgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_ICONS[0].id}`);
       fireEvent.click(forgeIcon);
 
       expect(mockNavigate).not.toHaveBeenCalled();
+      expect(mockActivateModule).not.toHaveBeenCalled();
     });
   });
 
@@ -204,13 +223,18 @@ describe('Desktop Icons (Priority 3)', () => {
   // --------------------------------------------------------------------------
 
   describe('source tracking (SC-8.6)', () => {
-    it('double-click navigates to suite route', async () => {
+    it('double-click launches suite icon', async () => {
       render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const icon = screen.getByTestId(`desktop-icon-${DESKTOP_ICONS[0].id}`);
       fireEvent.doubleClick(icon);
 
-      expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('/'));
+      // Suite icons activate module; OS features navigate
+      if (SUITE_IDS.has(DESKTOP_ICONS[0].id)) {
+        expect(mockActivateModule).toHaveBeenCalledWith(DESKTOP_ICONS[0].id, { source: 'desktop' });
+      } else {
+        expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('/'));
+      }
     });
   });
 
@@ -297,7 +321,7 @@ describe('Desktop Icons (Priority 3)', () => {
   // --------------------------------------------------------------------------
 
   describe('keyboard navigation', () => {
-    it('Enter key launches via navigate', async () => {
+    it('Enter key launches icon', async () => {
       render(<DesktopIconGrid />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
 
       const forgeIcon = screen.getByTestId(`desktop-icon-${DESKTOP_ICONS[0].id}`);
@@ -308,7 +332,12 @@ describe('Desktop Icons (Priority 3)', () => {
       // Press Enter
       fireEvent.keyDown(forgeIcon, { key: 'Enter' });
 
-      expect(mockNavigate).toHaveBeenCalledWith(DESKTOP_ICONS[0].route);
+      // Suite icons activate module; OS features navigate
+      if (SUITE_IDS.has(DESKTOP_ICONS[0].id)) {
+        expect(mockActivateModule).toHaveBeenCalledWith(DESKTOP_ICONS[0].id, { source: 'desktop' });
+      } else {
+        expect(mockNavigate).toHaveBeenCalledWith(DESKTOP_ICONS[0].route);
+      }
     });
 
     it('icons are focusable', () => {

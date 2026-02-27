@@ -85,10 +85,11 @@ function findExistingWindow(moduleId: string): string | null {
  */
 function getModuleDisplayName(moduleId: string): string {
   // Map of canonical IDs to display names
+  // Must cover every entry in MODULE_REGISTRY (moduleComponents.tsx)
   const displayNames: Record<string, string> = {
     'costforge': 'CostForge',
     'terra-gaia': 'TerraGaia',
-    'federation-dashboard': 'TerraDais',
+    'federation-dashboard': 'Federation Dashboard',
     'levy-calculator': 'Levy Calculator',
     'gis-viewer': 'GIS Viewer',
     'document-manager': 'Documents',
@@ -98,6 +99,10 @@ function getModuleDisplayName(moduleId: string): string {
     'counties': 'Counties Hub',
     'government-architecture': 'Architecture',
     'settings': 'Settings',
+    'shortcuts-help': 'Shortcuts & Help',
+    'plugin-manager': 'Plugin Manager',
+    'axiom-fs': 'AxiomFS',
+    'sovereign-dashboard': 'Sovereign Dashboard',
     // Constitutional Suite Homes
     'suite-forge': 'TerraForge',
     'suite-atlas': 'TerraAtlas',
@@ -114,6 +119,7 @@ function getModuleDisplayName(moduleId: string): string {
  */
 function getModuleIcon(moduleId: string): string {
   // Map of canonical IDs to icons
+  // Must cover every entry in MODULE_REGISTRY (moduleComponents.tsx)
   const icons: Record<string, string> = {
     'costforge': '💎',
     'terra-gaia': '🌍',
@@ -127,6 +133,10 @@ function getModuleIcon(moduleId: string): string {
     'counties': '🏛️',
     'government-architecture': '🏗️',
     'settings': '⚙️',
+    'shortcuts-help': '⌨️',
+    'plugin-manager': '🧩',
+    'axiom-fs': '📂',
+    'sovereign-dashboard': '📊',
     // Constitutional Suite Homes
     'suite-forge': '🔨',
     'suite-atlas': '🗺️',

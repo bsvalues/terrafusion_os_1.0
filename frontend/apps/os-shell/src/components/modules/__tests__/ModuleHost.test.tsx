@@ -32,6 +32,15 @@ jest.mock('../../../config/moduleComponents', () => ({
     const normalized = id.toLowerCase().trim();
     return aliases[normalized] || normalized;
   },
+  isModuleRegistered: (id: string) => {
+    const aliases: Record<string, string> = {
+      terrabuild: 'costforge',
+      'terra-build': 'costforge',
+    };
+    const normalized = id.toLowerCase().trim();
+    const canonical = aliases[normalized] || normalized;
+    return ['costforge', 'terra-gaia', 'atlas-ai'].includes(canonical);
+  },
   getModuleEntry: (id: string) => {
     const modules: Record<string, any> = {
       costforge: { id: 'costforge', status: 'active' },
@@ -40,6 +49,11 @@ jest.mock('../../../config/moduleComponents', () => ({
     };
     return modules[id] || null;
   },
+  MODULE_ALIASES: {
+    terrabuild: 'costforge',
+    'terra-build': 'costforge',
+  },
+  MODULE_REGISTRY: new Set(['costforge', 'terra-gaia', 'atlas-ai']),
   ModuleRenderer: ({ module }: { module: { id: string } }) => (
     <div data-testid='mock-module-renderer'>Module: {module.id}</div>
   ),

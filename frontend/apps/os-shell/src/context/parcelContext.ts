@@ -171,28 +171,41 @@ function clearSessionStorage(): void {
 }
 
 // ============================================================================
-// Recent Parcels Persistence
+// Recent Parcels Persistence (localStorage for cross-session persistence)
 // ============================================================================
 
 function persistRecentsToSession(recents: string[]): void {
   try {
-    sessionStorage.setItem(RECENT_PARCELS_STORAGE_KEY, JSON.stringify(recents));
+    localStorage.setItem(RECENT_PARCELS_STORAGE_KEY, JSON.stringify(recents));
   } catch {
-    // Session storage might be unavailable
+    // localStorage might be unavailable (private browsing, etc.)
   }
 }
 
 function restoreRecentsFromSession(): string[] {
   try {
-    const stored = sessionStorage.getItem(RECENT_PARCELS_STORAGE_KEY);
+    // Try localStorage first (cross-session persistence)
+    const stored = localStorage.getItem(RECENT_PARCELS_STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
       if (Array.isArray(parsed)) {
         return parsed.slice(0, MAX_RECENT_PARCELS);
       }
     }
+    // Fallback: migrate from sessionStorage if present
+    const sessionStored = sessionStorage.getItem(RECENT_PARCELS_STORAGE_KEY);
+    if (sessionStored) {
+      const parsed = JSON.parse(sessionStored);
+      if (Array.isArray(parsed)) {
+        const recents = parsed.slice(0, MAX_RECENT_PARCELS);
+        // Migrate to localStorage
+        localStorage.setItem(RECENT_PARCELS_STORAGE_KEY, JSON.stringify(recents));
+        sessionStorage.removeItem(RECENT_PARCELS_STORAGE_KEY);
+        return recents;
+      }
+    }
   } catch {
-    // Session storage might be unavailable
+    // Storage might be unavailable
   }
   return [];
 }

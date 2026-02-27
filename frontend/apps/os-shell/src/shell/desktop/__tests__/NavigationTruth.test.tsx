@@ -13,7 +13,6 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React, { act } from 'react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import {
     CONSTITUTIONAL_SUITES,
@@ -21,8 +20,8 @@ import {
     isConstitutionalSuite,
 } from '../../../config/suiteRegistry';
 
-const mockActivateModule = vi.fn();
-vi.mock('../../../orchestration/moduleActivation', () => ({
+const mockActivateModule = jest.fn();
+jest.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 

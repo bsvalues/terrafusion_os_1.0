@@ -87,7 +87,7 @@ export default function GptSuiteHome() {
   const [activeModule, setActiveModule] = useState('studio');
 
   return (
-    <div className='min-h-screen' style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Header */}
       <header style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }} className='backdrop-blur-xl'>
         <div className='max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4'>
@@ -107,9 +107,9 @@ export default function GptSuiteHome() {
         </div>
       </header>
 
-      <div className='flex'>
+      <div className='flex flex-1 min-h-0'>
         {/* Module Sidebar */}
-        <nav className='w-64 shrink-0 p-4 space-y-1' style={{ borderRight: '1px solid hsl(var(--tf-border))' }}>
+        <nav className='w-64 shrink-0 p-4 space-y-1 overflow-y-auto' style={{ borderRight: '1px solid hsl(var(--tf-border))' }}>
           <p className='text-xs font-medium uppercase tracking-wider px-3 py-2' style={{ color: 'hsl(var(--tf-muted))' }}>
             Modules
           </p>

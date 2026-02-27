@@ -42,7 +42,7 @@ export function SuiteHome({ suiteId }: SuiteHomeProps) {
 
   if (!suite) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-slate-950'>
+      <div className='h-full flex flex-col items-center justify-center bg-slate-950'>
         <p className='text-red-400'>Suite not found: {suiteId}</p>
       </div>
     );
@@ -51,7 +51,7 @@ export function SuiteHome({ suiteId }: SuiteHomeProps) {
   const Icon = ICON_MAP[suite.iconName] || Globe;
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950'>
+    <div className='h-full flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950'>
       {/* Header */}
       <header className='border-b border-white/5 bg-slate-900/50 backdrop-blur-xl'>
         <div className='max-w-6xl mx-auto px-6 py-4 flex items-center gap-4'>

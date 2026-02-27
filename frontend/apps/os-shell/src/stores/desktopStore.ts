@@ -133,7 +133,7 @@ export interface DesktopState {
 // Constants
 // ============================================================================
 
-const DEFAULT_WINDOW_SIZE: Size = { width: 800, height: 600 };
+const DEFAULT_WINDOW_SIZE: Size = { width: 1024, height: 700 };
 const MIN_WINDOW_SIZE: Size = { width: 400, height: 300 };
 const CASCADE_OFFSET = 30; // Pixels to offset each new window
 const BASE_POSITION: Position = { x: 100, y: 50 };

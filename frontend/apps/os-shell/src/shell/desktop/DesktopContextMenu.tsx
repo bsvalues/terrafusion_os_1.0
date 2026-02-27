@@ -248,7 +248,7 @@ export const DesktopContextMenu: React.FC<DesktopContextMenuProps> = ({
       aria-label='Desktop context menu'
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
       className={cn(
-        'fixed z-[100]',
+        'fixed z-[1020]',
         'min-w-[200px]',
         '!p-0 !rounded-lg py-1',
         'animate-in fade-in-0 zoom-in-95 duration-100'

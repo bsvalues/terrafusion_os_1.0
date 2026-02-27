@@ -22,7 +22,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { vi, describe, it, expect, afterEach } from 'vitest';
 import { getDesktopIcons, type DesktopIconEntry } from '../../config/desktopManifest';
 
 // ============================================================================
@@ -31,8 +30,8 @@ import { getDesktopIcons, type DesktopIconEntry } from '../../config/desktopMani
 
 let memoryRouterEntries: string[] = ['/'];
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   const ActualMemoryRouter = actual.MemoryRouter;
   return {
     ...actual,
@@ -42,20 +41,20 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../../auth/authStorage', () => ({
+jest.mock('../../auth/authStorage', () => ({
   getToken: () => 'smoke-test-token',
-  setToken: vi.fn(),
-  clearToken: vi.fn(),
+  setToken: jest.fn(),
+  clearToken: jest.fn(),
 }));
 
-vi.mock('../../auth/authBridge', () => ({
-  registerLogoutHandler: vi.fn(),
-  unregisterLogoutHandler: vi.fn(),
+jest.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: jest.fn(),
+  unregisterLogoutHandler: jest.fn(),
 }));
 
 // Mock activateModule (suite icons now open windows instead of navigating)
-const mockActivateModule = vi.fn();
-vi.mock('../../orchestration/moduleActivation', () => ({
+const mockActivateModule = jest.fn();
+jest.mock('../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 

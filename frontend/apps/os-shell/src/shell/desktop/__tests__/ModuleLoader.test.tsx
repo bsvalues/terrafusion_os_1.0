@@ -10,16 +10,15 @@
 
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { ModuleDefinition } from '../../../stores/moduleRegistryStore';
 import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { ModuleLoader } from '../ModuleLoader';
 
 // Mock the ModuleRenderer to avoid lazy loading issues and focus on ModuleLoader logic
-vi.mock('../../../config/moduleComponents', async () => {
-  const actual = await vi.importActual('../../../config/moduleComponents');
+jest.mock('../../../config/moduleComponents', () => {
+  const actual = jest.requireActual('../../../config/moduleComponents');
   return {
-    ...(actual as object),
+    ...actual,
     ModuleRenderer: ({ module }: { module: { id: string } }) => (
       <div data-testid='mock-module-renderer'>Rendered: {module.id}</div>
     ),
@@ -50,7 +49,7 @@ beforeEach(() => {
     isInitialized: false,
     initError: null,
   });
-  vi.clearAllMocks();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {

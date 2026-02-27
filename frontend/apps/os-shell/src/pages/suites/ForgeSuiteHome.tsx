@@ -101,7 +101,7 @@ export default function ForgeSuiteHome() {
   const [activeModule, setActiveModule] = useState('costforge');
 
   return (
-    <div className='min-h-screen' style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Header */}
       <header
         style={{
@@ -134,10 +134,10 @@ export default function ForgeSuiteHome() {
         </div>
       </header>
 
-      <div className='flex'>
+      <div className='flex flex-1 min-h-0'>
         {/* Module Sidebar */}
         <nav
-          className='w-64 shrink-0 p-4 space-y-1'
+          className='w-64 shrink-0 p-4 space-y-1 overflow-y-auto'
           style={{ borderRight: '1px solid hsl(var(--tf-border))' }}
         >
           <p

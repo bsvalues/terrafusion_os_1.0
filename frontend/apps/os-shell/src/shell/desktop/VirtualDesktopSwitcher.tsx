@@ -195,7 +195,7 @@ export const VirtualDesktopSwitcher: React.FC<VirtualDesktopSwitcherProps> = ({
     <>
       {/* Backdrop */}
       <div
-        className='fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]'
+        className='fixed inset-0 bg-black/60 backdrop-blur-sm z-[1010]'
         onClick={onClose}
         data-testid='desktop-switcher-backdrop'
       />

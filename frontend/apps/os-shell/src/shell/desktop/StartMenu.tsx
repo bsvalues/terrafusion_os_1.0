@@ -425,22 +425,52 @@ const UserProfile: React.FC = () => {
 
 const MapPinIcon = getLucideIcon('MapPin');
 
+/** Maximum recent parcels to display in the Start Menu */
+const MAX_DISPLAYED_PARCELS = 5;
+
 /**
  * RecentParcelsSection - Shows recently accessed parcels
  * Absorbed from ShellHome's recent items feature.
+ *
+ * Displays up to 5 most recent parcels with navigation to /property/{parcelId}.
+ * Shows empty state message when no parcels have been visited.
+ * Closes the Start Menu after navigating to a parcel.
  *
  * Split into gate + content components so useNavigate() is only called
  * when parcels exist (avoids crash in tests without Router context).
  */
 const RecentParcelsSection: React.FC = () => {
   const recentParcels = useRecentParcels();
-  if (recentParcels.length === 0) return null;
+
+  if (recentParcels.length === 0) {
+    return (
+      <div className='mt-2'>
+        <div
+          className='px-3 py-1.5 text-xs font-medium uppercase tracking-wider'
+          style={{ color: 'hsl(var(--tf-muted))' }}
+        >
+          Recent Parcels
+        </div>
+        <p className='px-3 py-1.5 text-xs text-white/40'>No recent parcels</p>
+      </div>
+    );
+  }
+
   return <RecentParcelsList parcels={recentParcels} />;
 };
 
 /** Inner component — only mounted when recent parcels exist. */
 const RecentParcelsList: React.FC<{ parcels: string[] }> = ({ parcels }) => {
   const navigate = useNavigate();
+  const { close } = useStartMenuStore();
+
+  const handleParcelClick = useCallback(
+    (parcelId: string) => {
+      navigate(`/property/${parcelId}`);
+      close();
+    },
+    [navigate, close]
+  );
 
   return (
     <div className='mt-2'>
@@ -450,11 +480,12 @@ const RecentParcelsList: React.FC<{ parcels: string[] }> = ({ parcels }) => {
       >
         Recent Parcels
       </div>
-      <div className='space-y-0.5 max-h-[80px] overflow-y-auto'>
-        {parcels.slice(0, 3).map((parcelId) => (
+      <div className='space-y-0.5 max-h-[120px] overflow-y-auto'>
+        {parcels.slice(0, MAX_DISPLAYED_PARCELS).map((parcelId) => (
           <button
             key={parcelId}
-            onClick={() => navigate(`/property/${parcelId}`)}
+            onClick={() => handleParcelClick(parcelId)}
+            aria-label={`Parcel ${parcelId}`}
             className={cn(
               'w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left',
               'transition-all duration-150',
@@ -559,7 +590,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
       aria-label='Start Menu'
       className={cn(
         // Position - bottom left, above taskbar dock
-        'fixed bottom-16 left-4 z-[60]',
+        'fixed bottom-16 left-4 z-[1010]',
         // Size
         'w-[380px] h-[540px]',
         // Layout

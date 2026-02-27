@@ -181,7 +181,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       role='menu'
       className={cn(
         // Base styles
-        'fixed z-[1000]',
+        'fixed z-[1020]',
         'min-w-[200px]',
 
         // Glass morphism
