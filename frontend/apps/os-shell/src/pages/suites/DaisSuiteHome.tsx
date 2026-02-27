@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { usePacsConnection } from '@/hooks/usePacsConnection';
+import { PacsStatusBadge } from '@/components/PacsStatusBadge';
 
 // ============================================================================
 // Module Definitions
@@ -454,6 +456,7 @@ function ModuleLoading() {
 export default function DaisSuiteHome() {
   const navigate = useNavigate();
   const [activeModule, setActiveModule] = useState('levy');
+  const { status: pacsStatus, loading: pacsLoading } = usePacsConnection();
 
   const renderModule = () => {
     switch (activeModule) {
@@ -511,6 +514,9 @@ export default function DaisSuiteHome() {
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
               Workflow Orchestration & Governance Dashboard
             </p>
+          </div>
+          <div className='ml-auto'>
+            <PacsStatusBadge status={pacsStatus} loading={pacsLoading} />
           </div>
         </div>
       </header>

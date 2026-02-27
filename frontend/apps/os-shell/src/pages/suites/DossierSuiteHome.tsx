@@ -13,6 +13,8 @@
 import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, FileStack, FolderOpen, Shield, Link2, Camera, Package, FileSearch } from 'lucide-react';
+import { usePacsConnection } from '@/hooks/usePacsConnection';
+import { PacsStatusBadge } from '@/components/PacsStatusBadge';
 
 const DocumentsModule = lazy(() => import('./modules/DocumentsModule'));
 const EvidenceModule = lazy(() => import('./modules/EvidenceModule'));
@@ -45,6 +47,7 @@ function ModuleLoading() {
 export default function DossierSuiteHome() {
   const navigate = useNavigate();
   const [activeModule, setActiveModule] = useState('documents');
+  const { status: pacsStatus, loading: pacsLoading } = usePacsConnection();
 
   return (
     <div className='min-h-screen' style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -63,6 +66,9 @@ export default function DossierSuiteHome() {
           <div>
             <h1 className='text-xl font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>TerraDossier</h1>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Document Management & Evidence Archive</p>
+          </div>
+          <div className='ml-auto'>
+            <PacsStatusBadge status={pacsStatus} loading={pacsLoading} />
           </div>
         </div>
       </header>

@@ -13,6 +13,8 @@
 import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bot, MessageSquare, Wrench, Store, BarChart3, Database, Settings } from 'lucide-react';
+import { usePacsConnection } from '@/hooks/usePacsConnection';
+import { PacsStatusBadge } from '@/components/PacsStatusBadge';
 
 // Lazy load existing GPT components
 const GptStudioView = lazy(() =>
@@ -70,6 +72,7 @@ function ModuleLoading() {
 export default function GptSuiteHome() {
   const navigate = useNavigate();
   const [activeModule, setActiveModule] = useState('studio');
+  const { status: pacsStatus, loading: pacsLoading } = usePacsConnection();
 
   return (
     <div className='min-h-screen' style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -88,6 +91,9 @@ export default function GptSuiteHome() {
           <div>
             <h1 className='text-xl font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>TerraGPT</h1>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>AI Assistant & Natural Language Interface</p>
+          </div>
+          <div className='ml-auto'>
+            <PacsStatusBadge status={pacsStatus} loading={pacsLoading} />
           </div>
         </div>
       </header>

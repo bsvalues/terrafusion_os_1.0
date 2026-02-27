@@ -9,6 +9,7 @@
 
 import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
+import { pacsService } from '@/services/pacsService';
 
 const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
 const ATLAS_API = `${API_BASE_URL}/api/atlas`;
@@ -156,32 +157,84 @@ export const atlasService = {
   },
 
   /**
-   * Search parcels by address, ID, or owner
+   * Search parcels by address, ID, or owner.
+   * Tries: 1) Atlas API → 2) PACS live data → 3) default fallback
    */
   searchParcels: async (request: ParcelSearchRequest): Promise<ParcelSearchResponse> => {
+    // 1. Try Atlas API (formal GIS surface)
     try {
       return await atlasPost<ParcelSearchResponse>('/parcels/search', request);
     } catch {
-      const query = request.query.toLowerCase();
-      const filtered = DEFAULT_PARCELS.filter(
-        (p) =>
-          p.parcelId.includes(query) ||
-          p.address.toLowerCase().includes(query) ||
-          p.owner.toLowerCase().includes(query)
-      );
-      return { results: filtered, total: filtered.length, hasMore: false };
+      // Atlas API offline — fall through to PACS
     }
+
+    // 2. Try PACS live data
+    try {
+      const pacsResult = await pacsService.listProperties(1, request.limit || 20);
+      if (pacsResult.items.length > 0) {
+        const query = request.query.toLowerCase();
+        const mapped: ParcelResult[] = pacsResult.items
+          .filter(
+            (p) =>
+              !query ||
+              p.geoId.includes(query) ||
+              p.address.toLowerCase().includes(query)
+          )
+          .map((p) => ({
+            parcelId: p.geoId,
+            address: p.address,
+            owner: '', // PACS list doesn't include owner
+            acreage: 0,
+            zoning: '',
+            landUse: p.propertyType,
+            assessedValue: p.assessedValue,
+          }));
+        return { results: mapped, total: pacsResult.totalCount, hasMore: pacsResult.totalCount > mapped.length };
+      }
+    } catch {
+      // PACS also offline — use defaults
+    }
+
+    // 3. Fallback to default parcels
+    const query = request.query.toLowerCase();
+    const filtered = DEFAULT_PARCELS.filter(
+      (p) =>
+        p.parcelId.includes(query) ||
+        p.address.toLowerCase().includes(query) ||
+        p.owner.toLowerCase().includes(query)
+    );
+    return { results: filtered, total: filtered.length, hasMore: false };
   },
 
   /**
-   * Get parcel detail by ID
+   * Get parcel detail by ID.
+   * Tries: 1) Atlas API → 2) PACS live detail → 3) default fallback
    */
   getParcel: async (parcelId: string): Promise<ParcelResult | null> => {
     try {
       return await atlasGet<ParcelResult>(`/parcels/${parcelId}`);
     } catch {
-      return DEFAULT_PARCELS.find((p) => p.parcelId === parcelId) ?? null;
+      // Atlas offline — try PACS
     }
+
+    try {
+      const pacsDetail = await pacsService.getProperty(parcelId);
+      if (pacsDetail) {
+        return {
+          parcelId: pacsDetail.geoId,
+          address: pacsDetail.address,
+          owner: pacsDetail.ownerName,
+          acreage: 0,
+          zoning: '',
+          landUse: pacsDetail.propertyType,
+          assessedValue: pacsDetail.assessedValue,
+        };
+      }
+    } catch {
+      // PACS also offline
+    }
+
+    return DEFAULT_PARCELS.find((p) => p.parcelId === parcelId) ?? null;
   },
 
   /**
