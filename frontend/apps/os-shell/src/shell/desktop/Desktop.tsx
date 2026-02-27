@@ -153,6 +153,16 @@ export function Desktop({ className = '' }: DesktopProps) {
   // Track Alt key state for Alt+Tab (Priority 14)
   const altKeyDownRef = useRef(false);
 
+  // Track previous StartMenu state for focus-return (WCAG 2.1 AA)
+  const prevStartMenuOpen = useRef(isStartMenuOpen);
+  useEffect(() => {
+    if (prevStartMenuOpen.current && !isStartMenuOpen) {
+      // StartMenu just closed → return focus to start button
+      document.getElementById('tf-start-button')?.focus();
+    }
+    prevStartMenuOpen.current = isStartMenuOpen;
+  }, [isStartMenuOpen]);
+
   // ============================================================================
   // Desktop Context Menu (Priority 6)
   // ============================================================================
@@ -337,6 +347,14 @@ export function Desktop({ className = '' }: DesktopProps) {
       onMouseDown={handleDesktopClick}
       onContextMenu={handleContextMenu}
     >
+      {/* WCAG 2.1 AA: Skip-to-content link for keyboard users */}
+      <a
+        href='#desktop-main-content'
+        className='sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[99999] focus:px-4 focus:py-2 focus:rounded-md focus:bg-[hsl(var(--tf-surface-dark-hs)_12%)] focus:text-white focus:ring-2 focus:ring-[var(--tf-transcend-highlight)]'
+      >
+        Skip to desktop content
+      </a>
+
       {/* Layer 0: Ambient Background - ALWAYS ON (CSS mode) */}
       <AmbientCompositor forcedMode='css' />
 
@@ -344,7 +362,7 @@ export function Desktop({ className = '' }: DesktopProps) {
       <DesktopTopSystemBar onOpenCommandPalette={openCommandPalette} />
 
       {/* Layer 0.5: Desktop Icons (Priority 3) */}
-      <DesktopIconGrid className='absolute top-10 left-3 z-[1]' />
+      <DesktopIconGrid id='desktop-main-content' className='absolute top-10 left-3 z-[1]' />
 
       {/* Layer 1-999: Windows */}
       <WindowManager />

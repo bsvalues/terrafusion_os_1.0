@@ -133,13 +133,14 @@ describe('Desktop', () => {
       const desktop = screen.getByTestId('desktop');
       const children = Array.from(desktop.children);
 
-      // Verify correct order: background, top-system-bar, icons, window-manager, taskbar, start-menu
-      expect(children[0]).toHaveAttribute('data-testid', 'desktop-background');
-      expect(children[1]).toHaveAttribute('data-testid', 'desktop-top-system-bar');
-      expect(children[2]).toHaveAttribute('data-testid', 'desktop-icon-grid');
-      expect(children[3]).toHaveAttribute('data-testid', 'window-manager');
-      expect(children[4]).toHaveAttribute('data-testid', 'taskbar');
-      expect(children[5]).toHaveAttribute('data-testid', 'start-menu');
+      // Verify correct order: skip-nav, background, top-system-bar, icons, window-manager, taskbar, start-menu
+      expect(children[0]).toHaveAttribute('href', '#desktop-main-content'); // skip-nav
+      expect(children[1]).toHaveAttribute('data-testid', 'desktop-background');
+      expect(children[2]).toHaveAttribute('data-testid', 'desktop-top-system-bar');
+      expect(children[3]).toHaveAttribute('data-testid', 'desktop-icon-grid');
+      expect(children[4]).toHaveAttribute('data-testid', 'window-manager');
+      expect(children[5]).toHaveAttribute('data-testid', 'taskbar');
+      expect(children[6]).toHaveAttribute('data-testid', 'start-menu');
     });
 
     it('prevents scroll/overflow', () => {
