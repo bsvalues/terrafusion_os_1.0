@@ -1,0 +1,224 @@
+/**
+ * ControlCenter — drawer styles.
+ *
+ * All colors reference --tf-* design tokens. No raw hex/rgba/hsl.
+ *
+ * @module control-center
+ */
+
+/* ============================================================================
+ * Backdrop
+ * ============================================================================ */
+
+.cc-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9996;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease-out;
+}
+
+.cc-backdrop--open {
+  opacity: 1;
+  pointer-events: auto;
+  background: var(--tf-scrim, transparent);
+  backdrop-filter: blur(2px);
+}
+
+/* ============================================================================
+ * Panel
+ * ============================================================================ */
+
+.cc-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9997;
+  height: 100vh;
+  width: 22rem;
+  max-width: 90vw;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cc-panel--open {
+  transform: translateX(0);
+}
+
+/* ============================================================================
+ * Header
+ * ============================================================================ */
+
+.cc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--tf-border-subtle, transparent);
+}
+
+.cc-header-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-family: var(--tf-font-mono, ui-monospace, monospace);
+}
+
+.cc-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.375rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.cc-close-btn:hover {
+  opacity: 1;
+}
+
+/* ============================================================================
+ * Content
+ * ============================================================================ */
+
+.cc-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ============================================================================
+ * Sections
+ * ============================================================================ */
+
+.cc-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: var(--tf-font-mono, ui-monospace, monospace);
+}
+
+.cc-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+/* ============================================================================
+ * Toggle Row
+ * ============================================================================ */
+
+.cc-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cc-toggle-row:hover {
+  background: var(--tf-surface-hover, transparent);
+}
+
+.cc-toggle-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.cc-toggle-track {
+  position: relative;
+  width: 2.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--tf-border-subtle, transparent);
+  background: var(--tf-surface-muted, transparent);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  padding: 0;
+}
+
+.cc-toggle-track--on {
+  background: var(--tf-accent-toggle, var(--tf-accent, transparent));
+  border-color: var(--tf-accent-toggle, var(--tf-accent, transparent));
+}
+
+.cc-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background: var(--tf-toggle-thumb, currentColor);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cc-toggle-track--on .cc-toggle-thumb {
+  transform: translateX(1rem);
+}
+
+/* ============================================================================
+ * Version Grid
+ * ============================================================================ */
+
+.cc-version-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.375rem;
+}
+
+.cc-version-btn {
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--tf-border-subtle, transparent);
+  background: var(--tf-surface-muted, transparent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--tf-font-mono, ui-monospace, monospace);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  color: inherit;
+}
+
+.cc-version-btn:hover {
+  background: var(--tf-surface-hover, transparent);
+}
+
+.cc-version-btn--active {
+  background: var(--tf-accent-toggle, var(--tf-accent, transparent));
+  border-color: var(--tf-accent-toggle, var(--tf-accent, transparent));
+}
+
+/* ============================================================================
+ * Reduced motion
+ * ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-panel {
+    transition-duration: 0.01ms;
+  }
+
+  .cc-backdrop {
+    transition-duration: 0.01ms;
+  }
+
+  .cc-toggle-thumb {
+    transition-duration: 0.01ms;
+  }
+}
