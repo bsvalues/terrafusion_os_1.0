@@ -9,6 +9,7 @@ import { useCallback, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -188,12 +189,12 @@ export default function TerraSketchModule() {
                   )}
                 </div>
                 <div className='flex items-center gap-2'>
-                  <Button variant='outline' size='sm' style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                    <Save size={14} className='mr-1' /> Save
-                  </Button>
-                  <Button variant='outline' size='sm' style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                    <Download size={14} className='mr-1' /> Export
-                  </Button>
+                  <TactileButton size='sm' leftIcon={<Save size={14} />}>
+                    Save
+                  </TactileButton>
+                  <TactileButton variant='secondary' size='sm' leftIcon={<Download size={14} />}>
+                    Export
+                  </TactileButton>
                 </div>
               </div>
               {/* Canvas area */}

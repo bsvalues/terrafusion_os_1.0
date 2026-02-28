@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -107,9 +108,9 @@ export default function DocumentsModule() {
             Government evidence repository -- Chain-of-custody tracking
           </p>
         </div>
-        <Button style={{ background: 'hsl(var(--tf-suite-dossier))' }}>
-          <Upload size={16} className='mr-2' /> Upload Document
-        </Button>
+        <TactileButton leftIcon={<Upload size={16} />}>
+          Upload Document
+        </TactileButton>
       </div>
 
       {/* Summary */}

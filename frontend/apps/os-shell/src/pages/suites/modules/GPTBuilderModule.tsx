@@ -9,6 +9,7 @@ import { useCallback, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -330,9 +331,9 @@ export default function GPTBuilderModule() {
           <Button variant='outline' style={{ borderColor: 'hsl(var(--tf-border))' }}>
             <Clock size={14} className='mr-1' /> Save Draft
           </Button>
-          <Button style={{ background: 'hsl(var(--tf-suite-gpt))', color: 'hsl(var(--tf-bg))' }}>
-            <Save size={14} className='mr-1' /> Publish GPT
-          </Button>
+          <TactileButton leftIcon={<Save size={14} />}>
+            Publish GPT
+          </TactileButton>
         </div>
       </div>
     </div>

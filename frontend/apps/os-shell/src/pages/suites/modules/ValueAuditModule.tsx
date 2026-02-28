@@ -26,6 +26,7 @@ import {
   RefreshCw,
   FileText,
 } from 'lucide-react';
+import { TactileButton } from '@/ui/materials';
 import {
   type AuditAction,
   type ValuationAuditEntry,
@@ -207,9 +208,9 @@ export default function ValueAuditModule() {
           <button onClick={handleAddTestEntry} className='px-3 py-1.5 rounded text-xs hover:bg-white/10 transition-colors' style={{ border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
             + Test Entry
           </button>
-          <button onClick={handleExportCSV} className='flex items-center gap-1.5 px-3 py-1.5 rounded text-xs hover:bg-white/10 transition-colors' style={{ border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
-            <Download size={12} /> Export CSV
-          </button>
+          <TactileButton size='sm' onClick={handleExportCSV} leftIcon={<Download size={12} />}>
+            Export CSV
+          </TactileButton>
           <button onClick={handleClearUserEntries} className='flex items-center gap-1.5 px-3 py-1.5 rounded text-xs hover:bg-white/10 transition-colors' style={{ border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
             <Trash2 size={12} /> Clear User Entries
           </button>

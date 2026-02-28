@@ -22,6 +22,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { TactileButton } from '@/ui/materials';
 import {
   type ApproachValue,
   type ReconciliationMethod,
@@ -446,13 +447,12 @@ export default function ReconciliationModule() {
               </div>
 
               {/* Save Button */}
-              <button
+              <TactileButton
                 onClick={handleSaveToAudit}
-                className='w-full py-2.5 rounded-lg text-sm font-medium transition-colors hover:opacity-90'
-                style={{ background: 'hsl(var(--tf-suite-forge))', color: '#000' }}
+                fullWidth
               >
                 Save to Audit Trail
-              </button>
+              </TactileButton>
             </>
           ) : (
             <div className='flex items-center justify-center min-h-[300px]'>

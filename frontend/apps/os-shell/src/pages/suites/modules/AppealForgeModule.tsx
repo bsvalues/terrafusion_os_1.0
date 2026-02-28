@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -438,12 +439,11 @@ export default function AppealForgeModule() {
                   />
                 </div>
                 <div className='flex gap-2'>
-                  <Button
+                  <TactileButton
                     onClick={handleCreateAppeal}
-                    style={{ background: 'hsl(var(--tf-suite-forge))', color: '#fff' }}
                   >
                     Create Appeal
-                  </Button>
+                  </TactileButton>
                   <Button
                     variant='outline'
                     onClick={() => setShowCreateForm(false)}
@@ -481,13 +481,12 @@ export default function AppealForgeModule() {
                     </div>
                     <div className='flex gap-2'>
                       {!['DECIDED', 'WITHDRAWN'].includes(activeAppeal.status) && (
-                        <Button
+                        <TactileButton
                           size='sm'
                           onClick={() => handleAdvanceStatus(activeAppeal.id)}
-                          style={{ background: 'hsl(var(--tf-suite-forge))', color: '#fff' }}
                         >
                           Advance Status
-                        </Button>
+                        </TactileButton>
                       )}
                       {!activeAppeal.id.startsWith('demo-') && (
                         <Button
@@ -645,15 +644,14 @@ export default function AppealForgeModule() {
                           className='text-xs'
                           style={{ background: 'hsl(var(--tf-bg))', borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
                         />
-                        <Button
+                        <TactileButton
                           size='sm'
                           onClick={handleAddEvidence}
                           disabled={!newEvidenceTitle}
-                          className='gap-1'
-                          style={{ background: 'hsl(var(--tf-suite-forge))', color: '#fff' }}
+                          leftIcon={<Plus size={14} />}
                         >
-                          <Plus size={14} /> Add Evidence
-                        </Button>
+                          Add Evidence
+                        </TactileButton>
                       </div>
                     </>
                   )}
