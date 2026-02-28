@@ -12,6 +12,7 @@
  */
 
 import * as signalR from '@microsoft/signalr';
+import { getViteEnv } from '../env/getViteEnv';
 
 export type HubConnectionState = 'Disconnected' | 'Connecting' | 'Connected' | 'Reconnecting' | 'Disconnected';
 
@@ -228,7 +229,7 @@ export class SignalRClientFactory {
    */
   static createSwarmClient(accessToken?: string): SignalRClient {
     return new SignalRClient({
-      hubUrl: 'http://localhost:3004/hubs/consciousness',
+      hubUrl: `${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/hubs/consciousness`,
       accessToken,
       automaticReconnect: true,
       onConnected: () => console.log('✅ Connected to AI Swarm Hub'),
@@ -243,7 +244,7 @@ export class SignalRClientFactory {
    */
   static createStreamingClient(accessToken?: string): SignalRClient {
     return new SignalRClient({
-      hubUrl: 'http://localhost:3006/hubs/streaming',
+      hubUrl: `${getViteEnv().VITE_PERFORMANCE_URL || ''}/hubs/streaming`,
       accessToken,
       automaticReconnect: true,
       onConnected: () => console.log('✅ Connected to Streaming Analytics Hub'),
@@ -258,7 +259,7 @@ export class SignalRClientFactory {
    */
   static createSystemClient(accessToken?: string): SignalRClient {
     return new SignalRClient({
-      hubUrl: 'http://localhost:5000/hubs/system',
+      hubUrl: `${getViteEnv().VITE_API_URL || ''}/hubs/system`,
       accessToken,
       automaticReconnect: true,
       onConnected: () => console.log('✅ Connected to System Notifications Hub'),

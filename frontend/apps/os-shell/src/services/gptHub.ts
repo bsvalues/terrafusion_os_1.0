@@ -9,7 +9,7 @@ import { GPTConfiguration, GPTMessage } from './gptAPI';
 const env = getViteEnv();
 const HUB_URL = env.VITE_API_URL
   ? `${env.VITE_API_URL}/hubs/gpt`
-  : 'http://localhost:5000/hubs/gpt';
+  : '/hubs/gpt';
 
 /**
  * Message chunk for streaming responses

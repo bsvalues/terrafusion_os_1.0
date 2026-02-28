@@ -43,7 +43,7 @@ export const OptimizedValuationComponent = memo(({ propertyId }: { propertyId: s
 class ValuationAPIService {
   private static instance: ValuationAPIService;
   private cache = new Map<string, any>();
-  private readonly baseURL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
+  private readonly baseURL = getViteEnv().VITE_API_URL || '';
 
   static getInstance(): ValuationAPIService {
     if (!ValuationAPIService.instance) {

@@ -48,10 +48,10 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
           },
         },
         api: {
-          port: 5000,
-          baseUrl: 'http://localhost:5000',
-          getPort: async () => 5000,
-          getBaseUrl: async () => 'http://localhost:5000',
+          port: 0,
+          baseUrl: '',
+          getPort: async () => 0,
+          getBaseUrl: async () => '',
         },
         isDesktop: false,
       };

@@ -8,7 +8,7 @@
  */
 
 import { getViteEnv } from '@/env/getViteEnv';
-const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 const CORE_API = `${API_BASE_URL}/api/core`;
 
 // ============================================================================

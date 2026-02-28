@@ -25,7 +25,7 @@ export class SignalRService {
   private reconnectAttempts: Map<string, number> = new Map();
   private readonly maxReconnectAttempts = 5;
 
-  constructor(baseUrl: string = getViteEnv().VITE_API_URL || 'http://localhost:5000') {
+  constructor(baseUrl: string = getViteEnv().VITE_API_URL || '') {
     this.baseUrl = baseUrl;
   }
 
