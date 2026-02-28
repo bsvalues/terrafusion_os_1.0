@@ -3,6 +3,8 @@
  * ===================================================================
  * Constitutional Suite: dossier (Article I)
  * Standalone route: /dossier
+ * Layout: Stage Tabs (horizontal) + content area
+ * Phase 7 Design Manifesto: replaces sidebar navigation with Stage Tabs
  *
  * Modules (ALL 6 ACTIVE):
  *   - Documents: File repository with search & type filtering
@@ -55,9 +57,15 @@ export default function DossierSuiteHome() {
 
   return (
     <div data-testid="suite-dossier-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }} className='backdrop-blur-xl'>
-        <div className='max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4'>
+      {/* Header + Stage Tabs */}
+      <header
+        style={{
+          borderBottom: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-card-bg) / 0.5)',
+        }}
+        className='backdrop-blur-xl shrink-0'
+      >
+        <div className='max-w-[1600px] mx-auto px-6 pt-4 pb-0 flex items-center gap-4'>
           <button
             onClick={() => navigate('/')}
             className='p-2 rounded-lg hover:bg-white/5 transition-colors'
@@ -72,14 +80,13 @@ export default function DossierSuiteHome() {
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Document Management & Evidence Archive</p>
           </div>
         </div>
-      </header>
 
-      <div className='flex flex-1 min-h-0'>
-        {/* Module Sidebar */}
-        <nav className='w-64 shrink-0 p-4 space-y-1 overflow-y-auto' style={{ borderRight: '1px solid hsl(var(--tf-border))' }}>
-          <p className='text-xs font-medium uppercase tracking-wider px-3 py-2' style={{ color: 'hsl(var(--tf-muted))' }}>
-            Modules
-          </p>
+        {/* Stage Tabs */}
+        <nav
+          role='tablist'
+          aria-label='TerraDossier modules'
+          className='max-w-[1600px] mx-auto px-6 flex gap-1 mt-3 overflow-x-auto'
+        >
           {DOSSIER_MODULES.map((mod) => {
             const Icon = mod.icon;
             const isActive = mod.id === activeModule;
@@ -87,57 +94,72 @@ export default function DossierSuiteHome() {
             return (
               <button
                 key={mod.id}
+                role='tab'
+                aria-selected={isActive}
+                aria-controls={`dossier-panel-${mod.id}`}
                 onClick={() => !isPlanned && setActiveModule(mod.id)}
                 disabled={isPlanned}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                   isActive
                     ? 'bg-white/10'
                     : isPlanned
-                    ? 'opacity-40 cursor-not-allowed'
-                    : 'hover:bg-white/5'
+                      ? 'opacity-40 cursor-not-allowed'
+                      : 'hover:bg-white/5'
                 }`}
+                style={{
+                  color: isActive
+                    ? 'hsl(var(--tf-fg))'
+                    : 'hsl(var(--tf-muted))',
+                  borderBottom: isActive
+                    ? '2px solid hsl(var(--tf-suite-dossier))'
+                    : '2px solid transparent',
+                }}
               >
                 <Icon
-                  size={18}
-                  style={{ color: isActive ? 'hsl(var(--tf-suite-dossier))' : 'hsl(var(--tf-muted))' }}
+                  size={16}
+                  style={{
+                    color: isActive
+                      ? 'hsl(var(--tf-suite-dossier))'
+                      : 'hsl(var(--tf-muted))',
+                  }}
                 />
-                <div>
-                  <span
-                    className='text-sm font-medium'
-                    style={{ color: isActive ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))' }}
-                  >
-                    {mod.label}
-                  </span>
-                  {isPlanned && (
-                    <span className='ml-2 text-xs px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-muted) / 0.15)', color: 'hsl(var(--tf-muted))' }}>
-                      Planned
-                    </span>
-                  )}
-                </div>
+                {mod.label}
               </button>
             );
           })}
         </nav>
+      </header>
 
-        {/* Module Content */}
-        <main className='flex-1 min-w-0'>
-          <Suspense fallback={<ModuleLoading />}>
-            {activeModule === 'documents' && <DocumentsModule />}
-            {activeModule === 'evidence' && <EvidenceModule />}
-            {activeModule === 'defense' && <DefensePacketsModule />}
-            {activeModule === 'chain' && <ChainOfCustodyModule />}
-            {activeModule === 'photos' && <PhotoManagerModule />}
-            {activeModule === 'search' && <DeepSearchModule />}
-            {!['documents', 'evidence', 'defense', 'chain', 'photos', 'search'].includes(activeModule) && (
-              <div className='p-6 flex items-center justify-center min-h-[400px]'>
-                <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Module under development
-                </p>
-              </div>
-            )}
-          </Suspense>
-        </main>
-      </div>
+      {/* Module Content */}
+      <main className='flex-1 min-h-0 overflow-y-auto'>
+        <Suspense fallback={<ModuleLoading />}>
+          {activeModule === 'documents' && (
+            <div role='tabpanel' id='dossier-panel-documents'><DocumentsModule /></div>
+          )}
+          {activeModule === 'evidence' && (
+            <div role='tabpanel' id='dossier-panel-evidence'><EvidenceModule /></div>
+          )}
+          {activeModule === 'defense' && (
+            <div role='tabpanel' id='dossier-panel-defense'><DefensePacketsModule /></div>
+          )}
+          {activeModule === 'chain' && (
+            <div role='tabpanel' id='dossier-panel-chain'><ChainOfCustodyModule /></div>
+          )}
+          {activeModule === 'photos' && (
+            <div role='tabpanel' id='dossier-panel-photos'><PhotoManagerModule /></div>
+          )}
+          {activeModule === 'search' && (
+            <div role='tabpanel' id='dossier-panel-search'><DeepSearchModule /></div>
+          )}
+          {!['documents', 'evidence', 'defense', 'chain', 'photos', 'search'].includes(activeModule) && (
+            <div className='p-6 flex items-center justify-center min-h-[400px]'>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                Module under development
+              </p>
+            </div>
+          )}
+        </Suspense>
+      </main>
     </div>
   );
 }
