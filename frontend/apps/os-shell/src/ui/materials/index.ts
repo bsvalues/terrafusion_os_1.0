@@ -27,4 +27,8 @@ export {
     BentoCard,
     type BentoCardProps, type BentoCardSpan, type BentoCardVariant
 } from './BentoCard';
+export {
+    NeonSignal,
+    type NeonSignalProps, type NeonSignalSize, type NeonSignalStatus
+} from './NeonSignal';
 
