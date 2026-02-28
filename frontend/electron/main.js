@@ -15,7 +15,7 @@ let mainWindow;
 let tray;
 let osBridge;
 let backendProcess;
-const backendPort = 5000;
+const backendPort = parseInt(process.env.TF_API_PORT || '5000', 10);
 
 // Expose OS connection state to renderer
 // Expose backend API URL to renderer
@@ -77,8 +77,8 @@ const startTime = Date.now();
 
 async function startBackendServer() {
   return new Promise((resolve, reject) => {
-    const backendPath = path.join(__dirname, '../../backend/Terrafusion.API');
-    const dllPath = path.join(backendPath, 'bin/Release/net8.0/Terrafusion.API.dll');
+    const backendPath = path.join(__dirname, '../../backend/TerraFusion.API');
+    const dllPath = path.join(backendPath, 'bin/Release/net8.0/TerraFusion.API.dll');
     
     // Check if built backend exists
     if (!fs.existsSync(dllPath)) {
@@ -124,7 +124,6 @@ function createWindow() {
       contextIsolation: true,
       enableRemoteModule: false,
       preload: path.join(__dirname, 'preload.js'),
-      webSecurity: false // Allow local file access
     },
     icon: path.join(__dirname, 'assets', 'icon.png'),
     titleBarStyle: 'hidden',
@@ -136,27 +135,27 @@ function createWindow() {
     frame: true // Show frame for desktop OS experience
   });
 
-  // Load the Terrafusion Command Center
+  // Load the Vite-built OS Shell (preferred), then legacy fallbacks
+  const pwaDist = path.join(__dirname, '../dist/index.html');
   const commandCenter = path.join(__dirname, '../terrafusion-command-center.html');
   const desktopApp = path.join(__dirname, '../desktop-app.html');
-  const pwaDist = path.join(__dirname, '../dist/index.html');
   const fallbackApp = path.join(__dirname, '../index.html');
   
-  if (fs.existsSync(commandCenter)) {
-    console.log('🚀 Loading Terrafusion Command Center from:', commandCenter);
+  if (fs.existsSync(pwaDist)) {
+    console.log('🌐 Loading TerraFusion OS Shell from:', pwaDist);
+    mainWindow.loadFile(pwaDist);
+  } else if (fs.existsSync(commandCenter)) {
+    console.log('🚀 Loading TerraFusion Command Center from:', commandCenter);
     mainWindow.loadFile(commandCenter);
   } else if (fs.existsSync(desktopApp)) {
-    console.log('📱 Loading Terrafusion Desktop App from:', desktopApp);
+    console.log('📱 Loading TerraFusion Desktop App from:', desktopApp);
     mainWindow.loadFile(desktopApp);
-  } else if (fs.existsSync(pwaDist)) {
-    console.log('🌐 Loading built PWA from:', pwaDist);
-    mainWindow.loadFile(pwaDist);
   } else if (fs.existsSync(fallbackApp)) {
     console.log('⚠️ Loading fallback app from:', fallbackApp);
     mainWindow.loadFile(fallbackApp);
   } else {
     console.log('❌ No app found, creating minimal interface...');
-    mainWindow.loadURL('data:text/html,<h1>Terrafusion OS Desktop</h1><p>Application files not found</p>');
+    mainWindow.loadURL('data:text/html,<h1>TerraFusion OS Desktop</h1><p>Application files not found</p>');
   }
 
   // Show window when ready
