@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 import {
   Box,
   Card,
@@ -22,7 +23,7 @@ import {
 } from '@mui/icons-material';
 
 // Use the consistent API base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '/api';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   background:

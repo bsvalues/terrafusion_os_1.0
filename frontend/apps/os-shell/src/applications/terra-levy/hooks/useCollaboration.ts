@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 import {
   CollaborativeSession,
   ConflictResolution,
@@ -37,7 +38,7 @@ export const useCollaboration = ({
       setConnectionStatus('connecting');
 
       // Initialize WebSocket connection for real-time collaboration
-      const wsUrl = `ws://localhost:8080/collaboration/${sessionId}`;
+      const wsUrl = `${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/collaboration/${sessionId}`;
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {

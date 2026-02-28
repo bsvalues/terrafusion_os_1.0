@@ -10,6 +10,7 @@
 /* eslint-disable no-unused-vars */
 
 import { CostAnalysis, CostCalculationRequest, useCostForgeAPI } from '@/hooks/useCostForgeAPI';
+import { getViteEnv } from '@/shared/viteEnv';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Activity,
@@ -156,7 +157,7 @@ export const EnhancedCostCalculator: React.FC = () => {
 
   // Initialize CostForge API connection
   const costForgeAPI = useCostForgeAPI({
-    baseUrl: 'https://localhost:5000',
+    baseUrl: getViteEnv().VITE_API_URL || '/api',
     timeout: 10000,
   });
 

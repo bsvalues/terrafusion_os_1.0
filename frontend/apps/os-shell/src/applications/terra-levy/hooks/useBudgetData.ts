@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 import { BudgetCategory } from '../types/BudgetTypes';
 
 // Custom hook for managing budget data with real-time updates
@@ -150,7 +151,7 @@ export const useBudgetData = () => {
     const connectWebSocket = () => {
       try {
         // In a real implementation, this would connect to TerraLevy's real-time service
-        wsRef.current = new WebSocket('ws://localhost:8080/budget-updates');
+        wsRef.current = new WebSocket(`${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/budget-updates`);
 
         wsRef.current.onopen = () => {
           console.log('Connected to budget data stream');

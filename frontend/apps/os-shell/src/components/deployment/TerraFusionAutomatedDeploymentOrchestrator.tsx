@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent as CardBody, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { getViteEnv } from '@/shared/viteEnv';
 import React, { useEffect, useState } from 'react';
 
 interface DeploymentService {
@@ -37,23 +38,23 @@ export const TerraFusionAutomatedDeploymentOrchestrator: React.FC = () => {
   const [services, setServices] = useState<DeploymentService[]>([
     {
       name: 'TerraFusion.API',
-      command: 'dotnet run --project TerraFusion.API --urls http://localhost:5000',
+      command: `dotnet run --project TerraFusion.API --urls http://localhost:${process.env.TF_API_PORT || 5000}`,
       port: 5000,
       workingDirectory: '../../backend',
       status: 'stopped',
       uptime: '00:00:00',
       restartCount: 0,
-      healthCheckUrl: 'http://localhost:5000/health',
+      healthCheckUrl: `${getViteEnv().VITE_API_URL || '/api'}/health`,
     },
     {
       name: 'TerraFusion.Consciousness',
-      command: 'dotnet run --project TerraFusion.Consciousness --urls http://localhost:3004',
+      command: `dotnet run --project TerraFusion.Consciousness --urls http://localhost:${process.env.TF_CONSCIOUSNESS_PORT || 3004}`,
       port: 3004,
       workingDirectory: '../../backend',
       status: 'stopped',
       uptime: '00:00:00',
       restartCount: 0,
-      healthCheckUrl: 'http://localhost:3004/',
+      healthCheckUrl: `${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/`,
     },
     {
       name: 'Elite Experiments API',
@@ -73,7 +74,7 @@ export const TerraFusionAutomatedDeploymentOrchestrator: React.FC = () => {
       status: 'running',
       uptime: '02:34:12',
       restartCount: 0,
-      healthCheckUrl: 'http://localhost:5175/',
+      healthCheckUrl: `http://localhost:${process.env.TF_FRONTEND_PORT || 5175}/`,
     },
   ]);
 

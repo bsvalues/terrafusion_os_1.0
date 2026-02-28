@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 import {
   Box,
   Card,
@@ -13,7 +14,7 @@ import { styled, keyframes } from '@mui/material/styles';
 import { Hub, Memory, TravelExplore, BarChart } from '@mui/icons-material';
 
 // Use the consistent API base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '/api';
 
 // Based on multi_species_interface_architecture.md
 type SpeciesType = 'silicon' | 'carbon' | 'quantum' | 'hybrid';

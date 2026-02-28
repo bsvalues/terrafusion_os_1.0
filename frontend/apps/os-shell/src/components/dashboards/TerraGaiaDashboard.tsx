@@ -1,3 +1,4 @@
+import { getViteEnv } from '@/shared/viteEnv';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -124,7 +125,7 @@ export const TerraGaiaDashboard: React.FC = () => {
 
   const loadConsciousnessStatus = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/ai/consciousness');
+      const response = await fetch(`${getViteEnv().VITE_API_URL || '/api'}/ai/consciousness`);
       if (response.ok) {
         const data = await response.json();
 
@@ -217,7 +218,7 @@ export const TerraGaiaDashboard: React.FC = () => {
 
     try {
       // Try to use the government excellence endpoint for basic analysis
-      const response = await fetch('http://localhost:5000/api/government/excellence', {
+      const response = await fetch(`${getViteEnv().VITE_API_URL || '/api'}/government/excellence`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

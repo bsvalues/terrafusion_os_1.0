@@ -7,6 +7,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { getViteEnv } from '@/shared/viteEnv';
 import { TerraSphere } from '@/components/brand/TerraSphere';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -51,7 +52,7 @@ interface EliteExperimentRun {
 
 // API Configuration
 const ELITE_API_BASE = '/api';
-const CONSCIOUSNESS_API_BASE = 'http://localhost:3004';
+const CONSCIOUSNESS_API_BASE = getViteEnv().VITE_CONSCIOUSNESS_URL || '';
 const ELITE_HUB_URL = `${ELITE_API_BASE}/hubs/elite-experiments`;
 
 // Elite API Service
