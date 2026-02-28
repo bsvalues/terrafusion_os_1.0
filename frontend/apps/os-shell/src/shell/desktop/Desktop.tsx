@@ -10,7 +10,7 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
-import { Building2, Command } from 'lucide-react';
+import { Building2, Command, Settings2 } from 'lucide-react';
 import { Launcher } from '../../components/launcher';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
@@ -19,6 +19,7 @@ import { SentinelPanel } from '../../sentinel/SentinelPanel';
 import { useSentinelStore } from '../../sentinel/sentinelStore';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
+import { useControlCenterStore } from '../../stores/controlCenterStore';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
@@ -27,6 +28,7 @@ import { AmbientCompositor } from '../ambient/AmbientCompositor';
 import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
 import { AltTabSwitcher } from './AltTabSwitcher';
+import { ControlCenter } from './ControlCenter';
 import { DesktopContextMenu } from './DesktopContextMenu';
 import { DesktopErrorBoundary } from './DesktopErrorBoundary';
 import { DesktopIconGrid } from './DesktopIconGrid';
@@ -44,8 +46,12 @@ export interface DesktopProps {
   className?: string;
 }
 
-const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
+const DesktopTopSystemBar: React.FC<{
+  onOpenCommandPalette: () => void;
+  onToggleControlCenter: () => void;
+}> = ({
   onOpenCommandPalette,
+  onToggleControlCenter,
 }) => (
   <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 z-[1050] pointer-events-none'>
     <LiquidPanel
@@ -71,6 +77,14 @@ const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
       </div>
       <div className='flex items-center gap-2'>
         <NeonSignal status='healthy' size='xs' pulse>SYSTEM</NeonSignal>
+        <button
+          onClick={onToggleControlCenter}
+          className='flex items-center opacity-60 hover:opacity-100 transition-opacity'
+          aria-label='Toggle Control Center (Ctrl+.)'
+          title='Control Center (Ctrl+.)'
+        >
+          <Settings2 className='h-3.5 w-3.5' />
+        </button>
         <TactileButton
         variant='ghost'
         size='sm'
@@ -126,6 +140,7 @@ export function Desktop({ className = '' }: DesktopProps) {
 
   const { panelOpen, setPanelOpen } = useSentinelStore();
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
+  const toggleControlCenter = useControlCenterStore((state) => state.toggle);
   // Subscribe to Start Menu state
   const isStartMenuOpen = useStartMenuStore((state) => state.isOpen);
   const toggleStartMenu = useStartMenuStore((state) => state.toggle);
@@ -269,9 +284,17 @@ export function Desktop({ className = '' }: DesktopProps) {
         nextDesktop();
         return;
       }
+
+      // Ctrl+. - Toggle Control Center
+      if (event.ctrlKey && event.key === '.') {
+        event.preventDefault();
+        toggleControlCenter();
+        return;
+      }
     },
     [
       toggleStartMenu,
+      toggleControlCenter,
       nextDesktop,
       previousDesktop,
       isAltTabOpen,
@@ -358,7 +381,10 @@ export function Desktop({ className = '' }: DesktopProps) {
       <AmbientCompositor forcedMode='css' />
 
       {/* Layer 0.75: Top System Bar */}
-      <DesktopTopSystemBar onOpenCommandPalette={openCommandPalette} />
+      <DesktopTopSystemBar
+        onOpenCommandPalette={openCommandPalette}
+        onToggleControlCenter={toggleControlCenter}
+      />
 
       {/* Layer 0.5: Desktop Icons (Priority 3) */}
       <DesktopIconGrid id='desktop-main-content' className='absolute top-10 left-3 z-[1]' />
@@ -393,6 +419,9 @@ export function Desktop({ className = '' }: DesktopProps) {
       <WindowPeek />
 
       <SentinelPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
+
+      {/* Layer 9997: Control Center Drawer */}
+      <ControlCenter />
     </div>
   );
 }
