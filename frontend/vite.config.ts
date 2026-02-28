@@ -6,6 +6,7 @@ import { securityPlugin } from './apps/os-shell/src/middleware/security-plugin';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const appRoot = path.resolve(__dirname, 'apps/os-shell');
+  const backendUrl = process.env.VITE_API_URL || `http://localhost:${process.env.TF_API_PORT || 5000}`;
 
   const plugins = [
     react(),
@@ -108,13 +109,13 @@ export default defineConfig(({ mode }) => {
       // Proxy API calls to .NET backend
       proxy: {
         '/api': {
-          target: process.env.VITE_API_URL || 'http://localhost:5000',
+          target: backendUrl,
           changeOrigin: true,
           secure: false,
           ws: true, // WebSocket support for SignalR
         },
         '/ops': {
-          target: process.env.VITE_API_URL || 'http://localhost:5000',
+          target: backendUrl,
           changeOrigin: true,
           secure: false,
         },
@@ -133,7 +134,7 @@ export default defineConfig(({ mode }) => {
     define: {
       // Environment variables available in app
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
-      __API_URL__: JSON.stringify(process.env.VITE_API_URL || 'http://localhost:5000'),
+      __API_URL__: JSON.stringify(process.env.VITE_API_URL || `/api`),
     },
   };
 });
