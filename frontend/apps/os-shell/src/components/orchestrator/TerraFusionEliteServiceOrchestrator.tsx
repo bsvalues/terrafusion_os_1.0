@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent as CardBody, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import React, { useEffect, useState } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 
 interface ServiceStatus {
   name: string;
@@ -118,16 +119,16 @@ export const TerraFusionEliteServiceOrchestrator: React.FC = () => {
     setLastMonitoringCheck(new Date().toLocaleTimeString());
   };
 
-  const getHealthCheckUrl = (serviceName: string, port: number): string => {
+  const getHealthCheckUrl = (serviceName: string, _port: number): string => {
     switch (serviceName) {
       case 'Elite Experiments API':
-        return `http://localhost:${port}/health`;
+        return `${getViteEnv().VITE_API_URL || '/api'}/health`;
       case 'Consciousness Engine':
-        return `http://localhost:${port}/`;
+        return `${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/`;
       case 'Frontend PWA':
-        return `http://localhost:${port}/`;
+        return '/';
       default:
-        return `http://localhost:${port}/health`;
+        return `${getViteEnv().VITE_API_URL || '/api'}/health`;
     }
   };
 

@@ -74,7 +74,7 @@ export const TerraFusionAutomatedDeploymentOrchestrator: React.FC = () => {
       status: 'running',
       uptime: '02:34:12',
       restartCount: 0,
-      healthCheckUrl: `http://localhost:${process.env.TF_FRONTEND_PORT || 5175}/`,
+      healthCheckUrl: '/',
     },
   ]);
 

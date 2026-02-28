@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 
 interface OSShellWindowProps {
   children: React.ReactNode;
@@ -48,10 +49,10 @@ const OSShellWindow: React.FC<OSShellWindowProps> = ({ children }) => {
           },
         },
         api: {
-          port: 5000,
-          baseUrl: 'http://localhost:5000',
-          getPort: async () => 5000,
-          getBaseUrl: async () => 'http://localhost:5000',
+          port: parseInt(getViteEnv().TF_API_PORT || '5000', 10),
+          baseUrl: getViteEnv().VITE_API_URL || '/api',
+          getPort: async () => parseInt(getViteEnv().TF_API_PORT || '5000', 10),
+          getBaseUrl: async () => getViteEnv().VITE_API_URL || '/api',
         },
         isDesktop: false,
       };

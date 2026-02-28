@@ -13,6 +13,7 @@
  */
 
 import React, { useState } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -92,7 +93,7 @@ export function HypothesisTestingLab({ isConnected }: HypothesisTestingLabProps)
       };
 
       // Call API
-      const response = await fetch('http://localhost:3005/api/v2/analytics/hypothesis-test', {
+      const response = await fetch(`${getViteEnv().VITE_QUANTUM_ANALYTICS_URL || ''}/api/v2/analytics/hypothesis-test`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
