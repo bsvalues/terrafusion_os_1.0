@@ -3,6 +3,8 @@
  * ===================================================================
  * Constitutional Suite: dais (Article I)
  * Standalone route: /dais
+ * Layout: Stage Tabs (horizontal) + content area
+ * Phase 7 Design Manifesto: replaces sidebar navigation with Stage Tabs
  *
  * Modules (ALL 6 ACTIVE):
  *   - Levy: Property tax levy calculation & analysis (API-wired)
@@ -1205,15 +1207,15 @@ export default function DaisSuiteHome() {
 
   return (
     <div data-testid="suite-dais-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
-      {/* Header */}
+      {/* Header + Stage Tabs */}
       <header
         style={{
           borderBottom: '1px solid hsl(var(--tf-border))',
           background: 'hsl(var(--tf-card-bg) / 0.5)',
         }}
-        className='backdrop-blur-xl'
+        className='backdrop-blur-xl shrink-0'
       >
-        <div className='max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4'>
+        <div className='max-w-[1600px] mx-auto px-6 pt-4 pb-0 flex items-center gap-4'>
           <button
             onClick={() => navigate('/')}
             className='p-2 rounded-lg hover:bg-white/5 transition-colors'
@@ -1235,20 +1237,13 @@ export default function DaisSuiteHome() {
             </p>
           </div>
         </div>
-      </header>
 
-      <div className='flex flex-1 min-h-0'>
-        {/* Module Sidebar */}
+        {/* Stage Tabs */}
         <nav
-          className='w-64 shrink-0 p-4 space-y-1 overflow-y-auto'
-          style={{ borderRight: '1px solid hsl(var(--tf-border))' }}
+          role='tablist'
+          aria-label='TerraDais modules'
+          className='max-w-[1600px] mx-auto px-6 flex gap-1 mt-3 overflow-x-auto'
         >
-          <p
-            className='text-xs font-medium uppercase tracking-wider px-3 py-2'
-            style={{ color: 'hsl(var(--tf-muted))' }}
-          >
-            Modules
-          </p>
           {DAIS_MODULES.map((mod) => {
             const Icon = mod.icon;
             const isActive = mod.id === activeModule;
@@ -1256,50 +1251,44 @@ export default function DaisSuiteHome() {
             return (
               <button
                 key={mod.id}
+                role='tab'
+                aria-selected={isActive}
+                aria-controls={`dais-panel-${mod.id}`}
                 onClick={() => !isPlanned && setActiveModule(mod.id)}
                 disabled={isPlanned}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                   isActive
                     ? 'bg-white/10'
                     : isPlanned
                       ? 'opacity-40 cursor-not-allowed'
                       : 'hover:bg-white/5'
                 }`}
+                style={{
+                  color: isActive
+                    ? 'hsl(var(--tf-fg))'
+                    : 'hsl(var(--tf-muted))',
+                  borderBottom: isActive
+                    ? '2px solid hsl(var(--tf-suite-dais))'
+                    : '2px solid transparent',
+                }}
               >
                 <Icon
-                  size={18}
+                  size={16}
                   style={{
                     color: isActive
                       ? 'hsl(var(--tf-suite-dais))'
                       : 'hsl(var(--tf-muted))',
                   }}
                 />
-                <div>
-                  <span
-                    className='text-sm font-medium'
-                    style={{
-                      color: isActive ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
-                    }}
-                  >
-                    {mod.label}
-                  </span>
-                  {isPlanned && (
-                    <span
-                      className='block text-xs'
-                      style={{ color: 'hsl(var(--tf-muted))' }}
-                    >
-                      Coming soon
-                    </span>
-                  )}
-                </div>
+                {mod.label}
               </button>
             );
           })}
         </nav>
+      </header>
 
-        {/* Module Content */}
-        <main className='flex-1 min-w-0'>{renderModule()}</main>
-      </div>
+      {/* Module Content */}
+      <main className='flex-1 min-h-0 overflow-y-auto'>{renderModule()}</main>
     </div>
   );
 }
