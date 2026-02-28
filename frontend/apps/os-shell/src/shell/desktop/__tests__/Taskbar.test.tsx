@@ -75,8 +75,8 @@ describe('Taskbar Component', () => {
       renderTaskbar();
 
       const taskbar = screen.getByRole('navigation', { name: /taskbar/i });
-      // macOS Tahoe dock uses inline backdropFilter style instead of Tailwind class
-      expect(taskbar.style.backdropFilter).toContain('blur');
+      // LiquidPanel applies glass via CSS classes
+      expect(taskbar.className).toContain('liquid-panel--shell');
     });
   });
 

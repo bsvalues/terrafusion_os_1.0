@@ -22,7 +22,7 @@ import { useAltTabStore } from '../../stores/altTabStore';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
-import { TactileButton } from '../../ui/materials';
+import { LiquidPanel, TactileButton } from '../../ui/materials';
 import { AmbientCompositor } from '../ambient/AmbientCompositor';
 import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
@@ -48,14 +48,10 @@ const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
   onOpenCommandPalette,
 }) => (
   <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 z-[1050] pointer-events-none'>
-    <div
+    <LiquidPanel
+      variant='shell'
+      radius='none'
       className='pointer-events-auto flex items-center justify-between px-4 py-1'
-      style={{
-        background: 'hsl(var(--tf-surface-dark-hs) 6% / 0.55)',
-        backdropFilter: 'saturate(180%) blur(20px)',
-        WebkitBackdropFilter: 'saturate(180%) blur(20px)',
-        borderBottom: '0.5px solid hsl(var(--tf-border) / 0.15)',
-      }}
     >
       <div className='flex items-center gap-2.5'>
         <TerraSphereIcon size={20} variant='system' glyph={<Building2 className='h-2.5 w-2.5' />} />
@@ -83,7 +79,7 @@ const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
       >
         Search
       </TactileButton>
-    </div>
+    </LiquidPanel>
   </div>
 );
 
