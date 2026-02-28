@@ -1,0 +1,191 @@
+/**
+ * @fileoverview BentoGrid CSS
+ *
+ * CSS Grid layout with pre-defined card sizes for dashboard-style layouts.
+ * Adapts to container width (windows can be any size).
+ *
+ * Design Tokens:
+ * - --bento-gap: Grid gap
+ * - --bento-padding: Grid padding
+ * - --bento-col-min: Minimum column width for auto-fit
+ *
+ * NO ANIMATIONS ON IDLE - CLS-safe (transforms/opacity only for transitions).
+ */
+
+/* ============================================================================
+   Grid Container
+   ============================================================================ */
+
+.bento-grid {
+  display: grid;
+  gap: var(--bento-gap, 1rem);
+  padding: var(--bento-padding, 1rem);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Column count presets */
+.bento-grid--cols-1 { grid-template-columns: 1fr; }
+.bento-grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.bento-grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.bento-grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Auto-fit mode: responsive columns based on minimum width */
+.bento-grid--auto {
+  grid-template-columns: repeat(auto-fit, minmax(var(--bento-col-min, 280px), 1fr));
+}
+
+/* ============================================================================
+   Card Sizes
+   ============================================================================ */
+
+/* Default: 1x1 (single grid cell) */
+.bento-card { min-width: 0; }
+
+/* 2x1: spans 2 columns */
+.bento-card--2x1 { grid-column: span 2; }
+
+/* 1x2: spans 2 rows */
+.bento-card--1x2 { grid-row: span 2; }
+
+/* 2x2: spans 2 columns + 2 rows */
+.bento-card--2x2 {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+/* Full-width: spans all columns */
+.bento-card--full { grid-column: 1 / -1; }
+
+/* ============================================================================
+   Card Container
+   ============================================================================ */
+
+.bento-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Card content area */
+.bento-card__content {
+  flex: 1;
+  min-height: 0;
+  padding: var(--bento-card-padding, 1rem);
+}
+
+/* Card header (optional) */
+.bento-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--bento-header-border, transparent);
+  flex-shrink: 0;
+}
+
+.bento-card__title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--bento-title-color, inherit);
+  line-height: 1.2;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.bento-card__subtitle {
+  font-size: 0.6875rem;
+  color: var(--bento-subtitle-color, inherit);
+  opacity: 0.5;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.bento-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+   Card Variants
+   ============================================================================ */
+
+/* Stat: compact metric display */
+.bento-card--stat .bento-card__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Chart: flexible content area */
+.bento-card--chart .bento-card__content {
+  padding: 0.5rem;
+}
+
+/* Table: dense data display */
+.bento-card--table .bento-card__content {
+  padding: 0;
+  overflow: auto;
+}
+
+/* Form: input-focused layout */
+.bento-card--form .bento-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Map: full-bleed content */
+.bento-card--map .bento-card__content {
+  padding: 0;
+  position: relative;
+}
+
+/* ============================================================================
+   Promote State (next required action)
+   ============================================================================ */
+
+.bento-card--promote {
+  outline: 1.5px solid var(--bento-promote-border, currentColor);
+  outline-offset: -1.5px;
+}
+
+.bento-card--promote::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 20px var(--bento-promote-glow, transparent);
+}
+
+/* ============================================================================
+   Responsive: Collapse spanning on narrow containers
+   ============================================================================ */
+
+@container (max-width: 480px) {
+  .bento-card--2x1,
+  .bento-card--2x2 {
+    grid-column: span 1;
+  }
+  .bento-card--2x2 {
+    grid-row: span 1;
+  }
+}
+
+/* Fallback for browsers without container queries */
+@media (max-width: 480px) {
+  .bento-card--2x1,
+  .bento-card--2x2 {
+    grid-column: span 1;
+  }
+  .bento-card--2x2 {
+    grid-row: span 1;
+  }
+}
