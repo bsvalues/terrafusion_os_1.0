@@ -22,4 +22,9 @@ export {
     TactileButton,
     type TactileButtonProps, type TactileButtonSize, type TactileButtonVariant
 } from './TactileButton';
+export { BentoGrid, type BentoGridColumns, type BentoGridProps } from './BentoGrid';
+export {
+    BentoCard,
+    type BentoCardProps, type BentoCardSpan, type BentoCardVariant
+} from './BentoCard';
 
