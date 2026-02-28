@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 
 // Academic research integration types
 interface ResearchDataset {
@@ -366,7 +367,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
 
       // Initialize WebSocket for real-time updates
       if (process.env.NODE_ENV !== 'test') {
-        wsRef.current = new WebSocket('ws://localhost:8080/quantum-research');
+        wsRef.current = new WebSocket(`${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/quantum-research`);
 
         wsRef.current.onopen = () => {
           console.log('Quantum research WebSocket connected');

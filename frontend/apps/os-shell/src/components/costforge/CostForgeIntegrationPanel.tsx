@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PerformanceMetrics, SystemStatus, useCostForgeAPI } from '@/hooks/useCostForgeAPI';
+import { getViteEnv } from '@/shared/viteEnv';
 import { Activity, AlertCircle, CheckCircle, Cloud, Database, Zap } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -28,7 +29,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
   const [isConnecting, setIsConnecting] = useState(false);
 
   const costForgeAPI = useCostForgeAPI({
-    baseUrl: 'http://localhost:5000',
+    baseUrl: getViteEnv().VITE_API_URL || '/api',
     timeout: 10000,
   });
 
@@ -41,7 +42,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
   const loadSystemData = async () => {
     try {
       // Use the working /health endpoint for real backend connectivity
-      const healthResponse = await fetch('http://localhost:5000/health');
+      const healthResponse = await fetch(`${getViteEnv().VITE_API_URL || '/api'}/health`);
       const healthData = await healthResponse.json();
 
       if (healthResponse.ok) {

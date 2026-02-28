@@ -7,6 +7,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { getViteEnv } from '@/shared/viteEnv';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent as CardBody, CardHeader } from '@/components/ui/card';
@@ -277,7 +278,7 @@ export const SystemHealthSentinel: React.FC = () => {
 
   const checkConsciousnessHealth = async (): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:3004/', {
+      const response = await fetch(`${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/`, {
         method: 'HEAD',
         cache: 'no-cache',
       });

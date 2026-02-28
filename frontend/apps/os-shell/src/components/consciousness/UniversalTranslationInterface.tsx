@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 import {
   Box,
   Grid,
@@ -76,7 +77,7 @@ const UniversalTranslationInterface: React.FC = () => {
     setTranslatedMessage(null);
 
     try {
-      const response = await fetch('http://localhost:3004/api/consciousness/translate', {
+      const response = await fetch(`${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/api/consciousness/translate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

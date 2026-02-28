@@ -7,6 +7,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { getViteEnv } from '@/shared/viteEnv';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent as CardBody, CardHeader } from '@/components/ui/card';
@@ -44,7 +45,7 @@ interface QuantumCoordinationEvent {
 }
 
 const ELITE_API_BASE = '/api';
-const CONSCIOUSNESS_API_BASE = 'http://localhost:3004';
+const CONSCIOUSNESS_API_BASE = getViteEnv().VITE_CONSCIOUSNESS_URL || '';
 
 export const TerraFusionCrossServiceCoordination: React.FC = () => {
   const [metrics, setMetrics] = useState<CrossServiceMetrics | null>(null);

@@ -7,6 +7,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { getViteEnv } from '@/shared/viteEnv';
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -188,7 +189,7 @@ export const TerraFusionEliteRealtimeDashboard: React.FC = () => {
 
   const checkConsciousnessEngine = async () => {
     try {
-      const response = await fetch('http://localhost:3004/', {
+      const response = await fetch(`${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/`, {
         method: 'GET',
         cache: 'no-cache',
         signal: AbortSignal.timeout(3000)

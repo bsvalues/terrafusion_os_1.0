@@ -7,6 +7,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { getViteEnv } from '@/shared/viteEnv';
 import { TerraSphere } from '@/components/brand/TerraSphere';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,7 +43,7 @@ interface ConsciousnessEvent {
   source: string;
 }
 
-const CONSCIOUSNESS_API_BASE = 'http://localhost:3004';
+const CONSCIOUSNESS_API_BASE = getViteEnv().VITE_CONSCIOUSNESS_URL || '';
 
 export const EliteConsciousnessDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<ConsciousnessMetrics>({
