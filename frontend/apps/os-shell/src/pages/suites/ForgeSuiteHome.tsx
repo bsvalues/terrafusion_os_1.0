@@ -6,6 +6,9 @@
  *
  * Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge → TerraForge
  *
+ * Layout: Stage Tabs (horizontal) + BentoGrid content area
+ * Phase 3 Design Manifesto: replaces sidebar navigation with Stage Tabs
+ *
  * Modules (ALL 6 ACTIVE):
  *   - CostForge: Benton County Cost Approach calculator
  *   - CompsForge: Sales comparison analysis
@@ -102,15 +105,15 @@ export default function ForgeSuiteHome() {
 
   return (
     <div data-testid="suite-forge-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
-      {/* Header */}
+      {/* Header + Stage Tabs */}
       <header
         style={{
           borderBottom: '1px solid hsl(var(--tf-border))',
           background: 'hsl(var(--tf-card-bg) / 0.5)',
         }}
-        className='backdrop-blur-xl'
+        className='backdrop-blur-xl shrink-0'
       >
-        <div className='max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4'>
+        <div className='max-w-[1600px] mx-auto px-6 pt-4 pb-0 flex items-center gap-4'>
           <button
             onClick={() => navigate('/')}
             className='p-2 rounded-lg hover:bg-white/5 transition-colors'
@@ -132,20 +135,13 @@ export default function ForgeSuiteHome() {
             </p>
           </div>
         </div>
-      </header>
 
-      <div className='flex flex-1 min-h-0'>
-        {/* Module Sidebar */}
+        {/* Stage Tabs */}
         <nav
-          className='w-64 shrink-0 p-4 space-y-1 overflow-y-auto'
-          style={{ borderRight: '1px solid hsl(var(--tf-border))' }}
+          role='tablist'
+          aria-label='TerraForge modules'
+          className='max-w-[1600px] mx-auto px-6 flex gap-1 mt-3 overflow-x-auto'
         >
-          <p
-            className='text-xs font-medium uppercase tracking-wider px-3 py-2'
-            style={{ color: 'hsl(var(--tf-muted))' }}
-          >
-            Modules
-          </p>
           {FORGE_MODULES.map((mod) => {
             const Icon = mod.icon;
             const isActive = mod.id === activeModule;
@@ -153,74 +149,92 @@ export default function ForgeSuiteHome() {
             return (
               <button
                 key={mod.id}
+                role='tab'
+                aria-selected={isActive}
+                aria-controls={`forge-panel-${mod.id}`}
                 onClick={() => !isPlanned && setActiveModule(mod.id)}
                 disabled={isPlanned}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                   isActive
                     ? 'bg-white/10'
                     : isPlanned
                       ? 'opacity-40 cursor-not-allowed'
                       : 'hover:bg-white/5'
                 }`}
+                style={{
+                  color: isActive
+                    ? 'hsl(var(--tf-fg))'
+                    : 'hsl(var(--tf-muted))',
+                  borderBottom: isActive
+                    ? '2px solid hsl(var(--tf-suite-forge))'
+                    : '2px solid transparent',
+                }}
               >
                 <Icon
-                  size={18}
+                  size={16}
                   style={{
                     color: isActive
                       ? 'hsl(var(--tf-suite-forge))'
                       : 'hsl(var(--tf-muted))',
                   }}
                 />
-                <div>
-                  <span
-                    className='text-sm font-medium'
-                    style={{
-                      color: isActive ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
-                    }}
-                  >
-                    {mod.label}
-                  </span>
-                  {isPlanned && (
-                    <span
-                      className='block text-xs'
-                      style={{ color: 'hsl(var(--tf-muted))' }}
-                    >
-                      Coming soon
-                    </span>
-                  )}
-                </div>
+                {mod.label}
               </button>
             );
           })}
         </nav>
+      </header>
 
-        {/* Module Content */}
-        <main className='flex-1 min-w-0'>
-          <Suspense fallback={<ModuleLoading />}>
-            {activeModule === 'costforge' && <CostForgeModule />}
-            {activeModule === 'comps' && <CompsForgeModule />}
-            {activeModule === 'income' && <IncomeForgeModule />}
-            {activeModule === 'appeal' && <AppealForgeModule />}
-            {activeModule === 'reconcile' && <ReconciliationModule />}
-            {activeModule === 'audit' && <ValueAuditModule />}
-            {!['costforge', 'comps', 'income', 'appeal', 'reconcile', 'audit'].includes(activeModule) && (
-              <div className='p-6 flex items-center justify-center min-h-[400px]'>
-                <div className='text-center space-y-3'>
-                  <Hammer
-                    size={48}
-                    className='mx-auto'
-                    style={{ color: 'hsl(var(--tf-suite-forge) / 0.3)' }}
-                  />
-                  <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                    {FORGE_MODULES.find((m) => m.id === activeModule)?.label} is under
-                    development
-                  </p>
-                </div>
+      {/* Module Content */}
+      <main className='flex-1 min-h-0 overflow-y-auto'>
+        <Suspense fallback={<ModuleLoading />}>
+          {activeModule === 'costforge' && (
+            <div role='tabpanel' id='forge-panel-costforge'>
+              <CostForgeModule />
+            </div>
+          )}
+          {activeModule === 'comps' && (
+            <div role='tabpanel' id='forge-panel-comps'>
+              <CompsForgeModule />
+            </div>
+          )}
+          {activeModule === 'income' && (
+            <div role='tabpanel' id='forge-panel-income'>
+              <IncomeForgeModule />
+            </div>
+          )}
+          {activeModule === 'appeal' && (
+            <div role='tabpanel' id='forge-panel-appeal'>
+              <AppealForgeModule />
+            </div>
+          )}
+          {activeModule === 'reconcile' && (
+            <div role='tabpanel' id='forge-panel-reconcile'>
+              <ReconciliationModule />
+            </div>
+          )}
+          {activeModule === 'audit' && (
+            <div role='tabpanel' id='forge-panel-audit'>
+              <ValueAuditModule />
+            </div>
+          )}
+          {!['costforge', 'comps', 'income', 'appeal', 'reconcile', 'audit'].includes(activeModule) && (
+            <div className='p-6 flex items-center justify-center min-h-[400px]'>
+              <div className='text-center space-y-3'>
+                <Hammer
+                  size={48}
+                  className='mx-auto'
+                  style={{ color: 'hsl(var(--tf-suite-forge) / 0.3)' }}
+                />
+                <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {FORGE_MODULES.find((m) => m.id === activeModule)?.label} is under
+                  development
+                </p>
               </div>
-            )}
-          </Suspense>
-        </main>
-      </div>
+            </div>
+          )}
+        </Suspense>
+      </main>
     </div>
   );
 }
