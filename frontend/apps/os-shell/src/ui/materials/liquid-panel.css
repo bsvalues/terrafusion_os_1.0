@@ -22,7 +22,7 @@
    ============================================================================ */
 
 .liquid-panel {
-  position: relative;
+  /* position is NOT set here — parent determines layout (fixed, absolute, relative) */
 
   /* Performance: will-change only on interaction, not idle */
   /* will-change is set via JS on hover/focus */
@@ -169,6 +169,11 @@
    2. User allows motion (no prefers-reduced-motion)
    3. Quality tier allows animations
 */
+
+/* Shimmer needs relative positioning for pseudo-element */
+.liquid-panel--shimmer {
+  position: relative;
+}
 
 .liquid-panel--shimmer::before {
   content: '';
