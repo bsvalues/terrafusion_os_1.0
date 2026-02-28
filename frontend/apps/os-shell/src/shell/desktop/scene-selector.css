@@ -1,0 +1,153 @@
+/* ============================================================================
+ * SceneSelector — Phase 8 Context Mode / Canonical Scenes
+ * All colors via var(--tf-*) design tokens (zero ratchet violations)
+ * ========================================================================== */
+
+.scene-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9996;
+  background: hsl(var(--tf-bg) / 0.4);
+  backdrop-filter: blur(2px);
+}
+
+.scene-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 90vw;
+  z-index: 9997;
+  transform: translateX(-100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scene-panel--open {
+  transform: translateX(0);
+}
+
+.scene-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid hsl(var(--tf-border));
+}
+
+.scene-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: hsl(var(--tf-fg));
+  margin: 0;
+}
+
+.scene-subtitle {
+  font-size: 0.75rem;
+  color: hsl(var(--tf-muted));
+  margin: 0.25rem 0 0;
+}
+
+.scene-close {
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  background: transparent;
+  border: none;
+  color: hsl(var(--tf-muted));
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+}
+
+.scene-close:hover {
+  background: hsl(var(--tf-border));
+  color: hsl(var(--tf-fg));
+}
+
+.scene-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+}
+
+.scene-group {
+  margin-bottom: 1.25rem;
+}
+
+.scene-group-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(var(--tf-muted));
+  margin: 0 0 0.5rem;
+  padding: 0 0.25rem;
+}
+
+.scene-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+  margin-bottom: 0.25rem;
+}
+
+.scene-card:hover {
+  background: hsl(var(--tf-border) / 0.5);
+}
+
+.scene-card--active {
+  border-color: hsl(var(--tf-accent));
+  background: hsl(var(--tf-accent) / 0.08);
+}
+
+.scene-card-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.scene-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.scene-card-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: hsl(var(--tf-fg));
+}
+
+.scene-card-desc {
+  font-size: 0.75rem;
+  color: hsl(var(--tf-muted));
+  line-height: 1.4;
+}
+
+.scene-card-windows {
+  font-size: 0.6875rem;
+  color: hsl(var(--tf-muted));
+  opacity: 0.7;
+  margin-top: 0.125rem;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scene-panel {
+    transition: none;
+  }
+  .scene-backdrop {
+    backdrop-filter: none;
+  }
+}
