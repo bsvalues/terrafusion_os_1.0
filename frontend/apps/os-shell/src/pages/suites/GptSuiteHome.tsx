@@ -3,6 +3,8 @@
  * ===================================================================
  * Constitutional Suite: gpt (Article I)
  * Standalone route: /gpt
+ * Layout: Stage Tabs (horizontal) + content area
+ * Phase 7 Design Manifesto: replaces sidebar navigation with Stage Tabs
  *
  * Modules:
  *   - GPT Studio: Interactive chat with AI assistants
@@ -87,10 +89,16 @@ export default function GptSuiteHome() {
   const [activeModule, setActiveModule] = useState('studio');
 
   return (
-    <div className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }} className='backdrop-blur-xl'>
-        <div className='max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4'>
+    <div data-testid="suite-gpt-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+      {/* Header + Stage Tabs */}
+      <header
+        style={{
+          borderBottom: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-card-bg) / 0.5)',
+        }}
+        className='backdrop-blur-xl shrink-0'
+      >
+        <div className='max-w-[1600px] mx-auto px-6 pt-4 pb-0 flex items-center gap-4'>
           <button
             onClick={() => navigate('/')}
             className='p-2 rounded-lg hover:bg-white/5 transition-colors'
@@ -105,14 +113,13 @@ export default function GptSuiteHome() {
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>AI Assistant & Natural Language Interface</p>
           </div>
         </div>
-      </header>
 
-      <div className='flex flex-1 min-h-0'>
-        {/* Module Sidebar */}
-        <nav className='w-64 shrink-0 p-4 space-y-1 overflow-y-auto' style={{ borderRight: '1px solid hsl(var(--tf-border))' }}>
-          <p className='text-xs font-medium uppercase tracking-wider px-3 py-2' style={{ color: 'hsl(var(--tf-muted))' }}>
-            Modules
-          </p>
+        {/* Stage Tabs */}
+        <nav
+          role='tablist'
+          aria-label='TerraGPT modules'
+          className='max-w-[1600px] mx-auto px-6 flex gap-1 mt-3 overflow-x-auto'
+        >
           {GPT_MODULES.map((mod) => {
             const Icon = mod.icon;
             const isActive = mod.id === activeModule;
@@ -120,50 +127,65 @@ export default function GptSuiteHome() {
             return (
               <button
                 key={mod.id}
+                role='tab'
+                aria-selected={isActive}
+                aria-controls={`gpt-panel-${mod.id}`}
                 onClick={() => !isPlanned && setActiveModule(mod.id)}
                 disabled={isPlanned}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                   isActive
                     ? 'bg-white/10'
                     : isPlanned
-                    ? 'opacity-40 cursor-not-allowed'
-                    : 'hover:bg-white/5'
+                      ? 'opacity-40 cursor-not-allowed'
+                      : 'hover:bg-white/5'
                 }`}
+                style={{
+                  color: isActive
+                    ? 'hsl(var(--tf-fg))'
+                    : 'hsl(var(--tf-muted))',
+                  borderBottom: isActive
+                    ? '2px solid hsl(var(--tf-suite-gpt))'
+                    : '2px solid transparent',
+                }}
               >
                 <Icon
-                  size={18}
-                  style={{ color: isActive ? 'hsl(var(--tf-suite-gpt))' : 'hsl(var(--tf-muted))' }}
+                  size={16}
+                  style={{
+                    color: isActive
+                      ? 'hsl(var(--tf-suite-gpt))'
+                      : 'hsl(var(--tf-muted))',
+                  }}
                 />
-                <div>
-                  <span
-                    className='text-sm font-medium'
-                    style={{ color: isActive ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))' }}
-                  >
-                    {mod.label}
-                  </span>
-                  {isPlanned && (
-                    <span className='ml-2 text-xs px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-muted) / 0.15)', color: 'hsl(var(--tf-muted))' }}>
-                      Planned
-                    </span>
-                  )}
-                </div>
+                {mod.label}
               </button>
             );
           })}
         </nav>
+      </header>
 
-        {/* Module Content */}
-        <main className='flex-1 min-w-0'>
-          <Suspense fallback={<ModuleLoading />}>
-            {activeModule === 'studio' && <GptStudioView />}
-            {activeModule === 'marketplace' && <GPTMarketplace />}
-            {activeModule === 'management' && <GPTManagementDashboard />}
-            {activeModule === 'builder' && <GPTBuilderModule />}
-            {activeModule === 'analytics' && <GPTAnalyticsModule />}
-            {activeModule === 'rag' && <RAGDatasetsModule />}
-          </Suspense>
-        </main>
-      </div>
+      {/* Module Content */}
+      <main className='flex-1 min-h-0 overflow-y-auto'>
+        <Suspense fallback={<ModuleLoading />}>
+          {activeModule === 'studio' && (
+            <div role='tabpanel' id='gpt-panel-studio'><GptStudioView /></div>
+          )}
+          {activeModule === 'marketplace' && (
+            <div role='tabpanel' id='gpt-panel-marketplace'><GPTMarketplace /></div>
+          )}
+          {activeModule === 'management' && (
+            <div role='tabpanel' id='gpt-panel-management'><GPTManagementDashboard /></div>
+          )}
+          {activeModule === 'builder' && (
+            <div role='tabpanel' id='gpt-panel-builder'><GPTBuilderModule /></div>
+          )}
+          {activeModule === 'analytics' && (
+            <div role='tabpanel' id='gpt-panel-analytics'><GPTAnalyticsModule /></div>
+          )}
+          {activeModule === 'rag' && (
+            <div role='tabpanel' id='gpt-panel-rag'><RAGDatasetsModule /></div>
+          )}
+        </Suspense>
+      </main>
     </div>
   );
 }

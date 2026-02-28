@@ -4,7 +4,8 @@
  * Constitutional Suite: atlas (Article I)
  * Standalone route: /atlas
  *
- * Modules (ALL 7 ACTIVE):
+ * Layout: Stage Tabs (horizontal) + content area
+ * Phase 7 Design Manifesto: replaces sidebar navigation with Stage Tabs
  *   - TerraGIS: Parcel boundaries, aerial, zoning overlays
  *   - ParcelLens: Detailed parcel inspection with measurement tools
  *   - LayerWorks: Advanced layer management & spatial analysis
@@ -58,9 +59,15 @@ export default function AtlasSuiteHome() {
 
   return (
     <div data-testid="suite-atlas-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }} className='backdrop-blur-xl'>
-        <div className='max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4'>
+      {/* Header + Stage Tabs */}
+      <header
+        style={{
+          borderBottom: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-card-bg) / 0.5)',
+        }}
+        className='backdrop-blur-xl shrink-0'
+      >
+        <div className='max-w-[1600px] mx-auto px-6 pt-4 pb-0 flex items-center gap-4'>
           <button
             onClick={() => navigate('/')}
             className='p-2 rounded-lg hover:bg-white/5 transition-colors'
@@ -75,14 +82,13 @@ export default function AtlasSuiteHome() {
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Geographic Intelligence & Parcel Mapping</p>
           </div>
         </div>
-      </header>
 
-      <div className='flex flex-1 min-h-0'>
-        {/* Module Sidebar */}
-        <nav className='w-64 shrink-0 p-4 space-y-1 overflow-y-auto' style={{ borderRight: '1px solid hsl(var(--tf-border))' }}>
-          <p className='text-xs font-medium uppercase tracking-wider px-3 py-2' style={{ color: 'hsl(var(--tf-muted))' }}>
-            Modules
-          </p>
+        {/* Stage Tabs */}
+        <nav
+          role='tablist'
+          aria-label='TerraAtlas modules'
+          className='max-w-[1600px] mx-auto px-6 flex gap-1 mt-3 overflow-x-auto'
+        >
           {ATLAS_MODULES.map((mod) => {
             const Icon = mod.icon;
             const isActive = mod.id === activeModule;
@@ -90,51 +96,68 @@ export default function AtlasSuiteHome() {
             return (
               <button
                 key={mod.id}
+                role='tab'
+                aria-selected={isActive}
+                aria-controls={`atlas-panel-${mod.id}`}
                 onClick={() => !isPlanned && setActiveModule(mod.id)}
                 disabled={isPlanned}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                   isActive
                     ? 'bg-white/10'
                     : isPlanned
-                    ? 'opacity-40 cursor-not-allowed'
-                    : 'hover:bg-white/5'
+                      ? 'opacity-40 cursor-not-allowed'
+                      : 'hover:bg-white/5'
                 }`}
+                style={{
+                  color: isActive
+                    ? 'hsl(var(--tf-fg))'
+                    : 'hsl(var(--tf-muted))',
+                  borderBottom: isActive
+                    ? '2px solid hsl(var(--tf-suite-atlas))'
+                    : '2px solid transparent',
+                }}
               >
                 <Icon
-                  size={18}
-                  style={{ color: isActive ? 'hsl(var(--tf-suite-atlas))' : 'hsl(var(--tf-muted))' }}
+                  size={16}
+                  style={{
+                    color: isActive
+                      ? 'hsl(var(--tf-suite-atlas))'
+                      : 'hsl(var(--tf-muted))',
+                  }}
                 />
-                <div>
-                  <span
-                    className='text-sm font-medium'
-                    style={{ color: isActive ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))' }}
-                  >
-                    {mod.label}
-                  </span>
-                  {isPlanned && (
-                    <span className='ml-2 text-xs px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-muted) / 0.15)', color: 'hsl(var(--tf-muted))' }}>
-                      Planned
-                    </span>
-                  )}
-                </div>
+                {mod.label}
               </button>
             );
           })}
         </nav>
+      </header>
 
-        {/* Module Content */}
-        <main className='flex-1 min-w-0'>
-          <Suspense fallback={<ModuleLoading />}>
-            {activeModule === 'gis' && <GISModule />}
-            {activeModule === 'parcel-lens' && <ParcelLensModule />}
-            {activeModule === 'layer-works' && <LayerWorksModule />}
-            {activeModule === 'terra-sketch' && <TerraSketchModule />}
-            {activeModule === 'terra-print' && <TerraPrintModule />}
-            {activeModule === 'terra-export' && <TerraExportModule />}
-            {activeModule === 'terra-query' && <TerraQueryModule />}
-          </Suspense>
-        </main>
-      </div>
+      {/* Module Content */}
+      <main className='flex-1 min-h-0 overflow-y-auto'>
+        <Suspense fallback={<ModuleLoading />}>
+          {activeModule === 'gis' && (
+            <div role='tabpanel' id='atlas-panel-gis'><GISModule /></div>
+          )}
+          {activeModule === 'parcel-lens' && (
+            <div role='tabpanel' id='atlas-panel-parcel-lens'><ParcelLensModule /></div>
+          )}
+          {activeModule === 'layer-works' && (
+            <div role='tabpanel' id='atlas-panel-layer-works'><LayerWorksModule /></div>
+          )}
+          {activeModule === 'terra-sketch' && (
+            <div role='tabpanel' id='atlas-panel-terra-sketch'><TerraSketchModule /></div>
+          )}
+          {activeModule === 'terra-print' && (
+            <div role='tabpanel' id='atlas-panel-terra-print'><TerraPrintModule /></div>
+          )}
+          {activeModule === 'terra-export' && (
+            <div role='tabpanel' id='atlas-panel-terra-export'><TerraExportModule /></div>
+          )}
+          {activeModule === 'terra-query' && (
+            <div role='tabpanel' id='atlas-panel-terra-query'><TerraQueryModule /></div>
+          )}
+        </Suspense>
+      </main>
     </div>
   );
 }
