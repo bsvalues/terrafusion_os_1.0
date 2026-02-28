@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent as CardBody, CardHeader } from '@/components/ui/card';
 import React, { useEffect, useState } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 
 type IntegrationView =
   | 'NEXUS_OVERVIEW'
@@ -87,7 +88,7 @@ export const TerraFusionEliteIntegrationNexus: React.FC = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-        const consciousnessResponse = await fetch('http://localhost:3004/health', {
+        const consciousnessResponse = await fetch(`${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/health`, {
           method: 'GET',
           signal: controller.signal,
           headers: { Accept: 'application/json' },

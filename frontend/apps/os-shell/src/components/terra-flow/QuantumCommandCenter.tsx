@@ -13,6 +13,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -63,7 +64,7 @@ export function QuantumCommandCenter() {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const response = await fetch('http://localhost:3005', { method: 'GET' });
+        const response = await fetch(`${getViteEnv().VITE_QUANTUM_ANALYTICS_URL || ''}/`, { method: 'GET' });
         if (response.ok) {
           setConnectionStatus('connected');
         } else {
@@ -260,7 +261,7 @@ export function QuantumCommandCenter() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => window.open('http://localhost:3005/swagger', '_blank')}
+                onClick={() => window.open(`${getViteEnv().VITE_QUANTUM_ANALYTICS_URL || ''}/swagger`, '_blank')}
               >
                 View API Docs
               </Button>

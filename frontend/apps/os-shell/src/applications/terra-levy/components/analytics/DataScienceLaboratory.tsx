@@ -16,6 +16,7 @@ import {
   Zap,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 
 // Mock UI components
 const Card = ({ children, className }: { children: React.ReactNode; className?: string }) => (
@@ -354,7 +355,7 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
         setCollaborativeSession(session);
 
         // Setup WebSocket for real-time collaboration
-        wsRef.current = new WebSocket('ws://localhost:8080/jupyter-collaboration');
+        wsRef.current = new WebSocket(`${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/jupyter-collaboration`);
 
         wsRef.current.onopen = () => {
           console.log('Collaborative session started');

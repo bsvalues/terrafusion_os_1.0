@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { getViteEnv } from '@/shared/viteEnv';
 
 interface APITestResult {
   endpoint: string;
@@ -57,10 +58,11 @@ export const APIConnectionTest: React.FC = () => {
   };
 
   const testAllEndpoints = async () => {
+    const apiBase = getViteEnv().VITE_API_URL || '/api';
     const endpoints = [
-      { url: 'http://localhost:5000/health', name: 'Backend Health' },
-      { url: 'http://localhost:5000/api/ai/consciousness', name: 'AI Consciousness' },
-      { url: 'http://localhost:5000/api/government/excellence', name: 'Government Excellence' },
+      { url: `${apiBase}/health`, name: 'Backend Health' },
+      { url: `${apiBase}/ai/consciousness`, name: 'AI Consciousness' },
+      { url: `${apiBase}/government/excellence`, name: 'Government Excellence' },
     ];
 
     setResults(endpoints.map((ep) => ({ endpoint: ep.name, status: 'loading' })));
