@@ -341,11 +341,11 @@ describe('Window Component Animations', () => {
   it('should transition to "open" after opening animation', async () => {
     render(<Window window={mockWindow} />);
 
-    // Wait for animation to complete
+    // Wait for animation to complete — check the motion.div (animated wrapper)
     await waitFor(
       () => {
-        const windowVisuals = screen.getByTestId('tf-window-chrome');
-        expect(windowVisuals).toHaveStyle({ opacity: '1' });
+        const windowAnimation = screen.getByTestId('tf-window-animation');
+        expect(windowAnimation).toHaveStyle({ opacity: '1' });
       },
       { timeout: 1000 }
     );

@@ -14,7 +14,6 @@ import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Panel } from '@terrafusion/ui';
 import type { Category } from '../../config/generatedModules';
 import { getLucideIcon } from '../../config/iconMap';
 import { useRecentParcels } from '../../context/parcelContext';
@@ -22,6 +21,7 @@ import { activateModule } from '../../orchestration/moduleActivation';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
+import { LiquidPanel } from '../../ui/materials';
 import { RecentAppsSection } from './RecentAppsSection';
 
 // ============================================================================
@@ -583,8 +583,11 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
   }
 
   return (
-    <Panel
+    <LiquidPanel
       ref={menuRef}
+      variant='shell'
+      radius='xl'
+      blurIntensity={3}
       data-testid='start-menu'
       role='menu'
       aria-label='Start Menu'
@@ -595,22 +598,10 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
         'w-[380px] h-[540px]',
         // Layout
         'flex flex-col',
-        // Override Panel defaults for start menu
-        '!p-0 !rounded-2xl',
-        // Glass effect class for tests/consistency
-        'backdrop-blur-xl',
         // Animation
         'animate-slideUp',
         className
       )}
-      style={{
-        // macOS Tahoe glassmorphism
-        background: 'hsl(var(--tf-surface-dark-hs) 8% / 0.72)',
-        backdropFilter: 'saturate(200%) blur(32px)',
-        WebkitBackdropFilter: 'saturate(200%) blur(32px)',
-        border: '0.5px solid hsl(var(--tf-text-primary-hs) 100% / 0.1)',
-        boxShadow: '0 24px 80px hsl(0 0% 0% / 0.5), 0 0 0 0.5px hsl(var(--tf-text-primary-hs) 100% / 0.06)',
-      }}
     >
       {/* Search Section */}
       <div className='p-3 border-b border-white/10'>
@@ -637,7 +628,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
 
       {/* User Profile */}
       <UserProfile />
-    </Panel>
+    </LiquidPanel>
   );
 };
 

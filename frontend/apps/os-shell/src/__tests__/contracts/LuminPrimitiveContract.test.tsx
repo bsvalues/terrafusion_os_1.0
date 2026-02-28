@@ -77,10 +77,8 @@ describe('Lumin Primitive Contract', () => {
     // surface's role/aria instead, and confirm the panel material classes.
     const startMenu = screen.getByTestId('start-menu');
     expect(startMenu).toBeInTheDocument();
-    // Panel applies token-backed border class
-    expect(startMenu.className).toContain('border-[hsl(var(--tf-border');
-    // Panel applies token-backed surface background
-    expect(startMenu.className).toContain('bg-[hsl(var(--tf-surface');
+    // LiquidPanel applies glass material via CSS classes
+    expect(startMenu.className).toContain('liquid-panel--shell');
   });
 
   it('DesktopContextMenu renders with Lumin Panel material', () => {
@@ -102,12 +100,10 @@ describe('Lumin Primitive Contract', () => {
 
     const nav = screen.getByRole('navigation');
     expect(nav).toBeInTheDocument();
-    const style = nav.getAttribute('style') ?? '';
-    // Background uses hsl(var(--tf-bg)) token
-    expect(style).toContain('hsl(var(--tf-bg)');
-    // Border uses hsl(var(--tf-border)) token (not accent)
-    expect(style).toContain('hsl(var(--tf-border)');
+    // LiquidPanel applies glass material via CSS classes
+    expect(nav.className).toContain('liquid-panel--shell');
     // No raw rgba in inline style
+    const style = nav.getAttribute('style') ?? '';
     expect(style).not.toMatch(/rgba\(/);
   });
 

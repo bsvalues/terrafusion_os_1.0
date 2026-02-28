@@ -125,7 +125,8 @@ describe('StartMenu Component', () => {
       render(<StartMenu />);
 
       const startMenu = screen.getByRole('menu', { name: /start menu/i });
-      expect(startMenu).toHaveClass('backdrop-blur-xl');
+      // LiquidPanel applies glass via CSS classes
+      expect(startMenu.className).toContain('liquid-panel--shell');
     });
   });
 
