@@ -1,17 +1,10 @@
 import { useEffect } from 'react';
 import { useSentinelStore } from './sentinelStore';
 import { useSentinel } from './useSentinel';
+import { NeonSignal, type NeonSignalStatus } from '@/ui/materials';
 
-function statusColor(status: 'healthy' | 'degraded' | 'down') {
-  if (status === 'healthy') return 'bg-emerald-400';
-  if (status === 'degraded') return 'bg-amber-400';
-  return 'bg-red-400';
-}
-
-function statusLabel(status: 'healthy' | 'degraded' | 'down') {
-  if (status === 'healthy') return 'Healthy';
-  if (status === 'degraded') return 'Degraded';
-  return 'Down';
+function toNeonStatus(status: 'healthy' | 'degraded' | 'down'): NeonSignalStatus {
+  return status;
 }
 
 type SentinelChipProps = {
@@ -41,22 +34,19 @@ export function SentinelChip({ variant = 'floating' }: SentinelChipProps) {
         data-testid='system-health-indicator'
         className={`${
           variant === 'floating' ? 'fixed top-4 right-4 z-[100]' : 'relative'
-        } glass-panel px-3 py-1.5 rounded-full text-[11px] font-mono text-slate-100 flex items-center gap-2 hover:bg-white/10 transition`}
+        } hover:bg-white/10 transition`}
         onClick={togglePanel}
         title='Sentinel diagnostics (Ctrl+Shift+S)'
       >
-        <span className={`w-2 h-2 rounded-full ${statusColor(status)} animate-pulse`} />
-        <span className='tracking-wide'>SENTINEL</span>
-        <span className='text-white/60'>{statusLabel(status)}</span>
-        {intentFilter && moduleCountActive !== null && moduleCountTotal !== null && (
-          <span
-            className='text-white/50'
-            title={`Filtered by intent: ${intentFilter} (active/total)`}
-          >
-            · {moduleCountActive}/{moduleCountTotal}
-          </span>
-        )}
-        {latencyMs !== null && <span className='text-white/50'>· {latencyMs}ms</span>}
+        <NeonSignal status={toNeonStatus(status)} pulse size='sm'>
+          SENTINEL
+          {intentFilter && moduleCountActive !== null && moduleCountTotal !== null && (
+            <span style={{ opacity: 0.6 }}>
+              · {moduleCountActive}/{moduleCountTotal}
+            </span>
+          )}
+          {latencyMs !== null && <span style={{ opacity: 0.6 }}>· {latencyMs}ms</span>}
+        </NeonSignal>
       </button>
     </>
   );

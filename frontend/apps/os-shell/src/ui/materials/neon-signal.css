@@ -1,0 +1,139 @@
+/**
+ * NeonSignal — Status indicator CSS
+ *
+ * Neon is NEVER decoration. Only for critical system state:
+ * Audit Mode Active, Model Locked, COD Exceeded, System Health, Roll Certification.
+ *
+ * @module neon-signal
+ */
+
+/* ============================================================================
+ * Neon design tokens (HSL base values — consumed via hsl(var(--tf-neon-*)))
+ * ============================================================================ */
+
+:root {
+  --tf-neon-healthy: 142 71% 45%;
+  --tf-neon-degraded: 38 92% 50%;
+  --tf-neon-down: 0 84% 60%;
+  --tf-neon-active: 189 94% 43%;
+  --tf-neon-locked: 25 95% 53%;
+}
+
+/* ============================================================================
+ * Base
+ * ============================================================================ */
+
+.neon-signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--tf-font-mono, ui-monospace, monospace);
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: 9999px;
+  user-select: none;
+  position: relative;
+}
+
+/* ============================================================================
+ * Sizes
+ * ============================================================================ */
+
+.neon-signal--xs {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.neon-signal--sm {
+  font-size: 0.6875rem;
+  padding: 0.1875rem 0.625rem;
+  letter-spacing: 0.04em;
+}
+
+.neon-signal--md {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================================
+ * Dot indicator — pulse animation
+ * ============================================================================ */
+
+.neon-signal--pulse .neon-signal__dot {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes neon-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ============================================================================
+ * Status Variants — colors resolved from --tf-neon-* tokens via hsl()
+ * ============================================================================ */
+
+.neon-signal--healthy {
+  --neon-color: hsl(var(--tf-neon-healthy));
+  --neon-bg: hsl(var(--tf-neon-healthy) / 0.08);
+  --neon-border: hsl(var(--tf-neon-healthy) / 0.2);
+  --neon-dim: hsl(var(--tf-neon-healthy) / 0.5);
+}
+
+.neon-signal--degraded {
+  --neon-color: hsl(var(--tf-neon-degraded));
+  --neon-bg: hsl(var(--tf-neon-degraded) / 0.08);
+  --neon-border: hsl(var(--tf-neon-degraded) / 0.2);
+  --neon-dim: hsl(var(--tf-neon-degraded) / 0.5);
+}
+
+.neon-signal--down {
+  --neon-color: hsl(var(--tf-neon-down));
+  --neon-bg: hsl(var(--tf-neon-down) / 0.08);
+  --neon-border: hsl(var(--tf-neon-down) / 0.2);
+  --neon-dim: hsl(var(--tf-neon-down) / 0.5);
+}
+
+.neon-signal--active {
+  --neon-color: hsl(var(--tf-neon-active));
+  --neon-bg: hsl(var(--tf-neon-active) / 0.08);
+  --neon-border: hsl(var(--tf-neon-active) / 0.2);
+  --neon-dim: hsl(var(--tf-neon-active) / 0.5);
+}
+
+.neon-signal--locked {
+  --neon-color: hsl(var(--tf-neon-locked));
+  --neon-bg: hsl(var(--tf-neon-locked) / 0.08);
+  --neon-border: hsl(var(--tf-neon-locked) / 0.2);
+  --neon-dim: hsl(var(--tf-neon-locked) / 0.5);
+}
+
+.neon-signal--healthy,
+.neon-signal--degraded,
+.neon-signal--down,
+.neon-signal--active,
+.neon-signal--locked {
+  color: var(--neon-color);
+  background: var(--neon-bg);
+  border: 1px solid var(--neon-border);
+}
+
+.neon-signal__dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--neon-color);
+  box-shadow: 0 0 4px var(--neon-color), 0 0 8px var(--neon-dim);
+}
+
+/* ============================================================================
+ * Reduced motion
+ * ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .neon-signal--pulse .neon-signal__dot {
+    animation: none;
+  }
+}
