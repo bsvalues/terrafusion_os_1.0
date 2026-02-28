@@ -17,7 +17,7 @@
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Panel } from '@terrafusion/ui';
+import { LiquidPanel } from '../../ui/materials';
 import { getLucideIcon } from '../../config/iconMap';
 import { activateModule } from '../../orchestration/moduleActivation';
 import {
@@ -613,7 +613,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
       />
 
       {/* Palette */}
-      <Panel
+      <LiquidPanel
+        variant='shell'
+        radius='xl'
+        blurIntensity={3}
         data-testid='command-palette'
         role='dialog'
         aria-label='Command Palette'
@@ -621,7 +624,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
         className={cn(
           'fixed top-[15%] left-1/2 -translate-x-1/2',
           'w-full max-w-xl',
-          '!p-0 !rounded-xl overflow-hidden',
+          'overflow-hidden',
           'z-[10000]',
           className
         )}
@@ -716,7 +719,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
           </div>
           <span data-testid='command-palette-count'>{flatList.length} commands</span>
         </div>
-      </Panel>
+      </LiquidPanel>
     </>
   );
 };

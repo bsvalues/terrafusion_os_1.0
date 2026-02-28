@@ -490,20 +490,21 @@ describe('Window Component', () => {
   // ============================================================================
 
   describe('Glass Morphism Styling', () => {
-    it('has glass background', () => {
+    it('has glass background via LiquidPanel', () => {
       const mockWindow = createMockWindow();
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
-      expect(windowVisuals.style.backdropFilter).toContain('blur(28px)');
+      // LiquidPanel applies glass via CSS classes
+      expect(windowVisuals.className).toContain('liquid-panel--shell');
     });
 
-    it('has rounded corners', () => {
+    it('has rounded corners via LiquidPanel', () => {
       const mockWindow = createMockWindow();
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
-      expect(windowVisuals.className).toContain('rounded-lg');
+      expect(windowVisuals.className).toContain('liquid-panel--radius-lg');
     });
 
     it('has shadow effect', () => {
@@ -511,7 +512,8 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
-      expect(windowVisuals.style.boxShadow).not.toBe('');
+      const style = windowVisuals.getAttribute('style') ?? '';
+      expect(style).toContain('box-shadow');
     });
   });
 

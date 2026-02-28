@@ -20,6 +20,7 @@ import { getLucideIcon } from '../../config/iconMap';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { DesktopWindow, useDesktopStore } from '../../stores/desktopStore';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
+import { LiquidPanel } from '../../ui/materials';
 import { useWindowSnap } from './useWindowSnap';
 import { WINDOW_ANIMATION_TIMING, windowVariants } from './windowAnimations';
 import { WindowContextMenu } from './WindowContextMenu';
@@ -523,7 +524,6 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
         }}
       >
         <motion.div
-          data-testid='tf-window-chrome'
           initial='initial'
           animate={animationState}
           exit='closing'
@@ -534,20 +534,19 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
               setAnimationState('open');
             }
           }}
+          data-testid='tf-window-animation'
+          className='w-full h-full'
+        >
+        <LiquidPanel
+          variant='shell'
+          radius='lg'
+          blurIntensity={3}
+          data-testid='tf-window-chrome'
           className={cn(
-            // Base styles
-            'flex flex-col',
-            'w-full h-full',
-            // Border & rounded
-            'rounded-lg',
-            // Transition for smooth state changes
+            'flex flex-col w-full h-full',
             'transition-shadow duration-200'
           )}
           style={{
-            // macOS Tahoe glassmorphism — translucent with depth
-            background: 'hsl(var(--tf-bg) / 0.68)',
-            backdropFilter: 'saturate(180%) blur(28px)',
-            WebkitBackdropFilter: 'saturate(180%) blur(28px)',
             border: isActive
               ? '0.5px solid hsl(var(--tf-text) / 0.12)'
               : '0.5px solid hsl(var(--tf-border) / 0.3)',
@@ -612,6 +611,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
               )}
             </WindowInteractionContext.Provider>
           </div>
+        </LiquidPanel>
         </motion.div>
       </Rnd>
 

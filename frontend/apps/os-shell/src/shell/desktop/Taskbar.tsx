@@ -21,6 +21,7 @@ import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { TerraSphere } from '../../ui/brand/TerraSphere';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
+import { LiquidPanel } from '../../ui/materials';
 import { AIStatusIndicator, defaultAIStatus, type AIStatus } from './AIStatusPanel';
 import { Clock } from './Clock';
 import { NotificationBell, type Notification } from './NotificationBell';
@@ -271,7 +272,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   return (
     <>
       <VirtualDesktopSwitcher isOpen={isTaskViewOpen} onClose={() => setIsTaskViewOpen(false)} />
-      <nav
+      <LiquidPanel
+        variant='shell'
+        radius='xl'
         role='navigation'
         aria-label={t('taskbar.ariaLabel')}
         className={cn(
@@ -279,18 +282,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           'fixed bottom-2 left-1/2 -translate-x-1/2 z-[1000]',
           // Layout
           'flex items-center gap-1 px-2 h-12',
-          // Glass effect
-          'rounded-2xl',
           className
         )}
-        style={{
-          background: 'hsl(var(--tf-bg) / 0.55)',
-          backdropFilter: 'saturate(180%) blur(24px)',
-          WebkitBackdropFilter: 'saturate(180%) blur(24px)',
-          border: '1px solid hsl(var(--tf-border) / 0.4)',
-          boxShadow: '0 8px 32px hsl(var(--tf-tokens-black-hs) 0% / 0.4), 0 0 0 0.5px hsl(var(--tf-border) / 0.2)',
-          maxWidth: 'calc(100vw - 2rem)',
-        }}
+        style={{ maxWidth: 'calc(100vw - 2rem)' }}
       >
         {/* Home button */}
         <DockHomeButton />
@@ -312,7 +306,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           onNotificationDismiss={onNotificationDismiss}
           onNotificationClearAll={onNotificationClearAll}
         />
-      </nav>
+      </LiquidPanel>
     </>
   );
 };
