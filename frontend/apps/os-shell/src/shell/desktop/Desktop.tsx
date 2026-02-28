@@ -22,7 +22,7 @@ import { useAltTabStore } from '../../stores/altTabStore';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
-import { LiquidPanel, TactileButton } from '../../ui/materials';
+import { LiquidPanel, NeonSignal, TactileButton } from '../../ui/materials';
 import { AmbientCompositor } from '../ambient/AmbientCompositor';
 import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
@@ -69,7 +69,9 @@ const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
           Benton County · Tax Year 2026
         </span>
       </div>
-      <TactileButton
+      <div className='flex items-center gap-2'>
+        <NeonSignal status='healthy' size='xs' pulse>SYSTEM</NeonSignal>
+        <TactileButton
         variant='ghost'
         size='sm'
         onClick={onOpenCommandPalette}
@@ -79,6 +81,7 @@ const DesktopTopSystemBar: React.FC<{ onOpenCommandPalette: () => void }> = ({
       >
         Search
       </TactileButton>
+      </div>
     </LiquidPanel>
   </div>
 );
