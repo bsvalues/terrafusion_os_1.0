@@ -13,6 +13,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -554,15 +555,15 @@ export default function CostForgeModule() {
                     color: 'hsl(var(--tf-fg))',
                   }}
                 />
-                <Button
+                <TactileButton
                   onClick={handleSaveScenario}
                   disabled={!scenarioName.trim()}
                   size='sm'
                   className='shrink-0'
+                  leftIcon={<Save size={14} />}
                 >
-                  <Save size={14} className='mr-1.5' />
                   Save
-                </Button>
+                </TactileButton>
               </div>
               {scenarios.length > 0 && (
                 <div className='mt-3 space-y-2'>
@@ -864,20 +865,16 @@ export default function CostForgeModule() {
               </CardDescription>
             </CardHeader>
             <CardContent className='space-y-3'>
-              <Button
+              <TactileButton
                 onClick={verifyViaApi}
                 disabled={apiLoading}
                 size='sm'
-                className='w-full'
-                variant='outline'
+                fullWidth
+                loading={apiLoading}
+                leftIcon={<ShieldCheck size={14} />}
               >
-                {apiLoading ? (
-                  <Loader2 size={14} className='mr-1.5 animate-spin' />
-                ) : (
-                  <ShieldCheck size={14} className='mr-1.5' />
-                )}
                 {apiLoading ? 'Verifying…' : 'Verify via API'}
-              </Button>
+              </TactileButton>
               {apiResult && (
                 <div className='space-y-1 text-sm'>
                   <div className='flex justify-between'>

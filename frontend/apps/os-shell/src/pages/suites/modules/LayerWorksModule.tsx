@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -275,10 +276,9 @@ export default function LayerWorksModule() {
                     </p>
                   )}
                   {analysis.status === 'ready' && (
-                    <Button variant='outline' size='sm' onClick={() => runAnalysis(analysis.id)} className='w-full' style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                      <Activity size={14} className='mr-1' />
+                    <TactileButton size='sm' onClick={() => runAnalysis(analysis.id)} fullWidth leftIcon={<Activity size={14} />}>
                       Run Analysis
-                    </Button>
+                    </TactileButton>
                   )}
                   {analysis.status === 'running' && (
                     <div className='flex items-center gap-2'>

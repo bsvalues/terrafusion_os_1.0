@@ -9,6 +9,7 @@ import { useCallback, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -288,15 +289,14 @@ export default function TerraPrintModule() {
                 </div>
               )}
 
-              <Button
+              <TactileButton
                 onClick={handlePrint}
                 disabled={!selectedTemplate}
-                className='w-full'
-                style={{ background: 'hsl(var(--tf-suite-atlas))', color: 'hsl(var(--tf-bg))' }}
+                fullWidth
+                leftIcon={<Printer size={14} />}
               >
-                <Printer size={14} className='mr-2' />
                 Generate Print
-              </Button>
+              </TactileButton>
             </CardContent>
           </Card>
         </div>

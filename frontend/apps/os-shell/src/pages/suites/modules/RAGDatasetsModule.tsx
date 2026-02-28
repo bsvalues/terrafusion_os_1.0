@@ -9,6 +9,7 @@ import { useCallback, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -259,10 +260,9 @@ export default function RAGDatasetsModule() {
             Knowledge bases powering RAG-enabled GPTs
           </p>
         </div>
-        <Button onClick={handleUpload} disabled={uploading} style={{ background: 'hsl(var(--tf-suite-gpt))', color: 'white' }}>
-          {uploading ? <RefreshCw size={16} className="mr-2 animate-spin" /> : <Upload size={16} className="mr-2" />}
+        <TactileButton onClick={handleUpload} disabled={uploading} loading={uploading} leftIcon={uploading ? undefined : <Upload size={16} />}>
           {uploading ? 'Ingesting…' : 'Ingest Documents'}
-        </Button>
+        </TactileButton>
         <input
           ref={fileInputRef}
           type="file"
