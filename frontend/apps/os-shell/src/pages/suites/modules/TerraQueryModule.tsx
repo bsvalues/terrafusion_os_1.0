@@ -9,6 +9,7 @@ import { useCallback, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import {
   Table,
   TableBody,
@@ -219,15 +220,15 @@ export default function TerraQueryModule() {
                   <Button variant='outline' size='sm' style={{ borderColor: 'hsl(var(--tf-border))' }}>
                     <Save size={14} className='mr-1' /> Save
                   </Button>
-                  <Button
+                  <TactileButton
                     size='sm'
                     onClick={() => runQuery()}
                     disabled={running || (!query.trim() && !activeQuery)}
-                    style={{ background: 'hsl(var(--tf-suite-atlas))', color: 'hsl(var(--tf-bg))' }}
+                    loading={running}
+                    leftIcon={<Play size={14} />}
                   >
-                    <Play size={14} className='mr-1' />
                     {running ? 'Running...' : 'Execute'}
-                  </Button>
+                  </TactileButton>
                 </div>
               </div>
             </CardHeader>

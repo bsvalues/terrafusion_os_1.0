@@ -9,6 +9,7 @@ import { useCallback, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TactileButton } from '@/ui/materials';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -281,15 +282,14 @@ export default function TerraExportModule() {
                 </div>
               </div>
 
-              <Button
+              <TactileButton
                 onClick={handleExport}
                 disabled={selectedLayers.length === 0}
-                className='w-full'
-                style={{ background: 'hsl(var(--tf-suite-atlas))', color: 'hsl(var(--tf-bg))' }}
+                fullWidth
+                leftIcon={<Download size={14} />}
               >
-                <Download size={14} className='mr-2' />
                 Export Data
-              </Button>
+              </TactileButton>
             </CardContent>
           </Card>
         </div>
