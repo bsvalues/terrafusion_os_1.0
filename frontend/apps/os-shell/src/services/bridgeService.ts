@@ -2,7 +2,7 @@ import { getViteEnv } from '@/env/getViteEnv';
 import { SovereignObject } from '../fs/types';
 
 const env = getViteEnv();
-const BRIDGE_URL = env.VITE_BRIDGE_URL || 'http://localhost:8000';
+const BRIDGE_URL = env.VITE_BRIDGE_URL || '';
 const BRIDGE_KEY = env.VITE_TF_BRIDGE_KEY || 'dev-key';
 
 export const bridgeService = {

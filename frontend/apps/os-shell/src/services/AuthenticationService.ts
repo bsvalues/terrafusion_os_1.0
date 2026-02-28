@@ -129,7 +129,7 @@ const ELITE_INSTITUTIONS = [
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export class AuthenticationService {
-  private static readonly API_BASE_URL = getViteEnv().VITE_API_BASE_URL || 'http://localhost:5000';
+  private static readonly API_BASE_URL = getViteEnv().VITE_API_BASE_URL || '';
   private static readonly TOKEN_STORAGE_KEY = 'terrafusion_auth_token';
   private static readonly REFRESH_TOKEN_KEY = 'terrafusion_refresh_token';
   private static readonly USER_PROFILE_KEY = 'terrafusion_user_profile';

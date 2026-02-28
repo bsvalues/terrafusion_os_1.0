@@ -54,7 +54,7 @@ export type PilotHealth = { ok: true } | { ok: false; error: string };
 import { getViteEnv } from '@/env/getViteEnv';
 
 const DEFAULT_BASE_URL =
-  getViteEnv().VITE_PILOT_API_URL || getViteEnv().PILOT_API_URL || 'http://localhost:3333';
+  getViteEnv().VITE_PILOT_API_URL || getViteEnv().PILOT_API_URL || '';
 
 const buildHeaders = (ctx: PilotApiHeaders): Record<string, string> => {
   const headers: Record<string, string> = {

@@ -5,7 +5,7 @@ import axios, { AxiosInstance } from 'axios';
 
 import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
-const API_BASE_URL = getViteEnv().VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 
 /**
  * GPT Configuration entity

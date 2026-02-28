@@ -1,5 +1,7 @@
 // frontend/apps/os-shell/src/lib/api/gptClient.ts
 
+import { getViteEnv } from '../../env/getViteEnv';
+
 export type GPTConfigurationDto = {
   key: string;
   name: string;
@@ -37,7 +39,7 @@ export type RagHealthDto = {
   error?: string;
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
+const API_BASE_URL = getViteEnv().VITE_API_BASE_URL || '';
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {

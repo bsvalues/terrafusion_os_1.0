@@ -44,7 +44,7 @@ export function PilotApiDemo(): React.ReactElement {
 
   const baseUrl = useMemo(() => {
     const env = getViteEnv();
-    return env.VITE_PILOT_API_URL || env.PILOT_API_URL || 'http://localhost:3333';
+    return env.VITE_PILOT_API_URL || env.PILOT_API_URL || '';
   }, []);
 
   const permissionsValue = overrides.permissions;

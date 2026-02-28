@@ -608,7 +608,7 @@ export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
     {
       name: 'researchSession',
       endpoint: {
-        url: 'http://localhost:5000/api/research-sessions/health',
+        url: '/api/research-sessions/health',
         method: 'GET',
         expectedStatusCode: 200,
         timeout: 5000,
@@ -619,7 +619,7 @@ export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
     {
       name: 'quantumVisualization',
       endpoint: {
-        url: 'http://localhost:5000/api/quantum-visualization/health',
+        url: '/api/quantum-visualization/health',
         method: 'GET',
         expectedStatusCode: 200,
         timeout: 5000,
@@ -630,7 +630,7 @@ export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
     {
       name: 'consciousnessParameter',
       endpoint: {
-        url: 'http://localhost:5000/api/consciousness-parameters/health',
+        url: '/api/consciousness-parameters/health',
         method: 'GET',
         expectedStatusCode: 200,
         timeout: 5000,
@@ -641,7 +641,7 @@ export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
     {
       name: 'statisticalAnalysis',
       endpoint: {
-        url: 'http://localhost:5000/api/statistical-analysis/health',
+        url: '/api/statistical-analysis/health',
         method: 'GET',
         expectedStatusCode: 200,
         timeout: 5000,
@@ -652,7 +652,7 @@ export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
     {
       name: 'aiSwarm',
       endpoint: {
-        url: 'http://localhost:3004/health',
+        url: '/health',
         method: 'GET',
         expectedStatusCode: 200,
         timeout: 5000,
@@ -663,7 +663,7 @@ export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
     {
       name: 'iaaCompliance',
       endpoint: {
-        url: 'http://localhost:5000/api/iaao-compliance/health',
+        url: '/api/iaao-compliance/health',
         method: 'GET',
         expectedStatusCode: 200,
         timeout: 5000,
@@ -674,7 +674,7 @@ export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
     {
       name: 'export',
       endpoint: {
-        url: 'http://localhost:5000/api/export-report/health',
+        url: '/api/export-report/health',
         method: 'GET',
         expectedStatusCode: 200,
         timeout: 5000,

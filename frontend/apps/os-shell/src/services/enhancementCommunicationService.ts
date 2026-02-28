@@ -4,6 +4,7 @@
  */
 
 import { signal } from '@preact/signals';
+import { getViteEnv } from '../env/getViteEnv';
 
 // Enhancement status interface
 interface EnhancementStatus {
@@ -63,7 +64,7 @@ export const enhancementError = signal<string | null>(null);
 export const lastEnhancementUpdate = signal<Date | null>(null);
 
 // API endpoints configuration
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+const API_BASE_URL = getViteEnv().VITE_API_URL ? `${getViteEnv().VITE_API_URL}/api` : '/api';
 const ENHANCEMENT_API_URL = `${API_BASE_URL}/enhancement`;
 
 /**
@@ -122,7 +123,7 @@ export class EnhancementCommunicationService {
       const { HubConnectionBuilder, LogLevel } = await import('@microsoft/signalr');
 
       this.hubConnection = new HubConnectionBuilder()
-        .withUrl('http://127.0.0.1:5000/hubs/enhancement')
+        .withUrl(`${getViteEnv().VITE_API_URL || ''}/hubs/enhancement`)
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
