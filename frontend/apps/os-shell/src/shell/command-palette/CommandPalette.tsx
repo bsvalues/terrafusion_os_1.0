@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { LiquidPanel } from '../../ui/materials';
 import { getLucideIcon } from '../../config/iconMap';
 import { activateModule } from '../../orchestration/moduleActivation';
+import { SCENE_LIBRARY } from '../../stores/sceneStore';
 import {
   useCommandPaletteStore,
   useCommandPaletteOpen,
@@ -295,6 +296,30 @@ function useCommandRegistry(): CommandItem[] {
         shortcut: action.shortcut,
         action: () => {
           addToRecent(`action:${action.id}`);
+          close();
+        },
+      });
+    });
+
+    // ========================================================================
+    // Scene Commands (Phase 8: Context Mode / Canonical Scenes)
+    // ========================================================================
+    SCENE_LIBRARY.forEach((scene) => {
+      commands.push({
+        id: `scene:${scene.id}`,
+        label: `Scene: ${scene.label}`,
+        description: scene.description,
+        icon: scene.icon,
+        category: 'actions',
+        keywords: ['scene', 'layout', 'workflow', ...scene.keywords],
+        action: () => {
+          for (const w of scene.windows) {
+            activateModule(w.moduleId, {
+              source: 'command_palette',
+              metadata: { scene: scene.id, ...w.metadata },
+            });
+          }
+          addToRecent(`scene:${scene.id}`);
           close();
         },
       });

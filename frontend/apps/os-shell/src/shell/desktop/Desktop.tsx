@@ -9,8 +9,8 @@
  * @see SUCCESS CRITERIA SC-2.4, SC-3.1, SC-3.11, SC-5.1, SC-7, SC-9
  */
 
-import { useCallback, useEffect, useRef } from 'react';
-import { Building2, Command, Settings2 } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Building2, Command, Layers, Settings2 } from 'lucide-react';
 import { Launcher } from '../../components/launcher';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
@@ -29,6 +29,7 @@ import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
 import { AltTabSwitcher } from './AltTabSwitcher';
 import { ControlCenter } from './ControlCenter';
+import SceneSelector from './SceneSelector';
 import { DesktopContextMenu } from './DesktopContextMenu';
 import { DesktopErrorBoundary } from './DesktopErrorBoundary';
 import { DesktopIconGrid } from './DesktopIconGrid';
@@ -49,9 +50,11 @@ export interface DesktopProps {
 const DesktopTopSystemBar: React.FC<{
   onOpenCommandPalette: () => void;
   onToggleControlCenter: () => void;
+  onToggleSceneSelector: () => void;
 }> = ({
   onOpenCommandPalette,
   onToggleControlCenter,
+  onToggleSceneSelector,
 }) => (
   <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 z-[1050] pointer-events-none'>
     <LiquidPanel
@@ -77,6 +80,14 @@ const DesktopTopSystemBar: React.FC<{
       </div>
       <div className='flex items-center gap-2'>
         <NeonSignal status='healthy' size='xs' pulse>SYSTEM</NeonSignal>
+        <button
+          onClick={onToggleSceneSelector}
+          className='flex items-center opacity-60 hover:opacity-100 transition-opacity'
+          aria-label='Toggle Scene Selector (Ctrl+,)'
+          title='Scenes (Ctrl+,)'
+        >
+          <Layers className='h-3.5 w-3.5' />
+        </button>
         <button
           onClick={onToggleControlCenter}
           className='flex items-center opacity-60 hover:opacity-100 transition-opacity'
@@ -137,6 +148,11 @@ const DesktopTopSystemBar: React.FC<{
 export function Desktop({ className = '' }: DesktopProps) {
   // Install IPC bridge for app ↔ shell communication (Phase 6)
   useIpcBridge();
+
+  // Scene Selector state (Phase 8)
+  const [isSceneSelectorOpen, setSceneSelectorOpen] = useState(false);
+  const toggleSceneSelector = useCallback(() => setSceneSelectorOpen((o) => !o), []);
+  const closeSceneSelector = useCallback(() => setSceneSelectorOpen(false), []);
 
   const { panelOpen, setPanelOpen } = useSentinelStore();
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
@@ -291,10 +307,18 @@ export function Desktop({ className = '' }: DesktopProps) {
         toggleControlCenter();
         return;
       }
+
+      // Ctrl+, - Toggle Scene Selector (Phase 8)
+      if (event.ctrlKey && event.key === ',') {
+        event.preventDefault();
+        toggleSceneSelector();
+        return;
+      }
     },
     [
       toggleStartMenu,
       toggleControlCenter,
+      toggleSceneSelector,
       nextDesktop,
       previousDesktop,
       isAltTabOpen,
@@ -384,6 +408,7 @@ export function Desktop({ className = '' }: DesktopProps) {
       <DesktopTopSystemBar
         onOpenCommandPalette={openCommandPalette}
         onToggleControlCenter={toggleControlCenter}
+        onToggleSceneSelector={toggleSceneSelector}
       />
 
       {/* Layer 0.5: Desktop Icons (Priority 3) */}
@@ -422,6 +447,9 @@ export function Desktop({ className = '' }: DesktopProps) {
 
       {/* Layer 9997: Control Center Drawer */}
       <ControlCenter />
+
+      {/* Layer 9996: Scene Selector (Phase 8) */}
+      <SceneSelector isOpen={isSceneSelectorOpen} onClose={closeSceneSelector} />
     </div>
   );
 }
