@@ -69,12 +69,21 @@ export {
     routeToParcelHandler,
     createSearchTraceHandler,
     summarizeLevyRateRealHandler,
+    explainModelInputsRealHandler,
+    compareAssessedValueHistoryRealHandler,
+    summarizeParcelCasefileRealHandler,
     type RunValuationModelParams,
     type RunValuationModelResult,
     type ExplainValueChangeParams,
     type ExplainValueChangeResult,
     type RouteToParcelParams,
     type RouteToParcelResult,
+    type ExplainModelInputsParams as ExplainModelInputsRealParams,
+    type ExplainModelInputsResult as ExplainModelInputsRealResult,
+    type CompareAssessedValueHistoryParams,
+    type CompareAssessedValueHistoryResult,
+    type SummarizeParcelCasefileParams as SummarizeParcelCasefileRealParams,
+    type SummarizeParcelCasefileResult as SummarizeParcelCasefileRealResult,
 } from './handlers.real.js';
 
 // Backend HTTP Client

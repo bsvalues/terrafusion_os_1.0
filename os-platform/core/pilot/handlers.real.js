@@ -3,21 +3,26 @@
 /**
  * TerraFusion OS — R1 Real Handlers
  *
- * Production handler implementations for 5 MVP tools.
+ * Production handler implementations for 8 R1 tools.
  * These call real backend endpoints instead of returning canned data.
  *
  * When registered, they OVERRIDE the canned Phase 8.3/8.4 stubs for the same toolIds.
  * Canned stubs remain for tools NOT in this set (and for test isolation).
  *
- * MVP Tools:
+ * Week 1 MVP Tools (5):
  *   1. run_valuation_model       → POST /api/costforge/calculate
  *   2. explain_value_change      → GET  /api/properties/{id} + GET /api/costforge/{id}
  *   3. route_to_parcel           → navigation event (no backend call)
  *   4. search_trace_by_correlation → real TraceService.getByCorrelationId()
  *   5. summarize_levy_rate_components → POST /api/levy-calculation/calculate-rate
+ *
+ * Week 3 Read-Only Tools (3):
+ *   6. explain_model_inputs      → GET  /api/costforge/models/{modelId}
+ *   7. compare_assessed_value_history → GET /api/properties/{parcelId}
+ *   8. summarize_parcel_casefile → GET  /api/dossier/parcels/{parcelId}/casefile
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
+exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
 exports.createSearchTraceHandler = createSearchTraceHandler;
 exports.registerR1Handlers = registerR1Handlers;
 const backendClient_js_1 = require("./backendClient.js");
@@ -160,17 +165,127 @@ exports.summarizeLevyRateRealHandler = summarizeLevyRateRealHandler;
 // ============================================================================
 // Registration
 // ============================================================================
+// ============================================================================
+// Handler 6: explain_model_inputs → GET /api/costforge/models/{modelId}
+//
+// Read-only Muse tool. Calls CostForge to explain which valuation model
+// inputs matter most and flags PII fields.
+// ============================================================================
+const explainModelInputsRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/costforge/models/${encodeURIComponent(params.modelId)}?year=${params.asOfYear}&countyId=${encodeURIComponent(context.countyId)}`);
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Model inputs lookup failed');
+    // Normalize backend response — different shapes may come back
+    const inputs = data.inputs
+        ?? data.modelInputs?.map(i => ({
+            name: i.field,
+            source: i.dataSource,
+            pii: i.containsPii ?? false,
+        }))
+        ?? [];
+    return {
+        inputs: inputs
+            .map(i => ({ name: i.name, source: i.source, pii: i.pii ?? false }))
+            .sort((a, b) => a.name.localeCompare(b.name)),
+        summary: `Model ${params.modelId} inputs as of ${params.asOfYear}: ${inputs.length} factors identified. PII fields flagged but never exposed in trace.`,
+    };
+};
+exports.explainModelInputsRealHandler = explainModelInputsRealHandler;
+// ============================================================================
+// Handler 7: compare_assessed_value_history → GET /api/properties/{parcelId}
+//
+// Read-only Muse tool. Fetches property valuation history and builds
+// year-over-year comparison with narrative.
+// ============================================================================
+const compareAssessedValueHistoryRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/properties/${encodeURIComponent(params.parcelId)}`);
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Property history lookup failed');
+    const history = data.valuationHistory ?? [];
+    const requestedYears = new Set(params.years);
+    // Build trend from backend data, filtering to requested years
+    const trend = params.years
+        .sort((a, b) => a - b)
+        .map(year => {
+        const entry = history.find(h => h.year === year);
+        const av = entry?.value ?? 0;
+        const tv = params.includeBreakdown ? (entry?.taxableValue ?? undefined) : undefined;
+        return { year, av, tv };
+    });
+    // Build narrative
+    const firstAv = trend[0]?.av ?? 0;
+    const lastAv = trend[trend.length - 1]?.av ?? 0;
+    const delta = lastAv - firstAv;
+    const pctChange = firstAv > 0 ? ((delta / firstAv) * 100).toFixed(1) : 'N/A';
+    const drivers = [];
+    if (delta > 0)
+        drivers.push('market appreciation');
+    if (delta < 0)
+        drivers.push('market decline');
+    if (Math.abs(delta) > firstAv * 0.15)
+        drivers.push('significant revaluation');
+    const narrative = `Assessed value across ${trend.length} year(s): $${firstAv.toLocaleString()} → $${lastAv.toLocaleString()} (${pctChange}% change). ${drivers.length > 0 ? `Drivers: ${drivers.join(', ')}.` : 'Stable market conditions.'}`;
+    const flags = [];
+    if (params.includeBreakdown)
+        flags.push('breakdown_included');
+    if (trend.some(t => t.av === 0))
+        flags.push('missing_years');
+    return {
+        trend,
+        narrative,
+        flags: flags.length > 0 ? flags : undefined,
+    };
+};
+exports.compareAssessedValueHistoryRealHandler = compareAssessedValueHistoryRealHandler;
+// ============================================================================
+// Handler 8: summarize_parcel_casefile → GET /api/dossier/parcels/{parcelId}/casefile
+//
+// Read-only Muse tool (suite=dossier). Fetches dossier/casefile from backend.
+// PII handling: payload_ref — large payloads stored by reference.
+// ============================================================================
+const summarizeParcelCasefileRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const includeSections = params.include ?? [];
+    const includeParam = includeSections.length > 0
+        ? `?include=${includeSections.join(',')}&countyId=${encodeURIComponent(context.countyId)}`
+        : `?countyId=${encodeURIComponent(context.countyId)}`;
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/dossier/parcels/${encodeURIComponent(params.parcelId)}/casefile${includeParam}`);
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Casefile lookup failed');
+    // Build highlights from structured response
+    const highlights = data.highlights ?? [];
+    if (highlights.length === 0 && data.sections) {
+        for (const [section, info] of Object.entries(data.sections)) {
+            highlights.push(`${section}: ${info.count} item(s) — ${info.summary}`);
+        }
+    }
+    if (highlights.length === 0 && data.documents) {
+        for (const doc of data.documents.slice(0, 10)) {
+            highlights.push(`${doc.type} (${doc.date})`);
+        }
+    }
+    const summary = data.summary
+        ?? `Casefile for parcel ${params.parcelId} includes ${includeSections.length || 'all'} section(s). ${highlights.length} highlight(s) returned.`;
+    // Payload ref for trace (PII stored by reference, not inline)
+    const payloadRef = `dossier://${context.countyId}/parcels/${params.parcelId}/casefile`;
+    return { summary, highlights, payloadRef };
+};
+exports.summarizeParcelCasefileRealHandler = summarizeParcelCasefileRealHandler;
 /**
- * Register R1 real handlers for 5 MVP tools.
+ * Register R1 real handlers for 8 tools (5 MVP + 3 read-only).
  * These OVERRIDE canned stubs when called after registerAllHandlers().
  *
  * @param runner - ToolRunner instance (must have initialized registry)
  * @param traceService - TraceService instance for search_trace_by_correlation
  */
 function registerR1Handlers(runner, traceService) {
+    // Week 1 MVP handlers (5)
     runner.registerHandler('run_valuation_model', exports.runValuationModelHandler);
     runner.registerHandler('explain_value_change', exports.explainValueChangeHandler);
     runner.registerHandler('route_to_parcel', exports.routeToParcelHandler);
     runner.registerHandler('search_trace_by_correlation', createSearchTraceHandler(traceService));
     runner.registerHandler('summarize_levy_rate_components', exports.summarizeLevyRateRealHandler);
+    // Week 3 read_only handlers (3)
+    runner.registerHandler('explain_model_inputs', exports.explainModelInputsRealHandler);
+    runner.registerHandler('compare_assessed_value_history', exports.compareAssessedValueHistoryRealHandler);
+    runner.registerHandler('summarize_parcel_casefile', exports.summarizeParcelCasefileRealHandler);
 }
