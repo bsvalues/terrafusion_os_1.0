@@ -227,7 +227,7 @@ describe('Lumin Primitive Contract', () => {
     const layer = screen.getByTestId('tf-ambient-layer');
     const style = layer.getAttribute('style') ?? '';
     // Root uses token var for background (inline style)
-    expect(style).toContain('var(--tf-void-black');
+    expect(style).toContain('hsl(var(--tf-bg))');
 
     // All child divs use token vars in inline styles
     const allDivs = layer.querySelectorAll('div');

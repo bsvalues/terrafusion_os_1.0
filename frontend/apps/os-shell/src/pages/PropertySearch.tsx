@@ -71,7 +71,7 @@ const PropertySearch: React.FC = () => {
     n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
   return (
-    <div className="tf-tab-panel" style={{ minHeight: '100vh' }}>
+    <div className="tf-tab-panel" data-testid="property-search-root" style={{ minHeight: '100vh' }}>
       {/* Hero header */}
       <div style={{ padding: '3rem 2rem 2rem', textAlign: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>

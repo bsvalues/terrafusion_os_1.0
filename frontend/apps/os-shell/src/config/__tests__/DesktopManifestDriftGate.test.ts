@@ -10,13 +10,14 @@
  * - getDesktopIcons() returns an empty array (registry disconnected)
  */
 
-import { CONSTITUTIONAL_SUITES, OS_FEATURES } from '../suiteRegistry';
+import { CONSTITUTIONAL_SUITES, OS_FEATURES, OS_SURFACES } from '../suiteRegistry';
 import { getDesktopIcons } from '../desktopManifest';
 
 describe('DesktopManifestDriftGate', () => {
   const canonicalSuiteIds = CONSTITUTIONAL_SUITES.map((s) => s.id);
   const canonicalFeatureIds = OS_FEATURES.map((f) => f.id);
-  const allCanonicalIds = [...canonicalSuiteIds, ...canonicalFeatureIds];
+  const canonicalSurfaceIds = OS_SURFACES.map((s) => `surface-${s.id}`);
+  const allCanonicalIds = [...canonicalSuiteIds, ...canonicalFeatureIds, ...canonicalSurfaceIds];
 
   const desktopIcons = getDesktopIcons();
   const desktopIds = desktopIcons.map((d) => d.id);

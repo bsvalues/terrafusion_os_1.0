@@ -41,6 +41,19 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
+const mockOpenWorkbenchWindow = jest.fn();
+jest.mock('../../../context/parcelContext', () => ({
+  openWorkbenchWindow: (...args: unknown[]) => mockOpenWorkbenchWindow(...args),
+  useParcelContextStore: {
+    getState: () => ({
+      context: null,
+      setContext: jest.fn(),
+      recordRecent: jest.fn(),
+    }),
+  },
+  useRecentParcels: () => [],
+}));
+
 jest.mock('../useParcelSearch', () => ({
   useParcelSearch: () => ({ results: [], isLoading: false, error: null }),
 }));
@@ -140,7 +153,7 @@ describe('CommandPalette — Parcel Search (Slice 7.3)', () => {
   // ==========================================================================
 
   describe('navigation behavior', () => {
-    it('navigates to /property/{parcelId} on Enter', async () => {
+    it('opens workbench window for parcelId on Enter', async () => {
       const user = userEvent.setup();
       openPalette();
       render(<CommandPalette />);
@@ -149,7 +162,7 @@ describe('CommandPalette — Parcel Search (Slice 7.3)', () => {
       await user.type(input, '12345');
       await user.keyboard('{Enter}');
 
-      expect(mockNavigate).toHaveBeenCalledWith('/property/12345');
+      expect(mockOpenWorkbenchWindow).toHaveBeenCalledWith('12345');
     });
 
     it('closes palette after navigation', async () => {
@@ -164,7 +177,7 @@ describe('CommandPalette — Parcel Search (Slice 7.3)', () => {
       expect(useCommandPaletteStore.getState().isOpen).toBe(false);
     });
 
-    it('navigates to /property/{parcelId} on click', async () => {
+    it('opens workbench window for parcelId on click', async () => {
       const user = userEvent.setup();
       openPalette();
       render(<CommandPalette />);
@@ -178,7 +191,7 @@ describe('CommandPalette — Parcel Search (Slice 7.3)', () => {
       expect(parcelOption).toHaveTextContent(/Go to Parcel 99999/);
       await user.click(parcelOption);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/property/99999');
+      expect(mockOpenWorkbenchWindow).toHaveBeenCalledWith('99999');
     });
   });
 
