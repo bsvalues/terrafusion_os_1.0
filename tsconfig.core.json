@@ -19,6 +19,7 @@
   "include": [
     "os-platform/core/pilot/**/*.ts",
     "os-platform/core/trace/**/*.ts",
+    "os-platform/core/terratrc/**/*.ts",
     "os-platform/core/types/**/*.ts",
     "os-platform/core/types/**/*.d.ts",
     "tools/registry/**/*.ts"

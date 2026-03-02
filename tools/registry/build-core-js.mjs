@@ -49,6 +49,10 @@ const targets = [
     source: 'os-platform/core/trace/index.ts',
     out: 'os-platform/core/trace/index.js',
   },
+  {
+    source: 'os-platform/core/terratrc/trace-feed-adapter.ts',
+    out: 'os-platform/core/terratrc/trace-feed-adapter.js',
+  },
 ];
 
 function transpile(sourcePath, outPath) {
