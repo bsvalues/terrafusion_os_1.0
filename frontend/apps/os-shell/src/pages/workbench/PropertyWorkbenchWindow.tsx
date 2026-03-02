@@ -25,9 +25,10 @@ import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
 import { BADGE_PROVIDERS } from '../../services/badges';
+import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
-import type { WorkbenchTabSlug, WorkMode, Badge, WorkbenchContext } from '../../contracts/workbench';
+import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 
 // ============================================================================
 // Lazy-loaded Tab Components (same as Router.tsx)
@@ -238,8 +239,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
-    () => ({ parcelId: parcelId || 'Unknown', propertyData }),
-    [parcelId, propertyData]
+    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode }),
+    [parcelId, propertyData, workMode]
   );
 
   // Work Mode state
@@ -270,6 +271,35 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
         if (r.status === 'fulfilled') allBadges.push(...r.value);
       }
       setBadges(allBadges);
+    });
+
+    return () => { cancelled = true; };
+  }, [parcelId, workMode]);
+
+  // Quick Actions — mode-aware, collected from providers
+  const [quickActions, setQuickActions] = useState<QuickActionDefinition[]>([]);
+
+  useEffect(() => {
+    if (!parcelId) return;
+    let cancelled = false;
+
+    const ctx: WorkbenchContext = {
+      countyId: 'benton',
+      userId: 'current-user',
+      roles: [],
+      parcelId,
+      workMode,
+    };
+
+    Promise.allSettled(
+      QUICK_ACTION_PROVIDERS.map((p) => p.getActions(ctx))
+    ).then((results) => {
+      if (cancelled) return;
+      const all: QuickActionDefinition[] = [];
+      for (const r of results) {
+        if (r.status === 'fulfilled') all.push(...r.value);
+      }
+      setQuickActions(all);
     });
 
     return () => { cancelled = true; };
@@ -309,6 +339,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
         owner={propertyData.owner}
         countyName="Benton County"
         badges={badges}
+        quickActions={quickActions}
         workMode={workMode}
         onWorkModeChange={setWorkMode}
         onPopOut={handlePopOut}

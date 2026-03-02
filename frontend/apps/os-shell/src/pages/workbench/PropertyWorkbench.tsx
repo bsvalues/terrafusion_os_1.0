@@ -32,10 +32,11 @@ import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
 import { BADGE_PROVIDERS } from '../../services/badges';
+import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { usePropertyLookup } from '../../hooks/usePropertyLookup';
-import type { WorkbenchTabSlug, WorkMode, Badge, WorkbenchContext } from '../../contracts/workbench';
+import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 
 // ============================================================================
 // Types
@@ -96,6 +97,19 @@ const WORKBENCH_TABS: WorkbenchTab[] = [
   { id: 'pilot', label: 'Pilot', icon: '🎮', path: 'pilot', enabled: true },
 ];
 
+/**
+ * Work-mode → tab emphasis mapping.
+ * Each mode highlights the tab most relevant to that workflow.
+ * overview highlights nothing (all tabs equally relevant).
+ */
+const MODE_TAB_EMPHASIS: Record<WorkMode, WorkbenchTabSlug | null> = {
+  overview: null,
+  valuation: 'forge',
+  mapping: 'atlas',
+  admin: 'dais',
+  case: 'dossier',
+};
+
 // ============================================================================
 // Tab Content Components (Lazy Loaded)
 // ============================================================================
@@ -130,8 +144,9 @@ const TabNavigation: React.FC<{
   parcelId: string;
   tabs: WorkbenchTab[];
   currentTabId: WorkbenchTabSlug;
+  emphasizedTabId: WorkbenchTabSlug | null;
   onTabClick: (tab: WorkbenchTab, isActive: boolean) => void;
-}> = ({ parcelId, tabs, currentTabId, onTabClick }) => (
+}> = ({ parcelId, tabs, currentTabId, emphasizedTabId, onTabClick }) => (
   <nav
     className="border-b px-4 flex gap-1 overflow-x-auto"
     style={{
@@ -147,13 +162,28 @@ const TabNavigation: React.FC<{
           to={tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`}
           end={tab.path === ''}
           className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
-          style={({ isActive }) => ({
-            color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
-            borderBottom: isActive ? '2px solid hsl(var(--tf-accent))' : '2px solid transparent',
-            background: isActive ? 'hsl(var(--tf-accent) / 0.05)' : 'transparent',
-            opacity: tab.enabled ? 1 : 0.5,
-            cursor: tab.enabled ? 'pointer' : 'not-allowed',
-          })}
+          style={({ isActive }) => {
+            const isEmphasized = emphasizedTabId === tab.id && !isActive;
+            return {
+              color: isActive
+                ? 'hsl(var(--tf-accent))'
+                : isEmphasized
+                  ? 'hsl(var(--tf-accent) / 0.8)'
+                  : 'hsl(var(--tf-text) / 0.6)',
+              borderBottom: isActive
+                ? '2px solid hsl(var(--tf-accent))'
+                : isEmphasized
+                  ? '2px solid hsl(var(--tf-accent) / 0.4)'
+                  : '2px solid transparent',
+              background: isActive
+                ? 'hsl(var(--tf-accent) / 0.05)'
+                : isEmphasized
+                  ? 'hsl(var(--tf-accent) / 0.02)'
+                  : 'transparent',
+              opacity: tab.enabled ? 1 : 0.5,
+              cursor: tab.enabled ? 'pointer' : 'not-allowed',
+            };
+          }}
           onClick={(e) => {
             if (!tab.enabled) {
               e.preventDefault();
@@ -245,6 +275,35 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         if (r.status === 'fulfilled') allBadges.push(...r.value);
       }
       setBadges(allBadges);
+    });
+
+    return () => { cancelled = true; };
+  }, [parcelId, workMode]);
+
+  // ── Quick Actions — mode-aware, collected from providers ──
+  const [quickActions, setQuickActions] = useState<QuickActionDefinition[]>([]);
+
+  useEffect(() => {
+    if (!parcelId) return;
+    let cancelled = false;
+
+    const ctx: WorkbenchContext = {
+      countyId: 'benton',
+      userId: 'current-user',
+      roles: [],
+      parcelId,
+      workMode,
+    };
+
+    Promise.allSettled(
+      QUICK_ACTION_PROVIDERS.map((p) => p.getActions(ctx))
+    ).then((results) => {
+      if (cancelled) return;
+      const all: QuickActionDefinition[] = [];
+      for (const r of results) {
+        if (r.status === 'fulfilled') all.push(...r.value);
+      }
+      setQuickActions(all);
     });
 
     return () => { cancelled = true; };
@@ -362,8 +421,27 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         owner={propertyData.owner}
         countyName="Benton County"
         badges={badges}
+        quickActions={quickActions}
         workMode={workMode}
         onWorkModeChange={setWorkMode}
+        onQuickAction={(action) => {
+          // Quick actions are tool-bound — route through TerraPilot
+          executeOsAction(
+            {
+              id: action.id,
+              label: action.label,
+              intent: 'pilot-tool',
+              disabled: false,
+            },
+            {
+              navigate,
+              suiteId: 'workbench',
+              surface: 'context-ribbon',
+              moduleId: 'quick-actions',
+              parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
+            }
+          );
+        }}
         onPopOut={handlePopOut}
       />
 
@@ -392,6 +470,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
             parcelId={parcelId}
             tabs={WORKBENCH_TABS}
             currentTabId={currentTabId}
+            emphasizedTabId={MODE_TAB_EMPHASIS[workMode]}
             onTabClick={handleTabClick}
           />
 
@@ -399,7 +478,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
           <main className="flex-1 overflow-auto">
             <ErrorBoundary>
               <Suspense fallback={<TabLoader />}>
-                <Outlet context={{ parcelId, propertyData }} />
+                <Outlet context={{ parcelId, propertyData, workMode }} />
               </Suspense>
             </ErrorBoundary>
           </main>
