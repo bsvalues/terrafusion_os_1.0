@@ -369,3 +369,71 @@ export function selectRecentParcel(parcelId: string): void {
 export function useRecentParcels(): string[] {
   return useParcelContextStore((state) => state.recentParcels);
 }
+
+// ============================================================================
+// Workbench Window Opener (Phase A)
+// ============================================================================
+
+/**
+ * Open the Property Workbench as a desktop window for a given parcel.
+ *
+ * If a workbench window for this parcel is already open, it will be focused.
+ * Otherwise a new window is created with the parcel ID in metadata.
+ *
+ * @param parcelId - The parcel to open
+ * @param tabId - Optional tab to focus (defaults to 'summary')
+ */
+export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
+  // Lazy import to avoid circular dependency with desktopStore
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { useDesktopStore } = require('../stores/desktopStore') as {
+    useDesktopStore: {
+      getState: () => {
+        windows: Array<{ id: string; moduleId: string; metadata?: Record<string, unknown> }>;
+        openWindow: (moduleId: string, title: string, icon: string, metadata?: Record<string, unknown>) => string;
+        focusWindow: (windowId: string) => void;
+      };
+    };
+  };
+
+  const { windows, openWindow, focusWindow } = useDesktopStore.getState();
+
+  // If no parcelId, open a blank workbench (shows NoParcelSelected state)
+  if (!parcelId) {
+    const blankExisting = windows.find(
+      (w) => w.moduleId === 'property-workbench' && !w.metadata?.parcelId
+    );
+    if (blankExisting) {
+      focusWindow(blankExisting.id);
+      return;
+    }
+    openWindow('property-workbench', 'Property Workbench', '🏠', {});
+    return;
+  }
+
+  // Check if a workbench window for this parcel already exists
+  const existing = windows.find(
+    (w) =>
+      w.moduleId === 'property-workbench' &&
+      w.metadata?.parcelId === parcelId
+  );
+
+  if (existing) {
+    focusWindow(existing.id);
+    return;
+  }
+
+  // Set parcel context + record to recents
+  const { setContext, recordRecent } = useParcelContextStore.getState();
+  setContext({ parcelId, source: 'selection' });
+  recordRecent(parcelId);
+
+  // Open new workbench window
+  const truncatedId = parcelId.length > 20 ? parcelId.slice(0, 20) + '…' : parcelId;
+  openWindow(
+    'property-workbench',
+    `Property: ${truncatedId}`,
+    '🏠',
+    { parcelId, tabId: tabId ?? 'summary' }
+  );
+}

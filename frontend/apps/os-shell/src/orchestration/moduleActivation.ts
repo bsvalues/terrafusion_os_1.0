@@ -103,6 +103,8 @@ function getModuleDisplayName(moduleId: string): string {
     'plugin-manager': 'Plugin Manager',
     'axiom-fs': 'AxiomFS',
     'sovereign-dashboard': 'Sovereign Dashboard',
+    // Property Workbench (Tier-0 OS Surface)
+    'property-workbench': 'Property Workbench',
     // Constitutional Suite Homes
     'suite-forge': 'TerraForge',
     'suite-atlas': 'TerraAtlas',
@@ -137,6 +139,8 @@ function getModuleIcon(moduleId: string): string {
     'plugin-manager': '🧩',
     'axiom-fs': '📂',
     'sovereign-dashboard': '📊',
+    // Property Workbench (Tier-0 OS Surface)
+    'property-workbench': '🏠',
     // Constitutional Suite Homes
     'suite-forge': '🔨',
     'suite-atlas': '🗺️',

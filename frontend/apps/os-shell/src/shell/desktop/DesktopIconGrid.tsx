@@ -82,9 +82,18 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ id, className 
 
   // Handle icon launch (double click) - Open suite home or OS feature.
   // Suite icons (forge, atlas, dais, dossier, gpt) open suite HOME PAGES as windows.
+  // Surface icons (surface-workbench) open the Property Workbench window.
   // OS feature icons (pilot, trace, canon) navigate to standalone pages.
   const handleLaunch = useCallback(
     (id: string) => {
+      // Surface: Property Workbench opens as a desktop window
+      if (id === 'surface-workbench') {
+        import('../../context/parcelContext').then(({ openWorkbenchWindow }) => {
+          openWorkbenchWindow();
+        });
+        return;
+      }
+
       // Suite IDs open their full suite home inside a Desktop window
       const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
       if (SUITE_IDS.has(id)) {

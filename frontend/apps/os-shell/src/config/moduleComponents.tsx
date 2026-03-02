@@ -53,6 +53,10 @@ export const MODULE_ALIASES: Record<string, string> = {
   'doc-viewer': 'sovereign-dashboard',
   'document-viewer': 'sovereign-dashboard',
 
+  // Property Workbench (desktop window adapter)
+  workbench: 'property-workbench',
+  'property-workbench-window': 'property-workbench',
+
   // Constitutional Suite Home aliases (desktop icons use these)
   forge: 'suite-forge',
   atlas: 'suite-atlas',
@@ -101,6 +105,8 @@ export const MODULE_REGISTRY = new Set<string>([
   'plugin-manager',
   'axiom-fs',
   'sovereign-dashboard', // Phase C3: Sovereign Dashboard
+  // Property Workbench (Tier-0 OS Surface — opens in window)
+  'property-workbench',
   // Constitutional Suite Homes (render inside Desktop windows)
   'suite-forge',
   'suite-atlas',
@@ -193,6 +199,13 @@ const SovereignDashboardWindow = lazy(() =>
 );
 
 // ============================================================================
+// Property Workbench Window (Tier-0 OS Surface — Phase A)
+// ============================================================================
+const PropertyWorkbenchWindow = lazy(
+  () => import('../pages/workbench/PropertyWorkbenchWindow')
+);
+
+// ============================================================================
 // Constitutional Suite Home Pages (render inside Desktop windows)
 // ============================================================================
 const ForgeSuiteHome = lazy(() => import('../pages/suites/ForgeSuiteHome'));
@@ -223,6 +236,8 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'plugin-manager': { Component: PluginManager },
   'axiom-fs': { Component: AxiomFSWindow },
   'sovereign-dashboard': { Component: SovereignDashboardWindow },
+  // Property Workbench Window (Tier-0 OS Surface)
+  'property-workbench': { Component: PropertyWorkbenchWindow },
   // Constitutional Suite Homes
   'suite-forge': { Component: ForgeSuiteHome },
   'suite-atlas': { Component: AtlasSuiteHome },
@@ -519,6 +534,17 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
                 | undefined
             }
           />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // PROPERTY WORKBENCH (Tier-0 OS Surface)
+    // ========================================================================
+
+    case 'property-workbench':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <PropertyWorkbenchWindow metadata={metadata as Record<string, unknown> | undefined} />
         </Suspense>
       );
 
