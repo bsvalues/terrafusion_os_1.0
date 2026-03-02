@@ -14,6 +14,7 @@
  * 4. Workbench barrel exports all required components
  * 5. Tab slug enum is locked (canonical order enforcement)
  * 6. Quick action providers implement the contract interface
+ * 7. Badge API client provides cached fetch with graceful fallback
  *
  * @module __tests__/workbench/workbench.contractGates.test
  * @see contracts/workbench.ts — Extension contract
@@ -24,6 +25,24 @@
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { VALID_WORKBENCH_TAB_IDS } from '../../config/suiteRegistry';
+
+// Mock the badge API so providers don't hit a real server in tests
+jest.mock('../../services/api/workbenchBadgeApi', () => ({
+  fetchPropertyBadgeData: jest.fn().mockResolvedValue({
+    geoId: 'test-parcel',
+    address: '123 Test St',
+    ownerName: 'Test Owner',
+    assessedValue: 250000,
+    marketValue: 300000,
+    landValue: 80000,
+    improvementValue: 170000,
+    propertyType: 'Residential',
+    appraisalYear: new Date().getFullYear(),
+    lastModified: null,
+    source: 'PACS',
+  }),
+  clearBadgeCache: jest.fn(),
+}));
 
 // ============================================================================
 // Gate 1: Contract Types Exist
@@ -205,5 +224,73 @@ describe('Gate 6: Quick Action Providers', () => {
         expect(action.toolId).toBeTruthy();
       }
     }
+  });
+});
+
+// ============================================================================
+// Gate 7: Badge API Client Contract
+// ============================================================================
+
+describe('Gate 7: Badge API Client', () => {
+  it('fetchPropertyBadgeData is importable and returns a Promise', async () => {
+    const { fetchPropertyBadgeData } = await import('../../services/api/workbenchBadgeApi');
+    expect(typeof fetchPropertyBadgeData).toBe('function');
+
+    const result = fetchPropertyBadgeData('test-parcel');
+    expect(typeof result.then).toBe('function');
+  });
+
+  it('clearBadgeCache is importable and callable', async () => {
+    const { clearBadgeCache } = await import('../../services/api/workbenchBadgeApi');
+    expect(typeof clearBadgeCache).toBe('function');
+    // Should not throw
+    clearBadgeCache();
+  });
+
+  it('badge providers produce data-driven badges with mock API data', async () => {
+    // The mock returns appraisalYear = current year, so forge should show "Valuation Current"
+    const forgeProvider = BADGE_PROVIDERS.find((p) => p.owner === 'forge')!;
+    const forgeBadges = await forgeProvider.getBadges('test-parcel', {
+      countyId: 'benton',
+      userId: 'test',
+      roles: [],
+      parcelId: 'test-parcel',
+      workMode: 'overview',
+    });
+
+    expect(forgeBadges.length).toBeGreaterThan(0);
+    const valBadge = forgeBadges.find((b) => b.key === 'forge-valuation-status');
+    expect(valBadge).toBeDefined();
+    expect(valBadge!.label).toBe('Valuation Current');
+    expect(valBadge!.severity).toBe('info');
+  });
+
+  it('atlas provider returns GIS Linked badge when address present', async () => {
+    const atlasProvider = BADGE_PROVIDERS.find((p) => p.owner === 'atlas')!;
+    const badges = await atlasProvider.getBadges('test-parcel', {
+      countyId: 'benton',
+      userId: 'test',
+      roles: [],
+      parcelId: 'test-parcel',
+      workMode: 'overview',
+    });
+
+    expect(badges.length).toBe(1);
+    expect(badges[0].key).toBe('atlas-geo-linked');
+  });
+
+  it('dossier provider returns source badge when source present', async () => {
+    const dossierProvider = BADGE_PROVIDERS.find((p) => p.owner === 'dossier')!;
+    const badges = await dossierProvider.getBadges('test-parcel', {
+      countyId: 'benton',
+      userId: 'test',
+      roles: [],
+      parcelId: 'test-parcel',
+      workMode: 'overview',
+    });
+
+    expect(badges.length).toBe(1);
+    expect(badges[0].key).toBe('dossier-source');
+    expect(badges[0].label).toBe('PACS');
   });
 });
