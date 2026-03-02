@@ -2,7 +2,7 @@
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
   "ok": false,
-  "scannedFileCount": 851,
+  "scannedFileCount": 853,
   "violationCount": 195,
   "violations": [
     {
@@ -192,7 +192,7 @@
       "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\SuiteCompass.tsx",
       "line": 162,
       "column": 32,
-      "excerpt": "hsl(${item.color})`\r"
+      "excerpt": "hsl(${item.color})`"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1177,98 +1177,98 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 122,
+      "line": 124,
       "column": 71,
       "excerpt": "#1a472a' />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 123,
+      "line": 125,
       "column": 51,
       "excerpt": "#1f5a2f' />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 124,
+      "line": 126,
       "column": 52,
       "excerpt": "#1f5a2f' />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 125,
+      "line": 127,
       "column": 52,
       "excerpt": "#245634' />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 162,
+      "line": 164,
       "column": 47,
       "excerpt": "#f59e0b' />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 163,
+      "line": 165,
       "column": 61,
       "excerpt": "#f59e0b' strokeWidth='1' opacity='0.6' />"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 114,
+      "line": 116,
       "column": 61,
       "excerpt": "rgba(255,255,255,0.05)' strokeWidth='0.5' />"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 133,
+      "line": 135,
       "column": 19,
       "excerpt": "rgba(59, 130, 246, 0.15)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 134,
+      "line": 136,
       "column": 21,
       "excerpt": "rgba(59, 130, 246, 0.4)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 144,
+      "line": 146,
       "column": 19,
       "excerpt": "rgba(168, 85, 247, 0.1)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 145,
+      "line": 147,
       "column": 21,
       "excerpt": "rgba(168, 85, 247, 0.3)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 155,
+      "line": 157,
       "column": 19,
       "excerpt": "rgba(34, 211, 238, 0.15)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 156,
+      "line": 158,
       "column": 21,
       "excerpt": "rgba(34, 211, 238, 0.8)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
-      "line": 167,
+      "line": 169,
       "column": 98,
       "excerpt": "rgba(0,0,0,0.4)' }}>"
     },
@@ -1371,5 +1371,5 @@
       "excerpt": "hsl(var(--tf-neon-*)))"
     }
   ],
-  "generatedAtIso": "2026-03-02T07:56:58.555Z"
+  "generatedAtIso": "2026-03-02T08:21:46.310Z"
 }
