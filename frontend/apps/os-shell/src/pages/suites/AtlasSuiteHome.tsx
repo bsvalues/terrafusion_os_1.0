@@ -17,6 +17,7 @@
 
 import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { ArrowLeft, Globe, Map, Search, Layers, Crosshair, Printer, Download, Database } from 'lucide-react';
 
 const GISModule = lazy(() => import('./modules/GISModule'));
@@ -59,6 +60,8 @@ export default function AtlasSuiteHome() {
 
   return (
     <div data-testid="suite-atlas-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+      {/* Parcel Context Banner — shows when parcel is active */}
+      <ParcelContextBanner suiteTabId="atlas" />
       {/* Header + Stage Tabs */}
       <header
         style={{

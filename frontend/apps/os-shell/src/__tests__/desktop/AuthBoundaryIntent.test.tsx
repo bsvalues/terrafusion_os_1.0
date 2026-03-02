@@ -116,6 +116,9 @@ const ROUTE_LANDMARKS: Record<string, { anyTestIds: string[] }> = {
   '/canon': {
     anyTestIds: ['terracanon-root', 'standalone-shell'],
   },
+  '/property': {
+    anyTestIds: ['property-search-root'],
+  },
 };
 
 // ============================================================================

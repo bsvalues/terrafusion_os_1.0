@@ -14,6 +14,7 @@
 
 import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { ArrowLeft, Bot, MessageSquare, Wrench, Store, BarChart3, Database, Settings } from 'lucide-react';
 
 // Lazy load existing GPT components
@@ -90,6 +91,8 @@ export default function GptSuiteHome() {
 
   return (
     <div data-testid="suite-gpt-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+      {/* Parcel Context Banner — shows when parcel is active */}
+      <ParcelContextBanner suiteTabId="pilot" />
       {/* Header + Stage Tabs */}
       <header
         style={{

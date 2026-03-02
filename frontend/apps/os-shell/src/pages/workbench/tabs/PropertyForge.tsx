@@ -18,6 +18,8 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { BentoGrid } from '../../../ui/materials/BentoGrid';
+import { BentoCard } from '../../../ui/materials/BentoCard';
 
 /** Current year for default selection */
 const CURRENT_YEAR = new Date().getFullYear();
@@ -184,7 +186,7 @@ export const PropertyForge: React.FC = () => {
   const isDev = getEnv('MODE') === 'development';
 
   return (
-    <div className='space-y-6' data-testid='property-forge-tab'>
+    <div className='tf-suite-forge space-y-6' data-testid='property-forge-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='🔥'
@@ -194,26 +196,23 @@ export const PropertyForge: React.FC = () => {
       />
 
       {/* Main Content Grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <BentoGrid columns={3} gap={1.5} padding={0}>
         {/* Controls Panel */}
-        <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
-          <h3 className='text-white font-semibold mb-4 flex items-center gap-2'>
-            <span>⚙️</span> Valuation Parameters
-          </h3>
+        <BentoCard variant="form" title="Valuation Parameters" actions={<span>⚙️</span>}>
 
           {/* Tax Year Selector */}
           <div className='mb-4'>
-            <label htmlFor='tax-year' className='block text-white/70 text-sm mb-2'>
+            <label htmlFor='tax-year' className='block tf-text-secondary text-sm mb-2'>
               Tax Year
             </label>
             <select
               id='tax-year'
               value={taxYear}
               onChange={(e) => setTaxYear(Number(e.target.value))}
-              className='w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50'
+              className='w-full tf-input px-3 py-2'
             >
               {TAX_YEARS.map((year) => (
-                <option key={year} value={year} className='bg-gray-800'>
+                <option key={year} value={year}>
                   {year}
                 </option>
               ))}
@@ -222,22 +221,22 @@ export const PropertyForge: React.FC = () => {
 
           {/* Audience Selector */}
           <div className='mb-4'>
-            <label htmlFor='audience' className='block text-white/70 text-sm mb-2'>
+            <label htmlFor='audience' className='block tf-text-secondary text-sm mb-2'>
               Audience
             </label>
             <select
               id='audience'
               value={audience}
               onChange={(e) => setAudience(e.target.value as AudienceType)}
-              className='w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50'
+              className='w-full tf-input px-3 py-2'
             >
               {AUDIENCES.map((opt) => (
-                <option key={opt.value} value={opt.value} className='bg-gray-800'>
+                <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
               ))}
             </select>
-            <p className='text-white/40 text-xs mt-1'>
+            <p className='tf-text-dim text-xs mt-1'>
               {AUDIENCES.find((a) => a.value === audience)?.description}
             </p>
           </div>
@@ -249,30 +248,30 @@ export const PropertyForge: React.FC = () => {
               onClick={() => setCompareEnabled(!compareEnabled)}
               className={`flex items-center gap-2 w-full p-3 rounded-lg border transition-all ${
                 compareEnabled
-                  ? 'bg-orange-500/20 border-orange-500/50 text-white'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                  ? 'tf-suite-active'
+                  : 'tf-panel tf-text-secondary tf-hover-surface'
               }`}
             >
               <span>{compareEnabled ? '📊' : '📈'}</span>
               <span>Year-over-Year Comparison</span>
-              {compareEnabled && <span className='ml-auto text-orange-400'>✓</span>}
+              {compareEnabled && <span className='ml-auto tf-suite-accent-text'>✓</span>}
             </button>
           </div>
 
           {/* Compare Year Selector (conditional) */}
           {compareEnabled && (
             <div className='mb-4'>
-              <label htmlFor='compare-year' className='block text-white/70 text-sm mb-2'>
+              <label htmlFor='compare-year' className='block tf-text-secondary text-sm mb-2'>
                 Compare to Year
               </label>
               <select
                 id='compare-year'
                 value={compareToYear}
                 onChange={(e) => setCompareToYear(Number(e.target.value))}
-                className='w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50'
+                className='w-full tf-input px-3 py-2'
               >
                 {TAX_YEARS.filter((y) => y !== taxYear).map((year) => (
-                  <option key={year} value={year} className='bg-gray-800'>
+                  <option key={year} value={year}>
                     {year}
                   </option>
                 ))}
@@ -286,37 +285,37 @@ export const PropertyForge: React.FC = () => {
             disabled={explainState.status === 'loading'}
             className={`w-full py-2 px-4 rounded-lg font-semibold transition-all ${
               explainState.status === 'loading'
-                ? 'bg-white/10 text-white/40 cursor-not-allowed'
-                : 'bg-orange-600 hover:bg-orange-500 text-white'
+                ? 'tf-suite-forge-cta' /* disabled state handled by :disabled */
+                : 'tf-suite-forge-cta'
             }`}
           >
             {explainState.status === 'loading' ? 'Analyzing...' : 'Explain Valuation'}
           </button>
-        </div>
+        </BentoCard>
 
         {/* Results Panel */}
-        <div className='lg:col-span-2 bg-white/5 rounded-xl border border-white/10 p-4'>
+        <BentoCard span="2x1">
           {explainState.status === 'loading' ? (
             <div role='status' className='flex flex-col items-center justify-center py-12 gap-3'>
-              <div className='animate-spin rounded-full h-10 w-10 border-2 border-white/20 border-t-orange-500' />
-              <span className='text-white/60'>Analyzing valuation model...</span>
+              <div className='tf-spinner h-10 w-10' />
+              <span className='tf-text-tertiary'>Analyzing valuation model...</span>
             </div>
           ) : explainState.status === 'success' && explainState.result ? (
             <div className='space-y-4'>
               {/* Value Summary */}
               <div className='flex items-center justify-between mb-3'>
-                <h4 className='text-orange-400 font-semibold flex items-center gap-2'>
+                <h4 className='tf-suite-accent-text font-semibold flex items-center gap-2'>
                   <span>✅</span> Valuation Explanation
                 </h4>
                 {explainState.correlationId && (
                   <div className='flex items-center gap-2 text-xs'>
-                    <span className='text-white/50'>ID:</span>
-                    <code className='text-orange-400 font-mono'>
+                    <span className='tf-text-muted'>ID:</span>
+                    <code className='tf-suite-accent-text font-mono'>
                       {explainState.correlationId.slice(0, 16)}...
                     </code>
                     <button
                       onClick={() => copyToClipboard(explainState.correlationId!)}
-                      className='text-white/60 hover:text-white'
+                      className='tf-text-tertiary hover:tf-text'
                       aria-label='Copy correlation ID'
                     >
                       📋
@@ -327,15 +326,15 @@ export const PropertyForge: React.FC = () => {
 
               {/* Value Cards */}
               <div className='grid grid-cols-2 gap-4'>
-                <div className='bg-white/5 rounded-lg p-4'>
-                  <div className='text-white/60 text-sm'>Assessed Value</div>
-                  <div className='text-2xl font-bold text-white'>
+                <div className='tf-panel p-4'>
+                  <div className='tf-text-tertiary text-sm'>Assessed Value</div>
+                  <div className='text-2xl font-bold tf-text'>
                     {formatCurrency(explainState.result.assessedValue)}
                   </div>
                 </div>
-                <div className='bg-white/5 rounded-lg p-4'>
-                  <div className='text-white/60 text-sm'>Market Value</div>
-                  <div className='text-2xl font-bold text-white'>
+                <div className='tf-panel p-4'>
+                  <div className='tf-text-tertiary text-sm'>Market Value</div>
+                  <div className='text-2xl font-bold tf-text'>
                     {formatCurrency(explainState.result.marketValue)}
                   </div>
                 </div>
@@ -343,31 +342,32 @@ export const PropertyForge: React.FC = () => {
 
               {/* Explanation Text */}
               {explainState.result.explanation && (
-                <div className='bg-white/5 rounded-lg p-4'>
-                  <h5 className='text-white/80 font-medium mb-2'>📝 Explanation</h5>
-                  <p className='text-white/70'>{explainState.result.explanation}</p>
+                <div className='tf-panel p-4'>
+                  <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>📝 Explanation</h5>
+                  <p className='tf-text-secondary'>{explainState.result.explanation}</p>
                 </div>
               )}
 
               {/* Drivers */}
               {explainState.result.drivers && explainState.result.drivers.length > 0 && (
-                <div className='bg-white/5 rounded-lg p-4'>
-                  <h5 className='text-white/80 font-medium mb-3'>📊 Value Drivers</h5>
+                <div className='tf-panel p-4'>
+                  <h5 className='tf-text font-medium mb-3' style={{ opacity: 0.8 }}>📊 Value Drivers</h5>
                   <div className='space-y-2'>
                     {explainState.result.drivers.map((driver, idx) => (
                       <div
                         key={idx}
-                        className='flex items-center justify-between py-2 px-3 bg-white/5 rounded'
+                        className='flex items-center justify-between py-2 px-3 tf-panel rounded'
                       >
-                        <span className='text-white/70'>{driver.factor}</span>
+                        <span className='tf-text-secondary'>{driver.factor}</span>
                         <span
-                          className={`font-mono ${
-                            driver.impact.startsWith('+')
-                              ? 'text-green-400'
+                          className='font-mono'
+                          style={{
+                            color: driver.impact.startsWith('+')
+                              ? 'hsl(var(--tf-success))'
                               : driver.impact.startsWith('-')
-                                ? 'text-red-400'
-                                : 'text-white/70'
-                          }`}
+                                ? 'hsl(var(--tf-error))'
+                                : 'hsl(var(--tf-text) / 0.7)',
+                          }}
                         >
                           {driver.impact}
                         </span>
@@ -380,8 +380,8 @@ export const PropertyForge: React.FC = () => {
               {/* Confidence */}
               {explainState.result.confidence !== undefined && (
                 <div className='flex items-center gap-3 text-sm'>
-                  <span className='text-white/60'>Model Confidence:</span>
-                  <span className='text-orange-400 font-semibold'>
+                  <span className='tf-text-tertiary'>Model Confidence:</span>
+                  <span className='tf-suite-accent-text font-semibold'>
                     {formatConfidence(explainState.result.confidence)}
                   </span>
                 </div>
@@ -389,10 +389,10 @@ export const PropertyForge: React.FC = () => {
 
               {/* Dev Info */}
               {isDev && explainState.correlationId && (
-                <div className='text-xs text-white/40 border-t border-white/10 pt-3'>
+                <div className='text-xs tf-text-dim border-t tf-border pt-3'>
                   <details>
-                    <summary className='cursor-pointer hover:text-white/60'>Developer Info</summary>
-                    <pre className='mt-2 bg-black/30 rounded p-2 overflow-x-auto'>
+                    <summary className='cursor-pointer tf-hover-surface'>Developer Info</summary>
+                    <pre className='mt-2 tf-overlay rounded p-2 overflow-x-auto'>
                       pnpm run trace:query --correlation {explainState.correlationId}
                     </pre>
                   </details>
@@ -402,14 +402,14 @@ export const PropertyForge: React.FC = () => {
           ) : explainState.status === 'idle' ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
               <div className='text-4xl mb-2'>🔥</div>
-              <p className='text-white/60'>Configure parameters and click Explain Valuation</p>
-              <p className='text-white/40 text-sm mt-1'>
+              <p className='tf-text-tertiary'>Configure parameters and click Explain Valuation</p>
+              <p className='tf-text-dim text-sm mt-1'>
                 Get AI-powered analysis of valuation model results
               </p>
             </div>
           ) : null}
-        </div>
-      </div>
+        </BentoCard>
+      </BentoGrid>
 
       {/* Error Display */}
       {explainState.status === 'error' && explainState.error && (

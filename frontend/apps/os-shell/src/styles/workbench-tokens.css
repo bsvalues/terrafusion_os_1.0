@@ -1,0 +1,173 @@
+/* ═══════════════════════════════════════════════════════════════
+   WORKBENCH TAB DESIGN TOKEN UTILITIES
+   Maps raw Tailwind color classes to --tf-* design tokens.
+   Phase D: Design System Compliance for workbench tabs.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Panel Surfaces ─── */
+.tf-panel {
+  background: hsl(var(--tf-surface) / 0.3);
+  border: 1px solid hsl(var(--tf-border));
+  border-radius: var(--radius-lg);
+}
+
+.tf-panel-elevated {
+  background: hsl(var(--tf-surface) / 0.5);
+  border: 1px solid hsl(var(--tf-border) / 0.8);
+  border-radius: var(--radius-lg);
+}
+
+/* ─── Text Hierarchy ─── */
+.tf-text { color: hsl(var(--tf-text)); }
+.tf-text-secondary { color: hsl(var(--tf-text) / 0.7); }
+.tf-text-tertiary { color: hsl(var(--tf-text) / 0.6); }
+.tf-text-muted { color: hsl(var(--tf-muted)); }
+.tf-text-dim { color: hsl(var(--tf-text) / 0.4); }
+
+/* ─── Borders ─── */
+.tf-border { border-color: hsl(var(--tf-border)); }
+.tf-border-subtle { border-color: hsl(var(--tf-border) / 0.5); }
+
+/* ─── Overlays ─── */
+.tf-overlay { background: hsl(var(--tf-bg) / 0.6); }
+
+/* ─── Interactive Surfaces ─── */
+.tf-hover-surface { transition: background 150ms ease; }
+.tf-hover-surface:hover { background: hsl(var(--tf-surface) / 0.5); }
+
+/* ─── Semantic Status ─── */
+.tf-status-success {
+  background: hsl(var(--tf-success) / 0.15);
+  border-color: hsl(var(--tf-success) / 0.3);
+  color: hsl(var(--tf-success));
+}
+
+.tf-status-error {
+  background: hsl(var(--tf-error) / 0.15);
+  border-color: hsl(var(--tf-error) / 0.3);
+  color: hsl(var(--tf-error));
+}
+
+.tf-status-warning {
+  background: hsl(var(--tf-warning) / 0.15);
+  border-color: hsl(var(--tf-warning) / 0.3);
+  color: hsl(var(--tf-warning));
+}
+
+.tf-status-info {
+  background: hsl(var(--tf-info) / 0.15);
+  border-color: hsl(var(--tf-info) / 0.3);
+  color: hsl(var(--tf-info));
+}
+
+/* ─── Suite Accent Colors ─── */
+
+/* Forge (Orange → mapped to warning-amber channel) */
+.tf-suite-forge { --suite-hs: var(--tf-warning-hs); }
+.tf-suite-forge-cta {
+  background: hsl(var(--tf-warning-hs) 45%);
+  color: hsl(var(--tf-bg));
+}
+.tf-suite-forge-cta:hover { background: hsl(var(--tf-warning-hs) 55%); }
+.tf-suite-forge-cta:disabled {
+  background: hsl(var(--tf-surface) / 0.5);
+  color: hsl(var(--tf-text) / 0.4);
+  cursor: not-allowed;
+}
+
+/* Atlas (Blue → network-blue channel) */
+.tf-suite-atlas { --suite-hs: var(--tf-network-blue-hs); }
+.tf-suite-atlas-cta {
+  background: hsl(var(--tf-network-blue-hs) 45%);
+  color: hsl(var(--tf-bg));
+}
+.tf-suite-atlas-cta:hover { background: hsl(var(--tf-network-blue-hs) 55%); }
+.tf-suite-atlas-cta:disabled {
+  background: hsl(var(--tf-surface) / 0.5);
+  color: hsl(var(--tf-text) / 0.4);
+  cursor: not-allowed;
+}
+
+/* Dais (Purple → info channel) */
+.tf-suite-dais { --suite-hs: var(--tf-info-hs); }
+.tf-suite-dais-cta {
+  background: hsl(var(--tf-info-hs) 45%);
+  color: hsl(var(--tf-bg));
+}
+.tf-suite-dais-cta:hover { background: hsl(var(--tf-info-hs) 55%); }
+.tf-suite-dais-cta:disabled {
+  background: hsl(var(--tf-surface) / 0.5);
+  color: hsl(var(--tf-text) / 0.4);
+  cursor: not-allowed;
+}
+
+/* Dossier (Emerald → success channel) */
+.tf-suite-dossier { --suite-hs: var(--tf-success-hs); }
+.tf-suite-dossier-cta {
+  background: hsl(var(--tf-success-hs) 35%);
+  color: hsl(var(--tf-bg));
+}
+.tf-suite-dossier-cta:hover { background: hsl(var(--tf-success-hs) 45%); }
+.tf-suite-dossier-cta:disabled {
+  background: hsl(var(--tf-surface) / 0.5);
+  color: hsl(var(--tf-text) / 0.4);
+  cursor: not-allowed;
+}
+
+/* Pilot (Indigo → mapped to info channel, slightly shifted) */
+.tf-suite-pilot { --suite-hs: 243 75%; }
+.tf-suite-pilot-cta {
+  background: hsl(243 75% 45%);
+  color: hsl(var(--tf-bg));
+}
+.tf-suite-pilot-cta:hover { background: hsl(243 75% 55%); }
+.tf-suite-pilot-cta:disabled {
+  background: hsl(var(--tf-surface) / 0.5);
+  color: hsl(var(--tf-text) / 0.4);
+  cursor: not-allowed;
+}
+
+/* ─── Suite Active State (toggle/selection) ─── */
+.tf-suite-active {
+  background: hsl(var(--suite-hs, var(--tf-transcend-cyan-hs)) 50% / 0.15);
+  border-color: hsl(var(--suite-hs, var(--tf-transcend-cyan-hs)) 50% / 0.5);
+  color: hsl(var(--tf-text));
+}
+
+/* ─── Suite Gradient Card (hero card with suite accent gradient) ─── */
+.tf-suite-card {
+  background: linear-gradient(
+    to bottom right,
+    hsl(var(--suite-hs, var(--tf-transcend-cyan-hs)) 50% / 0.2),
+    hsl(var(--suite-hs, var(--tf-transcend-cyan-hs)) 40% / 0.2)
+  );
+  border: 1px solid hsl(var(--suite-hs, var(--tf-transcend-cyan-hs)) 50% / 0.3);
+  border-radius: var(--radius-xl);
+}
+
+.tf-suite-accent-text {
+  color: hsl(var(--suite-hs, var(--tf-transcend-cyan-hs)) 65%);
+}
+
+/* ─── Spinner (uses suite accent) ─── */
+.tf-spinner {
+  border: 2px solid hsl(var(--tf-text) / 0.2);
+  border-top-color: hsl(var(--suite-hs, var(--tf-transcend-cyan-hs)) 50%);
+  border-radius: 9999px;
+  animation: spin 1s linear infinite;
+}
+
+/* ─── Select/Input ─── */
+.tf-input {
+  background: hsl(var(--tf-surface) / 0.5);
+  border: 1px solid hsl(var(--tf-border));
+  color: hsl(var(--tf-text));
+  border-radius: var(--radius-md);
+}
+.tf-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--suite-hs, var(--tf-transcend-cyan-hs)) 50% / 0.5);
+}
+.tf-input option {
+  background: hsl(var(--tf-surface-dark-hs) var(--tf-l-20));
+}

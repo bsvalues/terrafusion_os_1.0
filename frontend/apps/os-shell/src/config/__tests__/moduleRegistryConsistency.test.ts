@@ -161,6 +161,7 @@ describe('moduleActivation displayNames/icons coverage', () => {
       'suite-dais': 'TerraDais',
       'suite-dossier': 'TerraDossier',
       'suite-gpt': 'TerraGPT',
+      'property-workbench': 'Property Workbench',
     };
 
     const missing: string[] = [];

@@ -16,7 +16,6 @@
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { LiquidPanel } from '../../ui/materials';
 import { getLucideIcon } from '../../config/iconMap';
 import { activateModule } from '../../orchestration/moduleActivation';
@@ -453,7 +452,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
   const { close, setSearchQuery } = useCommandPaletteStore();
   const commands = useCommandRegistry();
 
-  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -477,12 +475,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
       iconVariant: 'mapping',
       category: 'navigation',
       keywords: ['parcel', 'property'],
-      action: () => {
-        navigate(`/property/${trimmed}`);
+      action: async () => {
+        const { openWorkbenchWindow } = await import('../../context/parcelContext');
+        openWorkbenchWindow(trimmed);
         close();
       },
     };
-  }, [query, navigate, close]);
+  }, [query, close]);
 
   // Convert API parcel search results into CommandItems
   const parcelSearchCommands = useMemo((): CommandItem[] => {
@@ -494,12 +493,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
       iconVariant: 'mapping' as TerraSphereIconVariant,
       category: 'navigation' as CommandCategory,
       keywords: ['parcel', 'property', 'search'],
-      action: () => {
-        navigate(`/property/${r.parcelNumber}`);
+      action: async () => {
+        const { openWorkbenchWindow } = await import('../../context/parcelContext');
+        openWorkbenchWindow(r.parcelNumber);
         close();
       },
     }));
-  }, [parcelSearchResults, navigate, close]);
+  }, [parcelSearchResults, close]);
 
   // Get recent commands
   const recentCommands = useMemo(() => {

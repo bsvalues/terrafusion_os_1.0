@@ -18,6 +18,8 @@ import {
   InvocationHistory,
   type InvocationRecord,
 } from '../../../components/workbench';
+import { BentoGrid } from '../../../ui/materials/BentoGrid';
+import { BentoCard } from '../../../ui/materials/BentoCard';
 
 /** Document categories for organization */
 const DOCUMENT_CATEGORIES = [
@@ -175,7 +177,7 @@ export const PropertyDossier: React.FC = () => {
   }, []);
 
   return (
-    <div className='space-y-6' data-testid='property-dossier-tab'>
+    <div className='tf-suite-dossier space-y-6' data-testid='property-dossier-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon="📁"
@@ -185,12 +187,12 @@ export const PropertyDossier: React.FC = () => {
       />
 
       {/* Document Categories & List */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <BentoGrid columns={3} gap={1.5} padding={0}>
         {/* Categories + Documents List */}
-        <div className='lg:col-span-1 space-y-4'>
+        <BentoCard variant="table" title="Documents" actions={<span>📁</span>}>
           {DOCUMENT_CATEGORIES.map((cat) => (
-            <div key={cat.id} className='bg-white/5 rounded-xl p-4 border border-white/10'>
-              <h3 className='text-white font-semibold flex items-center gap-2 mb-3'>
+            <div key={cat.id} className='tf-panel p-4'>
+              <h3 className='tf-text font-semibold flex items-center gap-2 mb-3'>
                 <span>{cat.icon}</span> {cat.label}
               </h3>
               <ul className='space-y-2'>
@@ -200,41 +202,41 @@ export const PropertyDossier: React.FC = () => {
                     onClick={() => handleSelectDocument(doc)}
                     className={`cursor-pointer px-3 py-2 rounded-lg transition-colors ${
                       selectedDoc?.id === doc.id
-                        ? 'bg-emerald-500/30 border border-emerald-500/50'
-                        : 'bg-white/5 hover:bg-white/10'
+                        ? 'tf-suite-active'
+                        : 'tf-hover-surface'
                     }`}
                   >
-                    <p className='text-white text-sm'>{doc.title}</p>
-                    <p className='text-white/50 text-xs'>{doc.date}</p>
+                    <p className='tf-text text-sm'>{doc.title}</p>
+                    <p className='tf-text-muted text-xs'>{doc.date}</p>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-        </div>
+        </BentoCard>
 
         {/* Document Detail & Actions */}
-        <div className='lg:col-span-2 space-y-4'>
+        <BentoCard span="2x1">
           {selectedDoc ? (
             <div
-              className='bg-gradient-to-br from-emerald-500/20 to-green-600/20 rounded-xl p-6 border border-emerald-500/30'
+              className='tf-suite-card p-6'
               data-testid='document-detail'
             >
               <div className='flex items-start justify-between mb-4'>
                 <div>
-                  <h3 className='text-white text-lg font-semibold'>{selectedDoc.title}</h3>
-                  <p className='text-white/60 text-sm'>
+                  <h3 className='tf-text text-lg font-semibold'>{selectedDoc.title}</h3>
+                  <p className='tf-text-tertiary text-sm'>
                     {selectedDoc.type.toUpperCase()} • {selectedDoc.date}
                   </p>
                 </div>
                 <button
                   onClick={handleSummarize}
                   disabled={summarizeState.status === 'loading'}
-                  className='px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2'
+                  className='tf-suite-dossier-cta px-4 py-2 rounded-lg transition-colors flex items-center gap-2'
                 >
                   {summarizeState.status === 'loading' ? (
                     <>
-                      <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
+                      <div className='w-4 h-4 border-2 rounded-full animate-spin' style={{ borderColor: 'hsl(var(--tf-text) / 0.3)', borderTopColor: 'hsl(var(--tf-text))' }} />
                       Summarizing...
                     </>
                   ) : (
@@ -244,47 +246,47 @@ export const PropertyDossier: React.FC = () => {
               </div>
 
               {/* Document Preview Panel */}
-              <div className='bg-black/20 rounded-lg overflow-hidden'>
+              <div className='tf-overlay rounded-lg overflow-hidden'>
                 {/* Document metadata bar */}
-                <div className='flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10'>
-                  <div className='flex items-center gap-3 text-sm text-white/60'>
+                <div className='flex items-center justify-between px-4 py-2' style={{ background: 'hsl(var(--tf-surface-2))' }}>
+                  <div className='flex items-center gap-3 text-sm tf-text-tertiary'>
                     <span>{selectedDoc.type.toUpperCase()}</span>
                     {selectedDoc.pages && <span>• {selectedDoc.pages} page{selectedDoc.pages > 1 ? 's' : ''}</span>}
                     {selectedDoc.fileSize && <span>• {selectedDoc.fileSize}</span>}
                   </div>
                   {selectedDoc.source && (
-                    <span className='text-xs text-white/40'>Source: {selectedDoc.source}</span>
+                    <span className='text-xs tf-text-dim'>Source: {selectedDoc.source}</span>
                   )}
                 </div>
 
                 {/* Content preview area */}
                 <div className='p-6'>
                   {selectedDoc.type === 'photo' ? (
-                    <div className='bg-white/5 rounded-lg p-8 text-center'>
+                    <div className='tf-panel p-8 text-center'>
                       <span className='text-6xl block mb-3'>📷</span>
-                      <p className='text-white/70 font-medium'>{selectedDoc.title}</p>
-                      <p className='text-white/40 text-sm mt-1'>
+                      <p className='tf-text-secondary font-medium'>{selectedDoc.title}</p>
+                      <p className='tf-text-dim text-sm mt-1'>
                         Captured {selectedDoc.date} • {selectedDoc.fileSize}
                       </p>
                     </div>
                   ) : (
                     <div className='space-y-3'>
                       {/* Simulated document lines */}
-                      <div className='bg-white/5 rounded p-4 font-mono text-xs text-white/50 space-y-2'>
-                        <div className='text-white/80 text-sm font-sans font-semibold'>
+                      <div className='tf-panel p-4 font-mono text-xs space-y-2'>
+                        <div className='tf-text-secondary text-sm font-sans font-semibold'>
                           {selectedDoc.title}
                         </div>
-                        <div className='border-b border-white/10 pb-2'>
-                          <span className='text-white/40'>Filed: </span>
-                          <span className='text-white/60'>{selectedDoc.date}</span>
+                        <div className='border-b tf-border pb-2'>
+                          <span className='tf-text-dim'>Filed: </span>
+                          <span className='tf-text-tertiary'>{selectedDoc.date}</span>
                           {selectedDoc.source && (
                             <>
-                              <span className='text-white/40'> • From: </span>
-                              <span className='text-white/60'>{selectedDoc.source}</span>
+                              <span className='tf-text-dim'> • From: </span>
+                              <span className='tf-text-tertiary'>{selectedDoc.source}</span>
                             </>
                           )}
                         </div>
-                        <div className='text-white/30 italic'>
+                        <div className='tf-text-dim italic'>
                           Full document preview requires document storage integration.
                           Use the Summarize button for an AI-generated summary.
                         </div>
@@ -295,59 +297,59 @@ export const PropertyDossier: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className='bg-white/5 rounded-xl p-8 border border-white/10 text-center'>
+            <div className='tf-panel p-8 text-center'>
               <span className='text-4xl mb-4 block'>👈</span>
-              <p className='text-white/60'>Select a document to view details</p>
+              <p className='tf-text-tertiary'>Select a document to view details</p>
             </div>
           )}
 
           {/* Loading State */}
           {summarizeState.status === 'loading' && (
-            <div className='bg-blue-500/20 rounded-xl p-4 border border-blue-500/30' role='status'>
+            <div className='tf-status-info rounded-xl p-4' role='status'>
               <div className='flex items-center gap-3'>
-                <div className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin' />
-                <span className='text-white'>Summarizing document...</span>
+                <div className='w-5 h-5 border-2 rounded-full animate-spin' style={{ borderColor: 'hsl(var(--tf-text) / 0.3)', borderTopColor: 'hsl(var(--tf-text))' }} />
+                <span className='tf-text'>Summarizing document...</span>
               </div>
             </div>
           )}
 
           {/* Success State */}
           {summarizeState.status === 'success' && summarizeState.result && (
-            <div className='bg-emerald-500/20 rounded-xl p-5 border border-emerald-500/30'>
+            <div className='tf-status-success rounded-xl p-5'>
               <div className='flex items-center justify-between mb-4'>
-                <h3 className='text-emerald-400 font-semibold flex items-center gap-2'>
+                <h3 className='font-semibold flex items-center gap-2' style={{ color: 'hsl(var(--tf-success))' }}>
                   <span>✅</span> Document Summary
                 </h3>
                 <div className='flex items-center gap-2'>
-                  <span className='text-white/50 text-sm'>Correlation ID:</span>
-                  <code className='bg-black/30 px-2 py-1 rounded text-sm text-white/80'>
+                  <span className='tf-text-muted text-sm'>Correlation ID:</span>
+                  <code className='tf-overlay px-2 py-1 rounded text-sm tf-text-secondary'>
                     {summarizeState.correlationId}
                   </code>
                   <button
                     onClick={() =>
                       navigator.clipboard.writeText(summarizeState.correlationId || '')
                     }
-                    className='px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20'
+                    className='px-2 py-1 text-xs tf-hover-surface rounded'
                     title='Copy correlation ID'
                   >
                     Copy
                   </button>
                   <button
                     onClick={clearSummarizeState}
-                    className='px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20'
+                    className='px-2 py-1 text-xs tf-hover-surface rounded'
                   >
                     Dismiss
                   </button>
                 </div>
               </div>
 
-              <div className='bg-black/30 rounded-lg p-4'>
-                <p className='text-white/90'>{summarizeState.result.summary}</p>
+              <div className='tf-overlay rounded-lg p-4'>
+                <p className='tf-text'>{summarizeState.result.summary}</p>
                 {summarizeState.result.keyFacts && (
                   <ul className='mt-4 space-y-1'>
                     {summarizeState.result.keyFacts.map((fact, idx) => (
-                      <li key={idx} className='text-white/70 text-sm flex items-center gap-2'>
-                        <span className='text-emerald-400'>•</span> {fact}
+                      <li key={idx} className='tf-text-secondary text-sm flex items-center gap-2'>
+                        <span style={{ color: 'hsl(var(--tf-success))' }}>•</span> {fact}
                       </li>
                     ))}
                   </ul>
@@ -356,11 +358,11 @@ export const PropertyDossier: React.FC = () => {
 
               {getEnv().DEV && (
                 <details className='mt-4'>
-                  <summary className='text-white/50 text-sm cursor-pointer hover:text-white/70'>
+                  <summary className='tf-text-muted text-sm cursor-pointer hover:text-[hsl(var(--tf-text)/0.7)]'>
                     🔍 Developer Info
                   </summary>
-                  <div className='mt-2 bg-black/20 rounded p-3'>
-                    <code className='text-xs text-white/60 block'>
+                  <div className='mt-2 tf-overlay rounded p-3'>
+                    <code className='text-xs tf-text-tertiary block'>
                       pnpm run trace:query --correlation {summarizeState.correlationId}
                     </code>
                   </div>
@@ -371,11 +373,11 @@ export const PropertyDossier: React.FC = () => {
 
           {/* Error State */}
           {summarizeState.status === 'error' && summarizeState.error && (
-            <div className='bg-red-500/20 rounded-xl p-5 border border-red-500/30'>
+            <div className='tf-status-error rounded-xl p-5'>
               <div className='flex justify-end mb-2'>
                 <button
                   onClick={clearSummarizeState}
-                  className='px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20'
+                  className='px-2 py-1 text-xs tf-hover-surface rounded'
                 >
                   Dismiss
                 </button>
@@ -383,8 +385,8 @@ export const PropertyDossier: React.FC = () => {
               <ErrorDisplay error={summarizeState.error} />
             </div>
           )}
-        </div>
-      </div>
+        </BentoCard>
+      </BentoGrid>
 
       {/* Invocation History */}
       <InvocationHistory

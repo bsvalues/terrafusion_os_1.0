@@ -16,7 +16,9 @@ import type { Category } from './generatedModules';
 import {
     CONSTITUTIONAL_SUITES,
     OS_FEATURES,
+    OS_SURFACES,
     type OsFeatureDefinition,
+    type OsSurfaceDefinition,
     type SuiteDefinition,
 } from './suiteRegistry';
 
@@ -91,6 +93,22 @@ function featureToDesktopIcon(feature: OsFeatureDefinition): DesktopIconEntry {
   };
 }
 
+/** Category mapping for OS surfaces (keyed by canonical surface ID) */
+const SURFACE_CATEGORY: Record<string, Category> = {
+  workbench: 'system',
+};
+
+function surfaceToDesktopIcon(surface: OsSurfaceDefinition): DesktopIconEntry {
+  return {
+    id: `surface-${surface.id}`,
+    name: surface.displayName,
+    iconName: surface.iconName,
+    category: SURFACE_CATEGORY[surface.id] ?? 'system',
+    route: surface.route,
+    wiringStatus: 'OS',
+  };
+}
+
 // ============================================================================
 // Public API
 // ============================================================================
@@ -111,5 +129,9 @@ export function getDesktopIcons(): DesktopIconEntry[] {
     featureToDesktopIcon
   );
 
-  return [...suiteIcons, ...featureIcons];
+  const surfaceIcons = OS_SURFACES.filter((s) => s.status === 'live').map(
+    surfaceToDesktopIcon
+  );
+
+  return [...suiteIcons, ...surfaceIcons, ...featureIcons];
 }
