@@ -13,6 +13,7 @@
  * 3. Badge providers implement the contract interface
  * 4. Workbench barrel exports all required components
  * 5. Tab slug enum is locked (canonical order enforcement)
+ * 6. Quick action providers implement the contract interface
  *
  * @module __tests__/workbench/workbench.contractGates.test
  * @see contracts/workbench.ts — Extension contract
@@ -21,6 +22,7 @@
  */
 
 import { BADGE_PROVIDERS } from '../../services/badges';
+import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { VALID_WORKBENCH_TAB_IDS } from '../../config/suiteRegistry';
 
 // ============================================================================
@@ -166,5 +168,42 @@ describe('Gate 5: Tab Slug Canonical Order', () => {
     // This prevents accidental reordering which would confuse users
     const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'pilot'];
     expect(VALID_WORKBENCH_TAB_IDS).toEqual(expected);
+  });
+});
+
+// ============================================================================
+// Gate 6: Quick Action Providers
+// ============================================================================
+
+describe('Gate 6: Quick Action Providers', () => {
+  it('QUICK_ACTION_PROVIDERS array exists and is non-empty', () => {
+    expect(Array.isArray(QUICK_ACTION_PROVIDERS)).toBe(true);
+    expect(QUICK_ACTION_PROVIDERS.length).toBeGreaterThan(0);
+  });
+
+  it('every provider has an owner field and getActions function', () => {
+    for (const provider of QUICK_ACTION_PROVIDERS) {
+      expect(typeof provider.owner).toBe('string');
+      expect(typeof provider.getActions).toBe('function');
+    }
+  });
+
+  it('getActions returns mode-aware actions', async () => {
+    for (const provider of QUICK_ACTION_PROVIDERS) {
+      const actions = await provider.getActions({
+        countyId: 'benton',
+        userId: 'test',
+        roles: [],
+        parcelId: 'test-parcel',
+        workMode: 'valuation',
+      });
+
+      expect(Array.isArray(actions)).toBe(true);
+      for (const action of actions) {
+        expect(action.id).toBeTruthy();
+        expect(action.label).toBeTruthy();
+        expect(action.toolId).toBeTruthy();
+      }
+    }
   });
 });

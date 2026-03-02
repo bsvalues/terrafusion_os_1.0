@@ -14,6 +14,7 @@
 
 import { createContext, useContext } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import type { WorkMode } from '../contracts/workbench';
 
 // ============================================================================
 // Types
@@ -33,6 +34,8 @@ export interface WorkbenchTabData {
     legalDescription: string;
     source: string;
   };
+  /** Current work mode — tabs can adapt their UI per mode */
+  workMode: WorkMode;
 }
 
 // ============================================================================
