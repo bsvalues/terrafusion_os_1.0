@@ -132,7 +132,7 @@ export const PropertyPilot: React.FC = () => {
   }, []);
 
   return (
-    <div className='space-y-6' data-testid='property-pilot-tab'>
+    <div className='tf-suite-pilot space-y-6' data-testid='property-pilot-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='🎮'
@@ -142,7 +142,7 @@ export const PropertyPilot: React.FC = () => {
         actions={
           <button
             onClick={() => navigate('/pilot')}
-            className='px-3 py-1.5 text-sm bg-white/10 text-white/70 rounded-lg hover:bg-white/20 transition-colors'
+            className='px-3 py-1.5 text-sm tf-hover-surface rounded-lg transition-colors'
           >
             Full Console →
           </button>
@@ -154,25 +154,25 @@ export const PropertyPilot: React.FC = () => {
         {PARCEL_TOOLS.map((tool) => (
           <div
             key={tool.toolId}
-            className='bg-gradient-to-br from-indigo-500/20 to-violet-600/20 rounded-xl p-5 border border-indigo-500/30'
+            className='tf-suite-card rounded-xl p-5'
           >
             <div className='flex items-start justify-between mb-3'>
               <div className='flex items-center gap-2'>
                 <span className='text-2xl'>{tool.icon}</span>
                 <div>
-                  <h3 className='text-white font-semibold'>{tool.label}</h3>
-                  <code className='text-xs text-white/50'>{tool.toolId}</code>
+                  <h3 className='tf-text font-semibold'>{tool.label}</h3>
+                  <code className='text-xs tf-text-muted'>{tool.toolId}</code>
                 </div>
               </div>
-              <span className='px-2 py-0.5 text-xs bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/30'>
+              <span className='px-2 py-0.5 text-xs tf-status-success rounded'>
                 Read-Only
               </span>
             </div>
-            <p className='text-white/70 text-sm mb-4'>{tool.description}</p>
+            <p className='tf-text-secondary text-sm mb-4'>{tool.description}</p>
             <button
               onClick={() => handleInvokeTool(tool.toolId)}
               disabled={invocationState.status === 'loading'}
-              className='w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+              className='tf-suite-pilot-cta w-full px-4 py-2 rounded-lg transition-colors'
             >
               {invocationState.status === 'loading' && invocationState.currentTool === tool.toolId
                 ? 'Running...'
@@ -184,43 +184,43 @@ export const PropertyPilot: React.FC = () => {
 
       {/* Current Invocation Result */}
       {invocationState.status === 'loading' && (
-        <div className='bg-blue-500/20 rounded-xl p-4 border border-blue-500/30' role='status'>
+        <div className='tf-status-info rounded-xl p-4' role='status'>
           <div className='flex items-center gap-3'>
-            <div className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin' />
-            <span className='text-white'>Invoking {invocationState.currentTool}...</span>
+            <div className='w-5 h-5 border-2 rounded-full animate-spin' style={{ borderColor: 'hsl(var(--tf-text) / 0.3)', borderTopColor: 'hsl(var(--tf-text))' }} />
+            <span className='tf-text'>Invoking {invocationState.currentTool}...</span>
           </div>
         </div>
       )}
 
       {invocationState.status === 'success' && invocationState.result && (
-        <div className='bg-emerald-500/20 rounded-xl p-5 border border-emerald-500/30'>
+        <div className='tf-status-success rounded-xl p-5'>
           <div className='flex items-center justify-between mb-4'>
-            <h3 className='text-emerald-400 font-semibold flex items-center gap-2'>
+            <h3 className='font-semibold flex items-center gap-2' style={{ color: 'hsl(var(--tf-success))' }}>
               <span>✅</span> Tool Execution Successful
             </h3>
             <div className='flex items-center gap-2'>
-              <span className='text-white/50 text-sm'>Correlation ID:</span>
-              <code className='bg-black/30 px-2 py-1 rounded text-sm text-white/80'>
+              <span className='tf-text-muted text-sm'>Correlation ID:</span>
+              <code className='tf-overlay px-2 py-1 rounded text-sm tf-text-secondary'>
                 {invocationState.correlationId}
               </code>
               <button
                 onClick={() => navigator.clipboard.writeText(invocationState.correlationId || '')}
-                className='px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20'
+                className='px-2 py-1 text-xs tf-hover-surface rounded'
                 title='Copy correlation ID'
               >
                 Copy
               </button>
               <button
                 onClick={clearState}
-                className='px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20'
+                className='px-2 py-1 text-xs tf-hover-surface rounded'
               >
                 Dismiss
               </button>
             </div>
           </div>
 
-          <div className='bg-black/30 rounded-lg p-4 overflow-x-auto'>
-            <pre className='text-sm text-white/80 font-mono whitespace-pre-wrap'>
+          <div className='tf-overlay rounded-lg p-4 overflow-x-auto'>
+            <pre className='text-sm tf-text-secondary font-mono whitespace-pre-wrap'>
               {(() => {
                 try {
                   return JSON.stringify(JSON.parse(invocationState.result.output), null, 2);
@@ -233,11 +233,11 @@ export const PropertyPilot: React.FC = () => {
 
           {getEnv().DEV && (
             <details className='mt-4'>
-              <summary className='text-white/50 text-sm cursor-pointer hover:text-white/70'>
+              <summary className='tf-text-muted text-sm cursor-pointer hover:text-[hsl(var(--tf-text)/0.7)]'>
                 🔍 Developer Info
               </summary>
-              <div className='mt-2 bg-black/20 rounded p-3'>
-                <code className='text-xs text-white/60 block'>
+              <div className='mt-2 tf-overlay rounded p-3'>
+                <code className='text-xs tf-text-tertiary block'>
                   pnpm run trace:query --correlation {invocationState.correlationId}
                 </code>
               </div>
@@ -247,11 +247,11 @@ export const PropertyPilot: React.FC = () => {
       )}
 
       {invocationState.status === 'error' && invocationState.error && (
-        <div className='bg-red-500/20 rounded-xl p-5 border border-red-500/30'>
+        <div className='tf-status-error rounded-xl p-5'>
           <div className='flex justify-end mb-2'>
             <button
               onClick={clearState}
-              className='px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20'
+              className='px-2 py-1 text-xs tf-hover-surface rounded'
             >
               Dismiss
             </button>

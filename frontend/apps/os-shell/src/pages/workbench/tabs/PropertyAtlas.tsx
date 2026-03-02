@@ -317,7 +317,7 @@ export const PropertyAtlas: React.FC = () => {
   const isDev = getEnv('MODE') === 'development';
 
   return (
-    <div className='space-y-6' data-testid='property-atlas-tab'>
+    <div className='tf-suite-atlas space-y-6' data-testid='property-atlas-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='🗺️'
@@ -329,8 +329,8 @@ export const PropertyAtlas: React.FC = () => {
       {/* Main Content Grid */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         {/* Layer Controls */}
-        <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
-          <h3 className='text-white font-semibold mb-4 flex items-center gap-2'>
+        <div className='tf-panel p-4'>
+          <h3 className='tf-text font-semibold mb-4 flex items-center gap-2'>
             <span>📚</span> Map Layers
           </h3>
 
@@ -343,16 +343,16 @@ export const PropertyAtlas: React.FC = () => {
                 aria-pressed={selectedLayers.has(layer.id)}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all ${
                   selectedLayers.has(layer.id)
-                    ? 'bg-blue-500/20 border-blue-500/50 text-white'
-                    : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                    ? 'tf-suite-active'
+                    : 'tf-panel tf-text-secondary tf-hover-surface'
                 }`}
               >
                 <span className='text-xl'>{layer.icon}</span>
                 <div className='text-left'>
                   <div className='font-medium'>{layer.label}</div>
-                  <div className='text-xs text-white/50'>{layer.description}</div>
+                  <div className='text-xs tf-text-muted'>{layer.description}</div>
                 </div>
-                {selectedLayers.has(layer.id) && <span className='ml-auto text-blue-400'>✓</span>}
+                {selectedLayers.has(layer.id) && <span className='ml-auto tf-suite-accent-text'>✓</span>}
               </button>
             ))}
           </div>
@@ -360,26 +360,23 @@ export const PropertyAtlas: React.FC = () => {
           <button
             onClick={handleQueryLayers}
             disabled={selectedLayers.size === 0 || queryState.status === 'loading'}
-            className={`mt-4 w-full py-2 px-4 rounded-lg font-semibold transition-all ${
-              selectedLayers.size === 0 || queryState.status === 'loading'
-                ? 'bg-white/10 text-white/40 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-500 text-white'
-            }`}
+            className='mt-4 w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-atlas-cta'
           >
             {queryState.status === 'loading' ? 'Querying...' : 'Query Layers'}
           </button>
         </div>
 
         {/* Map Container */}
-        <div className='lg:col-span-2 bg-white/5 rounded-xl border border-white/10 overflow-hidden'>
+        <div className='lg:col-span-2 tf-panel overflow-hidden'>
           <div
             data-testid='map-container'
-            className='aspect-video bg-gradient-to-br from-blue-900/30 to-cyan-900/30 relative overflow-hidden'
+            className='aspect-video relative overflow-hidden'
+            style={{ background: 'linear-gradient(to bottom right, hsl(var(--tf-network-blue-hs) 20% / 0.3), hsl(var(--tf-transcend-cyan-hs) 20% / 0.3))' }}
           >
             {queryState.status === 'loading' ? (
               <div role='status' className='absolute inset-0 flex flex-col items-center justify-center gap-3'>
-                <div className='animate-spin rounded-full h-10 w-10 border-2 border-white/20 border-t-blue-500' />
-                <span className='text-white/60'>Loading layer data...</span>
+                <div className='tf-spinner h-10 w-10' />
+                <span className='tf-text-tertiary'>Loading layer data...</span>
               </div>
             ) : queryState.status === 'success' && queryState.result ? (
               <ParcelMapVisualization
@@ -389,7 +386,7 @@ export const PropertyAtlas: React.FC = () => {
             ) : (
               <div className='absolute inset-0 flex flex-col items-center justify-center text-center p-4'>
                 <div className='text-4xl mb-2'>🌍</div>
-                <p className='text-white/60'>Select layers and query to view map data</p>
+                <p className='tf-text-tertiary'>Select layers and query to view map data</p>
               </div>
             )}
           </div>
@@ -398,20 +395,20 @@ export const PropertyAtlas: React.FC = () => {
 
       {/* Query Results */}
       {queryState.status === 'success' && queryState.result && (
-        <div className='bg-green-500/10 border border-green-500/30 rounded-xl p-4'>
+        <div className='tf-status-success rounded-xl p-4'>
           <div className='flex items-center justify-between mb-3'>
-            <h4 className='text-green-400 font-semibold flex items-center gap-2'>
+            <h4 className='font-semibold flex items-center gap-2' style={{ color: 'hsl(var(--tf-success))' }}>
               <span>✅</span> Query Results
             </h4>
             {queryState.correlationId && (
               <div className='flex items-center gap-2 text-xs'>
-                <span className='text-white/50'>ID:</span>
-                <code className='text-green-400 font-mono'>
+                <span className='tf-text-muted'>ID:</span>
+                <code className='font-mono' style={{ color: 'hsl(var(--tf-success))' }}>
                   {queryState.correlationId.slice(0, 16)}...
                 </code>
                 <button
                   onClick={() => copyToClipboard(queryState.correlationId!)}
-                  className='text-white/60 hover:text-white'
+                  className='tf-text-tertiary tf-hover-surface'
                   aria-label='Copy correlation ID'
                 >
                   📋
@@ -422,16 +419,16 @@ export const PropertyAtlas: React.FC = () => {
 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {queryState.result.layers.boundary && (
-              <div className='bg-white/5 rounded-lg p-3'>
-                <h5 className='text-white/80 font-medium mb-2'>📐 Boundary</h5>
-                <div className='text-sm text-white/60 space-y-1'>
+              <div className='tf-panel p-3'>
+                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>📐 Boundary</h5>
+                <div className='text-sm tf-text-tertiary space-y-1'>
                   <p>
                     Area:{' '}
-                    <span className='text-white'>{queryState.result.layers.boundary.area}</span>
+                    <span className='tf-text'>{queryState.result.layers.boundary.area}</span>
                   </p>
                   <p>
                     Perimeter:{' '}
-                    <span className='text-white'>
+                    <span className='tf-text'>
                       {queryState.result.layers.boundary.perimeter}
                     </span>
                   </p>
@@ -440,15 +437,15 @@ export const PropertyAtlas: React.FC = () => {
             )}
 
             {queryState.result.layers.zoning && (
-              <div className='bg-white/5 rounded-lg p-3'>
-                <h5 className='text-white/80 font-medium mb-2'>🏘️ Zoning</h5>
-                <div className='text-sm text-white/60 space-y-1'>
+              <div className='tf-panel p-3'>
+                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>🏘️ Zoning</h5>
+                <div className='text-sm tf-text-tertiary space-y-1'>
                   <p>
-                    Code: <span className='text-white'>{queryState.result.layers.zoning.code}</span>
+                    Code: <span className='tf-text'>{queryState.result.layers.zoning.code}</span>
                   </p>
                   <p>
                     Description:{' '}
-                    <span className='text-white'>
+                    <span className='tf-text'>
                       {queryState.result.layers.zoning.description}
                     </span>
                   </p>
@@ -457,29 +454,29 @@ export const PropertyAtlas: React.FC = () => {
             )}
 
             {queryState.result.layers.flood && (
-              <div className='bg-white/5 rounded-lg p-3'>
-                <h5 className='text-white/80 font-medium mb-2'>🌊 Flood Zone</h5>
-                <div className='text-sm text-white/60 space-y-1'>
+              <div className='tf-panel p-3'>
+                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>🌊 Flood Zone</h5>
+                <div className='text-sm tf-text-tertiary space-y-1'>
                   <p>
-                    Zone: <span className='text-white'>{queryState.result.layers.flood.zone}</span>
+                    Zone: <span className='tf-text'>{queryState.result.layers.flood.zone}</span>
                   </p>
                   <p>
-                    Risk: <span className='text-white'>{queryState.result.layers.flood.risk}</span>
+                    Risk: <span className='tf-text'>{queryState.result.layers.flood.risk}</span>
                   </p>
                 </div>
               </div>
             )}
 
             {queryState.result.layers.aerial && (
-              <div className='bg-white/5 rounded-lg p-3'>
-                <h5 className='text-white/80 font-medium mb-2'>🛰️ Aerial</h5>
-                <div className='text-sm text-white/60 space-y-1'>
+              <div className='tf-panel p-3'>
+                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>🛰️ Aerial</h5>
+                <div className='text-sm tf-text-tertiary space-y-1'>
                   <p>
-                    Date: <span className='text-white'>{queryState.result.layers.aerial.date}</span>
+                    Date: <span className='tf-text'>{queryState.result.layers.aerial.date}</span>
                   </p>
                   <p>
                     Resolution:{' '}
-                    <span className='text-white'>{queryState.result.layers.aerial.resolution}</span>
+                    <span className='tf-text'>{queryState.result.layers.aerial.resolution}</span>
                   </p>
                 </div>
               </div>
@@ -487,10 +484,10 @@ export const PropertyAtlas: React.FC = () => {
           </div>
 
           {isDev && queryState.correlationId && (
-            <div className='mt-3 text-xs text-white/40 border-t border-white/10 pt-3'>
+            <div className='mt-3 text-xs tf-text-dim border-t tf-border pt-3'>
               <details>
-                <summary className='cursor-pointer hover:text-white/60'>Developer Info</summary>
-                <pre className='mt-2 bg-black/30 rounded p-2 overflow-x-auto'>
+                <summary className='cursor-pointer tf-hover-surface'>Developer Info</summary>
+                <pre className='mt-2 tf-overlay rounded p-2 overflow-x-auto'>
                   pnpm run trace:query --correlation {queryState.correlationId}
                 </pre>
               </details>

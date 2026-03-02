@@ -209,7 +209,7 @@ export const PropertyDais: React.FC = () => {
   const isDev = getEnv('MODE') === 'development';
 
   return (
-    <div className='space-y-6' data-testid='property-dais-tab'>
+    <div className='tf-suite-dais space-y-6' data-testid='property-dais-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='📊'
@@ -221,29 +221,29 @@ export const PropertyDais: React.FC = () => {
       {/* Main Content Grid */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         {/* Controls Panel */}
-        <div className='bg-white/5 rounded-xl p-4 border border-white/10'>
-          <h3 className='text-white font-semibold mb-4 flex items-center gap-2'>
+        <div className='tf-panel p-4'>
+          <h3 className='tf-text font-semibold mb-4 flex items-center gap-2'>
             <span>⚙️</span> Workflow Parameters
           </h3>
 
           {/* Workflow Type Selector */}
           <div className='mb-4'>
-            <label htmlFor='workflow-type' className='block text-white/70 text-sm mb-2'>
+            <label htmlFor='workflow-type' className='block tf-text-secondary text-sm mb-2'>
               Workflow Type
             </label>
             <select
               id='workflow-type'
               value={workflowType}
               onChange={(e) => setWorkflowType(e.target.value as WorkflowType)}
-              className='w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50'
+              className='tf-input'
             >
               {WORKFLOW_TYPES.map((opt) => (
-                <option key={opt.value} value={opt.value} className='bg-gray-800'>
+                <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
               ))}
             </select>
-            <p className='text-white/40 text-xs mt-1'>
+            <p className='tf-text-dim text-xs mt-1'>
               {WORKFLOW_TYPES.find((t) => t.value === workflowType)?.description}
             </p>
           </div>
@@ -252,39 +252,35 @@ export const PropertyDais: React.FC = () => {
           <button
             onClick={handleCheckStatus}
             disabled={statusState.status === 'loading'}
-            className={`w-full py-2 px-4 rounded-lg font-semibold transition-all ${
-              statusState.status === 'loading'
-                ? 'bg-white/10 text-white/40 cursor-not-allowed'
-                : 'bg-purple-600 hover:bg-purple-500 text-white'
-            }`}
+            className='tf-suite-dais-cta w-full py-2 px-4 rounded-lg font-semibold transition-all'
           >
             {statusState.status === 'loading' ? 'Checking...' : 'Check Status'}
           </button>
         </div>
 
         {/* Results Panel */}
-        <div className='lg:col-span-2 bg-white/5 rounded-xl border border-white/10 p-4'>
+        <div className='lg:col-span-2 tf-panel p-4'>
           {statusState.status === 'loading' ? (
             <div role='status' className='flex flex-col items-center justify-center py-12 gap-3'>
-              <div className='animate-spin rounded-full h-10 w-10 border-2 border-white/20 border-t-purple-500' />
-              <span className='text-white/60'>Checking workflow status...</span>
+              <div className='tf-spinner h-10 w-10' />
+              <span className='tf-text-tertiary'>Checking workflow status...</span>
             </div>
           ) : statusState.status === 'success' && statusState.result ? (
             <div className='space-y-4'>
               {/* Status Summary */}
               <div className='flex items-center justify-between mb-3'>
-                <h4 className='text-purple-400 font-semibold flex items-center gap-2'>
+                <h4 className='tf-suite-accent-text font-semibold flex items-center gap-2'>
                   <span>✅</span> Workflow Status
                 </h4>
                 {statusState.correlationId && (
                   <div className='flex items-center gap-2 text-xs'>
-                    <span className='text-white/50'>ID:</span>
-                    <code className='text-purple-400 font-mono'>
+                    <span className='tf-text-muted'>ID:</span>
+                    <code className='tf-suite-accent-text font-mono'>
                       {statusState.correlationId.slice(0, 16)}...
                     </code>
                     <button
                       onClick={() => copyToClipboard(statusState.correlationId!)}
-                      className='text-white/60 hover:text-white'
+                      className='tf-text-tertiary hover:text-[hsl(var(--tf-text))]'
                       aria-label='Copy correlation ID'
                     >
                       📋
@@ -295,15 +291,15 @@ export const PropertyDais: React.FC = () => {
 
               {/* Status Cards */}
               <div className='grid grid-cols-2 gap-4'>
-                <div className='bg-white/5 rounded-lg p-4'>
-                  <div className='text-white/60 text-sm'>Status</div>
-                  <div className='text-xl font-bold text-white'>
+                <div className='tf-panel p-4'>
+                  <div className='tf-text-tertiary text-sm'>Status</div>
+                  <div className='text-xl font-bold tf-text'>
                     {statusState.result.certificationStatus || 'Unknown'}
                   </div>
                 </div>
-                <div className='bg-white/5 rounded-lg p-4'>
-                  <div className='text-white/60 text-sm'>Current Step</div>
-                  <div className='text-xl font-bold text-white'>
+                <div className='tf-panel p-4'>
+                  <div className='tf-text-tertiary text-sm'>Current Step</div>
+                  <div className='text-xl font-bold tf-text'>
                     {statusState.result.currentStep || 'N/A'}
                   </div>
                 </div>
@@ -313,28 +309,33 @@ export const PropertyDais: React.FC = () => {
               {(statusState.result.completedSteps?.length ||
                 statusState.result.pendingSteps?.length ||
                 statusState.result.currentStep) && (
-                <div className='bg-white/5 rounded-lg p-4'>
-                  <h5 className='text-white/80 font-medium mb-3'>📋 Workflow Steps</h5>
+                <div className='tf-panel p-4'>
+                  <h5 className='tf-text-secondary font-medium mb-3'>📋 Workflow Steps</h5>
                   <div className='space-y-2'>
                     {buildWorkflowSteps(statusState.result).map((step, idx) => (
                       <div
                         key={idx}
                         className={`flex items-center gap-3 py-2 px-3 rounded ${
                           step.status === 'current'
-                            ? 'bg-purple-500/20 border border-purple-500/30'
+                            ? 'tf-suite-active'
                             : step.status === 'completed'
-                              ? 'bg-green-500/10'
-                              : 'bg-white/5'
+                              ? 'tf-status-success'
+                              : 'tf-panel'
                         }`}
                       >
                         <span>{getStepIcon(step.status)}</span>
                         <span
                           className={
                             step.status === 'current'
-                              ? 'text-white font-medium'
+                              ? 'tf-text font-medium'
                               : step.status === 'completed'
-                                ? 'text-green-400'
-                                : 'text-white/50'
+                                ? ''
+                                : 'tf-text-muted'
+                          }
+                          style={
+                            step.status === 'completed'
+                              ? { color: 'hsl(var(--tf-success))' }
+                              : undefined
                           }
                         >
                           {step.name}
@@ -349,15 +350,15 @@ export const PropertyDais: React.FC = () => {
               {(statusState.result.assignedTo || statusState.result.dueDate) && (
                 <div className='grid grid-cols-2 gap-4'>
                   {statusState.result.assignedTo && (
-                    <div className='bg-white/5 rounded-lg p-3'>
-                      <div className='text-white/60 text-sm'>Assigned To</div>
-                      <div className='text-white font-medium'>{statusState.result.assignedTo}</div>
+                    <div className='tf-panel p-3'>
+                      <div className='tf-text-tertiary text-sm'>Assigned To</div>
+                      <div className='tf-text font-medium'>{statusState.result.assignedTo}</div>
                     </div>
                   )}
                   {statusState.result.dueDate && (
-                    <div className='bg-white/5 rounded-lg p-3'>
-                      <div className='text-white/60 text-sm'>Due Date</div>
-                      <div className='text-white font-medium'>
+                    <div className='tf-panel p-3'>
+                      <div className='tf-text-tertiary text-sm'>Due Date</div>
+                      <div className='tf-text font-medium'>
                         {formatDate(statusState.result.dueDate)}
                       </div>
                     </div>
@@ -367,17 +368,17 @@ export const PropertyDais: React.FC = () => {
 
               {/* Last Updated */}
               {statusState.result.lastUpdated && (
-                <div className='text-xs text-white/40'>
+                <div className='text-xs tf-text-dim'>
                   Last updated: {formatDate(statusState.result.lastUpdated)}
                 </div>
               )}
 
               {/* Dev Info */}
               {isDev && statusState.correlationId && (
-                <div className='text-xs text-white/40 border-t border-white/10 pt-3'>
+                <div className='text-xs tf-text-dim border-t tf-border pt-3'>
                   <details>
-                    <summary className='cursor-pointer hover:text-white/60'>Developer Info</summary>
-                    <pre className='mt-2 bg-black/30 rounded p-2 overflow-x-auto'>
+                    <summary className='cursor-pointer hover:text-[hsl(var(--tf-text)/0.6)]'>Developer Info</summary>
+                    <pre className='mt-2 tf-overlay rounded p-2 overflow-x-auto'>
                       pnpm run trace:query --correlation {statusState.correlationId}
                     </pre>
                   </details>
@@ -387,8 +388,8 @@ export const PropertyDais: React.FC = () => {
           ) : statusState.status === 'idle' ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
               <div className='text-4xl mb-2'>📊</div>
-              <p className='text-white/60'>Select workflow type and check status</p>
-              <p className='text-white/40 text-sm mt-1'>
+              <p className='tf-text-tertiary'>Select workflow type and check status</p>
+              <p className='tf-text-dim text-sm mt-1'>
                 View certification status, workflow steps, and assignments
               </p>
             </div>
