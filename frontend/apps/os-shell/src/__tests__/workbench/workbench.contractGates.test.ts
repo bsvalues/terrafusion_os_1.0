@@ -16,6 +16,7 @@
  * 6. Quick action providers implement the contract interface
  * 7. Badge API client provides cached fetch with graceful fallback
  * 8. Activity API client provides cached fetch with mock fallback
+ * 9. WorkbenchContribution registry unifies suite registrations
  *
  * @module __tests__/workbench/workbench.contractGates.test
  * @see contracts/workbench.ts — Extension contract
@@ -360,5 +361,98 @@ describe('Gate 8: Activity API Client', () => {
     const sources = entries!.map((e) => e.source);
     expect(sources).toContain('forge');
     expect(sources).toContain('atlas');
+  });
+});
+
+// ============================================================================
+// Gate 9: WorkbenchContribution Registry
+// ============================================================================
+
+describe('Gate 9: WorkbenchContribution Registry', () => {
+  it('WORKBENCH_CONTRIBUTIONS array is importable and non-empty', async () => {
+    const { WORKBENCH_CONTRIBUTIONS } = await import('../../services/contributions');
+    expect(Array.isArray(WORKBENCH_CONTRIBUTIONS)).toBe(true);
+    expect(WORKBENCH_CONTRIBUTIONS.length).toBeGreaterThan(0);
+  });
+
+  it('every contribution has getTabs() function', async () => {
+    const { WORKBENCH_CONTRIBUTIONS } = await import('../../services/contributions');
+    for (const c of WORKBENCH_CONTRIBUTIONS) {
+      expect(typeof c.getTabs).toBe('function');
+    }
+  });
+
+  it('getTabs returns TabDefinitions with required fields', async () => {
+    const { WORKBENCH_CONTRIBUTIONS } = await import('../../services/contributions');
+    const ctx = {
+      countyId: 'benton',
+      userId: 'test',
+      roles: [] as string[],
+      parcelId: 'test-parcel',
+      workMode: 'overview' as const,
+    };
+
+    for (const c of WORKBENCH_CONTRIBUTIONS) {
+      const tabs = await c.getTabs(ctx);
+      expect(Array.isArray(tabs)).toBe(true);
+      for (const tab of tabs) {
+        expect(tab.slug).toBeTruthy();
+        expect(tab.title).toBeTruthy();
+        expect(tab.owner).toBeTruthy();
+        expect(tab.route).toBeTruthy();
+      }
+    }
+  });
+
+  it('contributions cover all 6 canonical tab slugs', async () => {
+    const { WORKBENCH_CONTRIBUTIONS } = await import('../../services/contributions');
+    const ctx = {
+      countyId: 'benton',
+      userId: 'test',
+      roles: [] as string[],
+      parcelId: 'test-parcel',
+      workMode: 'overview' as const,
+    };
+
+    const allSlugs = new Set<string>();
+    for (const c of WORKBENCH_CONTRIBUTIONS) {
+      const tabs = await c.getTabs(ctx);
+      for (const tab of tabs) {
+        allSlugs.add(tab.slug);
+      }
+    }
+
+    expect(allSlugs).toContain('summary');
+    expect(allSlugs).toContain('forge');
+    expect(allSlugs).toContain('atlas');
+    expect(allSlugs).toContain('dais');
+    expect(allSlugs).toContain('dossier');
+    expect(allSlugs).toContain('pilot');
+    expect(allSlugs.size).toBe(6);
+  });
+
+  it('at least one contribution provides badges', async () => {
+    const { WORKBENCH_CONTRIBUTIONS } = await import('../../services/contributions');
+    const withBadges = WORKBENCH_CONTRIBUTIONS.filter((c) => c.badgeProvider);
+    expect(withBadges.length).toBeGreaterThan(0);
+  });
+
+  it('at least one contribution provides quick actions', async () => {
+    const { WORKBENCH_CONTRIBUTIONS } = await import('../../services/contributions');
+    const withActions = WORKBENCH_CONTRIBUTIONS.filter((c) => c.getQuickActions);
+    expect(withActions.length).toBeGreaterThan(0);
+  });
+
+  it('badge providers in contributions match the standalone registry', async () => {
+    const { WORKBENCH_CONTRIBUTIONS } = await import('../../services/contributions');
+    const badgeOwners = WORKBENCH_CONTRIBUTIONS
+      .filter((c) => c.badgeProvider)
+      .map((c) => c.badgeProvider!.owner);
+
+    // Must cover all 4 suite badge providers
+    expect(badgeOwners).toContain('forge');
+    expect(badgeOwners).toContain('atlas');
+    expect(badgeOwners).toContain('dais');
+    expect(badgeOwners).toContain('dossier');
   });
 });

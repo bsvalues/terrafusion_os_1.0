@@ -25,18 +25,17 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useCallback, useMemo, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
-import { BADGE_PROVIDERS } from '../../services/badges';
-import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { usePropertyLookup } from '../../hooks/usePropertyLookup';
-import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
+import { useWorkbenchContributions } from '../../hooks/useWorkbenchContributions';
+import type { WorkbenchTabSlug, WorkMode } from '../../contracts/workbench';
 
 // ============================================================================
 // Types
@@ -251,63 +250,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // ── Work Mode state ──
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
-  // ── Badge state — collected from all suite providers ──
-  const [badges, setBadges] = useState<Badge[]>([]);
-
-  useEffect(() => {
-    if (!parcelId) return;
-    let cancelled = false;
-
-    const ctx: WorkbenchContext = {
-      countyId: 'benton', // TODO: from session
-      userId: 'current-user', // TODO: from auth
-      roles: [],
-      parcelId,
-      workMode,
-    };
-
-    Promise.allSettled(
-      BADGE_PROVIDERS.map((p) => p.getBadges(parcelId, ctx))
-    ).then((results) => {
-      if (cancelled) return;
-      const allBadges: Badge[] = [];
-      for (const r of results) {
-        if (r.status === 'fulfilled') allBadges.push(...r.value);
-      }
-      setBadges(allBadges);
-    });
-
-    return () => { cancelled = true; };
-  }, [parcelId, workMode]);
-
-  // ── Quick Actions — mode-aware, collected from providers ──
-  const [quickActions, setQuickActions] = useState<QuickActionDefinition[]>([]);
-
-  useEffect(() => {
-    if (!parcelId) return;
-    let cancelled = false;
-
-    const ctx: WorkbenchContext = {
-      countyId: 'benton',
-      userId: 'current-user',
-      roles: [],
-      parcelId,
-      workMode,
-    };
-
-    Promise.allSettled(
-      QUICK_ACTION_PROVIDERS.map((p) => p.getActions(ctx))
-    ).then((results) => {
-      if (cancelled) return;
-      const all: QuickActionDefinition[] = [];
-      for (const r of results) {
-        if (r.status === 'fulfilled') all.push(...r.value);
-      }
-      setQuickActions(all);
-    });
-
-    return () => { cancelled = true; };
-  }, [parcelId, workMode]);
+  // ── Badges + Quick Actions — unified from WorkbenchContributions ──
+  const { badges, quickActions } = useWorkbenchContributions(parcelId, workMode);
 
   // ── Activity Feed — collapsible bottom panel ──
   const [activityOpen, setActivityOpen] = useState(false);

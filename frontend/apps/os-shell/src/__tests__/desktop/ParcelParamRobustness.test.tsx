@@ -56,6 +56,10 @@ jest.mock('../../auth/authBridge', () => ({
   unregisterLogoutHandler: jest.fn(),
 }));
 
+jest.mock('../../hooks/useWorkbenchContributions', () => ({
+  useWorkbenchContributions: () => ({ badges: [], quickActions: [], loading: false }),
+}));
+
 import Router from '../../Router';
 
 // ============================================================================

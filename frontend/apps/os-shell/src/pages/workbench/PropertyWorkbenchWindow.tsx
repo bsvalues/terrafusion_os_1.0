@@ -18,17 +18,16 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { usePropertyLookup } from '../../hooks/usePropertyLookup';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
-import { BADGE_PROVIDERS } from '../../services/badges';
-import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
+import { useWorkbenchContributions } from '../../hooks/useWorkbenchContributions';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
-import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
+import type { WorkbenchTabSlug, WorkMode } from '../../contracts/workbench';
 
 // ============================================================================
 // Lazy-loaded Tab Components (same as Router.tsx)
@@ -246,64 +245,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     [parcelId, propertyData]
   );
 
-  // Badge state — collected from all providers
-  const [badges, setBadges] = useState<Badge[]>([]);
-
-  // Fetch badges when parcelId changes
-  useEffect(() => {
-    if (!parcelId) return;
-    let cancelled = false;
-
-    const ctx: WorkbenchContext = {
-      countyId: 'benton', // TODO: from session
-      userId: 'current-user', // TODO: from auth
-      roles: [],
-      parcelId,
-      workMode,
-    };
-
-    Promise.allSettled(
-      BADGE_PROVIDERS.map((p) => p.getBadges(parcelId, ctx))
-    ).then((results) => {
-      if (cancelled) return;
-      const allBadges: Badge[] = [];
-      for (const r of results) {
-        if (r.status === 'fulfilled') allBadges.push(...r.value);
-      }
-      setBadges(allBadges);
-    });
-
-    return () => { cancelled = true; };
-  }, [parcelId, workMode]);
-
-  // Quick Actions — mode-aware, collected from providers
-  const [quickActions, setQuickActions] = useState<QuickActionDefinition[]>([]);
-
-  useEffect(() => {
-    if (!parcelId) return;
-    let cancelled = false;
-
-    const ctx: WorkbenchContext = {
-      countyId: 'benton',
-      userId: 'current-user',
-      roles: [],
-      parcelId,
-      workMode,
-    };
-
-    Promise.allSettled(
-      QUICK_ACTION_PROVIDERS.map((p) => p.getActions(ctx))
-    ).then((results) => {
-      if (cancelled) return;
-      const all: QuickActionDefinition[] = [];
-      for (const r of results) {
-        if (r.status === 'fulfilled') all.push(...r.value);
-      }
-      setQuickActions(all);
-    });
-
-    return () => { cancelled = true; };
-  }, [parcelId, workMode]);
+  // Badges + Quick Actions — unified from WorkbenchContributions
+  const { badges, quickActions } = useWorkbenchContributions(parcelId, workMode);
 
   // Pop out to full-screen route
   const handlePopOut = useCallback(() => {

@@ -108,6 +108,10 @@ jest.mock('../../../services/quickActions', () => ({
   QUICK_ACTION_PROVIDERS: [],
 }));
 
+jest.mock('../../../hooks/useWorkbenchContributions', () => ({
+  useWorkbenchContributions: () => ({ badges: [], quickActions: [], loading: false }),
+}));
+
 jest.mock('../../../services/activityFeed', () => ({
   useParcelActivity: () => ({ entries: [], loading: false, error: null }),
 }));
