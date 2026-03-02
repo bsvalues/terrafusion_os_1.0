@@ -17,6 +17,7 @@
 
 import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { ArrowLeft, FileStack, FolderOpen, Shield, Link2, Camera, Package, FileSearch } from 'lucide-react';
 
 const DocumentsModule = lazy(() => import('./modules/DocumentsModule'));
@@ -57,6 +58,8 @@ export default function DossierSuiteHome() {
 
   return (
     <div data-testid="suite-dossier-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+      {/* Parcel Context Banner — shows when parcel is active */}
+      <ParcelContextBanner suiteTabId="dossier" />
       {/* Header + Stage Tabs */}
       <header
         style={{

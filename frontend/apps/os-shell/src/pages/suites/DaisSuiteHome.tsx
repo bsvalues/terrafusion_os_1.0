@@ -17,6 +17,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import {
   ArrowLeft,
   LayoutDashboard,
@@ -1207,6 +1208,8 @@ export default function DaisSuiteHome() {
 
   return (
     <div data-testid="suite-dais-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+      {/* Parcel Context Banner — shows when parcel is active */}
+      <ParcelContextBanner suiteTabId="dais" />
       {/* Header + Stage Tabs */}
       <header
         style={{
