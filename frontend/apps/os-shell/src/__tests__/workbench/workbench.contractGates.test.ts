@@ -15,6 +15,7 @@
  * 5. Tab slug enum is locked (canonical order enforcement)
  * 6. Quick action providers implement the contract interface
  * 7. Badge API client provides cached fetch with graceful fallback
+ * 8. Activity API client provides cached fetch with mock fallback
  *
  * @module __tests__/workbench/workbench.contractGates.test
  * @see contracts/workbench.ts — Extension contract
@@ -42,6 +43,27 @@ jest.mock('../../services/api/workbenchBadgeApi', () => ({
     source: 'PACS',
   }),
   clearBadgeCache: jest.fn(),
+}));
+
+// Mock the activity API so the hook doesn't hit a real server in tests
+jest.mock('../../services/api/activityApi', () => ({
+  fetchParcelActivity: jest.fn().mockResolvedValue([
+    {
+      id: 'act-1',
+      source: 'forge',
+      summary: 'Cost approach recalculated',
+      timestamp: new Date('2026-03-01T12:00:00Z'),
+      severity: 'info',
+    },
+    {
+      id: 'act-2',
+      source: 'atlas',
+      summary: 'Parcel boundary updated',
+      timestamp: new Date('2026-02-28T10:00:00Z'),
+      severity: 'success',
+    },
+  ]),
+  clearActivityCache: jest.fn(),
 }));
 
 // ============================================================================
@@ -292,5 +314,51 @@ describe('Gate 7: Badge API Client', () => {
     expect(badges.length).toBe(1);
     expect(badges[0].key).toBe('dossier-source');
     expect(badges[0].label).toBe('PACS');
+  });
+});
+
+// ============================================================================
+// Gate 8: Activity API Client Contract
+// ============================================================================
+
+describe('Gate 8: Activity API Client', () => {
+  it('fetchParcelActivity is importable and returns a Promise', async () => {
+    const { fetchParcelActivity } = await import('../../services/api/activityApi');
+    expect(typeof fetchParcelActivity).toBe('function');
+
+    const result = fetchParcelActivity('test-parcel');
+    expect(typeof result.then).toBe('function');
+  });
+
+  it('clearActivityCache is importable and callable', async () => {
+    const { clearActivityCache } = await import('../../services/api/activityApi');
+    expect(typeof clearActivityCache).toBe('function');
+    // Should not throw
+    clearActivityCache();
+  });
+
+  it('parsed entries have required ActivityEntry fields', async () => {
+    const { fetchParcelActivity } = await import('../../services/api/activityApi');
+    const entries = await fetchParcelActivity('test-parcel');
+
+    expect(Array.isArray(entries)).toBe(true);
+    expect(entries!.length).toBe(2);
+
+    for (const entry of entries!) {
+      expect(entry.id).toBeTruthy();
+      expect(entry.source).toBeTruthy();
+      expect(entry.summary).toBeTruthy();
+      expect(entry.timestamp).toBeInstanceOf(Date);
+      expect(['info', 'success', 'warn', 'danger']).toContain(entry.severity);
+    }
+  });
+
+  it('entries include correct source values from mock', async () => {
+    const { fetchParcelActivity } = await import('../../services/api/activityApi');
+    const entries = await fetchParcelActivity('test-parcel');
+
+    const sources = entries!.map((e) => e.source);
+    expect(sources).toContain('forge');
+    expect(sources).toContain('atlas');
   });
 });

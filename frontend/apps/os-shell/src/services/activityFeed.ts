@@ -1,17 +1,22 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION OS — ACTIVITY FEED DATA SERVICE
- * Phase I: Parcel-scoped activity stream hook
+ * Phase I → P4: Parcel-scoped activity stream hook
  *
  * Provides a React hook that fetches activity entries for a given
- * parcel. Currently backed by deterministic mock data — replace
- * with SignalR hub subscription or REST polling when the backend
- * ActivityHub is available.
+ * parcel. Tries the REST backend first, falls back to deterministic
+ * mock data when the API is unavailable.
+ *
+ * Data flow:
+ *   1. fetchParcelActivity(parcelId) — REST call to /api/properties/parcel/{id}/activity
+ *   2. If REST returns data → use it (real backend events)
+ *   3. If REST returns null → generateMockEntries(parcelId) (deterministic fallback)
  *
  * Mock generation uses a hash-seeded approach so the same parcelId
  * always produces the same entries (stable for demos & screenshots).
  *
  * @see components/workbench/ActivityFeed.tsx — Rendering component
+ * @see services/api/activityApi.ts — REST client with caching
  * @see contracts/workbench.ts — BadgeOwner type
  * ═══════════════════════════════════════════════════════════════
  */
@@ -19,6 +24,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ActivityEntry, ActivitySeverity } from '../components/workbench/ActivityFeed';
 import type { BadgeOwner } from '../contracts/workbench';
+import { fetchParcelActivity } from './api/activityApi';
 
 // ============================================================================
 // Public Hook Interface
@@ -33,9 +39,14 @@ export interface UseParcelActivityResult {
 /**
  * Fetches activity entries for a parcel.
  *
- * Returns deterministic mock data seeded from the parcelId.
- * TODO: Replace mock with SignalR hub subscription or REST polling
- * when backend ActivityHub is available.
+ * Strategy: REST-first with mock fallback.
+ *   1. Calls fetchParcelActivity() — REST fetch with 30s cache
+ *   2. If the backend returns data → uses it directly
+ *   3. If the backend is unavailable (returns null) → falls back to
+ *      deterministic mock data seeded from parcelId
+ *
+ * Mock fallback ensures the activity feed always renders content,
+ * even when the backend is offline (demo mode, CI, local dev).
  */
 export function useParcelActivity(parcelId: string | null): UseParcelActivityResult {
   const [entries, setEntries] = useState<ActivityEntry[]>([]);
@@ -57,26 +68,49 @@ export function useParcelActivity(parcelId: string | null): UseParcelActivityRes
     activeRequestRef.current = requestId;
     setLoading(true);
     setError(null);
+    let cancelled = false;
 
-    // Simulate network delay (300–600ms)
-    const delay = 300 + (simpleHash(parcelId) % 300);
-
-    const timer = setTimeout(() => {
-      // Stale guard: if parcelId changed while we waited, discard
-      if (activeRequestRef.current !== requestId) return;
-
+    (async () => {
       try {
-        const mockEntries = generateMockEntries(parcelId);
-        setEntries(mockEntries);
+        // Try REST backend first
+        const apiEntries = await fetchParcelActivity(parcelId);
+
+        // Stale guard: if parcelId changed while we waited, discard
+        if (cancelled || activeRequestRef.current !== requestId) return;
+
+        if (apiEntries && apiEntries.length > 0) {
+          // Real backend data — map ParsedActivityEntry to ActivityEntry
+          setEntries(apiEntries.map((e) => ({
+            id: e.id,
+            source: e.source,
+            summary: e.summary,
+            severity: e.severity,
+            timestamp: e.timestamp,
+            detail: e.detail,
+          })));
+        } else {
+          // Backend unavailable or empty — deterministic mock fallback
+          setEntries(generateMockEntries(parcelId));
+        }
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load activity');
+        if (cancelled || activeRequestRef.current !== requestId) return;
+        // REST call failed — fall back to mock rather than showing error
+        try {
+          setEntries(generateMockEntries(parcelId));
+        } catch (mockErr) {
+          setError(
+            mockErr instanceof Error ? mockErr.message : 'Failed to load activity',
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled && activeRequestRef.current === requestId) {
+          setLoading(false);
+        }
       }
-    }, delay);
+    })();
 
     return () => {
-      clearTimeout(timer);
+      cancelled = true;
     };
   }, [parcelId]);
 
