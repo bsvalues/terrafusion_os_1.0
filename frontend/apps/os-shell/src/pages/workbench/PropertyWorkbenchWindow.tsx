@@ -306,6 +306,24 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
         quickActions={quickActions}
         workMode={workMode}
         onWorkModeChange={setWorkMode}
+        onQuickAction={(action) => {
+          // Quick actions are tool-bound — route through TerraPilot
+          executeOsAction(
+            {
+              id: action.id,
+              label: action.label,
+              intent: 'pilot-tool',
+              disabled: false,
+            },
+            {
+              navigate: () => {}, // No router in window mode
+              suiteId: 'workbench',
+              surface: 'workbench',
+              moduleId: 'quick-actions',
+              parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
+            }
+          );
+        }}
         onPopOut={handlePopOut}
       />
 

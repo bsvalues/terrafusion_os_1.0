@@ -19,6 +19,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
+import { CANONICAL_TAB_ORDER } from '../../services/contributions';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 
 // ============================================================================
@@ -46,59 +47,43 @@ export interface SuiteCompassProps {
 }
 
 // ============================================================================
-// Default Compass Items (Canonical Order)
+// Suite-specific metadata (not in CANONICAL_TAB_ORDER — compass-only concerns)
 // ============================================================================
 
-const DEFAULT_COMPASS_ITEMS: readonly SuiteCompassItem[] = [
-  {
-    slug: 'summary',
-    label: 'Summary',
-    shortLabel: 'Sum',
-    icon: '📊',
-    affordance: 'Parcel at a glance',
-    color: 'var(--tf-accent)',
-  },
-  {
-    slug: 'forge',
-    label: 'TerraForge',
-    shortLabel: 'Forge',
-    icon: '🔨',
-    affordance: 'Build value',
-    color: 'var(--tf-suite-forge)',
-  },
-  {
-    slug: 'atlas',
-    label: 'TerraAtlas',
-    shortLabel: 'Atlas',
-    icon: '🗺️',
-    affordance: 'See the county',
-    color: 'var(--tf-suite-atlas)',
-  },
-  {
-    slug: 'dais',
-    label: 'TerraDais',
-    shortLabel: 'Dais',
-    icon: '⚖️',
-    affordance: 'Operate value',
-    color: 'var(--tf-suite-dais)',
-  },
-  {
-    slug: 'dossier',
-    label: 'TerraDossier',
-    shortLabel: 'Dossier',
-    icon: '📋',
-    affordance: 'Prove the decision',
-    color: 'var(--tf-suite-dossier)',
-  },
-  {
-    slug: 'pilot',
-    label: 'TerraPilot',
-    shortLabel: 'Pilot',
-    icon: '🤖',
-    affordance: 'Act or draft',
-    color: 'var(--tf-accent)',
-  },
-] as const;
+/** Supplementary metadata for Suite Compass display (affordance, color, labels). */
+const COMPASS_SUPPLEMENTS: Record<WorkbenchTabSlug, {
+  fullLabel: string;
+  shortLabel: string;
+  affordance: string;
+  color: string;
+}> = {
+  summary:  { fullLabel: 'Summary',       shortLabel: 'Sum',     affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
+  forge:    { fullLabel: 'TerraForge',    shortLabel: 'Forge',   affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
+  atlas:    { fullLabel: 'TerraAtlas',    shortLabel: 'Atlas',   affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
+  dais:     { fullLabel: 'TerraDais',     shortLabel: 'Dais',    affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
+  dossier:  { fullLabel: 'TerraDossier',  shortLabel: 'Dossier', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
+  pilot:    { fullLabel: 'TerraPilot',    shortLabel: 'Pilot',   affordance: 'Act or draft',        color: 'var(--tf-accent)' },
+};
+
+// ============================================================================
+// Default Compass Items — derived from CANONICAL_TAB_ORDER (single source of truth)
+// ============================================================================
+
+/**
+ * Icons and order come from CANONICAL_TAB_ORDER; affordance text, color,
+ * and display labels come from COMPASS_SUPPLEMENTS (compass-specific concerns).
+ */
+const DEFAULT_COMPASS_ITEMS: readonly SuiteCompassItem[] = CANONICAL_TAB_ORDER.map((tab) => {
+  const extra = COMPASS_SUPPLEMENTS[tab.slug];
+  return {
+    slug: tab.slug,
+    label: extra.fullLabel,
+    shortLabel: extra.shortLabel,
+    icon: tab.icon,           // ← from CANONICAL_TAB_ORDER (single source of truth)
+    affordance: extra.affordance,
+    color: extra.color,
+  };
+});
 
 // ============================================================================
 // Component
