@@ -35,6 +35,7 @@ import { useParcelActivity } from '../../services/activityFeed';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { usePropertyLookup } from '../../hooks/usePropertyLookup';
 import { useWorkbenchContributions } from '../../hooks/useWorkbenchContributions';
+import { CANONICAL_TAB_ORDER } from '../../services/contributions';
 import type { WorkbenchTabSlug, WorkMode } from '../../contracts/workbench';
 
 // ============================================================================
@@ -84,17 +85,20 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
 }
 
 // ============================================================================
-// Tab Configuration (Locked Order)
+// Tab Configuration — derived from CANONICAL_TAB_ORDER (single source of truth)
 // ============================================================================
 
-const WORKBENCH_TABS: WorkbenchTab[] = [
-  { id: 'summary', label: 'Summary', icon: '📊', path: '', enabled: true },
-  { id: 'forge', label: 'Forge', icon: '🔥', path: 'forge', enabled: true },
-  { id: 'atlas', label: 'Atlas', icon: '🗺️', path: 'atlas', enabled: true },
-  { id: 'dais', label: 'Dais', icon: '📋', path: 'dais', enabled: true },
-  { id: 'dossier', label: 'Dossier', icon: '📁', path: 'dossier', enabled: true },
-  { id: 'pilot', label: 'Pilot', icon: '🎮', path: 'pilot', enabled: true },
-];
+/**
+ * Derived from CANONICAL_TAB_ORDER so icons, labels, and order stay in sync
+ * between the route-based workbench and the window adapter.
+ */
+const WORKBENCH_TABS: WorkbenchTab[] = CANONICAL_TAB_ORDER.map((tab) => ({
+  id: tab.slug,
+  label: tab.title,
+  icon: tab.icon,
+  path: tab.pathSegment ?? '',
+  enabled: true,
+}));
 
 /**
  * Work-mode → tab emphasis mapping.

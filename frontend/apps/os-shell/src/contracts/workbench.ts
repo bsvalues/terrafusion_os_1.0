@@ -58,6 +58,8 @@ export type TabOwner = 'os' | 'forge' | 'atlas' | 'dais' | 'dossier' | 'pilot';
 export interface TabDefinition {
   slug: WorkbenchTabSlug;
   title: string;
+  /** Emoji icon for the tab. */
+  icon: string;
   owner: TabOwner;
   /** RBAC claims required to see this tab (empty = always visible). */
   requiredClaims?: string[];
@@ -65,6 +67,8 @@ export interface TabDefinition {
   requiredLicense?: string;
   /** Route pattern for the tab content. */
   route: string; // e.g. `/property/:parcelId/forge`
+  /** Relative path segment for route-based navigation (e.g. 'forge', '' for summary). */
+  pathSegment?: string;
 }
 
 // ============================================================================

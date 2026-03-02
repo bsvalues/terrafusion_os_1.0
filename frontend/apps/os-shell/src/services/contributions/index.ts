@@ -35,8 +35,10 @@ const forgeContribution: WorkbenchContribution = {
     return [{
       slug: 'forge',
       title: 'Forge',
+      icon: '🔥',
       owner: 'forge',
       route: '/property/:parcelId/forge',
+      pathSegment: 'forge',
     }];
   },
   badgeProvider: forgeBadgeProvider,
@@ -47,8 +49,10 @@ const atlasContribution: WorkbenchContribution = {
     return [{
       slug: 'atlas',
       title: 'Atlas',
+      icon: '🗺️',
       owner: 'atlas',
       route: '/property/:parcelId/atlas',
+      pathSegment: 'atlas',
     }];
   },
   badgeProvider: atlasBadgeProvider,
@@ -59,8 +63,10 @@ const daisContribution: WorkbenchContribution = {
     return [{
       slug: 'dais',
       title: 'Dais',
+      icon: '⚖️',
       owner: 'dais',
       route: '/property/:parcelId/dais',
+      pathSegment: 'dais',
     }];
   },
   badgeProvider: daisBadgeProvider,
@@ -71,8 +77,10 @@ const dossierContribution: WorkbenchContribution = {
     return [{
       slug: 'dossier',
       title: 'Dossier',
+      icon: '📁',
       owner: 'dossier',
       route: '/property/:parcelId/dossier',
+      pathSegment: 'dossier',
     }];
   },
   badgeProvider: dossierBadgeProvider,
@@ -84,14 +92,18 @@ const osContribution: WorkbenchContribution = {
       {
         slug: 'summary',
         title: 'Summary',
+        icon: '📊',
         owner: 'os',
         route: '/property/:parcelId',
+        pathSegment: '',
       },
       {
         slug: 'pilot',
         title: 'Pilot',
+        icon: '🤖',
         owner: 'pilot',
         route: '/property/:parcelId/pilot',
+        pathSegment: 'pilot',
       },
     ];
   },
@@ -155,4 +167,26 @@ export const WORKBENCH_CONTRIBUTIONS: readonly WorkbenchContribution[] = [
   daisContribution,
   dossierContribution,
   osContribution,
+];
+
+// ============================================================================
+// Canonical Tab Order (synchronous, single source of truth)
+// ============================================================================
+
+/**
+ * Locked canonical tab order — derived from contributions.
+ *
+ * Both PropertyWorkbench (route-based) and PropertyWorkbenchWindow (window
+ * adapter) should import this instead of maintaining their own tab arrays.
+ * This eliminates icon/label drift between the two surfaces.
+ *
+ * Order matches the Constitution v1.0 specification.
+ */
+export const CANONICAL_TAB_ORDER: readonly TabDefinition[] = [
+  { slug: 'summary', title: 'Summary', icon: '📊', owner: 'os', route: '/property/:parcelId', pathSegment: '' },
+  { slug: 'forge', title: 'Forge', icon: '🔥', owner: 'forge', route: '/property/:parcelId/forge', pathSegment: 'forge' },
+  { slug: 'atlas', title: 'Atlas', icon: '🗺️', owner: 'atlas', route: '/property/:parcelId/atlas', pathSegment: 'atlas' },
+  { slug: 'dais', title: 'Dais', icon: '⚖️', owner: 'dais', route: '/property/:parcelId/dais', pathSegment: 'dais' },
+  { slug: 'dossier', title: 'Dossier', icon: '📁', owner: 'dossier', route: '/property/:parcelId/dossier', pathSegment: 'dossier' },
+  { slug: 'pilot', title: 'Pilot', icon: '🤖', owner: 'pilot', route: '/property/:parcelId/pilot', pathSegment: 'pilot' },
 ];

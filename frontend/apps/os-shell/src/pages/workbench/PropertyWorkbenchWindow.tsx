@@ -27,6 +27,8 @@ import { ActivityFeed } from '../../components/workbench/ActivityFeed';
 import { useParcelActivity } from '../../services/activityFeed';
 import { useWorkbenchContributions } from '../../hooks/useWorkbenchContributions';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
+import { CANONICAL_TAB_ORDER } from '../../services/contributions';
+import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import type { WorkbenchTabSlug, WorkMode } from '../../contracts/workbench';
 
 // ============================================================================
@@ -73,25 +75,21 @@ export interface PropertyWorkbenchWindowProps {
   metadata?: Record<string, unknown>;
 }
 
-interface TabDef {
-  id: WorkbenchTabSlug;
-  label: string;
-  icon: string;
+// ============================================================================
+// Utilities
+// ============================================================================
+
+/**
+ * Simple hash function for parcel ID (PII-safe)
+ * Uses a simple djb2-like hash for deterministic output
+ */
+function hashParcelId(parcelId: string): string {
+  let hash = 5381;
+  for (let i = 0; i < parcelId.length; i++) {
+    hash = (hash * 33) ^ parcelId.charCodeAt(i);
+  }
+  return `hash_${(hash >>> 0).toString(16)}`;
 }
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-/** Canonical tab order — locked per spec. */
-const TABS: readonly TabDef[] = [
-  { id: 'summary', label: 'Summary', icon: '📊' },
-  { id: 'forge', label: 'Forge', icon: '🔨' },
-  { id: 'atlas', label: 'Atlas', icon: '🗺️' },
-  { id: 'dais', label: 'Dais', icon: '⚖️' },
-  { id: 'dossier', label: 'Dossier', icon: '📋' },
-  { id: 'pilot', label: 'Pilot', icon: '🤖' },
-] as const;
 
 // ============================================================================
 // Loading Fallback
@@ -147,12 +145,12 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
       background: 'hsl(var(--tf-bg-surface) / 0.5)',
     }}
   >
-    {TABS.map((tab) => {
-      const isActive = tab.id === activeTab;
+    {CANONICAL_TAB_ORDER.map((tab) => {
+      const isActive = tab.slug === activeTab;
       return (
         <button
-          key={tab.id}
-          onClick={() => onTabChange(tab.id)}
+          key={tab.slug}
+          onClick={() => onTabChange(tab.slug)}
           className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
           style={{
             color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
@@ -163,7 +161,7 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
           role="tab"
         >
           <span>{tab.icon}</span>
-          <span>{tab.label}</span>
+          <span>{tab.title}</span>
         </button>
       );
     })}
@@ -210,8 +208,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   // Resolve initial tab from metadata slug
   const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
     if (!initialTab || initialTab === '/' as string) return 'summary';
-    const valid = TABS.find((t) => t.id === initialTab);
-    return valid?.id ?? 'summary';
+    const valid = CANONICAL_TAB_ORDER.find((t) => t.slug === initialTab);
+    return valid?.slug ?? 'summary';
   }, [initialTab]);
 
   // Active tab state
@@ -255,11 +253,34 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     }
   }, [parcelId]);
 
-  // Tab change handler
+  // Tab change handler — emits TerraTrace event for audit trail
   const handleTabChange = useCallback((slug: WorkbenchTabSlug) => {
+    const prevTab = activeTab;
     setActiveTab(slug);
-    // TODO: Emit TerraTrace tab_switched event
-  }, []);
+
+    // Emit TerraTrace tab_switched event (matches route-based counterpart)
+    if (slug !== prevTab) {
+      const tabDef = CANONICAL_TAB_ORDER.find((t) => t.slug === slug);
+      const action: OsAction = {
+        id: 'workbench_tab_switch',
+        label: `Switch to ${tabDef?.title ?? slug}`,
+        intent: 'workbench',
+        href: tabDef?.route?.replace(':parcelId', parcelId || '') ?? '',
+        disabled: false,
+      };
+
+      const context: OsActionContext = {
+        navigate: () => {}, // No navigation needed — state-based tab switching
+        suiteId: 'workbench',
+        surface: 'workbench',
+        moduleId: 'workbench_tabs',
+        parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
+        tabId: slug,
+      };
+
+      executeOsAction(action, context);
+    }
+  }, [activeTab, parcelId]);
 
   // Activity Feed state — collapsible bottom panel
   const [activityOpen, setActivityOpen] = useState(false);
