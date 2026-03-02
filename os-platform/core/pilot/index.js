@@ -6,7 +6,7 @@
  * Re-exports all pilot module components for clean imports.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.summarizeSalesCompsHandler = exports.summarizeParcelCasefileHandler = exports.summarizeLevyRateHandler = exports.summarizeDossierHandler = exports.searchTraceByCorrelationHandler = exports.registerPhase84Handlers = exports.registerPhase83Handlers = exports.registerAllHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.explainSeniorExemptionHandler = exports.explainModelResultsHandler = exports.explainModelInputsHandler = exports.draftValueChangeNoticeHandler = exports.draftBoeAppealResponseHandler = exports.draftAppealResponseHandler = exports.compareAssessedValueHandler = exports.addDossierNoteHandler = exports.toolRunner = exports.ToolRunner = exports.ToolRunnerError = exports.ErrorCodes = exports.createPreflight = exports.toolRegistry = exports.VALID_TRACE_POLICIES = exports.VALID_SUITES = exports.VALID_RISKS = exports.VALID_PII_HANDLING = exports.ToolRegistry = exports.ManifestValidationError = void 0;
+exports.unwrapBackend = exports.backendGet = exports.backendPost = exports.summarizeLevyRateRealHandler = exports.createSearchTraceHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = exports.registerR1Handlers = exports.summarizeSalesCompsHandler = exports.summarizeParcelCasefileHandler = exports.summarizeLevyRateHandler = exports.summarizeDossierHandler = exports.searchTraceByCorrelationHandler = exports.registerPhase84Handlers = exports.registerPhase83Handlers = exports.registerAllHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.explainSeniorExemptionHandler = exports.explainModelResultsHandler = exports.explainModelInputsHandler = exports.draftValueChangeNoticeHandler = exports.draftBoeAppealResponseHandler = exports.draftAppealResponseHandler = exports.compareAssessedValueHandler = exports.addDossierNoteHandler = exports.toolRunner = exports.ToolRunner = exports.ToolRunnerError = exports.ErrorCodes = exports.createPreflight = exports.toolRegistry = exports.VALID_TRACE_POLICIES = exports.VALID_SUITES = exports.VALID_RISKS = exports.VALID_PII_HANDLING = exports.ToolRegistry = exports.ManifestValidationError = void 0;
 var ToolRegistry_js_1 = require("./ToolRegistry.js");
 Object.defineProperty(exports, "ManifestValidationError", { enumerable: true, get: function () { return ToolRegistry_js_1.ManifestValidationError; } });
 Object.defineProperty(exports, "ToolRegistry", { enumerable: true, get: function () { return ToolRegistry_js_1.ToolRegistry; } });
@@ -42,3 +42,16 @@ Object.defineProperty(exports, "summarizeDossierHandler", { enumerable: true, ge
 Object.defineProperty(exports, "summarizeLevyRateHandler", { enumerable: true, get: function () { return handlers_js_1.summarizeLevyRateHandler; } });
 Object.defineProperty(exports, "summarizeParcelCasefileHandler", { enumerable: true, get: function () { return handlers_js_1.summarizeParcelCasefileHandler; } });
 Object.defineProperty(exports, "summarizeSalesCompsHandler", { enumerable: true, get: function () { return handlers_js_1.summarizeSalesCompsHandler; } });
+// R1 Real Handlers (override canned stubs when backend is available)
+var handlers_real_js_1 = require("./handlers.real.js");
+Object.defineProperty(exports, "registerR1Handlers", { enumerable: true, get: function () { return handlers_real_js_1.registerR1Handlers; } });
+Object.defineProperty(exports, "runValuationModelHandler", { enumerable: true, get: function () { return handlers_real_js_1.runValuationModelHandler; } });
+Object.defineProperty(exports, "explainValueChangeHandler", { enumerable: true, get: function () { return handlers_real_js_1.explainValueChangeHandler; } });
+Object.defineProperty(exports, "routeToParcelHandler", { enumerable: true, get: function () { return handlers_real_js_1.routeToParcelHandler; } });
+Object.defineProperty(exports, "createSearchTraceHandler", { enumerable: true, get: function () { return handlers_real_js_1.createSearchTraceHandler; } });
+Object.defineProperty(exports, "summarizeLevyRateRealHandler", { enumerable: true, get: function () { return handlers_real_js_1.summarizeLevyRateRealHandler; } });
+// Backend HTTP Client
+var backendClient_js_1 = require("./backendClient.js");
+Object.defineProperty(exports, "backendPost", { enumerable: true, get: function () { return backendClient_js_1.backendPost; } });
+Object.defineProperty(exports, "backendGet", { enumerable: true, get: function () { return backendClient_js_1.backendGet; } });
+Object.defineProperty(exports, "unwrapBackend", { enumerable: true, get: function () { return backendClient_js_1.unwrapBackend; } });

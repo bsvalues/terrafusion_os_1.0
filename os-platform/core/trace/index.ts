@@ -13,11 +13,11 @@ export {
 } from './TraceService.js';
 
 export {
+    FileTraceStore,
     InMemoryTraceStore,
-    PostgresTraceStore,
     createTraceStore,
+    type FileTraceStoreOptions,
     type InMemoryTraceStoreOptions,
-    type PostgresTraceStoreOptions,
     type TraceStore,
     type TraceStoreConfig,
     type TraceStoreType

@@ -2,11 +2,14 @@
  * TerraFusion OS - Trace Store Interface
  *
  * Abstraction layer for trace event persistence.
- * Allows swapping in-memory (dev) vs PostgreSQL (prod) without touching ToolRunner.
- *
- * Phase 8.1: Full PostgresTraceStore implementation with Drizzle ORM.
+ * Implementations:
+ *   - InMemoryTraceStore: dev/test (no persistence)
+ *   - FileTraceStore: R1 production (append-only JSON lines, zero deps)
+ *   - PostgresTraceStore: R2 future (Drizzle ORM, see schema.ts)
  */
 
+import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { dirname } from 'path';
 import type { TraceEvent, TraceQueryOptions } from '../types/index.js';
 
 // ============================================================================
@@ -165,213 +168,162 @@ export class InMemoryTraceStore implements TraceStore {
 }
 
 // ============================================================================
-// PostgreSQL Implementation (Drizzle ORM - Phase 8.1)
+// File-Based Implementation (R1 Production — zero external deps)
 // ============================================================================
 
-export interface PostgresTraceStoreOptions {
-  /** PostgreSQL connection string (DATABASE_URL) */
-  connectionString: string;
-  /** Maximum connections in pool (default: 10) */
-  maxConnections?: number;
-  /** Idle timeout in ms (default: 30000) */
-  idleTimeout?: number;
+export interface FileTraceStoreOptions {
+  /** Path to the trace events file (JSON lines format) */
+  filePath: string;
+  /** Flush interval in ms for in-memory cache sync (default: 0 = sync writes) */
+  flushIntervalMs?: number;
 }
 
 /**
- * PostgreSQL-backed trace store for production.
- * Uses Drizzle ORM with postgres-js driver.
+ * Append-only file-based trace store using JSON lines format.
+ * Each line is a complete serialized TraceEvent.
  *
- * Design:
- *   - APPEND-ONLY: No UPDATE or DELETE methods
- *   - COUNTY ISOLATION: All queries scoped by county_id
- *   - IMMUTABLE: Events cannot be modified after insertion
+ * Properties:
+ *   - PERSISTENT: survives process restarts
+ *   - APPEND-ONLY: no updates, no deletes
+ *   - ZERO-DEP: uses only Node.js built-ins (fs, path)
+ *   - QUERY: loads into memory for filtering (adequate for R1 volumes)
+ *
+ * For high-volume production, migrate to PostgresTraceStore (R2).
  */
-export class PostgresTraceStore implements TraceStore {
-  private db: PostgresJsDatabase;
-  private sql: postgres.Sql;
+export class FileTraceStore implements TraceStore {
+  private events: TraceEvent[] = [];
+  private filePath: string;
+  private loaded = false;
 
-  constructor(options: PostgresTraceStoreOptions) {
-    // Create postgres-js connection with pooling
-    this.sql = postgres(options.connectionString, {
-      max: options.maxConnections ?? 10,
-      idle_timeout: options.idleTimeout ?? 30,
-      connect_timeout: 10,
-    });
-
-    // Initialize Drizzle
-    this.db = drizzle(this.sql);
+  constructor(options: FileTraceStoreOptions) {
+    this.filePath = options.filePath;
   }
 
   /**
-   * Append a trace event (immutable, append-only).
-   * This is the ONLY write operation - no updates, no deletes.
+   * Ensure events are loaded from disk. Idempotent.
    */
-  async append(event: TraceEvent): Promise<TraceEvent> {
-    const insert: TraceEventInsert = {
-      eventId: event.eventId,
-      correlationId: event.correlationId,
-      countyId: event.context.countyId,
-      userId: event.context.userId,
-      toolId: event.toolId,
-      type: event.type,
-      mode: event.context.mode,
-      summary: event.summary,
-      context: event.context,
-      payloadRef: event.payloadRef ?? null,
-      payloadStore: event.payloadStore ?? null,
-      redactedFields: event.redactedFields ?? null,
-      schemaVersion: event.schemaVersion,
-      // createdAt is auto-set by defaultNow()
-    };
+  private ensureLoaded(): void {
+    if (this.loaded) return;
+    this.loaded = true;
 
-    await this.db.insert(traceEvents).values(insert);
+    if (!existsSync(this.filePath)) {
+      const dir = dirname(this.filePath);
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
+      writeFileSync(this.filePath, '', 'utf-8');
+      return;
+    }
+
+    const raw = readFileSync(this.filePath, 'utf-8');
+    const lines = raw.split('\n').filter(line => line.trim().length > 0);
+
+    for (const line of lines) {
+      try {
+        const event = JSON.parse(line) as TraceEvent;
+        this.events.push(event);
+      } catch {
+        // Skip malformed lines — append-only means we never fix them
+      }
+    }
+  }
+
+  async append(event: TraceEvent): Promise<TraceEvent> {
+    this.ensureLoaded();
+    this.events.push(event);
+
+    // Append to file (sync for durability)
+    const dir = dirname(this.filePath);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+    appendFileSync(this.filePath, JSON.stringify(event) + '\n', 'utf-8');
 
     return event;
   }
 
-  /**
-   * Query trace events with filters.
-   * All queries are county-scoped for isolation.
-   */
-  async query(options: TraceQueryOptions): Promise<TraceEvent[]> {
-    const limit = options.limit ?? 100;
-    const offset = options.offset ?? 0;
-
-    // Build conditions array
-    const conditions = [];
+  async query(options: TraceQueryOptions = {}): Promise<TraceEvent[]> {
+    this.ensureLoaded();
+    let results = [...this.events];
 
     if (options.toolId) {
-      conditions.push(eq(traceEvents.toolId, options.toolId));
+      results = results.filter(e => e.toolId === options.toolId);
     }
     if (options.correlationId) {
-      conditions.push(eq(traceEvents.correlationId, options.correlationId));
+      results = results.filter(e => e.correlationId === options.correlationId);
     }
     if (options.type) {
-      conditions.push(eq(traceEvents.type, options.type));
+      results = results.filter(e => e.type === options.type);
     }
     if (options.parcelId) {
-      // Use SQL JSON operator for context.parcelId
-      conditions.push(sql`${traceEvents.context}->>'parcelId' = ${options.parcelId}`);
+      results = results.filter(e => e.context.parcelId === options.parcelId);
     }
     if (options.dossierId) {
-      conditions.push(sql`${traceEvents.context}->>'dossierId' = ${options.dossierId}`);
+      results = results.filter(e => e.context.dossierId === options.dossierId);
     }
 
-    // Execute query with conditions
-    const rows = await this.db
-      .select()
-      .from(traceEvents)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(desc(traceEvents.createdAt))
-      .limit(limit)
-      .offset(offset);
+    results.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-    // Map rows to TraceEvent type
-    return rows.map(this.rowToEvent);
+    const offset = options.offset ?? 0;
+    const limit = options.limit ?? 100;
+    return results.slice(offset, offset + limit);
   }
 
-  /**
-   * Query events by county with time window (for MetricsService).
-   */
   async queryByCountyAndWindow(
     countyId: string,
     since: Date,
     limit: number = 100000
   ): Promise<TraceEvent[]> {
-    const rows = await this.db
-      .select()
-      .from(traceEvents)
-      .where(and(eq(traceEvents.countyId, countyId), gte(traceEvents.createdAt, since)))
-      .orderBy(desc(traceEvents.createdAt))
-      .limit(limit);
-
-    return rows.map(this.rowToEvent);
+    this.ensureLoaded();
+    return this.events
+      .filter(e => e.context.countyId === countyId && new Date(e.timestamp) >= since)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit);
   }
 
-  /**
-   * Get a single event by ID.
-   */
   async getById(eventId: string): Promise<TraceEvent | undefined> {
-    const rows = await this.db
-      .select()
-      .from(traceEvents)
-      .where(eq(traceEvents.eventId, eventId))
-      .limit(1);
-
-    return rows.length > 0 ? this.rowToEvent(rows[0]) : undefined;
+    this.ensureLoaded();
+    return this.events.find(e => e.eventId === eventId);
   }
 
-  /**
-   * Get all events for a correlation ID.
-   * County isolation is enforced by requiring countyId.
-   */
   async getByCorrelationId(correlationId: string, countyId?: string): Promise<TraceEvent[]> {
-    const conditions = [eq(traceEvents.correlationId, correlationId)];
+    this.ensureLoaded();
+    let results = this.events.filter(e => e.correlationId === correlationId);
     if (countyId) {
-      conditions.push(eq(traceEvents.countyId, countyId));
+      results = results.filter(e => e.context.countyId === countyId);
     }
-
-    const rows = await this.db
-      .select()
-      .from(traceEvents)
-      .where(and(...conditions))
-      .orderBy(traceEvents.createdAt);
-
-    return rows.map(this.rowToEvent);
+    return results.sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
   }
 
-  /**
-   * Get event count (for monitoring).
-   * Optionally filtered by county.
-   */
   async count(countyId?: string): Promise<number> {
-    const result = await this.db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(traceEvents)
-      .where(countyId ? eq(traceEvents.countyId, countyId) : undefined);
-
-    return result[0]?.count ?? 0;
+    this.ensureLoaded();
+    if (countyId) {
+      return this.events.filter(e => e.context.countyId === countyId).length;
+    }
+    return this.events.length;
   }
 
-  /**
-   * Health check for the store.
-   */
   async healthy(): Promise<boolean> {
     try {
-      await this.db
-        .select({ one: sql`1` })
-        .from(traceEvents)
-        .limit(1);
+      this.ensureLoaded();
       return true;
     } catch {
       return false;
     }
   }
 
-  /**
-   * Close the database connection pool.
-   */
   async close(): Promise<void> {
-    await this.sql.end();
+    // No-op — sync writes mean nothing to flush
   }
 
-  /**
-   * Convert database row to TraceEvent type.
-   */
-  private rowToEvent(row: typeof traceEvents.$inferSelect): TraceEvent {
-    return {
-      eventId: row.eventId,
-      correlationId: row.correlationId,
-      toolId: row.toolId,
-      type: row.type as TraceEvent['type'],
-      summary: row.summary,
-      context: row.context as TraceEvent['context'],
-      payloadRef: row.payloadRef ?? undefined,
-      payloadStore: row.payloadStore as TraceEvent['payloadStore'],
-      redactedFields: row.redactedFields ?? undefined,
-      schemaVersion: row.schemaVersion,
-      timestamp: row.createdAt.toISOString(),
-    };
+  /** Clear events (testing only — rewrites the file) */
+  clear(): void {
+    this.events = [];
+    if (existsSync(this.filePath)) {
+      writeFileSync(this.filePath, '', 'utf-8');
+    }
   }
 }
 
@@ -379,23 +331,27 @@ export class PostgresTraceStore implements TraceStore {
 // Factory
 // ============================================================================
 
-export type TraceStoreType = 'memory' | 'postgres';
+export type TraceStoreType = 'memory' | 'file';
 
 export interface TraceStoreConfig {
   type: TraceStoreType;
   memory?: InMemoryTraceStoreOptions;
-  postgres?: PostgresTraceStoreOptions;
+  file?: FileTraceStoreOptions;
 }
 
+/**
+ * Create a TraceStore from configuration.
+ * Default: 'memory' for dev/test, 'file' for persistence.
+ */
 export function createTraceStore(config: TraceStoreConfig): TraceStore {
   switch (config.type) {
     case 'memory':
       return new InMemoryTraceStore(config.memory);
-    case 'postgres':
-      if (!config.postgres) {
-        throw new Error('PostgresTraceStoreOptions required for postgres type');
+    case 'file':
+      if (!config.file) {
+        throw new Error('FileTraceStoreOptions required for file type');
       }
-      return new PostgresTraceStore(config.postgres);
+      return new FileTraceStore(config.file);
     default:
       throw new Error(`Unknown trace store type: ${config.type}`);
   }

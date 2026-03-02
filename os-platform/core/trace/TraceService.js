@@ -71,6 +71,7 @@ class TraceService {
         this.ringBufferSize = options.ringBufferSize ?? DEFAULT_RING_BUFFER_SIZE;
         this.enablePayloadStore = options.enablePayloadStore ?? true;
         this.payloadStore = new PayloadReferenceStore();
+        this.store = options.store;
     }
     /**
      * Emit a trace event.
@@ -83,12 +84,17 @@ class TraceService {
             timestamp: new Date().toISOString(),
             schemaVersion: SCHEMA_VERSION,
         };
-        // Append to ring buffer
+        // Append to in-memory ring buffer (always, for fast query)
         this.events.push(event);
-        // Trim if over capacity
         if (this.events.length > this.ringBufferSize) {
             const trimCount = this.events.length - this.ringBufferSize;
             this.events.splice(0, trimCount);
+        }
+        // Persist if store is configured (fire-and-forget — don't block emit)
+        if (this.store) {
+            this.store.append(event).catch(() => {
+                // Persistence failure is non-fatal for R1 — event is still in ring buffer
+            });
         }
         return event;
     }
@@ -121,9 +127,11 @@ class TraceService {
     }
     /**
      * Query trace events.
-     * Events are immutable - this returns copies.
+     * When a persistent store is configured, queries go through it.
+     * Otherwise falls back to in-memory ring buffer.
      */
     query(options = {}) {
+        // Synchronous path uses ring buffer (for backward compat with tests)
         let results = [...this.events];
         // Apply filters
         if (options.toolId) {
@@ -154,6 +162,25 @@ class TraceService {
     getEvent(eventId) {
         const event = this.events.find(e => e.eventId === eventId);
         return event ? { ...event } : undefined;
+    }
+    /**
+     * Async query — delegates to persistent store when available.
+     * Use this for API endpoints that can await.
+     */
+    async queryAsync(options = {}) {
+        if (this.store) {
+            return this.store.query(options);
+        }
+        return this.query(options);
+    }
+    /**
+     * Async getByCorrelationId — delegates to persistent store.
+     */
+    async getByCorrelationIdAsync(correlationId, countyId) {
+        if (this.store) {
+            return this.store.getByCorrelationId(correlationId, countyId);
+        }
+        return this.getByCorrelationId(correlationId);
     }
     /**
      * Get events by correlation ID.

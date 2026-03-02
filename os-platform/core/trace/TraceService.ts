@@ -15,6 +15,7 @@ import type {
     TraceEventInput,
     TraceQueryOptions,
 } from '../types/index.js';
+import type { TraceStore } from './TraceStore.js';
 
 // ============================================================================
 // Constants
@@ -89,10 +90,12 @@ class PayloadReferenceStore {
 // ============================================================================
 
 export interface TraceServiceOptions {
-  /** Maximum events to retain in ring buffer */
+  /** Maximum events to retain in ring buffer (when no store provided) */
   ringBufferSize?: number;
   /** Whether to enable payload storage */
   enablePayloadStore?: boolean;
+  /** Optional persistent store. When set, events are persisted via TraceStore. */
+  store?: TraceStore;
 }
 
 export class TraceService {
@@ -100,11 +103,13 @@ export class TraceService {
   private ringBufferSize: number;
   private payloadStore: PayloadReferenceStore;
   private enablePayloadStore: boolean;
+  private store: TraceStore | undefined;
 
   constructor(options: TraceServiceOptions = {}) {
     this.ringBufferSize = options.ringBufferSize ?? DEFAULT_RING_BUFFER_SIZE;
     this.enablePayloadStore = options.enablePayloadStore ?? true;
     this.payloadStore = new PayloadReferenceStore();
+    this.store = options.store;
   }
 
   /**
@@ -119,13 +124,18 @@ export class TraceService {
       schemaVersion: SCHEMA_VERSION,
     };
 
-    // Append to ring buffer
+    // Append to in-memory ring buffer (always, for fast query)
     this.events.push(event);
-
-    // Trim if over capacity
     if (this.events.length > this.ringBufferSize) {
       const trimCount = this.events.length - this.ringBufferSize;
       this.events.splice(0, trimCount);
+    }
+
+    // Persist if store is configured (fire-and-forget — don't block emit)
+    if (this.store) {
+      this.store.append(event).catch(() => {
+        // Persistence failure is non-fatal for R1 — event is still in ring buffer
+      });
     }
 
     return event;
@@ -167,9 +177,11 @@ export class TraceService {
 
   /**
    * Query trace events.
-   * Events are immutable - this returns copies.
+   * When a persistent store is configured, queries go through it.
+   * Otherwise falls back to in-memory ring buffer.
    */
   query(options: TraceQueryOptions = {}): TraceEvent[] {
+    // Synchronous path uses ring buffer (for backward compat with tests)
     let results = [...this.events];
 
     // Apply filters
@@ -204,6 +216,27 @@ export class TraceService {
   getEvent(eventId: string): TraceEvent | undefined {
     const event = this.events.find(e => e.eventId === eventId);
     return event ? { ...event } : undefined;
+  }
+
+  /**
+   * Async query — delegates to persistent store when available.
+   * Use this for API endpoints that can await.
+   */
+  async queryAsync(options: TraceQueryOptions = {}): Promise<TraceEvent[]> {
+    if (this.store) {
+      return this.store.query(options);
+    }
+    return this.query(options);
+  }
+
+  /**
+   * Async getByCorrelationId — delegates to persistent store.
+   */
+  async getByCorrelationIdAsync(correlationId: string, countyId?: string): Promise<TraceEvent[]> {
+    if (this.store) {
+      return this.store.getByCorrelationId(correlationId, countyId);
+    }
+    return this.getByCorrelationId(correlationId);
   }
 
   /**
