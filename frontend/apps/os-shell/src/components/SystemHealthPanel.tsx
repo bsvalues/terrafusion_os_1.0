@@ -34,11 +34,11 @@ export interface SystemHealthPanelProps {
 const statusColor = (s: 'healthy' | 'warning' | 'error'): string => {
   switch (s) {
     case 'healthy':
-      return 'hsl(var(--tf-accent-success, 142 76% 42%))';
+      return 'hsl(var(--tf-accent-success))';
     case 'warning':
-      return 'hsl(var(--tf-accent-warning, 38 92% 55%))';
+      return 'hsl(var(--tf-accent-warning))';
     case 'error':
-      return 'hsl(var(--tf-accent-danger, 0 84% 60%))';
+      return 'hsl(var(--tf-accent-danger))';
   }
 };
 

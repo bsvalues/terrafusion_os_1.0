@@ -11,7 +11,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
@@ -47,8 +47,7 @@ interface InvocationState {
 }
 
 export const PropertyPilot: React.FC = () => {
-  const { parcelId } = useOutletContext<{ parcelId: string }>();
-  const navigate = useNavigate();
+  const { parcelId } = useWorkbenchTab();
 
   const [invocationState, setInvocationState] = useState<InvocationState>({
     status: 'idle',
@@ -141,7 +140,7 @@ export const PropertyPilot: React.FC = () => {
         subtitle={`Tool execution for parcel ${parcelId}`}
         actions={
           <button
-            onClick={() => navigate('/pilot')}
+            onClick={() => window.open(`/property/${encodeURIComponent(parcelId)}/pilot`, '_blank')}
             className='px-3 py-1.5 text-sm tf-hover-surface rounded-lg transition-colors'
           >
             Full Console →

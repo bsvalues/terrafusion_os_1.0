@@ -8,7 +8,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
@@ -59,7 +59,7 @@ interface ExplainState {
 }
 
 export const PropertyForge: React.FC = () => {
-  const { parcelId } = useOutletContext<{ parcelId: string }>();
+  const { parcelId } = useWorkbenchTab();
 
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [audience, setAudience] = useState<AudienceType>('internal');

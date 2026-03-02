@@ -8,7 +8,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -69,7 +69,7 @@ interface SummarizeState {
 }
 
 export const PropertyDossier: React.FC = () => {
-  const { parcelId } = useOutletContext<{ parcelId: string }>();
+  const { parcelId } = useWorkbenchTab();
 
   const [selectedDoc, setSelectedDoc] = useState<DossierDocument | null>(null);
   const [summarizeState, setSummarizeState] = useState<SummarizeState>({ status: 'idle' });

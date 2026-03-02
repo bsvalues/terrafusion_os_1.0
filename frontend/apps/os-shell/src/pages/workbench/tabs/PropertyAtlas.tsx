@@ -8,7 +8,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
@@ -186,7 +186,7 @@ function ParcelMapVisualization({
 /* ------------------------------------------------------------------ */
 
 export const PropertyAtlas: React.FC = () => {
-  const { parcelId } = useOutletContext<{ parcelId: string }>();
+  const { parcelId } = useWorkbenchTab();
 
   const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set());
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
