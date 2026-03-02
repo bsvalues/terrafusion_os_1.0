@@ -385,8 +385,8 @@ export const PropertyDossier: React.FC = () => {
               <ErrorDisplay error={summarizeState.error} />
             </div>
           )}
-        </div>
-      </div>
+        </BentoCard>
+      </BentoGrid>
 
       {/* Invocation History */}
       <InvocationHistory
