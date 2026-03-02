@@ -241,8 +241,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
-    () => ({ parcelId: parcelId || 'Unknown', propertyData }),
-    [parcelId, propertyData]
+    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode }),
+    [parcelId, propertyData, workMode]
   );
 
   // Badges + Quick Actions — unified from WorkbenchContributions
