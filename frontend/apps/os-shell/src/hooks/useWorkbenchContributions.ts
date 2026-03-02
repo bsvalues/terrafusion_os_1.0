@@ -20,7 +20,7 @@ import type {
   WorkbenchContext,
   WorkMode,
 } from '../../contracts/workbench';
-import { WORKBENCH_CONTRIBUTIONS } from '../../services/contributions';
+import { WORKBENCH_CONTRIBUTIONS } from '../services/contributions';
 
 export interface UseWorkbenchContributionsResult {
   badges: Badge[];
