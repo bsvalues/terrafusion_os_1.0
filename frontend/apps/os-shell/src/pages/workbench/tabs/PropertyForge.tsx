@@ -18,6 +18,8 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { BentoGrid } from '../../../ui/materials/BentoGrid';
+import { BentoCard } from '../../../ui/materials/BentoCard';
 
 /** Current year for default selection */
 const CURRENT_YEAR = new Date().getFullYear();
@@ -194,12 +196,9 @@ export const PropertyForge: React.FC = () => {
       />
 
       {/* Main Content Grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <BentoGrid columns={3} gap={1.5} padding={0}>
         {/* Controls Panel */}
-        <div className='tf-panel p-4'>
-          <h3 className='tf-text font-semibold mb-4 flex items-center gap-2'>
-            <span>⚙️</span> Valuation Parameters
-          </h3>
+        <BentoCard variant="form" title="Valuation Parameters" actions={<span>⚙️</span>}>
 
           {/* Tax Year Selector */}
           <div className='mb-4'>
@@ -292,10 +291,10 @@ export const PropertyForge: React.FC = () => {
           >
             {explainState.status === 'loading' ? 'Analyzing...' : 'Explain Valuation'}
           </button>
-        </div>
+        </BentoCard>
 
         {/* Results Panel */}
-        <div className='lg:col-span-2 tf-panel p-4'>
+        <BentoCard span="2x1">
           {explainState.status === 'loading' ? (
             <div role='status' className='flex flex-col items-center justify-center py-12 gap-3'>
               <div className='tf-spinner h-10 w-10' />
@@ -409,8 +408,8 @@ export const PropertyForge: React.FC = () => {
               </p>
             </div>
           ) : null}
-        </div>
-      </div>
+        </BentoCard>
+      </BentoGrid>
 
       {/* Error Display */}
       {explainState.status === 'error' && explainState.error && (

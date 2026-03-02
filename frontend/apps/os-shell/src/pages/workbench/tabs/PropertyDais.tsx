@@ -18,6 +18,8 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { BentoGrid } from '../../../ui/materials/BentoGrid';
+import { BentoCard } from '../../../ui/materials/BentoCard';
 
 /** Workflow type options */
 const WORKFLOW_TYPES = [
@@ -219,12 +221,9 @@ export const PropertyDais: React.FC = () => {
       />
 
       {/* Main Content Grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <BentoGrid columns={3} gap={1.5} padding={0}>
         {/* Controls Panel */}
-        <div className='tf-panel p-4'>
-          <h3 className='tf-text font-semibold mb-4 flex items-center gap-2'>
-            <span>⚙️</span> Workflow Parameters
-          </h3>
+        <BentoCard variant="form" title="Workflow Parameters" actions={<span>⚙️</span>}>
 
           {/* Workflow Type Selector */}
           <div className='mb-4'>
@@ -256,10 +255,10 @@ export const PropertyDais: React.FC = () => {
           >
             {statusState.status === 'loading' ? 'Checking...' : 'Check Status'}
           </button>
-        </div>
+        </BentoCard>
 
         {/* Results Panel */}
-        <div className='lg:col-span-2 tf-panel p-4'>
+        <BentoCard span="2x1">
           {statusState.status === 'loading' ? (
             <div role='status' className='flex flex-col items-center justify-center py-12 gap-3'>
               <div className='tf-spinner h-10 w-10' />
@@ -394,8 +393,8 @@ export const PropertyDais: React.FC = () => {
               </p>
             </div>
           ) : null}
-        </div>
-      </div>
+        </BentoCard>
+      </BentoGrid>
 
       {/* Error Display */}
       {statusState.status === 'error' && statusState.error && (

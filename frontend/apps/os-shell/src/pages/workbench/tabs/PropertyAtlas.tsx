@@ -18,6 +18,8 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { BentoGrid } from '../../../ui/materials/BentoGrid';
+import { BentoCard } from '../../../ui/materials/BentoCard';
 
 /** Available map layers */
 const MAP_LAYERS = [
@@ -327,12 +329,9 @@ export const PropertyAtlas: React.FC = () => {
       />
 
       {/* Main Content Grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <BentoGrid columns={3} gap={1.5} padding={0}>
         {/* Layer Controls */}
-        <div className='tf-panel p-4'>
-          <h3 className='tf-text font-semibold mb-4 flex items-center gap-2'>
-            <span>📚</span> Map Layers
-          </h3>
+        <BentoCard variant="form" title="Map Layers" actions={<span>📚</span>}>
 
           <div className='space-y-2'>
             {MAP_LAYERS.map((layer) => (
@@ -364,10 +363,10 @@ export const PropertyAtlas: React.FC = () => {
           >
             {queryState.status === 'loading' ? 'Querying...' : 'Query Layers'}
           </button>
-        </div>
+        </BentoCard>
 
         {/* Map Container */}
-        <div className='lg:col-span-2 tf-panel overflow-hidden'>
+        <BentoCard span="2x1" variant="map">
           <div
             data-testid='map-container'
             className='aspect-video relative overflow-hidden'
@@ -390,8 +389,8 @@ export const PropertyAtlas: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
-      </div>
+        </BentoCard>
+      </BentoGrid>
 
       {/* Query Results */}
       {queryState.status === 'success' && queryState.result && (

@@ -22,8 +22,8 @@ import { usePropertyLookup } from '../../hooks/usePropertyLookup';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
-import type { ActivityEntry } from '../../components/workbench/ActivityFeed';
 import { BADGE_PROVIDERS } from '../../services/badges';
+import { useParcelActivity } from '../../services/activityFeed';
 import type { WorkbenchTabSlug, WorkMode, Badge, WorkbenchContext } from '../../contracts/workbench';
 
 // ============================================================================
@@ -336,8 +336,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Activity Feed state — collapsible bottom panel
   const [activityOpen, setActivityOpen] = useState(false);
-  const [activityEntries] = useState<ActivityEntry[]>([]);
-  // TODO: Populate activity entries from a real event source (SignalR hub, polling, etc.)
+  const { entries: activityEntries, loading: activityLoading } = useParcelActivity(parcelId);
 
   // No parcel selected
   if (!parcelId) {
@@ -403,7 +402,23 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
             id="workbench-activity-feed"
             className="max-h-48 overflow-auto"
           >
-            <ActivityFeed entries={activityEntries} maxEntries={15} />
+            {activityLoading ? (
+              <div
+                className="flex items-center gap-2 px-4 py-3 text-xs"
+                style={{ color: 'hsl(var(--tf-text) / 0.4)' }}
+              >
+                <div
+                  className="w-3 h-3 rounded-full animate-spin"
+                  style={{
+                    border: '1.5px solid hsl(var(--tf-accent) / 0.2)',
+                    borderTopColor: 'hsl(var(--tf-accent))',
+                  }}
+                />
+                Loading activity...
+              </div>
+            ) : (
+              <ActivityFeed entries={activityEntries} maxEntries={15} />
+            )}
           </div>
         )}
       </div>

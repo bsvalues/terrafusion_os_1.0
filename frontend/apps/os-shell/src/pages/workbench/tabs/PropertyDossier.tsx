@@ -18,6 +18,8 @@ import {
   InvocationHistory,
   type InvocationRecord,
 } from '../../../components/workbench';
+import { BentoGrid } from '../../../ui/materials/BentoGrid';
+import { BentoCard } from '../../../ui/materials/BentoCard';
 
 /** Document categories for organization */
 const DOCUMENT_CATEGORIES = [
@@ -185,9 +187,9 @@ export const PropertyDossier: React.FC = () => {
       />
 
       {/* Document Categories & List */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <BentoGrid columns={3} gap={1.5} padding={0}>
         {/* Categories + Documents List */}
-        <div className='lg:col-span-1 space-y-4'>
+        <BentoCard variant="table" title="Documents" actions={<span>📁</span>}>
           {DOCUMENT_CATEGORIES.map((cat) => (
             <div key={cat.id} className='tf-panel p-4'>
               <h3 className='tf-text font-semibold flex items-center gap-2 mb-3'>
@@ -211,10 +213,10 @@ export const PropertyDossier: React.FC = () => {
               </ul>
             </div>
           ))}
-        </div>
+        </BentoCard>
 
         {/* Document Detail & Actions */}
-        <div className='lg:col-span-2 space-y-4'>
+        <BentoCard span="2x1">
           {selectedDoc ? (
             <div
               className='tf-suite-card p-6'
