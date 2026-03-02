@@ -39,6 +39,8 @@ const LoadingFallback = () => (
 const App = lazy(() => import('./App'));
 // Shell Home - Primary OS landing surface with suite tiles, search, system health
 const ShellHome = lazy(() => import('./shell/home/ShellHome'));
+// Property Search - Native TerraPrime replacement (parcel browse/search → Workbench)
+const PropertySearch = lazy(() => import('./pages/PropertySearch'));
 // Property Workbench - Parcel-context hub (Tier-0 OS Surface)
 const PropertyWorkbench = lazy(() => import('./pages/workbench/PropertyWorkbench'));
 const PropertySummary = lazy(() => import('./pages/workbench/tabs/PropertySummary'));
@@ -64,7 +66,7 @@ const TerraForgeGen2 = lazy(() => import('./pages/gen2/TerraForgeGen2'));
 const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
 
 // Suite Wrappers (Phase 5: MWUX Slices)
-const TerraPrimeSuite = lazy(() => import('./pages/suites/TerraPrimeSuite'));
+// TerraPrimeSuite — replaced by native PropertySearch page (legacy redirect active)
 
 // Suite Home Pages (Wave 2: Vivified Constitutional Suite Routes)
 const ForgeHome = lazy(() => import('./pages/suites/ForgeSuiteHome'));
@@ -137,6 +139,9 @@ const Router: React.FC = () => {
                   element={<LegacyRedirect to='/' legacyAppId='launchpad.legacy-route' />}
                 />
 
+                {/* Property Search — native TerraPrime replacement */}
+                <Route path='/property' element={<PropertySearch />} />
+
                 {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
                 <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
                   <Route index element={<PropertySummary />} />
@@ -169,7 +174,8 @@ const Router: React.FC = () => {
                 <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
 
                 {/* Suite Routes (Phase 5: MWUX Slices) */}
-                <Route path='/suites/terra-prime/*' element={<TerraPrimeSuite />} />
+                {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}
+                <Route path='/suites/terra-prime/*' element={<LegacyRedirect to='/property' legacyAppId='suites.terra-prime' />} />
 
                 {/* Constitutional Suite Home Routes (Phase 9) */}
                 <Route path='/forge' element={<ForgeHome />} />

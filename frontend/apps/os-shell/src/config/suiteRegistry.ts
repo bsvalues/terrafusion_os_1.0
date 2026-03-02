@@ -336,7 +336,7 @@ export const OS_SURFACES: readonly OsSurfaceDefinition[] = [
     displayName: 'Property Workbench',
     description: 'Primary parcel-context workspace with suite tabs',
     iconName: 'Building',
-    route: '/property/:parcelId',
+    route: '/property',
     status: 'live',
   },
 ] as const;

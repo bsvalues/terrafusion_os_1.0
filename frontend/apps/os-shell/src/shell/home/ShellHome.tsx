@@ -143,7 +143,7 @@ const OS_ENTRYPOINTS: OSEntrypoint[] = [
     name: 'TerraPrime',
     description: 'Property viewer',
     iconName: 'Building2',
-    route: '/suites/terra-prime',
+    route: '/property',
   },
 ];
 
