@@ -38,7 +38,22 @@ if [ ! -f "pnpm-lock.yaml" ]; then
   exit 1
 fi
 
-# Gate 2: Verify root deps exist (npm workspace for root, pnpm for frontend)
+# Gate 2: Untracked-file guard — no mystery files in governed paths
+# Prevents agent branch-switching contamination from leaking into pushes
+UNTRACKED_GOVERNED="$(git ls-files --others --exclude-standard \
+  os-platform/core/ \
+  tools/registry/ \
+  packages/os-core/ \
+  2>/dev/null)"
+
+if [ -n "$UNTRACKED_GOVERNED" ]; then
+  echo "❌ Untracked files in governed paths — refusing push:"
+  echo "$UNTRACKED_GOVERNED" | sed 's/^/   /'
+  echo "   Either: git add them, .gitignore them, or delete them."
+  exit 1
+fi
+
+# Gate 3: Verify root deps exist (npm workspace for root, pnpm for frontend)
 if [ ! -d "node_modules" ]; then
   echo "⚠️ Root node_modules not found. Installing..."
   npm install --legacy-peer-deps || {
@@ -47,7 +62,7 @@ if [ ! -d "node_modules" ]; then
   }
 fi
 
-# Gate 3: Verify vitest is available from root
+# Gate 4: Verify vitest is available from root
 if ! npx vitest --version >/dev/null 2>&1; then
   echo "❌ vitest not available. Run: npm install"
   exit 1
