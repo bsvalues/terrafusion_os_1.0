@@ -237,14 +237,14 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     [pacsData, parcelId]
   );
 
-  // Context value for tab components (via WorkbenchTabCtx)
-  const tabContextValue = useMemo(
-    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode }),
-    [parcelId, propertyData, workMode]
-  );
-
   // Work Mode state
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
+
+  // Context value for tab components (via WorkbenchTabCtx)
+  const tabContextValue = useMemo(
+    () => ({ parcelId: parcelId || 'Unknown', propertyData }),
+    [parcelId, propertyData]
+  );
 
   // Badge state — collected from all providers
   const [badges, setBadges] = useState<Badge[]>([]);

@@ -21,6 +21,7 @@
  */
 
 import { create } from 'zustand';
+import { useDesktopStore } from '../stores/desktopStore';
 
 // ============================================================================
 // Types
@@ -384,18 +385,7 @@ export function useRecentParcels(): string[] {
  * @param tabId - Optional tab to focus (defaults to 'summary')
  */
 export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
-  // Lazy import to avoid circular dependency with desktopStore
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { useDesktopStore } = require('../stores/desktopStore') as {
-    useDesktopStore: {
-      getState: () => {
-        windows: Array<{ id: string; moduleId: string; metadata?: Record<string, unknown> }>;
-        openWindow: (moduleId: string, title: string, icon: string, metadata?: Record<string, unknown>) => string;
-        focusWindow: (windowId: string) => void;
-      };
-    };
-  };
-
+  // useDesktopStore imported at module top level (no circular dep exists)
   const { windows, openWindow, focusWindow } = useDesktopStore.getState();
 
   // If no parcelId, open a blank workbench (shows NoParcelSelected state)
