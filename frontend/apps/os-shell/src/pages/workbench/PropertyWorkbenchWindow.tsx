@@ -116,6 +116,7 @@ const NoParcelSelected: React.FC = () => (
   <div
     className="flex flex-col items-center justify-center h-full gap-4 p-8"
     style={{ color: 'hsl(var(--tf-text) / 0.6)' }}
+    data-testid="workbench-no-parcel"
   >
     <span className="text-5xl">🏠</span>
     <h2 className="text-lg font-medium" style={{ color: 'hsl(var(--tf-text))' }}>
@@ -129,15 +130,33 @@ const NoParcelSelected: React.FC = () => (
 );
 
 // ============================================================================
+// Work-Mode → Tab Emphasis (matches route-based PropertyWorkbench.tsx)
+// ============================================================================
+
+/**
+ * Work-mode → tab emphasis mapping.
+ * Each mode highlights the tab most relevant to that workflow.
+ * overview highlights nothing (all tabs equally relevant).
+ */
+const MODE_TAB_EMPHASIS: Record<WorkMode, WorkbenchTabSlug | null> = {
+  overview: null,
+  valuation: 'forge',
+  mapping: 'atlas',
+  admin: 'dais',
+  case: 'dossier',
+};
+
+// ============================================================================
 // Tab Navigation Bar (state-based, no Router dependency)
 // ============================================================================
 
 interface TabBarProps {
   activeTab: WorkbenchTabSlug;
+  emphasizedTabId: WorkbenchTabSlug | null;
   onTabChange: (tab: WorkbenchTabSlug) => void;
 }
 
-const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
+const TabBar: React.FC<TabBarProps> = ({ activeTab, emphasizedTabId, onTabChange }) => (
   <nav
     className="border-b px-4 flex gap-1 overflow-x-auto"
     style={{
@@ -147,18 +166,32 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
   >
     {CANONICAL_TAB_ORDER.map((tab) => {
       const isActive = tab.slug === activeTab;
+      const isEmphasized = emphasizedTabId === tab.slug && !isActive;
       return (
         <button
           key={tab.slug}
           onClick={() => onTabChange(tab.slug)}
           className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
           style={{
-            color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
-            borderBottom: isActive ? '2px solid hsl(var(--tf-accent))' : '2px solid transparent',
-            background: isActive ? 'hsl(var(--tf-accent) / 0.05)' : 'transparent',
+            color: isActive
+              ? 'hsl(var(--tf-accent))'
+              : isEmphasized
+                ? 'hsl(var(--tf-accent) / 0.8)'
+                : 'hsl(var(--tf-text) / 0.6)',
+            borderBottom: isActive
+              ? '2px solid hsl(var(--tf-accent))'
+              : isEmphasized
+                ? '2px solid hsl(var(--tf-accent) / 0.4)'
+                : '2px solid transparent',
+            background: isActive
+              ? 'hsl(var(--tf-accent) / 0.05)'
+              : isEmphasized
+                ? 'hsl(var(--tf-accent) / 0.02)'
+                : 'transparent',
           }}
           aria-selected={isActive}
           role="tab"
+          data-testid={`workbench-tab-${tab.slug}`}
         >
           <span>{tab.icon}</span>
           <span>{tab.title}</span>
@@ -295,7 +328,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   }
 
   return (
-    <div className="flex flex-col h-full w-full" style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div className="flex flex-col h-full w-full" style={{ background: 'hsl(var(--tf-bg))' }} data-testid="workbench-window">
       {/* Context Ribbon replaces old ParcelHeader */}
       <ContextRibbon
         parcelId={parcelId}
@@ -337,8 +370,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
           {/* Main content area */}
           <div className="flex flex-col flex-1 min-w-0">
-            <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
-            <main className="flex-1 overflow-auto">
+            <TabBar activeTab={activeTab} emphasizedTabId={MODE_TAB_EMPHASIS[workMode]} onTabChange={handleTabChange} />
+            <main className="flex-1 overflow-auto" data-testid="workbench-tab-content">
               {loading ? (
                 <TabLoader />
               ) : (
