@@ -61,3 +61,29 @@ export {
     type SummarizeSalesCompsResult
 } from './handlers.js';
 
+// R1 Real Handlers (override canned stubs when backend is available)
+export {
+    registerR1Handlers,
+    runValuationModelHandler,
+    explainValueChangeHandler,
+    routeToParcelHandler,
+    createSearchTraceHandler,
+    summarizeLevyRateRealHandler,
+    type RunValuationModelParams,
+    type RunValuationModelResult,
+    type ExplainValueChangeParams,
+    type ExplainValueChangeResult,
+    type RouteToParcelParams,
+    type RouteToParcelResult,
+} from './handlers.real.js';
+
+// Backend HTTP Client
+export {
+    backendPost,
+    backendGet,
+    unwrapBackend,
+    type BackendResponse,
+    type BackendError,
+    type BackendResult,
+} from './backendClient.js';
+
