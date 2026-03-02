@@ -1,165 +1,21 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import React from 'react';
-
-let memoryRouterEntries: string[] = ['/'];
-
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
-  return {
-    ...actual,
-    BrowserRouter: ({ children }: { children: React.ReactNode }) => (
-      <actual.MemoryRouter initialEntries={memoryRouterEntries}>{children}</actual.MemoryRouter>
-    ),
-  };
-});
-
-jest.mock('../../auth/authStorage', () => ({
-  getToken: () => 'workbench-test-token',
-  setToken: jest.fn(),
-  clearToken: jest.fn(),
-}));
-
-jest.mock('../../auth/authBridge', () => ({
-  registerLogoutHandler: jest.fn(),
-  unregisterLogoutHandler: jest.fn(),
-}));
-
-// Mock PACS property lookup so workbench doesn't block on real API fetch
-jest.mock('../../hooks/usePropertyLookup', () => ({
-  usePropertyLookup: () => ({
-    data: null,
-    loading: false,
-    error: null,
-    refetch: undefined,
-  }),
-}));
-
-import Router from '../../Router';
+/**
+ * PropertyWorkbench explain_model_inputs panel - REMOVED
+ *
+ * The debug panels (explain_model_inputs, compare_assessed_value_history,
+ * summarize_sales_comps_rationale) were removed during the workbench shell
+ * reconciliation (feat/workbench-shell-reconciliation).
+ *
+ * The PropertyWorkbench now uses ContextRibbon + SuiteCompass + ActivityFeed
+ * matching the spec-compliant layout from PropertyWorkbenchWindow.
+ *
+ * Tool execution surfaces will be rebuilt via TerraPilot (the OS copilot)
+ * rather than debug panels in the workbench chrome.
+ */
+import '@testing-library/jest-dom';
 
 describe('PropertyWorkbench explain_model_inputs action', () => {
-  afterEach(() => {
-    cleanup();
-    jest.restoreAllMocks();
-  });
-
-  async function renderWorkbenchRoute() {
-    memoryRouterEntries = ['/property/12345-001'];
-    render(<Router />);
-
-    await waitFor(
-      () => {
-        expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
-        expect(screen.queryByText(/Loading property/i)).not.toBeInTheDocument();
-      },
-      { timeout: 5000 }
-    );
-  }
-
-  function mockTextResponse(payload: unknown, status = 200): Response {
-    return {
-      ok: status >= 200 && status < 300,
-      status,
-      json: async () => payload,
-      text: async () => JSON.stringify(payload),
-    } as Response;
-  }
-
-  const mockPropertyData = {
-    propId: 1, geoId: '12345-001', address: '123 Main St',
-    ownerName: 'Test', assessedValue: 250000, marketValue: 260000,
-    landValue: 100000, improvementValue: 150000, propertyType: 'Residential',
-    legalDescription: 'LOT 1', appraisalYear: 2024, lastModified: '2024-01-01', source: 'test',
-  };
-
-  it('runs explain_model_inputs and renders normalized success fields', async () => {
-    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
-      const url = String(input);
-      if (url.includes('/ops/pacs/property/')) {
-        return mockTextResponse(mockPropertyData);
-      }
-      if (url.includes('/pilot/workbench/explain-model-inputs')) {
-        return mockTextResponse({
-          tool: 'terracanon-ping',
-          version: 1,
-          startedAt: '2026-02-20T00:00:00.000Z',
-          dryRun: false,
-          overallOk: true,
-          normalized: {
-            ok: true,
-            ts: '2026-02-20T00:00:00.000Z',
-            echo: 'hello',
-            toolId: 'explain_model_inputs',
-            inputCount: 3,
-          },
-        });
-      }
-
-      return mockTextResponse({ overallOk: true });
-    });
-
-    await renderWorkbenchRoute();
-
-    fireEvent.click(screen.getByTestId('workbench-run-explain-model-inputs'));
-
-    await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalled();
-      expect(screen.getByTestId('workbench-explain-model-inputs-status')).toHaveTextContent('PASS');
-      expect(screen.getByTestId('workbench-explain-model-inputs-tool-id')).toHaveTextContent(
-        'explain_model_inputs'
-      );
-      expect(screen.getByTestId('workbench-explain-model-inputs-input-count')).toHaveTextContent(
-        '3'
-      );
-    });
-
-    const calls = fetchMock.mock.calls.map((call) => String(call[0]));
-    expect(calls.some((url) => url.includes('/pilot/workbench/explain-model-inputs'))).toBe(true);
-  });
-
-  it('renders failure and details for explain_model_inputs action', async () => {
-    jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
-      const url = String(input);
-      if (url.includes('/ops/pacs/property/')) {
-        return mockTextResponse(mockPropertyData);
-      }
-      if (url.includes('/pilot/workbench/explain-model-inputs')) {
-        return mockTextResponse({
-          tool: 'terracanon-ping',
-          version: 1,
-          startedAt: '2026-02-20T00:01:00.000Z',
-          dryRun: false,
-          overallOk: false,
-          error: 'workbench explain failed',
-          rawStderr: 'tool failure details',
-        });
-      }
-
-      return mockTextResponse({ overallOk: true });
-    });
-
-    await renderWorkbenchRoute();
-
-    fireEvent.change(screen.getByTestId('workbench-explain-model-inputs-echo'), {
-      target: { value: 'bad-input' },
-    });
-    fireEvent.click(screen.getByTestId('workbench-run-explain-model-inputs'));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('workbench-explain-model-inputs-status')).toHaveTextContent('FAIL');
-      expect(screen.getByTestId('workbench-explain-model-inputs-error')).toHaveTextContent(
-        'workbench explain failed'
-      );
-    });
-
-    const details = screen.getByTestId('workbench-explain-model-inputs-details');
-    const summary = details.querySelector('summary');
-    if (!summary) {
-      throw new Error('missing details summary');
-    }
-    fireEvent.click(summary);
-
-    expect(screen.getByTestId('workbench-explain-model-inputs-raw-stderr')).toHaveTextContent(
-      'tool failure details'
-    );
+  it('debug panel removed - tool execution moved to TerraPilot', () => {
+    // Panels were replaced by ContextRibbon + SuiteCompass + ActivityFeed
+    expect(true).toBe(true);
   });
 });

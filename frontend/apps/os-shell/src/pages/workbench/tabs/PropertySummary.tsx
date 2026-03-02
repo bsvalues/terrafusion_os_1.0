@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 
@@ -46,7 +46,7 @@ const typeLabels: Record<string, string> = {
 };
 
 export const PropertySummary: React.FC = () => {
-  const { propertyData } = useOutletContext<PropertyContext>();
+  const { propertyData } = useWorkbenchTab();
 
   return (
     <div className="space-y-6 p-1">

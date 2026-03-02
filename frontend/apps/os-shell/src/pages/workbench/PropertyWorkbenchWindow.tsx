@@ -5,7 +5,10 @@
  *
  * Renders the Property Workbench inside a desktop window.
  * Receives parcelId via window metadata (not URL params).
- * Uses MemoryRouter + Outlet so tab components work unchanged.
+ *
+ * Uses state-based tab switching + WorkbenchTabCtx so tab components
+ * get their context without requiring a nested Router (which crashes
+ * React Router v6 with "cannot render a Router inside another Router").
  *
  * The full-screen route (/property/:parcelId) remains untouched.
  * This adapter adds window capability without breaking existing code.
@@ -16,7 +19,6 @@
  */
 
 import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import { MemoryRouter, NavLink, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { usePropertyLookup } from '../../hooks/usePropertyLookup';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
@@ -24,6 +26,7 @@ import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { useParcelActivity } from '../../services/activityFeed';
+import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
 import type { WorkbenchTabSlug, WorkMode, Badge, WorkbenchContext } from '../../contracts/workbench';
 
 // ============================================================================
@@ -50,6 +53,19 @@ const PropertyPilot = lazy(() =>
 );
 
 // ============================================================================
+// Tab → Component Map
+// ============================================================================
+
+const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.FC>> = {
+  summary: PropertySummary,
+  forge: PropertyForge,
+  atlas: PropertyAtlas,
+  dais: PropertyDais,
+  dossier: PropertyDossier,
+  pilot: PropertyPilot,
+};
+
+// ============================================================================
 // Types
 // ============================================================================
 
@@ -61,7 +77,6 @@ interface TabDef {
   id: WorkbenchTabSlug;
   label: string;
   icon: string;
-  path: string; // relative path for MemoryRouter
 }
 
 // ============================================================================
@@ -70,12 +85,12 @@ interface TabDef {
 
 /** Canonical tab order — locked per spec. */
 const TABS: readonly TabDef[] = [
-  { id: 'summary', label: 'Summary', icon: '📊', path: '/' },
-  { id: 'forge', label: 'Forge', icon: '🔨', path: '/forge' },
-  { id: 'atlas', label: 'Atlas', icon: '🗺️', path: '/atlas' },
-  { id: 'dais', label: 'Dais', icon: '⚖️', path: '/dais' },
-  { id: 'dossier', label: 'Dossier', icon: '📋', path: '/dossier' },
-  { id: 'pilot', label: 'Pilot', icon: '🤖', path: '/pilot' },
+  { id: 'summary', label: 'Summary', icon: '📊' },
+  { id: 'forge', label: 'Forge', icon: '🔨' },
+  { id: 'atlas', label: 'Atlas', icon: '🗺️' },
+  { id: 'dais', label: 'Dais', icon: '⚖️' },
+  { id: 'dossier', label: 'Dossier', icon: '📋' },
+  { id: 'pilot', label: 'Pilot', icon: '🤖' },
 ] as const;
 
 // ============================================================================
@@ -116,14 +131,48 @@ const NoParcelSelected: React.FC = () => (
 );
 
 // ============================================================================
-// Inner Layout (inside MemoryRouter)
+// Tab Navigation Bar (state-based, no Router dependency)
 // ============================================================================
 
-interface WorkbenchLayoutProps {
-  parcelId: string;
-  propertyData: PropertyData;
-  loading: boolean;
+interface TabBarProps {
+  activeTab: WorkbenchTabSlug;
+  onTabChange: (tab: WorkbenchTabSlug) => void;
 }
+
+const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
+  <nav
+    className="border-b px-4 flex gap-1 overflow-x-auto"
+    style={{
+      borderColor: 'hsl(var(--tf-border) / 0.15)',
+      background: 'hsl(var(--tf-bg-surface) / 0.5)',
+    }}
+  >
+    {TABS.map((tab) => {
+      const isActive = tab.id === activeTab;
+      return (
+        <button
+          key={tab.id}
+          onClick={() => onTabChange(tab.id)}
+          className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+          style={{
+            color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
+            borderBottom: isActive ? '2px solid hsl(var(--tf-accent))' : '2px solid transparent',
+            background: isActive ? 'hsl(var(--tf-accent) / 0.05)' : 'transparent',
+          }}
+          aria-selected={isActive}
+          role="tab"
+        >
+          <span>{tab.icon}</span>
+          <span>{tab.label}</span>
+        </button>
+      );
+    })}
+  </nav>
+);
+
+// ============================================================================
+// Inner Layout Types
+// ============================================================================
 
 interface PropertyData {
   parcelId: string;
@@ -138,111 +187,6 @@ interface PropertyData {
   source: string;
 }
 
-/**
- * Tab navigation bar — reuses the locked tab order.
- */
-const TabBar: React.FC = () => {
-  const location = useLocation();
-
-  return (
-    <nav
-      className="border-b px-4 flex gap-1 overflow-x-auto"
-      style={{
-        borderColor: 'hsl(var(--tf-border) / 0.15)',
-        background: 'hsl(var(--tf-bg-surface) / 0.5)',
-      }}
-    >
-      {TABS.map((tab) => {
-        const isActive =
-          tab.path === '/'
-            ? location.pathname === '/'
-            : location.pathname.startsWith(tab.path);
-        return (
-          <NavLink
-            key={tab.id}
-            to={tab.path}
-            className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
-            style={{
-              color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
-              borderBottom: isActive ? '2px solid hsl(var(--tf-accent))' : '2px solid transparent',
-              background: isActive ? 'hsl(var(--tf-accent) / 0.05)' : 'transparent',
-            }}
-          >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-};
-
-/**
- * Layout wrapper inside the MemoryRouter.
- * Provides Outlet context so tab components work unchanged.
- * Includes SuiteCompass left rail.
- */
-const WorkbenchLayout: React.FC<WorkbenchLayoutProps & { onTabChange: (slug: WorkbenchTabSlug) => void }> = ({
-  parcelId,
-  propertyData,
-  loading,
-  onTabChange,
-}) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // Derive active tab from MemoryRouter location
-  const activeTab: WorkbenchTabSlug = useMemo(() => {
-    const path = location.pathname.replace(/^\//, '');
-    if (!path) return 'summary';
-    const tabMap: Record<string, WorkbenchTabSlug> = {
-      forge: 'forge',
-      atlas: 'atlas',
-      dais: 'dais',
-      dossier: 'dossier',
-      pilot: 'pilot',
-    };
-    return tabMap[path] ?? 'summary';
-  }, [location.pathname]);
-
-  // Navigate inside MemoryRouter when SuiteCompass is clicked
-  const handleCompassNav = useCallback(
-    (slug: WorkbenchTabSlug) => {
-      const tab = TABS.find((t) => t.id === slug);
-      if (tab) {
-        navigate(tab.path);
-        onTabChange(slug);
-      }
-    },
-    [navigate, onTabChange]
-  );
-
-  return (
-    <div className="flex h-full">
-      {/* Suite Compass — left rail (desktop) / top bar (tablet) */}
-      <div className="shrink-0">
-        <SuiteCompass activeTab={activeTab} onTabChange={handleCompassNav} />
-      </div>
-
-      {/* Main content area */}
-      <div className="flex flex-col flex-1 min-w-0">
-        <TabBar />
-        <main className="flex-1 overflow-auto">
-          {loading ? (
-            <TabLoader />
-          ) : (
-            <ErrorBoundary>
-              <Suspense fallback={<TabLoader />}>
-                <Outlet context={{ parcelId, propertyData }} />
-              </Suspense>
-            </ErrorBoundary>
-          )}
-        </main>
-      </div>
-    </div>
-  );
-};
-
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -255,20 +199,23 @@ const WorkbenchLayout: React.FC<WorkbenchLayoutProps & { onTabChange: (slug: Wor
  * Full-screen route (/property/:parcelId) remains untouched.
  *
  * Architecture:
- * - MemoryRouter provides internal route context for tab components
- * - Outlet context provides { parcelId, propertyData } (same as route-based workbench)
- * - Tab components (PropertySummary, PropertyForge, etc.) work unchanged
+ * - State-based tab switching (no Router needed)
+ * - WorkbenchTabCtx.Provider gives tab components { parcelId, propertyData }
+ * - Tab components use useWorkbenchTab() which reads from this context
  */
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
   const parcelId = (metadata?.parcelId as string) ?? null;
-  const initialTab = (metadata?.tabId as string) ?? '/';
+  const initialTab = (metadata?.tabId as WorkbenchTabSlug) ?? 'summary';
 
-  // Resolve initial MemoryRouter entry from tab slug
-  const initialEntry = useMemo(() => {
-    if (!initialTab || initialTab === 'summary' || initialTab === '/') return '/';
-    const tab = TABS.find((t) => t.id === initialTab);
-    return tab?.path ?? '/';
+  // Resolve initial tab from metadata slug
+  const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
+    if (!initialTab || initialTab === '/' as string) return 'summary';
+    const valid = TABS.find((t) => t.id === initialTab);
+    return valid?.id ?? 'summary';
   }, [initialTab]);
+
+  // Active tab state
+  const [activeTab, setActiveTab] = useState<WorkbenchTabSlug>(resolvedInitialTab);
 
   // Property data from PACS
   const { data: pacsData, loading } = usePropertyLookup(parcelId);
@@ -287,6 +234,12 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
       source: pacsData?.source || '',
     }),
     [pacsData, parcelId]
+  );
+
+  // Context value for tab components (via WorkbenchTabCtx)
+  const tabContextValue = useMemo(
+    () => ({ parcelId: parcelId || 'Unknown', propertyData }),
+    [parcelId, propertyData]
   );
 
   // Work Mode state
@@ -329,14 +282,18 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     }
   }, [parcelId]);
 
-  // Tab change callback (for future trace emission)
-  const handleTabChange = useCallback((_slug: WorkbenchTabSlug) => {
+  // Tab change handler
+  const handleTabChange = useCallback((slug: WorkbenchTabSlug) => {
+    setActiveTab(slug);
     // TODO: Emit TerraTrace tab_switched event
   }, []);
 
   // Activity Feed state — collapsible bottom panel
   const [activityOpen, setActivityOpen] = useState(false);
   const { entries: activityEntries, loading: activityLoading } = useParcelActivity(parcelId);
+
+  // Resolve active tab component
+  const ActiveTabComponent = TAB_COMPONENTS[activeTab];
 
   // No parcel selected
   if (!parcelId) {
@@ -357,27 +314,31 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
         onPopOut={handlePopOut}
       />
 
-      <MemoryRouter initialEntries={[initialEntry]}>
-        <Routes>
-          <Route
-            element={
-              <WorkbenchLayout
-                parcelId={parcelId}
-                propertyData={propertyData}
-                loading={loading}
-                onTabChange={handleTabChange}
-              />
-            }
-          >
-            <Route index element={<PropertySummary />} />
-            <Route path="forge" element={<PropertyForge />} />
-            <Route path="atlas" element={<PropertyAtlas />} />
-            <Route path="dais" element={<PropertyDais />} />
-            <Route path="dossier" element={<PropertyDossier />} />
-            <Route path="pilot" element={<PropertyPilot />} />
-          </Route>
-        </Routes>
-      </MemoryRouter>
+      {/* Workbench content — state-based tabs, no Router needed */}
+      <WorkbenchTabCtx.Provider value={tabContextValue}>
+        <div className="flex flex-1 min-h-0">
+          {/* Suite Compass — left rail (desktop) / top bar (tablet) */}
+          <div className="shrink-0">
+            <SuiteCompass activeTab={activeTab} onTabChange={handleTabChange} />
+          </div>
+
+          {/* Main content area */}
+          <div className="flex flex-col flex-1 min-w-0">
+            <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+            <main className="flex-1 overflow-auto">
+              {loading ? (
+                <TabLoader />
+              ) : (
+                <ErrorBoundary>
+                  <Suspense fallback={<TabLoader />}>
+                    <ActiveTabComponent />
+                  </Suspense>
+                </ErrorBoundary>
+              )}
+            </main>
+          </div>
+        </div>
+      </WorkbenchTabCtx.Provider>
 
       {/* Collapsible Activity Feed — bottom drawer */}
       <div

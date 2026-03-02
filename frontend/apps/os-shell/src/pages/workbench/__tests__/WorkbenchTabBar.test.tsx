@@ -85,6 +85,33 @@ jest.mock('../../../components/errors/ErrorBoundary', () => ({
   ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+// Mock workbench chrome components (tested separately)
+jest.mock('../../../components/workbench/ContextRibbon', () => ({
+  ContextRibbon: ({ parcelId }: { parcelId: string }) => (
+    <div data-testid="context-ribbon">{parcelId}</div>
+  ),
+}));
+
+jest.mock('../../../components/workbench/SuiteCompass', () => ({
+  SuiteCompass: () => <nav data-testid="suite-compass" />,
+}));
+
+jest.mock('../../../components/workbench/ActivityFeed', () => ({
+  ActivityFeed: () => <div data-testid="activity-feed" />,
+}));
+
+jest.mock('../../../services/badges', () => ({
+  BADGE_PROVIDERS: [],
+}));
+
+jest.mock('../../../services/activityFeed', () => ({
+  useParcelActivity: () => ({ entries: [], loading: false, error: null }),
+}));
+
+jest.mock('../../../hooks/usePropertyLookup', () => ({
+  usePropertyLookup: () => ({ data: null, loading: false, error: null }),
+}));
+
 // Import after mocks
 import PropertyWorkbench from '../PropertyWorkbench';
 
@@ -310,20 +337,22 @@ describe('WorkbenchTabBar', () => {
     });
   });
 
-  describe('Header and Back Navigation', () => {
-    it('displays_parcel_id_in_header', async () => {
+  describe('Context Ribbon', () => {
+    it('displays_parcel_id_in_context_ribbon', async () => {
       renderWorkbench('/property/HEADER-TEST');
 
       await waitFor(() => {
-        expect(screen.getByText(/Parcel HEADER-TEST/)).toBeInTheDocument();
+        const ribbon = screen.getByTestId('context-ribbon');
+        expect(ribbon).toBeInTheDocument();
+        expect(ribbon).toHaveTextContent('HEADER-TEST');
       });
     });
 
-    it('back_button_is_present', async () => {
+    it('suite_compass_is_present', async () => {
       renderWorkbench();
 
       await waitFor(() => {
-        expect(screen.getByTitle('Back to Home')).toBeInTheDocument();
+        expect(screen.getByTestId('suite-compass')).toBeInTheDocument();
       });
     });
   });

@@ -8,7 +8,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
@@ -56,7 +56,7 @@ interface StatusState {
 }
 
 export const PropertyDais: React.FC = () => {
-  const { parcelId } = useOutletContext<{ parcelId: string }>();
+  const { parcelId } = useWorkbenchTab();
 
   const [workflowType, setWorkflowType] = useState<WorkflowType>('certification');
   const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
