@@ -207,6 +207,25 @@ describe('InMemoryTraceStore.query() with date filters', () => {
     const results = await store.query({ to: '2025-01-01T00:00:00.000Z' });
     assert.strictEqual(results.length, 0);
   });
+
+  it('tiebreaks equal timestamps by correlationId for stable ordering', async () => {
+    const sameTs = '2026-03-01T15:00:00.000Z';
+    const tieStore = new InMemoryTraceStore();
+    await tieStore.append(makeEvent({ timestamp: sameTs, correlationId: 'corr-zebra' }));
+    await tieStore.append(makeEvent({ timestamp: sameTs, correlationId: 'corr-alpha' }));
+    await tieStore.append(makeEvent({ timestamp: sameTs, correlationId: 'corr-mango' }));
+
+    const results = await tieStore.query({});
+    assert.strictEqual(results.length, 3);
+    // Same timestamp → sorted ascending by correlationId
+    assert.strictEqual(results[0].correlationId, 'corr-alpha');
+    assert.strictEqual(results[1].correlationId, 'corr-mango');
+    assert.strictEqual(results[2].correlationId, 'corr-zebra');
+
+    // Run again — must be deterministic
+    const results2 = await tieStore.query({});
+    assert.deepStrictEqual(results.map(e => e.correlationId), results2.map(e => e.correlationId));
+  });
 });
 
 // ============================================================================

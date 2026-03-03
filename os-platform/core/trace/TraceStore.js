@@ -54,8 +54,13 @@ class InMemoryTraceStore {
             const toMs = new Date(options.to).getTime();
             results = results.filter(e => new Date(e.timestamp).getTime() <= toMs);
         }
-        // Sort newest first
-        results.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        // Sort newest first; tiebreak by correlationId for stable ordering
+        results.sort((a, b) => {
+            const dt = new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+            if (dt !== 0)
+                return dt;
+            return a.correlationId.localeCompare(b.correlationId);
+        });
         // Apply pagination
         const offset = options.offset ?? 0;
         const limit = options.limit ?? 100;
@@ -177,7 +182,13 @@ class FileTraceStore {
             const toMs = new Date(options.to).getTime();
             results = results.filter(e => new Date(e.timestamp).getTime() <= toMs);
         }
-        results.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        // Sort newest first; tiebreak by correlationId for stable ordering
+        results.sort((a, b) => {
+            const dt = new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+            if (dt !== 0)
+                return dt;
+            return a.correlationId.localeCompare(b.correlationId);
+        });
         const offset = options.offset ?? 0;
         const limit = options.limit ?? 100;
         return results.slice(offset, offset + limit);

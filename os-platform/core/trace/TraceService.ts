@@ -209,8 +209,12 @@ export class TraceService {
       results = results.filter(e => new Date(e.timestamp).getTime() <= toMs);
     }
 
-    // Sort newest first
-    results.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    // Sort newest first; tiebreak by correlationId for stable ordering
+    results.sort((a, b) => {
+      const dt = new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+      if (dt !== 0) return dt;
+      return a.correlationId.localeCompare(b.correlationId);
+    });
 
     // Apply pagination
     const offset = options.offset ?? 0;
