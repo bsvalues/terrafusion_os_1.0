@@ -184,7 +184,7 @@ describe('Lane I — admin diagnostics drawer', () => {
 
     const toggle = screen.getByTestId('diagnostics-toggle');
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    expect(toggle).toHaveTextContent(/show diagnostics/i);
+    expect(toggle).toHaveTextContent(/trace store diagnostics/i);
 
     // Content should NOT be visible yet
     expect(screen.queryByTestId('diagnostics-content')).not.toBeInTheDocument();

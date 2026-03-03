@@ -15,12 +15,33 @@
 import React, { useCallback, useState } from 'react';
 import type { ApprovalToken, PilotTool, Risk } from '../../api/pilotApi';
 import { requestApprovalToken } from '../../api/pilotApi';
+import { getSession } from '../../auth/session';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { TactileButton } from '../../ui/materials/TactileButton';
 import type { InvocationPhase, UseToolInvocationResult } from '../../hooks/useToolInvocation';
 import { useTraceByCorrelationId } from '../../hooks/useTraceByCorrelationId';
+import { useTraceStats } from '../../hooks/useTraceStats';
 import { EvidenceRail } from './EvidenceRail';
 import { RiskConfirmationModal } from './RiskConfirmationModal';
+
+// Roles that may view store-wide trace diagnostics (mirrors backend ELEVATED_TRACE_ROLES)
+const ELEVATED_TRACE_ROLES = new Set([
+  'admin',
+  'administrator',
+  'compliance_officer',
+  'auditor',
+  'supervisor',
+]);
+
+function canViewGlobalTraceDiagnostics(): boolean {
+  const session = getSession();
+  if (!session) return false;
+
+  const role = (session.role ?? '').toLowerCase();
+  if (role && ELEVATED_TRACE_ROLES.has(role)) return true;
+
+  return (session.permissions ?? []).some((permission) => permission.toLowerCase() === 'admin:trace');
+}
 
 // ============================================================================
 // Types
@@ -195,6 +216,12 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
   const traceCorrelationId = isTerminal && showEvidence ? correlationId : null;
   const trace = useTraceByCorrelationId(traceCorrelationId);
 
+  // Lane J: Admin diagnostics — fetch store-wide stats when elevated role + evidence visible
+  const showDiagnostics = canViewGlobalTraceDiagnostics();
+  const traceStats = useTraceStats({
+    enabled: showDiagnostics && showEvidence && isTerminal,
+  });
+
   // Idle state — nothing to show yet
   if (phase === 'idle') {
     return null;
@@ -274,12 +301,23 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
             {showEvidence ? 'Hide evidence' : 'Show evidence'}
           </TactileButton>
           {showEvidence && (
-            <EvidenceRail
-              phase={trace.phase}
-              events={trace.events}
-              error={trace.error}
-              onRetry={trace.refresh}
-            />
+            <div className='space-y-2'>
+              {showDiagnostics && (
+                <p className='text-xs text-white/40' data-testid='trace-diagnostics-label'>
+                  Trace Store Diagnostics (global)
+                </p>
+              )}
+              <EvidenceRail
+                phase={trace.phase}
+                events={trace.events}
+                error={trace.error}
+                onRetry={trace.refresh}
+                lastFetchedAt={showDiagnostics ? traceStats.lastFetchedAt : null}
+                fetchFailed={showDiagnostics ? traceStats.fetchFailed : false}
+                diagnostics={showDiagnostics ? traceStats.diagnostics : null}
+                showDiagnostics={showDiagnostics}
+              />
+            </div>
           )}
         </div>
       )}

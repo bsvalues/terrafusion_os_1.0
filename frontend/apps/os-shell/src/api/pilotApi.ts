@@ -250,6 +250,16 @@ export interface PilotTraceListResponse {
   };
 }
 
+/** Trace-store diagnostics response (global, elevated-role only). */
+export interface PilotTraceStatsResponse {
+  totalEvents: number;
+  oldestTimestamp: string | null;
+  newestTimestamp: string | null;
+  perParcelCap?: number;
+  cappedParcelsCount?: number;
+  maxEventsInParcel?: number;
+}
+
 /** Health check response */
 export interface PilotHealthResponse {
   status: string;
@@ -470,6 +480,26 @@ export async function listPilotTraces(params: PilotTraceListParams): Promise<Pil
   }
 
   return (await response.json()) as PilotTraceListResponse;
+}
+
+/**
+ * Get global trace-store diagnostics.
+ * Requires elevated trace role (enforced server-side).
+ */
+export async function getTraceStats(): Promise<PilotTraceStatsResponse> {
+  const url = `${API_BASE_URL}/pilot/traces/stats`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: buildPilotHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`Failed to get trace stats (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as PilotTraceStatsResponse;
 }
 
 /**
