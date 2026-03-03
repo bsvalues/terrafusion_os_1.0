@@ -243,9 +243,11 @@ export function useToolInvocation(): UseToolInvocationResult {
         const response = await invokePilotTool({
           toolId: state.toolId,
           params: state.params,
-          confirmation: options.confirmation,
-          reasonCode: options.reasonCode,
-          supervisorApproval: options.supervisorApproval,
+          confirmation: {
+            confirmed: options.confirmation,
+            reasonCode: options.reasonCode,
+            supervisorApproval: options.supervisorApproval,
+          },
         });
 
         if (response.ok) {

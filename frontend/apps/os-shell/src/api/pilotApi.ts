@@ -88,6 +88,13 @@ export interface PilotToolListResponse {
   tools: PilotTool[];
 }
 
+/** Nested confirmation payload (preferred form) */
+export interface ConfirmationPayload {
+  confirmed: boolean;
+  reasonCode?: string;
+  supervisorApproval?: { approvedBy: string; role: string };
+}
+
 /** Request to invoke a tool */
 export interface PilotInvokeRequest {
   toolId: string;
@@ -95,8 +102,16 @@ export interface PilotInvokeRequest {
   mode?: Mode;
   parcelId?: string;
   dossierId?: string;
-  confirmation?: boolean;
+  /**
+   * Confirmation gate payload.
+   * - `boolean`: legacy flat form (backward compat for PilotConsole callers)
+   * - `ConfirmationPayload`: nested form (preferred, used by useToolInvocation)
+   * invokePilotTool normalizes both to the flat wire format per INVOKE_CONTRACT.
+   */
+  confirmation?: boolean | ConfirmationPayload;
+  /** @deprecated Use confirmation.reasonCode instead */
   reasonCode?: string;
+  /** @deprecated Use confirmation.supervisorApproval instead */
   supervisorApproval?: {
     approvedBy: string;
     role: string;
@@ -286,10 +301,26 @@ export async function getPilotTool(toolId: string): Promise<PilotToolFull> {
 export async function invokePilotTool(request: PilotInvokeRequest): Promise<PilotInvokeResponse> {
   const url = `${API_BASE_URL}/pilot/invoke`;
 
+  // Normalize confirmation to flat wire format (INVOKE_CONTRACT.md)
+  const { confirmation, reasonCode, supervisorApproval, ...rest } = request;
+  let wireBody: Record<string, unknown> = { ...rest };
+
+  if (typeof confirmation === 'object' && confirmation !== null) {
+    // Nested form → flatten
+    wireBody.confirmation = confirmation.confirmed;
+    if (confirmation.reasonCode) wireBody.reasonCode = confirmation.reasonCode;
+    if (confirmation.supervisorApproval) wireBody.supervisorApproval = confirmation.supervisorApproval;
+  } else {
+    // Legacy flat form (boolean or undefined)
+    if (confirmation !== undefined) wireBody.confirmation = confirmation;
+    if (reasonCode) wireBody.reasonCode = reasonCode;
+    if (supervisorApproval) wireBody.supervisorApproval = supervisorApproval;
+  }
+
   const response = await fetch(url, {
     method: 'POST',
     headers: buildPilotHeaders(),
-    body: JSON.stringify(request),
+    body: JSON.stringify(wireBody),
   });
 
   // Always parse JSON response even for errors
