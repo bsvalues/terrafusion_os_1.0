@@ -38,6 +38,10 @@ const targets = [
     out: 'os-platform/core/pilot/index.js',
   },
   {
+    source: 'os-platform/core/pilot/traceExport.ts',
+    out: 'os-platform/core/pilot/traceExport.js',
+  },
+  {
     source: 'os-platform/core/trace/TraceStore.ts',
     out: 'os-platform/core/trace/TraceStore.js',
   },
