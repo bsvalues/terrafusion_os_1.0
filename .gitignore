@@ -47,6 +47,9 @@ out/
 ehthumbs.db
 Thumbs.db
 
+# Agent forensics (debug artifacts, not source)
+.forensics/
+
 # Logs
 logs/
 *.log
