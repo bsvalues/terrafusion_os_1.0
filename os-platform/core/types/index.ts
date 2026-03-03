@@ -172,6 +172,10 @@ export interface TraceQueryOptions {
   toolId?: string;
   correlationId?: string;
   type?: TraceEventType;
+  /** ISO 8601 lower bound (inclusive). Events with timestamp >= from. */
+  from?: string;
+  /** ISO 8601 upper bound (inclusive). Events with timestamp <= to. */
+  to?: string;
   limit?: number;
   offset?: number;
 }

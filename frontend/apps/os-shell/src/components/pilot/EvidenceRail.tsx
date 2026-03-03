@@ -13,6 +13,7 @@
 import React from 'react';
 import type { PilotTraceEvent } from '../../api/pilotApi';
 import type { TracePhase } from '../../hooks/useTraceByCorrelationId';
+import type { TraceListPhase } from '../../hooks/usePilotTraceList';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { TactileButton } from '../../ui/materials/TactileButton';
 
@@ -21,7 +22,7 @@ import { TactileButton } from '../../ui/materials/TactileButton';
 // ============================================================================
 
 export interface EvidenceRailProps {
-  phase: TracePhase;
+  phase: TracePhase | TraceListPhase;
   events: PilotTraceEvent[];
   error: string | null;
   onRetry: () => void;
@@ -74,14 +75,21 @@ function formatTimestamp(value: string): string {
 function CorrelationHeader({ events }: { events: PilotTraceEvent[] }) {
   if (events.length === 0) return null;
 
-  const cid = events[0].correlationId;
+  // Detect if showing multiple correlations (list mode) or single (detail mode)
+  const uniqueCorrelations = new Set(events.map(e => e.correlationId));
+  const isList = uniqueCorrelations.size > 1;
+
   const timestamps = events.map((e) => new Date(e.timestamp).getTime()).filter((t) => !Number.isNaN(t));
   const earliest = timestamps.length > 0 ? new Date(Math.min(...timestamps)) : null;
   const latest = timestamps.length > 1 ? new Date(Math.max(...timestamps)) : null;
 
   return (
     <div className="flex items-center justify-between text-[11px] text-white/50 px-1" data-testid="evidence-header">
-      <code className="bg-black/30 px-2 py-0.5 rounded truncate max-w-[60%]">{cid}</code>
+      {isList ? (
+        <span className="bg-black/30 px-2 py-0.5 rounded">{uniqueCorrelations.size} invocations</span>
+      ) : (
+        <code className="bg-black/30 px-2 py-0.5 rounded truncate max-w-[60%]">{events[0].correlationId}</code>
+      )}
       <span>
         {earliest ? formatTimestamp(earliest.toISOString()) : ''}
         {latest ? ` → ${formatTimestamp(latest.toISOString())}` : ''}

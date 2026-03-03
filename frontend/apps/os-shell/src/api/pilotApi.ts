@@ -230,6 +230,26 @@ export interface PilotTraceResponse {
   events: PilotTraceEvent[];
 }
 
+/** Trace list query params */
+export interface PilotTraceListParams {
+  parcelId: string;
+  toolId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  offset?: number;
+}
+
+/** Trace list response (with pagination metadata) */
+export interface PilotTraceListResponse {
+  events: PilotTraceEvent[];
+  pagination: {
+    offset: number;
+    limit: number;
+    returned: number;
+  };
+}
+
 /** Health check response */
 export interface PilotHealthResponse {
   status: string;
@@ -420,6 +440,36 @@ export async function getPilotTrace(correlationId: string): Promise<PilotTraceRe
   }
 
   return (await response.json()) as PilotTraceResponse;
+}
+
+/**
+ * List trace events with parcel-scoped filtering and date range.
+ * Newest-first ordering with offset/limit pagination.
+ *
+ * @param params - Query parameters (parcelId required, rest optional)
+ */
+export async function listPilotTraces(params: PilotTraceListParams): Promise<PilotTraceListResponse> {
+  const qs = new URLSearchParams();
+  qs.set('parcelId', params.parcelId);
+  if (params.toolId) qs.set('toolId', params.toolId);
+  if (params.from) qs.set('from', params.from);
+  if (params.to) qs.set('to', params.to);
+  if (params.limit !== undefined) qs.set('limit', String(params.limit));
+  if (params.offset !== undefined) qs.set('offset', String(params.offset));
+
+  const url = `${API_BASE_URL}/pilot/traces?${qs.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: buildPilotHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`Failed to list traces (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as PilotTraceListResponse;
 }
 
 /**
