@@ -143,7 +143,7 @@ describe('handleTraceExport', () => {
     });
 
     const req = {
-      query: { parcelId: 'P-777', limit: '25' },
+      query: { parcelId: 'P-777', limit: '25', includeMeta: '1' },
       user: {
         userId: 'admin-1',
         roles: ['administrator'],
@@ -161,14 +161,20 @@ describe('handleTraceExport', () => {
     );
 
     const lines = parseNdjsonBody(res.bodyText);
-    assert.ok(lines.length >= 1);
+    // header + 2 events + footer = 4 lines
+    assert.equal(lines.length, 4);
 
     const header = lines[0];
     assert.equal(header.type, 'trace_export_header');
     assert.equal(header.parcelId, 'P-777');
-    assert.equal(header.count, 2);
     assert.equal(header.limit, 25);
     assert.equal(header.order, 'timestamp_desc,correlationId_asc,eventId_asc');
+
+    const footer = lines[lines.length - 1];
+    assert.equal(footer.type, 'trace_export_footer');
+    assert.equal(footer.count, 2);
+    assert.equal(typeof footer.sha256, 'string');
+    assert.equal(footer.sha256.length, 64);
   });
 
   it('returns 403 + permission_denied audit for non-elevated role', async () => {
@@ -303,10 +309,108 @@ describe('handleTraceExport', () => {
     await handleTraceExport(req, res, traceService);
     assert.equal(res.statusCode, 200);
 
-    const exported = parseNdjsonBody(res.bodyText).slice(1);
+    const exported = parseNdjsonBody(res.bodyText);
     const exportedIds = exported.map((e) => e.eventId);
     const expectedIds = sortTraceExportEvents([eventB, eventA2, eventA1]).map((e) => e.eventId);
 
     assert.deepEqual(exportedIds, expectedIds);
+  });
+
+  it('default mode (no includeMeta) returns events only, no header/footer', async () => {
+    emitTraceEvent({
+      correlationId: 'corr-plain',
+      context: {
+        countyId: 'benton',
+        userId: 'owner-1',
+        roles: ['appraiser'],
+        mode: 'pilot',
+        parcelId: 'P-PLAIN',
+      },
+    });
+
+    const req = {
+      query: { parcelId: 'P-PLAIN' },
+      user: {
+        userId: 'admin-1',
+        roles: ['administrator'],
+        countyId: 'benton',
+      },
+    };
+    const res = createMockResponse();
+
+    await handleTraceExport(req, res, traceService);
+
+    assert.equal(res.statusCode, 200);
+    const lines = parseNdjsonBody(res.bodyText);
+    assert.equal(lines.length, 1);
+    assert.equal(lines[0].type, 'tool_completed');
+    assert.equal(lines[0].correlationId, 'corr-plain');
+  });
+
+  it('includeMeta=1 footer count matches event count', async () => {
+    for (let i = 0; i < 5; i++) {
+      emitTraceEvent({
+        correlationId: `corr-cnt-${i}`,
+        context: {
+          countyId: 'benton',
+          userId: `user-${i}`,
+          roles: ['appraiser'],
+          mode: 'pilot',
+          parcelId: 'P-CNT',
+        },
+      });
+    }
+
+    const req = {
+      query: { parcelId: 'P-CNT', includeMeta: '1' },
+      user: {
+        userId: 'admin-1',
+        roles: ['administrator'],
+        countyId: 'benton',
+      },
+    };
+    const res = createMockResponse();
+
+    await handleTraceExport(req, res, traceService);
+
+    const lines = parseNdjsonBody(res.bodyText);
+    const footer = lines[lines.length - 1];
+    assert.equal(footer.type, 'trace_export_footer');
+    assert.equal(footer.count, 5);
+    // header(1) + events(5) + footer(1) = 7
+    assert.equal(lines.length, 7);
+  });
+
+  it('includeMeta SHA-256 hash is deterministic for same events', async () => {
+    emitTraceEvent({
+      correlationId: 'corr-hash',
+      context: {
+        countyId: 'benton',
+        userId: 'owner-hash',
+        roles: ['appraiser'],
+        mode: 'pilot',
+        parcelId: 'P-HASH',
+      },
+    });
+
+    const run = async () => {
+      const req = {
+        query: { parcelId: 'P-HASH', includeMeta: '1' },
+        user: {
+          userId: 'admin-1',
+          roles: ['administrator'],
+          countyId: 'benton',
+        },
+      };
+      const res = createMockResponse();
+      await handleTraceExport(req, res, traceService);
+      const lines = parseNdjsonBody(res.bodyText);
+      return lines[lines.length - 1].sha256;
+    };
+
+    const hash1 = await run();
+    const hash2 = await run();
+    assert.equal(hash1, hash2, 'SHA-256 hash must be deterministic across runs');
+    assert.equal(hash1.length, 64);
   });
 });

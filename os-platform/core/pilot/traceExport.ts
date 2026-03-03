@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import {
   hasElevatedTraceRole,
   recordAccessDenied,
@@ -36,6 +36,7 @@ export interface TraceExportParams {
   from: string;
   to: string;
   limit: number;
+  includeMeta: boolean;
 }
 
 export type TraceExportParseResult =
@@ -101,6 +102,9 @@ export function parseTraceExportQuery(
 
   const correlationId = queryString(query, 'correlationId')?.trim() || undefined;
 
+  const rawIncludeMeta = queryString(query, 'includeMeta');
+  const includeMeta = rawIncludeMeta === '1' || rawIncludeMeta === 'true';
+
   return {
     ok: true,
     value: {
@@ -109,6 +113,7 @@ export function parseTraceExportQuery(
       from: new Date(effectiveFromMs).toISOString(),
       to: new Date(effectiveToMs).toISOString(),
       limit,
+      includeMeta,
     },
   };
 }
@@ -237,21 +242,39 @@ export async function handleTraceExport(
     `attachment; filename="trace-export-${safeParcelId}${fileSuffix}.ndjson"`
   );
 
-  const header = {
-    type: 'trace_export_header',
-    parcelId: params.parcelId,
-    correlationId: params.correlationId ?? null,
-    from: params.from,
-    to: params.to,
-    limit: params.limit,
-    exportedAt,
-    count: exportedEvents.length,
-    order: 'timestamp_desc,correlationId_asc,eventId_asc',
-  };
+  if (params.includeMeta) {
+    const header = {
+      type: 'trace_export_header',
+      parcelId: params.parcelId,
+      correlationId: params.correlationId ?? null,
+      from: params.from,
+      to: params.to,
+      limit: params.limit,
+      exportedAt,
+      order: 'timestamp_desc,correlationId_asc,eventId_asc',
+    };
+    res.write(`${JSON.stringify(header)}\n`);
 
-  res.write(`${JSON.stringify(header)}\n`);
-  for (const event of exportedEvents) {
-    res.write(`${JSON.stringify(event)}\n`);
+    const hash = createHash('sha256');
+    let count = 0;
+    for (const event of exportedEvents) {
+      const line = `${JSON.stringify(event)}\n`;
+      hash.update(line);
+      res.write(line);
+      count++;
+    }
+
+    const footer = {
+      type: 'trace_export_footer',
+      sha256: hash.digest('hex'),
+      count,
+    };
+    res.write(`${JSON.stringify(footer)}\n`);
+  } else {
+    for (const event of exportedEvents) {
+      res.write(`${JSON.stringify(event)}\n`);
+    }
   }
+
   return res.end();
 }
