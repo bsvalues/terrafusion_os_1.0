@@ -58,6 +58,13 @@ jest.mock('../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
+// Mock openWorkbenchWindow (surface icon opens a desktop window, not navigate)
+const mockOpenWorkbenchWindow = jest.fn();
+jest.mock('../../context/parcelContext', () => ({
+  ...jest.requireActual('../../context/parcelContext'),
+  openWorkbenchWindow: (...args: unknown[]) => mockOpenWorkbenchWindow(...args),
+}));
+
 // Stage 1 imports (DesktopIconGrid uses navigate() from react-router-dom)
 import { DesktopIconGrid } from '../../shell/desktop/DesktopIconGrid';
 
@@ -130,10 +137,14 @@ function assertLandmark(route: string) {
 // Suite IDs that now open as windows (not navigate)
 const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
 
+// Surface icons open desktop windows (not navigate)
+const SURFACE_PREFIX = 'surface-';
+
 describe('Phase 26 intent contract: click desktop icon → navigate → landmark renders', () => {
   afterEach(() => {
     cleanup();
     mockActivateModule.mockClear();
+    mockOpenWorkbenchWindow.mockClear();
   });
 
   const icons = getDesktopIcons();
@@ -141,6 +152,7 @@ describe('Phase 26 intent contract: click desktop icon → navigate → landmark
   // OS feature icons still navigate (pilot, trace, canon)
   const navigatingIcons = icons.filter((icon) => {
     if (SUITE_IDS.has(icon.id)) return false; // Suites open windows now
+    if (icon.id.startsWith(SURFACE_PREFIX)) return false; // Surfaces open desktop windows
     const r = icon.route;
     if (!r || typeof r !== 'string') return false;
     if (isExternal(r)) return false;
@@ -150,8 +162,11 @@ describe('Phase 26 intent contract: click desktop icon → navigate → landmark
   // Suite icons that activate modules
   const suiteIcons = icons.filter((icon) => SUITE_IDS.has(icon.id));
 
+  // Surface icons that open desktop windows
+  const surfaceIcons = icons.filter((icon) => icon.id.startsWith(SURFACE_PREFIX));
+
   it('has testable desktop icons', () => {
-    expect(navigatingIcons.length + suiteIcons.length).toBeGreaterThan(0);
+    expect(navigatingIcons.length + suiteIcons.length + surfaceIcons.length).toBeGreaterThan(0);
   });
 
   // Suite icons: verify they call activateModule (open as window)
@@ -176,6 +191,32 @@ describe('Phase 26 intent contract: click desktop icon → navigate → landmark
 
       // Suite icons open windowed modules via activateModule
       expect(mockActivateModule).toHaveBeenCalledWith(icon.id, { source: 'desktop' });
+    }
+  );
+
+  // Surface icons: verify they open desktop windows (not navigate)
+  it.each(surfaceIcons)(
+    '$name ($id): double-click → opens desktop window',
+    async (icon: DesktopIconEntry) => {
+      memoryRouterEntries = ['/'];
+
+      render(
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route path='/' element={<DesktopIconGrid />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      const iconEl = screen.getByTestId(`desktop-icon-${icon.id}`);
+      expect(iconEl).toBeInTheDocument();
+
+      fireEvent.doubleClick(iconEl);
+
+      // Surface icons open windows via openWorkbenchWindow (async dynamic import)
+      await waitFor(() => {
+        expect(mockOpenWorkbenchWindow).toHaveBeenCalled();
+      });
     }
   );
 
