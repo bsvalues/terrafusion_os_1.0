@@ -44,6 +44,7 @@ UNTRACKED_GOVERNED="$(git ls-files --others --exclude-standard \
   os-platform/core/ \
   tools/registry/ \
   packages/os-core/ \
+  frontend/apps/os-shell/ \
   2>/dev/null)"
 
 if [ -n "$UNTRACKED_GOVERNED" ]; then

@@ -62,6 +62,7 @@ UNTRACKED_GOVERNED="$(git ls-files --others --exclude-standard \
   os-platform/core/ \
   tools/registry/ \
   packages/os-core/ \
+  frontend/apps/os-shell/ \
   2>/dev/null)"
 
 if [ -n "$UNTRACKED_GOVERNED" ]; then
@@ -69,7 +70,7 @@ if [ -n "$UNTRACKED_GOVERNED" ]; then
   echo "$UNTRACKED_GOVERNED" | sed 's/^/   /'
   echo ""
   echo "   Either: git add them, .gitignore them, or delete them."
-  echo "   Governed paths: os-platform/core/, tools/registry/, packages/os-core/"
+  echo "   Governed paths: os-platform/core/, tools/registry/, packages/os-core/, frontend/apps/os-shell/"
   exit 1
 fi
 # Gate 1: UI Token Contract (Lumin design system — scoped Gen2 + ratchet)
