@@ -82,7 +82,7 @@ Source of truth: `os-platform/core/api/PilotController.ts`, `os-platform/core/tr
 - Irreversible OS tools (e.g. `request_trace_redaction`) require `administrator` role with `approve:irreversible` + `admin:trace` claims.
 - `runtime-lock.test.mjs` now deterministic (11/11 pass).
 
-## Endpoint: `GET /pilot/traces/export` (merged in #523, #525)
+## Endpoint: `GET /pilot/traces/export` (merged in #523, #525, #528)
 
 ### Purpose
 - Downloads trace events as NDJSON file for a given parcel.
@@ -97,6 +97,7 @@ Source of truth: `os-platform/core/api/PilotController.ts`, `os-platform/core/tr
   - `limit` (optional, default `500`, clamped `1..2000`)
   - `format` (optional, must be `ndjson` if present)
   - `includeMeta` (optional, `1` or `true` — enables integrity envelope)
+  - `sidecar` (optional, `1` or `true` — emits `X-Trace-Export-SHA256` and `X-Trace-Export-Count` HTTP headers)
 
 ### Validation
 - `parcelId` missing → `400 INVALID_REQUEST`
@@ -134,10 +135,19 @@ Source of truth: `os-platform/core/api/PilotController.ts`, `os-platform/core/tr
 - **Verification**: a consumer can recompute the hash by streaming event lines through `SHA-256` and comparing against `footer.sha256`.
 - **Count**: `footer.count` equals the number of event lines (must match count of lines between header and footer).
 
+### Response: Sidecar Mode (`sidecar=1`)
+- Content-Type: `application/x-ndjson; charset=utf-8`
+- HTTP headers:
+  - `X-Trace-Export-SHA256: <64-char hex>` — SHA-256 of event-line bytes (same hash contract as footer)
+  - `X-Trace-Export-Count: <N>` — number of event lines
+- Body: bare events (same as default mode, no header/footer).
+- When combined with `includeMeta=1`: HTTP headers match inline footer `sha256` and `count` exactly. Hash is computed once and shared.
+
 ### Design Rationale
 - Header/footer excluded from hash so that `exportedAt` (a wall-clock timestamp) does not break deterministic verification.
 - Default mode emits bare events for backward compatibility and lightweight consumers.
 - Integrity mode is opt-in to avoid breaking existing download flows.
+- Sidecar mode enables integrity verification without parsing NDJSON (ops tooling, curl scripts, automation).
 
 ## K4: Export Action UI Behavior (merged in #524)
 
