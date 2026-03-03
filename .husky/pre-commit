@@ -75,8 +75,8 @@ if [ -n "$UNTRACKED_GOVERNED" ]; then
 fi
 # Gate 1: UI Token Contract (Lumin design system — scoped Gen2 + ratchet)
 if command -v pnpm >/dev/null 2>&1; then
-  echo "🎨 Running UI token contract audit (scoped + ratchet)..."
-  pnpm -s tdc:ui:tokens || exit 1
+  echo "🎨 Running UI token contract check (read-only ratchet)..."
+  pnpm -s tdc:ui:tokens:check || exit 1
 else
   echo "⚠️  pnpm not available - skipping UI token audit"
 fi
