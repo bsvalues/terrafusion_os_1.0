@@ -72,6 +72,7 @@ class TraceService {
         this.enablePayloadStore = options.enablePayloadStore ?? true;
         this.payloadStore = new PayloadReferenceStore();
         this.store = options.store;
+        this.retentionMs = options.retentionMs;
     }
     /**
      * Emit a trace event.
@@ -252,6 +253,48 @@ class TraceService {
             summary: `Ticket ${ticketId} created. Awaiting secure deletion of ${targetPayloadRefs.length} payload(s).`,
         });
         return { requestEvent, ticketEvent, ticketId };
+    }
+    /**
+     * Prune events older than the configured retention window (or explicit retentionMs).
+     * Prunes both in-memory ring buffer and persistent store.
+     * Returns total events removed.
+     */
+    async prune(retentionMs) {
+        const window = retentionMs ?? this.retentionMs;
+        if (!window || window <= 0)
+            return 0;
+        const cutoff = Date.now() - window;
+        // Prune ring buffer
+        const before = this.events.length;
+        this.events = this.events.filter(e => new Date(e.timestamp).getTime() >= cutoff);
+        let removed = before - this.events.length;
+        // Prune persistent store
+        if (this.store) {
+            removed += await this.store.prune(window);
+        }
+        return removed;
+    }
+    /**
+     * Get store statistics.
+     * When persistent store is configured, delegates to it.
+     * Otherwise reports ring buffer stats.
+     */
+    async stats() {
+        if (this.store) {
+            return this.store.stats();
+        }
+        if (this.events.length === 0) {
+            return { totalEvents: 0, oldestTimestamp: null, newestTimestamp: null };
+        }
+        let oldest = this.events[0].timestamp;
+        let newest = this.events[0].timestamp;
+        for (const e of this.events) {
+            if (e.timestamp < oldest)
+                oldest = e.timestamp;
+            if (e.timestamp > newest)
+                newest = e.timestamp;
+        }
+        return { totalEvents: this.events.length, oldestTimestamp: oldest, newestTimestamp: newest };
     }
     /**
      * Clear all events (for testing only).

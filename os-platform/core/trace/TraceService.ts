@@ -16,6 +16,7 @@ import type {
     TraceQueryOptions,
 } from '../types/index.js';
 import type { TraceStore } from './TraceStore.js';
+import type { TraceStoreStats } from './TraceStore.js';
 
 // ============================================================================
 // Constants
@@ -96,6 +97,8 @@ export interface TraceServiceOptions {
   enablePayloadStore?: boolean;
   /** Optional persistent store. When set, events are persisted via TraceStore. */
   store?: TraceStore;
+  /** Retention window in ms. When set, prune() removes events older than this on demand. */
+  retentionMs?: number;
 }
 
 export class TraceService {
@@ -104,12 +107,14 @@ export class TraceService {
   private payloadStore: PayloadReferenceStore;
   private enablePayloadStore: boolean;
   private store: TraceStore | undefined;
+  private retentionMs: number | undefined;
 
   constructor(options: TraceServiceOptions = {}) {
     this.ringBufferSize = options.ringBufferSize ?? DEFAULT_RING_BUFFER_SIZE;
     this.enablePayloadStore = options.enablePayloadStore ?? true;
     this.payloadStore = new PayloadReferenceStore();
     this.store = options.store;
+    this.retentionMs = options.retentionMs;
   }
 
   /**
@@ -321,6 +326,49 @@ export class TraceService {
     });
 
     return { requestEvent, ticketEvent, ticketId };
+  }
+
+  /**
+   * Prune events older than the configured retention window (or explicit retentionMs).
+   * Prunes both in-memory ring buffer and persistent store.
+   * Returns total events removed.
+   */
+  async prune(retentionMs?: number): Promise<number> {
+    const window = retentionMs ?? this.retentionMs;
+    if (!window || window <= 0) return 0;
+    const cutoff = Date.now() - window;
+    // Prune ring buffer
+    const before = this.events.length;
+    this.events = this.events.filter(
+      e => new Date(e.timestamp).getTime() >= cutoff
+    );
+    let removed = before - this.events.length;
+    // Prune persistent store
+    if (this.store) {
+      removed += await this.store.prune(window);
+    }
+    return removed;
+  }
+
+  /**
+   * Get store statistics.
+   * When persistent store is configured, delegates to it.
+   * Otherwise reports ring buffer stats.
+   */
+  async stats(): Promise<TraceStoreStats> {
+    if (this.store) {
+      return this.store.stats();
+    }
+    if (this.events.length === 0) {
+      return { totalEvents: 0, oldestTimestamp: null, newestTimestamp: null };
+    }
+    let oldest = this.events[0].timestamp;
+    let newest = this.events[0].timestamp;
+    for (const e of this.events) {
+      if (e.timestamp < oldest) oldest = e.timestamp;
+      if (e.timestamp > newest) newest = e.timestamp;
+    }
+    return { totalEvents: this.events.length, oldestTimestamp: oldest, newestTimestamp: newest };
   }
 
   /**

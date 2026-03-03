@@ -652,7 +652,39 @@ export function createPilotRouter(runner?: ToolRunner): Router {
     return res.json({
       events: visibleEvents,
       pagination: { offset, limit, returned: visibleEvents.length },
+      nextCursor: null, // Reserved for future cursor-based pagination
     });
+  });
+
+  /**
+   * GET /pilot/traces/stats
+   *
+   * Trace store statistics for operability dashboards.
+   * Returns total event count, oldest/newest timestamps.
+   * Requires elevated trace role (admin, compliance_officer).
+   */
+  router.get('/traces/stats', async (req: AuthenticatedRequest, res: Response) => {
+    const user = req.user ?? {
+      userId: 'anonymous',
+      roles: ['viewer'],
+      countyId: 'benton',
+    };
+
+    const principal: TraceAccessPrincipal = {
+      userId: user.userId,
+      roles: user.roles,
+      countyId: user.countyId,
+    };
+
+    if (!hasElevatedTraceRole(principal)) {
+      return res.status(403).json({
+        error: 'ACCESS_DENIED',
+        message: 'Trace stats require elevated role',
+      });
+    }
+
+    const stats = await traceService.stats();
+    return res.json(stats);
   });
 
   /**

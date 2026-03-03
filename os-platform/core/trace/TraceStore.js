@@ -17,20 +17,58 @@ const path_1 = require("path");
 class InMemoryTraceStore {
     constructor(options = {}) {
         this.events = [];
+        /** Parcel index: parcelId → set of array indices for O(1) lookup */
+        this.parcelIndex = new Map();
         this.maxEvents = options.maxEvents ?? 10000;
     }
     async append(event) {
         this.events.push(event);
+        // Update parcel index
+        const pid = event.context.parcelId;
+        if (pid) {
+            if (!this.parcelIndex.has(pid))
+                this.parcelIndex.set(pid, new Set());
+            this.parcelIndex.get(pid).add(this.events.length - 1);
+        }
         // Trim if over capacity
         if (this.events.length > this.maxEvents) {
             const trimCount = this.events.length - this.maxEvents;
+            this.rebuildIndex(trimCount);
             this.events.splice(0, trimCount);
         }
         return event;
     }
+    /** Rebuild parcel index after trimming first N events */
+    rebuildIndex(trimCount) {
+        this.parcelIndex.clear();
+        for (let i = trimCount; i < this.events.length; i++) {
+            const pid = this.events[i].context.parcelId;
+            if (pid) {
+                if (!this.parcelIndex.has(pid))
+                    this.parcelIndex.set(pid, new Set());
+                this.parcelIndex.get(pid).add(i - trimCount);
+            }
+        }
+    }
     async query(options = {}) {
-        let results = [...this.events];
-        // Apply filters
+        // Use parcel index for the hot path when parcelId is specified
+        let results;
+        if (options.parcelId && this.parcelIndex.has(options.parcelId)) {
+            const indices = this.parcelIndex.get(options.parcelId);
+            results = [];
+            for (const idx of indices) {
+                if (idx < this.events.length)
+                    results.push(this.events[idx]);
+            }
+        }
+        else if (options.parcelId) {
+            // parcelId specified but not in index — empty result
+            results = [];
+        }
+        else {
+            results = [...this.events];
+        }
+        // Apply remaining filters
         if (options.toolId) {
             results = results.filter(e => e.toolId === options.toolId);
         }
@@ -40,11 +78,15 @@ class InMemoryTraceStore {
         if (options.type) {
             results = results.filter(e => e.type === options.type);
         }
-        if (options.parcelId) {
-            results = results.filter(e => e.context.parcelId === options.parcelId);
-        }
-        if (options.dossierId) {
+        if (!options.parcelId && options.dossierId) {
+            // parcelId already handled above; dossierId is a separate filter
             results = results.filter(e => e.context.dossierId === options.dossierId);
+        }
+        if (options.parcelId) {
+            // dossierId filter still applies even when parcel-indexed
+            if (options.dossierId) {
+                results = results.filter(e => e.context.dossierId === options.dossierId);
+            }
         }
         if (options.from) {
             const fromMs = new Date(options.from).getTime();
@@ -92,11 +134,35 @@ class InMemoryTraceStore {
     async healthy() {
         return true;
     }
+    async prune(retentionMs) {
+        const cutoff = Date.now() - retentionMs;
+        const before = this.events.length;
+        this.events = this.events.filter(e => new Date(e.timestamp).getTime() >= cutoff);
+        const removed = before - this.events.length;
+        if (removed > 0)
+            this.rebuildIndex(0);
+        return removed;
+    }
+    async stats() {
+        if (this.events.length === 0) {
+            return { totalEvents: 0, oldestTimestamp: null, newestTimestamp: null };
+        }
+        let oldest = this.events[0].timestamp;
+        let newest = this.events[0].timestamp;
+        for (const e of this.events) {
+            if (e.timestamp < oldest)
+                oldest = e.timestamp;
+            if (e.timestamp > newest)
+                newest = e.timestamp;
+        }
+        return { totalEvents: this.events.length, oldestTimestamp: oldest, newestTimestamp: newest };
+    }
     /**
      * Clear all events (for testing).
      */
     clear() {
         this.events = [];
+        this.parcelIndex.clear();
     }
 }
 exports.InMemoryTraceStore = InMemoryTraceStore;
@@ -230,6 +296,34 @@ class FileTraceStore {
     }
     async close() {
         // No-op — sync writes mean nothing to flush
+    }
+    async prune(retentionMs) {
+        this.ensureLoaded();
+        const cutoff = Date.now() - retentionMs;
+        const before = this.events.length;
+        this.events = this.events.filter(e => new Date(e.timestamp).getTime() >= cutoff);
+        const removed = before - this.events.length;
+        if (removed > 0) {
+            // Rewrite file with surviving events
+            const lines = this.events.map(e => JSON.stringify(e)).join('\n');
+            (0, fs_1.writeFileSync)(this.filePath, lines.length > 0 ? lines + '\n' : '', 'utf-8');
+        }
+        return removed;
+    }
+    async stats() {
+        this.ensureLoaded();
+        if (this.events.length === 0) {
+            return { totalEvents: 0, oldestTimestamp: null, newestTimestamp: null };
+        }
+        let oldest = this.events[0].timestamp;
+        let newest = this.events[0].timestamp;
+        for (const e of this.events) {
+            if (e.timestamp < oldest)
+                oldest = e.timestamp;
+            if (e.timestamp > newest)
+                newest = e.timestamp;
+        }
+        return { totalEvents: this.events.length, oldestTimestamp: oldest, newestTimestamp: newest };
     }
     /** Clear events (testing only — rewrites the file) */
     clear() {
