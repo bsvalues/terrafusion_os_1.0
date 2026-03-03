@@ -226,7 +226,7 @@ function DiagnosticsDrawer({ diagnostics }: { diagnostics: EvidenceRailDiagnosti
         data-testid="diagnostics-toggle"
         aria-expanded={open}
       >
-        {open ? '▾ Hide store diagnostics (global)' : '▸ Trace Store Diagnostics (global)'}
+        {open ? '▾ Hide diagnostics' : '▸ Show diagnostics'}
       </button>
       {open && (
         <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]" data-testid="diagnostics-content">
