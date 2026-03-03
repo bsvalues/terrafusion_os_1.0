@@ -130,7 +130,9 @@ export type TraceEventType =
   | 'approval_granted'
   | 'approval_denied'
   | 'redaction_requested'
-  | 'redaction_ticket_created';
+  | 'redaction_ticket_created'
+  | 'trace_accessed'
+  | 'permission_denied';
 
 export interface TraceEventInput {
   /** Event type */

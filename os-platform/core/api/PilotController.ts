@@ -630,6 +630,23 @@ export function createPilotRouter(runner?: ToolRunner): Router {
       countyId: user.countyId,
     };
 
+    // Audit: emit trace_accessed event for this request
+    // NOTE: parcelId intentionally omitted from context to prevent audit events
+    // from appearing in parcel-scoped queries (avoids audit noise in feed)
+    const accessCorrelationId = `trace-list-${randomUUID().slice(0, 8)}`;
+    traceService.emit({
+      type: 'trace_accessed',
+      toolId: 'pilot:traces:list',
+      correlationId: accessCorrelationId,
+      summary: `Trace list accessed: parcelId=${parcelId}`,
+      context: {
+        countyId: principal.countyId,
+        userId: principal.userId,
+        sessionId: '',
+        mode: 'pilot',
+      },
+    });
+
     // Query trace events (async path for persistent store)
     const events = await traceService.queryAsync({
       parcelId,
@@ -641,13 +658,39 @@ export function createPilotRouter(runner?: ToolRunner): Router {
     });
 
     // Filter by county isolation + access control
+    let filteredCount = 0;
     const visibleEvents = events.filter(e => {
       // Always deny cross-county
-      if (e.context.countyId.toLowerCase() !== principal.countyId.toLowerCase()) return false;
+      if (e.context.countyId.toLowerCase() !== principal.countyId.toLowerCase()) {
+        recordAccessDenied('cross_county');
+        filteredCount++;
+        return false;
+      }
       // Elevated roles see all in-county; others only own
       if (hasElevatedTraceRole(principal)) return true;
-      return e.context.userId === principal.userId;
+      if (e.context.userId !== principal.userId) {
+        recordAccessDenied('user_mismatch');
+        filteredCount++;
+        return false;
+      }
+      return true;
     });
+
+    // Audit: emit permission_denied if events were filtered out
+    if (filteredCount > 0) {
+      traceService.emit({
+        type: 'permission_denied',
+        toolId: 'pilot:traces:list',
+        correlationId: accessCorrelationId,
+        summary: `Trace list: ${filteredCount} event(s) filtered by access control`,
+        context: {
+          countyId: principal.countyId,
+          userId: principal.userId,
+          sessionId: '',
+          mode: 'pilot',
+        },
+      });
+    }
 
     return res.json({
       events: visibleEvents,
@@ -677,11 +720,38 @@ export function createPilotRouter(runner?: ToolRunner): Router {
     };
 
     if (!hasElevatedTraceRole(principal)) {
+      traceService.emit({
+        type: 'permission_denied',
+        toolId: 'pilot:traces:stats',
+        correlationId: `trace-stats-${randomUUID().slice(0, 8)}`,
+        summary: `Trace stats access denied: user=${principal.userId}`,
+        context: {
+          countyId: principal.countyId,
+          userId: principal.userId,
+          sessionId: '',
+          mode: 'pilot',
+        },
+      });
+      recordAccessDenied('user_mismatch');
       return res.status(403).json({
         error: 'ACCESS_DENIED',
         message: 'Trace stats require elevated role',
       });
     }
+
+    // Audit: emit trace_accessed for stats
+    traceService.emit({
+      type: 'trace_accessed',
+      toolId: 'pilot:traces:stats',
+      correlationId: `trace-stats-${randomUUID().slice(0, 8)}`,
+      summary: `Trace stats accessed by ${principal.userId}`,
+      context: {
+        countyId: principal.countyId,
+        userId: principal.userId,
+        sessionId: '',
+        mode: 'pilot',
+      },
+    });
 
     const stats = await traceService.stats();
     return res.json(stats);

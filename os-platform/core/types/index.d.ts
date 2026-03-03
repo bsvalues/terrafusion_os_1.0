@@ -85,7 +85,7 @@ export interface ToolExecutionFailure {
     traceEventId?: string;
 }
 export type ToolExecutionResult<TResult = unknown> = ToolExecutionSuccess<TResult> | ToolExecutionFailure;
-export type TraceEventType = 'tool_invoked' | 'tool_completed' | 'tool_failed' | 'value_changed' | 'status_changed' | 'document_generated' | 'approval_requested' | 'approval_granted' | 'approval_denied' | 'redaction_requested' | 'redaction_ticket_created';
+export type TraceEventType = 'tool_invoked' | 'tool_completed' | 'tool_failed' | 'value_changed' | 'status_changed' | 'document_generated' | 'approval_requested' | 'approval_granted' | 'approval_denied' | 'redaction_requested' | 'redaction_ticket_created' | 'trace_accessed' | 'permission_denied';
 export interface TraceEventInput {
     /** Event type */
     type: TraceEventType;
