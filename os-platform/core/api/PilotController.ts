@@ -614,6 +614,9 @@ export function createPilotRouter(runner?: ToolRunner): Router {
 
     const toolId = req.query.toolId as string | undefined;
 
+    // Default from=now-30d when no date bounds specified (retention window)
+    const effectiveFrom = from || (to ? undefined : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+
     // Build access principal from auth context
     const user = req.user ?? {
       userId: 'anonymous',
@@ -631,7 +634,7 @@ export function createPilotRouter(runner?: ToolRunner): Router {
     const events = await traceService.queryAsync({
       parcelId,
       toolId,
-      from: from || undefined,
+      from: effectiveFrom || undefined,
       to: to || undefined,
       limit,
       offset,
