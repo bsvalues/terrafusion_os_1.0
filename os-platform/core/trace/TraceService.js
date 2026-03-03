@@ -10,6 +10,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SCHEMA_VERSION = exports.DEFAULT_RING_BUFFER_SIZE = exports.traceService = exports.TraceService = void 0;
+exports.isAuditEventType = isAuditEventType;
 const crypto_1 = require("crypto");
 const sanitizeForTrace_js_1 = require("../security/sanitizeForTrace.js");
 // ============================================================================
@@ -19,6 +20,18 @@ const SCHEMA_VERSION = '1.0.0';
 exports.SCHEMA_VERSION = SCHEMA_VERSION;
 const DEFAULT_RING_BUFFER_SIZE = 10000;
 exports.DEFAULT_RING_BUFFER_SIZE = DEFAULT_RING_BUFFER_SIZE;
+/**
+ * Audit event types that must NEVER recursively generate additional audit events.
+ * This is the service-level audit loop guard (Lane H).
+ */
+const AUDIT_EVENT_TYPES = new Set([
+    'trace_accessed',
+    'permission_denied',
+]);
+/** Returns true if the event type is an audit/system-generated type. */
+function isAuditEventType(type) {
+    return AUDIT_EVENT_TYPES.has(type);
+}
 class PayloadReferenceStore {
     constructor() {
         this.payloads = new Map();
@@ -68,6 +81,12 @@ class PayloadReferenceStore {
 class TraceService {
     constructor(options = {}) {
         this.events = [];
+        /**
+         * Audit loop guard flag. When true, we are inside an audit-event emit.
+         * Any nested emit() call for an audit event type is suppressed.
+         * This prevents future middleware or hooks from creating infinite audit chains.
+         */
+        this._insideAuditEmit = false;
         this.ringBufferSize = options.ringBufferSize ?? DEFAULT_RING_BUFFER_SIZE;
         this.enablePayloadStore = options.enablePayloadStore ?? true;
         this.payloadStore = new PayloadReferenceStore();
@@ -79,25 +98,46 @@ class TraceService {
      * This is an append-only operation - events cannot be deleted or modified.
      */
     emit(input) {
-        const event = {
-            ...input,
-            eventId: (0, crypto_1.randomUUID)(),
-            timestamp: new Date().toISOString(),
-            schemaVersion: SCHEMA_VERSION,
-        };
-        // Append to in-memory ring buffer (always, for fast query)
-        this.events.push(event);
-        if (this.events.length > this.ringBufferSize) {
-            const trimCount = this.events.length - this.ringBufferSize;
-            this.events.splice(0, trimCount);
+        const isAudit = isAuditEventType(input.type);
+        // Audit loop guard: if we are already inside an audit emit and this is
+        // another audit event, suppress it to prevent recursive audit chains.
+        // This is the central service-level guard (Lane H).
+        if (isAudit && this._insideAuditEmit) {
+            // Return a synthetic no-op event so callers don't crash
+            return {
+                ...input,
+                eventId: `suppressed-${(0, crypto_1.randomUUID)()}`,
+                timestamp: new Date().toISOString(),
+                schemaVersion: SCHEMA_VERSION,
+            };
         }
-        // Persist if store is configured (fire-and-forget — don't block emit)
-        if (this.store) {
-            this.store.append(event).catch(() => {
-                // Persistence failure is non-fatal for R1 — event is still in ring buffer
-            });
+        if (isAudit)
+            this._insideAuditEmit = true;
+        try {
+            const event = {
+                ...input,
+                eventId: (0, crypto_1.randomUUID)(),
+                timestamp: new Date().toISOString(),
+                schemaVersion: SCHEMA_VERSION,
+            };
+            // Append to in-memory ring buffer (always, for fast query)
+            this.events.push(event);
+            if (this.events.length > this.ringBufferSize) {
+                const trimCount = this.events.length - this.ringBufferSize;
+                this.events.splice(0, trimCount);
+            }
+            // Persist if store is configured (fire-and-forget — don't block emit)
+            if (this.store) {
+                this.store.append(event).catch(() => {
+                    // Persistence failure is non-fatal for R1 — event is still in ring buffer
+                });
+            }
+            return event;
         }
-        return event;
+        finally {
+            if (isAudit)
+                this._insideAuditEmit = false;
+        }
     }
     /**
      * Create a trace event with PII handling.
