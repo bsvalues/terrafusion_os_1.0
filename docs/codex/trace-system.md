@@ -1,0 +1,84 @@
+# Trace System Contract (R1 Integration)
+
+Last updated: 2026-03-03  
+Source of truth: `os-platform/core/api/PilotController.ts`, `os-platform/core/trace/TraceService.ts`, `os-platform/core/trace/TraceStore.ts`, PRs #511-#515.
+
+## Scope
+- Endpoint contracts for `GET /pilot/traces` and `GET /pilot/traces/stats`
+- Query semantics and access rules
+- Response shape guarantees
+- Security and audit behavior
+
+## Endpoint: `GET /pilot/traces`
+
+### Request
+- Query params:
+  - `parcelId` (required)
+  - `toolId` (optional)
+  - `from` (optional, ISO 8601 inclusive lower bound)
+  - `to` (optional, ISO 8601 inclusive upper bound)
+  - `limit` (optional, default `50`, clamped `1..200`)
+  - `offset` (optional, default `0`, min `0`)
+
+### Validation
+- `parcelId` missing -> `400 INVALID_REQUEST`
+- invalid `from`/`to` -> `400 INVALID_REQUEST`
+- `from > to` -> `400 INVALID_REQUEST`
+
+### Query Semantics
+- Default window: if neither `from` nor `to` is provided, effective `from = now - 30 days`.
+- Ordering: stable sort `timestamp DESC`, tie-break `correlationId ASC`.
+- Pagination: offset/limit over sorted events.
+- `toolId` filter is parcel-bounded in practice: querying `toolId` under a different parcel returns empty (no cross-parcel existence leak).
+
+### Access Control
+- County isolation is always enforced.
+- Elevated roles can see in-county traces across users.
+- Non-elevated users only see their own trace events.
+- Filtered events are removed from results; response remains `200`.
+
+### Auditing Behavior
+- Every call emits `trace_accessed` (`toolId: pilot:traces:list`).
+- If events are filtered by access control, emits `permission_denied` with filtered count.
+- Guard against audit-feed recursion/noise: audit events for list access intentionally omit `parcelId` in event context, so they do not re-enter parcel-scoped list feeds.
+
+### Response
+- JSON:
+  - `events: TraceEvent[]`
+  - `pagination: { offset, limit, returned }`
+  - `nextCursor: null` (reserved for future cursor pagination)
+
+## Endpoint: `GET /pilot/traces/stats`
+
+### Purpose
+- Returns trace store operability stats.
+
+### Access Control
+- Requires elevated trace role (`admin`/`administrator`/`compliance_officer`/`auditor`/`supervisor` per `TraceAccessControl`).
+- Unauthorized calls return `403 ACCESS_DENIED`.
+
+### Auditing Behavior
+- Denied calls emit `permission_denied` (`toolId: pilot:traces:stats`).
+- Allowed calls emit `trace_accessed` (`toolId: pilot:traces:stats`).
+
+### Response
+- JSON:
+  - `totalEvents: number`
+  - `oldestTimestamp: string | null`
+  - `newestTimestamp: string | null`
+
+## Store and Retention Semantics
+- Store type in R1: `FileTraceStore` (JSONL append-only persistence) via `TraceService` store delegation.
+- `TraceService.emit()` is fire-and-forget persistence (ring buffer remains source for immediate in-memory access; store failures do not fail emit).
+- Retention pruning exists at both `TraceService.prune()` and `TraceStore.prune()`.
+
+## Durability (merged in #515)
+- Atomic prune rewrite (`.tmp` + rename) — crash-safe file replacement.
+- Corruption line counter (`getCorruptLineCount()`) — malformed lines counted during load.
+- Restart/durability hardening tests (12 new tests covering persistence, corruption, atomic prune).
+
+## Security Invariants (merged in #516)
+- No `write:os` claim exists in ROLE_VOCABULARY; OS-lane tools are gated by `admin:trace`.
+- Irreversible OS tools (e.g. `request_trace_redaction`) require `administrator` role with `approve:irreversible` + `admin:trace` claims.
+- `runtime-lock.test.mjs` now deterministic (11/11 pass).
+
