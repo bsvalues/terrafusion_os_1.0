@@ -5,7 +5,6 @@ import { assertNoRawColorLeaks } from "../../tools/ui-tokens/leak-guard";
 const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..", "..", "..");
 
 const FILES = [
-  "frontend/apps/os-shell/src/components/emergency/ProgressiveTerraFusionTest.css",
   "frontend/apps/os-shell/src/plugins/cama-core/index.module.css",
   "frontend/apps/os-shell/src/design-system/tokens/colors.stories.css",
   "frontend/apps/os-shell/src/components/ui/EliteProgress.css",

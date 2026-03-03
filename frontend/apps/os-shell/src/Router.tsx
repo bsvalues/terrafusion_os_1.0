@@ -163,7 +163,6 @@ const Router: React.FC = () => {
                 <Route path='/marketplace' element={<TerraFusionMarketplace />} />
                 <Route path='/experiments' element={<ExperimentsList />} />
                 <Route path='/experiments/create' element={<CreateExperiment />} />
-                <Route path='/elite-research' element={<EliteExperimentalResearchInterface />} />
                 <Route path='/codex/preferences' element={<NotificationPreferences />} />
 
                 {/* Gen2 Module Routes - Internal OS modules */}
