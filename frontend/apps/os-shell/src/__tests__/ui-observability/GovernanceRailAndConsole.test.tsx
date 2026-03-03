@@ -3,81 +3,75 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { EvidenceRail } from '../../components/pilot/EvidenceRail';
 import { ExecutionConsole } from '../../components/pilot/ExecutionConsole';
-import type { PilotTraceResponse } from '../../api/pilotApi';
-import { getPilotTrace } from '../../api/pilotApi';
+import type { PilotTraceEvent } from '../../api/pilotApi';
 
-jest.mock('../../api/pilotApi', () => {
-  const actual = jest.requireActual('../../api/pilotApi');
-  return {
-    ...actual,
-    getPilotTrace: jest.fn(),
-  };
-});
+jest.mock('../../ui/materials/LiquidPanel', () => ({
+  LiquidPanel: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div {...props}>{children}</div>
+  ),
+}));
 
-const mockGetPilotTrace = getPilotTrace as jest.MockedFunction<typeof getPilotTrace>;
+jest.mock('../../ui/materials/TactileButton', () => ({
+  TactileButton: ({ children, ...props }: React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) => (
+    <button {...props}>{children}</button>
+  ),
+}));
 
 describe('Governance evidence + execution surfaces', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders EvidenceRail from real trace query responses', async () => {
-    const traceResponse: PilotTraceResponse = {
-      events: [
-        {
-          eventId: 'evt-1',
-          type: 'tool_completed',
-          toolId: 'explain_value_change',
-          correlationId: 'corr-1',
-          summary: 'Value change explained.',
-          timestamp: '2026-03-02T19:00:00.000Z',
-          context: {
-            countyId: 'benton',
-            userId: 'u-1',
-            mode: 'pilot',
-            parcelId: 'parcel-123',
-          },
+  it('renders EvidenceRail timeline from trace events', () => {
+    const events: PilotTraceEvent[] = [
+      {
+        eventId: 'evt-1',
+        type: 'tool_completed',
+        toolId: 'explain_value_change',
+        correlationId: 'corr-1',
+        summary: 'Value change explained.',
+        timestamp: '2026-03-02T19:00:00.000Z',
+        context: {
+          countyId: 'benton',
+          userId: 'u-1',
+          mode: 'pilot',
+          parcelId: 'parcel-123',
         },
-      ],
-    };
-    mockGetPilotTrace.mockResolvedValue(traceResponse);
+      },
+    ];
 
-    render(<EvidenceRail correlationIds={['corr-1']} parcelId='parcel-123' />);
+    render(<EvidenceRail phase="ready" events={events} error={null} onRetry={jest.fn()} />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Value change explained.')).toBeInTheDocument();
-    });
-    expect(screen.getByText('corr-1')).toBeInTheDocument();
-    expect(mockGetPilotTrace).toHaveBeenCalledWith('corr-1');
+    expect(screen.getByText('Value change explained.')).toBeInTheDocument();
+    expect(screen.getByTestId('evidence-header')).toBeInTheDocument();
+    expect(screen.getByTestId('evidence-timeline')).toBeInTheDocument();
   });
 
-  it('shows payload_ref entries with a dossier link', async () => {
-    mockGetPilotTrace.mockResolvedValue({
-      events: [
-        {
-          eventId: 'evt-2',
-          type: 'tool_completed',
-          toolId: 'summarize_dossier',
-          correlationId: 'corr-2',
-          summary: 'Dossier summary generated.',
-          timestamp: '2026-03-02T19:01:00.000Z',
-          context: {
-            countyId: 'benton',
-            userId: 'u-1',
-            mode: 'pilot',
-            parcelId: 'parcel-123',
-          },
-          payloadRef: 'dossier://doc/42',
+  it('shows payloadRef as reference text (Gate 6 compliant)', () => {
+    const events: PilotTraceEvent[] = [
+      {
+        eventId: 'evt-2',
+        type: 'tool_completed',
+        toolId: 'summarize_dossier',
+        correlationId: 'corr-2',
+        summary: 'Dossier summary generated.',
+        timestamp: '2026-03-02T19:01:00.000Z',
+        context: {
+          countyId: 'benton',
+          userId: 'u-1',
+          mode: 'pilot',
+          parcelId: 'parcel-123',
         },
-      ],
-    });
+        payloadRef: 'dossier://doc/42',
+      },
+    ];
 
-    render(<EvidenceRail correlationIds={['corr-2']} parcelId='parcel-123' />);
+    render(<EvidenceRail phase="ready" events={events} error={null} onRetry={jest.fn()} />);
 
-    await waitFor(() => {
-      expect(screen.getByTestId('payload-ref-link')).toBeInTheDocument();
-    });
-    expect(screen.getByTestId('payload-ref-link')).toHaveTextContent('View in Dossier');
+    const payloadRef = screen.getByTestId('payload-ref');
+    expect(payloadRef).toHaveTextContent('Payload stored: dossier://doc/42');
+    // Gate 6: no link to dossier, reference only
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('renders ExecutionConsole lifecycle output with correlationId', async () => {

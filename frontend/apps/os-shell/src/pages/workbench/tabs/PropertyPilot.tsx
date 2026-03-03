@@ -21,6 +21,7 @@ import {
 import { ExecutionConsole } from '../../../components/pilot/ExecutionConsole';
 import { EvidenceRail } from '../../../components/pilot/EvidenceRail';
 import { useToolInvocation } from '../../../hooks/useToolInvocation';
+import { useTraceByCorrelationId } from '../../../hooks/useTraceByCorrelationId';
 
 // ============================================================================
 // Risk level display helpers
@@ -128,10 +129,13 @@ export const PropertyPilot: React.FC = () => {
   }, [activeTool, invocation.state.toolId, tools]);
 
   const isInvoking = invocation.state.phase !== 'idle';
-  const traceCorrelationIds = useMemo(
-    () => invocationHistory.map((record) => record.correlationId),
-    [invocationHistory]
+
+  // Evidence Rail — show trace for most-recent invocation
+  const latestCorrelationId = useMemo(
+    () => (invocationHistory.length > 0 ? invocationHistory[0].correlationId : null),
+    [invocationHistory],
   );
+  const trace = useTraceByCorrelationId(latestCorrelationId);
 
   return (
     <div className='tf-suite-pilot space-y-6' data-testid='property-pilot-tab'>
@@ -243,7 +247,7 @@ export const PropertyPilot: React.FC = () => {
           />
         </div>
 
-        <EvidenceRail correlationIds={traceCorrelationIds} parcelId={parcelId} />
+        <EvidenceRail phase={trace.phase} events={trace.events} error={trace.error} onRetry={trace.refresh} />
       </div>
     </div>
   );
