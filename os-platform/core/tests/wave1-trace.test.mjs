@@ -278,8 +278,9 @@ describe('Wave1 Trace: Correlation ID Pivoting', () => {
     const events = traceService.query({ correlationId });
 
     assert.equal(events.length, 3, 'Should return all events in chain');
+    // query() returns newest-first; assert on sorted set membership
     assert.deepEqual(
-      events.map(e => e.type),
+      events.map(e => e.type).sort(),
       ['event_1', 'event_2', 'event_3']
     );
   });

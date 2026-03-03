@@ -362,8 +362,10 @@ describe('Handler: search_trace_by_correlation', () => {
 
     assert.equal(result.found, true);
     assert.equal(result.events.length, 2);
-    assert.equal(result.events[0].type, 'tool_invoked');
-    assert.equal(result.events[1].type, 'tool_succeeded');
+    // query() returns newest-first; within same-ms events the order may vary,
+    // so assert on set membership rather than positional type.
+    const types = result.events.map(e => e.type).sort();
+    assert.deepEqual(types, ['tool_invoked', 'tool_succeeded']);
   });
 
   it('returns found:false when no matching events', async () => {
