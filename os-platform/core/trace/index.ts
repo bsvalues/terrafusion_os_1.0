@@ -20,6 +20,7 @@ export {
     type InMemoryTraceStoreOptions,
     type TraceStore,
     type TraceStoreConfig,
+    type TraceStoreStats,
     type TraceStoreType
 } from './TraceStore.js';
 

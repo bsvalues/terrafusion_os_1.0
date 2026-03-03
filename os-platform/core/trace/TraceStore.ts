@@ -61,6 +61,27 @@ export interface TraceStore {
    * Close the store and release resources (optional).
    */
   close?(): Promise<void>;
+
+  /**
+   * Prune events older than retentionMs from now.
+   * Returns the number of events removed.
+   */
+  prune(retentionMs: number): Promise<number>;
+
+  /**
+   * Get store statistics for observability.
+   */
+  stats(): Promise<TraceStoreStats>;
+}
+
+// ============================================================================
+// Store Stats (for ops/health endpoints)
+// ============================================================================
+
+export interface TraceStoreStats {
+  totalEvents: number;
+  oldestTimestamp: string | null;
+  newestTimestamp: string | null;
 }
 
 // ============================================================================
@@ -75,6 +96,8 @@ export interface InMemoryTraceStoreOptions {
 export class InMemoryTraceStore implements TraceStore {
   private events: TraceEvent[] = [];
   private maxEvents: number;
+  /** Parcel index: parcelId → set of array indices for O(1) lookup */
+  private parcelIndex: Map<string, Set<number>> = new Map();
 
   constructor(options: InMemoryTraceStoreOptions = {}) {
     this.maxEvents = options.maxEvents ?? 10000;
@@ -82,20 +105,52 @@ export class InMemoryTraceStore implements TraceStore {
 
   async append(event: TraceEvent): Promise<TraceEvent> {
     this.events.push(event);
+    // Update parcel index
+    const pid = event.context.parcelId;
+    if (pid) {
+      if (!this.parcelIndex.has(pid)) this.parcelIndex.set(pid, new Set());
+      this.parcelIndex.get(pid)!.add(this.events.length - 1);
+    }
 
     // Trim if over capacity
     if (this.events.length > this.maxEvents) {
       const trimCount = this.events.length - this.maxEvents;
+      this.rebuildIndex(trimCount);
       this.events.splice(0, trimCount);
     }
 
     return event;
   }
 
-  async query(options: TraceQueryOptions = {}): Promise<TraceEvent[]> {
-    let results = [...this.events];
+  /** Rebuild parcel index after trimming first N events */
+  private rebuildIndex(trimCount: number): void {
+    this.parcelIndex.clear();
+    for (let i = trimCount; i < this.events.length; i++) {
+      const pid = this.events[i].context.parcelId;
+      if (pid) {
+        if (!this.parcelIndex.has(pid)) this.parcelIndex.set(pid, new Set());
+        this.parcelIndex.get(pid)!.add(i - trimCount);
+      }
+    }
+  }
 
-    // Apply filters
+  async query(options: TraceQueryOptions = {}): Promise<TraceEvent[]> {
+    // Use parcel index for the hot path when parcelId is specified
+    let results: TraceEvent[];
+    if (options.parcelId && this.parcelIndex.has(options.parcelId)) {
+      const indices = this.parcelIndex.get(options.parcelId)!;
+      results = [];
+      for (const idx of indices) {
+        if (idx < this.events.length) results.push(this.events[idx]);
+      }
+    } else if (options.parcelId) {
+      // parcelId specified but not in index — empty result
+      results = [];
+    } else {
+      results = [...this.events];
+    }
+
+    // Apply remaining filters
     if (options.toolId) {
       results = results.filter(e => e.toolId === options.toolId);
     }
@@ -105,11 +160,15 @@ export class InMemoryTraceStore implements TraceStore {
     if (options.type) {
       results = results.filter(e => e.type === options.type);
     }
-    if (options.parcelId) {
-      results = results.filter(e => e.context.parcelId === options.parcelId);
-    }
-    if (options.dossierId) {
+    if (!options.parcelId && options.dossierId) {
+      // parcelId already handled above; dossierId is a separate filter
       results = results.filter(e => e.context.dossierId === options.dossierId);
+    }
+    if (options.parcelId) {
+      // dossierId filter still applies even when parcel-indexed
+      if (options.dossierId) {
+        results = results.filter(e => e.context.dossierId === options.dossierId);
+      }
     }
     if (options.from) {
       const fromMs = new Date(options.from).getTime();
@@ -171,11 +230,36 @@ export class InMemoryTraceStore implements TraceStore {
     return true;
   }
 
+  async prune(retentionMs: number): Promise<number> {
+    const cutoff = Date.now() - retentionMs;
+    const before = this.events.length;
+    this.events = this.events.filter(
+      e => new Date(e.timestamp).getTime() >= cutoff
+    );
+    const removed = before - this.events.length;
+    if (removed > 0) this.rebuildIndex(0);
+    return removed;
+  }
+
+  async stats(): Promise<TraceStoreStats> {
+    if (this.events.length === 0) {
+      return { totalEvents: 0, oldestTimestamp: null, newestTimestamp: null };
+    }
+    let oldest = this.events[0].timestamp;
+    let newest = this.events[0].timestamp;
+    for (const e of this.events) {
+      if (e.timestamp < oldest) oldest = e.timestamp;
+      if (e.timestamp > newest) newest = e.timestamp;
+    }
+    return { totalEvents: this.events.length, oldestTimestamp: oldest, newestTimestamp: newest };
+  }
+
   /**
    * Clear all events (for testing).
    */
   clear(): void {
     this.events = [];
+    this.parcelIndex.clear();
   }
 }
 
@@ -341,6 +425,36 @@ export class FileTraceStore implements TraceStore {
 
   async close(): Promise<void> {
     // No-op — sync writes mean nothing to flush
+  }
+
+  async prune(retentionMs: number): Promise<number> {
+    this.ensureLoaded();
+    const cutoff = Date.now() - retentionMs;
+    const before = this.events.length;
+    this.events = this.events.filter(
+      e => new Date(e.timestamp).getTime() >= cutoff
+    );
+    const removed = before - this.events.length;
+    if (removed > 0) {
+      // Rewrite file with surviving events
+      const lines = this.events.map(e => JSON.stringify(e)).join('\n');
+      writeFileSync(this.filePath, lines.length > 0 ? lines + '\n' : '', 'utf-8');
+    }
+    return removed;
+  }
+
+  async stats(): Promise<TraceStoreStats> {
+    this.ensureLoaded();
+    if (this.events.length === 0) {
+      return { totalEvents: 0, oldestTimestamp: null, newestTimestamp: null };
+    }
+    let oldest = this.events[0].timestamp;
+    let newest = this.events[0].timestamp;
+    for (const e of this.events) {
+      if (e.timestamp < oldest) oldest = e.timestamp;
+      if (e.timestamp > newest) newest = e.timestamp;
+    }
+    return { totalEvents: this.events.length, oldestTimestamp: oldest, newestTimestamp: newest };
   }
 
   /** Clear events (testing only — rewrites the file) */
