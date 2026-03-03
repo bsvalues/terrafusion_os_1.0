@@ -198,7 +198,8 @@ function deriveRequiredClaims(tool: Tool): string[] {
   if (tool.touches?.includes('dossier')) claims.push('read:dossier');
 
   // Write tools need write claims for their suite
-  if (tool.writeLane) {
+  // OS-lane tools are governed by admin:trace (no write:os claim in vocabulary)
+  if (tool.writeLane && tool.writeLane !== 'os') {
     claims.push(`write:${tool.writeLane}`);
   }
 
