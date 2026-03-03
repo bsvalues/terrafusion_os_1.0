@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useExperimentsSignalR } from '../../hooks/useExperimentsSignalR';
+// TODO(R2): wire real-time experiment updates via SignalR
 
 type Manifest = any;
 type Run = {
@@ -30,12 +30,6 @@ export default function ExperimentsList() {
     })();
   }, []);
 
-  useExperimentsSignalR((payload) => {
-    console.log('SignalR update:', payload);
-    if (payload.experimentId && payload.runId) {
-      loadRunsForExperiment(payload.experimentId);
-    }
-  });
 
   const loadRunsForExperiment = async (experimentId: string) => {
     try {
