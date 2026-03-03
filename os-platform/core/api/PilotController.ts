@@ -12,6 +12,7 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { NextFunction, Request, Response, Router } from 'express';
 import { toolRegistry, ToolRunner, toolRunner } from '../pilot/index.js';
+import { handleTraceExport } from '../pilot/traceExport.js';
 import {
     createMetricsService,
     getMetricsService,
@@ -697,6 +698,28 @@ export function createPilotRouter(runner?: ToolRunner): Router {
       pagination: { offset, limit, returned: visibleEvents.length },
       nextCursor: null, // Reserved for future cursor-based pagination
     });
+  });
+
+  /**
+   * GET /pilot/traces/export
+   *
+   * Export trace events for a parcel as NDJSON (admin/elevated only).
+   *
+   * Query params:
+   *   - parcelId (required)
+   *   - correlationId (optional)
+   *   - from (optional ISO 8601, inclusive)
+   *   - to (optional ISO 8601, inclusive)
+   *   - limit (optional, default 500, max 2000)
+   *   - format (optional, only "ndjson" supported)
+   *
+   * Bounds:
+   *   - window must be <= 30 days
+   *   - if no bounds: defaults to [now-30d, now]
+   *   - if only one bound is provided, the other is inferred to maintain bounded export
+   */
+  router.get('/traces/export', async (req: AuthenticatedRequest, res: Response) => {
+    return handleTraceExport(req, res, traceService);
   });
 
   /**
