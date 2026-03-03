@@ -8,8 +8,8 @@
  *   - PostgresTraceStore: R2 future (Drizzle ORM, see schema.ts)
  */
 
-import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
-import { dirname } from 'path';
+import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'fs';
+import { dirname, join } from 'path';
 import type { TraceEvent, TraceQueryOptions } from '../types/index.js';
 
 // ============================================================================
@@ -290,9 +290,16 @@ export class FileTraceStore implements TraceStore {
   private events: TraceEvent[] = [];
   private filePath: string;
   private loaded = false;
+  /** Count of malformed lines skipped during load (corruption metric) */
+  private corruptLineCount = 0;
 
   constructor(options: FileTraceStoreOptions) {
     this.filePath = options.filePath;
+  }
+
+  /** Number of malformed lines skipped during last load */
+  getCorruptLineCount(): number {
+    return this.corruptLineCount;
   }
 
   /**
@@ -320,6 +327,7 @@ export class FileTraceStore implements TraceStore {
         this.events.push(event);
       } catch {
         // Skip malformed lines — append-only means we never fix them
+        this.corruptLineCount++;
       }
     }
   }
@@ -436,9 +444,11 @@ export class FileTraceStore implements TraceStore {
     );
     const removed = before - this.events.length;
     if (removed > 0) {
-      // Rewrite file with surviving events
+      // Atomic rewrite: write to temp file, then rename (prevents partial writes on crash)
+      const tmpPath = this.filePath + '.tmp';
       const lines = this.events.map(e => JSON.stringify(e)).join('\n');
-      writeFileSync(this.filePath, lines.length > 0 ? lines + '\n' : '', 'utf-8');
+      writeFileSync(tmpPath, lines.length > 0 ? lines + '\n' : '', 'utf-8');
+      renameSync(tmpPath, this.filePath);
     }
     return removed;
   }
