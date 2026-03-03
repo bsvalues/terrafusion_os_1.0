@@ -58,6 +58,8 @@ function parseTraceExportQuery(query, nowMs = Date.now()) {
     const correlationId = queryString(query, 'correlationId')?.trim() || undefined;
     const rawIncludeMeta = queryString(query, 'includeMeta');
     const includeMeta = rawIncludeMeta === '1' || rawIncludeMeta === 'true';
+    const rawSidecar = queryString(query, 'sidecar');
+    const sidecar = rawSidecar === '1' || rawSidecar === 'true';
     return {
         ok: true,
         value: {
@@ -67,6 +69,7 @@ function parseTraceExportQuery(query, nowMs = Date.now()) {
             to: new Date(effectiveToMs).toISOString(),
             limit,
             includeMeta,
+            sidecar,
         },
     };
 }
@@ -176,6 +179,22 @@ async function handleTraceExport(req, res, traceService) {
     res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Content-Disposition', `attachment; filename="trace-export-${safeParcelId}${fileSuffix}.ndjson"`);
+    // Compute integrity hash when sidecar headers or inline meta requested
+    const needsHash = params.includeMeta || params.sidecar;
+    let computedHash;
+    if (needsHash) {
+        const hash = (0, crypto_1.createHash)('sha256');
+        for (const event of exportedEvents) {
+            hash.update(`${JSON.stringify(event)}\n`);
+        }
+        computedHash = hash.digest('hex');
+    }
+    // Set sidecar HTTP headers before body writes
+    if (params.sidecar && computedHash !== undefined) {
+        res.setHeader('X-Trace-Export-SHA256', computedHash);
+        res.setHeader('X-Trace-Export-Count', String(exportedEvents.length));
+    }
+    // Write body
     if (params.includeMeta) {
         const header = {
             type: 'trace_export_header',
@@ -188,18 +207,13 @@ async function handleTraceExport(req, res, traceService) {
             order: 'timestamp_desc,correlationId_asc,eventId_asc',
         };
         res.write(`${JSON.stringify(header)}\n`);
-        const hash = (0, crypto_1.createHash)('sha256');
-        let count = 0;
         for (const event of exportedEvents) {
-            const line = `${JSON.stringify(event)}\n`;
-            hash.update(line);
-            res.write(line);
-            count++;
+            res.write(`${JSON.stringify(event)}\n`);
         }
         const footer = {
             type: 'trace_export_footer',
-            sha256: hash.digest('hex'),
-            count,
+            sha256: computedHash,
+            count: exportedEvents.length,
         };
         res.write(`${JSON.stringify(footer)}\n`);
     }

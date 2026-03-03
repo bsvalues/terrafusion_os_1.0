@@ -414,3 +414,121 @@ describe('handleTraceExport', () => {
     assert.equal(hash1.length, 64);
   });
 });
+
+// ── Lane S: sidecar header tests ──
+
+describe('handleTraceExport sidecar headers', () => {
+  it('sidecar=1 emits X-Trace-Export-SHA256 and X-Trace-Export-Count headers', async () => {
+    for (let i = 0; i < 3; i++) {
+      emitTraceEvent({
+        correlationId: `corr-sc-${i}`,
+        context: {
+          countyId: 'benton',
+          userId: `user-sc-${i}`,
+          roles: ['appraiser'],
+          mode: 'pilot',
+          parcelId: 'P-SC',
+        },
+      });
+    }
+
+    const req = {
+      query: { parcelId: 'P-SC', sidecar: '1' },
+      user: { userId: 'admin-1', roles: ['administrator'], countyId: 'benton' },
+    };
+    const res = createMockResponse();
+    await handleTraceExport(req, res, traceService);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.headers.get('x-trace-export-count'), '3');
+    const sha = res.headers.get('x-trace-export-sha256');
+    assert.equal(typeof sha, 'string');
+    assert.equal(sha.length, 64);
+
+    // Body should be bare events (no header/footer) since includeMeta omitted
+    const lines = parseNdjsonBody(res.bodyText);
+    assert.equal(lines.length, 3);
+    assert.ok(lines.every((l) => l.type === 'tool_completed'));
+  });
+
+  it('sidecar=1 + includeMeta=1 headers match inline footer values', async () => {
+    for (let i = 0; i < 2; i++) {
+      emitTraceEvent({
+        correlationId: `corr-both-${i}`,
+        context: {
+          countyId: 'benton',
+          userId: `user-both-${i}`,
+          roles: ['appraiser'],
+          mode: 'pilot',
+          parcelId: 'P-BOTH',
+        },
+      });
+    }
+
+    const req = {
+      query: { parcelId: 'P-BOTH', sidecar: '1', includeMeta: '1' },
+      user: { userId: 'admin-1', roles: ['administrator'], countyId: 'benton' },
+    };
+    const res = createMockResponse();
+    await handleTraceExport(req, res, traceService);
+
+    const lines = parseNdjsonBody(res.bodyText);
+    const footer = lines[lines.length - 1];
+    assert.equal(footer.type, 'trace_export_footer');
+
+    // HTTP headers must match inline footer
+    assert.equal(res.headers.get('x-trace-export-sha256'), footer.sha256);
+    assert.equal(res.headers.get('x-trace-export-count'), String(footer.count));
+  });
+
+  it('default mode (no sidecar) does not emit sidecar headers', async () => {
+    emitTraceEvent({
+      correlationId: 'corr-no-sc',
+      context: {
+        countyId: 'benton',
+        userId: 'owner-no-sc',
+        roles: ['appraiser'],
+        mode: 'pilot',
+        parcelId: 'P-NOSC',
+      },
+    });
+
+    const req = {
+      query: { parcelId: 'P-NOSC' },
+      user: { userId: 'admin-1', roles: ['administrator'], countyId: 'benton' },
+    };
+    const res = createMockResponse();
+    await handleTraceExport(req, res, traceService);
+
+    assert.equal(res.headers.has('x-trace-export-sha256'), false);
+    assert.equal(res.headers.has('x-trace-export-count'), false);
+  });
+
+  it('sidecar=1 SHA-256 is deterministic across calls', async () => {
+    emitTraceEvent({
+      correlationId: 'corr-det',
+      context: {
+        countyId: 'benton',
+        userId: 'owner-det',
+        roles: ['appraiser'],
+        mode: 'pilot',
+        parcelId: 'P-DET',
+      },
+    });
+
+    const run = async () => {
+      const req = {
+        query: { parcelId: 'P-DET', sidecar: '1' },
+        user: { userId: 'admin-1', roles: ['administrator'], countyId: 'benton' },
+      };
+      const res = createMockResponse();
+      await handleTraceExport(req, res, traceService);
+      return res.headers.get('x-trace-export-sha256');
+    };
+
+    const h1 = await run();
+    const h2 = await run();
+    assert.equal(h1, h2, 'Sidecar SHA-256 must be deterministic');
+    assert.equal(h1.length, 64);
+  });
+});
