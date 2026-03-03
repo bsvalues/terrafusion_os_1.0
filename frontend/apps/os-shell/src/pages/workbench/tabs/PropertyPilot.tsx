@@ -7,7 +7,7 @@
  * All invocations go through useToolInvocation → preflight → confirm → execute.
  * Write-risk tools enforce Gate 5 (confirmation + reason code) via RiskConfirmationModal.
  *
- * No mock data. No hardcoded tools. No demo mode.
+ * Production-only tool and trace flows.
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -19,6 +19,7 @@ import {
   type InvocationRecord,
 } from '../../../components/workbench';
 import { ExecutionConsole } from '../../../components/pilot/ExecutionConsole';
+import { EvidenceRail } from '../../../components/pilot/EvidenceRail';
 import { useToolInvocation } from '../../../hooks/useToolInvocation';
 
 // ============================================================================
@@ -127,6 +128,10 @@ export const PropertyPilot: React.FC = () => {
   }, [activeTool, invocation.state.toolId, tools]);
 
   const isInvoking = invocation.state.phase !== 'idle';
+  const traceCorrelationIds = useMemo(
+    () => invocationHistory.map((record) => record.correlationId),
+    [invocationHistory]
+  );
 
   return (
     <div className='tf-suite-pilot space-y-6' data-testid='property-pilot-tab'>
@@ -222,18 +227,24 @@ export const PropertyPilot: React.FC = () => {
         </div>
       )}
 
-      {/* Execution Console — lifecycle + confirmation gate + correlationId */}
-      <ExecutionConsole
-        invocation={invocation}
-        tool={activeToolMeta}
-      />
+      <div className='grid grid-cols-1 xl:grid-cols-3 gap-4 items-start'>
+        <div className='xl:col-span-2 space-y-4'>
+          {/* Execution Console — lifecycle + confirmation gate + correlationId */}
+          <ExecutionConsole
+            invocation={invocation}
+            tool={activeToolMeta}
+          />
 
-      {/* Invocation History */}
-      <InvocationHistory
-        records={invocationHistory}
-        title='Invocation History'
-        emptyMessage='No tool invocations for this parcel yet.'
-      />
+          {/* Invocation History */}
+          <InvocationHistory
+            records={invocationHistory}
+            title='Invocation History'
+            emptyMessage='No tool invocations for this parcel yet.'
+          />
+        </div>
+
+        <EvidenceRail correlationIds={traceCorrelationIds} parcelId={parcelId} />
+      </div>
     </div>
   );
 };

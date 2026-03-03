@@ -1,10 +1,11 @@
 /**
  * ExecutionConsole.tsx
  *
- * PR-UI1: Governed Tool Invocation Console
+ * PR-UI1 + PR-UI2: Governed Tool Invocation Console + Evidence Rail
  *
  * Renders the full tool invocation lifecycle with correlationId at every stage.
  * Composes with RiskConfirmationModal for Gate 5 enforcement.
+ * On terminal states, offers "Show evidence" toggle to display trace timeline.
  *
  * Lifecycle: idle → preflight → confirming → executing → succeeded → failed
  *
@@ -17,6 +18,8 @@ import { requestApprovalToken } from '../../api/pilotApi';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { TactileButton } from '../../ui/materials/TactileButton';
 import type { InvocationPhase, UseToolInvocationResult } from '../../hooks/useToolInvocation';
+import { useTraceByCorrelationId } from '../../hooks/useTraceByCorrelationId';
+import { EvidenceRail } from './EvidenceRail';
 import { RiskConfirmationModal } from './RiskConfirmationModal';
 
 // ============================================================================
@@ -182,8 +185,15 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
   const handleReset = useCallback(() => {
     setApprovalToken(null);
     setApprovalTokenError(undefined);
+    setShowEvidence(false);
     reset();
   }, [reset]);
+
+  // PR-UI2: Evidence Rail — trace polling, only active on terminal states + toggle
+  const [showEvidence, setShowEvidence] = useState(false);
+  const isTerminal = phase === 'succeeded' || phase === 'failed';
+  const traceCorrelationId = isTerminal && showEvidence ? correlationId : null;
+  const trace = useTraceByCorrelationId(traceCorrelationId);
 
   // Idle state — nothing to show yet
   if (phase === 'idle') {
@@ -252,8 +262,30 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
         <ErrorDisplay error={error} errorCode={errorCode} />
       )}
 
+      {/* PR-UI2: Evidence Rail toggle + trace timeline */}
+      {isTerminal && correlationId && (
+        <div className='space-y-2'>
+          <TactileButton
+            variant='ghost'
+            size='sm'
+            onClick={() => setShowEvidence((v) => !v)}
+            data-testid='evidence-toggle'
+          >
+            {showEvidence ? 'Hide evidence' : 'Show evidence'}
+          </TactileButton>
+          {showEvidence && (
+            <EvidenceRail
+              phase={trace.phase}
+              events={trace.events}
+              error={trace.error}
+              onRetry={trace.refresh}
+            />
+          )}
+        </div>
+      )}
+
       {/* Reset button (after terminal states) */}
-      {showReset && (phase === 'succeeded' || phase === 'failed') && (
+      {showReset && isTerminal && (
         <div className='pt-2'>
           <TactileButton variant='ghost' size='sm' onClick={handleReset}>
             Dismiss
