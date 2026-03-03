@@ -557,6 +557,102 @@ export function createPilotRouter(runner?: ToolRunner): Router {
   });
 
   /**
+   * GET /pilot/traces
+   *
+   * List trace events with parcel-scoped filtering and date range.
+   * Newest-first ordering with offset/limit pagination.
+   *
+   * Query params:
+   *   - parcelId (required) — scope to a single parcel
+   *   - toolId (optional)   — filter by tool
+   *   - from (optional)     — ISO 8601 lower bound (inclusive)
+   *   - to (optional)       — ISO 8601 upper bound (inclusive)
+   *   - limit (optional)    — page size, default 50, max 200
+   *   - offset (optional)   — pagination offset, default 0
+   *
+   * ACCESS RULES: same county isolation as /trace/:correlationId.
+   */
+  router.get('/traces', async (req: AuthenticatedRequest, res: Response) => {
+    const parcelId = req.query.parcelId as string | undefined;
+    if (!parcelId) {
+      return res.status(400).json({
+        error: 'INVALID_REQUEST',
+        message: 'parcelId query parameter is required',
+      });
+    }
+
+    // Parse and validate limit
+    const rawLimit = req.query.limit as string | undefined;
+    const limit = rawLimit ? Math.min(Math.max(1, parseInt(rawLimit, 10) || 50), 200) : 50;
+
+    // Parse and validate offset
+    const rawOffset = req.query.offset as string | undefined;
+    const offset = rawOffset ? Math.max(0, parseInt(rawOffset, 10) || 0) : 0;
+
+    // Parse date bounds
+    const from = req.query.from as string | undefined;
+    const to = req.query.to as string | undefined;
+
+    if (from && isNaN(new Date(from).getTime())) {
+      return res.status(400).json({
+        error: 'INVALID_REQUEST',
+        message: 'from must be a valid ISO 8601 timestamp',
+      });
+    }
+    if (to && isNaN(new Date(to).getTime())) {
+      return res.status(400).json({
+        error: 'INVALID_REQUEST',
+        message: 'to must be a valid ISO 8601 timestamp',
+      });
+    }
+    if (from && to && new Date(from).getTime() > new Date(to).getTime()) {
+      return res.status(400).json({
+        error: 'INVALID_REQUEST',
+        message: 'from must not be after to',
+      });
+    }
+
+    const toolId = req.query.toolId as string | undefined;
+
+    // Build access principal from auth context
+    const user = req.user ?? {
+      userId: 'anonymous',
+      roles: ['viewer'],
+      countyId: 'benton',
+    };
+
+    const principal: TraceAccessPrincipal = {
+      userId: user.userId,
+      roles: user.roles,
+      countyId: user.countyId,
+    };
+
+    // Query trace events (async path for persistent store)
+    const events = await traceService.queryAsync({
+      parcelId,
+      toolId,
+      from: from || undefined,
+      to: to || undefined,
+      limit,
+      offset,
+    });
+
+    // Filter by county isolation + access control
+    const visibleEvents = events.filter(e => {
+      // Always deny cross-county
+      if (e.context.countyId.toLowerCase() !== principal.countyId.toLowerCase()) return false;
+      // Elevated roles see all in-county; others only own
+      if (hasElevatedTraceRole(principal)) return true;
+      return e.context.userId === principal.userId;
+    });
+
+    return res.json({
+      events: visibleEvents,
+      pagination: { offset, limit, returned: visibleEvents.length },
+    });
+  });
+
+  /**
    * GET /pilot/trace/:correlationId
    *
    * Get trace events for a tool invocation.

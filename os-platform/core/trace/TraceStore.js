@@ -46,6 +46,14 @@ class InMemoryTraceStore {
         if (options.dossierId) {
             results = results.filter(e => e.context.dossierId === options.dossierId);
         }
+        if (options.from) {
+            const fromMs = new Date(options.from).getTime();
+            results = results.filter(e => new Date(e.timestamp).getTime() >= fromMs);
+        }
+        if (options.to) {
+            const toMs = new Date(options.to).getTime();
+            results = results.filter(e => new Date(e.timestamp).getTime() <= toMs);
+        }
         // Sort newest first
         results.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
         // Apply pagination
@@ -160,6 +168,14 @@ class FileTraceStore {
         }
         if (options.dossierId) {
             results = results.filter(e => e.context.dossierId === options.dossierId);
+        }
+        if (options.from) {
+            const fromMs = new Date(options.from).getTime();
+            results = results.filter(e => new Date(e.timestamp).getTime() >= fromMs);
+        }
+        if (options.to) {
+            const toMs = new Date(options.to).getTime();
+            results = results.filter(e => new Date(e.timestamp).getTime() <= toMs);
         }
         results.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
         const offset = options.offset ?? 0;
