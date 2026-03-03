@@ -182,7 +182,13 @@ class FileTraceStore {
     constructor(options) {
         this.events = [];
         this.loaded = false;
+        /** Count of malformed lines skipped during load (corruption metric) */
+        this.corruptLineCount = 0;
         this.filePath = options.filePath;
+    }
+    /** Number of malformed lines skipped during last load */
+    getCorruptLineCount() {
+        return this.corruptLineCount;
     }
     /**
      * Ensure events are loaded from disk. Idempotent.
@@ -208,6 +214,7 @@ class FileTraceStore {
             }
             catch {
                 // Skip malformed lines — append-only means we never fix them
+                this.corruptLineCount++;
             }
         }
     }
@@ -304,9 +311,11 @@ class FileTraceStore {
         this.events = this.events.filter(e => new Date(e.timestamp).getTime() >= cutoff);
         const removed = before - this.events.length;
         if (removed > 0) {
-            // Rewrite file with surviving events
+            // Atomic rewrite: write to temp file, then rename (prevents partial writes on crash)
+            const tmpPath = this.filePath + '.tmp';
             const lines = this.events.map(e => JSON.stringify(e)).join('\n');
-            (0, fs_1.writeFileSync)(this.filePath, lines.length > 0 ? lines + '\n' : '', 'utf-8');
+            (0, fs_1.writeFileSync)(tmpPath, lines.length > 0 ? lines + '\n' : '', 'utf-8');
+            (0, fs_1.renameSync)(tmpPath, this.filePath);
         }
         return removed;
     }
