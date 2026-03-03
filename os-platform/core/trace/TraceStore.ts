@@ -82,6 +82,12 @@ export interface TraceStoreStats {
   totalEvents: number;
   oldestTimestamp: string | null;
   newestTimestamp: string | null;
+  /** Configured per-parcel event cap (undefined if not set) */
+  perParcelCap?: number;
+  /** Number of parcels currently at the cap limit */
+  cappedParcelsCount?: number;
+  /** Highest event count for any single parcel */
+  maxEventsInParcel?: number;
 }
 
 // ============================================================================
@@ -91,16 +97,22 @@ export interface TraceStoreStats {
 export interface InMemoryTraceStoreOptions {
   /** Maximum events to retain */
   maxEvents?: number;
+  /** Hard maximum events retained per parcel (default: 2000). 0 = no cap. */
+  perParcelCap?: number;
 }
+
+const DEFAULT_PER_PARCEL_CAP = 2000;
 
 export class InMemoryTraceStore implements TraceStore {
   private events: TraceEvent[] = [];
   private maxEvents: number;
+  private perParcelCap: number;
   /** Parcel index: parcelId → set of array indices for O(1) lookup */
   private parcelIndex: Map<string, Set<number>> = new Map();
 
   constructor(options: InMemoryTraceStoreOptions = {}) {
     this.maxEvents = options.maxEvents ?? 10000;
+    this.perParcelCap = options.perParcelCap ?? DEFAULT_PER_PARCEL_CAP;
   }
 
   async append(event: TraceEvent): Promise<TraceEvent> {
@@ -112,6 +124,11 @@ export class InMemoryTraceStore implements TraceStore {
       this.parcelIndex.get(pid)!.add(this.events.length - 1);
     }
 
+    // Enforce per-parcel cap (retention-first, then cap)
+    if (pid && this.perParcelCap > 0) {
+      this.enforceParcelCap(pid);
+    }
+
     // Trim if over capacity
     if (this.events.length > this.maxEvents) {
       const trimCount = this.events.length - this.maxEvents;
@@ -120,6 +137,40 @@ export class InMemoryTraceStore implements TraceStore {
     }
 
     return event;
+  }
+
+  /**
+   * Enforce per-parcel cap: if a parcel exceeds the cap, remove its oldest
+   * events (by timestamp ASC, correlationId ASC for deterministic ordering).
+   */
+  private enforceParcelCap(parcelId: string): void {
+    const indices = this.parcelIndex.get(parcelId);
+    if (!indices || indices.size <= this.perParcelCap) return;
+
+    // Gather parcel events with their array indices
+    const parcelEntries: { idx: number; event: TraceEvent }[] = [];
+    for (const idx of indices) {
+      if (idx < this.events.length) {
+        parcelEntries.push({ idx, event: this.events[idx] });
+      }
+    }
+
+    // Sort: newest first (timestamp DESC, correlationId ASC for ties)
+    parcelEntries.sort((a, b) => {
+      const dt = new Date(b.event.timestamp).getTime() - new Date(a.event.timestamp).getTime();
+      if (dt !== 0) return dt;
+      return a.event.correlationId.localeCompare(b.event.correlationId);
+    });
+
+    // Mark events beyond cap for removal
+    const toRemove = new Set<number>();
+    for (let i = this.perParcelCap; i < parcelEntries.length; i++) {
+      toRemove.add(parcelEntries[i].idx);
+    }
+
+    // Remove events and rebuild
+    this.events = this.events.filter((_, i) => !toRemove.has(i));
+    this.rebuildIndex(0);
   }
 
   /** Rebuild parcel index after trimming first N events */
@@ -243,7 +294,14 @@ export class InMemoryTraceStore implements TraceStore {
 
   async stats(): Promise<TraceStoreStats> {
     if (this.events.length === 0) {
-      return { totalEvents: 0, oldestTimestamp: null, newestTimestamp: null };
+      return {
+        totalEvents: 0,
+        oldestTimestamp: null,
+        newestTimestamp: null,
+        perParcelCap: this.perParcelCap > 0 ? this.perParcelCap : undefined,
+        cappedParcelsCount: 0,
+        maxEventsInParcel: 0,
+      };
     }
     let oldest = this.events[0].timestamp;
     let newest = this.events[0].timestamp;
@@ -251,7 +309,23 @@ export class InMemoryTraceStore implements TraceStore {
       if (e.timestamp < oldest) oldest = e.timestamp;
       if (e.timestamp > newest) newest = e.timestamp;
     }
-    return { totalEvents: this.events.length, oldestTimestamp: oldest, newestTimestamp: newest };
+
+    // Per-parcel cap stats
+    let cappedParcelsCount = 0;
+    let maxEventsInParcel = 0;
+    for (const [, indices] of this.parcelIndex) {
+      if (indices.size > maxEventsInParcel) maxEventsInParcel = indices.size;
+      if (this.perParcelCap > 0 && indices.size >= this.perParcelCap) cappedParcelsCount++;
+    }
+
+    return {
+      totalEvents: this.events.length,
+      oldestTimestamp: oldest,
+      newestTimestamp: newest,
+      perParcelCap: this.perParcelCap > 0 ? this.perParcelCap : undefined,
+      cappedParcelsCount,
+      maxEventsInParcel,
+    };
   }
 
   /**
@@ -272,6 +346,8 @@ export interface FileTraceStoreOptions {
   filePath: string;
   /** Flush interval in ms for in-memory cache sync (default: 0 = sync writes) */
   flushIntervalMs?: number;
+  /** Hard maximum events retained per parcel (default: 2000). 0 = no cap. */
+  perParcelCap?: number;
 }
 
 /**
@@ -292,9 +368,11 @@ export class FileTraceStore implements TraceStore {
   private loaded = false;
   /** Count of malformed lines skipped during load (corruption metric) */
   private corruptLineCount = 0;
+  private perParcelCap: number;
 
   constructor(options: FileTraceStoreOptions) {
     this.filePath = options.filePath;
+    this.perParcelCap = options.perParcelCap ?? DEFAULT_PER_PARCEL_CAP;
   }
 
   /** Number of malformed lines skipped during last load */
@@ -439,9 +517,14 @@ export class FileTraceStore implements TraceStore {
     this.ensureLoaded();
     const cutoff = Date.now() - retentionMs;
     const before = this.events.length;
+    // Retention-first: drop events older than cutoff
     this.events = this.events.filter(
       e => new Date(e.timestamp).getTime() >= cutoff
     );
+    // Then enforce per-parcel cap on surviving events
+    if (this.perParcelCap > 0) {
+      this.enforceAllParcelCaps();
+    }
     const removed = before - this.events.length;
     if (removed > 0) {
       // Atomic rewrite: write to temp file, then rename (prevents partial writes on crash)
@@ -453,18 +536,86 @@ export class FileTraceStore implements TraceStore {
     return removed;
   }
 
+  /**
+   * Enforce per-parcel cap across all parcels.
+   * For each parcel, keep only the newest `perParcelCap` events.
+   * Sort order: timestamp DESC, correlationId ASC (deterministic).
+   */
+  private enforceAllParcelCaps(): void {
+    // Group events by parcelId
+    const parcelGroups = new Map<string, { idx: number; event: TraceEvent }[]>();
+    const noParcel: TraceEvent[] = [];
+    for (let i = 0; i < this.events.length; i++) {
+      const pid = this.events[i].context.parcelId;
+      if (pid) {
+        if (!parcelGroups.has(pid)) parcelGroups.set(pid, []);
+        parcelGroups.get(pid)!.push({ idx: i, event: this.events[i] });
+      } else {
+        noParcel.push(this.events[i]);
+      }
+    }
+
+    // Check if any parcel exceeds cap
+    let needsFilter = false;
+    const toRemove = new Set<number>();
+    for (const [, entries] of parcelGroups) {
+      if (entries.length <= this.perParcelCap) continue;
+      needsFilter = true;
+      // Sort newest first
+      entries.sort((a, b) => {
+        const dt = new Date(b.event.timestamp).getTime() - new Date(a.event.timestamp).getTime();
+        if (dt !== 0) return dt;
+        return a.event.correlationId.localeCompare(b.event.correlationId);
+      });
+      for (let i = this.perParcelCap; i < entries.length; i++) {
+        toRemove.add(entries[i].idx);
+      }
+    }
+
+    if (needsFilter) {
+      this.events = this.events.filter((_, i) => !toRemove.has(i));
+    }
+  }
+
   async stats(): Promise<TraceStoreStats> {
     this.ensureLoaded();
     if (this.events.length === 0) {
-      return { totalEvents: 0, oldestTimestamp: null, newestTimestamp: null };
+      return {
+        totalEvents: 0,
+        oldestTimestamp: null,
+        newestTimestamp: null,
+        perParcelCap: this.perParcelCap > 0 ? this.perParcelCap : undefined,
+        cappedParcelsCount: 0,
+        maxEventsInParcel: 0,
+      };
     }
     let oldest = this.events[0].timestamp;
     let newest = this.events[0].timestamp;
+    const parcelCounts = new Map<string, number>();
     for (const e of this.events) {
       if (e.timestamp < oldest) oldest = e.timestamp;
       if (e.timestamp > newest) newest = e.timestamp;
+      const pid = e.context.parcelId;
+      if (pid) {
+        parcelCounts.set(pid, (parcelCounts.get(pid) ?? 0) + 1);
+      }
     }
-    return { totalEvents: this.events.length, oldestTimestamp: oldest, newestTimestamp: newest };
+
+    let cappedParcelsCount = 0;
+    let maxEventsInParcel = 0;
+    for (const [, count] of parcelCounts) {
+      if (count > maxEventsInParcel) maxEventsInParcel = count;
+      if (this.perParcelCap > 0 && count >= this.perParcelCap) cappedParcelsCount++;
+    }
+
+    return {
+      totalEvents: this.events.length,
+      oldestTimestamp: oldest,
+      newestTimestamp: newest,
+      perParcelCap: this.perParcelCap > 0 ? this.perParcelCap : undefined,
+      cappedParcelsCount,
+      maxEventsInParcel,
+    };
   }
 
   /** Clear events (testing only — rewrites the file) */
