@@ -56,9 +56,6 @@ const TerraFusionMarketplace = lazy(
 );
 const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList'));
 const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment'));
-const EliteExperimentalResearchInterface = lazy(
-  () => import('./components/elite/EliteExperimentalResearchInterface')
-);
 const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
 
 // Gen2 Module Routes
