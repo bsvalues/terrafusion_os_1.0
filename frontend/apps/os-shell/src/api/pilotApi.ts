@@ -482,6 +482,60 @@ export async function listPilotTraces(params: PilotTraceListParams): Promise<Pil
   return (await response.json()) as PilotTraceListResponse;
 }
 
+/** Parameters for trace export (NDJSON download). */
+export interface TraceExportParams {
+  parcelId: string;
+  correlationId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+}
+
+/** Error shape returned by the export endpoint on 4xx/5xx. */
+export interface TraceExportError {
+  error: string;
+  correlationId?: string;
+}
+
+/**
+ * Export trace events as an NDJSON blob (admin/elevated only).
+ * Hits GET /pilot/traces/export with query parameters.
+ *
+ * @returns NDJSON Blob on success; throws with correlationId on failure.
+ */
+export async function exportTraces(params: TraceExportParams): Promise<Blob> {
+  const qs = new URLSearchParams();
+  qs.set('parcelId', params.parcelId);
+  qs.set('format', 'ndjson');
+  if (params.correlationId) qs.set('correlationId', params.correlationId);
+  if (params.from) qs.set('from', params.from);
+  if (params.to) qs.set('to', params.to);
+  if (params.limit !== undefined) qs.set('limit', String(params.limit));
+
+  const url = `${API_BASE_URL}/pilot/traces/export?${qs.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: buildPilotHeaders(),
+  });
+
+  if (!response.ok) {
+    let errBody: TraceExportError | undefined;
+    try {
+      errBody = (await response.json()) as TraceExportError;
+    } catch {
+      // non-JSON error body
+    }
+    const msg = errBody?.error ?? `Export failed (${response.status})`;
+    const err = new Error(msg) as Error & { correlationId?: string; status?: number };
+    err.correlationId = errBody?.correlationId;
+    err.status = response.status;
+    throw err;
+  }
+
+  return response.blob();
+}
+
 /**
  * Get global trace-store diagnostics.
  * Requires elevated trace role (enforced server-side).

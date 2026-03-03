@@ -14,7 +14,7 @@
 
 import React, { useCallback, useState } from 'react';
 import type { ApprovalToken, PilotTool, Risk } from '../../api/pilotApi';
-import { requestApprovalToken } from '../../api/pilotApi';
+import { exportTraces, requestApprovalToken } from '../../api/pilotApi';
 import { getSession } from '../../auth/session';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { TactileButton } from '../../ui/materials/TactileButton';
@@ -210,6 +210,40 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
     reset();
   }, [reset]);
 
+  // K4: Trace export — download NDJSON evidence pack (admin/elevated only)
+  const [exportBusy, setExportBusy] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  const handleExport = useCallback(async () => {
+    const parcelId = state.params?.parcelId as string | undefined;
+    if (!parcelId) return;
+    setExportBusy(true);
+    setExportError(null);
+    try {
+      const blob = await exportTraces({
+        parcelId,
+        correlationId: correlationId ?? undefined,
+      });
+      const corrPart = correlationId ?? 'all';
+      const ts = new Date().toISOString().replace(/[:.]/g, '').replace('Z', 'Z');
+      const filename = `trace-export_${parcelId}_${corrPart}_${ts}.ndjson`;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err: unknown) {
+      const e = err as Error & { correlationId?: string };
+      const suffix = e.correlationId ? ` [${e.correlationId}]` : '';
+      setExportError(`${e.message}${suffix}`);
+    } finally {
+      setExportBusy(false);
+    }
+  }, [state.params, correlationId]);
+
   // PR-UI2: Evidence Rail — trace polling, only active on terminal states + toggle
   const [showEvidence, setShowEvidence] = useState(false);
   const isTerminal = phase === 'succeeded' || phase === 'failed';
@@ -287,6 +321,26 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
       {/* Error result */}
       {phase === 'failed' && error && (
         <ErrorDisplay error={error} errorCode={errorCode} />
+      )}
+
+      {/* K4: Admin-only trace export button */}
+      {isTerminal && showDiagnostics && state.params?.parcelId && (
+        <div className='space-y-1' data-testid='trace-export-section'>
+          <TactileButton
+            variant='ghost'
+            size='sm'
+            onClick={handleExport}
+            disabled={exportBusy}
+            data-testid='trace-export-btn'
+          >
+            {exportBusy ? 'Exporting…' : 'Export evidence pack (NDJSON)'}
+          </TactileButton>
+          {exportError && (
+            <p className='text-xs text-red-400' data-testid='trace-export-error'>
+              {exportError}
+            </p>
+          )}
+        </div>
       )}
 
       {/* PR-UI2: Evidence Rail toggle + trace timeline */}
