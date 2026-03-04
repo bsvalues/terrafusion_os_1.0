@@ -159,23 +159,12 @@ public sealed class R1Week5Cx19CrossCountyNonLeakTests
   [Fact]
   public async Task CostForge_CrossCounty_Breakdown_NoLeak()
   {
-    // DOCUMENTED FINDING: CostForge breakdown endpoint (GET {propertyId}/breakdown)
-    // does NOT resolve county context. It passes the propertyId directly to
-    // the service layer without verifying the property belongs to the caller's county.
-    // Compare with POST /calculate which DOES validate via CountyCodeMatchesContext().
-    // This is a county-scoping gap to be addressed in a future CX lane.
     using var client = CreateBentonClient();
     var response = await client.GetAsync(
         $"/api/CostForge/{Cx19CrossCountyFactory.KingPropertyGuid}/breakdown");
 
-    // 204 = service returned null (mock has no setup for GetCostBreakdownAsync)
-    // 200 / 403 / 404 are also acceptable — we document actual behavior
-    var status = response.StatusCode;
-    (status == HttpStatusCode.OK ||
-     status == HttpStatusCode.NoContent ||
-     status == HttpStatusCode.Forbidden ||
-     status == HttpStatusCode.NotFound).Should().BeTrue(
-        $"CostForge breakdown returned {status} — documented: no county scoping on GET breakdown");
+    response.StatusCode.Should().Be(HttpStatusCode.NotFound,
+        "Benton caller should receive 404 for King county property breakdown");
   }
 
   // ════════════════════════════════════════════════════════════════════
