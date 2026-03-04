@@ -895,12 +895,19 @@ export interface GovernedValuationResult {
 export class PilotInvokeError extends Error {
   public readonly errorCode: string | undefined;
   public readonly correlationId: string;
+  public readonly status: number | undefined;
 
-  constructor(message: string, errorCode: string | undefined, correlationId: string) {
+  constructor(
+    message: string,
+    errorCode: string | undefined,
+    correlationId: string,
+    status?: number,
+  ) {
     super(message);
     this.name = 'PilotInvokeError';
     this.errorCode = errorCode;
     this.correlationId = correlationId;
+    this.status = status;
   }
 }
 

@@ -78,15 +78,13 @@ export default function ForgeExecutionPanel() {
   const [taxYear, setTaxYear] = useState(CURRENT_YEAR);
   const [modelType, setModelType] = useState<string>('cost');
 
-  const handleInvoke = useCallback(() => {
-    if (!parcelId.trim()) return;
+  // County from session — required for county-isolated invocations
+  const county = getSession()?.countyId;
 
-    const session = getSession();
-    const county = session?.countyId;
-    if (!county) {
-      // No county in session — cannot invoke without county isolation context
-      return;
-    }
+  const canInvoke = !!county && !!parcelId.trim();
+
+  const handleInvoke = useCallback(() => {
+    if (!canInvoke || !county) return;
 
     invocation.invoke('run_valuation_model', {
       parcelId: parcelId.trim(),
@@ -94,7 +92,7 @@ export default function ForgeExecutionPanel() {
       modelType,
       county,
     });
-  }, [parcelId, taxYear, modelType, invocation]);
+  }, [canInvoke, county, parcelId, taxYear, modelType, invocation]);
 
   const isRunning =
     invocation.state.phase === 'preflight' ||
@@ -207,25 +205,35 @@ export default function ForgeExecutionPanel() {
         {/* Invoke Button */}
         <button
           onClick={handleInvoke}
-          disabled={isRunning || !parcelId.trim()}
+          disabled={isRunning || !canInvoke}
           className="px-6 py-2 rounded-lg font-semibold text-sm transition-all"
           style={{
             background:
-              isRunning || !parcelId.trim()
+              isRunning || !canInvoke
                 ? 'hsl(var(--tf-muted) / 0.3)'
                 : 'hsl(var(--tf-suite-forge))',
             color:
-              isRunning || !parcelId.trim()
+              isRunning || !canInvoke
                 ? 'hsl(var(--tf-muted))'
                 : 'hsl(var(--tf-fg))',
-            cursor: isRunning || !parcelId.trim() ? 'not-allowed' : 'pointer',
+            cursor: isRunning || !canInvoke ? 'not-allowed' : 'pointer',
           }}
         >
           {isRunning ? 'Running…' : 'Run Valuation Model'}
         </button>
 
+        {/* Missing county session warning */}
+        {!county && (
+          <p
+            className="text-xs mt-3 font-medium"
+            style={{ color: 'hsl(0 70% 60%)' }}
+          >
+            No county context in session. Re-authenticate or select a county to enable invocation.
+          </p>
+        )}
+
         {/* Governed execution note */}
-        {isIdle && (
+        {isIdle && county && (
           <p
             className="text-xs mt-3"
             style={{ color: 'hsl(var(--tf-muted))' }}
