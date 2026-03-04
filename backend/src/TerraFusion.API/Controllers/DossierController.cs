@@ -2,28 +2,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
-using TerraFusion.Data;
+using TerraFusion.Core.Services;
 using TerraFusion.API.Security;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Controllers;
 
 /// <summary>
-/// TerraDossier — Notes CRUD for R1.
+/// TerraDossier — Notes CRUD + composed parcel dossier for R1.
 /// Write-lane: dossier. County isolation enforced on all queries.
+/// Cross-county requests return 404 (anti-enumeration).
 /// </summary>
 [ApiController]
 [Route("api/dossier")]
 [Authorize]
 public class DossierController : ControllerBase
 {
-    private readonly TerraFusionDbContext _db;
+    private readonly DataDbContext _db;
+    private readonly ICostForgeService _costForge;
     private readonly ILogger<DossierController> _logger;
     private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
 
-    public DossierController(TerraFusionDbContext db, ILogger<DossierController> logger)
+    public DossierController(
+        DataDbContext db,
+        ICostForgeService costForge,
+        ILogger<DossierController> logger)
     {
         _db = db;
+        _costForge = costForge;
         _logger = logger;
     }
 
@@ -273,5 +281,141 @@ public class DossierController : ControllerBase
                 notes = new { count = notes.Count, summary = $"{notes.Count} case note(s)" },
             },
         });
+    }
+
+    // ── GET /api/dossier/{parcelId} ───────────────────────────────────
+    // CX-22: Composed parcel dossier v0
+    //   Property core + CostForge summary + Levy history + Notes summary
+    //   County-isolated: cross-county → 404 (anti-enumeration)
+
+    /// <summary>
+    /// Composed parcel dossier (county-isolated).
+    /// Returns property core data, CostForge analysis summary,
+    /// county levy history, and case notes for a single parcel.
+    /// Cross-county requests receive 404 to prevent enumeration.
+    /// </summary>
+    [HttpGet("{parcelId}")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(typeof(ParcelDossierDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<ParcelDossierDto>> GetParcelDossier(string parcelId)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        // ── Property core (county-isolated) ──────────────────────
+        var property = await _db.Properties
+            .AsNoTracking()
+            .Include(p => p.County)
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+        if (property is null)
+            return NotFound(new { error = "Parcel not found" });
+
+        var dossier = new ParcelDossierDto
+        {
+            ParcelId = parcelId,
+            CountyId = countyId.Value,
+            CountyName = property.County?.Name ?? string.Empty,
+            Property = new ParcelDossierPropertyDto
+            {
+                PropertyId = property.Id,
+                ParcelNumber = property.ParcelNumber,
+                Address = property.Address,
+                PropertyType = property.PropertyType,
+                YearBuilt = property.YearBuilt,
+                AssessedValue = property.AssessedValue,
+                LandValue = property.LandValue,
+                ImprovementValue = property.ImprovementValue,
+                MarketValue = property.MarketValue,
+                TaxYear = property.TaxYear,
+                AssessmentDate = property.AssessmentDate,
+            },
+        };
+
+        // ── CostForge summary (best-effort, nullable) ────────────
+        try
+        {
+            var analysis = await _costForge.AnalyzeCostAsync(property.Id);
+            if (analysis is not null)
+            {
+                dossier.CostForge = new ParcelDossierCostForgeSummaryDto
+                {
+                    TotalCost = analysis.TotalCost,
+                    LandValue = analysis.LandValue,
+                    ImprovementValue = analysis.ImprovementValue,
+                    ConfidenceScore = analysis.ConfidenceScore,
+                    AnalysisDate = analysis.AnalysisDate,
+                    AnalysisMethod = analysis.AnalysisMethod,
+                    ComponentCount = analysis.Components?.Count ?? 0,
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "CostForge analysis unavailable for property {PropertyId}", property.Id);
+            // CostForge section stays null — non-fatal
+        }
+
+        // ── Levy history (county-scoped, most recent 10) ─────────
+        var levyQuery = _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.CountyId == countyId.Value && t.IsActive);
+
+        var totalLevies = await levyQuery.CountAsync();
+        var recentLevies = await levyQuery
+            .OrderByDescending(t => t.EffectiveDate)
+            .Take(10)
+            .Select(t => new ParcelDossierLevyEntryDto
+            {
+                TaxLevyId = t.Id,
+                TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+                TaxRate = t.TaxRate,
+                LevyAmount = t.LevyAmount,
+                TaxYear = t.TaxYear,
+                Purpose = t.Purpose ?? string.Empty,
+                EffectiveDate = t.EffectiveDate,
+            })
+            .ToListAsync();
+
+        dossier.Levies = new ParcelDossierLevySummaryDto
+        {
+            TotalRecords = totalLevies,
+            Recent = recentLevies,
+        };
+
+        // ── Notes summary (county-isolated, most recent 5) ───────
+        var notesQuery = _db.DossierNotes
+            .AsNoTracking()
+            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
+
+        var totalNotes = await notesQuery.CountAsync();
+        var recentNotes = await notesQuery
+            .OrderByDescending(n => n.CreatedAt)
+            .Take(5)
+            .Select(n => new ParcelDossierNoteEntryDto
+            {
+                NoteId = n.Id,
+                NoteType = n.NoteType,
+                Preview = n.Content.Length > 120 ? n.Content.Substring(0, 120) + "..." : n.Content,
+                CreatedBy = n.CreatedBy,
+                CreatedAt = n.CreatedAt,
+            })
+            .ToListAsync();
+
+        dossier.Notes = new ParcelDossierNotesSummaryDto
+        {
+            TotalCount = totalNotes,
+            Recent = recentNotes,
+        };
+
+        return Ok(dossier);
     }
 }
