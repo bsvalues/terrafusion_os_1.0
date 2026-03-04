@@ -235,7 +235,7 @@ export default function ForgeSuiteHome() {
               <ForgeExecutionPanel />
             </div>
           )}
-          {!['costforge', 'comps', 'income', 'appeal', 'reconcile', 'audit', 'governed'].includes(activeModule) && (
+          {!FORGE_MODULES.some((m) => m.id === activeModule) && (
             <div className='p-6 flex items-center justify-center min-h-[400px]'>
               <div className='text-center space-y-3'>
                 <Hammer

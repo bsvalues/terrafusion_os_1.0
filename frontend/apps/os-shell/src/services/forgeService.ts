@@ -971,6 +971,7 @@ export async function runGovernedValuation(
       response.error ?? 'Valuation model execution failed',
       response.errorCode,
       response.correlationId,
+      response.status,
     );
   }
 
@@ -987,13 +988,19 @@ export async function runGovernedValuation(
     );
   }
 
+  const rawComponents = (result?.components ?? {}) as Record<string, unknown>;
+  const components: Record<string, number> = {};
+  for (const [k, v] of Object.entries(rawComponents)) {
+    if (typeof v === 'number') components[k] = v;
+  }
+
   return {
     parcelId: result?.parcelId ?? params.parcelId,
     taxYear: result?.taxYear ?? params.taxYear,
     modelType: result?.modelType ?? params.modelType ?? 'cost',
     estimatedValue: result?.estimatedValue ?? 0,
     confidence: result?.confidence ?? 0,
-    components: result?.components ?? {},
+    components,
     correlationId: response.correlationId,
   };
 }

@@ -171,6 +171,7 @@ export interface PilotInvokeResponse {
   error?: string;
   errorCode?: string;
   traceEventId?: string;
+  status?: number;
 }
 
 /** Request to validate a tool invocation */
@@ -355,6 +356,9 @@ export async function invokePilotTool(request: PilotInvokeRequest): Promise<Pilo
 
   // Always parse JSON response even for errors
   const data = (await response.json()) as PilotInvokeResponse;
+
+  // Propagate HTTP status so callers can distinguish 401/403/500
+  data.status = response.status;
 
   // Return the response directly - it contains ok: true/false
   return data;
