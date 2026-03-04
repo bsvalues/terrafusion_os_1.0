@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -95,6 +96,47 @@ public class AtlasDossierControllerGuardsTests
     }
 
     [Fact]
+    public async Task Atlas_SameCountyParcel_ReturnsExplicitGeometryUnavailable()
+    {
+        await using var db = CreateDbContext(nameof(Atlas_SameCountyParcel_ReturnsExplicitGeometryUnavailable));
+        var countyA = new County { Id = Guid.NewGuid(), Name = "Benton", State = "WA", FipsCode = "003" };
+        db.Counties.Add(countyA);
+        db.Properties.Add(new Property
+        {
+            PropertyId = "PROP-10",
+            ParcelId = "PARCEL-101",
+            ParcelNumber = "PARCEL-101",
+            Address = "100 First St",
+            PropertyType = "SFR",
+            AssessedValue = 110000,
+            LandValue = 55000,
+            ImprovementValue = 55000,
+            MarketValue = 125000,
+            AssessmentDate = DateTime.UtcNow,
+            LastUpdated = DateTime.UtcNow,
+            TaxYear = 2026,
+            CountyId = countyA.Id,
+        });
+        await db.SaveChangesAsync();
+
+        var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+        AttachPrincipal(controller, CreatePrincipal(countyA.Id));
+
+        var result = await controller.GetParcelGeometry("PARCEL-101");
+        var ok = Assert.IsType<OkObjectResult>(result);
+
+        using var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        var root = doc.RootElement;
+        Assert.Equal("PARCEL-101", root.GetProperty("parcelId").GetString());
+        Assert.Equal(JsonValueKind.Null, root.GetProperty("geometry").ValueKind);
+        Assert.Equal(JsonValueKind.Null, root.GetProperty("centroid").ValueKind);
+        Assert.Equal(JsonValueKind.Null, root.GetProperty("areaSqft").ValueKind);
+        Assert.Equal(JsonValueKind.Null, root.GetProperty("areaAcres").ValueKind);
+        Assert.Equal(JsonValueKind.Null, root.GetProperty("zoning").ValueKind);
+        Assert.False(root.GetProperty("geometryAvailable").GetBoolean());
+    }
+
+    [Fact]
     public async Task Dossier_CreateNote_ForCrossCountyParcel_ReturnsNotFound()
     {
         await using var db = CreateDbContext(nameof(Dossier_CreateNote_ForCrossCountyParcel_ReturnsNotFound));
@@ -132,9 +174,9 @@ public class AtlasDossierControllerGuardsTests
     }
 
     [Fact]
-    public async Task Dossier_Casefile_QueryCountyMismatch_ReturnsForbid()
+    public async Task Dossier_Casefile_CrossCountyParcel_ReturnsNotFound()
     {
-        await using var db = CreateDbContext(nameof(Dossier_Casefile_QueryCountyMismatch_ReturnsForbid));
+        await using var db = CreateDbContext(nameof(Dossier_Casefile_CrossCountyParcel_ReturnsNotFound));
         var countyA = new County { Id = Guid.NewGuid(), Name = "Benton", State = "WA", FipsCode = "003" };
         var countyB = new County { Id = Guid.NewGuid(), Name = "Yakima", State = "WA", FipsCode = "077" };
 
@@ -153,18 +195,15 @@ public class AtlasDossierControllerGuardsTests
             AssessmentDate = DateTime.UtcNow,
             LastUpdated = DateTime.UtcNow,
             TaxYear = 2026,
-            CountyId = countyA.Id,
+            CountyId = countyB.Id,
         });
         await db.SaveChangesAsync();
 
         var controller = new DossierController(db, NullLogger<DossierController>.Instance);
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
-        var result = await controller.GetCasefile(
-            "PARCEL-300",
-            include: null,
-            countyId: countyB.Id.ToString());
-
-        Assert.IsType<ForbidResult>(result);
+        var result = await controller.GetCasefile("PARCEL-300", include: null);
+        var notFound = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal(404, notFound.StatusCode);
     }
 }

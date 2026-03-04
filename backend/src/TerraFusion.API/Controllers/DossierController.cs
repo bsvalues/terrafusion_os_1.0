@@ -143,7 +143,7 @@ public class DossierController : ControllerBase
     /// </summary>
     [HttpGet("parcels/{parcelId}/casefile")]
     [RequiresPermission("read:dossier")]
-    public async Task<IActionResult> GetCasefile(string parcelId, [FromQuery] string? include, [FromQuery] string? countyId)
+    public async Task<IActionResult> GetCasefile(string parcelId, [FromQuery] string? include)
     {
         parcelId = parcelId.Trim();
         if (!IsValidParcelId(parcelId))
@@ -152,12 +152,6 @@ public class DossierController : ControllerBase
         var contextCountyId = GetCountyId();
         if (contextCountyId is null)
             return Forbid();
-
-        if (!string.IsNullOrWhiteSpace(countyId))
-        {
-            if (!Guid.TryParse(countyId, out var requestedCountyId) || requestedCountyId != contextCountyId.Value)
-                return Forbid();
-        }
 
         var parcelExists = await _db.Properties
             .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == contextCountyId.Value);

@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
@@ -65,6 +63,8 @@ public class AtlasController : ControllerBase
         if (countyId is null)
             return Forbid();
 
+        _logger.LogDebug("Atlas geometry request for parcel {ParcelId} in county {CountyId}", parcelId, countyId);
+
         var property = await _db.Properties
             .Where(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)
             .Select(p => new
@@ -79,44 +79,17 @@ public class AtlasController : ControllerBase
         if (property is null)
             return NotFound(new { error = "Parcel not found" });
 
-        // R1: geometry derived from parcel data available in the Property table.
-        // Real GIS backend would supply WKT polygons; for R1 we return a
-        // representative centroid computed from the county's geographic center
-        // plus a deterministic offset from a stable parcelId hash.
-        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(parcelId));
-        var latSeed = BitConverter.ToUInt32(hashBytes, 0);
-        var lngSeed = BitConverter.ToUInt32(hashBytes, 4);
-        var latOffset = (latSeed % 1000) / 100_000.0;
-        var lngOffset = (lngSeed % 1000) / 100_000.0;
-
-        // Benton County, WA approximate center
-        const double baseLat = 46.23;
-        const double baseLng = -119.20;
-        var centroidLat = Math.Round(baseLat + latOffset, 6);
-        var centroidLng = Math.Round(baseLng + lngOffset, 6);
-
-        // Synthetic area from parcel class (SFR ≈ 7500–10000 sqft)
-        var areaSqft = 7500 + (int)(latSeed % 5000);
-        var areaAcres = Math.Round(areaSqft / 43560.0, 3);
-
-        // Derive zoning from PropertyType
-        var zoning = property.PropertyType switch
-        {
-            "SFR" or "Residential" => "R-1",
-            "MFR" or "Multi-Family" => "R-2",
-            "Commercial" => "C-1",
-            "Industrial" => "I-1",
-            _ => "R-1",
-        };
-
+        // R1 guardrail: do not fabricate GIS geometry. If geometry storage
+        // is not available yet, return explicit nulls and availability=false.
         return Ok(new
         {
             parcelId = property.ParcelId,
-            geometry = $"POLYGON(({centroidLng - 0.001} {centroidLat - 0.001}, {centroidLng + 0.001} {centroidLat - 0.001}, {centroidLng + 0.001} {centroidLat + 0.001}, {centroidLng - 0.001} {centroidLat + 0.001}, {centroidLng - 0.001} {centroidLat - 0.001}))",
-            centroid = new { lat = centroidLat, lng = centroidLng },
-            areaSqft,
-            areaAcres,
-            zoning,
+            geometry = (string?)null,
+            centroid = (object?)null,
+            areaSqft = (int?)null,
+            areaAcres = (double?)null,
+            zoning = (string?)null,
+            geometryAvailable = false,
             layers = DefaultLayers,
         });
     }
@@ -138,6 +111,8 @@ public class AtlasController : ControllerBase
         var countyId = GetCountyId();
         if (countyId is null)
             return Forbid();
+
+        _logger.LogDebug("Atlas layers request for parcel {ParcelId} in county {CountyId}", parcelId, countyId);
 
         var exists = await _db.Properties
             .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
