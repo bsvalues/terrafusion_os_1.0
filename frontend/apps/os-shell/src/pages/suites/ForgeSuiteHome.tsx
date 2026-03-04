@@ -30,6 +30,7 @@ import {
   TrendingUp,
   FileSearch,
   Gavel,
+  ShieldCheck,
 } from 'lucide-react';
 
 const CostForgeModule = lazy(() => import('./modules/CostForgeModule'));
@@ -38,6 +39,7 @@ const IncomeForgeModule = lazy(() => import('./modules/IncomeForgeModule'));
 const AppealForgeModule = lazy(() => import('./modules/AppealForgeModule'));
 const ReconciliationModule = lazy(() => import('./modules/ReconciliationModule'));
 const ValueAuditModule = lazy(() => import('./modules/ValueAuditModule'));
+const ForgeExecutionPanel = lazy(() => import('./modules/ForgeExecutionPanel'));
 
 interface ForgeModuleDef {
   id: string;
@@ -89,6 +91,13 @@ const FORGE_MODULES: ForgeModuleDef[] = [
     icon: FileSearch,
     status: 'active',
     description: 'FISMA-compliant audit trail for valuation changes',
+  },
+  {
+    id: 'governed',
+    label: 'Governed Run',
+    icon: ShieldCheck,
+    status: 'active',
+    description: 'Execute run_valuation_model through the governed path with full trace visibility',
   },
 ];
 
@@ -221,7 +230,12 @@ export default function ForgeSuiteHome() {
               <ValueAuditModule />
             </div>
           )}
-          {!['costforge', 'comps', 'income', 'appeal', 'reconcile', 'audit'].includes(activeModule) && (
+          {activeModule === 'governed' && (
+            <div role='tabpanel' id='forge-panel-governed' className='p-6'>
+              <ForgeExecutionPanel />
+            </div>
+          )}
+          {!FORGE_MODULES.some((m) => m.id === activeModule) && (
             <div className='p-6 flex items-center justify-center min-h-[400px]'>
               <div className='text-center space-y-3'>
                 <Hammer

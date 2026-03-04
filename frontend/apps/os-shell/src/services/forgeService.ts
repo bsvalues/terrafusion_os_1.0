@@ -865,3 +865,142 @@ export async function getForgeStats(): Promise<ForgeStats> {
     lastUpdated: new Date().toISOString(),
   };
 }
+
+// ============================================================================
+// Governed Valuation — Lane U: pilotApi.invoke('run_valuation_model')
+// ============================================================================
+
+export interface GovernedValuationParams {
+  parcelId: string;
+  taxYear: number;
+  modelType?: 'cost' | 'income' | 'sales';
+  county: string;
+}
+
+export interface GovernedValuationResult {
+  parcelId: string;
+  taxYear: number;
+  modelType: string;
+  estimatedValue: number;
+  confidence: number;
+  components: Record<string, number>;
+  correlationId: string;
+}
+
+/**
+ * Structured error for governed invocation failures.
+ * Preserves machine-readable errorCode and correlationId for
+ * callers who need to distinguish confirmation vs network vs handler errors.
+ */
+export class PilotInvokeError extends Error {
+  public readonly errorCode: string | undefined;
+  public readonly correlationId: string;
+  public readonly status: number | undefined;
+
+  constructor(
+    message: string,
+    errorCode: string | undefined,
+    correlationId: string,
+    status?: number,
+  ) {
+    super(message);
+    this.name = 'PilotInvokeError';
+    this.errorCode = errorCode;
+    this.correlationId = correlationId;
+    this.status = status;
+  }
+}
+
+/**
+ * Run a valuation model through the governed path.
+ *
+ * This calls pilotApi.invokePilotTool('run_valuation_model', ...) instead
+ * of doing client-side math. The backend handler (handlers.real.ts) calls
+ * POST /api/costforge/calculate and returns real data.
+ *
+ * Requires write_high confirmation + reason code (Gate 5).
+ * All invocations are traced (TerraTrace).
+ */
+export async function runGovernedValuation(
+  params: GovernedValuationParams,
+  confirmation: {
+    confirmed: boolean;
+    reasonCode: string;
+    supervisorApproval?: { approvedBy: string; role: string };
+  },
+): Promise<GovernedValuationResult> {
+  // Hard-enforce Gate 5 preconditions — this helper is "already-confirmed"
+  // so callers MUST pass confirmed === true and a non-empty reason code.
+  if (!confirmation.confirmed) {
+    throw new PilotInvokeError(
+      'Confirmation required: confirmed must be true for write_high tools',
+      'CONFIRMATION_REQUIRED',
+      'pre-invoke',
+      400,
+    );
+  }
+  if (!confirmation.reasonCode) {
+    throw new PilotInvokeError(
+      'Reason code required for write_high confirmation',
+      'CONFIRMATION_REQUIRED',
+      'pre-invoke',
+      400,
+    );
+  }
+
+  // Lazy import to avoid circular dependency
+  const { invokePilotTool } = await import('../api/pilotApi');
+
+  const response = await invokePilotTool({
+    toolId: 'run_valuation_model',
+    params: {
+      parcelId: params.parcelId,
+      taxYear: params.taxYear,
+      modelType: params.modelType ?? 'cost',
+      county: params.county,
+    },
+    confirmation: {
+      confirmed: confirmation.confirmed,
+      reasonCode: confirmation.reasonCode,
+      supervisorApproval: confirmation.supervisorApproval,
+    },
+  });
+
+  if (!response.ok) {
+    throw new PilotInvokeError(
+      response.error ?? 'Valuation model execution failed',
+      response.errorCode,
+      response.correlationId,
+      response.status,
+    );
+  }
+
+  let result: Record<string, unknown>;
+  try {
+    result = typeof response.result === 'string'
+      ? JSON.parse(response.result)
+      : (response.result as Record<string, unknown>);
+  } catch {
+    throw new PilotInvokeError(
+      'Invalid JSON in valuation response',
+      'PARSE_ERROR',
+      response.correlationId,
+    );
+  }
+
+  const rawComponents = (result?.components ?? {}) as Record<string, unknown>;
+  const components: Record<string, number> = {};
+  for (const [k, v] of Object.entries(rawComponents)) {
+    if (typeof v === 'number') components[k] = v;
+  }
+
+  return {
+    parcelId: result?.parcelId ?? params.parcelId,
+    taxYear: result?.taxYear ?? params.taxYear,
+    modelType: result?.modelType ?? params.modelType ?? 'cost',
+    estimatedValue: result?.estimatedValue ?? 0,
+    confidence: result?.confidence ?? 0,
+    components,
+    correlationId: response.correlationId,
+  };
+}
