@@ -559,3 +559,4 @@ tools/registry/autonomy-viewer/bin/*.mjs
 
 # Generated pact artifacts
 pact/
+_archive/
