@@ -28,11 +28,49 @@ public class AtlasController : ControllerBase
 
     // ── County Isolation Helper ──────────────────────────────────────
 
-    private Guid? GetCountyId()
+    private async Task<Guid?> ResolveCountyIdAsync()
     {
-        var claim = User.FindFirst("countyId")?.Value;
-        if (Guid.TryParse(claim, out var id)) return id;
-        return null;
+        var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+        if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+            return directCountyId;
+
+        var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+
+        var tokens = new[] { countyIdClaim, countyCodeClaim }
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .Select(v => NormalizeCountyToken(v!))
+            .Where(v => v.Length > 0)
+            .Distinct()
+            .ToArray();
+
+        if (tokens.Length == 0)
+            return null;
+
+        var counties = await _db.Counties
+            .AsNoTracking()
+            .Select(c => new { c.Id, c.Name, c.FipsCode })
+            .ToListAsync();
+
+        var match = counties.FirstOrDefault(c =>
+            tokens.Contains(NormalizeCountyToken(c.Name)) ||
+            tokens.Contains(NormalizeCountyToken(c.FipsCode)));
+
+        return match?.Id;
+    }
+
+    private static string NormalizeCountyToken(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        var normalized = value.Trim().ToLowerInvariant();
+        if (normalized.EndsWith(" county"))
+            normalized = normalized[..^7];
+
+        return normalized
+            .Replace("-", string.Empty)
+            .Replace("_", string.Empty)
+            .Replace(" ", string.Empty);
     }
 
     // ── Available Layers (static for R1) ─────────────────────────────
@@ -59,7 +97,7 @@ public class AtlasController : ControllerBase
         if (!IsValidParcelId(parcelId))
             return BadRequest(new { error = "Invalid parcelId format" });
 
-        var countyId = GetCountyId();
+        var countyId = await ResolveCountyIdAsync();
         if (countyId is null)
             return Forbid();
 
@@ -108,7 +146,7 @@ public class AtlasController : ControllerBase
         if (!IsValidParcelId(parcelId))
             return BadRequest(new { error = "Invalid parcelId format" });
 
-        var countyId = GetCountyId();
+        var countyId = await ResolveCountyIdAsync();
         if (countyId is null)
             return Forbid();
 

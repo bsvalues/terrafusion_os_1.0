@@ -28,15 +28,26 @@ public class AtlasDossierControllerGuardsTests
         return new TerraFusionDbContext(options, config);
     }
 
-    private static ClaimsPrincipal CreatePrincipal(Guid countyId, string userId = "unit-user")
+    private static ClaimsPrincipal CreatePrincipal(string countyClaim, string userId = "unit-user", string? countyCodeClaim = null)
     {
+        var claims = new List<Claim>
+        {
+            new("countyId", countyClaim),
+            new("sub", userId),
+            new("userId", userId),
+        };
+
+        if (!string.IsNullOrWhiteSpace(countyCodeClaim))
+        {
+            claims.Add(new Claim("countyCode", countyCodeClaim));
+        }
+
         return new ClaimsPrincipal(new ClaimsIdentity(
-        [
-            new Claim("countyId", countyId.ToString()),
-            new Claim("sub", userId),
-            new Claim("userId", userId),
-        ], "TestAuth"));
+            claims, "TestAuth"));
     }
+
+    private static ClaimsPrincipal CreatePrincipal(Guid countyId, string userId = "unit-user")
+        => CreatePrincipal(countyId.ToString(), userId);
 
     private static void AttachPrincipal(ControllerBase controller, ClaimsPrincipal principal)
     {
@@ -137,6 +148,40 @@ public class AtlasDossierControllerGuardsTests
     }
 
     [Fact]
+    public async Task Atlas_StringCountyClaim_ResolvesCountyContext()
+    {
+        await using var db = CreateDbContext(nameof(Atlas_StringCountyClaim_ResolvesCountyContext));
+        var countyA = new County { Id = Guid.NewGuid(), Name = "Benton", State = "WA", FipsCode = "003" };
+        db.Counties.Add(countyA);
+        db.Properties.Add(new Property
+        {
+            PropertyId = "PROP-11",
+            ParcelId = "PARCEL-102",
+            ParcelNumber = "PARCEL-102",
+            Address = "101 First St",
+            PropertyType = "SFR",
+            AssessedValue = 110000,
+            LandValue = 55000,
+            ImprovementValue = 55000,
+            MarketValue = 125000,
+            AssessmentDate = DateTime.UtcNow,
+            LastUpdated = DateTime.UtcNow,
+            TaxYear = 2026,
+            CountyId = countyA.Id,
+        });
+        await db.SaveChangesAsync();
+
+        var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+        AttachPrincipal(controller, CreatePrincipal("benton"));
+
+        var result = await controller.GetParcelGeometry("PARCEL-102");
+        var ok = Assert.IsType<OkObjectResult>(result);
+
+        using var doc = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        Assert.Equal("PARCEL-102", doc.RootElement.GetProperty("parcelId").GetString());
+    }
+
+    [Fact]
     public async Task Dossier_CreateNote_ForCrossCountyParcel_ReturnsNotFound()
     {
         await using var db = CreateDbContext(nameof(Dossier_CreateNote_ForCrossCountyParcel_ReturnsNotFound));
@@ -205,5 +250,40 @@ public class AtlasDossierControllerGuardsTests
         var result = await controller.GetCasefile("PARCEL-300", include: null);
         var notFound = Assert.IsType<NotFoundObjectResult>(result);
         Assert.Equal(404, notFound.StatusCode);
+    }
+
+    [Fact]
+    public async Task Dossier_StringCountyClaim_ResolvesCountyContext()
+    {
+        await using var db = CreateDbContext(nameof(Dossier_StringCountyClaim_ResolvesCountyContext));
+        var countyA = new County { Id = Guid.NewGuid(), Name = "Benton", State = "WA", FipsCode = "003" };
+        db.Counties.Add(countyA);
+        db.Properties.Add(new Property
+        {
+            PropertyId = "PROP-12",
+            ParcelId = "PARCEL-400",
+            ParcelNumber = "PARCEL-400",
+            Address = "999 River St",
+            PropertyType = "SFR",
+            AssessedValue = 125000,
+            LandValue = 60000,
+            ImprovementValue = 65000,
+            MarketValue = 130000,
+            AssessmentDate = DateTime.UtcNow,
+            LastUpdated = DateTime.UtcNow,
+            TaxYear = 2026,
+            CountyId = countyA.Id,
+        });
+        await db.SaveChangesAsync();
+
+        var controller = new DossierController(db, NullLogger<DossierController>.Instance);
+        AttachPrincipal(controller, CreatePrincipal("BENTON"));
+
+        var result = await controller.CreateNote(
+            "PARCEL-400",
+            new DossierController.CreateNoteRequest("note from string county claim", "case_note"));
+
+        var created = Assert.IsType<CreatedResult>(result);
+        Assert.Equal(201, created.StatusCode);
     }
 }
