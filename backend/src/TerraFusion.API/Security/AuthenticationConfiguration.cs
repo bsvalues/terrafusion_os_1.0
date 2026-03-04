@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +10,7 @@ using TerraFusion.API.Security;
 using TerraFusion.API.Security.Interfaces;
 using TerraFusion.API.Security.Services;
 using TerraFusion.API.Services;
+using TerraFusion.Data.Repositories;
 using CoreAuth = TerraFusion.Core.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Concurrent;
@@ -105,6 +107,15 @@ namespace TerraFusion.API.Security
                 options.AddPolicy("TIER5AIAccess", policy =>
                     policy.RequireRole("SystemAdministrator", "Admin", "SystemAdmin", "AIModuleAccess"));
             });
+
+            // CX-18D: Enable dynamic permission policy resolution.
+            // DynamicModulePolicyProvider resolves RequiresPermission_* and module:* policies.
+            // PluginPermissionHandler enforces per-plugin permission checks via X-Plugin-Id header.
+            // ModuleAccessHandler enforces module-level access via "perm" claims.
+            services.AddSingleton<IAuthorizationPolicyProvider, DynamicModulePolicyProvider>();
+            services.AddScoped<IAuthorizationHandler, PluginPermissionHandler>();
+            services.AddScoped<IAuthorizationHandler, ModuleAccessHandler>();
+            services.AddScoped<IPluginRepository, PluginRepository>();
 
             return services;
         }
