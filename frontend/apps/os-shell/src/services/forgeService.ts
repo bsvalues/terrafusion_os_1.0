@@ -929,6 +929,25 @@ export async function runGovernedValuation(
     supervisorApproval?: { approvedBy: string; role: string };
   },
 ): Promise<GovernedValuationResult> {
+  // Hard-enforce Gate 5 preconditions — this helper is "already-confirmed"
+  // so callers MUST pass confirmed === true and a non-empty reason code.
+  if (!confirmation.confirmed) {
+    throw new PilotInvokeError(
+      'Confirmation required: confirmed must be true for write_high tools',
+      'CONFIRMATION_REQUIRED',
+      'pre-invoke',
+      400,
+    );
+  }
+  if (!confirmation.reasonCode) {
+    throw new PilotInvokeError(
+      'Reason code required for write_high confirmation',
+      'CONFIRMATION_REQUIRED',
+      'pre-invoke',
+      400,
+    );
+  }
+
   // Lazy import to avoid circular dependency
   const { invokePilotTool } = await import('../api/pilotApi');
 
@@ -955,9 +974,18 @@ export async function runGovernedValuation(
     );
   }
 
-  const result = typeof response.result === 'string'
-    ? JSON.parse(response.result)
-    : response.result;
+  let result: Record<string, unknown>;
+  try {
+    result = typeof response.result === 'string'
+      ? JSON.parse(response.result)
+      : (response.result as Record<string, unknown>);
+  } catch {
+    throw new PilotInvokeError(
+      'Invalid JSON in valuation response',
+      'PARSE_ERROR',
+      response.correlationId,
+    );
+  }
 
   return {
     parcelId: result?.parcelId ?? params.parcelId,
