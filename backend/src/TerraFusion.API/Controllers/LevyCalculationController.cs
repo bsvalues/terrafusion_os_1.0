@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Data;
+using TerraFusion.Core.Entities;
 using CountyEntity = TerraFusion.Core.Entities.County;
+using Task = System.Threading.Tasks.Task;
 
 namespace TerraFusion.API.Controllers;
 
@@ -294,8 +296,25 @@ public class LevyCalculationController : ControllerBase
                 projectedRevenue,
                 riskLevel);
 
+            // CX-21: Persist calculation to TaxLevies for audit trail
+            var taxLevy = new TaxLevy
+            {
+                Id = Guid.NewGuid(),
+                CountyId = countyContext.CountyId,
+                TaxingDistrict = request.DistrictId,
+                TaxRate = (decimal)quantumOptimizedRate.Rate,
+                LevyAmount = (decimal)projectedRevenue,
+                TaxYear = DateTime.UtcNow.Year,
+                Purpose = $"{request.DistrictType}/{request.MeasureType}",
+                EffectiveDate = DateTime.UtcNow,
+                IsActive = true
+            };
+            _db.TaxLevies.Add(taxLevy);
+            await _db.SaveChangesAsync();
+
             return Ok(new LevyCalculationResultDto
             {
+                TaxLevyId = taxLevy.Id,
                 DistrictId = request.DistrictId,
                 DistrictName = request.DistrictName,
                 BaseRate = baseRate,
@@ -306,7 +325,7 @@ public class LevyCalculationController : ControllerBase
                 ProjectedRevenue = projectedRevenue,
                 RiskLevel = riskLevel,
                 Warnings = compliance.Warnings,
-                CalculationTimestamp = DateTime.UtcNow,
+                CalculationTimestamp = taxLevy.EffectiveDate,
                 QuantumFactor = 949,
                 OptimizationMethod = "QuantumGradientBoosting_v1.0"
             });
@@ -321,6 +340,49 @@ public class LevyCalculationController : ControllerBase
                 Status = 500
             });
         }
+    }
+
+    /// <summary>
+    /// Retrieve persisted levy calculation history for the caller's county.
+    /// </summary>
+    [HttpGet("history")]
+    [ProducesResponseType(typeof(List<LevyHistoryDto>), 200)]
+    [ProducesResponseType(403)]
+    public async Task<ActionResult<List<LevyHistoryDto>>> GetHistory(
+        [FromQuery] int? taxYear = null,
+        [FromQuery] string? districtId = null)
+    {
+        var countyContext = await ResolveCountyContextAsync();
+        if (countyContext is null)
+            return Forbid();
+
+        var query = _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.CountyId == countyContext.CountyId && t.IsActive);
+
+        if (taxYear.HasValue)
+            query = query.Where(t => t.TaxYear == taxYear.Value);
+
+        if (!string.IsNullOrWhiteSpace(districtId))
+            query = query.Where(t => t.TaxingDistrict == districtId);
+
+        var records = await query
+            .OrderByDescending(t => t.EffectiveDate)
+            .Take(200)
+            .Select(t => new LevyHistoryDto
+            {
+                TaxLevyId = t.Id,
+                CountyId = t.CountyId,
+                TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+                TaxRate = (double)t.TaxRate,
+                LevyAmount = (double)t.LevyAmount,
+                TaxYear = t.TaxYear,
+                Purpose = t.Purpose ?? string.Empty,
+                EffectiveDate = t.EffectiveDate,
+            })
+            .ToListAsync();
+
+        return Ok(records);
     }
 
     /// <summary>
@@ -357,28 +419,40 @@ public class LevyCalculationController : ControllerBase
         var results = new List<LevyCalculationResultDto>();
         var errors = new List<string>();
 
-        // Process in parallel for performance (max 8 concurrent)
-        var options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
-
-        await Parallel.ForEachAsync(requests, options, async (request, ct) =>
+        // Compute rates (pure math, parallelizable)
+        foreach (var request in requests)
         {
             try
             {
                 var result = await CalculateOptimalRateInternalAsync(request);
-                lock (results)
-                {
-                    results.Add(result);
-                }
+                results.Add(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to calculate levy for district {District}", request.DistrictId);
-                lock (errors)
-                {
-                    errors.Add($"District {request.DistrictId}: {ex.Message}");
-                }
+                errors.Add($"District {request.DistrictId}: {ex.Message}");
             }
-        });
+        }
+
+        // CX-21: Persist all successful calculations as TaxLevy records
+        foreach (var result in results)
+        {
+            var taxLevy = new TaxLevy
+            {
+                Id = Guid.NewGuid(),
+                CountyId = countyContext.CountyId,
+                TaxingDistrict = result.DistrictId,
+                TaxRate = (decimal)result.AiOptimalRate,
+                LevyAmount = (decimal)result.ProjectedRevenue,
+                TaxYear = DateTime.UtcNow.Year,
+                Purpose = $"batch/{result.DistrictName}",
+                EffectiveDate = DateTime.UtcNow,
+                IsActive = true
+            };
+            _db.TaxLevies.Add(taxLevy);
+            result.TaxLevyId = taxLevy.Id;
+        }
+        await _db.SaveChangesAsync();
 
         stopwatch.Stop();
 
@@ -576,8 +650,21 @@ public class LevyMeasureRequest
     public string CountyCode { get; set; } = string.Empty;
 }
 
+public class LevyHistoryDto
+{
+    public Guid TaxLevyId { get; set; }
+    public Guid CountyId { get; set; }
+    public string TaxingDistrict { get; set; } = string.Empty;
+    public double TaxRate { get; set; }
+    public double LevyAmount { get; set; }
+    public int TaxYear { get; set; }
+    public string Purpose { get; set; } = string.Empty;
+    public DateTime EffectiveDate { get; set; }
+}
+
 public class LevyCalculationResultDto
 {
+    public Guid? TaxLevyId { get; set; }
     public string DistrictId { get; set; } = string.Empty;
     public string DistrictName { get; set; } = string.Empty;
     public double BaseRate { get; set; }

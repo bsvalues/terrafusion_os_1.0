@@ -62,6 +62,13 @@ wiring: the frontend execution spine can call these endpoints with confidence.
 |--------|------|-----------|---------|----------|--------|
 | POST | `/calculate-rate` | *(role-gated)* | `LevyMeasureRequest` | `LevyCalculationResultDto` | Full |
 | POST | `/calculate-batch` | *(role-gated)* | `List<LevyMeasureRequest>` | `BatchCalculationResultDto` | Full |
+| GET | `/history` | *(role-gated)* | `?taxYear=N&districtId=X` | `List<LevyHistoryDto>` | Full |
+
+**CX-21 contract bump** (added in PR #553):
+- `GET /history` — new endpoint for county-isolated retrieval of persisted levy calculations
+- `LevyCalculationResultDto` gained `TaxLevyId` (nullable `Guid?`) linking to the persisted `TaxLevy` record
+- `LevyHistoryDto` — new DTO: `TaxLevyId`, `CountyId`, `TaxingDistrict`, `TaxRate`, `LevyAmount`, `TaxYear`, `Purpose`, `EffectiveDate`
+- `BatchCalculationResultDto.Results[].TaxLevyId` — each batch result now includes its persisted record ID
 
 **Cleanest controller**: Role-gated + county-isolated. Model for others.
 
