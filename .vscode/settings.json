@@ -1,0 +1,12 @@
+{
+  "files.autoSave": "off",
+  "editor.formatOnSave": false,
+  "editor.formatOnPaste": false,
+  "editor.codeActionsOnSave": {},
+  "[csharp]": { "editor.formatOnSave": false, "editor.codeActionsOnSave": {} },
+  "[typescript]": { "editor.formatOnSave": false, "editor.codeActionsOnSave": {} },
+  "[typescriptreact]": { "editor.formatOnSave": false, "editor.codeActionsOnSave": {} },
+  "[javascript]": { "editor.formatOnSave": false, "editor.codeActionsOnSave": {} },
+  "[json]": { "editor.formatOnSave": false, "editor.codeActionsOnSave": {} },
+  "[markdown]": { "editor.formatOnSave": false, "editor.codeActionsOnSave": {} }
+}
