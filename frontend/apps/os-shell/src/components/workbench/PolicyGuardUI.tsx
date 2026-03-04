@@ -40,11 +40,11 @@ export interface PolicyGuardUIProps {
 // Risk → visual mapping
 // ============================================================================
 
-const RISK_CONFIG: Record<RiskLevel, { emoji: string; label: string; toneClass: string }> = {
-  read_only:    { emoji: '🟢', label: 'Read Only',   toneClass: 'bg-emerald-500/15 text-emerald-700' },
-  write_low:    { emoji: '🟡', label: 'Write (Low)',  toneClass: 'bg-amber-500/15 text-amber-700' },
-  write_high:   { emoji: '🟠', label: 'Write (High)', toneClass: 'bg-orange-500/15 text-orange-700' },
-  irreversible: { emoji: '🔴', label: 'Irreversible', toneClass: 'bg-red-500/15 text-red-700' },
+const RISK_CONFIG: Record<RiskLevel, { emoji: string; label: string; colorVar: string }> = {
+  read_only:    { emoji: '🟢', label: 'Read Only',    colorVar: '--tf-success' },
+  write_low:    { emoji: '🟡', label: 'Write (Low)',   colorVar: '--tf-accent' },
+  write_high:   { emoji: '🟠', label: 'Write (High)',  colorVar: '--tf-warning' },
+  irreversible: { emoji: '🔴', label: 'Irreversible',  colorVar: '--tf-error' },
 };
 
 // ============================================================================
@@ -69,7 +69,12 @@ export const PolicyGuardUI: React.FC<PolicyGuardUIProps> = ({
       {/* Write-lane badge */}
       {lane && (
         <span
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded font-medium border border-border bg-muted/60 text-foreground"
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded font-medium"
+          style={{
+            background: 'hsl(var(--tf-accent) / 0.1)',
+            color: 'hsl(var(--tf-accent))',
+            border: '1px solid hsl(var(--tf-accent) / 0.2)',
+          }}
           data-testid="lane-badge"
         >
           📝 {lane}
@@ -79,7 +84,11 @@ export const PolicyGuardUI: React.FC<PolicyGuardUIProps> = ({
       {/* Risk level badge */}
       {riskCfg && (
         <span
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-medium ${riskCfg.toneClass}`}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded font-medium"
+          style={{
+            background: `hsl(var(${riskCfg.colorVar}) / 0.15)`,
+            color: `hsl(var(${riskCfg.colorVar}))`,
+          }}
           data-testid="risk-badge"
         >
           {riskCfg.emoji} {riskCfg.label}

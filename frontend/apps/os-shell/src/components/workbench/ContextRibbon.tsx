@@ -99,7 +99,7 @@ function riskLevelStyle(risk?: string | null) {
     case 'write_low':
       return { bg: 'hsl(var(--tf-accent) / 0.15)', color: 'hsl(var(--tf-accent))', label: '🟡 write_low' };
     case 'read_only':
-      return { bg: 'hsl(var(--tf-success) / 0.15)', color: 'hsl(var(--tf-success, 160 60% 45%))', label: '🟢 read_only' };
+      return { bg: 'hsl(var(--tf-success) / 0.15)', color: 'hsl(var(--tf-success))', label: '🟢 read_only' };
     default:
       return null;
   }
