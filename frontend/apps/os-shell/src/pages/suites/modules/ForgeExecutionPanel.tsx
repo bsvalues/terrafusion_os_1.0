@@ -82,7 +82,11 @@ export default function ForgeExecutionPanel() {
     if (!parcelId.trim()) return;
 
     const session = getSession();
-    const county = session?.countyId ?? 'benton';
+    const county = session?.countyId;
+    if (!county) {
+      // No county in session — cannot invoke without county isolation context
+      return;
+    }
 
     invocation.invoke('run_valuation_model', {
       parcelId: parcelId.trim(),

@@ -888,6 +888,23 @@ export interface GovernedValuationResult {
 }
 
 /**
+ * Structured error for governed invocation failures.
+ * Preserves machine-readable errorCode and correlationId for
+ * callers who need to distinguish confirmation vs network vs handler errors.
+ */
+export class PilotInvokeError extends Error {
+  public readonly errorCode: string | undefined;
+  public readonly correlationId: string;
+
+  constructor(message: string, errorCode: string | undefined, correlationId: string) {
+    super(message);
+    this.name = 'PilotInvokeError';
+    this.errorCode = errorCode;
+    this.correlationId = correlationId;
+  }
+}
+
+/**
  * Run a valuation model through the governed path.
  *
  * This calls pilotApi.invokePilotTool('run_valuation_model', ...) instead
@@ -924,7 +941,11 @@ export async function runGovernedValuation(
   });
 
   if (!response.ok) {
-    throw new Error(response.error ?? 'Valuation model execution failed');
+    throw new PilotInvokeError(
+      response.error ?? 'Valuation model execution failed',
+      response.errorCode,
+      response.correlationId,
+    );
   }
 
   const result = typeof response.result === 'string'
