@@ -20,9 +20,13 @@
  *   6. explain_model_inputs      → GET  /api/costforge/models/{modelId}
  *   7. compare_assessed_value_history → GET /api/properties/{parcelId}
  *   8. summarize_parcel_casefile → GET  /api/dossier/parcels/{parcelId}/casefile
+ *
+ * Week 3 Remaining Tools (2):
+ *   9. add_dossier_note          → POST /api/dossier/{parcelId}/notes
+ *  10. query_parcel_layers       → GET  /api/atlas/parcels/{parcelId}/layers
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
+exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
 exports.createSearchTraceHandler = createSearchTraceHandler;
 exports.registerR1Handlers = registerR1Handlers;
 const backendClient_js_1 = require("./backendClient.js");
@@ -270,8 +274,45 @@ const summarizeParcelCasefileRealHandler = async (params, context, _tool) => {
     return { summary, highlights, payloadRef };
 };
 exports.summarizeParcelCasefileRealHandler = summarizeParcelCasefileRealHandler;
+const addDossierNoteRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    if (!params.note || params.note.trim().length === 0) {
+        throw new Error('Note content is required');
+    }
+    if (params.note.length > 2000) {
+        throw new Error('Note exceeds 2000 character limit');
+    }
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/dossier/${encodeURIComponent(params.parcelId)}/notes`, {
+        content: params.note,
+        type: 'case_note',
+    });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Dossier note creation failed');
+    return {
+        noteId: data.noteId ?? 'unknown',
+        appended: true,
+        payloadRef: `dossier://${context.countyId}/parcels/${params.parcelId}/notes/${data.noteId}`,
+    };
+};
+exports.addDossierNoteRealHandler = addDossierNoteRealHandler;
+const queryParcelLayersRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/atlas/parcels/${encodeURIComponent(params.parcelId)}/layers`);
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Atlas layer query failed');
+    let layers = data.layers ?? [];
+    // If caller requested specific layers, filter to those
+    if (params.layers && params.layers.length > 0) {
+        const requested = new Set(params.layers);
+        layers = layers.filter(l => requested.has(l.id));
+    }
+    return {
+        parcelId: params.parcelId,
+        layers,
+        format: params.format ?? 'summary',
+    };
+};
+exports.queryParcelLayersRealHandler = queryParcelLayersRealHandler;
 /**
- * Register R1 real handlers for 8 tools (5 MVP + 3 read-only).
+ * Register R1 real handlers for 10 tools (5 MVP + 5 Week-3).
  * These OVERRIDE canned stubs when called after registerAllHandlers().
  *
  * @param runner - ToolRunner instance (must have initialized registry)
@@ -288,4 +329,7 @@ function registerR1Handlers(runner, traceService) {
     runner.registerHandler('explain_model_inputs', exports.explainModelInputsRealHandler);
     runner.registerHandler('compare_assessed_value_history', exports.compareAssessedValueHistoryRealHandler);
     runner.registerHandler('summarize_parcel_casefile', exports.summarizeParcelCasefileRealHandler);
+    // Week 3 remaining handlers (2)
+    runner.registerHandler('add_dossier_note', exports.addDossierNoteRealHandler);
+    runner.registerHandler('query_parcel_layers', exports.queryParcelLayersRealHandler);
 }

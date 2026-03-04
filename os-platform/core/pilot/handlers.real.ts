@@ -18,6 +18,10 @@
  *   6. explain_model_inputs      → GET  /api/costforge/models/{modelId}
  *   7. compare_assessed_value_history → GET /api/properties/{parcelId}
  *   8. summarize_parcel_casefile → GET  /api/dossier/parcels/{parcelId}/casefile
+ *
+ * Week 3 Remaining Tools (2):
+ *   9. add_dossier_note          → POST /api/dossier/{parcelId}/notes
+ *  10. query_parcel_layers       → GET  /api/atlas/parcels/{parcelId}/layers
  */
 
 import type { ToolHandler } from './ToolRunner.js';
@@ -445,8 +449,104 @@ export const summarizeParcelCasefileRealHandler: ToolHandler<
   return { summary, highlights, payloadRef };
 };
 
+// ============================================================================
+// Handler 9: add_dossier_note → POST /api/dossier/{parcelId}/notes
+//
+// write_low Pilot tool. Posts a case note to the real Dossier backend.
+// Replaces the canned handler that returned a stable-hashed noteId.
+// ============================================================================
+
+export interface AddDossierNoteRealParams {
+  county: string;
+  parcelId: string;
+  note: string;
+  tags?: string[];
+}
+
+export interface AddDossierNoteRealResult {
+  noteId: string;
+  appended: true;
+  payloadRef: string;
+}
+
+export const addDossierNoteRealHandler: ToolHandler<
+  AddDossierNoteRealParams,
+  AddDossierNoteRealResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  if (!params.note || params.note.trim().length === 0) {
+    throw new Error('Note content is required');
+  }
+  if (params.note.length > 2000) {
+    throw new Error('Note exceeds 2000 character limit');
+  }
+
+  const raw = await backendPost<{
+    noteId?: string;
+    parcelId?: string;
+    createdAt?: string;
+  }>(`/api/dossier/${encodeURIComponent(params.parcelId)}/notes`, {
+    content: params.note,
+    type: 'case_note',
+  });
+  const data = unwrapBackend(raw, 'Dossier note creation failed');
+
+  return {
+    noteId: data.noteId ?? 'unknown',
+    appended: true,
+    payloadRef: `dossier://${context.countyId}/parcels/${params.parcelId}/notes/${data.noteId}`,
+  };
+};
+
+// ============================================================================
+// Handler 10: query_parcel_layers → GET /api/atlas/parcels/{parcelId}/layers
+//
+// read_only Pilot tool. Fetches GIS layer list from the Atlas backend.
+// ============================================================================
+
+export interface QueryParcelLayersParams {
+  county: string;
+  parcelId: string;
+  layers?: string[];
+  format?: 'geojson' | 'wkt' | 'summary';
+}
+
+export interface QueryParcelLayersResult {
+  parcelId: string;
+  layers: Array<{ id: string; name: string; available: boolean }>;
+  format: string;
+}
+
+export const queryParcelLayersRealHandler: ToolHandler<
+  QueryParcelLayersParams,
+  QueryParcelLayersResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const raw = await backendGet<{
+    parcelId?: string;
+    layers?: Array<{ id: string; name: string; available: boolean }>;
+  }>(`/api/atlas/parcels/${encodeURIComponent(params.parcelId)}/layers`);
+  const data = unwrapBackend(raw, 'Atlas layer query failed');
+
+  let layers = data.layers ?? [];
+
+  // If caller requested specific layers, filter to those
+  if (params.layers && params.layers.length > 0) {
+    const requested = new Set(params.layers);
+    layers = layers.filter(l => requested.has(l.id));
+  }
+
+  return {
+    parcelId: params.parcelId,
+    layers,
+    format: params.format ?? 'summary',
+  };
+};
+
 /**
- * Register R1 real handlers for 8 tools (5 MVP + 3 read-only).
+ * Register R1 real handlers for 10 tools (5 MVP + 5 Week-3).
  * These OVERRIDE canned stubs when called after registerAllHandlers().
  *
  * @param runner - ToolRunner instance (must have initialized registry)
@@ -469,4 +569,8 @@ export function registerR1Handlers(
   runner.registerHandler('explain_model_inputs', explainModelInputsRealHandler);
   runner.registerHandler('compare_assessed_value_history', compareAssessedValueHistoryRealHandler);
   runner.registerHandler('summarize_parcel_casefile', summarizeParcelCasefileRealHandler);
+
+  // Week 3 remaining handlers (2)
+  runner.registerHandler('add_dossier_note', addDossierNoteRealHandler);
+  runner.registerHandler('query_parcel_layers', queryParcelLayersRealHandler);
 }
