@@ -99,26 +99,32 @@ wiring: the frontend execution spine can call these endpoints with confidence.
 | POST | `/{parcelId}/notes` | `write:dossier` | `CreateNoteRequest` | JSON (Created) | Full |
 | GET | `/parcels/{parcelId}/casefile` | `read:dossier` | `?include=` | JSON (casefile) | Full |
 | GET | `/parcels/{parcelId}/summary` | `read:dossier` | `?levyLimit=10` | `ParcelDossierDto` | Full |
+| GET | `/parcels/{parcelId}/details` | `read:dossier` | `?levyLimit=10&noteLimit=5` | `ParcelDossierDetailsDto` | Full |
 
 > **CX-22 (Parcel Dossier v0)**: The `/summary` endpoint is a read-only composition
 > returning property core fields, CostForge breakdown, county-scoped levy history
 > (last N, default 10), and dossier notes summary. OwnerSSN excluded from response.
 >
-> **Status codes**:
+> **CX-23 (Parcel Dossier v1 "details")**: Richer composition with expanded property
+> fields, valuation signals, levy history + total count, and note headers (metadata
+> only, no bodies). `piiRedacted: true` in response metadata. Schema-expansion fields
+> (classCode, useCode, neighborhood) return null until CAMA integration.
+>
+> **Status codes** (both `/summary` and `/details`):
 > - `400` — Invalid `parcelId` format (regex guard).
 > - `403` — Caller has no `countyId` claim (cannot resolve county context).
 > - `404` — Parcel not found **or** parcel exists but belongs to a different county.
 >   Cross-county access returns 404, not 403, to prevent parcel-existence enumeration.
 >
-> **`levyLimit` query parameter**:
-> - Type: `int`, default: `10`.
-> - Clamped server-side: `min 1`, `max 100`. Values outside this range are silently clamped.
+> **Query parameters**:
+> - `levyLimit`: `int`, default `10`, clamped `[1, 100]`.
+> - `noteLimit` (details only): `int`, default `5`, clamped `[1, 20]`.
 >
-> **`costBreakdown` nullable semantics**:
-> - Field type: `CostBreakdownDto?` (nullable).
-> - Returns `null` (JSON: `"costBreakdown": null`) when CostForge service throws or
->   is unavailable. The endpoint still returns `200` with property + levy + notes.
-> - Warning logged server-side when fallback is triggered.
+> **Nullable field semantics**:
+> - `costBreakdown`: `CostBreakdownDto?` — `null` when CostForge throws. Endpoint
+>   still returns `200`. Warning logged server-side.
+> - `property.classCode`, `property.useCode`, `property.neighborhood`,
+>   `property.landSummary`, `property.buildingSummary`: always `null` until CAMA.
 
 ---
 

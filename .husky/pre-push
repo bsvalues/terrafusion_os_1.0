@@ -105,7 +105,18 @@ echo ""
 run_gate "🏛️ Government compliance validation..." npm run government:compliance
 
 echo ""
-run_gate "🏗️ Build verification..." npm run build
+# Split build: backend always runs; frontend only when frontend paths changed.
+# This avoids --no-verify exceptions when only backend/docs change.
+run_gate "🏗️ Backend build verification..." npm run backend:build
+
+FRONTEND_CHANGED="$(git diff --name-only HEAD @{upstream} 2>/dev/null | grep -E '^frontend/' || true)"
+if [ -n "$FRONTEND_CHANGED" ]; then
+  echo ""
+  run_gate "🏗️ Frontend build verification..." npm run frontend:build
+else
+  echo ""
+  echo "⏭️  Frontend build skipped (no frontend/ changes in push)"
+fi
 
 echo ""
 echo "✅ Core quality gates passed! Government. Transcended."

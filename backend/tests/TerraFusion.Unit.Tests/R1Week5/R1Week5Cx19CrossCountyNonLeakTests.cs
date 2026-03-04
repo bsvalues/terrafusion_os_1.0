@@ -594,17 +594,21 @@ public sealed class Cx19CrossCountyFactory : WebApplicationFactory<ApiProgram>
         await db.SaveChangesAsync();
       }
 
-      // ── Seed DossierNotes (one per county) ───────────────────
+      // ── Seed DossierNotes (per county + CX-23 bulk for Benton) ──
       if (!await db.DossierNotes.AnyAsync(n => n.ParcelId == BentonParcelId))
       {
-        db.DossierNotes.Add(new DossierNote
+        // Benton: 7 notes (enough to test noteLimit=5 clamping)
+        for (var i = 1; i <= 7; i++)
         {
-          ParcelId = BentonParcelId,
-          CountyId = BentonCountyId,
-          Content = "Benton county assessment note",
-          NoteType = "case_note",
-          CreatedBy = "cx19-seed",
-        });
+          db.DossierNotes.Add(new DossierNote
+          {
+            ParcelId = BentonParcelId,
+            CountyId = BentonCountyId,
+            Content = $"Benton assessment note #{i}",
+            NoteType = i % 2 == 0 ? "inspection" : "case_note",
+            CreatedBy = i <= 2 ? "system-import" : "cx19-seed",
+          });
+        }
 
         db.DossierNotes.Add(new DossierNote
         {

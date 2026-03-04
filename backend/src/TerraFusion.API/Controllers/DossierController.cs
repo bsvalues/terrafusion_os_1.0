@@ -383,4 +383,148 @@ public class DossierController : ControllerBase
             GeneratedAtUtc = DateTime.UtcNow,
         });
     }
+
+    // ── GET /api/dossier/parcels/{parcelId}/details ──────────────────
+
+    /// <summary>
+    /// Parcel Dossier v1 — richer composition with property details, valuation
+    /// signals, levy history + total, and note headers (metadata only, no bodies).
+    /// County-isolated. Read-only. PII redacted (OwnerSSN excluded).
+    /// </summary>
+    [HttpGet("parcels/{parcelId}/details")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(typeof(ParcelDossierDetailsDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> GetParcelDetails(
+        string parcelId,
+        [FromQuery] int levyLimit = 10,
+        [FromQuery] int noteLimit = 5)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        if (levyLimit < 1) levyLimit = 1;
+        if (levyLimit > 100) levyLimit = 100;
+        if (noteLimit < 1) noteLimit = 1;
+        if (noteLimit > 20) noteLimit = 20;
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        // ── Property (county-isolated, expanded projection) ─────────
+        var property = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)
+            .Select(p => new PropertyDetails
+            {
+                Id = p.Id,
+                ParcelNumber = p.ParcelNumber,
+                Address = p.Address,
+                OwnerName = p.OwnerName,
+                PropertyType = p.PropertyType,
+                YearBuilt = p.YearBuilt,
+                // Schema-expansion placeholders (null until CAMA integration)
+                ClassCode = null,
+                UseCode = null,
+                Neighborhood = null,
+                LandSummary = null,
+                BuildingSummary = null,
+            })
+            .FirstOrDefaultAsync();
+
+        if (property is null)
+            return NotFound(new { error = "Parcel not found" });
+
+        // ── Valuation signals (from same property row) ──────────────
+        var valuation = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)
+            .Select(p => new ValuationSignals
+            {
+                AssessedValue = p.AssessedValue,
+                LandValue = p.LandValue,
+                ImprovementValue = p.ImprovementValue,
+                MarketValue = p.MarketValue,
+                AssessmentDate = p.AssessmentDate,
+                TaxYear = p.TaxYear,
+            })
+            .FirstOrDefaultAsync();
+
+        // ── CostForge breakdown (graceful fallback) ─────────────────
+        CostBreakdownDto? costBreakdown = null;
+        try
+        {
+            costBreakdown = await _costForge.GetCostBreakdownAsync(property.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "CostForge breakdown unavailable for property {PropertyId}", property.Id);
+        }
+
+        // ── Levy history (county-isolated, last N) + total count ────
+        var levyCountTotal = await _db.TaxLevies
+            .Where(t => t.CountyId == countyId.Value && t.IsActive)
+            .CountAsync();
+
+        var levyHistory = await _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.CountyId == countyId.Value && t.IsActive)
+            .OrderByDescending(t => t.EffectiveDate)
+            .Take(levyLimit)
+            .Select(t => new LevyHistorySummary
+            {
+                TaxLevyId = t.Id,
+                TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+                TaxRate = (double)t.TaxRate,
+                LevyAmount = (double)t.LevyAmount,
+                TaxYear = t.TaxYear,
+                Purpose = t.Purpose ?? string.Empty,
+                EffectiveDate = t.EffectiveDate,
+            })
+            .ToListAsync();
+
+        // ── Note headers (metadata only, no bodies) ─────────────────
+        var noteCount = await _db.DossierNotes
+            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value)
+            .CountAsync();
+
+        var latestNotes = await _db.DossierNotes
+            .AsNoTracking()
+            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value)
+            .OrderByDescending(n => n.CreatedAt)
+            .Take(noteLimit)
+            .Select(n => new NoteHeaderItem
+            {
+                NoteId = n.Id,
+                CreatedAt = n.CreatedAt,
+                NoteType = n.NoteType,
+                AuthorKind = n.CreatedBy.StartsWith("system") ? "system" : "user",
+            })
+            .ToListAsync();
+
+        return Ok(new ParcelDossierDetailsDto
+        {
+            ParcelId = parcelId,
+            CountyId = countyId.Value,
+            PiiRedacted = true,
+            Property = property,
+            Valuation = valuation,
+            CostBreakdown = costBreakdown,
+            Levy = new LevyDetails
+            {
+                LevyCountTotal = levyCountTotal,
+                History = levyHistory,
+            },
+            Notes = new NoteHeaders
+            {
+                NoteCount = noteCount,
+                Latest = latestNotes,
+            },
+            GeneratedAtUtc = DateTime.UtcNow,
+        });
+    }
 }
