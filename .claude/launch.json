@@ -1,0 +1,76 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173,
+      "cwd": "frontend"
+    },
+    {
+      "name": "backend-api",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": [
+        "watch",
+        "run",
+        "--project",
+        "backend/src/TerraFusion.API/TerraFusion.API.csproj"
+      ],
+      "port": 5000
+    },
+    {
+      "name": "pilot-runtime",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["os-platform/core/pilot/dev-pilot-runtime.mjs"],
+      "port": 4317
+    },
+    {
+      "name": "consciousness",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "backend/src/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj"
+      ],
+      "port": 3004
+    },
+    {
+      "name": "gateway",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "backend/TerraFusion.Gateway/TerraFusion.Gateway.csproj"
+      ],
+      "port": 3002
+    },
+    {
+      "name": "operations",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "backend/src/TerraFusion.Operations/TerraFusion.Operations.csproj"
+      ],
+      "port": 5002
+    },
+    {
+      "name": "storybook",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "storybook"],
+      "port": 6006,
+      "cwd": "frontend"
+    },
+    {
+      "name": "streaming-analytics",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "backend/TerraFusion.StreamingAnalytics/TerraFusion.StreamingAnalytics.csproj"
+      ],
+      "port": 3006
+    }
+  ]
+}
