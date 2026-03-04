@@ -19,4 +19,5 @@ export { ContextRibbon, type ContextRibbonProps } from './ContextRibbon';
 export { WorkModeSelector, type WorkModeSelectorProps } from './WorkModeSelector';
 export { ActivityFeed, type ActivityEntry, type ActivityFeedProps, type ActivitySeverity } from './ActivityFeed';
 export { ParcelContextBanner, type ParcelContextBannerProps } from './ParcelContextBanner';
+export { PolicyGuardUI, type PolicyGuardUIProps, type RiskLevel, type PilotMode } from './PolicyGuardUI';
 
