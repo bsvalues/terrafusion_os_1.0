@@ -105,3 +105,4 @@ dotnet test tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj \
 - **Fix**: Persist to TaxLevies + county-isolated history endpoint
 - **Evidence**: 6 tests prove persistence, round-trip, county isolation, input-variable outputs
 - **Bonus**: Fixed latent thread-safety issue in batch calculate (Parallel.ForEachAsync with shared DbContext)
+- **Design note**: Retries create new audit events intentionally — each calculation is a distinct record, not idempotent by design. This is correct for FISMA audit trail requirements where every invocation must be logged.

@@ -196,6 +196,15 @@ public sealed class R1Week3Cx21LevyPersistenceTests
             record.GetProperty("taxLevyId").GetString().Should().NotBe(bentonTaxLevyId,
                 "King county must not see Benton county levy records");
         }
+
+        // Stronger: query King history filtered by Benton's exact districtId → must be empty
+        var kingFiltered = await kingClient.GetAsync(
+            "/api/levy-calculation/history?districtId=DIST-BENTON-ISO");
+        kingFiltered.StatusCode.Should().Be(HttpStatusCode.OK);
+        var kingFilteredJson = await kingFiltered.Content.ReadAsStringAsync();
+        var kingFilteredRecords = JsonSerializer.Deserialize<JsonElement>(kingFilteredJson);
+        kingFilteredRecords.GetArrayLength().Should().Be(0,
+            "King county querying Benton's districtId must get zero records");
     }
 
     // ════════════════════════════════════════════════════════════════════
