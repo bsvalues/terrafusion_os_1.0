@@ -7,9 +7,21 @@ Branch: `codex/r1-week4-perf-baseline`
 
 Baseline for `POST /api/costforge/calculate` using a deterministic local harness:
 
+- Evidence classification: `synthetic harness-only micro-benchmark` (not production-stack latency).
 - Warmup requests: `10`
 - Measured requests: `100`
 - Target: `p95 < 150ms`
+
+## Evidence Boundary (Read First)
+
+This baseline does not measure production CostForge compute or production database latency.
+
+- Data layer uses EF Core `InMemory` provider.
+- Service layer replaces `ICostForgeService` and `ICostForgeAIService` with fast stubs.
+- Auth/policy path uses a harness-specific authentication handler and policy provider.
+
+These numbers are valid only for harness health/regression tracking and endpoint wiring checks.
+They must not be used as production or real-stack performance claims.
 
 ## Harness
 
@@ -45,7 +57,7 @@ dotnet run --project backend/tools/CostForgePerfHarness/CostForgePerfHarness.csp
   - `p95: 1.3703ms`
   - `p99: 2.4372ms`
 - Target check:
-  - `p95 < 150ms`: `PASS`
+  - `p95 < 150ms` (harness-only target): `PASS`
 
 ## Notes
 

@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 
+#if DEBUG
 namespace TerraFusion.API.Controllers;
 
 /// <summary>
-/// Test endpoints for CostForge integration - NO AUTH required for development
-/// Enables frontend-backend integration testing without authentication barriers
+/// Development-only test endpoints for CostForge integration.
+/// This controller is compiled only in DEBUG builds.
 /// </summary>
 [ApiController]
 [Route("api/costforge-test")]
@@ -206,3 +207,4 @@ public class TestPropertyCostRequest
     public string? County { get; set; }
     public bool TestMode { get; set; } = true;
 }
+#endif
