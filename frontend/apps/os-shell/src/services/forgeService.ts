@@ -865,3 +865,79 @@ export async function getForgeStats(): Promise<ForgeStats> {
     lastUpdated: new Date().toISOString(),
   };
 }
+
+// ============================================================================
+// Governed Valuation — Lane U: pilotApi.invoke('run_valuation_model')
+// ============================================================================
+
+export interface GovernedValuationParams {
+  parcelId: string;
+  taxYear: number;
+  modelType?: 'cost' | 'income' | 'sales';
+  county: string;
+}
+
+export interface GovernedValuationResult {
+  parcelId: string;
+  taxYear: number;
+  modelType: string;
+  estimatedValue: number;
+  confidence: number;
+  components: Record<string, number>;
+  correlationId: string;
+}
+
+/**
+ * Run a valuation model through the governed path.
+ *
+ * This calls pilotApi.invokePilotTool('run_valuation_model', ...) instead
+ * of doing client-side math. The backend handler (handlers.real.ts) calls
+ * POST /api/costforge/calculate and returns real data.
+ *
+ * Requires write_high confirmation + reason code (Gate 5).
+ * All invocations are traced (TerraTrace).
+ */
+export async function runGovernedValuation(
+  params: GovernedValuationParams,
+  confirmation: {
+    confirmed: boolean;
+    reasonCode: string;
+    supervisorApproval?: { approvedBy: string; role: string };
+  },
+): Promise<GovernedValuationResult> {
+  // Lazy import to avoid circular dependency
+  const { invokePilotTool } = await import('../api/pilotApi');
+
+  const response = await invokePilotTool({
+    toolId: 'run_valuation_model',
+    params: {
+      parcelId: params.parcelId,
+      taxYear: params.taxYear,
+      modelType: params.modelType ?? 'cost',
+      county: params.county,
+    },
+    confirmation: {
+      confirmed: confirmation.confirmed,
+      reasonCode: confirmation.reasonCode,
+      supervisorApproval: confirmation.supervisorApproval,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(response.error ?? 'Valuation model execution failed');
+  }
+
+  const result = typeof response.result === 'string'
+    ? JSON.parse(response.result)
+    : response.result;
+
+  return {
+    parcelId: result?.parcelId ?? params.parcelId,
+    taxYear: result?.taxYear ?? params.taxYear,
+    modelType: result?.modelType ?? params.modelType ?? 'cost',
+    estimatedValue: result?.estimatedValue ?? 0,
+    confidence: result?.confidence ?? 0,
+    components: result?.components ?? {},
+    correlationId: response.correlationId,
+  };
+}
