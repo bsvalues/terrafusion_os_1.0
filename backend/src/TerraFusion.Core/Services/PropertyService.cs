@@ -73,6 +73,16 @@ public class PropertyService : IPropertyService
         return _mapper.Map<IEnumerable<PropertyDto>>(properties);
     }
 
+    public async Task<PropertyDto?> GetPropertyByIdAsync(Guid id, Guid countyId)
+    {
+        var property = await _context.Properties
+            .Include(p => p.County)
+            .Include(p => p.Valuations)
+            .FirstOrDefaultAsync(p => p.Id == id && p.CountyId == countyId);
+
+        return property != null ? _mapper.Map<PropertyDto>(property) : null;
+    }
+
     public async Task<PropertyDto?> GetPropertyByIdAsync(Guid id)
     {
         var property = await _context.Properties

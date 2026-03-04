@@ -45,7 +45,10 @@ public class PropertiesController : ControllerBase
     {
         try
         {
-            var property = await _propertyService.GetPropertyByIdAsync(id);
+            if (!TryGetCountyId(out var countyId))
+                return Forbid();
+
+            var property = await _propertyService.GetPropertyByIdAsync(id, countyId);
             if (property == null)
                 return NotFound();
 
@@ -56,6 +59,13 @@ public class PropertiesController : ControllerBase
             _logger.LogError(ex, "Error retrieving property {PropertyId}", id);
             return StatusCode(500, "Internal server error");
         }
+    }
+
+    private bool TryGetCountyId(out Guid countyId)
+    {
+        countyId = Guid.Empty;
+        var claim = User.FindFirst("countyId")?.Value?.Trim();
+        return !string.IsNullOrWhiteSpace(claim) && Guid.TryParse(claim, out countyId);
     }
 
     [HttpGet("parcel/{parcelNumber}")]

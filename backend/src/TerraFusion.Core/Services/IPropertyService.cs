@@ -6,6 +6,7 @@ public interface IPropertyService
 {
     Task<PagedResult<PropertyDto>> GetPropertiesAsync(int page, int pageSize, string? search = null, Guid? countyId = null);
     Task<PropertyDto?> GetPropertyByIdAsync(Guid id);
+    Task<PropertyDto?> GetPropertyByIdAsync(Guid id, Guid countyId);
     Task<PropertyDto?> GetPropertyByParcelAsync(string parcelNumber);
     Task<IEnumerable<ValuationDto>> GetPropertyValuationsAsync(Guid propertyId);
     Task<ValuationDto> CreateValuationAsync(CreateValuationDto createDto);
