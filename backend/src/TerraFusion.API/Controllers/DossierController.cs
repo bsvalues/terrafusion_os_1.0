@@ -36,42 +36,100 @@ public class DossierController : ControllerBase
             return directCountyId;
 
         var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+        var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
+        var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
 
-        var tokens = new[] { countyIdClaim, countyCodeClaim }
-            .Where(v => !string.IsNullOrWhiteSpace(v))
-            .Select(v => NormalizeCountyToken(v!))
-            .Where(v => v.Length > 0)
-            .Distinct()
-            .ToArray();
+        IQueryable<County> countyQuery = _db.Counties.AsNoTracking();
 
-        if (tokens.Length == 0)
+        if (nameCandidates.Length > 0 && fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c =>
+                nameCandidates.Contains(c.Name) ||
+                (c.FipsCode != null && fipsCandidates.Contains(c.FipsCode)));
+        }
+        else if (nameCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => nameCandidates.Contains(c.Name));
+        }
+        else if (fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => c.FipsCode != null && fipsCandidates.Contains(c.FipsCode));
+        }
+        else
+        {
             return null;
+        }
 
-        var counties = await _db.Counties
-            .AsNoTracking()
-            .Select(c => new { c.Id, c.Name, c.FipsCode })
-            .ToListAsync();
-
-        var match = counties.FirstOrDefault(c =>
-            tokens.Contains(NormalizeCountyToken(c.Name)) ||
-            tokens.Contains(NormalizeCountyToken(c.FipsCode)));
-
-        return match?.Id;
+        return await countyQuery
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync();
     }
 
-    private static string NormalizeCountyToken(string? value)
+    private static string[] BuildCountyNameCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var withoutSuffix = StripCountySuffix(trimmed);
+            AddCandidate(candidates, withoutSuffix);
+
+            var titleCase = ToTitleCaseWords(withoutSuffix);
+            AddCandidate(candidates, titleCase);
+            AddCandidate(candidates, $"{titleCase} County");
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string[] BuildFipsCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var digitsOnly = new string(trimmed.Where(char.IsDigit).ToArray());
+            AddCandidate(candidates, digitsOnly);
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string StripCountySuffix(string value)
+    {
+        return value.EndsWith(" County", StringComparison.OrdinalIgnoreCase)
+            ? value[..^7].TrimEnd()
+            : value;
+    }
+
+    private static string ToTitleCaseWords(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return string.Empty;
 
-        var normalized = value.Trim().ToLowerInvariant();
-        if (normalized.EndsWith(" county"))
-            normalized = normalized[..^7];
+        var words = value
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(word => word.Length == 1
+                ? char.ToUpperInvariant(word[0]).ToString()
+                : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
 
-        return normalized
-            .Replace("-", string.Empty)
-            .Replace("_", string.Empty)
-            .Replace(" ", string.Empty);
+        return string.Join(' ', words);
+    }
+
+    private static void AddCandidate(HashSet<string> candidates, string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            candidates.Add(value.Trim());
     }
 
     private static bool IsValidParcelId(string parcelId)
