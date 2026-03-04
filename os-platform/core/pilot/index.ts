@@ -72,6 +72,8 @@ export {
     explainModelInputsRealHandler,
     compareAssessedValueHistoryRealHandler,
     summarizeParcelCasefileRealHandler,
+    addDossierNoteRealHandler,
+    queryParcelLayersRealHandler,
     type RunValuationModelParams,
     type RunValuationModelResult,
     type ExplainValueChangeParams,
@@ -84,6 +86,10 @@ export {
     type CompareAssessedValueHistoryResult,
     type SummarizeParcelCasefileParams as SummarizeParcelCasefileRealParams,
     type SummarizeParcelCasefileResult as SummarizeParcelCasefileRealResult,
+    type AddDossierNoteRealParams,
+    type AddDossierNoteRealResult,
+    type QueryParcelLayersParams,
+    type QueryParcelLayersResult,
 } from './handlers.real.js';
 
 // Backend HTTP Client

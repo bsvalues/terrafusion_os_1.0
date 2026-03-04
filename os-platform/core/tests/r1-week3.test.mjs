@@ -1,10 +1,12 @@
 /**
  * TerraFusion OS – R1 Week 3 Tests (CP-9 + CP-10)
  *
- * CP-9: Tests for 3 new read_only real handlers:
+ * CP-9: Tests for 5 new real handlers:
  *   6. explain_model_inputs           → GET /api/costforge/models/{modelId}
  *   7. compare_assessed_value_history → GET /api/properties/{parcelId}
  *   8. summarize_parcel_casefile      → GET /api/dossier/parcels/{parcelId}/casefile
+ *   9. add_dossier_note               → POST /api/dossier/{parcelId}/notes
+ *  10. query_parcel_layers            → GET /api/atlas/parcels/{parcelId}/layers
  *
  * CP-10: Tests for TraceFeedAdapter bridging FileTraceStore → trace-feed
  *
@@ -17,6 +19,8 @@ import { before, afterEach, describe, it } from 'node:test';
 let explainModelInputsRealHandler,
   compareAssessedValueHistoryRealHandler,
   summarizeParcelCasefileRealHandler,
+  addDossierNoteRealHandler,
+  queryParcelLayersRealHandler,
   TraceFeedAdapter,
   InMemoryTraceStore,
   TraceService;
@@ -31,6 +35,8 @@ before(async () => {
   explainModelInputsRealHandler = pilot.explainModelInputsRealHandler;
   compareAssessedValueHistoryRealHandler = pilot.compareAssessedValueHistoryRealHandler;
   summarizeParcelCasefileRealHandler = pilot.summarizeParcelCasefileRealHandler;
+  addDossierNoteRealHandler = pilot.addDossierNoteRealHandler;
+  queryParcelLayersRealHandler = pilot.queryParcelLayersRealHandler;
   InMemoryTraceStore = trace.InMemoryTraceStore;
   TraceService = trace.TraceService;
 
@@ -510,5 +516,150 @@ describe('TraceFeedAdapter', () => {
 
     const events = await adapter.listEvents({ countyId: 'clark' });
     assert.equal(events.length, 0);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// CP-9: Handler 9 — add_dossier_note
+// ══════════════════════════════════════════════════════════════════════
+
+describe('Handler: add_dossier_note (real)', () => {
+  it('posts note to backend and returns noteId', async () => {
+    mockFetch({
+      noteId: 'note-uuid-001',
+      parcelId: 'P-100',
+      createdAt: '2026-03-03T10:00:00Z',
+    }, 201);
+
+    const result = await addDossierNoteRealHandler(
+      { county: 'benton', parcelId: 'P-100', note: 'Inspection complete' },
+      BENTON_CONTEXT,
+      DOSSIER_TOOL_STUB
+    );
+
+    assert.equal(result.noteId, 'note-uuid-001');
+    assert.equal(result.appended, true);
+    assert.ok(result.payloadRef.includes('benton'));
+    assert.ok(result.payloadRef.includes('P-100'));
+  });
+
+  it('rejects empty note', async () => {
+    await assert.rejects(
+      () => addDossierNoteRealHandler(
+        { county: 'benton', parcelId: 'P-100', note: '' },
+        BENTON_CONTEXT,
+        DOSSIER_TOOL_STUB
+      ),
+      /Note content is required/
+    );
+  });
+
+  it('rejects notes exceeding 2000 characters', async () => {
+    const longNote = 'x'.repeat(2001);
+    await assert.rejects(
+      () => addDossierNoteRealHandler(
+        { county: 'benton', parcelId: 'P-100', note: longNote },
+        BENTON_CONTEXT,
+        DOSSIER_TOOL_STUB
+      ),
+      /Note exceeds 2000 character limit/
+    );
+  });
+
+  it('rejects county mismatch', async () => {
+    await assert.rejects(
+      () => addDossierNoteRealHandler(
+        { county: 'yakima', parcelId: 'P-100', note: 'Test' },
+        BENTON_CONTEXT,
+        DOSSIER_TOOL_STUB
+      ),
+      /County mismatch/
+    );
+  });
+
+  it('propagates backend errors', async () => {
+    mockFetch({ error: 'Internal error' }, 500);
+
+    await assert.rejects(
+      () => addDossierNoteRealHandler(
+        { county: 'benton', parcelId: 'P-100', note: 'Test' },
+        BENTON_CONTEXT,
+        DOSSIER_TOOL_STUB
+      ),
+      /Dossier note creation failed/
+    );
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// CP-9: Handler 10 — query_parcel_layers
+// ══════════════════════════════════════════════════════════════════════
+
+describe('Handler: query_parcel_layers (real)', () => {
+  it('returns layer list from backend', async () => {
+    mockFetch({
+      parcelId: 'P-100',
+      layers: [
+        { id: 'boundary', name: 'Parcel Boundary', available: true },
+        { id: 'zoning', name: 'Zoning Districts', available: true },
+        { id: 'flood', name: 'FEMA Flood Zones', available: true },
+      ],
+    });
+
+    const result = await queryParcelLayersRealHandler(
+      { county: 'benton', parcelId: 'P-100' },
+      BENTON_CONTEXT,
+      TOOL_STUB
+    );
+
+    assert.equal(result.parcelId, 'P-100');
+    assert.equal(result.layers.length, 3);
+    assert.equal(result.layers[0].id, 'boundary');
+    assert.equal(result.format, 'summary');
+  });
+
+  it('filters to requested layers', async () => {
+    mockFetch({
+      parcelId: 'P-100',
+      layers: [
+        { id: 'boundary', name: 'Parcel Boundary', available: true },
+        { id: 'zoning', name: 'Zoning Districts', available: true },
+        { id: 'flood', name: 'FEMA Flood Zones', available: true },
+      ],
+    });
+
+    const result = await queryParcelLayersRealHandler(
+      { county: 'benton', parcelId: 'P-100', layers: ['boundary', 'flood'] },
+      BENTON_CONTEXT,
+      TOOL_STUB
+    );
+
+    assert.equal(result.layers.length, 2);
+    assert.equal(result.layers[0].id, 'boundary');
+    assert.equal(result.layers[1].id, 'flood');
+  });
+
+  it('rejects county mismatch', async () => {
+    await assert.rejects(
+      () => queryParcelLayersRealHandler(
+        { county: 'yakima', parcelId: 'P-100' },
+        BENTON_CONTEXT,
+        TOOL_STUB
+      ),
+      /County mismatch/
+    );
+  });
+
+  it('propagates backend 404 for unknown parcel', async () => {
+    mockFetch({ error: 'Parcel not found' }, 404);
+
+    await assert.rejects(
+      () => queryParcelLayersRealHandler(
+        { county: 'benton', parcelId: 'P-UNKNOWN' },
+        BENTON_CONTEXT,
+        TOOL_STUB
+      ),
+      /Atlas layer query failed/
+    );
   });
 });
