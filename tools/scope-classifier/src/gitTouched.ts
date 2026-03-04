@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 
 export type AnchorInputs = {
@@ -61,9 +61,23 @@ export function computeTouchedFromNames(names: string[], repoRoot?: string): Tou
   return touched;
 }
 
+function gitOut(args: string[]): string {
+  const r = spawnSync("git", args, {
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024, // 64 MB — prevents ENOBUFS on large diffs
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  if (r.error) throw r.error;
+  if (r.status !== 0) {
+    const msg = (r.stderr || "").trim() || `git ${args.join(" ")} exited ${r.status}`;
+    throw new Error(msg);
+  }
+  return r.stdout || "";
+}
+
 function gitNames(repoRoot: string, anchor: string): string[] {
-  const cmd = `git -C "${repoRoot}" diff --name-only ${anchor}..HEAD`;
-  const out = execSync(cmd, { encoding: "utf8" });
+  const out = gitOut(["-C", repoRoot, "diff", "--name-only", `${anchor}..HEAD`]);
   return out
     .split("\n")
     .map((s) => s.trim())
