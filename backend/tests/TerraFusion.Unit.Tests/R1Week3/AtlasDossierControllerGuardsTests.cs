@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.Core.Entities;
-using TerraFusion.Data;
+using TerraFusion.Core.Services;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
+using TerraFusionDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.Unit.Tests.R1Week3;
 
@@ -207,7 +209,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
         var result = await controller.CreateNote(
@@ -244,7 +246,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
         var result = await controller.GetCasefile("PARCEL-300", include: null);
@@ -276,7 +278,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
         AttachPrincipal(controller, CreatePrincipal("BENTON"));
 
         var result = await controller.CreateNote(
