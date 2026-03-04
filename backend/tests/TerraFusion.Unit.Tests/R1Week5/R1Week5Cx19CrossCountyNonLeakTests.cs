@@ -618,6 +618,38 @@ public sealed class Cx19CrossCountyFactory : WebApplicationFactory<ApiProgram>
         await db.SaveChangesAsync();
       }
 
+      // ── Seed TaxLevies (one per county) ──────────────────────
+      if (!await db.TaxLevies.AnyAsync(t => t.CountyId == BentonCountyId))
+      {
+        db.TaxLevies.Add(new TaxLevy
+        {
+          Id = Guid.NewGuid(),
+          CountyId = BentonCountyId,
+          TaxingDistrict = "BENTON-GEN-001",
+          TaxRate = 0.0123m,
+          LevyAmount = 3075m,
+          TaxYear = 2026,
+          Purpose = "General Fund",
+          EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+          IsActive = true,
+        });
+
+        db.TaxLevies.Add(new TaxLevy
+        {
+          Id = Guid.NewGuid(),
+          CountyId = KingCountyId,
+          TaxingDistrict = "KING-GEN-001",
+          TaxRate = 0.0099m,
+          LevyAmount = 7425m,
+          TaxYear = 2026,
+          Purpose = "General Fund — SHOULD NOT LEAK",
+          EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+          IsActive = true,
+        });
+
+        await db.SaveChangesAsync();
+      }
+
       _seeded = true;
     }
     finally
@@ -644,6 +676,19 @@ public sealed class Cx19CrossCountyFactory : WebApplicationFactory<ApiProgram>
           ConfidenceScore = 0.95,
           AnalysisDate = DateTime.UtcNow,
           AnalysisMethod = "cx19-test",
+        });
+
+    costForgeMock
+        .Setup(m => m.GetCostBreakdownAsync(It.IsAny<Guid>()))
+        .ReturnsAsync((Guid propertyId) => new CostBreakdownDto
+        {
+          PropertyId = propertyId,
+          TotalValue = 100000m,
+          Categories = new List<CostCategoryDto>
+          {
+            new() { Name = "Land", Amount = 40000m, Percentage = 40.0 },
+            new() { Name = "Improvement", Amount = 60000m, Percentage = 60.0 },
+          },
         });
 
     services.AddScoped(_ => costForgeMock.Object);

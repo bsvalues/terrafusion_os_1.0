@@ -98,6 +98,11 @@ wiring: the frontend execution spine can call these endpoints with confidence.
 | GET | `/{parcelId}/notes` | `read:dossier` | — | JSON (notes array) | Full |
 | POST | `/{parcelId}/notes` | `write:dossier` | `CreateNoteRequest` | JSON (Created) | Full |
 | GET | `/parcels/{parcelId}/casefile` | `read:dossier` | `?include=` | JSON (casefile) | Full |
+| GET | `/parcels/{parcelId}/summary` | `read:dossier` | `?levyLimit=10` | `ParcelDossierDto` | Full |
+
+> **CX-22 (Parcel Dossier v0)**: The `/summary` endpoint is a read-only composition
+> returning property core fields, CostForge breakdown, county-scoped levy history
+> (last N, default 10), and dossier notes summary. OwnerSSN excluded from response.
 
 ---
 

@@ -5,19 +5,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.Core.Entities;
-using TerraFusion.Data;
+using TerraFusion.Core.Services;
 using Xunit;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
 
 namespace TerraFusion.Unit.Tests.R1Week3;
 
 public class AtlasDossierControllerGuardsTests
 {
-    private static TerraFusionDbContext CreateDbContext(string name)
+    private static DataDbContext CreateDbContext(string name)
     {
-        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+        var options = new DbContextOptionsBuilder<DataDbContext>()
             .UseInMemoryDatabase(name)
             .Options;
 
@@ -25,7 +27,7 @@ public class AtlasDossierControllerGuardsTests
             .AddInMemoryCollection(new Dictionary<string, string?>())
             .Build();
 
-        return new TerraFusionDbContext(options, config);
+        return new DataDbContext(options, config);
     }
 
     private static ClaimsPrincipal CreatePrincipal(string countyClaim, string userId = "unit-user", string? countyCodeClaim = null)
@@ -207,7 +209,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
         var result = await controller.CreateNote(
@@ -244,7 +246,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
         var result = await controller.GetCasefile("PARCEL-300", include: null);
@@ -276,7 +278,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
         AttachPrincipal(controller, CreatePrincipal("BENTON"));
 
         var result = await controller.CreateNote(

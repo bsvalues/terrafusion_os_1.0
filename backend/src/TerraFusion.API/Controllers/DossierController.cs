@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using TerraFusion.Core.Entities;
-using TerraFusion.Data;
+using TerraFusion.Core.Services;
+using TerraFusion.API.DTOs;
 using TerraFusion.API.Security;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Controllers;
 
 /// <summary>
-/// TerraDossier — Notes CRUD for R1.
+/// TerraDossier — Notes CRUD + Parcel Dossier composition for R1.
 /// Write-lane: dossier. County isolation enforced on all queries.
 /// </summary>
 [ApiController]
@@ -17,13 +19,15 @@ namespace TerraFusion.API.Controllers;
 [Authorize]
 public class DossierController : ControllerBase
 {
-    private readonly TerraFusionDbContext _db;
+    private readonly DataDbContext _db;
+    private readonly ICostForgeService _costForge;
     private readonly ILogger<DossierController> _logger;
     private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
 
-    public DossierController(TerraFusionDbContext db, ILogger<DossierController> logger)
+    public DossierController(DataDbContext db, ICostForgeService costForge, ILogger<DossierController> logger)
     {
         _db = db;
+        _costForge = costForge;
         _logger = logger;
     }
 
@@ -272,6 +276,111 @@ public class DossierController : ControllerBase
             {
                 notes = new { count = notes.Count, summary = $"{notes.Count} case note(s)" },
             },
+        });
+    }
+
+    // ── GET /api/dossier/parcels/{parcelId}/summary ──────────────────
+
+    /// <summary>
+    /// Parcel Dossier v0 — composition view aggregating property, cost breakdown,
+    /// levy history, and notes summary. County-isolated. Read-only.
+    /// </summary>
+    [HttpGet("parcels/{parcelId}/summary")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(typeof(ParcelDossierDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> GetParcelSummary(string parcelId, [FromQuery] int levyLimit = 10)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        if (levyLimit < 1) levyLimit = 1;
+        if (levyLimit > 100) levyLimit = 100;
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        // ── Property (county-isolated) ──────────────────────────────
+        var property = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)
+            .Select(p => new ParcelPropertySummary
+            {
+                Id = p.Id,
+                ParcelNumber = p.ParcelNumber,
+                Address = p.Address,
+                OwnerName = p.OwnerName,
+                PropertyType = p.PropertyType,
+                YearBuilt = p.YearBuilt,
+                AssessedValue = p.AssessedValue,
+                LandValue = p.LandValue,
+                ImprovementValue = p.ImprovementValue,
+                MarketValue = p.MarketValue,
+                AssessmentDate = p.AssessmentDate,
+                TaxYear = p.TaxYear,
+            })
+            .FirstOrDefaultAsync();
+
+        if (property is null)
+            return NotFound(new { error = "Parcel not found" });
+
+        // ── CostForge breakdown (graceful fallback) ─────────────────
+        CostBreakdownDto? costBreakdown = null;
+        try
+        {
+            costBreakdown = await _costForge.GetCostBreakdownAsync(property.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "CostForge breakdown unavailable for property {PropertyId}", property.Id);
+        }
+
+        // ── Levy history (county-isolated, last N) ──────────────────
+        var levyHistory = await _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.CountyId == countyId.Value && t.IsActive)
+            .OrderByDescending(t => t.EffectiveDate)
+            .Take(levyLimit)
+            .Select(t => new LevyHistorySummary
+            {
+                TaxLevyId = t.Id,
+                TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+                TaxRate = (double)t.TaxRate,
+                LevyAmount = (double)t.LevyAmount,
+                TaxYear = t.TaxYear,
+                Purpose = t.Purpose ?? string.Empty,
+                EffectiveDate = t.EffectiveDate,
+            })
+            .ToListAsync();
+
+        // ── Dossier notes summary ───────────────────────────────────
+        var noteCount = await _db.DossierNotes
+            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value)
+            .CountAsync();
+
+        var latestNoteAt = noteCount > 0
+            ? await _db.DossierNotes
+                .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value)
+                .MaxAsync(n => (DateTime?)n.CreatedAt)
+            : null;
+
+        return Ok(new ParcelDossierDto
+        {
+            ParcelId = parcelId,
+            CountyId = countyId.Value,
+            Property = property,
+            CostBreakdown = costBreakdown,
+            LevyHistory = levyHistory,
+            Notes = new DossierNotesSummary
+            {
+                NoteCount = noteCount,
+                LatestNoteAt = latestNoteAt,
+            },
+            GeneratedAtUtc = DateTime.UtcNow,
         });
     }
 }
