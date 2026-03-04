@@ -88,6 +88,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     public DbSet<TerraFusion.Data.Entities.Experiment> Experiments { get; set; }
     public DbSet<TerraFusion.Data.Entities.ExperimentRun> ExperimentRuns { get; set; }
 
+    // Dossier Entities (R1 Week 3 — CX-11)
+    public DbSet<DossierNote> DossierNotes { get; set; }
+
     // TerraFlow Quantum Command Center Entities (Phase 1 Week 3)
     public DbSet<QuantumNotebook> QuantumNotebooks { get; set; }
     public DbSet<AnalysisResult> AnalysisResults { get; set; }
@@ -178,6 +181,18 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
             entity.Property(e => e.TaxRate).HasPrecision(8, 6);
             entity.Property(e => e.LevyAmount).HasPrecision(18, 2);
             entity.HasOne<County>().WithMany().HasForeignKey(e => e.CountyId);
+        });
+
+        // Configure DossierNote entity (R1 Week 3 — CX-11)
+        modelBuilder.Entity<DossierNote>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Content).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.NoteType).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.CreatedBy).HasMaxLength(200);
+            entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
+            entity.HasIndex(e => new { e.CountyId, e.ParcelId });
         });
 
         // Configure GovernmentUser entity
