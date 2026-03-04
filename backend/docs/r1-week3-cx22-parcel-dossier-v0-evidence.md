@@ -1,5 +1,15 @@
 # CX-22: Parcel Dossier v0 — Evidence Report
 
+## Provenance
+
+| Field | Value |
+|-------|-------|
+| **Branch** | `r1/cx22-parcel-dossier-v0` |
+| **Commit** | `2f824b522` |
+| **PR** | [#556](https://github.com/bsvalues/terrafusion_os_1.0/pull/556) |
+| **Base** | `r1/integration` |
+| **Author** | AI-Collaboration: GitHub Copilot (CX-22 session) |
+
 ## Summary
 Implements `GET /api/dossier/parcels/{parcelId}/summary` — a read-only composition
 endpoint returning property core fields, CostForge breakdown, county-scoped levy
@@ -94,3 +104,35 @@ Regression: CX-19D2 (5 tests ✓), CX-15 (5 tests ✓), AtlasDossier (7 tests �
 - **No new DI registrations required** — `ICostForgeService` was already registered in
   `Program.cs` (CX-8).
 - **Retry-idempotency**: GET endpoint, fully idempotent by nature.
+
+## Reproduction Commands
+
+```bash
+# Build (from backend/)
+dotnet build src/TerraFusion.API/TerraFusion.API.csproj -c Release --no-restore
+
+# Run CX-22 tests only
+dotnet test tests/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj \
+  --filter "FullyQualifiedName~R1Week5Cx22" --verbosity normal
+
+# Run full regression (CX-15 + CX-19 + CX-22 + AtlasDossier)
+dotnet test tests/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj \
+  --filter "FullyQualifiedName~R1Week5|FullyQualifiedName~R1Week4Cx15|FullyQualifiedName~AtlasDossier" \
+  --verbosity normal
+```
+
+## Performance Verification
+
+Query count for `GET /parcels/{parcelId}/summary`:
+
+| Step | Operation | Query Count | Notes |
+|------|-----------|-------------|-------|
+| 1 | `ResolveCountyIdAsync()` | 0–1 | 0 if Guid claim, 1 if name/FIPS lookup |
+| 2 | Property lookup | 1 | `FirstOrDefaultAsync` with `Select` projection, `AsNoTracking` |
+| 3 | CostForge breakdown | 1 (service) | Single `GetCostBreakdownAsync` call; null on failure |
+| 4 | Levy history | 1 | `Where + OrderByDescending + Take(N) + Select`, `AsNoTracking` |
+| 5 | Notes count | 1 | `CountAsync` |
+| 6 | Latest note date | 0–1 | `MaxAsync` only if count > 0 |
+
+**Total: 4–6 DB queries, O(1) per field group**. No N+1. No full-entity materialization.
+All read queries use `AsNoTracking()` and server-side `Select` projection.

@@ -103,6 +103,22 @@ wiring: the frontend execution spine can call these endpoints with confidence.
 > **CX-22 (Parcel Dossier v0)**: The `/summary` endpoint is a read-only composition
 > returning property core fields, CostForge breakdown, county-scoped levy history
 > (last N, default 10), and dossier notes summary. OwnerSSN excluded from response.
+>
+> **Status codes**:
+> - `400` — Invalid `parcelId` format (regex guard).
+> - `403` — Caller has no `countyId` claim (cannot resolve county context).
+> - `404` — Parcel not found **or** parcel exists but belongs to a different county.
+>   Cross-county access returns 404, not 403, to prevent parcel-existence enumeration.
+>
+> **`levyLimit` query parameter**:
+> - Type: `int`, default: `10`.
+> - Clamped server-side: `min 1`, `max 100`. Values outside this range are silently clamped.
+>
+> **`costBreakdown` nullable semantics**:
+> - Field type: `CostBreakdownDto?` (nullable).
+> - Returns `null` (JSON: `"costBreakdown": null`) when CostForge service throws or
+>   is unavailable. The endpoint still returns `200` with property + levy + notes.
+> - Warning logged server-side when fallback is triggered.
 
 ---
 
