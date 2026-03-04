@@ -190,6 +190,13 @@ public class CostForgeController : ControllerBase
         return requested == claimCode || requested == countyName || requested == countyFips;
     }
 
+    private async Task<bool> PropertyExistsInCountyAsync(Guid propertyId, Guid countyId)
+    {
+        return await _db.Properties
+            .AsNoTracking()
+            .AnyAsync(p => p.Id == propertyId && p.CountyId == countyId);
+    }
+
     /// <summary>
     /// Enhanced cost calculation for property assessment
     /// Integrates with frontend EnhancedCostCalculator component
@@ -345,6 +352,18 @@ public class CostForgeController : ControllerBase
     {
         try
         {
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+
+            var propertyExistsInCounty = await PropertyExistsInCountyAsync(propertyId, countyContext.CountyId);
+            if (!propertyExistsInCounty)
+            {
+                return NotFound();
+            }
+
             await _auditLogger.LogDataAccessAsync("CostBreakdown", propertyId.ToString(), "READ",
                 User.FindFirst("sub")?.Value);
 
@@ -370,6 +389,24 @@ public class CostForgeController : ControllerBase
     {
         try
         {
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+
+            var property1ExistsInCounty = await PropertyExistsInCountyAsync(propertyId1, countyContext.CountyId);
+            if (!property1ExistsInCounty)
+            {
+                return NotFound();
+            }
+
+            var property2ExistsInCounty = await PropertyExistsInCountyAsync(propertyId2, countyContext.CountyId);
+            if (!property2ExistsInCounty)
+            {
+                return NotFound();
+            }
+
             await _auditLogger.LogDataAccessAsync("CostComparison", $"{propertyId1}:{propertyId2}", "READ",
                 User.FindFirst("sub")?.Value);
 
@@ -399,6 +436,18 @@ public class CostForgeController : ControllerBase
             if (years < 1 || years > 20)
             {
                 return BadRequest("Forecast years must be between 1 and 20");
+            }
+
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+
+            var propertyExistsInCounty = await PropertyExistsInCountyAsync(propertyId, countyContext.CountyId);
+            if (!propertyExistsInCounty)
+            {
+                return NotFound();
             }
 
             await _auditLogger.LogDataAccessAsync("CostForecast", propertyId.ToString(), "READ",
