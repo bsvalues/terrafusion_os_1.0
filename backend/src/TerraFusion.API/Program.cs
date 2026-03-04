@@ -347,6 +347,9 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
     }
 });
 
+// CX-8: Register ICostForgeService for real property-backed cost calculation
+builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeService, TerraFusion.API.Services.CostForgeService>();
+
 // Register ITerraFusionDbContext interface
 builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
     provider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());

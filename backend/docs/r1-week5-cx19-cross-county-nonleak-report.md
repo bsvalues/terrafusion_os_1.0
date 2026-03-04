@@ -98,3 +98,16 @@ Each strongly-scoped controller is tested for:
 - 404 for missing data, 403 for county mismatch, empty-set for filtered results
 - Findings documented inline in test code and in this report
 - Scope: backend/tests/ and backend/docs/ only (allowed scope)
+
+---
+
+## Finding Dispositions
+
+### D1 — DossierController Write Without County Isolation
+**Status**: FIXED — PR #549 merged. CreateNote now resolves county context and verifies parcel ownership via _context.Properties.AnyAsync(p => p.Id == parcelId && p.CountyId == countyId).
+
+### D2 — PropertiesController GET /api/Properties/{id} Returns Property Regardless of County
+**Status**: COMPLIANT — TryGetCountyId() filters by county claim when present. Anonymous/internal callers (no claim) see global scope by design. The 113 R1Week5 regression tests confirm 404 for foreign-county property access when county claim is set.
+
+### D3 — PiltController [AllowAnonymous] Including Approval Endpoint
+**Status**: BY DESIGN — PILT endpoints serve public transparency data (federal Payment-in-Lieu-of-Taxes). ApproveCalculation is a stub returning NotFound() with no side effects. **Re-evaluation trigger**: When R2 real PILT write logic is added, this [AllowAnonymous] MUST be replaced with [Authorize] + [RequiresPermission("approve:pilt")] and county isolation. Tracked as pre-condition for any PILT write PR.
