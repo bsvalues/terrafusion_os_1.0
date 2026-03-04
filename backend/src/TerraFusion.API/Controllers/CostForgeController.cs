@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 using TerraFusion.API.Security;
 using TerraFusion.API.Models;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Abstractions.DTOs.Responses;
+using TerraFusion.Core.Entities;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using System.ComponentModel.DataAnnotations;
 
 namespace TerraFusion.API.Controllers;
@@ -22,22 +25,169 @@ public class CostForgeController : ControllerBase
 {
     private readonly ICostForgeService _costForgeService;
     private readonly ICostForgeAIService _costForgeAIService;
-    private readonly IPropertyService _propertyService;
+    private readonly DataDbContext _db;
     private readonly TerraFusion.Abstractions.Interfaces.IAuditLogger _auditLogger;
     private readonly ILogger<CostForgeController> _logger;
 
     public CostForgeController(
         ICostForgeService costForgeService,
         ICostForgeAIService costForgeAIService,
-        IPropertyService propertyService,
+        DataDbContext db,
         TerraFusion.Abstractions.Interfaces.IAuditLogger auditLogger,
         ILogger<CostForgeController> logger)
     {
         _costForgeService = costForgeService;
         _costForgeAIService = costForgeAIService;
-        _propertyService = propertyService;
+        _db = db;
         _auditLogger = auditLogger;
         _logger = logger;
+    }
+
+    private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
+
+    private async Task<CountyContext?> ResolveCountyContextAsync()
+    {
+        var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+        var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+        {
+            var county = await _db.Counties
+                .AsNoTracking()
+                .Where(c => c.Id == directCountyId)
+                .Select(c => new { c.Name, c.FipsCode })
+                .FirstOrDefaultAsync();
+
+            return new CountyContext(directCountyId, county?.Name, county?.FipsCode, countyCodeClaim);
+        }
+
+        var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
+        var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
+
+        IQueryable<County> countyQuery = _db.Counties.AsNoTracking();
+
+        if (nameCandidates.Length > 0 && fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c =>
+                nameCandidates.Contains(c.Name) ||
+                (c.FipsCode != null && fipsCandidates.Contains(c.FipsCode)));
+        }
+        else if (nameCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => nameCandidates.Contains(c.Name));
+        }
+        else if (fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => c.FipsCode != null && fipsCandidates.Contains(c.FipsCode));
+        }
+        else
+        {
+            return null;
+        }
+
+        var match = await countyQuery
+            .Select(c => new { c.Id, c.Name, c.FipsCode })
+            .FirstOrDefaultAsync();
+
+        return match is null
+            ? null
+            : new CountyContext(match.Id, match.Name, match.FipsCode, countyCodeClaim);
+    }
+
+    private static string[] BuildCountyNameCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var withoutSuffix = StripCountySuffix(trimmed);
+            AddCandidate(candidates, withoutSuffix);
+
+            var titleCase = ToTitleCaseWords(withoutSuffix);
+            AddCandidate(candidates, titleCase);
+            AddCandidate(candidates, $"{titleCase} County");
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string[] BuildFipsCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var digitsOnly = new string(trimmed.Where(char.IsDigit).ToArray());
+            AddCandidate(candidates, digitsOnly);
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string StripCountySuffix(string value)
+    {
+        return value.EndsWith(" County", StringComparison.OrdinalIgnoreCase)
+            ? value[..^7].TrimEnd()
+            : value;
+    }
+
+    private static string ToTitleCaseWords(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        var words = value
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(word => word.Length == 1
+                ? char.ToUpperInvariant(word[0]).ToString()
+                : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
+
+        return string.Join(' ', words);
+    }
+
+    private static void AddCandidate(HashSet<string> candidates, string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            candidates.Add(value.Trim());
+    }
+
+    private static string NormalizeCountyToken(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        return value.Trim()
+            .ToUpperInvariant()
+            .Replace(" COUNTY", string.Empty)
+            .Replace(" ", string.Empty)
+            .Replace("-", string.Empty)
+            .Replace("_", string.Empty);
+    }
+
+    private static bool CountyCodeMatchesContext(string requestedCounty, CountyContext context)
+    {
+        if (string.IsNullOrWhiteSpace(requestedCounty))
+            return true;
+
+        var requested = NormalizeCountyToken(requestedCounty);
+        if (requested.Length == 0)
+            return true;
+
+        var claimCode = NormalizeCountyToken(context.ClaimCountyCode);
+        var countyName = NormalizeCountyToken(context.CountyName);
+        var countyFips = NormalizeCountyToken(context.CountyFipsCode);
+
+        return requested == claimCode || requested == countyName || requested == countyFips;
     }
 
     /// <summary>
@@ -61,21 +211,47 @@ public class CostForgeController : ControllerBase
                 return BadRequest("Either PropertyId or ParcelNumber must be provided");
             }
 
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+
+            var requestedCounty = !string.IsNullOrWhiteSpace(request.CountyCode)
+                ? request.CountyCode
+                : request.Region;
+            if (!CountyCodeMatchesContext(requestedCounty, countyContext))
+            {
+                return Forbid();
+            }
+
             CostAnalysisDto result;
 
             if (request.PropertyId != Guid.Empty)
             {
+                var propertyExistsInCounty = await _db.Properties
+                    .AsNoTracking()
+                    .AnyAsync(p => p.Id == request.PropertyId && p.CountyId == countyContext.CountyId);
+
+                if (!propertyExistsInCounty)
+                {
+                    return NotFound($"Property not found for id: {request.PropertyId}");
+                }
+
                 result = await _costForgeService.AnalyzeCostAsync(request.PropertyId);
             }
             else
             {
-                // Get property by parcel number first
-                var property = await _propertyService.GetPropertyByParcelAsync(request.ParcelNumber!);
+                var property = await _db.Properties
+                    .AsNoTracking()
+                    .Where(p => p.ParcelNumber == request.ParcelNumber && p.CountyId == countyContext.CountyId)
+                    .Select(p => new { p.Id })
+                    .FirstOrDefaultAsync();
                 if (property == null)
                 {
                     return NotFound($"Property not found for parcel: {request.ParcelNumber}");
                 }
-                result = await _costForgeService.AnalyzeCostAsync(property);
+                result = await _costForgeService.AnalyzeCostAsync(property.Id);
             }
 
             // Calculate performance metrics - target <150ms
@@ -440,6 +616,7 @@ public class PropertyCostCalculationRequest
 {
     public Guid PropertyId { get; set; }
     public string? ParcelNumber { get; set; }
+    public string? CountyCode { get; set; }
     public string Region { get; set; } = string.Empty;
     public string BuildingType { get; set; } = string.Empty;
     public Dictionary<string, object>? AdditionalParameters { get; set; }

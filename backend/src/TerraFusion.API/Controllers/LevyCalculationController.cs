@@ -10,6 +10,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using TerraFusion.Data;
+using CountyEntity = TerraFusion.Core.Entities.County;
 
 namespace TerraFusion.API.Controllers;
 
@@ -39,10 +42,156 @@ namespace TerraFusion.API.Controllers;
 public class LevyCalculationController : ControllerBase
 {
     private readonly ILogger<LevyCalculationController> _logger;
+    private readonly TerraFusionDbContext _db;
 
-    public LevyCalculationController(ILogger<LevyCalculationController> logger)
+    public LevyCalculationController(ILogger<LevyCalculationController> logger, TerraFusionDbContext db)
     {
         _logger = logger;
+        _db = db;
+    }
+
+    private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
+
+    private async Task<CountyContext?> ResolveCountyContextAsync()
+    {
+        var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+        var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+        {
+            var county = await _db.Counties
+                .AsNoTracking()
+                .Where(c => c.Id == directCountyId)
+                .Select(c => new { c.Name, c.FipsCode })
+                .FirstOrDefaultAsync();
+
+            return new CountyContext(directCountyId, county?.Name, county?.FipsCode, countyCodeClaim);
+        }
+
+        var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
+        var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
+
+        IQueryable<CountyEntity> countyQuery = _db.Counties.AsNoTracking();
+
+        if (nameCandidates.Length > 0 && fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c =>
+                nameCandidates.Contains(c.Name) ||
+                (c.FipsCode != null && fipsCandidates.Contains(c.FipsCode)));
+        }
+        else if (nameCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => nameCandidates.Contains(c.Name));
+        }
+        else if (fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => c.FipsCode != null && fipsCandidates.Contains(c.FipsCode));
+        }
+        else
+        {
+            return null;
+        }
+
+        var match = await countyQuery
+            .Select(c => new { c.Id, c.Name, c.FipsCode })
+            .FirstOrDefaultAsync();
+
+        return match is null
+            ? null
+            : new CountyContext(match.Id, match.Name, match.FipsCode, countyCodeClaim);
+    }
+
+    private static string[] BuildCountyNameCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var withoutSuffix = StripCountySuffix(trimmed);
+            AddCandidate(candidates, withoutSuffix);
+
+            var titleCase = ToTitleCaseWords(withoutSuffix);
+            AddCandidate(candidates, titleCase);
+            AddCandidate(candidates, $"{titleCase} County");
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string[] BuildFipsCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var digitsOnly = new string(trimmed.Where(char.IsDigit).ToArray());
+            AddCandidate(candidates, digitsOnly);
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string StripCountySuffix(string value)
+    {
+        return value.EndsWith(" County", StringComparison.OrdinalIgnoreCase)
+            ? value[..^7].TrimEnd()
+            : value;
+    }
+
+    private static string ToTitleCaseWords(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        var words = value
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(word => word.Length == 1
+                ? char.ToUpperInvariant(word[0]).ToString()
+                : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
+
+        return string.Join(' ', words);
+    }
+
+    private static void AddCandidate(HashSet<string> candidates, string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            candidates.Add(value.Trim());
+    }
+
+    private static string NormalizeCountyToken(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        return value.Trim()
+            .ToUpperInvariant()
+            .Replace(" COUNTY", string.Empty)
+            .Replace(" ", string.Empty)
+            .Replace("-", string.Empty)
+            .Replace("_", string.Empty);
+    }
+
+    private static bool CountyCodeMatchesContext(string requestedCounty, CountyContext context)
+    {
+        if (string.IsNullOrWhiteSpace(requestedCounty))
+            return false;
+
+        var requested = NormalizeCountyToken(requestedCounty);
+        var claimCode = NormalizeCountyToken(context.ClaimCountyCode);
+        var countyName = NormalizeCountyToken(context.CountyName);
+        var countyFips = NormalizeCountyToken(context.CountyFipsCode);
+
+        return requested == claimCode || requested == countyName || requested == countyFips;
     }
 
     /// <summary>
@@ -86,6 +235,16 @@ public class LevyCalculationController : ControllerBase
 
             if (request.BudgetAmount <= 0)
                 return BadRequest("Budget amount must be greater than zero");
+
+            if (string.IsNullOrWhiteSpace(request.CountyCode))
+                return BadRequest("CountyCode is required");
+
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+                return Forbid();
+
+            if (!CountyCodeMatchesContext(request.CountyCode, countyContext))
+                return Forbid();
 
             // Calculate base rate (per $1,000 assessed value)
             var baseRate = (request.BudgetAmount / request.AssessedValue) * 1000.0;
@@ -181,6 +340,18 @@ public class LevyCalculationController : ControllerBase
 
         if (requests.Count > 100)
             return BadRequest("Batch size limited to 100 measures per request");
+
+        var countyContext = await ResolveCountyContextAsync();
+        if (countyContext is null)
+            return Forbid();
+
+        var hasMissingCountyCode = requests.Any(r => string.IsNullOrWhiteSpace(r.CountyCode));
+        if (hasMissingCountyCode)
+            return BadRequest("CountyCode is required for all batch items");
+
+        var hasCrossCountyRequest = requests.Any(r => !CountyCodeMatchesContext(r.CountyCode, countyContext));
+        if (hasCrossCountyRequest)
+            return Forbid();
 
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var results = new List<LevyCalculationResultDto>();
@@ -401,6 +572,7 @@ public class LevyMeasureRequest
     [Required]
     public string MeasureType { get; set; } = "regular";
 
+    [Required]
     public string CountyCode { get; set; } = string.Empty;
 }
 
