@@ -33,6 +33,7 @@ out/
 
 # IDE and Editor files
 .vscode/
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -472,7 +473,6 @@ storybook-static
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
-.vscode/settings.json
 
 # Workspace file cleanup patterns
 *.code-workspace.backup

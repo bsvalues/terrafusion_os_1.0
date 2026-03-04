@@ -1,0 +1,54 @@
+{
+  // TerraFusion OS - Tracked Workspace Settings (mutation prevention)
+  // See docs/WORKSPACE_SAFETY.md for rationale.
+
+  // MUTATION PREVENTION (do not change)
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "never",
+    "source.organizeImports": "never"
+  },
+
+  // Performance: File Watcher Exclusions
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/out/**": true,
+    "**/.next/**": true,
+    "**/.turbo/**": true,
+    "**/.pnpm-store/**": true,
+    "**/coverage/**": true,
+    "**/tmp/**": true,
+    "**/*.log": true
+  },
+
+  // Performance: Search Exclusions
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/out/**": true,
+    "**/.next/**": true,
+    "**/.turbo/**": true,
+    "**/.pnpm-store/**": true,
+    "**/coverage/**": true,
+    "**/pnpm-lock.yaml": true,
+    "**/package-lock.json": true,
+    "**/*.log": true,
+    "**/*.lock": true
+  },
+
+  // Git
+  "git.autofetch": false,
+  "git.autorefresh": false,
+
+  // TypeScript
+  "typescript.tsserver.maxTsServerMemory": 8192,
+  "typescript.tsserver.log": "off",
+
+  // Telemetry
+  "telemetry.telemetryLevel": "off"
+}
