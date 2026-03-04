@@ -7,7 +7,7 @@ namespace TerraFusion.API.Controllers;
 /// Enables frontend-backend integration testing without authentication barriers
 /// </summary>
 [ApiController]
-[Route("api/costforge")]
+[Route("api/costforge-test")]
 public class CostForgeTestController : ControllerBase
 {
     private readonly ILogger<CostForgeTestController> _logger;
