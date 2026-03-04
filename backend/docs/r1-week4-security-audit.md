@@ -28,7 +28,7 @@ Out-of-scope: non-R1 controller surfaces.
 
 | Endpoint | Auth Gate | County Isolation Method | Verdict |
 |---|---|---|---|
-| `POST /api/costforge/calculate` | Controller `[Authorize]` + `[RequiresPermission("access:costforge")]`, action `[RequiresPermission("calculate:property-cost")]` | `ResolveCountyContextAsync()` from claims + `CountyCodeMatchesContext()` + property lookup constrained to `p.CountyId == countyContext.CountyId` before valuation | PASS |
+| `POST /api/costforge/calculate` | Controller `[Authorize]` + `[RequiresPermission("access:costforge")]`, action `[RequiresPermission("calculate:property-cost")]` | `ResolveCountyContextAsync()` from claims + request requires `CountyCode` or `Region` + `CountyCodeMatchesContext()` reject path + property lookup constrained to `p.CountyId == countyContext.CountyId` before valuation | PASS |
 | `POST /api/levy-calculation/calculate-rate` | Controller `[Authorize(Roles = "LevyClerk,Assessor,Admin")]` | `ResolveCountyContextAsync()` from claims + required `request.CountyCode` + `CountyCodeMatchesContext()` reject path | PASS |
 | `POST /api/levy-calculation/calculate-batch` | Controller `[Authorize(Roles = "LevyClerk,Assessor,Admin")]` | Same claim context resolution; every batch item must include `CountyCode` and match claim county context | PASS |
 | `GET /api/atlas/parcels/{parcelId}` | Controller `[Authorize]`, action `[RequiresPermission("read:parcel")]` | `ResolveCountyIdAsync()` from claims + `Properties` query constrained to matching `CountyId` | PASS |
@@ -58,6 +58,7 @@ Out-of-scope: non-R1 controller surfaces.
     - `CostForge_SameCountyRequest_ReturnsOk`
     - `CostForge_CrossCountyRequest_ReturnsForbid`
     - `CostForge_MissingCountyClaims_ReturnsForbid`
+    - `CostForge_MissingCountyCodeAndRegion_ReturnsBadRequest`
     - `Levy_SameCountyRequest_ReturnsOk`
     - `Levy_CrossCountyRequest_ReturnsForbid`
     - `Levy_MissingCountyClaims_ReturnsForbid`
@@ -72,7 +73,7 @@ dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -
 
 Result:
 
-- Passed: `772`
+- Passed: `773`
 - Failed: `0`
 - Skipped: `0`
 

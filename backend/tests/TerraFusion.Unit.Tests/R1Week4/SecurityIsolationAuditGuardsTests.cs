@@ -203,6 +203,38 @@ public class SecurityIsolationAuditGuardsTests
     }
 
     [Fact]
+    public async Task CostForge_MissingCountyCodeAndRegion_ReturnsBadRequest()
+    {
+        await using var db = CreateDbContext(nameof(CostForge_MissingCountyCodeAndRegion_ReturnsBadRequest));
+        var benton = new CountyEntity { Id = Guid.NewGuid(), Name = "Benton", State = "WA", FipsCode = "003" };
+        var property = CreateProperty(benton.Id, "PROP-4", "PARCEL-400");
+        db.Counties.Add(benton);
+        db.Properties.Add(property);
+        await db.SaveChangesAsync();
+
+        var costForgeMock = new Mock<ICostForgeService>();
+        var controller = new CostForgeController(
+            costForgeMock.Object,
+            new Mock<ICostForgeAIService>().Object,
+            db,
+            CreateAuditLoggerMock().Object,
+            NullLogger<CostForgeController>.Instance);
+
+        AttachPrincipal(controller, CreatePrincipal("benton", "BENTON"));
+
+        var result = await controller.CalculatePropertyCost(new PropertyCostCalculationRequest
+        {
+            PropertyId = property.Id,
+            CountyCode = " ",
+            Region = " ",
+            BuildingType = "SFR",
+        });
+
+        Assert.IsType<BadRequestObjectResult>(result.Result);
+        costForgeMock.Verify(m => m.AnalyzeCostAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Levy_SameCountyRequest_ReturnsOk()
     {
         await using var db = CreateDbContext(nameof(Levy_SameCountyRequest_ReturnsOk));

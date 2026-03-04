@@ -177,11 +177,11 @@ public class CostForgeController : ControllerBase
     private static bool CountyCodeMatchesContext(string requestedCounty, CountyContext context)
     {
         if (string.IsNullOrWhiteSpace(requestedCounty))
-            return true;
+            return false;
 
         var requested = NormalizeCountyToken(requestedCounty);
         if (requested.Length == 0)
-            return true;
+            return false;
 
         var claimCode = NormalizeCountyToken(context.ClaimCountyCode);
         var countyName = NormalizeCountyToken(context.CountyName);
@@ -220,6 +220,11 @@ public class CostForgeController : ControllerBase
             var requestedCounty = !string.IsNullOrWhiteSpace(request.CountyCode)
                 ? request.CountyCode
                 : request.Region;
+            if (string.IsNullOrWhiteSpace(requestedCounty))
+            {
+                return BadRequest("CountyCode or Region is required");
+            }
+
             if (!CountyCodeMatchesContext(requestedCounty, countyContext))
             {
                 return Forbid();
