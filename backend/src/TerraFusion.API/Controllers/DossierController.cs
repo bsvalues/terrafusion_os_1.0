@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
+using TerraFusion.API.DTOs;
 using TerraFusion.API.Security;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
@@ -417,5 +418,166 @@ public class DossierController : ControllerBase
         };
 
         return Ok(dossier);
+    }
+
+    // ── GET /api/dossier/parcels/{parcelId}/details ──────────────────
+    // CX-23: Parcel Dossier v1 "details"
+    //   Deeper view: parameterized limits, PII redaction, cost breakdown,
+    //   note headers only (no content), CAMA-ready placeholders.
+    //   County-isolated: cross-county → 404 (anti-enumeration)
+
+    /// <summary>
+    /// Detailed parcel dossier (county-isolated).
+    /// Returns property with CAMA placeholders, cost breakdown categories,
+    /// parameterized levy/note limits, and PII-redacted note headers.
+    /// </summary>
+    [HttpGet("parcels/{parcelId}/details")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(typeof(ParcelDossierDetailsDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<ParcelDossierDetailsDto>> GetParcelDetails(
+        string parcelId,
+        [FromQuery] int levyLimit = 10,
+        [FromQuery] int noteLimit = 5)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        // Clamp limits to safe bounds
+        levyLimit = Math.Clamp(levyLimit, 1, 100);
+        noteLimit = Math.Clamp(noteLimit, 1, 20);
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        // ── Property (county-isolated) ───────────────────────────
+        var property = await _db.Properties
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+        if (property is null)
+            return NotFound(new { error = "Parcel not found" });
+
+        var propertyDetails = new PropertyDetails(
+            PropertyId: property.Id,
+            ParcelNumber: property.ParcelNumber,
+            Address: property.Address,
+            PropertyType: property.PropertyType,
+            YearBuilt: property.YearBuilt,
+            AssessedValue: property.AssessedValue,
+            LandValue: property.LandValue,
+            ImprovementValue: property.ImprovementValue,
+            MarketValue: property.MarketValue,
+            TaxYear: property.TaxYear,
+            AssessmentDate: property.AssessmentDate,
+            ClassCode: null,
+            UseCode: null,
+            Neighborhood: null
+        );
+
+        // ── Valuation breakdown (best-effort, nullable) ──────────
+        ValuationSignals? valuation = null;
+        try
+        {
+            var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
+            if (breakdown is not null)
+            {
+                valuation = new ValuationSignals(
+                    TotalValue: breakdown.TotalValue,
+                    CategoryCount: breakdown.Categories.Count,
+                    Categories: breakdown.Categories
+                        .Select(c => new ValuationCategory(c.Name, c.Amount, c.Percentage))
+                        .ToList()
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "CostForge breakdown unavailable for property {PropertyId}", property.Id);
+        }
+
+        // ── Levy history (county-scoped, parameterized limit) ────
+        var levyQuery = _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.CountyId == countyId.Value && t.IsActive);
+
+        var totalLevies = await levyQuery.CountAsync();
+        var recentLevyData = await levyQuery
+            .OrderByDescending(t => t.EffectiveDate)
+            .Take(levyLimit)
+            .Select(t => new
+            {
+                t.Id,
+                TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+                t.TaxRate,
+                t.LevyAmount,
+                t.TaxYear,
+                Purpose = t.Purpose ?? string.Empty,
+                t.EffectiveDate,
+            })
+            .ToListAsync();
+
+        var recentLevies = recentLevyData
+            .Select(t => new LevyEntry(t.Id, t.TaxingDistrict, t.TaxRate,
+                t.LevyAmount, t.TaxYear, t.Purpose, t.EffectiveDate))
+            .ToList();
+
+        // ── Note headers (county-isolated, no content, PII-redacted) ──
+        var noteQuery = _db.DossierNotes
+            .AsNoTracking()
+            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
+
+        var totalNotes = await noteQuery.CountAsync();
+        var noteData = await noteQuery
+            .OrderByDescending(n => n.CreatedAt)
+            .Take(noteLimit)
+            .Select(n => new
+            {
+                n.Id,
+                n.NoteType,
+                n.CreatedAt,
+                n.CreatedBy,
+            })
+            .ToListAsync();
+
+        var noteHeaders = noteData
+            .Select(n => new NoteHeaderItem(n.Id, n.NoteType, n.CreatedAt,
+                ClassifyAuthorKind(n.CreatedBy)))
+            .ToList();
+
+        var dto = new ParcelDossierDetailsDto(
+            ParcelId: parcelId,
+            CountyId: countyId.Value,
+            GeneratedAt: DateTime.UtcNow,
+            PiiRedacted: true,
+            Property: propertyDetails,
+            Valuation: valuation,
+            Levies: new LevyDetails(totalLevies, recentLevies.Count, recentLevies),
+            Notes: new NoteHeaders(totalNotes, noteHeaders.Count, noteHeaders)
+        );
+
+        return Ok(dto);
+    }
+
+    /// <summary>
+    /// Classify note author into a non-PII kind bucket.
+    /// "system" for known system prefixes, "human" otherwise.
+    /// </summary>
+    private static string ClassifyAuthorKind(string createdBy)
+    {
+        if (string.IsNullOrWhiteSpace(createdBy))
+            return "unknown";
+
+        var lower = createdBy.ToLowerInvariant();
+        if (lower.StartsWith("system") || lower.StartsWith("auto") ||
+            lower.StartsWith("cx") || lower.StartsWith("seed") ||
+            lower.StartsWith("bot") || lower.StartsWith("agent"))
+            return "system";
+
+        return "human";
     }
 }
