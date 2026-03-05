@@ -9,8 +9,10 @@
  *   3. Direct HTTP: CostForge returns 200 with real parcel
  *   4. Direct HTTP: levy history returns 200 with array
  *
- * Dev DB fixture: parcel 1-0531-100-0001-000 (Benton County, Kennewick)
- *   AssessedValue=285000, LandValue=75000, ImprovementValue=210000
+ * Parcel discovery: queries GET /api/properties?pageSize=1 for a real parcel.
+ * Falls back to 1-0531-100-0001-000 (Benton County seed parcel) if the
+ * endpoint is unavailable. If the fallback parcel is also missing, the test
+ * fails with instructions to reseed the dev DB.
  *
  * Requires:
  *   TF_API_PORT=5046 (or backend running on 5046)
@@ -28,6 +30,26 @@ let ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers;
 let acquirePilotToken, clearPilotToken, backendPost, backendGet;
 let TraceService, traceService;
 
+/** Parcel number resolved at runtime — see discoverTestParcel(). */
+let TEST_PARCEL = '1-0531-100-0001-000'; // fallback if discovery unavailable
+const FALLBACK_PARCEL = TEST_PARCEL;
+
+/**
+ * Discover a real parcel from the backend. Uses GET /api/properties?pageSize=1
+ * so the test does not break when the dev DB is reseeded with different data.
+ */
+async function discoverTestParcel(token) {
+  try {
+    const result = await backendGet('/api/properties?pageSize=1', { token });
+    if (result.ok && result.data?.items?.[0]?.parcelNumber) {
+      TEST_PARCEL = result.data.items[0].parcelNumber;
+      console.log(`  🔍 Discovered test parcel: ${TEST_PARCEL}`);
+      return;
+    }
+  } catch { /* fall through to fallback */ }
+  console.log(`  ⚠️  Parcel discovery unavailable — using fallback: ${FALLBACK_PARCEL}`);
+}
+
 before(async () => {
   const pilotMod = await import('../pilot/index.js');
   const traceMod = await import('../trace/index.js');
@@ -44,6 +66,10 @@ before(async () => {
   backendGet = pilot.backendGet;
   TraceService = trace.TraceService;
   traceService = trace.traceService;
+
+  // Discover a real parcel before any CostForge tests run
+  const { token } = await acquirePilotToken();
+  await discoverTestParcel(token);
 });
 
 describe('R1 Payload Shaping (backend on :5046)', () => {
@@ -54,13 +80,15 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     const { token } = await acquirePilotToken();
 
     const result = await backendPost('/api/costforge/calculate', {
-      parcelNumber: '1-0531-100-0001-000',
+      parcelNumber: TEST_PARCEL,
       countyCode: 'benton',
       region: 'benton',
       buildingType: 'cost',
     }, { token });
 
-    assert.equal(result.ok, true, `CostForge should return 200, got ${result.status}: ${result.error}`);
+    assert.equal(result.ok, true,
+      `CostForge should return 200 for parcel ${TEST_PARCEL}, got ${result.status}: ${result.error}` +
+      (result.status === 404 ? '\n  → Dev DB may have been reseeded. Run: sqlite3 backend/src/TerraFusion.API/terrafusion-dev.db "SELECT ParcelNumber FROM Properties LIMIT 1;" and update FALLBACK_PARCEL.' : ''));
     assert.ok(result.data.totalCost > 0, `totalCost should be > 0, got ${result.data.totalCost}`);
     assert.ok(result.data.confidenceScore > 0, `confidenceScore should be > 0, got ${result.data.confidenceScore}`);
     assert.ok(Array.isArray(result.data.components), 'components should be an array');
@@ -92,7 +120,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
       toolId: 'run_valuation_model',
       params: {
         county: 'benton',
-        parcelId: '1-0531-100-0001-000',
+        parcelId: TEST_PARCEL,
         taxYear: 2026,
       },
       context: {
@@ -144,7 +172,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
   it('unauthenticated calls still return 401', async () => {
     const noAuth = await backendPost('/api/costforge/calculate', {
-      parcelNumber: '1-0531-100-0001-000',
+      parcelNumber: TEST_PARCEL,
       countyCode: 'benton',
     });
     assert.equal(noAuth.status, 401, 'Unauthenticated CostForge should be 401');
