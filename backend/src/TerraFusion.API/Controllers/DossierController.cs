@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
@@ -175,10 +178,15 @@ public class DossierController : ControllerBase
     /// </summary>
     private static DossierResourceLinks BuildResourceLinks(string parcelId, string selfVariant)
     {
+        var self = selfVariant switch
+        {
+            "details" => $"/api/dossier/parcels/{parcelId}/details",
+            "evidence" => $"/api/dossier/parcels/{parcelId}/evidence",
+            _ => $"/api/dossier/{parcelId}",
+        };
+
         return new DossierResourceLinks(
-            Self: selfVariant == "details"
-                ? $"/api/dossier/parcels/{parcelId}/details"
-                : $"/api/dossier/{parcelId}",
+            Self: self,
             Summary: $"/api/dossier/{parcelId}",
             Details: $"/api/dossier/parcels/{parcelId}/details",
             Notes: $"/api/dossier/{parcelId}/notes",
@@ -665,6 +673,142 @@ public class DossierController : ControllerBase
         return requested.Count > 0
             ? requested
             : new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
+    }
+
+    // ── GET /api/dossier/parcels/{parcelId}/evidence ─────────────────
+    // CX-25: Evidence snapshot for audit handoff.
+    //   Self-contained, hash-verifiable, county-isolated.
+    //   Composes property, valuation, levy, and note metadata
+    //   into a snapshot with SHA-256 content hash.
+
+    /// <summary>
+    /// Evidence snapshot for audit/regulatory handoff (county-isolated).
+    /// Returns a self-contained evidence document with SHA-256 content
+    /// hash for tamper detection. No note content — summary counts only.
+    /// </summary>
+    [HttpGet("parcels/{parcelId}/evidence")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(typeof(EvidenceSnapshotDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<EvidenceSnapshotDto>> GetEvidenceSnapshot(string parcelId)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        // ── Property (county-isolated) ────────────────────────────
+        var property = await _db.Properties
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+        if (property is null)
+            return NotFound(new { error = "Parcel not found" });
+
+        var propertySummary = new EvidencePropertySummary(
+            PropertyId: property.Id,
+            ParcelNumber: property.ParcelNumber,
+            Address: property.Address,
+            PropertyType: property.PropertyType,
+            AssessedValue: property.AssessedValue,
+            LandValue: property.LandValue,
+            ImprovementValue: property.ImprovementValue,
+            MarketValue: property.MarketValue,
+            TaxYear: property.TaxYear,
+            AssessmentDate: property.AssessmentDate
+        );
+
+        // ── Valuation summary (best-effort) ──────────────────────
+        EvidenceValuationSummary? valuationSummary = null;
+        try
+        {
+            var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
+            if (breakdown is not null)
+            {
+                valuationSummary = new EvidenceValuationSummary(
+                    TotalValue: breakdown.TotalValue,
+                    CategoryCount: breakdown.Categories.Count
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "CostForge unavailable for evidence snapshot {PropertyId}", property.Id);
+        }
+
+        // ── Levy summary (county-scoped) ─────────────────────────
+        var levyQuery = _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.CountyId == countyId.Value && t.IsActive);
+
+        var totalLevies = await levyQuery.CountAsync();
+        var totalLevyAmount = totalLevies > 0
+            ? await levyQuery.SumAsync(t => t.LevyAmount)
+            : 0m;
+
+        // ── Note summary (county-isolated, no content) ───────────
+        var noteQuery = _db.DossierNotes
+            .AsNoTracking()
+            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
+
+        var totalNotes = await noteQuery.CountAsync();
+        var noteTypes = await noteQuery
+            .Select(n => n.NoteType)
+            .Distinct()
+            .OrderBy(t => t)
+            .ToArrayAsync();
+
+        // ── Build snapshot (pre-hash) ────────────────────────────
+        var correlationId = GetOrCreateCorrelationId();
+        var snapshotTimestamp = DateTime.UtcNow;
+        var links = BuildResourceLinks(parcelId, "evidence");
+
+        // Compute content hash over the data fields (not the hash itself)
+        var hashInput = new
+        {
+            parcelId,
+            countyId = countyId.Value,
+            snapshotTimestamp,
+            property = propertySummary,
+            valuation = valuationSummary,
+            levies = new { totalLevies, totalLevyAmount },
+            notes = new { totalNotes, noteTypes },
+        };
+        var contentHash = ComputeSha256(JsonSerializer.Serialize(hashInput, JsonHashOptions));
+
+        var dto = new EvidenceSnapshotDto(
+            ParcelId: parcelId,
+            CountyId: countyId.Value,
+            SnapshotTimestamp: snapshotTimestamp,
+            CorrelationId: correlationId,
+            ContentHash: contentHash,
+            Property: propertySummary,
+            Valuation: valuationSummary,
+            Levies: new EvidenceLevySummary(totalLevies, totalLevies, totalLevyAmount),
+            Notes: new EvidenceNoteSummary(totalNotes, totalNotes, noteTypes),
+            Links: links
+        );
+
+        return Ok(dto);
+    }
+
+    // ── CX-25: Hash Helper ───────────────────────────────────────
+
+    private static readonly JsonSerializerOptions JsonHashOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = false,
+    };
+
+    private static string ComputeSha256(string input)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+        return Convert.ToHexString(bytes).ToLowerInvariant();
     }
 
     /// <summary>
