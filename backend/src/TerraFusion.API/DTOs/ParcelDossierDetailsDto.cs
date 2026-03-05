@@ -5,6 +5,7 @@ namespace TerraFusion.API.DTOs;
 /// Adds: parameterized limits, PII redaction, note-headers-only (no content),
 /// cost breakdown categories, CAMA-ready placeholders.
 /// County-isolated: cross-county → 404 (anti-enumeration).
+/// CX-24: Added CorrelationId, Links for trace/evidence.
 /// </summary>
 public sealed record ParcelDossierDetailsDto(
     string ParcelId,
@@ -15,7 +16,20 @@ public sealed record ParcelDossierDetailsDto(
     ValuationSignals? Valuation,
     LevyDetails Levies,
     NoteHeaders Notes
-);
+)
+{
+    /// <summary>
+    /// CX-24: Request correlation ID for audit-trail lookups.
+    /// Echoes the inbound X-Correlation-ID header when present,
+    /// otherwise server-generated with "dossier-" prefix.
+    /// </summary>
+    public string? CorrelationId { get; init; }
+
+    /// <summary>
+    /// CX-24: Stable resource links for evidence navigation.
+    /// </summary>
+    public DossierResourceLinks? Links { get; init; }
+}
 
 public sealed record PropertyDetails(
     Guid PropertyId,
@@ -74,4 +88,16 @@ public sealed record NoteHeaderItem(
     string NoteType,
     DateTime CreatedAt,
     string AuthorKind
+);
+
+/// <summary>
+/// CX-24: Stable resource links for dossier evidence navigation.
+/// All paths are relative API routes — no host/scheme, safe for any deployment.
+/// </summary>
+public sealed record DossierResourceLinks(
+    string Self,
+    string? Summary,
+    string? Details,
+    string Notes,
+    string Casefile
 );
