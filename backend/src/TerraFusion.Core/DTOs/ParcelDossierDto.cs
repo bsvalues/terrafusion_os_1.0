@@ -23,6 +23,14 @@ public class ParcelDossierDto
 
     // ── Notes Summary ────────────────────────────────────────────
     public ParcelDossierNotesSummaryDto Notes { get; set; } = new();
+
+    // ── CX-24: Trace metadata ────────────────────────────────────
+    /// <summary>
+    /// Request correlation ID for audit-trail lookups.
+    /// Echoes the inbound X-Correlation-ID header when present,
+    /// otherwise server-generated with "dossier-" prefix.
+    /// </summary>
+    public string? CorrelationId { get; set; }
 }
 
 public class ParcelDossierPropertyDto

@@ -146,6 +146,46 @@ public class DossierController : ControllerBase
         return !string.IsNullOrWhiteSpace(parcelId) && ParcelIdPattern.IsMatch(parcelId);
     }
 
+    // ── CX-24: Trace & Evidence Helpers ──────────────────────────
+
+    /// <summary>
+    /// Extract or generate a correlation ID for the current request.
+    /// Reads inbound X-Correlation-ID (sanitized), falls back to dossier-{Guid}.
+    /// Sets the response header so clients can always correlate.
+    /// </summary>
+    private static readonly Regex CorrelationIdSanitizer = new("^[A-Za-z0-9._-]{1,128}$", RegexOptions.Compiled);
+
+    private string GetOrCreateCorrelationId()
+    {
+        var inbound = HttpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(inbound) && CorrelationIdSanitizer.IsMatch(inbound))
+        {
+            HttpContext.Response.Headers["X-Correlation-ID"] = inbound;
+            return inbound;
+        }
+
+        var generated = $"dossier-{Guid.NewGuid():N}";
+        HttpContext.Response.Headers["X-Correlation-ID"] = generated;
+        return generated;
+    }
+
+    /// <summary>
+    /// Build stable resource links for a parcel's dossier endpoints.
+    /// Relative paths only — no host/scheme, safe for any deployment.
+    /// </summary>
+    private static DossierResourceLinks BuildResourceLinks(string parcelId, string selfVariant)
+    {
+        return new DossierResourceLinks(
+            Self: selfVariant == "details"
+                ? $"/api/dossier/parcels/{parcelId}/details"
+                : $"/api/dossier/{parcelId}",
+            Summary: $"/api/dossier/{parcelId}",
+            Details: $"/api/dossier/parcels/{parcelId}/details",
+            Notes: $"/api/dossier/{parcelId}/notes",
+            Casefile: $"/api/dossier/parcels/{parcelId}/casefile"
+        );
+    }
+
     // ── GET /api/dossier/{parcelId}/notes ────────────────────────────
 
     /// <summary>
@@ -417,6 +457,9 @@ public class DossierController : ControllerBase
             Recent = recentNotes,
         };
 
+        // ── CX-24: Trace metadata ───────────────────────────────
+        dossier.CorrelationId = GetOrCreateCorrelationId();
+
         return Ok(dossier);
     }
 
@@ -587,7 +630,12 @@ public class DossierController : ControllerBase
             Valuation: valuation,
             Levies: levyDetails,
             Notes: noteHeadersResult
-        );
+        )
+        {
+            // CX-24: Trace & evidence metadata
+            CorrelationId = GetOrCreateCorrelationId(),
+            Links = BuildResourceLinks(parcelId, "details"),
+        };
 
         return Ok(dto);
     }
