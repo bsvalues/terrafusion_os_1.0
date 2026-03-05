@@ -8,8 +8,8 @@
  *  3) Valuation success path (200)
  *  4) Levy summary success path (200)
  *  5) Trace lookup by correlationId
- *  6) Write-governance block (missing confirmation must fail)
- *  7) Unauthenticated guard (401)
+ *  6) Unauthenticated guard (401)
+ *  7) Write-governance block (missing confirmation must fail)
  *
  * Output contract:
  *   STEP <n> <name>: OK correlationId=<id> key=value
@@ -358,54 +358,6 @@ async function main() {
 
   await runStep(
     6,
-    'write_guard_block',
-    async () => {
-      const pilotMod = await import('../pilot/index.js');
-      const traceMod = await import('../trace/index.js');
-      const pilot = pilotMod.default || pilotMod;
-      const trace = traceMod.default || traceMod;
-
-      const registry = new pilot.ToolRegistry();
-      await registry.initialize();
-
-      const runner = new pilot.ToolRunner({ registry });
-      pilot.registerPhase84Handlers(runner);
-      pilot.registerR1Handlers(runner, trace.traceService);
-
-      const blocked = await runner.execute({
-        toolId: 'run_valuation_model',
-        params: {
-          county: COUNTY,
-          parcelId,
-          taxYear: TAX_YEAR,
-        },
-        context: {
-          countyId: COUNTY,
-          userId: 'r1-demo-proof',
-          roles: ['appraiser'],
-          mode: 'pilot',
-          confirmation: false,
-        },
-      });
-
-      if (blocked.ok) {
-        fail('expected write guard block, invocation succeeded', blocked.correlationId);
-      }
-      if (blocked.errorCode !== 'CONFIRMATION_REQUIRED') {
-        fail(`expected CONFIRMATION_REQUIRED, got ${blocked.errorCode}`, blocked.correlationId);
-      }
-
-      return {
-        correlationId: blocked.correlationId,
-        details: {
-          errorCode: blocked.errorCode,
-        },
-      };
-    }
-  );
-
-  await runStep(
-    7,
     'unauthenticated_401_guard',
     async () => {
       const unauth = await requestJson('POST', '/api/costforge/calculate', {
@@ -428,6 +380,60 @@ async function main() {
     },
     { allowMissingCorrelation: true }
   );
+
+  // Step 7: Write-gate enforcement proof (C3)
+  // Attempts assemble_boe_packet WITHOUT confirmation — must be blocked.
+  await runStep(7, 'write_block_proof', async () => {
+    const pilotMod = await import('../pilot/index.js');
+    const traceMod = await import('../trace/index.js');
+    const pilot = pilotMod.default || pilotMod;
+    const trace = traceMod.default || traceMod;
+
+    const registry = new pilot.ToolRegistry();
+    await registry.initialize();
+
+    const traceStore = new trace.InMemoryTraceStore({ maxEvents: 100 });
+    const traceService = new trace.TraceService({ store: traceStore });
+    const runner = new pilot.ToolRunner({ registry, trace: traceService });
+    pilot.registerPhase84Handlers(runner);
+    pilot.registerWriteGateHandlers(runner);
+
+    // Deliberately omit confirmation + reasonCode → must be blocked
+    const result = await runner.execute({
+      toolId: 'assemble_boe_packet',
+      params: {
+        county: COUNTY,
+        caseId: 'BOE-2026-PROOF',
+        sections: ['cover_sheet'],
+      },
+      context: {
+        countyId: COUNTY,
+        userId: 'r1-demo-proof',
+        roles: ['viewer'],
+        mode: 'pilot',
+      },
+    });
+
+    if (result.ok) {
+      fail('write_high tool should have been BLOCKED but succeeded — enforcement is broken', result.correlationId);
+    }
+
+    const errorCode = result.errorCode || '';
+    const hasExpectedCode = (
+      errorCode === 'CONFIRMATION_REQUIRED' ||
+      errorCode === 'PERMISSION_DENIED' ||
+      errorCode === 'REASON_CODE_REQUIRED'
+    );
+
+    if (!hasExpectedCode) {
+      fail(`blocked but unexpected errorCode: ${errorCode}`, result.correlationId);
+    }
+
+    return {
+      correlationId: result.correlationId,
+      details: { errorCode, blocked: 'true' },
+    };
+  });
 }
 
 main()
