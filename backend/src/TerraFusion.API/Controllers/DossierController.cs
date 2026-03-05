@@ -686,6 +686,13 @@ public class DossierController : ControllerBase
     /// Returns a self-contained evidence document with SHA-256 content
     /// hash for tamper detection. No note content — summary counts only.
     /// </summary>
+    /// <remarks>
+    /// <para><b>Hash contract:</b> The contentHash is a SHA-256 of the serialized
+    /// data fields <em>including snapshotTimestamp</em>. This makes it a
+    /// point-in-time snapshot seal, NOT a content-only digest. Two requests
+    /// for the same parcel at different times will produce different hashes
+    /// even if the underlying data has not changed.</para>
+    /// </remarks>
     [HttpGet("parcels/{parcelId}/evidence")]
     [RequiresPermission("read:dossier")]
     [ProducesResponseType(typeof(EvidenceSnapshotDto), 200)]

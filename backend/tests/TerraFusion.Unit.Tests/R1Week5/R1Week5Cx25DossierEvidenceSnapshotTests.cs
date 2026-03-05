@@ -304,6 +304,108 @@ public sealed class R1Week5Cx25DossierEvidenceSnapshotTests
             "CX-24 contract: X-Correlation-ID header must be set on evidence");
     }
 
+    // ── Post-merge smoke tests (5-point checklist) ─────────────────
+
+    // Smoke 1: Same-county parcel → 200
+    [Fact]
+    public async Task Smoke_SameCounty_Returns200()
+    {
+        using var client = CreateBentonClient();
+        var response = await client.GetAsync(
+            $"{EvidenceRoute}/{Cx19CrossCountyFactory.BentonParcelId}/evidence");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    // Smoke 2: Cross-county parcel → 404
+    [Fact]
+    public async Task Smoke_CrossCounty_Returns404()
+    {
+        using var client = CreateBentonClient();
+        var response = await client.GetAsync(
+            $"{EvidenceRoute}/{Cx19CrossCountyFactory.KingParcelId}/evidence");
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    // Smoke 3: No county claim → 403
+    [Fact]
+    public async Task Smoke_NoCountyClaim_Returns403()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(
+                Cx19CrossCountyFactory.AuthScheme, "token");
+        // No X-Test-CountyId header → no county claim
+        client.DefaultRequestHeaders.TryAddWithoutValidation("X-Test-UserId", "cx25-no-county");
+        client.DefaultRequestHeaders.TryAddWithoutValidation("X-Test-Role", "Assessor");
+        client.DefaultRequestHeaders.TryAddWithoutValidation(
+            "X-Plugin-Id", Cx19CrossCountyFactory.PluginAllPermsId.ToString());
+
+        var response = await client.GetAsync(
+            $"{EvidenceRoute}/{Cx19CrossCountyFactory.BentonParcelId}/evidence");
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    // Smoke 4: Response contains correlationId, resource links, no note content, and hash
+    [Fact]
+    public async Task Smoke_ResponseShape_HasRequiredFieldsAndNoNoteContent()
+    {
+        using var client = CreateBentonClient();
+        var response = await client.GetAsync(
+            $"{EvidenceRoute}/{Cx19CrossCountyFactory.BentonParcelId}/evidence");
+        var json = await ParseJsonAsync(response);
+
+        // correlationId present
+        json.GetProperty("correlationId").GetString().Should().NotBeNullOrEmpty();
+
+        // resource links present
+        var links = json.GetProperty("links");
+        links.GetProperty("self").GetString().Should().Contain("/evidence");
+        links.GetProperty("summary").GetString().Should().NotBeNullOrEmpty();
+        links.GetProperty("details").GetString().Should().NotBeNullOrEmpty();
+
+        // hash present and valid
+        json.GetProperty("contentHash").GetString().Should().MatchRegex("^[0-9a-f]{64}$");
+
+        // notes section has counts and types but no content field
+        var notes = json.GetProperty("notes");
+        notes.GetProperty("totalCount").GetInt32().Should().BeGreaterThan(0);
+        notes.GetProperty("noteTypes").GetArrayLength().Should().BeGreaterThan(0);
+        notes.TryGetProperty("content", out _).Should().BeFalse(
+            "evidence snapshot must NOT include note content");
+        notes.TryGetProperty("headers", out _).Should().BeFalse(
+            "evidence snapshot must NOT include note headers");
+    }
+
+    // Smoke 5: Different timestamps → different hashes
+    //   (proves timestamp is included in hash basis — contract requirement)
+    [Fact]
+    public async Task Smoke_DifferentTimestamps_ProduceDifferentHashes()
+    {
+        using var client = CreateBentonClient();
+
+        var response1 = await client.GetAsync(
+            $"{EvidenceRoute}/{Cx19CrossCountyFactory.BentonParcelId}/evidence");
+        var json1 = await ParseJsonAsync(response1);
+        var hash1 = json1.GetProperty("contentHash").GetString()!;
+        var ts1 = json1.GetProperty("snapshotTimestamp").GetString()!;
+
+        // Ensure a measurable time gap
+        await Task.Delay(50);
+
+        var response2 = await client.GetAsync(
+            $"{EvidenceRoute}/{Cx19CrossCountyFactory.BentonParcelId}/evidence");
+        var json2 = await ParseJsonAsync(response2);
+        var hash2 = json2.GetProperty("contentHash").GetString()!;
+        var ts2 = json2.GetProperty("snapshotTimestamp").GetString()!;
+
+        // Timestamps must differ (50ms gap)
+        ts1.Should().NotBe(ts2, "two requests 50ms apart must have different timestamps");
+
+        // Because timestamp is in hash basis, hashes must differ
+        hash1.Should().NotBe(hash2,
+            "hash includes snapshotTimestamp, so different timestamps → different hashes");
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────
 
     private HttpClient CreateBentonClient(string roles = "Assessor")

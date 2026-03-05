@@ -32,7 +32,7 @@ Read-only. No new entities. No note content. County-isolated.
 
 | File | Tests |
 |------|-------|
-| `R1Week5Cx25DossierEvidenceSnapshotTests.cs` | 12 integration tests |
+| `R1Week5Cx25DossierEvidenceSnapshotTests.cs` | 17 integration tests (12 core + 5 post-merge smoke) |
 
 ## Endpoint Contract
 
@@ -91,7 +91,17 @@ Response body:
 - **Input**: JSON serialization of `{ parcelId, countyId, snapshotTimestamp, property, valuation, levies, notes }` (camelCase, not indented)
 - **Output**: 64-character lowercase hex string
 - **Purpose**: Tamper detection for evidence handoff. Same input data → same hash.
-- **Note**: `snapshotTimestamp` is included in the hash, so each snapshot has a unique hash. This is by design — the hash proves "this exact data at this exact time."
+
+**⚠️ SNAPSHOT HASH — NOT A CONTENT-ONLY DIGEST**
+
+`snapshotTimestamp` is included in the hash basis. This means:
+
+1. Two requests for the same parcel at different times produce **different hashes**, even if the underlying data has not changed.
+2. The hash proves "this exact data at this exact time" — it is a **point-in-time snapshot seal**, not a canonical content fingerprint.
+3. Consumers who need to compare business data across snapshots should compare the data fields directly (e.g., `property`, `levies`, `notes`), not the `contentHash`.
+4. To verify a received snapshot was not tampered with, re-serialize the same fields (including `snapshotTimestamp`) using the documented JSON rules and recompute SHA-256.
+
+This design is intentional: for regulatory/audit handoff, the evidence must include *when* the snapshot was taken, and the hash must bind to that moment.
 
 ### HTTP Headers
 
@@ -116,6 +126,11 @@ Response body:
 | 10 | `Evidence_NoteTypes_PopulatedFromSeedData` | Distinct types from seeded notes |
 | 11 | `Evidence_LevySummary_HasTotalAmount` | Total count + amount > 0 |
 | 12 | `Evidence_ResponseHeader_ContainsCorrelationId` | X-Correlation-ID header set |
+| 13 | `Smoke_SameCounty_Returns200` | Same-county → 200 |
+| 14 | `Smoke_CrossCounty_Returns404` | Cross-county → 404 |
+| 15 | `Smoke_NoCountyClaim_Returns403` | No county claim → 403 |
+| 16 | `Smoke_ResponseShape_HasRequiredFieldsAndNoNoteContent` | correlationId + links + hash + no note content |
+| 17 | `Smoke_DifferentTimestamps_ProduceDifferentHashes` | Timestamp in hash → different hashes |
 
 ## Build Evidence
 
@@ -128,8 +143,8 @@ Build succeeded.
 ## Test Evidence
 
 ```
-CX-25: 12/12 passed
-Full dossier suite (CX-19+22+23+24+25): 56/56 passed
+CX-25: 17/17 passed (12 core + 5 post-merge smoke)
+Full dossier suite (CX-19+22+23+24+25): 73/73 passed
 R1 suite: 161/165 (4 pre-existing CX-16 failures, unrelated)
 ```
 
