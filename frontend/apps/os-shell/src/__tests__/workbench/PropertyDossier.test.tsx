@@ -356,7 +356,9 @@ describe('PropertyDossier', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/404 Not Found/i)).toBeInTheDocument();
-        expect(screen.getByText(/Retry/i)).toBeInTheDocument();
+        // Multiple Retry buttons may render (dossierDetails + evidence);
+        // verify at least one exists for the evidence error path.
+        expect(screen.getAllByText(/Retry/i).length).toBeGreaterThanOrEqual(1);
       });
     });
   });
