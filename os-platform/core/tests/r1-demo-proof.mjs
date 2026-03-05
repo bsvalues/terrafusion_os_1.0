@@ -9,6 +9,7 @@
  *  4) Levy summary success path (200)
  *  5) Trace lookup by correlationId
  *  6) Unauthenticated guard (401)
+ *  7) Write-gate enforcement proof (C3) — blocked without confirmation
  *
  * Output contract:
  *   STEP <n> <name>: OK correlationId=<id> key=value
@@ -379,6 +380,59 @@ async function main() {
     },
     { allowMissingCorrelation: true }
   );
+
+  // Step 7: Write-gate enforcement proof (C3)
+  // Attempts assemble_boe_packet WITHOUT confirmation — must be blocked.
+  await runStep(7, 'write_block_proof', async () => {
+    const pilotMod = await import('../pilot/index.js');
+    const traceMod = await import('../trace/index.js');
+    const pilot = pilotMod.default || pilotMod;
+    const trace = traceMod.default || traceMod;
+
+    const registry = new pilot.ToolRegistry();
+    await registry.initialize();
+
+    const traceStore = new trace.InMemoryTraceStore({ maxEvents: 100 });
+    const traceService = new trace.TraceService({ store: traceStore });
+    const runner = new pilot.ToolRunner({ registry, trace: traceService });
+    pilot.registerPhase84Handlers(runner);
+    pilot.registerWriteGateHandlers(runner);
+
+    // Deliberately omit confirmation + reasonCode → must be blocked
+    const result = await runner.execute({
+      toolId: 'assemble_boe_packet',
+      params: {
+        county: COUNTY,
+        caseId: 'BOE-2026-PROOF',
+        sections: ['cover_sheet'],
+      },
+      context: {
+        countyId: COUNTY,
+        userId: 'r1-demo-proof',
+        roles: ['viewer'],
+        mode: 'pilot',
+      },
+    });
+
+    if (result.ok) {
+      fail('write_high tool should have been BLOCKED but succeeded — enforcement is broken', result.correlationId);
+    }
+
+    const errorCode = result.error || '';
+    const hasExpectedCode =
+      errorCode.includes('CONFIRMATION_REQUIRED') ||
+      errorCode.includes('PERMISSION_DENIED') ||
+      errorCode.includes('REASON_CODE_REQUIRED');
+
+    if (!hasExpectedCode) {
+      fail(`blocked but unexpected errorCode: ${errorCode}`, result.correlationId);
+    }
+
+    return {
+      correlationId: result.correlationId,
+      details: { errorCode: errorCode.split(':')[0], blocked: 'true' },
+    };
+  });
 }
 
 main()

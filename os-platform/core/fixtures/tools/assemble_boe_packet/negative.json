@@ -4,5 +4,6 @@
     "caseId": "BOE-2026-043",
     "include": ["evidence"]
   },
-  "assert": { "rejects": true }
+  "assert": { "rejects": true },
+  "expectedErrorCode": "CONFIRMATION_REQUIRED"
 }

@@ -11,5 +11,17 @@
   "assert": {
     "resultKeys": ["packetRef", "sections", "caseId"],
     "noPii": true
+  },
+  "expectedResponse": {
+    "caseId": "BOE-2026-042",
+    "packetRef": "dossier://benton/boe/BOE-2026-042/packet/e71163d9",
+    "sections": [
+      "cover_sheet",
+      "section_evidence",
+      "section_valuation_history",
+      "section_comps",
+      "certification"
+    ],
+    "payloadRef": "dossier://benton/boe/BOE-2026-042/packet/e71163d9"
   }
 }

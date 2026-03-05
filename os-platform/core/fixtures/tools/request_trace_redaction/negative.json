@@ -4,5 +4,6 @@
     "traceEventIds": ["evt-xyz-789"],
     "reason": "Unauthorized request"
   },
-  "assert": { "rejects": true }
+  "assert": { "rejects": true },
+  "expectedErrorCode": "CONFIRMATION_REQUIRED"
 }

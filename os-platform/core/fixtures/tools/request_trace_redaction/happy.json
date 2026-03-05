@@ -16,5 +16,11 @@
   "assert": {
     "resultKeys": ["redactionTicketId", "status", "eventsMarked"],
     "noPii": true
+  },
+  "expectedResponse": {
+    "redactionTicketId": "redact-eec7e655",
+    "status": "pending_review",
+    "eventsMarked": 2,
+    "payloadRef": "secure-blob://benton/redaction/redact-eec7e655/41d900ff"
   }
 }
