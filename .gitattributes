@@ -14,6 +14,9 @@
 # Unix/Linux shells (keep LF)
 *.sh text eol=lf
 
+# --- Test snapshots (vitest/jest — always LF to prevent cross-platform churn) ---
+*.snap text eol=lf
+
 # --- Source code (explicit text classification) ---
 # .NET Backend
 *.cs text
