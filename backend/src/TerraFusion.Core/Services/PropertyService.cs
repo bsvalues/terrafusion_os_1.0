@@ -232,14 +232,14 @@ public class PropertyService : IPropertyService
     {
         return new PropertyDto
         {
-            Id = MapGuidToInt(property.Id),
+            Id = property.Id,
             ParcelNumber = property.ParcelNumber,
             Address = property.Address,
             OwnerName = property.OwnerName,
             AssessedValue = property.AssessedValue,
             LandValue = property.LandValue,
             ImprovementValue = property.ImprovementValue,
-            CountyId = MapGuidToInt(property.CountyId),
+            CountyId = property.CountyId,
             CountyName = property.County?.Name ?? string.Empty,
             CreatedAt = property.CreatedAt,
             UpdatedAt = property.UpdatedAt
@@ -250,9 +250,9 @@ public class PropertyService : IPropertyService
     {
         return new ValuationDto
         {
-            Id = MapGuidToInt(valuation.Id),
-            PropertyId = MapGuidToInt(valuation.PropertyId),
-            AIModelId = MapGuidToInt(valuation.AIModelId),
+            Id = valuation.Id,
+            PropertyId = valuation.PropertyId,
+            AIModelId = valuation.AIModelId,
             AIModelName = valuation.AIModel?.Name ?? string.Empty,
             EstimatedValue = valuation.EstimatedValue,
             Confidence = valuation.Confidence,
@@ -262,10 +262,5 @@ public class PropertyService : IPropertyService
             ReviewedAt = valuation.ReviewedAt,
             ReviewedBy = valuation.ReviewedBy
         };
-    }
-
-    private static int MapGuidToInt(Guid value)
-    {
-        return BitConverter.ToInt32(value.ToByteArray(), 0);
     }
 }
