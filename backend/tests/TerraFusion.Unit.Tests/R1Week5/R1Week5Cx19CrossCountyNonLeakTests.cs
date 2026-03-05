@@ -594,17 +594,31 @@ public sealed class Cx19CrossCountyFactory : WebApplicationFactory<ApiProgram>
         await db.SaveChangesAsync();
       }
 
-      // ── Seed DossierNotes (one per county) ───────────────────
+      // ── Seed DossierNotes (7 for Benton — limit testing, 1 for King) ──
       if (!await db.DossierNotes.AnyAsync(n => n.ParcelId == BentonParcelId))
       {
-        db.DossierNotes.Add(new DossierNote
+        var bentonNoteTypes = new[]
         {
-          ParcelId = BentonParcelId,
-          CountyId = BentonCountyId,
-          Content = "Benton county assessment note",
-          NoteType = "case_note",
-          CreatedBy = "cx19-seed",
-        });
+          ("case_note", "Benton county assessment note"),
+          ("inspection", "Property inspection completed"),
+          ("valuation", "Annual valuation review note"),
+          ("appeal", "Appeal hearing summary"),
+          ("correspondence", "Owner correspondence record"),
+          ("exemption", "Senior exemption review"),
+          ("compliance", "Compliance check passed"),
+        };
+
+        foreach (var (noteType, content) in bentonNoteTypes)
+        {
+          db.DossierNotes.Add(new DossierNote
+          {
+            ParcelId = BentonParcelId,
+            CountyId = BentonCountyId,
+            Content = content,
+            NoteType = noteType,
+            CreatedBy = "cx19-seed",
+          });
+        }
 
         db.DossierNotes.Add(new DossierNote
         {
@@ -615,6 +629,56 @@ public sealed class Cx19CrossCountyFactory : WebApplicationFactory<ApiProgram>
           CreatedBy = "cx19-seed",
         });
 
+        await db.SaveChangesAsync();
+      }
+
+      // ── Seed TaxLevies (3 for Benton, 1 for King — cross-county + limit testing) ──
+      if (!await db.TaxLevies.AnyAsync(t => t.CountyId == BentonCountyId))
+      {
+        db.TaxLevies.Add(new TerraFusion.Core.Entities.TaxLevy
+        {
+          CountyId = BentonCountyId,
+          TaxingDistrict = "Benton County Regular",
+          TaxRate = 10.5m,
+          LevyAmount = 2625m,
+          TaxYear = 2026,
+          Purpose = "General Fund",
+          EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+          IsActive = true,
+        });
+        db.TaxLevies.Add(new TerraFusion.Core.Entities.TaxLevy
+        {
+          CountyId = BentonCountyId,
+          TaxingDistrict = "Kennewick School District",
+          TaxRate = 3.2m,
+          LevyAmount = 800m,
+          TaxYear = 2026,
+          Purpose = "Education",
+          EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+          IsActive = true,
+        });
+        db.TaxLevies.Add(new TerraFusion.Core.Entities.TaxLevy
+        {
+          CountyId = BentonCountyId,
+          TaxingDistrict = "Benton County Road",
+          TaxRate = 1.8m,
+          LevyAmount = 450m,
+          TaxYear = 2025,
+          Purpose = "Road Maintenance",
+          EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+          IsActive = true,
+        });
+        db.TaxLevies.Add(new TerraFusion.Core.Entities.TaxLevy
+        {
+          CountyId = KingCountyId,
+          TaxingDistrict = "King County Regular",
+          TaxRate = 12.0m,
+          LevyAmount = 9000m,
+          TaxYear = 2026,
+          Purpose = "General Fund",
+          EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+          IsActive = true,
+        });
         await db.SaveChangesAsync();
       }
 
@@ -644,6 +708,20 @@ public sealed class Cx19CrossCountyFactory : WebApplicationFactory<ApiProgram>
           ConfidenceScore = 0.95,
           AnalysisDate = DateTime.UtcNow,
           AnalysisMethod = "cx19-test",
+        });
+
+    costForgeMock
+        .Setup(m => m.GetCostBreakdownAsync(It.IsAny<Guid>()))
+        .ReturnsAsync((Guid propertyId) => new CostBreakdownDto
+        {
+          PropertyId = propertyId,
+          TotalValue = 250000m,
+          Categories = new List<CostCategoryDto>
+          {
+            new() { Name = "Land", Amount = 100000m, Percentage = 40.0 },
+            new() { Name = "Structure", Amount = 130000m, Percentage = 52.0 },
+            new() { Name = "Site Improvements", Amount = 20000m, Percentage = 8.0 },
+          },
         });
 
     services.AddScoped(_ => costForgeMock.Object);
