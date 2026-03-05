@@ -4,10 +4,10 @@
  * Proves that R1 handler payloads produce full 200-path success:
  *   1. run_valuation_model sends correct PropertyCostCalculationRequest shape
  *      → expect 200 with real cost analysis for known Benton County parcel
- *   2. summarize_levy_rate_components calls GET /history
- *      → expect 200 with array (possibly empty)
+ *   2. summarize_levy_rate_components sends valid LevyMeasureRequest shape
+ *      → expect 200 (no auth-only pass, no validation failure)
  *   3. Direct HTTP: CostForge returns 200 with real parcel
- *   4. Direct HTTP: levy history returns 200 with array
+ *   4. Direct HTTP: shaped levy calculate-rate payload returns 200
  *
  * Parcel discovery: queries GET /api/properties?pageSize=1 for a real parcel.
  * Falls back to 1-0531-100-0001-000 (Benton County seed parcel) if the
@@ -25,29 +25,46 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 
 process.env.TF_API_PORT = process.env.TF_API_PORT || '5046';
+const BENTON_FIXTURE_PARCEL = process.env.TF_R1_FIXTURE_PARCEL_NUMBER || '1-0531-100-0001-000';
+const BENTON_FIXTURE_DISTRICT = process.env.TF_R1_FIXTURE_DISTRICT_ID || 'DIST-BENTON-SMOKE';
 
 let ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers;
 let acquirePilotToken, clearPilotToken, backendPost, backendGet;
 let TraceService, traceService;
 
 /** Parcel number resolved at runtime — see discoverTestParcel(). */
-let TEST_PARCEL = '1-0531-100-0001-000'; // fallback if discovery unavailable
-const FALLBACK_PARCEL = TEST_PARCEL;
+let TEST_PARCEL = BENTON_FIXTURE_PARCEL;
+const FALLBACK_PARCEL = BENTON_FIXTURE_PARCEL;
 
 /**
- * Discover a real parcel from the backend. Uses GET /api/properties?pageSize=1
- * so the test does not break when the dev DB is reseeded with different data.
+ * Discover a valuation-ready parcel from the backend.
+ * Queries GET /api/properties?pageSize=10 and picks the first parcel with
+ * improvementValue > 0 (required for CostForge cost calculation).
+ * Falls back to FALLBACK_PARCEL if discovery fails.
  */
 async function discoverTestParcel(token) {
   try {
-    const result = await backendGet('/api/properties?pageSize=1', { token });
-    if (result.ok && result.data?.items?.[0]?.parcelNumber) {
-      TEST_PARCEL = result.data.items[0].parcelNumber;
-      console.log(`  🔍 Discovered test parcel: ${TEST_PARCEL}`);
+    const result = await backendGet('/api/properties?pageSize=10', { token });
+    if (!result.ok) {
+      console.log(`  ⚠️  Parcel discovery failed: ${result.status} ${result.error ?? ''} — using fallback: ${FALLBACK_PARCEL}`);
       return;
     }
-  } catch { /* fall through to fallback */ }
-  console.log(`  ⚠️  Parcel discovery unavailable — using fallback: ${FALLBACK_PARCEL}`);
+    const items = result.data?.items ?? [];
+    const viable = items.find(p => p.parcelNumber && p.improvementValue > 0);
+    if (viable) {
+      TEST_PARCEL = viable.parcelNumber;
+      console.log(`  🔍 Discovered test parcel: ${TEST_PARCEL} (improvementValue=${viable.improvementValue})`);
+      return;
+    }
+    if (items.length > 0 && items[0].parcelNumber) {
+      TEST_PARCEL = items[0].parcelNumber;
+      console.log(`  ⚠️  No parcel with improvementValue > 0 found; using first available: ${TEST_PARCEL}`);
+      return;
+    }
+    console.log(`  ⚠️  /api/properties returned 0 items — using fallback: ${FALLBACK_PARCEL}`);
+  } catch (err) {
+    console.log(`  ⚠️  Parcel discovery error: ${err.message} — using fallback: ${FALLBACK_PARCEL}`);
+  }
 }
 
 before(async () => {
@@ -95,16 +112,25 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     console.log(`  ✅ CostForge: 200 — totalCost=$${result.data.totalCost.toFixed(2)}, confidence=${result.data.confidenceScore}`);
   });
 
-  // ── Direct HTTP: Levy history returns 200 ─────────────────────────
+  // ── Direct HTTP: Levy calculate-rate returns 200 ──────────────────
 
-  it('levy history endpoint returns 200 with array', async () => {
+  it('shaped levy calculate-rate payload returns 200', async () => {
     const { token } = await acquirePilotToken();
 
-    const result = await backendGet('/api/levy-calculation/history?taxYear=2025', { token });
+    const result = await backendPost('/api/levy-calculation/calculate-rate', {
+      districtId: BENTON_FIXTURE_DISTRICT,
+      districtName: 'Benton Smoke District',
+      assessedValue: 1500000,
+      budgetAmount: 45000,
+      districtType: 'county-regular',
+      measureType: 'regular',
+      countyCode: 'BENTON',
+    }, { token });
 
-    assert.equal(result.ok, true, `Levy history should return 200, got ${result.status}: ${result.error}`);
-    assert.ok(Array.isArray(result.data), 'Levy history should return an array');
-    console.log(`  ✅ Levy history: 200 with ${result.data.length} records`);
+    assert.equal(result.ok, true, `Levy calculate-rate should return 200, got ${result.status}: ${result.error}`);
+    assert.equal(typeof result.data.aiOptimalRate, 'number', 'aiOptimalRate should be present');
+    assert.ok(Number.isFinite(result.data.aiOptimalRate));
+    console.log(`  ✅ Levy calculate-rate: 200, aiOptimalRate=${result.data.aiOptimalRate}`);
   });
 
   // ── Handler: run_valuation_model no longer 400 ────────────────────
@@ -151,7 +177,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
     const result = await runner.execute({
       toolId: 'summarize_levy_rate_components',
-      params: { county: 'benton', taxYear: 2025 },
+      params: { county: 'benton', taxYear: 2025, districtCode: BENTON_FIXTURE_DISTRICT },
       context: {
         countyId: 'benton',
         userId: 'payload-smoke-test',
@@ -163,6 +189,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     assert.equal(result.ok, true, `Levy handler should succeed, got error: ${result.error}`);
     assert.ok(Array.isArray(result.result.components), 'components should be an array');
     assert.equal(typeof result.result.totalRate, 'number', 'totalRate should be a number');
+    assert.ok(result.result.totalRate > 0, 'totalRate should be > 0 for valid levy payload');
     assert.ok(result.result.explanation, 'explanation should be non-empty');
     console.log(`  ✅ summarize_levy: 200 — ${result.result.components.length} components, totalRate=${result.result.totalRate}`);
     console.log(`     explanation: "${result.result.explanation}"`);

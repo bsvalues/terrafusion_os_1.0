@@ -5,9 +5,8 @@
  *
  * Evidence model:
  *   1. pilotAuth: Token acquisition succeeds via POST /api/auth/login.
- *   2. run_valuation_model: With auth token, backend returns non-401/403.
- *      (May return 400/404/500 for missing data — proving auth passed.)
- *   3. summarize_levy_rate_components: With auth token, non-401/403.
+ *   2. run_valuation_model: With auth token + valid payload fixture, returns 200-path success.
+ *   3. summarize_levy_rate_components: With auth token + valid payload fixture, returns 200.
  *   4. search_trace_by_correlation: Still works full e2e (no regression).
  *   5. Unauthenticated direct calls return 401 (backend requires auth).
  *
@@ -24,6 +23,8 @@ import { before, describe, it } from 'node:test';
 
 // Force backend target
 process.env.TF_API_PORT = process.env.TF_API_PORT || '5046';
+const BENTON_FIXTURE_PARCEL = process.env.TF_R1_FIXTURE_PARCEL_NUMBER || '1-0531-100-0001-000';
+const BENTON_FIXTURE_DISTRICT = process.env.TF_R1_FIXTURE_DISTRICT_ID || 'DIST-BENTON-SMOKE';
 
 let ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers;
 let acquirePilotToken, clearPilotToken, backendPost;
@@ -81,10 +82,11 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
 
   it('unauthenticated POST to /api/costforge/calculate returns 401', async () => {
     const result = await backendPost('/api/costforge/calculate', {
-      parcelId: 'R-001',
-      taxYear: 2026,
-      modelType: 'cost',
-      countyId: 'benton',
+      propertyId: '00000000-0000-0000-0000-000000000000',
+      parcelNumber: BENTON_FIXTURE_PARCEL,
+      countyCode: 'BENTON',
+      region: 'BENTON',
+      buildingType: 'SFR',
     });
     assert.equal(result.ok, false, 'Should fail without auth');
     assert.equal(result.status, 401, `Expected 401, got ${result.status}`);
@@ -93,8 +95,13 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
 
   it('unauthenticated POST to /api/levy-calculation/calculate-rate returns 401', async () => {
     const result = await backendPost('/api/levy-calculation/calculate-rate', {
-      countyId: 'benton',
-      taxYear: 2026,
+      districtId: BENTON_FIXTURE_DISTRICT,
+      districtName: 'Benton Smoke District',
+      assessedValue: 1500000,
+      budgetAmount: 45000,
+      districtType: 'county-regular',
+      measureType: 'regular',
+      countyCode: 'BENTON',
     });
     assert.equal(result.ok, false, 'Should fail without auth');
     assert.equal(result.status, 401, `Expected 401, got ${result.status}`);
@@ -103,7 +110,7 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
 
   // ── Auth 3: run_valuation_model passes auth (no 401/403) ─────────
 
-  it('run_valuation_model with auth does not get 401/403', async () => {
+  it('run_valuation_model with auth returns success (200-path)', async () => {
     const registry = new ToolRegistry();
     await registry.initialize();
     const runner = new ToolRunner({ registry });
@@ -115,7 +122,7 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
       toolId: 'run_valuation_model',
       params: {
         county: 'benton',
-        parcelId: 'R-001',
+        parcelId: BENTON_FIXTURE_PARCEL,
         taxYear: 2026,
       },
       context: {
@@ -128,22 +135,15 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
       },
     });
 
-    // With auth, the response should NOT be 401/403.
-    // It may succeed (200) or fail with a data error (400/404/500).
-    if (result.ok === false) {
-      assert.ok(
-        !result.error.includes('401') && !result.error.includes('Unauthorized'),
-        `Auth should have passed, but got auth error: ${result.error}`
-      );
-      console.log(`  ✅ run_valuation_model passed auth, backend returned: ${result.error}`);
-    } else {
-      console.log(`  ✅ run_valuation_model returned success: estimatedValue=${result.result.estimatedValue}`);
-    }
+    assert.equal(result.ok, true, `Expected success, got: ${result.error}`);
+    assert.equal(typeof result.result.estimatedValue, 'number');
+    assert.ok(Number.isFinite(result.result.estimatedValue));
+    console.log(`  ✅ run_valuation_model 200-path success: estimatedValue=${result.result.estimatedValue}`);
   });
 
   // ── Auth 4: summarize_levy_rate_components passes auth ────────────
 
-  it('summarize_levy_rate_components with auth does not get 401/403', async () => {
+  it('summarize_levy_rate_components with auth returns success (200)', async () => {
     const registry = new ToolRegistry();
     await registry.initialize();
     const runner = new ToolRunner({ registry });
@@ -153,7 +153,7 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
 
     const result = await runner.execute({
       toolId: 'summarize_levy_rate_components',
-      params: { county: 'benton', taxYear: 2026 },
+      params: { county: 'benton', taxYear: 2026, districtCode: BENTON_FIXTURE_DISTRICT },
       context: {
         countyId: 'benton',
         userId: 'auth-smoke-test',
@@ -162,15 +162,11 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
       },
     });
 
-    if (result.ok === false) {
-      assert.ok(
-        !result.error.includes('401') && !result.error.includes('Unauthorized'),
-        `Auth should have passed, but got auth error: ${result.error}`
-      );
-      console.log(`  ✅ summarize_levy_rate_components passed auth, backend returned: ${result.error}`);
-    } else {
-      console.log(`  ✅ summarize_levy_rate_components returned success: totalRate=${result.result.totalRate}`);
-    }
+    assert.equal(result.ok, true, `Expected success, got: ${result.error}`);
+    assert.equal(typeof result.result.totalRate, 'number');
+    assert.ok(Number.isFinite(result.result.totalRate));
+    assert.ok(result.result.totalRate > 0, 'totalRate should be > 0 for valid levy payload');
+    console.log(`  ✅ summarize_levy_rate_components 200 success: totalRate=${result.result.totalRate}`);
   });
 
   // ── Auth 5: search_trace_by_correlation still works (no regression)
