@@ -4,10 +4,10 @@
  * Proves that R1 handler payloads produce full 200-path success:
  *   1. run_valuation_model sends correct PropertyCostCalculationRequest shape
  *      → expect 200 with real cost analysis for known Benton County parcel
- *   2. summarize_levy_rate_components calls GET /history
- *      → expect 200 with array (possibly empty)
+ *   2. summarize_levy_rate_components sends valid LevyMeasureRequest shape
+ *      → expect 200 (no auth-only pass, no validation failure)
  *   3. Direct HTTP: CostForge returns 200 with real parcel
- *   4. Direct HTTP: levy history returns 200 with array
+ *   4. Direct HTTP: shaped levy calculate-rate payload returns 200
  *
  * Dev DB fixture: parcel 1-0531-100-0001-000 (Benton County, Kennewick)
  *   AssessedValue=285000, LandValue=75000, ImprovementValue=210000
@@ -23,9 +23,11 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 
 process.env.TF_API_PORT = process.env.TF_API_PORT || '5046';
+const BENTON_FIXTURE_PARCEL = process.env.TF_R1_FIXTURE_PARCEL_NUMBER || '1-0531-100-0001-000';
+const BENTON_FIXTURE_DISTRICT = process.env.TF_R1_FIXTURE_DISTRICT_ID || 'DIST-BENTON-SMOKE';
 
 let ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers;
-let acquirePilotToken, clearPilotToken, backendPost, backendGet;
+let acquirePilotToken, clearPilotToken, backendPost;
 let TraceService, traceService;
 
 before(async () => {
@@ -41,7 +43,6 @@ before(async () => {
   acquirePilotToken = pilot.acquirePilotToken;
   clearPilotToken = pilot.clearPilotToken;
   backendPost = pilot.backendPost;
-  backendGet = pilot.backendGet;
   TraceService = trace.TraceService;
   traceService = trace.traceService;
 });
@@ -54,10 +55,11 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     const { token } = await acquirePilotToken();
 
     const result = await backendPost('/api/costforge/calculate', {
-      parcelNumber: '1-0531-100-0001-000',
-      countyCode: 'benton',
-      region: 'benton',
-      buildingType: 'cost',
+      propertyId: '00000000-0000-0000-0000-000000000000',
+      parcelNumber: BENTON_FIXTURE_PARCEL,
+      countyCode: 'BENTON',
+      region: 'BENTON',
+      buildingType: 'SFR',
     }, { token });
 
     assert.equal(result.ok, true, `CostForge should return 200, got ${result.status}: ${result.error}`);
@@ -67,16 +69,25 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     console.log(`  ✅ CostForge: 200 — totalCost=$${result.data.totalCost.toFixed(2)}, confidence=${result.data.confidenceScore}`);
   });
 
-  // ── Direct HTTP: Levy history returns 200 ─────────────────────────
+  // ── Direct HTTP: Levy calculate-rate returns 200 ──────────────────
 
-  it('levy history endpoint returns 200 with array', async () => {
+  it('shaped levy calculate-rate payload returns 200', async () => {
     const { token } = await acquirePilotToken();
 
-    const result = await backendGet('/api/levy-calculation/history?taxYear=2025', { token });
+    const result = await backendPost('/api/levy-calculation/calculate-rate', {
+      districtId: BENTON_FIXTURE_DISTRICT,
+      districtName: 'Benton Smoke District',
+      assessedValue: 1500000,
+      budgetAmount: 45000,
+      districtType: 'county-regular',
+      measureType: 'regular',
+      countyCode: 'BENTON',
+    }, { token });
 
-    assert.equal(result.ok, true, `Levy history should return 200, got ${result.status}: ${result.error}`);
-    assert.ok(Array.isArray(result.data), 'Levy history should return an array');
-    console.log(`  ✅ Levy history: 200 with ${result.data.length} records`);
+    assert.equal(result.ok, true, `Levy calculate-rate should return 200, got ${result.status}: ${result.error}`);
+    assert.equal(typeof result.data.aiOptimalRate, 'number', 'aiOptimalRate should be present');
+    assert.ok(Number.isFinite(result.data.aiOptimalRate));
+    console.log(`  ✅ Levy calculate-rate: 200, aiOptimalRate=${result.data.aiOptimalRate}`);
   });
 
   // ── Handler: run_valuation_model no longer 400 ────────────────────
@@ -92,7 +103,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
       toolId: 'run_valuation_model',
       params: {
         county: 'benton',
-        parcelId: '1-0531-100-0001-000',
+        parcelId: BENTON_FIXTURE_PARCEL,
         taxYear: 2026,
       },
       context: {
@@ -123,7 +134,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
     const result = await runner.execute({
       toolId: 'summarize_levy_rate_components',
-      params: { county: 'benton', taxYear: 2025 },
+      params: { county: 'benton', taxYear: 2025, districtCode: BENTON_FIXTURE_DISTRICT },
       context: {
         countyId: 'benton',
         userId: 'payload-smoke-test',
@@ -135,6 +146,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     assert.equal(result.ok, true, `Levy handler should succeed, got error: ${result.error}`);
     assert.ok(Array.isArray(result.result.components), 'components should be an array');
     assert.equal(typeof result.result.totalRate, 'number', 'totalRate should be a number');
+    assert.ok(result.result.totalRate > 0, 'totalRate should be > 0 for valid levy payload');
     assert.ok(result.result.explanation, 'explanation should be non-empty');
     console.log(`  ✅ summarize_levy: 200 — ${result.result.components.length} components, totalRate=${result.result.totalRate}`);
     console.log(`     explanation: "${result.result.explanation}"`);

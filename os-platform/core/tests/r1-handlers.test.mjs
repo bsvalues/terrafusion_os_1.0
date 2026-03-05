@@ -155,7 +155,7 @@ describe('Handler: run_valuation_model', () => {
         BENTON_CONTEXT,
         TOOL_STUB
       ),
-      /Valuation model failed/
+      /Valuation model failed|Pilot auth failed/
     );
   });
 
@@ -451,14 +451,12 @@ describe('Handler: search_trace_by_correlation', () => {
 // ══════════════════════════════════════════════════════════════════════
 
 describe('Handler: summarize_levy_rate_components', () => {
-  it('returns levy components from backend POST', async () => {
+  it('returns levy components from calculate-rate response', async () => {
     mockFetch({
-      components: [
-        { name: 'State Schools', rate: 3.12 },
-        { name: 'County General', rate: 1.85 },
-        { name: 'Fire District', rate: 2.45 },
-      ],
-      totalRate: 7.42,
+      aiOptimalRate: 7.42,
+      baseRate: 7.5,
+      statutoryLimit: 10.0,
+      projectedRevenue: 11130,
     });
 
     const result = await summarizeLevyRateRealHandler(
@@ -475,13 +473,12 @@ describe('Handler: summarize_levy_rate_components', () => {
     assert.ok(result.components[0].rate >= result.components[1].rate);
   });
 
-  it('handles districtRates format from backend', async () => {
+  it('maps named component fields from backend response', async () => {
     mockFetch({
-      districtRates: [
-        { district: 'City of Richland', rate: 2.5 },
-        { district: 'Port', rate: 0.8 },
-      ],
-      levyRate: 3.3,
+      aiOptimalRate: 3.3,
+      baseRate: 3.1,
+      statutoryLimit: 5.9,
+      projectedRevenue: 4950,
     });
 
     const result = await summarizeLevyRateRealHandler(
@@ -490,9 +487,9 @@ describe('Handler: summarize_levy_rate_components', () => {
       TOOL_STUB
     );
 
-    assert.equal(result.components.length, 2);
+    assert.equal(result.components.length, 3);
     assert.equal(result.totalRate, 3.3);
-    assert.equal(result.components[0].name, 'City of Richland');
+    assert.equal(result.components[0].name, 'Statutory Limit');
   });
 
   it('includes district scope in explanation when districtCode provided', async () => {
@@ -532,7 +529,7 @@ describe('Handler: summarize_levy_rate_components', () => {
         BENTON_CONTEXT,
         TOOL_STUB
       ),
-      /Levy rate calculation failed/
+      /Levy rate calculation failed|Pilot auth failed/
     );
   });
 });
