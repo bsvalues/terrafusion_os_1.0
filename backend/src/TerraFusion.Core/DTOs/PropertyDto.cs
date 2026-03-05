@@ -4,48 +4,48 @@ namespace TerraFusion.Core.DTOs;
 
 public class PropertyDto
 {
-    public int Id { get; set; }
-    
+    public Guid Id { get; set; }
+
     [Required]
     [StringLength(50)]
     public string ParcelNumber { get; set; } = string.Empty;
-    
+
     [Required]
     [StringLength(500)]
     public string Address { get; set; } = string.Empty;
-    
+
     [StringLength(200)]
     public string? OwnerName { get; set; }
-    
+
     [Range(0, double.MaxValue)]
     public decimal AssessedValue { get; set; }
-    
+
     [Range(0, double.MaxValue)]
     public decimal LandValue { get; set; }
-    
+
     [Range(0, double.MaxValue)]
     public decimal ImprovementValue { get; set; }
-    
+
     [Required]
-    public int CountyId { get; set; }
-    
+    public Guid CountyId { get; set; }
+
     [Required]
     [StringLength(100)]
     public string CountyName { get; set; } = string.Empty;
-    
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
 
 public class ValuationDto
 {
-    public int Id { get; set; }
-    
+    public Guid Id { get; set; }
+
     [Required]
-    public int PropertyId { get; set; }
-    
+    public Guid PropertyId { get; set; }
+
     [Required]
-    public int AIModelId { get; set; }
+    public Guid AIModelId { get; set; }
     
     [Required]
     [StringLength(100)]
@@ -73,10 +73,10 @@ public class ValuationDto
 public class CreateValuationDto
 {
     [Required]
-    public int PropertyId { get; set; }
-    
+    public Guid PropertyId { get; set; }
+
     [Required]
-    public int AIModelId { get; set; }
+    public Guid AIModelId { get; set; }
     
     [Required]
     [Range(0, double.MaxValue)]
@@ -98,26 +98,26 @@ public class ImportPropertyDto
     [Required]
     [StringLength(50)]
     public string ParcelNumber { get; set; } = string.Empty;
-    
+
     [Required]
     [StringLength(500)]
     public string Address { get; set; } = string.Empty;
-    
+
     [StringLength(200)]
     public string? OwnerName { get; set; }
-    
+
     [Required]
     [Range(0, double.MaxValue)]
     public decimal AssessedValue { get; set; }
-    
+
     [Range(0, double.MaxValue)]
     public decimal LandValue { get; set; }
-    
+
     [Range(0, double.MaxValue)]
     public decimal ImprovementValue { get; set; }
-    
+
     [Required]
-    public int CountyId { get; set; }
+    public Guid CountyId { get; set; }
 }
 
 public class PropertyStatsDto
