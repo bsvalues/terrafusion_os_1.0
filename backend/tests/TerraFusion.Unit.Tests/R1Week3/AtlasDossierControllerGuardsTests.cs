@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
@@ -209,7 +210,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
         var result = await controller.CreateNote(
@@ -246,7 +247,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
         var result = await controller.GetCasefile("PARCEL-300", include: null);
@@ -278,7 +279,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
         AttachPrincipal(controller, CreatePrincipal("BENTON"));
 
         var result = await controller.CreateNote(

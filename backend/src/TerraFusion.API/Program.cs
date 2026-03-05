@@ -348,6 +348,8 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
 });
 
 // CX-8: Register ICostForgeService for real property-backed cost calculation
+// CX-27: ICostForgeAIService must be registered before ICostForgeService (dependency)
+builder.Services.AddSingleton<TerraFusion.Core.Services.ICostForgeAIService, TerraFusion.AI.Services.CostForgeAIService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeService, TerraFusion.API.Services.CostForgeService>();
 
 // Register ITerraFusionDbContext interface
@@ -647,6 +649,58 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         Console.WriteLine($"⚠️ GPT seeding skipped: {ex.Message}");
+    }
+
+    // ── CX-27: Seed dev county + property for runtime validation ──
+    if (app.Environment.IsDevelopment())
+    {
+        try
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+
+            // Ensure Benton County exists
+            var bentonCounty = await dbContext.Counties.FirstOrDefaultAsync(c => c.Name == "Benton");
+            if (bentonCounty == null)
+            {
+                bentonCounty = new TerraFusion.Core.Entities.County
+                {
+                    Name = "Benton",
+                    State = "WA",
+                    Population = 206873,
+                    Area = 1703.38,
+                    FipsCode = "53005",
+                };
+                dbContext.Counties.Add(bentonCounty);
+                await dbContext.SaveChangesAsync();
+                Console.WriteLine("🏛️ CX-27: Seeded Benton County");
+            }
+
+            // Ensure dev property exists
+            if (!await dbContext.Properties.AnyAsync(p => p.ParcelId == "BENTON-001"))
+            {
+                dbContext.Properties.Add(new TerraFusion.Core.Entities.Property
+                {
+                    ParcelId = "BENTON-001",
+                    ParcelNumber = "100010000",
+                    Address = "123 Main St, Kennewick, WA 99336",
+                    PropertyType = "Residential",
+                    YearBuilt = 1998,
+                    AssessedValue = 325000m,
+                    LandValue = 85000m,
+                    ImprovementValue = 240000m,
+                    MarketValue = 340000m,
+                    TaxYear = 2025,
+                    AssessmentDate = new DateTime(2025, 1, 15),
+                    CountyId = bentonCounty.Id,
+                });
+                await dbContext.SaveChangesAsync();
+                Console.WriteLine("🏠 CX-27: Seeded dev property BENTON-001");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ CX-27 dev seed skipped: {ex.Message}");
+        }
     }
 }
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
@@ -266,7 +267,7 @@ public class R1Week4Cx15BackendValidationSuiteTests
         db.Properties.Add(CreateProperty(benton.Id, "CX15-PROP-5", "CX15-PARCEL-5"));
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
         AttachPrincipal(controller, CreatePrincipal("BENTON", "BENTON", "cx15-author"));
 
         var createdResult = await controller.CreateNote(
@@ -306,7 +307,7 @@ public class R1Week4Cx15BackendValidationSuiteTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
         AttachPrincipal(controller, CreatePrincipal(benton.Id.ToString(), "BENTON"));
 
         var result = await controller.GetNotes("CX15-PARCEL-6");
@@ -322,7 +323,7 @@ public class R1Week4Cx15BackendValidationSuiteTests
     public async Task Dossier_InvalidParcelId_ReturnsBadRequest()
     {
         await using var db = CreateDbContext(nameof(Dossier_InvalidParcelId_ReturnsBadRequest));
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance);
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
         AttachPrincipal(controller, CreatePrincipal(Guid.NewGuid().ToString(), "BENTON"));
 
         var result = await controller.GetCasefile("bad parcel id!", include: null);

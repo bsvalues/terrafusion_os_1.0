@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -27,16 +28,19 @@ public class DossierController : ControllerBase
     private readonly DataDbContext _db;
     private readonly ICostForgeService _costForge;
     private readonly ILogger<DossierController> _logger;
+    private readonly bool _isDevelopment;
     private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
 
     public DossierController(
         DataDbContext db,
         ICostForgeService costForge,
-        ILogger<DossierController> logger)
+        ILogger<DossierController> logger,
+        IHostEnvironment hostEnvironment)
     {
         _db = db;
         _costForge = costForge;
         _logger = logger;
+        _isDevelopment = hostEnvironment.IsDevelopment();
     }
 
     // ── County Isolation Helper ──────────────────────────────────────
@@ -69,6 +73,17 @@ public class DossierController : ControllerBase
         }
         else
         {
+            // CX-27: In Development, fall back to the first seeded county so
+            // runtime validation works without county-aware JWT claims.
+            if (_isDevelopment)
+            {
+                _logger.LogWarning("CX-27: No county claim found; falling back to first seeded county (Development only)");
+                return await _db.Counties.AsNoTracking()
+                    .OrderBy(c => c.Name)
+                    .Select(c => (Guid?)c.Id)
+                    .FirstOrDefaultAsync();
+            }
+
             return null;
         }
 
