@@ -194,6 +194,36 @@ export interface AddDossierNoteResult {
 }
 
 // ============================================================================
+// Phase C2: Write-Lane Governance Tool Types
+// ============================================================================
+
+export interface AssembleBoePacketParams {
+  county: string;
+  caseId: string;
+  include?: ('evidence' | 'valuation_history' | 'comps')[];
+}
+
+export interface AssembleBoePacketResult {
+  caseId: string;
+  packetRef: string;
+  sections: string[];
+  payloadRef: string;
+}
+
+export interface RequestTraceRedactionParams {
+  county: string;
+  traceEventIds: string[];
+  reason: string;
+}
+
+export interface RequestTraceRedactionResult {
+  redactionTicketId: string;
+  status: 'pending_review';
+  eventsMarked: number;
+  payloadRef: string;
+}
+
+// ============================================================================
 // Handler Implementations
 // ============================================================================
 
@@ -651,6 +681,68 @@ export const addDossierNoteHandler: ToolHandler<
 };
 
 // ============================================================================
+// Phase C2: Write-Lane Governance Handlers
+// ============================================================================
+
+/**
+ * Assemble BOE Packet - Pilot/write_high/payload_ref
+ * Requires confirmation + reasonCode.
+ */
+export const assembleBoePacketHandler: ToolHandler<
+  AssembleBoePacketParams,
+  AssembleBoePacketResult
+> = async (params, context, _tool) => {
+  const { county, caseId, include = [] } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const sections = [
+    'cover_sheet',
+    ...include.map(i => `section_${i}`),
+    'certification',
+  ];
+
+  const packetRef = buildPayloadRef(
+    `dossier://${context.countyId}/boe/${caseId}/packet`,
+    `${context.countyId}:${caseId}:${include.sort().join(',')}`
+  );
+
+  return {
+    caseId,
+    packetRef,
+    sections,
+    payloadRef: packetRef,
+  };
+};
+
+/**
+ * Request Trace Redaction - Pilot/irreversible/payload_ref
+ * Requires confirmation + reasonCode + supervisorApproval.
+ */
+export const requestTraceRedactionHandler: ToolHandler<
+  RequestTraceRedactionParams,
+  RequestTraceRedactionResult
+> = async (params, context, _tool) => {
+  const { county, traceEventIds, reason } = params;
+  assertCountyMatch(county, context.countyId);
+
+  if (!traceEventIds || traceEventIds.length === 0) {
+    throw new Error('At least one trace event ID is required');
+  }
+
+  const ticketId = `redact-${stableHash(`${context.countyId}:${traceEventIds.join(',')}:${reason}`)}`;
+
+  return {
+    redactionTicketId: ticketId,
+    status: 'pending_review',
+    eventsMarked: traceEventIds.length,
+    payloadRef: buildPayloadRef(
+      `secure-blob://${context.countyId}/redaction/${ticketId}`,
+      `${context.countyId}:${ticketId}`
+    ),
+  };
+};
+
+// ============================================================================
 // Handler Registry
 // ============================================================================
 
@@ -684,13 +776,24 @@ export function registerPhase84Handlers(runner: {
 }
 
 /**
- * Register all tool handlers (Phase 8.3 + 8.4).
+ * Register C2 write-lane governance handlers (write_high + irreversible).
+ */
+export function registerWriteGateHandlers(runner: {
+  registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
+}): void {
+  runner.registerHandler('assemble_boe_packet', assembleBoePacketHandler);
+  runner.registerHandler('request_trace_redaction', requestTraceRedactionHandler);
+}
+
+/**
+ * Register all tool handlers (Phase 8.3 + 8.4 + C2).
  */
 export function registerAllHandlers(runner: {
   registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
 }): void {
   registerPhase83Handlers(runner);
   registerPhase84Handlers(runner);
+  registerWriteGateHandlers(runner);
 }
 
 /**
@@ -716,4 +819,12 @@ export const phase84Handlers = {
   summarize_sales_comps_rationale: summarizeSalesCompsHandler,
   search_trace_by_correlation: searchTraceByCorrelationHandler,
   add_dossier_note: addDossierNoteHandler,
+} as const;
+
+/**
+ * Map of C2 write-lane governance handlers for direct access.
+ */
+export const writeGateHandlers = {
+  assemble_boe_packet: assembleBoePacketHandler,
+  request_trace_redaction: requestTraceRedactionHandler,
 } as const;

@@ -1,0 +1,15 @@
+{
+  "params": {
+    "county": "benton",
+    "caseId": "BOE-2026-042",
+    "include": ["evidence", "valuation_history", "comps"]
+  },
+  "context": {
+    "confirmation": true,
+    "reasonCode": "appeal_response"
+  },
+  "assert": {
+    "resultKeys": ["packetRef", "sections", "caseId"],
+    "noPii": true
+  }
+}

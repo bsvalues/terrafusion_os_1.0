@@ -1,0 +1,8 @@
+{
+  "params": {
+    "county": "yakima",
+    "traceEventIds": ["evt-xyz-789"],
+    "reason": "Unauthorized request"
+  },
+  "assert": { "rejects": true }
+}
