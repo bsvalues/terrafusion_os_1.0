@@ -30,6 +30,7 @@ exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = expor
 exports.createSearchTraceHandler = createSearchTraceHandler;
 exports.registerR1Handlers = registerR1Handlers;
 const backendClient_js_1 = require("./backendClient.js");
+const pilotAuth_js_1 = require("./pilotAuth.js");
 // ============================================================================
 // Utility: County Match Enforcement
 // ============================================================================
@@ -46,12 +47,13 @@ function assertCountyMatch(paramCounty, contextCounty) {
 // ============================================================================
 const runValuationModelHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
     const raw = await (0, backendClient_js_1.backendPost)('/api/costforge/calculate', {
         parcelId: params.parcelId,
         taxYear: params.taxYear,
         modelType: params.modelType ?? 'cost',
         countyId: context.countyId,
-    });
+    }, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Valuation model failed');
     return {
         parcelId: params.parcelId,
@@ -69,7 +71,8 @@ exports.runValuationModelHandler = runValuationModelHandler;
 const explainValueChangeHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
     // Fetch property data to get valuation history
-    const propRaw = await (0, backendClient_js_1.backendGet)(`/api/properties/${encodeURIComponent(params.parcelId)}`);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const propRaw = await (0, backendClient_js_1.backendGet)(`/api/properties/${encodeURIComponent(params.parcelId)}`, { token });
     const prop = (0, backendClient_js_1.unwrapBackend)(propRaw, 'Property lookup failed');
     const history = prop.valuationHistory ?? [];
     const fromEntry = history.find(h => h.year === params.fromYear);
@@ -145,11 +148,12 @@ function createSearchTraceHandler(traceService) {
 // ============================================================================
 const summarizeLevyRateRealHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
     const raw = await (0, backendClient_js_1.backendPost)('/api/levy-calculation/calculate-rate', {
         countyId: context.countyId,
         taxYear: params.taxYear,
         districtCode: params.districtCode,
-    });
+    }, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Levy rate calculation failed');
     // Normalize backend response — backend may return different shapes
     const components = data.components
@@ -177,7 +181,8 @@ exports.summarizeLevyRateRealHandler = summarizeLevyRateRealHandler;
 // ============================================================================
 const explainModelInputsRealHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
-    const raw = await (0, backendClient_js_1.backendGet)(`/api/costforge/models/${encodeURIComponent(params.modelId)}?year=${params.asOfYear}&countyId=${encodeURIComponent(context.countyId)}`);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/costforge/models/${encodeURIComponent(params.modelId)}?year=${params.asOfYear}&countyId=${encodeURIComponent(context.countyId)}`, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Model inputs lookup failed');
     // Normalize backend response — different shapes may come back
     const inputs = data.inputs
@@ -203,7 +208,8 @@ exports.explainModelInputsRealHandler = explainModelInputsRealHandler;
 // ============================================================================
 const compareAssessedValueHistoryRealHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
-    const raw = await (0, backendClient_js_1.backendGet)(`/api/properties/${encodeURIComponent(params.parcelId)}`);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/properties/${encodeURIComponent(params.parcelId)}`, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Property history lookup failed');
     const history = data.valuationHistory ?? [];
     const requestedYears = new Set(params.years);
@@ -253,7 +259,8 @@ const summarizeParcelCasefileRealHandler = async (params, context, _tool) => {
     const includeParam = includeSections.length > 0
         ? `?include=${includeSections.join(',')}&countyId=${encodeURIComponent(context.countyId)}`
         : `?countyId=${encodeURIComponent(context.countyId)}`;
-    const raw = await (0, backendClient_js_1.backendGet)(`/api/dossier/parcels/${encodeURIComponent(params.parcelId)}/casefile${includeParam}`);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/dossier/parcels/${encodeURIComponent(params.parcelId)}/casefile${includeParam}`, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Casefile lookup failed');
     // Build highlights from structured response
     const highlights = data.highlights ?? [];
@@ -282,10 +289,11 @@ const addDossierNoteRealHandler = async (params, context, _tool) => {
     if (params.note.length > 2000) {
         throw new Error('Note exceeds 2000 character limit');
     }
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
     const raw = await (0, backendClient_js_1.backendPost)(`/api/dossier/${encodeURIComponent(params.parcelId)}/notes`, {
         content: params.note,
         type: 'case_note',
-    });
+    }, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Dossier note creation failed');
     return {
         noteId: data.noteId ?? 'unknown',
@@ -296,7 +304,8 @@ const addDossierNoteRealHandler = async (params, context, _tool) => {
 exports.addDossierNoteRealHandler = addDossierNoteRealHandler;
 const queryParcelLayersRealHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
-    const raw = await (0, backendClient_js_1.backendGet)(`/api/atlas/parcels/${encodeURIComponent(params.parcelId)}/layers`);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/atlas/parcels/${encodeURIComponent(params.parcelId)}/layers`, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Atlas layer query failed');
     let layers = data.layers ?? [];
     // If caller requested specific layers, filter to those

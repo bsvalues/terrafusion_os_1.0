@@ -41,12 +41,16 @@ function unwrapBackend(result, label) {
 /**
  * POST JSON to a backend endpoint. Returns typed result.
  */
-async function backendPost(path, body) {
+async function backendPost(path, body, options) {
     const url = `${resolveBaseUrl()}${path}`;
     try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (options?.token) {
+            headers['Authorization'] = `Bearer ${options.token}`;
+        }
         const res = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify(body),
             signal: AbortSignal.timeout(15000),
         });
@@ -65,12 +69,16 @@ async function backendPost(path, body) {
 /**
  * GET from a backend endpoint. Returns typed result.
  */
-async function backendGet(path) {
+async function backendGet(path, options) {
     const url = `${resolveBaseUrl()}${path}`;
     try {
+        const headers = { 'Accept': 'application/json' };
+        if (options?.token) {
+            headers['Authorization'] = `Bearer ${options.token}`;
+        }
         const res = await fetch(url, {
             method: 'GET',
-            headers: { 'Accept': 'application/json' },
+            headers,
             signal: AbortSignal.timeout(15000),
         });
         const text = await res.text();
