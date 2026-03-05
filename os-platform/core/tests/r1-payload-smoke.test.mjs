@@ -9,8 +9,10 @@
  *   3. Direct HTTP: CostForge returns 200 with real parcel
  *   4. Direct HTTP: shaped levy calculate-rate payload returns 200
  *
- * Dev DB fixture: parcel 1-0531-100-0001-000 (Benton County, Kennewick)
- *   AssessedValue=285000, LandValue=75000, ImprovementValue=210000
+ * Parcel discovery: queries GET /api/properties?pageSize=1 for a real parcel.
+ * Falls back to 1-0531-100-0001-000 (Benton County seed parcel) if the
+ * endpoint is unavailable. If the fallback parcel is also missing, the test
+ * fails with instructions to reseed the dev DB.
  *
  * Requires:
  *   TF_API_PORT=5046 (or backend running on 5046)
@@ -27,8 +29,43 @@ const BENTON_FIXTURE_PARCEL = process.env.TF_R1_FIXTURE_PARCEL_NUMBER || '1-0531
 const BENTON_FIXTURE_DISTRICT = process.env.TF_R1_FIXTURE_DISTRICT_ID || 'DIST-BENTON-SMOKE';
 
 let ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers;
-let acquirePilotToken, clearPilotToken, backendPost;
+let acquirePilotToken, clearPilotToken, backendPost, backendGet;
 let TraceService, traceService;
+
+/** Parcel number resolved at runtime — see discoverTestParcel(). */
+let TEST_PARCEL = BENTON_FIXTURE_PARCEL;
+const FALLBACK_PARCEL = BENTON_FIXTURE_PARCEL;
+
+/**
+ * Discover a valuation-ready parcel from the backend.
+ * Queries GET /api/properties?pageSize=10 and picks the first parcel with
+ * improvementValue > 0 (required for CostForge cost calculation).
+ * Falls back to FALLBACK_PARCEL if discovery fails.
+ */
+async function discoverTestParcel(token) {
+  try {
+    const result = await backendGet('/api/properties?pageSize=10', { token });
+    if (!result.ok) {
+      console.log(`  ⚠️  Parcel discovery failed: ${result.status} ${result.error ?? ''} — using fallback: ${FALLBACK_PARCEL}`);
+      return;
+    }
+    const items = result.data?.items ?? [];
+    const viable = items.find(p => p.parcelNumber && p.improvementValue > 0);
+    if (viable) {
+      TEST_PARCEL = viable.parcelNumber;
+      console.log(`  🔍 Discovered test parcel: ${TEST_PARCEL} (improvementValue=${viable.improvementValue})`);
+      return;
+    }
+    if (items.length > 0 && items[0].parcelNumber) {
+      TEST_PARCEL = items[0].parcelNumber;
+      console.log(`  ⚠️  No parcel with improvementValue > 0 found; using first available: ${TEST_PARCEL}`);
+      return;
+    }
+    console.log(`  ⚠️  /api/properties returned 0 items — using fallback: ${FALLBACK_PARCEL}`);
+  } catch (err) {
+    console.log(`  ⚠️  Parcel discovery error: ${err.message} — using fallback: ${FALLBACK_PARCEL}`);
+  }
+}
 
 before(async () => {
   const pilotMod = await import('../pilot/index.js');
@@ -43,8 +80,13 @@ before(async () => {
   acquirePilotToken = pilot.acquirePilotToken;
   clearPilotToken = pilot.clearPilotToken;
   backendPost = pilot.backendPost;
+  backendGet = pilot.backendGet;
   TraceService = trace.TraceService;
   traceService = trace.traceService;
+
+  // Discover a real parcel before any CostForge tests run
+  const { token } = await acquirePilotToken();
+  await discoverTestParcel(token);
 });
 
 describe('R1 Payload Shaping (backend on :5046)', () => {
@@ -55,14 +97,15 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     const { token } = await acquirePilotToken();
 
     const result = await backendPost('/api/costforge/calculate', {
-      propertyId: '00000000-0000-0000-0000-000000000000',
-      parcelNumber: BENTON_FIXTURE_PARCEL,
-      countyCode: 'BENTON',
-      region: 'BENTON',
-      buildingType: 'SFR',
+      parcelNumber: TEST_PARCEL,
+      countyCode: 'benton',
+      region: 'benton',
+      buildingType: 'cost',
     }, { token });
 
-    assert.equal(result.ok, true, `CostForge should return 200, got ${result.status}: ${result.error}`);
+    assert.equal(result.ok, true,
+      `CostForge should return 200 for parcel ${TEST_PARCEL}, got ${result.status}: ${result.error}` +
+      (result.status === 404 ? '\n  → Dev DB may have been reseeded. Run: sqlite3 backend/src/TerraFusion.API/terrafusion-dev.db "SELECT ParcelNumber FROM Properties LIMIT 1;" and update FALLBACK_PARCEL.' : ''));
     assert.ok(result.data.totalCost > 0, `totalCost should be > 0, got ${result.data.totalCost}`);
     assert.ok(result.data.confidenceScore > 0, `confidenceScore should be > 0, got ${result.data.confidenceScore}`);
     assert.ok(Array.isArray(result.data.components), 'components should be an array');
@@ -103,7 +146,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
       toolId: 'run_valuation_model',
       params: {
         county: 'benton',
-        parcelId: BENTON_FIXTURE_PARCEL,
+        parcelId: TEST_PARCEL,
         taxYear: 2026,
       },
       context: {
@@ -156,7 +199,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
   it('unauthenticated calls still return 401', async () => {
     const noAuth = await backendPost('/api/costforge/calculate', {
-      parcelNumber: '1-0531-100-0001-000',
+      parcelNumber: TEST_PARCEL,
       countyCode: 'benton',
     });
     assert.equal(noAuth.status, 401, 'Unauthenticated CostForge should be 401');
