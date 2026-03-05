@@ -49,10 +49,10 @@ const runValuationModelHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
     const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
     const raw = await (0, backendClient_js_1.backendPost)('/api/costforge/calculate', {
-        parcelId: params.parcelId,
-        taxYear: params.taxYear,
-        modelType: params.modelType ?? 'cost',
-        countyId: context.countyId,
+        parcelNumber: params.parcelId,
+        countyCode: params.county,
+        region: params.county,
+        buildingType: params.modelType ?? 'cost',
     }, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Valuation model failed');
     return {
@@ -60,7 +60,7 @@ const runValuationModelHandler = async (params, context, _tool) => {
         taxYear: params.taxYear,
         modelType: params.modelType ?? 'cost',
         estimatedValue: data.estimatedValue ?? 0,
-        confidence: data.confidence ?? 0,
+        confidence: data.confidence ?? data.confidenceScore ?? 0,
         components: data.components ?? data.costBreakdown ?? {},
     };
 };
@@ -149,24 +149,27 @@ function createSearchTraceHandler(traceService) {
 const summarizeLevyRateRealHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
     const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
-    const raw = await (0, backendClient_js_1.backendPost)('/api/levy-calculation/calculate-rate', {
-        countyId: context.countyId,
-        taxYear: params.taxYear,
-        districtCode: params.districtCode,
-    }, { token });
-    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Levy rate calculation failed');
-    // Normalize backend response — backend may return different shapes
-    const components = data.components
-        ?? data.districtRates?.map(d => ({ name: d.district, rate: d.rate }))
-        ?? [];
-    const totalRate = data.totalRate
-        ?? data.levyRate
-        ?? components.reduce((sum, c) => sum + c.rate, 0);
+    // Use GET /history which returns persisted levy data — matches "summarize" semantics
+    // (POST /calculate-rate needs budgetAmount+assessedValue which this tool doesn't collect)
+    const qs = new URLSearchParams();
+    qs.set('taxYear', String(params.taxYear));
+    if (params.districtCode)
+        qs.set('districtId', params.districtCode);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/levy-calculation/history?${qs.toString()}`, { token });
+    const records = (0, backendClient_js_1.unwrapBackend)(raw, 'Levy history lookup failed');
+    // Normalize into the expected component shape
+    const components = (Array.isArray(records) ? records : []).map(r => ({
+        name: r.taxingDistrict || r.purpose || 'unknown',
+        rate: r.taxRate ?? 0,
+    }));
+    const totalRate = components.reduce((sum, c) => sum + c.rate, 0);
     const scopeNote = params.districtCode ? ` District ${params.districtCode} applied.` : '';
     return {
         components: components.sort((a, b) => b.rate - a.rate),
         totalRate: Math.round(totalRate * 100) / 100,
-        explanation: `Levy components for ${params.taxYear} total $${totalRate.toFixed(2)} per $1,000 assessed value.${scopeNote}`,
+        explanation: components.length > 0
+            ? `Levy components for ${params.taxYear} total $${totalRate.toFixed(2)} per $1,000 assessed value.${scopeNote}`
+            : `No levy records found for ${params.taxYear}.${scopeNote} Use calculate-rate to model new scenarios.`,
     };
 };
 exports.summarizeLevyRateRealHandler = summarizeLevyRateRealHandler;
