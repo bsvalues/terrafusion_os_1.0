@@ -1,0 +1,9 @@
+{
+  "params": {
+    "county": "yakima",
+    "parcelId": "P-501",
+    "taxYear": 2026,
+    "modelType": "cost"
+  },
+  "assert": { "rejects": true }
+}
