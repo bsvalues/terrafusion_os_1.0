@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -18,6 +19,7 @@ namespace TerraFusion.API.Controllers;
 /// TerraDossier — Notes CRUD + composed parcel dossier for R1.
 /// Write-lane: dossier. County isolation enforced on all queries.
 /// Cross-county requests return 404 (anti-enumeration).
+/// DX-01: Development fallback resolves to Benton County when claims absent.
 /// </summary>
 [ApiController]
 [Route("api/dossier")]
@@ -27,16 +29,19 @@ public class DossierController : ControllerBase
     private readonly DataDbContext _db;
     private readonly ICostForgeService _costForge;
     private readonly ILogger<DossierController> _logger;
+    private readonly bool _isDevelopment;
     private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
 
     public DossierController(
         DataDbContext db,
         ICostForgeService costForge,
-        ILogger<DossierController> logger)
+        ILogger<DossierController> logger,
+        IHostEnvironment hostEnvironment)
     {
         _db = db;
         _costForge = costForge;
         _logger = logger;
+        _isDevelopment = hostEnvironment.IsDevelopment();
     }
 
     // ── County Isolation Helper ──────────────────────────────────────
@@ -69,6 +74,17 @@ public class DossierController : ControllerBase
         }
         else
         {
+            // DX-01: In Development, fall back to Benton County when no claims present.
+            // Production requires valid claims — no fallback.
+            if (_isDevelopment)
+            {
+                _logger.LogDebug("[DX-01] No county claims found; falling back to Benton County (Development only)");
+                return await _db.Counties
+                    .AsNoTracking()
+                    .Where(c => c.Name == "Benton" && c.State == "WA")
+                    .Select(c => (Guid?)c.Id)
+                    .FirstOrDefaultAsync();
+            }
             return null;
         }
 
