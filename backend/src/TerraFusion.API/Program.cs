@@ -643,11 +643,26 @@ using (var scope = app.Services.CreateScope())
             scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
         await seeder.SeedAllGPTsAsync();
 
-        logger.LogInformation("✅ GPT configurations seeded successfully");
+        logger.LogInformation("GPT configurations seeded successfully");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"⚠️ GPT seeding skipped: {ex.Message}");
+        Console.WriteLine($"GPT seeding skipped: {ex.Message}");
+    }
+}
+
+// DX-01: Seed dossier runtime data in Development
+if (app.Environment.IsDevelopment())
+{
+    using var seedScope = app.Services.CreateScope();
+    try
+    {
+        var db = seedScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+        await TerraFusion.API.Seeds.DatabaseSeeder.SeedDossierRuntimeDataAsync(db);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[DX-01] Dossier seed skipped: {ex.Message}");
     }
 }
 
@@ -696,6 +711,54 @@ app.UseAuditLogging();
 app.UseUltimateCostForgeAPI(app.Environment);
 
 app.MapControllers();
+
+// DX-01: Development-only JWT token endpoint for local testing.
+// Returns a valid JWT with countyId, countyCode, role, and permission claims.
+// GUARDED: Only available when app.Environment.IsDevelopment() is true.
+if (app.Environment.IsDevelopment())
+{
+    app.MapGet("/api/auth/dev-token", (
+        TerraFusion.API.Services.IJwtTokenService jwtService,
+        IConfiguration config) =>
+    {
+        var defaultCountyId = config["DefaultCounty:Id"] ?? TerraFusion.API.Seeds.DatabaseSeeder.BentonCountyId.ToString();
+        var defaultCountyCode = config["DefaultCounty:Code"] ?? "benton";
+
+        var customClaims = new Dictionary<string, object>
+        {
+            ["countyId"] = defaultCountyId,
+            ["countyCode"] = defaultCountyCode,
+            ["perm"] = new List<string>
+            {
+                "read:dossier",
+                "write:dossier",
+                "read:property",
+                "read:levy",
+                "read:costforge"
+            }
+        };
+
+        var token = jwtService.GenerateAccessToken(
+            userId: "dev-user-001",
+            email: "dev@terrafusion.local",
+            roles: new[] { "Developer", "Assessor" },
+            customClaims: customClaims);
+
+        return Results.Ok(new
+        {
+            token,
+            expiresIn = int.Parse(config["JwtSettings:ExpirationMinutes"] ?? "120"),
+            countyId = defaultCountyId,
+            countyCode = defaultCountyCode,
+            note = "Development-only token. Not available in production."
+        });
+    })
+    .WithName("DevToken")
+    .WithTags("Auth")
+    .AllowAnonymous();
+
+    Console.WriteLine("[DX-01] Development auth endpoint registered: GET /api/auth/dev-token");
+}
 
 // SPA Fallback - serve index.html for all non-API routes
 if (Directory.Exists(uiPath))
