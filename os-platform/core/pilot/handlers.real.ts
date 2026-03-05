@@ -153,11 +153,41 @@ function parsePositiveNumber(value: string | undefined, fallback: number): numbe
 }
 
 const DEFAULT_FIXTURE_PARCEL_NUMBER =
-  process.env.TF_R1_FIXTURE_PARCEL_NUMBER ?? '1-0531-100-0001-000';
+  process.env.TF_R1_FIXTURE_PARCEL_NUMBER ?? '';
+const LAST_RESORT_PARCEL_FALLBACK =
+  process.env.TF_R1_LAST_RESORT_PARCEL_NUMBER ?? '1-0531-100-0001-000';
 const DEFAULT_FIXTURE_ASSESSED_VALUE =
   parsePositiveNumber(process.env.TF_R1_FIXTURE_ASSESSED_VALUE, 1_500_000);
 const DEFAULT_FIXTURE_BUDGET_AMOUNT =
   parsePositiveNumber(process.env.TF_R1_FIXTURE_BUDGET_AMOUNT, 45_000);
+
+function extractDiscoveredParcelNumber(
+  payload: unknown,
+): string | null {
+  const records = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === 'object' && Array.isArray((payload as { items?: unknown[] }).items)
+      ? (payload as { items: unknown[] }).items
+      : [];
+
+  for (const record of records) {
+    if (!record || typeof record !== 'object') continue;
+    const parcelNumber = (record as { parcelNumber?: unknown }).parcelNumber;
+    if (typeof parcelNumber === 'string' && parcelNumber.trim().length > 0) {
+      return parcelNumber.trim();
+    }
+  }
+
+  return null;
+}
+
+async function discoverParcelNumber(token: string): Promise<string | null> {
+  const response = await backendGet<unknown>('/api/properties', { token });
+  if (response.ok === false) {
+    return null;
+  }
+  return extractDiscoveredParcelNumber(response.data);
+}
 
 // ============================================================================
 // Handler 1: run_valuation_model → POST /api/costforge/calculate
@@ -170,22 +200,35 @@ export const runValuationModelHandler: ToolHandler<
   assertCountyMatch(params.county, context.countyId);
   const { token } = await acquirePilotToken();
   const countyCode = normalizeCountyCode(params.county);
-  const parcelNumber = params.parcelId?.trim() || DEFAULT_FIXTURE_PARCEL_NUMBER;
+  let parcelNumber = params.parcelId?.trim() || DEFAULT_FIXTURE_PARCEL_NUMBER;
+  if (!parcelNumber) {
+    parcelNumber = (await discoverParcelNumber(token)) ?? LAST_RESORT_PARCEL_FALLBACK;
+  }
 
-  const raw = await backendPost<{
-    totalCost?: number;
-    estimatedValue?: number;
-    confidence?: number;
-    confidenceScore?: number;
-    components?: Array<{ name: string; amount: number }> | Record<string, number>;
-    costBreakdown?: Record<string, number>;
-  }>('/api/costforge/calculate', {
-    propertyId: '00000000-0000-0000-0000-000000000000',
-    parcelNumber,
-    countyCode,
-    region: countyCode,
-    buildingType: toCostForgeBuildingType(params.modelType),
-  }, { token });
+  const callCostForge = (targetParcelNumber: string) =>
+    backendPost<{
+      totalCost?: number;
+      estimatedValue?: number;
+      confidence?: number;
+      confidenceScore?: number;
+      components?: Array<{ name: string; amount: number }> | Record<string, number>;
+      costBreakdown?: Record<string, number>;
+    }>('/api/costforge/calculate', {
+      propertyId: '00000000-0000-0000-0000-000000000000',
+      parcelNumber: targetParcelNumber,
+      countyCode,
+      region: countyCode,
+      buildingType: toCostForgeBuildingType(params.modelType),
+    }, { token });
+
+  let raw = await callCostForge(parcelNumber);
+  if (raw.ok === false && raw.status === 404) {
+    const discoveredParcelNumber = await discoverParcelNumber(token);
+    if (discoveredParcelNumber && discoveredParcelNumber !== parcelNumber) {
+      parcelNumber = discoveredParcelNumber;
+      raw = await callCostForge(parcelNumber);
+    }
+  }
   const data = unwrapBackend(raw, 'Valuation model failed');
 
   // CostForge returns totalCost (not estimatedValue) and components as array

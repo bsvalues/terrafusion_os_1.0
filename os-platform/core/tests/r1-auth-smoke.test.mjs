@@ -23,12 +23,31 @@ import { before, describe, it } from 'node:test';
 
 // Force backend target
 process.env.TF_API_PORT = process.env.TF_API_PORT || '5046';
-const BENTON_FIXTURE_PARCEL = process.env.TF_R1_FIXTURE_PARCEL_NUMBER || '1-0531-100-0001-000';
+const BENTON_FIXTURE_PARCEL = process.env.TF_R1_FIXTURE_PARCEL_NUMBER || '';
+const LAST_RESORT_PARCEL = '1-0531-100-0001-000';
 const BENTON_FIXTURE_DISTRICT = process.env.TF_R1_FIXTURE_DISTRICT_ID || 'DIST-BENTON-SMOKE';
+let RESOLVED_BENTON_PARCEL = BENTON_FIXTURE_PARCEL;
 
 let ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers;
-let acquirePilotToken, clearPilotToken, backendPost;
+let acquirePilotToken, clearPilotToken, backendPost, backendGet;
 let TraceService, traceService;
+
+function discoverParcelNumber(payload) {
+  const items = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === 'object' && Array.isArray(payload.items)
+      ? payload.items
+      : [];
+
+  for (const item of items) {
+    const parcelNumber = item?.parcelNumber;
+    if (typeof parcelNumber === 'string' && parcelNumber.trim().length > 0) {
+      return parcelNumber.trim();
+    }
+  }
+
+  return null;
+}
 
 before(async () => {
   const pilotMod = await import('../pilot/index.js');
@@ -44,8 +63,30 @@ before(async () => {
   acquirePilotToken = pilot.acquirePilotToken;
   clearPilotToken = pilot.clearPilotToken;
   backendPost = pilot.backendPost;
+  backendGet = pilot.backendGet;
   TraceService = trace.TraceService;
   traceService = trace.traceService;
+
+  if (!RESOLVED_BENTON_PARCEL) {
+    try {
+      const { token } = await acquirePilotToken();
+      const propertiesResponse = await backendGet('/api/properties', { token });
+      if (propertiesResponse.ok) {
+        RESOLVED_BENTON_PARCEL = discoverParcelNumber(propertiesResponse.data) || '';
+      }
+    } catch {
+      // fall through to last-resort fixture below
+    } finally {
+      clearPilotToken();
+    }
+  }
+
+  if (!RESOLVED_BENTON_PARCEL) {
+    RESOLVED_BENTON_PARCEL = LAST_RESORT_PARCEL;
+    console.log(`  ⚠️ parcel discovery unavailable, using fallback parcel ${RESOLVED_BENTON_PARCEL}`);
+  } else if (!BENTON_FIXTURE_PARCEL) {
+    console.log(`  ✅ discovered Benton parcel fixture: ${RESOLVED_BENTON_PARCEL}`);
+  }
 });
 
 describe('R1 Auth Smoke (backend on :5046)', () => {
@@ -83,7 +124,7 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
   it('unauthenticated POST to /api/costforge/calculate returns 401', async () => {
     const result = await backendPost('/api/costforge/calculate', {
       propertyId: '00000000-0000-0000-0000-000000000000',
-      parcelNumber: BENTON_FIXTURE_PARCEL,
+      parcelNumber: RESOLVED_BENTON_PARCEL,
       countyCode: 'BENTON',
       region: 'BENTON',
       buildingType: 'SFR',
@@ -122,7 +163,7 @@ describe('R1 Auth Smoke (backend on :5046)', () => {
       toolId: 'run_valuation_model',
       params: {
         county: 'benton',
-        parcelId: BENTON_FIXTURE_PARCEL,
+        parcelId: RESOLVED_BENTON_PARCEL,
         taxYear: 2026,
       },
       context: {
