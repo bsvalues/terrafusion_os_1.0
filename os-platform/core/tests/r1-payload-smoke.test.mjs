@@ -1,13 +1,16 @@
 /**
- * TerraFusion OS – R1 Payload Shaping Smoke Test
+ * TerraFusion OS – R1 CostForge 200-Path Smoke Test
  *
- * Proves that R1 handler payloads now match backend request contracts:
+ * Proves that R1 handler payloads produce full 200-path success:
  *   1. run_valuation_model sends correct PropertyCostCalculationRequest shape
- *      → expect 200 or 404 (parcel not in DB) — NOT 400 (validation failure)
+ *      → expect 200 with real cost analysis for known Benton County parcel
  *   2. summarize_levy_rate_components calls GET /history
- *      → expect 200 with array (possibly empty) — NOT 400/403
- *   3. Direct HTTP: shaped CostForge payload no longer fails model validation
+ *      → expect 200 with array (possibly empty)
+ *   3. Direct HTTP: CostForge returns 200 with real parcel
  *   4. Direct HTTP: levy history returns 200 with array
+ *
+ * Dev DB fixture: parcel 1-0531-100-0001-000 (Benton County, Kennewick)
+ *   AssessedValue=285000, LandValue=75000, ImprovementValue=210000
  *
  * Requires:
  *   TF_API_PORT=5046 (or backend running on 5046)
@@ -45,32 +48,23 @@ before(async () => {
 
 describe('R1 Payload Shaping (backend on :5046)', () => {
 
-  // ── Direct HTTP: CostForge shaped payload passes validation ───────
+  // ── Direct HTTP: CostForge returns 200 with real parcel ─────────
 
-  it('shaped CostForge payload passes validation (no 400)', async () => {
+  it('CostForge returns 200 for known Benton County parcel', async () => {
     const { token } = await acquirePilotToken();
 
-    // This is the shaped payload: parcelNumber + countyCode (not parcelId + countyId)
     const result = await backendPost('/api/costforge/calculate', {
-      parcelNumber: 'R-SMOKE-001',
+      parcelNumber: '1-0531-100-0001-000',
       countyCode: 'benton',
       region: 'benton',
       buildingType: 'cost',
     }, { token });
 
-    // Should NOT be 400 (model validation). Expect 200 or 404 (parcel not found).
-    assert.notEqual(result.status, 400, `Shaped payload should not trigger validation 400, got: ${result.raw ?? result.error}`);
-    assert.notEqual(result.status, 401, 'Auth should pass');
-    assert.notEqual(result.status, 403, 'Authz should pass');
-
-    // 404 is the expected response when parcel doesn't exist in DB
-    if (result.status === 404) {
-      console.log('  ✅ CostForge: 404 (parcel not in DB) — validation passed, auth passed');
-    } else if (result.ok) {
-      console.log(`  ✅ CostForge: 200 — full success`);
-    } else {
-      console.log(`  ⚠️  CostForge: ${result.status} — ${result.error}`);
-    }
+    assert.equal(result.ok, true, `CostForge should return 200, got ${result.status}: ${result.error}`);
+    assert.ok(result.data.totalCost > 0, `totalCost should be > 0, got ${result.data.totalCost}`);
+    assert.ok(result.data.confidenceScore > 0, `confidenceScore should be > 0, got ${result.data.confidenceScore}`);
+    assert.ok(Array.isArray(result.data.components), 'components should be an array');
+    console.log(`  ✅ CostForge: 200 — totalCost=$${result.data.totalCost.toFixed(2)}, confidence=${result.data.confidenceScore}`);
   });
 
   // ── Direct HTTP: Levy history returns 200 ─────────────────────────
@@ -87,7 +81,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
   // ── Handler: run_valuation_model no longer 400 ────────────────────
 
-  it('run_valuation_model handler gets 200 or 404 (not 400)', async () => {
+  it('run_valuation_model handler returns 200 with cost analysis', async () => {
     const registry = new ToolRegistry();
     await registry.initialize();
     const runner = new ToolRunner({ registry });
@@ -98,7 +92,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
       toolId: 'run_valuation_model',
       params: {
         county: 'benton',
-        parcelId: 'R-SMOKE-001',
+        parcelId: '1-0531-100-0001-000',
         taxYear: 2026,
       },
       context: {
@@ -111,18 +105,11 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
       },
     });
 
-    if (result.ok === false) {
-      // Should be a "not found" error, not a validation error
-      assert.ok(
-        !result.error.includes('400') && !result.error.includes('Bad Request'),
-        `Payload shaping should eliminate 400 validation errors: ${result.error}`
-      );
-      // 404 "not found" is the expected correct domain response
-      const is404 = result.error.includes('404') || result.error.toLowerCase().includes('not found');
-      console.log(`  ✅ run_valuation_model: ${is404 ? '404 (parcel not in DB)' : result.error} — validation passed`);
-    } else {
-      console.log(`  ✅ run_valuation_model: 200 — estimatedValue=${result.result.estimatedValue}`);
-    }
+    assert.equal(result.ok, true, `Handler should succeed, got error: ${result.error}`);
+    assert.ok(result.result.estimatedValue > 0, `estimatedValue should be > 0, got ${result.result.estimatedValue}`);
+    assert.ok(result.result.confidence > 0, `confidence should be > 0, got ${result.result.confidence}`);
+    assert.equal(typeof result.result.components, 'object', 'components should be an object');
+    console.log(`  ✅ run_valuation_model: 200 — estimatedValue=$${result.result.estimatedValue.toFixed(2)}, confidence=${result.result.confidence}`);
   });
 
   // ── Handler: summarize_levy_rate_components returns success ────────
@@ -157,7 +144,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
   it('unauthenticated calls still return 401', async () => {
     const noAuth = await backendPost('/api/costforge/calculate', {
-      parcelNumber: 'R-001',
+      parcelNumber: '1-0531-100-0001-000',
       countyCode: 'benton',
     });
     assert.equal(noAuth.status, 401, 'Unauthenticated CostForge should be 401');
