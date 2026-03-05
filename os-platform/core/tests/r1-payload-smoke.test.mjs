@@ -1,13 +1,16 @@
 /**
- * TerraFusion OS – R1 Payload Shaping Smoke Test
+ * TerraFusion OS – R1 CostForge 200-Path Smoke Test
  *
- * Proves that R1 handler payloads now match backend request contracts:
+ * Proves that R1 handler payloads produce full 200-path success:
  *   1. run_valuation_model sends correct PropertyCostCalculationRequest shape
- *      → expect 200 using known-good seeded parcel fixture
+ *      → expect 200 with real cost analysis for known Benton County parcel
  *   2. summarize_levy_rate_components sends valid LevyMeasureRequest shape
  *      → expect 200 (no auth-only pass, no validation failure)
- *   3. Direct HTTP: shaped CostForge payload no longer fails model validation
+ *   3. Direct HTTP: CostForge returns 200 with real parcel
  *   4. Direct HTTP: shaped levy calculate-rate payload returns 200
+ *
+ * Dev DB fixture: parcel 1-0531-100-0001-000 (Benton County, Kennewick)
+ *   AssessedValue=285000, LandValue=75000, ImprovementValue=210000
  *
  * Requires:
  *   TF_API_PORT=5046 (or backend running on 5046)
@@ -46,12 +49,11 @@ before(async () => {
 
 describe('R1 Payload Shaping (backend on :5046)', () => {
 
-  // ── Direct HTTP: CostForge shaped payload passes validation ───────
+  // ── Direct HTTP: CostForge returns 200 with real parcel ─────────
 
-  it('shaped CostForge payload returns 200 with known fixture parcel', async () => {
+  it('CostForge returns 200 for known Benton County parcel', async () => {
     const { token } = await acquirePilotToken();
 
-    // This is the shaped payload: parcelNumber + countyCode (not parcelId + countyId)
     const result = await backendPost('/api/costforge/calculate', {
       propertyId: '00000000-0000-0000-0000-000000000000',
       parcelNumber: BENTON_FIXTURE_PARCEL,
@@ -61,8 +63,10 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     }, { token });
 
     assert.equal(result.ok, true, `CostForge should return 200, got ${result.status}: ${result.error}`);
-    assert.equal(result.status, 200, `Expected 200, got ${result.status}`);
-    console.log('  ✅ CostForge: 200 with shaped payload + known fixture parcel');
+    assert.ok(result.data.totalCost > 0, `totalCost should be > 0, got ${result.data.totalCost}`);
+    assert.ok(result.data.confidenceScore > 0, `confidenceScore should be > 0, got ${result.data.confidenceScore}`);
+    assert.ok(Array.isArray(result.data.components), 'components should be an array');
+    console.log(`  ✅ CostForge: 200 — totalCost=$${result.data.totalCost.toFixed(2)}, confidence=${result.data.confidenceScore}`);
   });
 
   // ── Direct HTTP: Levy calculate-rate returns 200 ──────────────────
@@ -88,7 +92,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
   // ── Handler: run_valuation_model no longer 400 ────────────────────
 
-  it('run_valuation_model handler returns 200 with known fixture payload', async () => {
+  it('run_valuation_model handler returns 200 with cost analysis', async () => {
     const registry = new ToolRegistry();
     await registry.initialize();
     const runner = new ToolRunner({ registry });
@@ -112,10 +116,11 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
       },
     });
 
-    assert.equal(result.ok, true, `Expected run_valuation_model success, got ${result.error}`);
-    assert.equal(typeof result.result.estimatedValue, 'number');
-    assert.ok(Number.isFinite(result.result.estimatedValue));
-    console.log(`  ✅ run_valuation_model: 200 — estimatedValue=${result.result.estimatedValue}`);
+    assert.equal(result.ok, true, `Handler should succeed, got error: ${result.error}`);
+    assert.ok(result.result.estimatedValue > 0, `estimatedValue should be > 0, got ${result.result.estimatedValue}`);
+    assert.ok(result.result.confidence > 0, `confidence should be > 0, got ${result.result.confidence}`);
+    assert.equal(typeof result.result.components, 'object', 'components should be an object');
+    console.log(`  ✅ run_valuation_model: 200 — estimatedValue=$${result.result.estimatedValue.toFixed(2)}, confidence=${result.result.confidence}`);
   });
 
   // ── Handler: summarize_levy_rate_components returns success ────────
@@ -151,7 +156,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
   it('unauthenticated calls still return 401', async () => {
     const noAuth = await backendPost('/api/costforge/calculate', {
-      parcelNumber: 'R-001',
+      parcelNumber: '1-0531-100-0001-000',
       countyCode: 'benton',
     });
     assert.equal(noAuth.status, 401, 'Unauthenticated CostForge should be 401');

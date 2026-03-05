@@ -173,10 +173,11 @@ export const runValuationModelHandler: ToolHandler<
   const parcelNumber = params.parcelId?.trim() || DEFAULT_FIXTURE_PARCEL_NUMBER;
 
   const raw = await backendPost<{
+    totalCost?: number;
     estimatedValue?: number;
     confidence?: number;
     confidenceScore?: number;
-    components?: Record<string, number>;
+    components?: Array<{ name: string; amount: number }> | Record<string, number>;
     costBreakdown?: Record<string, number>;
   }>('/api/costforge/calculate', {
     propertyId: '00000000-0000-0000-0000-000000000000',
@@ -187,13 +188,25 @@ export const runValuationModelHandler: ToolHandler<
   }, { token });
   const data = unwrapBackend(raw, 'Valuation model failed');
 
+  // CostForge returns totalCost (not estimatedValue) and components as array
+  const estimatedValue = data.totalCost ?? data.estimatedValue ?? 0;
+  const confidence = data.confidence ?? data.confidenceScore ?? 0;
+  let components: Record<string, number>;
+  if (Array.isArray(data.components)) {
+    components = Object.fromEntries(
+      data.components.map((c: { name: string; amount: number }) => [c.name, c.amount]),
+    );
+  } else {
+    components = (data.components as Record<string, number>) ?? data.costBreakdown ?? {};
+  }
+
   return {
     parcelId: parcelNumber,
     taxYear: params.taxYear,
     modelType: params.modelType ?? 'cost',
-    estimatedValue: data.estimatedValue ?? 0,
-    confidence: data.confidence ?? data.confidenceScore ?? 0,
-    components: data.components ?? data.costBreakdown ?? {},
+    estimatedValue,
+    confidence,
+    components,
   };
 };
 
