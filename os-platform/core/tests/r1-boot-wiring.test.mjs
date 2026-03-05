@@ -101,11 +101,15 @@ describe('R1 Boot Wiring', () => {
     registerPhase84Handlers(runner);
     registerR1Handlers(runner, traceService);
 
-    // Mock backend response for CostForge
+    // Mock backend response for CostForge — canonical shape from
+    // POST /api/costforge/calculate (totalCost, confidenceScore, array components)
     mockFetch({
-      estimatedValue: 250000,
-      confidence: 0.88,
-      components: { land: 100000, improvements: 150000 },
+      totalCost: 250000,
+      confidenceScore: 0.88,
+      components: [
+        { name: 'land', amount: 100000 },
+        { name: 'improvements', amount: 150000 },
+      ],
     });
 
     const result = await runner.execute({
@@ -174,13 +178,14 @@ describe('R1 Boot Wiring', () => {
 
     registerR1Handlers(runner, traceService);
 
+    // Mock backend response for POST /api/levy-calculation/calculate-rate
+    // Canonical shape: { aiOptimalRate, baseRate, statutoryLimit, projectedRevenue }
+    // Handler builds 3 components and sets totalRate = Math.round(aiOptimalRate * 100) / 100
     mockFetch({
-      components: [
-        { name: 'State School', rate: 3.12 },
-        { name: 'Local School', rate: 2.45 },
-        { name: 'County General', rate: 1.85 },
-      ],
-      totalRate: 7.42,
+      aiOptimalRate: 7.42,
+      baseRate: 2.5,
+      statutoryLimit: 10.0,
+      projectedRevenue: 500000,
     });
 
     const result = await runner.execute({
