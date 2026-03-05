@@ -16,8 +16,10 @@ import { getEnv } from '../../../runtime/env';
 import {
   ParcelContextHeader,
   InvocationHistory,
+  EvidenceSnapshotPanel,
   type InvocationRecord,
 } from '../../../components/workbench';
+import { useEvidenceSnapshot } from '../../../hooks/useEvidenceSnapshot';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 
@@ -74,6 +76,9 @@ export const PropertyDossier: React.FC = () => {
   const [selectedDoc, setSelectedDoc] = useState<DossierDocument | null>(null);
   const [summarizeState, setSummarizeState] = useState<SummarizeState>({ status: 'idle' });
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
+
+  // CX-26: Evidence snapshot (manual fetch — point-in-time)
+  const evidence = useEvidenceSnapshot(parcelId);
 
   const handleSelectDocument = useCallback((doc: DossierDocument) => {
     setSelectedDoc(doc);
@@ -383,6 +388,77 @@ export const PropertyDossier: React.FC = () => {
                 </button>
               </div>
               <ErrorDisplay error={summarizeState.error} />
+            </div>
+          )}
+        </BentoCard>
+      </BentoGrid>
+
+      {/* CX-26: Evidence Snapshot */}
+      <BentoGrid columns={1} gap={1.5} padding={0}>
+        <BentoCard variant="table" title="Evidence Snapshot" actions={<span>🔏</span>}>
+          {!evidence.snapshot && !evidence.loading && !evidence.error && (
+            <div className="tf-panel p-6 text-center">
+              <p className="tf-text-tertiary text-sm mb-4">
+                Generate a point-in-time evidence snapshot for audit and trace workflows.
+              </p>
+              <button
+                onClick={evidence.fetch}
+                className="tf-suite-dossier-cta px-4 py-2 rounded-lg transition-colors"
+                data-testid="evidence-fetch-btn"
+              >
+                📋 Load Evidence Snapshot
+              </button>
+            </div>
+          )}
+
+          {evidence.loading && (
+            <div className="tf-status-info rounded-xl p-4" role="status">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-5 h-5 border-2 rounded-full animate-spin"
+                  style={{
+                    borderColor: 'hsl(var(--tf-text) / 0.3)',
+                    borderTopColor: 'hsl(var(--tf-text))',
+                  }}
+                />
+                <span className="tf-text">Generating evidence snapshot…</span>
+              </div>
+            </div>
+          )}
+
+          {evidence.error && (
+            <div className="tf-status-error rounded-xl p-5">
+              <ErrorDisplay
+                error={{
+                  message: evidence.error,
+                  code: evidence.httpStatus ? `HTTP_${evidence.httpStatus}` : 'NETWORK_ERROR',
+                  severity: 'error',
+                }}
+              />
+              <button
+                onClick={evidence.fetch}
+                className="mt-3 px-3 py-1.5 text-sm tf-hover-surface rounded-lg"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {evidence.snapshot && (
+            <div>
+              <EvidenceSnapshotPanel
+                snapshot={evidence.snapshot}
+                headerCorrelationId={evidence.headerCorrelationId}
+              />
+              <div className="mt-3 flex justify-end">
+                <button
+                  onClick={evidence.fetch}
+                  className="px-3 py-1.5 text-xs tf-hover-surface rounded-lg"
+                  title="Generate a new point-in-time snapshot"
+                >
+                  🔄 Refresh Snapshot
+                </button>
+              </div>
             </div>
           )}
         </BentoCard>

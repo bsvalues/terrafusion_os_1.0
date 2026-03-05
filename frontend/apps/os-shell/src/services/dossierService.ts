@@ -113,6 +113,78 @@ export interface DossierStats {
 }
 
 // ============================================================================
+// CX-25: Evidence Snapshot Types (backend contract)
+// ============================================================================
+
+export interface EvidenceSnapshotResourceLinks {
+  self: string;
+  summary: string | null;
+  details: string | null;
+  notes: string;
+  casefile: string;
+}
+
+export interface EvidencePropertySummary {
+  propertyId: string;
+  parcelNumber: string;
+  address: string;
+  propertyType: string | null;
+  assessedValue: number;
+  landValue: number;
+  improvementValue: number;
+  marketValue: number;
+  taxYear: number;
+  assessmentDate: string;
+}
+
+export interface EvidenceValuationSummary {
+  totalValue: number;
+  categoryCount: number;
+}
+
+export interface EvidenceLevySummary {
+  totalCount: number;
+  includedCount: number;
+  totalLevyAmount: number;
+}
+
+export interface EvidenceNoteSummary {
+  totalCount: number;
+  includedCount: number;
+  noteTypes: string[];
+}
+
+/**
+ * CX-25 evidence snapshot — self-contained, hash-verifiable evidence
+ * document for a parcel. Suitable for audit, appeals, regulatory handoff.
+ *
+ * IMPORTANT: `contentHash` is a **snapshot hash**, NOT a content-only
+ * digest. It includes `snapshotTimestamp`, so two requests for the same
+ * parcel at different times will produce different hashes even if the
+ * underlying data has not changed. This is by design — the hash proves
+ * "this exact data at this exact time."
+ */
+export interface EvidenceSnapshot {
+  parcelId: string;
+  countyId: string;
+  snapshotTimestamp: string;
+  correlationId: string;
+  contentHash: string;
+  property: EvidencePropertySummary;
+  valuation: EvidenceValuationSummary | null;
+  levies: EvidenceLevySummary;
+  notes: EvidenceNoteSummary;
+  links: EvidenceSnapshotResourceLinks;
+}
+
+/** Response wrapper for evidence fetch — includes HTTP correlation header */
+export interface EvidenceSnapshotResult {
+  snapshot: EvidenceSnapshot;
+  /** X-Correlation-ID from response header (may differ from body correlationId) */
+  headerCorrelationId: string | null;
+}
+
+// ============================================================================
 // HELPERS
 // ============================================================================
 
@@ -187,6 +259,26 @@ export const dossierService = {
    */
   getStats: async (): Promise<DossierStats> => {
     return dossierGet<DossierStats>('/stats');
+  },
+
+  /**
+   * CX-26: Fetch the evidence snapshot for a parcel.
+   * Returns the snapshot data plus the X-Correlation-ID response header.
+   *
+   * Endpoint: GET /api/dossier/parcels/{parcelId}/evidence
+   * County-isolated: cross-county → 404
+   */
+  getEvidenceSnapshot: async (parcelId: string): Promise<EvidenceSnapshotResult> => {
+    const response = await fetch(
+      `${DOSSIER_API}/parcels/${encodeURIComponent(parcelId)}/evidence`,
+      { headers: authHeaders() },
+    );
+    if (!response.ok) {
+      throw new Error(`Dossier API error: ${response.status} ${response.statusText}`);
+    }
+    const snapshot: EvidenceSnapshot = await response.json();
+    const headerCorrelationId = response.headers.get('X-Correlation-ID');
+    return { snapshot, headerCorrelationId };
   },
 };
 
