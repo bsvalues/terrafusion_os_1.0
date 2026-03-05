@@ -97,8 +97,16 @@ export {
     backendPost,
     backendGet,
     unwrapBackend,
+    type BackendCallOptions,
     type BackendResponse,
     type BackendError,
     type BackendResult,
 } from './backendClient.js';
+
+// Pilot Auth
+export {
+    acquirePilotToken,
+    clearPilotToken,
+    type PilotToken,
+} from './pilotAuth.js';
 

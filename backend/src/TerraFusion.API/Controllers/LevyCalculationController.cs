@@ -40,7 +40,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/levy-calculation")]
-[Authorize(Roles = "LevyClerk,Assessor,Admin")]
+[Authorize(Roles = "LevyClerk,Assessor,Admin,Administrator")]
 public class LevyCalculationController : ControllerBase
 {
     private readonly ILogger<LevyCalculationController> _logger;
