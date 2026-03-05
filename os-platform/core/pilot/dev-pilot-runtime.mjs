@@ -4,7 +4,8 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ToolRegistry, ToolRunner, registerPhase84Handlers } from "./index.js";
+import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
+import { TraceService } from "../trace/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -445,13 +446,45 @@ function normalizeSalesCompsInput(body) {
 
 let compareRunnerPromise = null;
 
+/**
+ * R1 Boot Wiring — Conditional Handler Activation
+ *
+ * When TF_API_BASE_URL (or TF_API_PORT) is set, we register the real R1 handlers
+ * that call live backend endpoints. Otherwise we use the canned Phase 8.4 stubs.
+ *
+ * This two-tier approach ensures:
+ *   - Dev/CI without a backend → deterministic stub responses
+ *   - Local with backend running → real HTTP calls to .NET API
+ *
+ * Activation is logged at boot to make the active mode visible.
+ */
+const R1_LIVE_MODE = !!(process.env.TF_API_BASE_URL || process.env.TF_API_PORT);
+
 async function getCompareRunner() {
   if (!compareRunnerPromise) {
     compareRunnerPromise = (async () => {
       const registry = new ToolRegistry();
       await registry.initialize(path.resolve(REPO_ROOT, "tools/registry/terrapilot.tools.json"));
       const runner = new ToolRunner({ registry });
+
+      // Phase 8.4 canned stubs — always registered first as baseline
       registerPhase84Handlers(runner);
+
+      // R1 real handlers — override stubs when backend env vars are set
+      if (R1_LIVE_MODE) {
+        const traceService = new TraceService();
+        registerR1Handlers(runner, traceService);
+        console.log(
+          `[pilot-boot] R1 LIVE handlers activated (${process.env.TF_API_BASE_URL || `localhost:${process.env.TF_API_PORT}`}) — ` +
+          `10 real handlers override stubs`
+        );
+      } else {
+        console.log(
+          `[pilot-boot] R1 STUB mode — no TF_API_BASE_URL or TF_API_PORT set. ` +
+          `Set TF_API_BASE_URL=http://localhost:5046 to activate live backend wiring.`
+        );
+      }
+
       return runner;
     })();
   }
