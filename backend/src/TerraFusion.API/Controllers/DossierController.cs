@@ -422,6 +422,7 @@ public class DossierController : ControllerBase
 
     // ── GET /api/dossier/parcels/{parcelId}/details ──────────────────
     // CX-23: Parcel Dossier v1 "details"
+    // CX-24: Selective includes (?include=property,valuation,levies,notes)
     //   Deeper view: parameterized limits, PII redaction, cost breakdown,
     //   note headers only (no content), CAMA-ready placeholders.
     //   County-isolated: cross-county → 404 (anti-enumeration)
@@ -430,6 +431,10 @@ public class DossierController : ControllerBase
     /// Detailed parcel dossier (county-isolated).
     /// Returns property with CAMA placeholders, cost breakdown categories,
     /// parameterized levy/note limits, and PII-redacted note headers.
+    /// Use ?include= to request only specific sections (comma-separated).
+    /// Valid sections: property, valuation, levies, notes.
+    /// Default (omit include): all sections populated.
+    /// Non-requested sections are serialized as null.
     /// </summary>
     [HttpGet("parcels/{parcelId}/details")]
     [RequiresPermission("read:dossier")]
@@ -439,6 +444,7 @@ public class DossierController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<ActionResult<ParcelDossierDetailsDto>> GetParcelDetails(
         string parcelId,
+        [FromQuery] string? include = null,
         [FromQuery] int levyLimit = 10,
         [FromQuery] int noteLimit = 5)
     {
@@ -450,11 +456,14 @@ public class DossierController : ControllerBase
         levyLimit = Math.Clamp(levyLimit, 1, 100);
         noteLimit = Math.Clamp(noteLimit, 1, 20);
 
+        // CX-24: Parse selective includes (default = all sections)
+        var sections = ParseIncludes(include);
+
         var countyId = await ResolveCountyIdAsync();
         if (countyId is null)
             return Forbid();
 
-        // ── Property (county-isolated) ───────────────────────────
+        // ── Property (county-isolated) — always loaded for existence check ──
         var property = await _db.Properties
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
@@ -462,92 +471,112 @@ public class DossierController : ControllerBase
         if (property is null)
             return NotFound(new { error = "Parcel not found" });
 
-        var propertyDetails = new PropertyDetails(
-            PropertyId: property.Id,
-            ParcelNumber: property.ParcelNumber,
-            Address: property.Address,
-            PropertyType: property.PropertyType,
-            YearBuilt: property.YearBuilt,
-            AssessedValue: property.AssessedValue,
-            LandValue: property.LandValue,
-            ImprovementValue: property.ImprovementValue,
-            MarketValue: property.MarketValue,
-            TaxYear: property.TaxYear,
-            AssessmentDate: property.AssessmentDate,
-            ClassCode: null,
-            UseCode: null,
-            Neighborhood: null
-        );
-
-        // ── Valuation breakdown (best-effort, nullable) ──────────
-        ValuationSignals? valuation = null;
-        try
+        // ── Property section (CX-24: only if requested) ──────────
+        PropertyDetails? propertyDetails = null;
+        if (sections.Contains("property"))
         {
-            var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
-            if (breakdown is not null)
+            propertyDetails = new PropertyDetails(
+                PropertyId: property.Id,
+                ParcelNumber: property.ParcelNumber,
+                Address: property.Address,
+                PropertyType: property.PropertyType,
+                YearBuilt: property.YearBuilt,
+                AssessedValue: property.AssessedValue,
+                LandValue: property.LandValue,
+                ImprovementValue: property.ImprovementValue,
+                MarketValue: property.MarketValue,
+                TaxYear: property.TaxYear,
+                AssessmentDate: property.AssessmentDate,
+                ClassCode: null,
+                UseCode: null,
+                Neighborhood: null
+            );
+        }
+
+        // ── Valuation breakdown (CX-24: only if requested, best-effort) ──
+        ValuationSignals? valuation = null;
+        if (sections.Contains("valuation"))
+        {
+            try
             {
-                valuation = new ValuationSignals(
-                    TotalValue: breakdown.TotalValue,
-                    CategoryCount: breakdown.Categories.Count,
-                    Categories: breakdown.Categories
-                        .Select(c => new ValuationCategory(c.Name, c.Amount, c.Percentage))
-                        .ToList()
-                );
+                var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
+                if (breakdown is not null)
+                {
+                    valuation = new ValuationSignals(
+                        TotalValue: breakdown.TotalValue,
+                        CategoryCount: breakdown.Categories.Count,
+                        Categories: breakdown.Categories
+                            .Select(c => new ValuationCategory(c.Name, c.Amount, c.Percentage))
+                            .ToList()
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "CostForge breakdown unavailable for property {PropertyId}", property.Id);
             }
         }
-        catch (Exception ex)
+
+        // ── Levy history (CX-24: only if requested) ─────────────
+        LevyDetails? levyDetails = null;
+        if (sections.Contains("levies"))
         {
-            _logger.LogWarning(ex, "CostForge breakdown unavailable for property {PropertyId}", property.Id);
+            var levyQuery = _db.TaxLevies
+                .AsNoTracking()
+                .Where(t => t.CountyId == countyId.Value && t.IsActive);
+
+            var totalLevies = await levyQuery.CountAsync();
+            var recentLevyData = await levyQuery
+                .OrderByDescending(t => t.EffectiveDate)
+                .Take(levyLimit)
+                .Select(t => new
+                {
+                    t.Id,
+                    TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+                    t.TaxRate,
+                    t.LevyAmount,
+                    t.TaxYear,
+                    Purpose = t.Purpose ?? string.Empty,
+                    t.EffectiveDate,
+                })
+                .ToListAsync();
+
+            var recentLevies = recentLevyData
+                .Select(t => new LevyEntry(t.Id, t.TaxingDistrict, t.TaxRate,
+                    t.LevyAmount, t.TaxYear, t.Purpose, t.EffectiveDate))
+                .ToList();
+
+            levyDetails = new LevyDetails(totalLevies, recentLevies.Count, recentLevies);
         }
 
-        // ── Levy history (county-scoped, parameterized limit) ────
-        var levyQuery = _db.TaxLevies
-            .AsNoTracking()
-            .Where(t => t.CountyId == countyId.Value && t.IsActive);
+        // ── Note headers (CX-24: only if requested) ─────────────
+        NoteHeaders? noteHeadersResult = null;
+        if (sections.Contains("notes"))
+        {
+            var noteQuery = _db.DossierNotes
+                .AsNoTracking()
+                .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
 
-        var totalLevies = await levyQuery.CountAsync();
-        var recentLevyData = await levyQuery
-            .OrderByDescending(t => t.EffectiveDate)
-            .Take(levyLimit)
-            .Select(t => new
-            {
-                t.Id,
-                TaxingDistrict = t.TaxingDistrict ?? string.Empty,
-                t.TaxRate,
-                t.LevyAmount,
-                t.TaxYear,
-                Purpose = t.Purpose ?? string.Empty,
-                t.EffectiveDate,
-            })
-            .ToListAsync();
+            var totalNotes = await noteQuery.CountAsync();
+            var noteData = await noteQuery
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(noteLimit)
+                .Select(n => new
+                {
+                    n.Id,
+                    n.NoteType,
+                    n.CreatedAt,
+                    n.CreatedBy,
+                })
+                .ToListAsync();
 
-        var recentLevies = recentLevyData
-            .Select(t => new LevyEntry(t.Id, t.TaxingDistrict, t.TaxRate,
-                t.LevyAmount, t.TaxYear, t.Purpose, t.EffectiveDate))
-            .ToList();
+            var noteHeaders = noteData
+                .Select(n => new NoteHeaderItem(n.Id, n.NoteType, n.CreatedAt,
+                    ClassifyAuthorKind(n.CreatedBy)))
+                .ToList();
 
-        // ── Note headers (county-isolated, no content, PII-redacted) ──
-        var noteQuery = _db.DossierNotes
-            .AsNoTracking()
-            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
-
-        var totalNotes = await noteQuery.CountAsync();
-        var noteData = await noteQuery
-            .OrderByDescending(n => n.CreatedAt)
-            .Take(noteLimit)
-            .Select(n => new
-            {
-                n.Id,
-                n.NoteType,
-                n.CreatedAt,
-                n.CreatedBy,
-            })
-            .ToListAsync();
-
-        var noteHeaders = noteData
-            .Select(n => new NoteHeaderItem(n.Id, n.NoteType, n.CreatedAt,
-                ClassifyAuthorKind(n.CreatedBy)))
-            .ToList();
+            noteHeadersResult = new NoteHeaders(totalNotes, noteHeaders.Count, noteHeaders);
+        }
 
         var dto = new ParcelDossierDetailsDto(
             ParcelId: parcelId,
@@ -556,11 +585,38 @@ public class DossierController : ControllerBase
             PiiRedacted: true,
             Property: propertyDetails,
             Valuation: valuation,
-            Levies: new LevyDetails(totalLevies, recentLevies.Count, recentLevies),
-            Notes: new NoteHeaders(totalNotes, noteHeaders.Count, noteHeaders)
+            Levies: levyDetails,
+            Notes: noteHeadersResult
         );
 
         return Ok(dto);
+    }
+
+    // ── CX-24: Selective Includes Parser ────────────────────────────────
+
+    private static readonly HashSet<string> AllSections = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "property", "valuation", "levies", "notes"
+    };
+
+    /// <summary>
+    /// Parse ?include= query parameter into a set of requested sections.
+    /// Returns all sections if include is null/empty or contains no valid names.
+    /// </summary>
+    private static HashSet<string> ParseIncludes(string? include)
+    {
+        if (string.IsNullOrWhiteSpace(include))
+            return new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
+
+        var requested = include
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(s => s.ToLowerInvariant())
+            .Where(s => AllSections.Contains(s))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        return requested.Count > 0
+            ? requested
+            : new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>

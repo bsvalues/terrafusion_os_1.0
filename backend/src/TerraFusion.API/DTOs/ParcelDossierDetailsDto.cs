@@ -1,20 +1,24 @@
 namespace TerraFusion.API.DTOs;
 
 /// <summary>
-/// CX-23: Parcel Dossier v1 "details" — deeper view than CX-22's composed summary.
+/// CX-23/CX-24: Parcel Dossier v1 "details" — deeper view than CX-22's composed summary.
 /// Adds: parameterized limits, PII redaction, note-headers-only (no content),
-/// cost breakdown categories, CAMA-ready placeholders.
+/// cost breakdown categories, CAMA-ready placeholders, selective includes.
 /// County-isolated: cross-county → 404 (anti-enumeration).
+///
+/// CX-24: All section fields are nullable. When ?include= is specified,
+/// non-requested sections are serialized as null.
+/// Default (no include param) = all sections populated.
 /// </summary>
 public sealed record ParcelDossierDetailsDto(
     string ParcelId,
     Guid CountyId,
     DateTime GeneratedAt,
     bool PiiRedacted,
-    PropertyDetails Property,
+    PropertyDetails? Property,
     ValuationSignals? Valuation,
-    LevyDetails Levies,
-    NoteHeaders Notes
+    LevyDetails? Levies,
+    NoteHeaders? Notes
 );
 
 public sealed record PropertyDetails(
