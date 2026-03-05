@@ -148,9 +148,14 @@ namespace TerraFusion.Core.Services
             break;
 
           case "CountyAuditor":
+            // DX-04: Add access:costforge gate so CountyAuditors can reach
+            // read-only CostForge endpoints they already have granular perms for.
+            // Without this, the controller-level [RequiresPermission("access:costforge")]
+            // blocks all requests before endpoint-specific checks run.  Issue #571.
             perms.UnionWith(new[]
             {
                             "read:dossier", "read:properties", "read:parcel",
+                            "access:costforge",
                             "read:cost-breakdown", "read:cost-comparison",
                             "read:cost-factors", "read:cost-matrix",
                             "read:system-status", "read:performance-metrics",
