@@ -3,11 +3,11 @@
  *
  * Proves that R1 handler payloads now match backend request contracts:
  *   1. run_valuation_model sends correct PropertyCostCalculationRequest shape
- *      → expect 200 or 404 (parcel not in DB) — NOT 400 (validation failure)
- *   2. summarize_levy_rate_components calls GET /history
- *      → expect 200 with array (possibly empty) — NOT 400/403
+ *      → expect 200 using known-good seeded parcel fixture
+ *   2. summarize_levy_rate_components sends valid LevyMeasureRequest shape
+ *      → expect 200 (no auth-only pass, no validation failure)
  *   3. Direct HTTP: shaped CostForge payload no longer fails model validation
- *   4. Direct HTTP: levy history returns 200 with array
+ *   4. Direct HTTP: shaped levy calculate-rate payload returns 200
  *
  * Requires:
  *   TF_API_PORT=5046 (or backend running on 5046)
@@ -20,9 +20,11 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 
 process.env.TF_API_PORT = process.env.TF_API_PORT || '5046';
+const BENTON_FIXTURE_PARCEL = process.env.TF_R1_FIXTURE_PARCEL_NUMBER || '1-0531-100-0001-000';
+const BENTON_FIXTURE_DISTRICT = process.env.TF_R1_FIXTURE_DISTRICT_ID || 'DIST-BENTON-SMOKE';
 
 let ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers;
-let acquirePilotToken, clearPilotToken, backendPost, backendGet;
+let acquirePilotToken, clearPilotToken, backendPost;
 let TraceService, traceService;
 
 before(async () => {
@@ -38,7 +40,6 @@ before(async () => {
   acquirePilotToken = pilot.acquirePilotToken;
   clearPilotToken = pilot.clearPilotToken;
   backendPost = pilot.backendPost;
-  backendGet = pilot.backendGet;
   TraceService = trace.TraceService;
   traceService = trace.traceService;
 });
@@ -47,47 +48,47 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
   // ── Direct HTTP: CostForge shaped payload passes validation ───────
 
-  it('shaped CostForge payload passes validation (no 400)', async () => {
+  it('shaped CostForge payload returns 200 with known fixture parcel', async () => {
     const { token } = await acquirePilotToken();
 
     // This is the shaped payload: parcelNumber + countyCode (not parcelId + countyId)
     const result = await backendPost('/api/costforge/calculate', {
-      parcelNumber: 'R-SMOKE-001',
-      countyCode: 'benton',
-      region: 'benton',
-      buildingType: 'cost',
+      propertyId: '00000000-0000-0000-0000-000000000000',
+      parcelNumber: BENTON_FIXTURE_PARCEL,
+      countyCode: 'BENTON',
+      region: 'BENTON',
+      buildingType: 'SFR',
     }, { token });
 
-    // Should NOT be 400 (model validation). Expect 200 or 404 (parcel not found).
-    assert.notEqual(result.status, 400, `Shaped payload should not trigger validation 400, got: ${result.raw ?? result.error}`);
-    assert.notEqual(result.status, 401, 'Auth should pass');
-    assert.notEqual(result.status, 403, 'Authz should pass');
-
-    // 404 is the expected response when parcel doesn't exist in DB
-    if (result.status === 404) {
-      console.log('  ✅ CostForge: 404 (parcel not in DB) — validation passed, auth passed');
-    } else if (result.ok) {
-      console.log(`  ✅ CostForge: 200 — full success`);
-    } else {
-      console.log(`  ⚠️  CostForge: ${result.status} — ${result.error}`);
-    }
+    assert.equal(result.ok, true, `CostForge should return 200, got ${result.status}: ${result.error}`);
+    assert.equal(result.status, 200, `Expected 200, got ${result.status}`);
+    console.log('  ✅ CostForge: 200 with shaped payload + known fixture parcel');
   });
 
-  // ── Direct HTTP: Levy history returns 200 ─────────────────────────
+  // ── Direct HTTP: Levy calculate-rate returns 200 ──────────────────
 
-  it('levy history endpoint returns 200 with array', async () => {
+  it('shaped levy calculate-rate payload returns 200', async () => {
     const { token } = await acquirePilotToken();
 
-    const result = await backendGet('/api/levy-calculation/history?taxYear=2025', { token });
+    const result = await backendPost('/api/levy-calculation/calculate-rate', {
+      districtId: BENTON_FIXTURE_DISTRICT,
+      districtName: 'Benton Smoke District',
+      assessedValue: 1500000,
+      budgetAmount: 45000,
+      districtType: 'county-regular',
+      measureType: 'regular',
+      countyCode: 'BENTON',
+    }, { token });
 
-    assert.equal(result.ok, true, `Levy history should return 200, got ${result.status}: ${result.error}`);
-    assert.ok(Array.isArray(result.data), 'Levy history should return an array');
-    console.log(`  ✅ Levy history: 200 with ${result.data.length} records`);
+    assert.equal(result.ok, true, `Levy calculate-rate should return 200, got ${result.status}: ${result.error}`);
+    assert.equal(typeof result.data.aiOptimalRate, 'number', 'aiOptimalRate should be present');
+    assert.ok(Number.isFinite(result.data.aiOptimalRate));
+    console.log(`  ✅ Levy calculate-rate: 200, aiOptimalRate=${result.data.aiOptimalRate}`);
   });
 
   // ── Handler: run_valuation_model no longer 400 ────────────────────
 
-  it('run_valuation_model handler gets 200 or 404 (not 400)', async () => {
+  it('run_valuation_model handler returns 200 with known fixture payload', async () => {
     const registry = new ToolRegistry();
     await registry.initialize();
     const runner = new ToolRunner({ registry });
@@ -98,7 +99,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
       toolId: 'run_valuation_model',
       params: {
         county: 'benton',
-        parcelId: 'R-SMOKE-001',
+        parcelId: BENTON_FIXTURE_PARCEL,
         taxYear: 2026,
       },
       context: {
@@ -111,18 +112,10 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
       },
     });
 
-    if (result.ok === false) {
-      // Should be a "not found" error, not a validation error
-      assert.ok(
-        !result.error.includes('400') && !result.error.includes('Bad Request'),
-        `Payload shaping should eliminate 400 validation errors: ${result.error}`
-      );
-      // 404 "not found" is the expected correct domain response
-      const is404 = result.error.includes('404') || result.error.toLowerCase().includes('not found');
-      console.log(`  ✅ run_valuation_model: ${is404 ? '404 (parcel not in DB)' : result.error} — validation passed`);
-    } else {
-      console.log(`  ✅ run_valuation_model: 200 — estimatedValue=${result.result.estimatedValue}`);
-    }
+    assert.equal(result.ok, true, `Expected run_valuation_model success, got ${result.error}`);
+    assert.equal(typeof result.result.estimatedValue, 'number');
+    assert.ok(Number.isFinite(result.result.estimatedValue));
+    console.log(`  ✅ run_valuation_model: 200 — estimatedValue=${result.result.estimatedValue}`);
   });
 
   // ── Handler: summarize_levy_rate_components returns success ────────
@@ -136,7 +129,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
 
     const result = await runner.execute({
       toolId: 'summarize_levy_rate_components',
-      params: { county: 'benton', taxYear: 2025 },
+      params: { county: 'benton', taxYear: 2025, districtCode: BENTON_FIXTURE_DISTRICT },
       context: {
         countyId: 'benton',
         userId: 'payload-smoke-test',
@@ -148,6 +141,7 @@ describe('R1 Payload Shaping (backend on :5046)', () => {
     assert.equal(result.ok, true, `Levy handler should succeed, got error: ${result.error}`);
     assert.ok(Array.isArray(result.result.components), 'components should be an array');
     assert.equal(typeof result.result.totalRate, 'number', 'totalRate should be a number');
+    assert.ok(result.result.totalRate > 0, 'totalRate should be > 0 for valid levy payload');
     assert.ok(result.result.explanation, 'explanation should be non-empty');
     console.log(`  ✅ summarize_levy: 200 — ${result.result.components.length} components, totalRate=${result.result.totalRate}`);
     console.log(`     explanation: "${result.result.explanation}"`);

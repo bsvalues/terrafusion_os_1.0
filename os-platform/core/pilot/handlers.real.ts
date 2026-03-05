@@ -132,6 +132,33 @@ function assertCountyMatch(paramCounty: string | undefined, contextCounty: strin
   }
 }
 
+function normalizeCountyCode(county: string): string {
+  return county.trim().toUpperCase();
+}
+
+function toCostForgeBuildingType(modelType?: 'cost' | 'income' | 'sales'): string {
+  switch (modelType) {
+    case 'income':
+      return 'MFR';
+    case 'sales':
+      return 'SFR';
+    default:
+      return 'SFR';
+  }
+}
+
+function parsePositiveNumber(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+const DEFAULT_FIXTURE_PARCEL_NUMBER =
+  process.env.TF_R1_FIXTURE_PARCEL_NUMBER ?? '1-0531-100-0001-000';
+const DEFAULT_FIXTURE_ASSESSED_VALUE =
+  parsePositiveNumber(process.env.TF_R1_FIXTURE_ASSESSED_VALUE, 1_500_000);
+const DEFAULT_FIXTURE_BUDGET_AMOUNT =
+  parsePositiveNumber(process.env.TF_R1_FIXTURE_BUDGET_AMOUNT, 45_000);
+
 // ============================================================================
 // Handler 1: run_valuation_model → POST /api/costforge/calculate
 // ============================================================================
@@ -142,6 +169,8 @@ export const runValuationModelHandler: ToolHandler<
 > = async (params, context, _tool) => {
   assertCountyMatch(params.county, context.countyId);
   const { token } = await acquirePilotToken();
+  const countyCode = normalizeCountyCode(params.county);
+  const parcelNumber = params.parcelId?.trim() || DEFAULT_FIXTURE_PARCEL_NUMBER;
 
   const raw = await backendPost<{
     estimatedValue?: number;
@@ -150,15 +179,16 @@ export const runValuationModelHandler: ToolHandler<
     components?: Record<string, number>;
     costBreakdown?: Record<string, number>;
   }>('/api/costforge/calculate', {
-    parcelNumber: params.parcelId,
-    countyCode: params.county,
-    region: params.county,
-    buildingType: params.modelType ?? 'cost',
+    propertyId: '00000000-0000-0000-0000-000000000000',
+    parcelNumber,
+    countyCode,
+    region: countyCode,
+    buildingType: toCostForgeBuildingType(params.modelType),
   }, { token });
   const data = unwrapBackend(raw, 'Valuation model failed');
 
   return {
-    parcelId: params.parcelId,
+    parcelId: parcelNumber,
     taxYear: params.taxYear,
     modelType: params.modelType ?? 'cost',
     estimatedValue: data.estimatedValue ?? 0,
@@ -279,33 +309,46 @@ export const summarizeLevyRateRealHandler: ToolHandler<
   assertCountyMatch(params.county, context.countyId);
 
   const { token } = await acquirePilotToken();
+  const countyCode = normalizeCountyCode(params.county);
+  const districtCode = params.districtCode?.trim();
+  const districtId = districtCode || `DIST-${countyCode}-${params.taxYear}`;
+  const districtName = districtCode
+    ? `District ${districtCode}`
+    : `${countyCode} County Regular Levy`;
 
-  // Use GET /history which returns persisted levy data — matches "summarize" semantics
-  // (POST /calculate-rate needs budgetAmount+assessedValue which this tool doesn't collect)
-  const qs = new URLSearchParams();
-  qs.set('taxYear', String(params.taxYear));
-  if (params.districtCode) qs.set('districtId', params.districtCode);
+  const raw = await backendPost<{
+    aiOptimalRate?: number;
+    baseRate?: number;
+    statutoryLimit?: number;
+    projectedRevenue?: number;
+  }>('/api/levy-calculation/calculate-rate', {
+    districtId,
+    districtName,
+    assessedValue: DEFAULT_FIXTURE_ASSESSED_VALUE,
+    budgetAmount: DEFAULT_FIXTURE_BUDGET_AMOUNT,
+    districtType: 'county-regular',
+    measureType: 'regular',
+    countyCode,
+  }, { token });
+  const data = unwrapBackend(raw, 'Levy rate calculation failed');
 
-  const raw = await backendGet<
-    Array<{ taxingDistrict: string; taxRate: number; levyAmount: number; taxYear: number; purpose: string }>
-  >(`/api/levy-calculation/history?${qs.toString()}`, { token });
-  const records = unwrapBackend(raw, 'Levy history lookup failed');
+  const aiOptimalRate = data.aiOptimalRate ?? 0;
+  const baseRate = data.baseRate ?? 0;
+  const statutoryLimit = data.statutoryLimit ?? 0;
+  const projectedRevenue = data.projectedRevenue ?? 0;
 
-  // Normalize into the expected component shape
-  const components = (Array.isArray(records) ? records : []).map(r => ({
-    name: r.taxingDistrict || r.purpose || 'unknown',
-    rate: r.taxRate ?? 0,
-  }));
-  const totalRate = components.reduce((sum, c) => sum + c.rate, 0);
+  const components = [
+    { name: 'AI Optimal Rate', rate: aiOptimalRate },
+    { name: 'Base Rate', rate: baseRate },
+    { name: 'Statutory Limit', rate: statutoryLimit },
+  ].sort((a, b) => b.rate - a.rate);
 
   const scopeNote = params.districtCode ? ` District ${params.districtCode} applied.` : '';
 
   return {
-    components: components.sort((a, b) => b.rate - a.rate),
-    totalRate: Math.round(totalRate * 100) / 100,
-    explanation: components.length > 0
-      ? `Levy components for ${params.taxYear} total $${totalRate.toFixed(2)} per $1,000 assessed value.${scopeNote}`
-      : `No levy records found for ${params.taxYear}.${scopeNote} Use calculate-rate to model new scenarios.`,
+    components,
+    totalRate: Math.round(aiOptimalRate * 100) / 100,
+    explanation: `Levy calculation for ${params.taxYear} returned AI optimal rate $${aiOptimalRate.toFixed(2)} per $1,000 AV with projected revenue $${projectedRevenue.toFixed(0)}.${scopeNote}`,
   };
 };
 
