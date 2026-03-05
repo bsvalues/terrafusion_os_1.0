@@ -418,4 +418,212 @@ public class DossierController : ControllerBase
 
         return Ok(dossier);
     }
+
+    // ── GET /api/dossier/{parcelId}/details ──────────────────────────
+    // CX-23: Enriched parcel dossier details
+    //   Full CostForge breakdown, configurable limits, PII-safe note headers
+    //   Selective includes via ?include= query parameter
+    //   County-isolated: cross-county → 404 (anti-enumeration)
+
+    /// <summary>
+    /// Enriched parcel dossier details (county-isolated).
+    /// Returns expanded property data, full CostForge cost breakdown,
+    /// configurable levy history, and PII-safe note headers.
+    /// Use ?include= to select specific sections (property,valuation,costBreakdown,levies,notes).
+    /// Use ?levyLimit= and ?noteLimit= to control history depth.
+    /// Cross-county requests receive 404 to prevent enumeration.
+    /// </summary>
+    [HttpGet("{parcelId}/details")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(typeof(ParcelDossierDetailsDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<ParcelDossierDetailsDto>> GetParcelDossierDetails(
+        string parcelId,
+        [FromQuery] string? include = null,
+        [FromQuery] int levyLimit = 10,
+        [FromQuery] int noteLimit = 5)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        // Clamp limits
+        levyLimit = Math.Clamp(levyLimit, 1, 100);
+        noteLimit = Math.Clamp(noteLimit, 1, 20);
+
+        // Parse selective includes (all if omitted)
+        var sections = ParseIncludes(include);
+
+        // ── Property core (county-isolated) ──────────────────────
+        var property = await _db.Properties
+            .AsNoTracking()
+            .Include(p => p.County)
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+        if (property is null)
+            return NotFound(new { error = "Parcel not found" });
+
+        var details = new ParcelDossierDetailsDto
+        {
+            ParcelId = parcelId,
+            CountyId = countyId.Value,
+            CountyName = property.County?.Name ?? string.Empty,
+            PiiRedacted = true,
+        };
+
+        // ── Property section (expanded, PII-safe: no SSN) ────────
+        if (sections.Contains("property"))
+        {
+            details.Property = new DossierDetailPropertyDto
+            {
+                PropertyId = property.Id,
+                ParcelNumber = property.ParcelNumber,
+                Address = property.Address,
+                OwnerName = property.OwnerName,
+                PropertyType = property.PropertyType,
+                YearBuilt = property.YearBuilt,
+            };
+        }
+
+        // ── Valuation signals (semantic extraction) ──────────────
+        if (sections.Contains("valuation"))
+        {
+            details.Valuation = new DossierDetailValuationDto
+            {
+                AssessedValue = property.AssessedValue,
+                LandValue = property.LandValue,
+                ImprovementValue = property.ImprovementValue,
+                MarketValue = property.MarketValue,
+                TaxYear = property.TaxYear,
+                AssessmentDate = property.AssessmentDate,
+            };
+        }
+
+        // ── CostForge breakdown (full hierarchy, nullable) ───────
+        if (sections.Contains("costbreakdown"))
+        {
+            try
+            {
+                var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
+                var analysis = await _costForge.AnalyzeCostAsync(property.Id);
+
+                if (breakdown is not null)
+                {
+                    details.CostBreakdown = new DossierDetailCostBreakdownDto
+                    {
+                        TotalValue = breakdown.TotalValue,
+                        ConfidenceScore = analysis?.ConfidenceScore ?? 0,
+                        AnalysisDate = analysis?.AnalysisDate ?? DateTime.UtcNow,
+                        AnalysisMethod = analysis?.AnalysisMethod ?? string.Empty,
+                        Categories = breakdown.Categories.Select(c => new DossierDetailCostCategoryDto
+                        {
+                            Name = c.Name,
+                            Amount = c.Amount,
+                            Percentage = c.Percentage,
+                            Components = c.Components.Select(comp => new DossierDetailCostComponentDto
+                            {
+                                Name = comp.Name,
+                                Amount = comp.Amount,
+                                Unit = comp.Unit,
+                                Quantity = comp.Quantity,
+                                UnitCost = comp.UnitCost,
+                            }).ToList(),
+                        }).ToList(),
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "CostForge breakdown unavailable for property {PropertyId}", property.Id);
+                // CostBreakdown stays null — non-fatal
+            }
+        }
+
+        // ── Levy details (county-scoped, configurable depth) ─────
+        if (sections.Contains("levies"))
+        {
+            var levyQuery = _db.TaxLevies
+                .AsNoTracking()
+                .Where(t => t.CountyId == countyId.Value && t.IsActive);
+
+            var totalLevies = await levyQuery.CountAsync();
+            var levyHistory = await levyQuery
+                .OrderByDescending(t => t.EffectiveDate)
+                .Take(levyLimit)
+                .Select(t => new ParcelDossierLevyEntryDto
+                {
+                    TaxLevyId = t.Id,
+                    TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+                    TaxRate = t.TaxRate,
+                    LevyAmount = t.LevyAmount,
+                    TaxYear = t.TaxYear,
+                    Purpose = t.Purpose ?? string.Empty,
+                    EffectiveDate = t.EffectiveDate,
+                })
+                .ToListAsync();
+
+            details.Levies = new DossierDetailLevyDto
+            {
+                TotalCountyLevies = totalLevies,
+                History = levyHistory,
+            };
+        }
+
+        // ── Note headers (metadata-only, PII-safe) ──────────────
+        if (sections.Contains("notes"))
+        {
+            var notesQuery = _db.DossierNotes
+                .AsNoTracking()
+                .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
+
+            var noteCount = await notesQuery.CountAsync();
+            var noteHeaders = await notesQuery
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(noteLimit)
+                .Select(n => new DossierDetailNoteHeaderDto
+                {
+                    NoteId = n.Id,
+                    CreatedAt = n.CreatedAt,
+                    NoteType = n.NoteType,
+                    AuthorKind = n.CreatedBy.StartsWith("system", StringComparison.OrdinalIgnoreCase)
+                        ? "system" : "user",
+                })
+                .ToListAsync();
+
+            details.Notes = new DossierDetailNotesDto
+            {
+                NoteCount = noteCount,
+                Headers = noteHeaders,
+            };
+        }
+
+        return Ok(details);
+    }
+
+    // ── Include parser ────────────────────────────────────────────────
+
+    private static readonly HashSet<string> AllSections = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "property", "valuation", "costbreakdown", "levies", "notes"
+    };
+
+    private static HashSet<string> ParseIncludes(string? include)
+    {
+        if (string.IsNullOrWhiteSpace(include))
+            return new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
+
+        var requested = include
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(s => s.ToLowerInvariant())
+            .Where(s => AllSections.Contains(s))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        return requested.Count > 0 ? requested : new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
+    }
 }
