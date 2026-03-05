@@ -55,13 +55,23 @@ const runValuationModelHandler = async (params, context, _tool) => {
         buildingType: params.modelType ?? 'cost',
     }, { token });
     const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Valuation model failed');
+    // CostForge returns totalCost (not estimatedValue) and components as array
+    const estimatedValue = data.totalCost ?? data.estimatedValue ?? 0;
+    const confidence = data.confidence ?? data.confidenceScore ?? 0;
+    let components;
+    if (Array.isArray(data.components)) {
+        components = Object.fromEntries(data.components.map((c) => [c.name, c.amount]));
+    }
+    else {
+        components = data.components ?? data.costBreakdown ?? {};
+    }
     return {
         parcelId: params.parcelId,
         taxYear: params.taxYear,
         modelType: params.modelType ?? 'cost',
-        estimatedValue: data.estimatedValue ?? 0,
-        confidence: data.confidence ?? data.confidenceScore ?? 0,
-        components: data.components ?? data.costBreakdown ?? {},
+        estimatedValue,
+        confidence,
+        components,
     };
 };
 exports.runValuationModelHandler = runValuationModelHandler;
