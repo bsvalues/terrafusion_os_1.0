@@ -9,7 +9,7 @@
  *  4) Levy summary success path (200)
  *  5) Trace lookup by correlationId
  *  6) Unauthenticated guard (401)
- *  7) Write-gate enforcement proof (C3) — blocked without confirmation
+ *  7) Write-governance block (missing confirmation must fail)
  *
  * Output contract:
  *   STEP <n> <name>: OK correlationId=<id> key=value
@@ -418,11 +418,12 @@ async function main() {
       fail('write_high tool should have been BLOCKED but succeeded — enforcement is broken', result.correlationId);
     }
 
-    const errorCode = result.error || '';
-    const hasExpectedCode =
-      errorCode.includes('CONFIRMATION_REQUIRED') ||
-      errorCode.includes('PERMISSION_DENIED') ||
-      errorCode.includes('REASON_CODE_REQUIRED');
+    const errorCode = result.errorCode || '';
+    const hasExpectedCode = (
+      errorCode === 'CONFIRMATION_REQUIRED' ||
+      errorCode === 'PERMISSION_DENIED' ||
+      errorCode === 'REASON_CODE_REQUIRED'
+    );
 
     if (!hasExpectedCode) {
       fail(`blocked but unexpected errorCode: ${errorCode}`, result.correlationId);
@@ -430,7 +431,7 @@ async function main() {
 
     return {
       correlationId: result.correlationId,
-      details: { errorCode: errorCode.split(':')[0], blocked: 'true' },
+      details: { errorCode, blocked: 'true' },
     };
   });
 }

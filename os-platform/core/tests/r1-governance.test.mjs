@@ -72,6 +72,8 @@ const SUPERVISOR_MUSE = { countyId: 'benton', userId: 'super-001', roles: ['supe
 const ADMIN_PILOT = { countyId: 'benton', userId: 'admin-001', roles: ['administrator'], mode: 'pilot' };
 const FABRICATED_PILOT = { countyId: 'benton', userId: 'hacker-001', roles: ['superadmin'], mode: 'pilot' };
 const MULTI_ROLE_MUSE = { countyId: 'benton', userId: 'multi-001', roles: ['appraiser', 'supervisor'], mode: 'muse' };
+const WRITE_LOW_PILOT_APPROVED = { confirmation: true, reasonCode: 'workflow_update' };
+const WRITE_LOW_MUSE_APPROVED = { confirmation: true, reasonCode: 'appeal_response' };
 
 // == Gate 5b: RBAC Permission Enforcement ====================================
 
@@ -81,7 +83,7 @@ describe('Gate 5b: RBAC Permission Enforcement', () => {
     const result = await runner.execute({
       toolId: 'add_dossier_note',
       params: { county: 'benton' },
-      context: VIEWER_PILOT,
+      context: { ...VIEWER_PILOT, ...WRITE_LOW_PILOT_APPROVED },
     });
     assert.equal(result.ok, false);
     assert.equal(result.errorCode, ErrorCodes.PERMISSION_DENIED);
@@ -93,7 +95,7 @@ describe('Gate 5b: RBAC Permission Enforcement', () => {
     const result = await runner.execute({
       toolId: 'draft_appeal_response',
       params: { county: 'benton' },
-      context: APPRAISER_MUSE,
+      context: { ...APPRAISER_MUSE, ...WRITE_LOW_MUSE_APPROVED },
     });
     assert.equal(result.ok, false);
     assert.equal(result.errorCode, ErrorCodes.PERMISSION_DENIED);
@@ -105,7 +107,7 @@ describe('Gate 5b: RBAC Permission Enforcement', () => {
     const result = runner.validate({
       toolId: 'draft_appeal_response',
       params: { county: 'benton' },
-      context: SUPERVISOR_MUSE,
+      context: { ...SUPERVISOR_MUSE, ...WRITE_LOW_MUSE_APPROVED },
     });
     assert.equal(result.valid, true);
     assert.equal(result.violations.length, 0);
@@ -116,7 +118,7 @@ describe('Gate 5b: RBAC Permission Enforcement', () => {
     const result = await runner.execute({
       toolId: 'add_dossier_note',
       params: { county: 'benton' },
-      context: FABRICATED_PILOT,
+      context: { ...FABRICATED_PILOT, ...WRITE_LOW_PILOT_APPROVED },
     });
     assert.equal(result.ok, false);
     assert.equal(result.errorCode, ErrorCodes.PERMISSION_DENIED);
@@ -139,7 +141,7 @@ describe('Gate 5b: RBAC Permission Enforcement', () => {
     const result = runner.validate({
       toolId: 'draft_appeal_response',
       params: { county: 'benton' },
-      context: MULTI_ROLE_MUSE,
+      context: { ...MULTI_ROLE_MUSE, ...WRITE_LOW_MUSE_APPROVED },
     });
     assert.equal(result.valid, true);
     assert.equal(result.violations.length, 0);
@@ -247,7 +249,7 @@ describe('Gate 4: Write-Lane Enforcement (runtime)', () => {
     const result = runner.validate({
       toolId: 'add_dossier_note',
       params: { county: 'benton' },
-      context: APPRAISER_PILOT,
+      context: { ...APPRAISER_PILOT, ...WRITE_LOW_PILOT_APPROVED },
     });
     assert.equal(result.valid, true);
   });
@@ -340,7 +342,7 @@ describe('Gate 6: PII/Trace Policy Enforcement (runtime)', () => {
     const result = runner.validate({
       toolId: 'add_dossier_note',
       params: { county: 'benton' },
-      context: APPRAISER_PILOT,
+      context: { ...APPRAISER_PILOT, ...WRITE_LOW_PILOT_APPROVED },
     });
     assert.equal(result.valid, true);
   });
@@ -388,7 +390,7 @@ describe('Combined Gate + Trace Emission', () => {
     await runner.execute({
       toolId: 'add_dossier_note',
       params: { county: 'benton' },
-      context: VIEWER_PILOT,
+      context: { ...VIEWER_PILOT, ...WRITE_LOW_PILOT_APPROVED },
     });
     const events = await store.query({ toolId: 'add_dossier_note', type: 'tool_failed' });
     assert.ok(events.length >= 1, 'Should emit tool_failed trace event');
