@@ -229,6 +229,8 @@ builder.Services.AddScoped<TerraFusion.Core.Services.LegacyDatabaseService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
 // Register Dynamic Property Service (REQUIRED by HarrisPacsLegacyService)
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
+// Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
+builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
 
 
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
