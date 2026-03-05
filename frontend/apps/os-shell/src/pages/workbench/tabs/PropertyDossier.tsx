@@ -83,8 +83,13 @@ interface SummarizeState {
 // ============================================================================
 // Helper: Format currency for display
 // ============================================================================
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+  return currencyFormatter.format(value);
 }
 
 // ============================================================================
@@ -391,7 +396,7 @@ export const PropertyDossier: React.FC = () => {
                 {dossierDetails.correlationId}
               </code>
               <button
-                onClick={() => navigator.clipboard.writeText(dossierDetails.correlationId || '')}
+                onClick={() => { navigator.clipboard?.writeText(dossierDetails.correlationId || '').catch(() => { /* clipboard unavailable */ }); }}
                 className='px-1.5 py-0.5 text-xs tf-hover-surface rounded'
                 title='Copy correlation ID'
               >
@@ -434,7 +439,7 @@ export const PropertyDossier: React.FC = () => {
           </div>
         )}
 
-        {/* Details sections — 4 collapsible BentoGrid cards */}
+        {/* Details sections — 4 BentoGrid cards */}
         {dossierDetails.data && (
           <BentoGrid columns={2} gap={1.5} padding={0}>
             {/* Property */}
@@ -623,9 +628,9 @@ export const PropertyDossier: React.FC = () => {
                     {summarizeState.correlationId}
                   </code>
                   <button
-                    onClick={() =>
-                      navigator.clipboard.writeText(summarizeState.correlationId || '')
-                    }
+                    onClick={() => {
+                      navigator.clipboard?.writeText(summarizeState.correlationId || '').catch(() => { /* clipboard unavailable */ });
+                    }}
                     className='px-2 py-1 text-xs tf-hover-surface rounded'
                     title='Copy correlation ID'
                   >

@@ -22,7 +22,6 @@ import { dossierService } from '../services/dossierService';
 export interface DossierDetailsError {
   message: string;
   code?: string;
-  correlationId?: string;
 }
 
 export interface UseDossierDetailsResult {
