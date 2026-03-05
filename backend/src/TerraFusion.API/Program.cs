@@ -229,6 +229,8 @@ builder.Services.AddScoped<TerraFusion.Core.Services.LegacyDatabaseService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
 // Register Dynamic Property Service (REQUIRED by HarrisPacsLegacyService)
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
+// Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
+builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
 
 
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
@@ -350,8 +352,6 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
 // CX-8: Register ICostForgeService for real property-backed cost calculation
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeAIService, TerraFusion.AI.Services.CostForgeAIService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeService, TerraFusion.API.Services.CostForgeService>();
-// DX-03: Ensure Property API/Hubs can activate without runtime DI 500s.
-builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
 
 // Register ITerraFusionDbContext interface
 builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
