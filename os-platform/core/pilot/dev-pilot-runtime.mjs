@@ -457,6 +457,10 @@ async function getCompareRunner() {
       // Presence of TF_API_BASE_URL or TF_API_PORT signals a running backend.
       if (process.env.TF_API_BASE_URL || process.env.TF_API_PORT) {
         registerR1Handlers(runner, traceService);
+        const target = process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT}`;
+        console.log(`[pilot] R1 real handlers active → backend ${target}`);
+      } else {
+        console.log("[pilot] R1 real handlers inactive (no TF_API_BASE_URL/TF_API_PORT) → canned stubs");
       }
       return runner;
     })();
