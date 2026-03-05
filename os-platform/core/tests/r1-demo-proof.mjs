@@ -8,7 +8,8 @@
  *  3) Valuation success path (200)
  *  4) Levy summary success path (200)
  *  5) Trace lookup by correlationId
- *  6) Unauthenticated guard (401)
+ *  6) Write-governance block (missing confirmation must fail)
+ *  7) Unauthenticated guard (401)
  *
  * Output contract:
  *   STEP <n> <name>: OK correlationId=<id> key=value
@@ -357,6 +358,54 @@ async function main() {
 
   await runStep(
     6,
+    'write_guard_block',
+    async () => {
+      const pilotMod = await import('../pilot/index.js');
+      const traceMod = await import('../trace/index.js');
+      const pilot = pilotMod.default || pilotMod;
+      const trace = traceMod.default || traceMod;
+
+      const registry = new pilot.ToolRegistry();
+      await registry.initialize();
+
+      const runner = new pilot.ToolRunner({ registry });
+      pilot.registerPhase84Handlers(runner);
+      pilot.registerR1Handlers(runner, trace.traceService);
+
+      const blocked = await runner.execute({
+        toolId: 'run_valuation_model',
+        params: {
+          county: COUNTY,
+          parcelId,
+          taxYear: TAX_YEAR,
+        },
+        context: {
+          countyId: COUNTY,
+          userId: 'r1-demo-proof',
+          roles: ['appraiser'],
+          mode: 'pilot',
+          confirmation: false,
+        },
+      });
+
+      if (blocked.ok) {
+        fail('expected write guard block, invocation succeeded', blocked.correlationId);
+      }
+      if (blocked.errorCode !== 'CONFIRMATION_REQUIRED') {
+        fail(`expected CONFIRMATION_REQUIRED, got ${blocked.errorCode}`, blocked.correlationId);
+      }
+
+      return {
+        correlationId: blocked.correlationId,
+        details: {
+          errorCode: blocked.errorCode,
+        },
+      };
+    }
+  );
+
+  await runStep(
+    7,
     'unauthenticated_401_guard',
     async () => {
       const unauth = await requestJson('POST', '/api/costforge/calculate', {
