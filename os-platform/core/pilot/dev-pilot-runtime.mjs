@@ -4,7 +4,8 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ToolRegistry, ToolRunner, registerPhase84Handlers } from "./index.js";
+import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
+import { traceService } from "../trace/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -452,6 +453,11 @@ async function getCompareRunner() {
       await registry.initialize(path.resolve(REPO_ROOT, "tools/registry/terrapilot.tools.json"));
       const runner = new ToolRunner({ registry });
       registerPhase84Handlers(runner);
+      // Register R1 real handlers when backend is available.
+      // Presence of TF_API_BASE_URL or TF_API_PORT signals a running backend.
+      if (process.env.TF_API_BASE_URL || process.env.TF_API_PORT) {
+        registerR1Handlers(runner, traceService);
+      }
       return runner;
     })();
   }
