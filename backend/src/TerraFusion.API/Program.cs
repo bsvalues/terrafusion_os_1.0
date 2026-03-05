@@ -676,6 +676,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
+// DX-05: Correlation ID — ensure every response (including 400/403/404/500) carries
+// X-Correlation-ID for traceability. Registered early so it wraps all downstream middleware.
+app.UseCorrelationId();
+
 // Prometheus metrics middleware
 app.UseHttpMetrics();
 
