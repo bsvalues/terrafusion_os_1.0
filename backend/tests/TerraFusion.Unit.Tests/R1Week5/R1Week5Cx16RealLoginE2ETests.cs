@@ -121,6 +121,39 @@ public sealed class R1Week5Cx16RealLoginE2ETests
         items.GetArrayLength().Should().BeGreaterThan(0);
     }
 
+    [Fact]
+    public async Task RealLogin_Assessor_GetPropertiesStats_Returns200_Not500()
+    {
+        using var client = _factory.CreateClient();
+
+        var loginResponse = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            Email = "assessor@terrafusionmarket.com",
+            Password = "Government2026!",
+        });
+
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var loginBody = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var token = loginBody.GetProperty("token").GetString();
+        token.Should().NotBeNullOrWhiteSpace();
+
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var statsResponse = await client.GetAsync("/api/properties/stats");
+
+        statsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var payload = await statsResponse.Content.ReadFromJsonAsync<JsonElement>();
+        payload.TryGetProperty("totalProperties", out var totalProperties).Should().BeTrue();
+        totalProperties.ValueKind.Should().Be(JsonValueKind.Number);
+        payload.TryGetProperty("totalAssessedValue", out var totalAssessedValue).Should().BeTrue();
+        totalAssessedValue.ValueKind.Should().Be(JsonValueKind.Number);
+        payload.TryGetProperty("averageAssessedValue", out var averageAssessedValue).Should().BeTrue();
+        averageAssessedValue.ValueKind.Should().Be(JsonValueKind.Number);
+    }
+
     // ── 2. Token carries perm claims (structural assertion) ──────────
 
     [Fact]
