@@ -38,3 +38,16 @@ export type {
   TraceEventType,
   TraceSuite,
 } from './trace';
+
+export type {
+  DossierDetailsOptions,
+  DossierDetailsResponse,
+  DossierLevyDetails,
+  DossierLevyEntry,
+  DossierNoteHeaderItem,
+  DossierNoteHeaders,
+  DossierPropertyDetails,
+  DossierResourceLinks,
+  DossierValuationCategory,
+  DossierValuationSignals,
+} from './dossierDetails';

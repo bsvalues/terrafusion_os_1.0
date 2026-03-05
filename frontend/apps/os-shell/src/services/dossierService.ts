@@ -9,6 +9,7 @@
 
 import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
+import type { DossierDetailsOptions, DossierDetailsResponse } from '@/contracts/dossierDetails';
 
 const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 const DOSSIER_API = `${API_BASE_URL}/api/dossier`;
@@ -211,6 +212,37 @@ async function dossierPost<T>(path: string, body: unknown): Promise<T> {
   return response.json();
 }
 
+/** Generate a correlation ID matching the CostForge pattern. */
+function generateCorrelationId(): string {
+  return `tf-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+/**
+ * GET with X-Correlation-ID header injection.
+ * Returns both the parsed body and the correlation ID echoed by the server.
+ */
+async function dossierGetWithCorrelation<T>(
+  path: string,
+  correlationId?: string,
+): Promise<{ data: T; correlationId: string }> {
+  const cid = correlationId || generateCorrelationId();
+  const headers: Record<string, string> = {
+    ...authHeaders(),
+    'X-Correlation-ID': cid,
+  };
+
+  const response = await fetch(`${DOSSIER_API}${path}`, { headers });
+  if (!response.ok) {
+    throw new Error(`Dossier API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data: T = await response.json();
+
+  // Prefer the server-echoed header; fall back to what we sent
+  const echoed = response.headers.get('X-Correlation-ID') || cid;
+  return { data, correlationId: echoed };
+}
+
 // ============================================================================
 // NOTE: DEFAULT fallback data removed in CC-14 (R1 Week 3).
 // All service methods now propagate errors from the real backend.
@@ -259,6 +291,29 @@ export const dossierService = {
    */
   getStats: async (): Promise<DossierStats> => {
     return dossierGet<DossierStats>('/stats');
+  },
+
+  /**
+   * CX-25: Get structured parcel dossier details.
+   * Calls GET /api/dossier/parcels/{parcelId}/details with:
+   *   - X-Correlation-ID header (generated and returned alongside data)
+   *   - ?include=, ?levyLimit=, ?noteLimit= query parameters
+   *
+   * Returns the full DossierDetailsResponse with nullable sections and
+   * the generated correlationId used for the request.
+   */
+  getDetails: async (
+    parcelId: string,
+    options?: DossierDetailsOptions,
+  ): Promise<{ data: DossierDetailsResponse; correlationId: string }> => {
+    const params = new URLSearchParams();
+    if (options?.include) params.set('include', options.include);
+    if (options?.levyLimit != null) params.set('levyLimit', String(options.levyLimit));
+    if (options?.noteLimit != null) params.set('noteLimit', String(options.noteLimit));
+
+    const qs = params.toString();
+    const path = `/parcels/${encodeURIComponent(parcelId)}/details${qs ? `?${qs}` : ''}`;
+    return dossierGetWithCorrelation<DossierDetailsResponse>(path);
   },
 
   /**
