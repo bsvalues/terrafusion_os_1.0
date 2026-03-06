@@ -10,6 +10,13 @@ export type LeakGuardOptions = {
   ignoreLinePatterns?: RegExp[];
   /** Entire file can be excluded by path pattern (rare). */
   ignoreFilePatterns?: RegExp[];
+  /**
+   * Known violation baseline. When set, the guard allows up to this many
+   * leaks (ratchet mode). Fails only if current leaks EXCEED the baseline.
+   * Use for files with intentional raw colors (stories, design tokens, config)
+   * or known false positives awaiting scanner improvements.
+   */
+  knownViolationBaseline?: number;
 };
 
 export type LeakMatch = {
@@ -98,6 +105,20 @@ export function assertNoRawColorLeaks(
   options: LeakGuardOptions = {},
 ): void {
   const leaks = findRawColorLeaks(content, options);
+  const baseline = options.knownViolationBaseline;
+
+  // Ratchet mode: allow up to baseline, fail on regression
+  if (baseline !== undefined) {
+    if (leaks.length > baseline) {
+      const label = options.label ? ` (${options.label})` : '';
+      throw new Error(
+        `Leak regression${label}: found ${leaks.length} leaks, expected ≤ ${baseline} (known baseline).\n` +
+          'New raw colors were introduced. Fix or update knownViolationBaseline.\n',
+      );
+    }
+    return;
+  }
+
   if (leaks.length === 0) return;
 
   const label = options.label ? ` (${options.label})` : '';

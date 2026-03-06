@@ -11,6 +11,9 @@ describe('colors.ts leak guard', () => {
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'colors.ts' });
+    assertNoRawColorLeaks(content, {
+      label: 'colors.ts',
+      knownViolationBaseline: 92, // Design system: canonical color palette definitions (source of truth)
+    });
   });
 });

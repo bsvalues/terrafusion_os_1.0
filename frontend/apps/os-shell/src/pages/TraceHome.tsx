@@ -115,7 +115,7 @@ function MiniBarChart({ buckets }: { buckets: TraceMetrics['hourlyBuckets'] }) {
                 width={barWidth - 0.4}
                 height={errH}
                 rx={0.5}
-                fill='hsl(0 70% 55%)'
+                fill='hsl(var(--tf-error-hs) 55%)'
               />
             )}
           </g>
@@ -342,7 +342,7 @@ function TraceConsoleContent({ telemetryStore }: TraceHomeProps): React.ReactEle
           {/* Recent errors */}
           {metrics.recentErrors.length > 0 && (
             <div style={{ marginTop: '0.75rem' }}>
-              <h4 style={{ color: 'hsl(0 70% 65%)', marginBottom: '0.5rem' }}>Recent Errors</h4>
+              <h4 style={{ color: 'hsl(var(--tf-error-hs) 65%)', marginBottom: '0.5rem' }}>Recent Errors</h4>
               <div className='space-y-1'>
                 {metrics.recentErrors.map((e) => (
                   <div
@@ -356,7 +356,7 @@ function TraceConsoleContent({ telemetryStore }: TraceHomeProps): React.ReactEle
                     <span style={{ color: 'hsl(var(--tf-muted))' }}>
                       {new Date(e.timestamp).toLocaleTimeString()}
                     </span>
-                    <span style={{ color: 'hsl(0 70% 65%)' }}>
+                    <span style={{ color: 'hsl(var(--tf-error-hs) 65%)' }}>
                       {e.payload.errorCode || 'UNKNOWN'}
                     </span>
                     <span style={{ color: 'hsl(var(--tf-fg))' }}>{e.payload.actionId}</span>

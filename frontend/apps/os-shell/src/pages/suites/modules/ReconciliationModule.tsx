@@ -121,8 +121,8 @@ export default function ReconciliationModule() {
     alert('Reconciliation saved to audit trail');
   }, [result, subjectId, method, propertyType, approaches]);
 
-  const agreementColor = (a: string) => a === 'strong' ? '#22c55e' : a === 'moderate' ? '#f59e0b' : '#ef4444';
-  const confidenceColor = (c: string) => c === 'high' ? '#22c55e' : c === 'medium' ? '#f59e0b' : '#ef4444';
+  const agreementColor = (a: string) => a === 'strong' ? 'hsl(var(--tf-success-hs) 45%)' : a === 'moderate' ? 'hsl(var(--tf-warning-hs) 50%)' : 'hsl(var(--tf-error-hs) 55%)';
+  const confidenceColor = (c: string) => c === 'high' ? 'hsl(var(--tf-success-hs) 45%)' : c === 'medium' ? 'hsl(var(--tf-warning-hs) 50%)' : 'hsl(var(--tf-error-hs) 55%)';
 
   return (
     <div className='p-6 space-y-6'>
@@ -360,7 +360,7 @@ export default function ReconciliationModule() {
                     </div>
                     <div className='flex items-center gap-2'>
                       <div className='flex-1 h-2 rounded-full overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
-                        <div className='h-full rounded-full' style={{ width: `${result.approachSummary.cost.weight * 100}%`, background: '#3b82f6' }} />
+                        <div className='h-full rounded-full' style={{ width: `${result.approachSummary.cost.weight * 100}%`, background: 'hsl(var(--tf-network-blue-hs) 55%)' }} />
                       </div>
                       <span className='text-xs font-mono w-12 text-right' style={{ color: 'hsl(var(--tf-muted))' }}>{pct(result.approachSummary.cost.weight)}</span>
                     </div>
@@ -374,7 +374,7 @@ export default function ReconciliationModule() {
                     </div>
                     <div className='flex items-center gap-2'>
                       <div className='flex-1 h-2 rounded-full overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
-                        <div className='h-full rounded-full' style={{ width: `${result.approachSummary.sales.weight * 100}%`, background: '#22c55e' }} />
+                        <div className='h-full rounded-full' style={{ width: `${result.approachSummary.sales.weight * 100}%`, background: 'hsl(var(--tf-success-hs) 45%)' }} />
                       </div>
                       <span className='text-xs font-mono w-12 text-right' style={{ color: 'hsl(var(--tf-muted))' }}>{pct(result.approachSummary.sales.weight)}</span>
                     </div>
@@ -388,7 +388,7 @@ export default function ReconciliationModule() {
                     </div>
                     <div className='flex items-center gap-2'>
                       <div className='flex-1 h-2 rounded-full overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
-                        <div className='h-full rounded-full' style={{ width: `${result.approachSummary.income.weight * 100}%`, background: '#f59e0b' }} />
+                        <div className='h-full rounded-full' style={{ width: `${result.approachSummary.income.weight * 100}%`, background: 'hsl(var(--tf-warning-hs) 50%)' }} />
                       </div>
                       <span className='text-xs font-mono w-12 text-right' style={{ color: 'hsl(var(--tf-muted))' }}>{pct(result.approachSummary.income.weight)}</span>
                     </div>
@@ -440,8 +440,8 @@ export default function ReconciliationModule() {
                 </div>
                 {result.qualityIndicators.warnings.map((w, i) => (
                   <div key={i} className='flex items-start gap-2'>
-                    <AlertTriangle size={14} className='mt-0.5 shrink-0' style={{ color: '#f59e0b' }} />
-                    <span className='text-xs' style={{ color: '#f59e0b' }}>{w}</span>
+                    <AlertTriangle size={14} className='mt-0.5 shrink-0' style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }} />
+                    <span className='text-xs' style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }}>{w}</span>
                   </div>
                 ))}
               </div>

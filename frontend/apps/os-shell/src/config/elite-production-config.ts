@@ -109,7 +109,7 @@ const eliteCSSOptimizer = (): Plugin => ({
           /box-shadow:\s*0\s+0\s+(\d+)px\s+rgba\(0,\s*255,\s*255,\s*([0-9.]+)\)/g,
           (match, size, opacity) => {
             const optimizedOpacity = Math.min(0.8, parseFloat(opacity));
-            return `box-shadow: 0 0 ${size}px rgba(0, 255, 255, ${optimizedOpacity})`;
+            return `box-shadow: 0 0 ${size}px rgba(0, 255, 255, ${optimizedOpacity})`; // tdc:allow — CSS regex replacement
           }
         );
 

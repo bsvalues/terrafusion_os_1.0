@@ -115,8 +115,8 @@ export function SwarmVisualization3D({
 
         // Gradient based on coherence
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-        gradient.addColorStop(0, `rgba(34, 211, 238, ${coherence})`); // cyan-400
-        gradient.addColorStop(1, `rgba(59, 130, 246, ${coherence * 0.3})`); // blue-500
+        gradient.addColorStop(0, `rgba(34, 211, 238, ${coherence})`); // cyan-400 tdc:allow — Canvas API
+        gradient.addColorStop(1, `rgba(59, 130, 246, ${coherence * 0.3})`); // blue-500 tdc:allow — Canvas API
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -124,7 +124,7 @@ export function SwarmVisualization3D({
         ctx.fill();
 
         // Draw connections between nearby clusters
-        ctx.strokeStyle = `rgba(34, 211, 238, ${coherence * 0.2})`;
+        ctx.strokeStyle = `rgba(34, 211, 238, ${coherence * 0.2})`; // tdc:allow — Canvas API
         ctx.lineWidth = 1;
         for (let j = i + 1; j < numClusters; j++) {
           const x2 = (canvas.width / 2) + Math.sin(frame * 0.001 + j) * 200;
