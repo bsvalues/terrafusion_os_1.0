@@ -85,9 +85,9 @@ function severityColor(severity: ActivitySeverity): {
       };
     case 'success':
       return {
-        bg: 'hsl(120 60% 40% / 0.08)',
-        dot: 'hsl(120 60% 50%)',
-        text: 'hsl(120 60% 70%)',
+        bg: 'hsl(var(--tf-success-hs) 40% / 0.08)',
+        dot: 'hsl(var(--tf-success-hs) 50%)',
+        text: 'hsl(var(--tf-success-hs) 70%)',
       };
     default:
       return {
