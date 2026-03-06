@@ -540,11 +540,13 @@ export function exportNDJSON(
   options: ExportNDJSONOptions = {}
 ): string {
   let filtered = events;
-  if (options.from) {
-    filtered = filtered.filter(e => e.timestamp >= options.from);
+  const fromBound = options.from;
+  const toBound = options.to;
+  if (fromBound) {
+    filtered = filtered.filter(e => e.timestamp >= fromBound);
   }
-  if (options.to) {
-    filtered = filtered.filter(e => e.timestamp <= options.to);
+  if (toBound) {
+    filtered = filtered.filter(e => e.timestamp <= toBound);
   }
   const mapper = options.auditFormat ? toAuditRecord : (e) => e;
   return filtered.map(e => JSON.stringify(mapper(e))).join('\n');
