@@ -59,6 +59,35 @@ function mockFetch(data, status = 200) {
   });
 }
 
+/**
+ * URL-aware mock: returns valid auth for /api/auth/login, error for other paths.
+ * Needed for error-propagation tests where the handler calls acquirePilotToken()
+ * (via fetch) before making its real backend call.
+ */
+function mockFetchWithAuth(data, status = 200) {
+  globalThis.fetch = async (url) => {
+    if (typeof url === 'string' && url.includes('/api/auth/login')) {
+      return {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: async () => JSON.stringify({
+          token: 'mock-token',
+          email: 'admin@gov.',
+          roles: ['appraiser'],
+          expiresAt: new Date(Date.now() + 3600000).toISOString(),
+        }),
+      };
+    }
+    return {
+      ok: status >= 200 && status < 300,
+      status,
+      statusText: status === 200 ? 'OK' : 'Error',
+      text: async () => JSON.stringify(data),
+    };
+  };
+}
+
 function mockFetchError(message = 'ECONNREFUSED') {
   globalThis.fetch = async () => {
     throw new Error(message);
@@ -140,7 +169,7 @@ describe('Handler: explain_model_inputs (real)', () => {
   });
 
   it('propagates backend errors', async () => {
-    mockFetch({ error: 'Not found' }, 404);
+    mockFetchWithAuth({ error: 'Not found' }, 404);
 
     await assert.rejects(
       () => explainModelInputsRealHandler(
@@ -246,7 +275,7 @@ describe('Handler: compare_assessed_value_history (real)', () => {
   });
 
   it('propagates backend errors', async () => {
-    mockFetch({ error: 'Server error' }, 500);
+    mockFetchWithAuth({ error: 'Server error' }, 500);
 
     await assert.rejects(
       () => compareAssessedValueHistoryRealHandler(
@@ -344,7 +373,7 @@ describe('Handler: summarize_parcel_casefile (real)', () => {
   });
 
   it('propagates backend errors (404 = endpoint not ready)', async () => {
-    mockFetch({ error: 'Not found' }, 404);
+    mockFetchWithAuth({ error: 'Not found' }, 404);
 
     await assert.rejects(
       () => summarizeParcelCasefileRealHandler(
@@ -578,7 +607,7 @@ describe('Handler: add_dossier_note (real)', () => {
   });
 
   it('propagates backend errors', async () => {
-    mockFetch({ error: 'Internal error' }, 500);
+    mockFetchWithAuth({ error: 'Internal error' }, 500);
 
     await assert.rejects(
       () => addDossierNoteRealHandler(
@@ -651,7 +680,7 @@ describe('Handler: query_parcel_layers (real)', () => {
   });
 
   it('propagates backend 404 for unknown parcel', async () => {
-    mockFetch({ error: 'Parcel not found' }, 404);
+    mockFetchWithAuth({ error: 'Parcel not found' }, 404);
 
     await assert.rejects(
       () => queryParcelLayersRealHandler(

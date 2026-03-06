@@ -9,7 +9,7 @@
  *   3. Direct HTTP: CostForge returns 200 with real parcel
  *   4. Direct HTTP: shaped levy calculate-rate payload returns 200
  *
- * Parcel discovery: queries GET /api/properties?pageSize=1 for a real parcel.
+ * Parcel discovery: queries GET /api/properties?pageSize=10 for a real parcel.
  * Falls back to 1-0531-100-0001-000 (Benton County seed parcel) if the
  * endpoint is unavailable. If the fallback parcel is also missing, the test
  * fails with instructions to reseed the dev DB.
@@ -40,30 +40,32 @@ const FALLBACK_PARCEL = BENTON_FIXTURE_PARCEL;
  * Discover a valuation-ready parcel from the backend.
  * Queries GET /api/properties?pageSize=10 and picks the first parcel with
  * improvementValue > 0 (required for CostForge cost calculation).
- * Falls back to FALLBACK_PARCEL if discovery fails.
+ *
+ * Returns the discovered parcel number, or undefined if discovery fails.
+ * Callers should fall back to FALLBACK_PARCEL when undefined is returned.
  */
 async function discoverTestParcel(token) {
   try {
     const result = await backendGet('/api/properties?pageSize=10', { token });
     if (!result.ok) {
-      console.log(`  ⚠️  Parcel discovery failed: ${result.status} ${result.error ?? ''} — using fallback: ${FALLBACK_PARCEL}`);
-      return;
+      console.log(`  ⚠️  Parcel discovery failed: ${result.status} ${result.error ?? ''}`);
+      return undefined;
     }
     const items = result.data?.items ?? [];
     const viable = items.find(p => p.parcelNumber && p.improvementValue > 0);
     if (viable) {
-      TEST_PARCEL = viable.parcelNumber;
-      console.log(`  🔍 Discovered test parcel: ${TEST_PARCEL} (improvementValue=${viable.improvementValue})`);
-      return;
+      console.log(`  🔍 Discovered test parcel: ${viable.parcelNumber} (improvementValue=${viable.improvementValue})`);
+      return viable.parcelNumber;
     }
     if (items.length > 0 && items[0].parcelNumber) {
-      TEST_PARCEL = items[0].parcelNumber;
-      console.log(`  ⚠️  No parcel with improvementValue > 0 found; using first available: ${TEST_PARCEL}`);
-      return;
+      console.log(`  ⚠️  No parcel with improvementValue > 0 found; using first available: ${items[0].parcelNumber}`);
+      return items[0].parcelNumber;
     }
-    console.log(`  ⚠️  /api/properties returned 0 items — using fallback: ${FALLBACK_PARCEL}`);
+    console.log(`  ⚠️  /api/properties returned 0 items`);
+    return undefined;
   } catch (err) {
-    console.log(`  ⚠️  Parcel discovery error: ${err.message} — using fallback: ${FALLBACK_PARCEL}`);
+    console.log(`  ⚠️  Parcel discovery error: ${err.message}`);
+    return undefined;
   }
 }
 
@@ -84,9 +86,16 @@ before(async () => {
   TraceService = trace.TraceService;
   traceService = trace.traceService;
 
-  // Discover a real parcel before any CostForge tests run
+  // Discover a real parcel before any CostForge tests run.
+  // Token is scoped to discovery only — clear after use so each test
+  // manages its own token lifecycle (aligned with test-scoped pattern).
   const { token } = await acquirePilotToken();
-  await discoverTestParcel(token);
+  const discovered = await discoverTestParcel(token);
+  TEST_PARCEL = discovered ?? FALLBACK_PARCEL;
+  if (!discovered) {
+    console.log(`  → Using fallback parcel: ${FALLBACK_PARCEL}`);
+  }
+  clearPilotToken();
 });
 
 describe('R1 Payload Shaping (backend on :5046)', () => {
