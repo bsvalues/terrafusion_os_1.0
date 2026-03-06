@@ -1,7 +1,6 @@
 /**
  * TerraFusion OS - D2 Evidence Retention & Redaction Contract
  */
-import { describe, expect, it } from 'vitest';
 import { exportNDJSON, toAuditRecord } from '../trace/TraceService.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

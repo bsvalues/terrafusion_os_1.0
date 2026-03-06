@@ -252,10 +252,10 @@ export const ContextRibbon: React.FC<ContextRibbonProps> = ({
               style={{
                 background: pilotMode === 'pilot'
                   ? 'hsl(var(--tf-accent) / 0.15)'
-                  : 'hsl(270 60% 50% / 0.15)',
+                  : 'hsl(var(--tf-info-hs) 50% / 0.15)',
                 color: pilotMode === 'pilot'
                   ? 'hsl(var(--tf-accent))'
-                  : 'hsl(270 60% 65%)',
+                  : 'hsl(var(--tf-info-hs) 65%)',
               }}
               data-testid="mode-badge"
             >
