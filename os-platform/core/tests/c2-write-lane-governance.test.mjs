@@ -462,7 +462,7 @@ describe('C2 Gate 5: risk escalation ladder', () => {
     assert.strictEqual(result.ok, true, `read_only should pass without gates, got: ${result.error}`);
   });
 
-  it('write_low → no confirmation/reason required (handled by role check)', async () => {
+  it('write_low → passes with confirmation + reasonCode + role check', async () => {
     const { runner } = await setupRunner();
     const fx = loadToolFixture('add_dossier_note', 'happy');
     const result = await runner.execute({
@@ -473,9 +473,11 @@ describe('C2 Gate 5: risk escalation ladder', () => {
         userId: 'appraiser-001',
         roles: ['appraiser'],
         mode: 'pilot',
+        confirmation: true,
+        reasonCode: 'workflow_update',
       },
     });
-    assert.strictEqual(result.ok, true, `write_low should pass for appraiser, got: ${result.error}`);
+    assert.strictEqual(result.ok, true, `write_low should pass for appraiser with confirmation, got: ${result.error}`);
   });
 
   it('write_high → requires confirmation + reasonCode', async () => {

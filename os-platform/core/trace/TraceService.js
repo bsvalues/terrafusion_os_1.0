@@ -11,6 +11,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SCHEMA_VERSION = exports.DEFAULT_RING_BUFFER_SIZE = exports.traceService = exports.TraceService = void 0;
 exports.isAuditEventType = isAuditEventType;
+exports.toAuditRecord = toAuditRecord;
+exports.exportNDJSON = exportNDJSON;
 const crypto_1 = require("crypto");
 const sanitizeForTrace_js_1 = require("../security/sanitizeForTrace.js");
 // ============================================================================
@@ -350,3 +352,57 @@ exports.TraceService = TraceService;
 // Singleton Instance
 // ============================================================================
 exports.traceService = new TraceService();
+/** Governance error codes that indicate a policy-blocked write attempt. */
+const GOVERNANCE_ERROR_CODES = new Set([
+    'CONFIRMATION_REQUIRED',
+    'REASON_CODE_REQUIRED',
+    'REASON_CODE_INVALID',
+    'PERMISSION_DENIED',
+    'SUPERVISOR_APPROVAL_REQUIRED',
+    'SUPERVISOR_ROLE_INVALID',
+    'WRITE_LANE_MISMATCH',
+    'WRITE_LANE_REQUIRED',
+    'POLICY_DENIED',
+]);
+/**
+ * Map a TraceEvent to an AuditRecord with an explicit `decision` field.
+ *
+ * Decision logic:
+ *   - tool_failed + governance errorCode → "blocked"
+ *   - tool_failed + other errorCode → "failed"
+ *   - tool_completed → "allowed"
+ *   - tool_invoked → "allowed" (in-progress)
+ */
+function toAuditRecord(event) {
+    let decision;
+    if (event.type === 'tool_failed') {
+        decision = event.errorCode && GOVERNANCE_ERROR_CODES.has(event.errorCode)
+            ? 'blocked'
+            : 'failed';
+    }
+    else {
+        decision = 'allowed';
+    }
+    return {
+        correlationId: event.correlationId,
+        toolId: event.toolId,
+        decision,
+        errorCode: event.errorCode ?? null,
+        userId: event.context.userId,
+        countyId: event.context.countyId,
+        roles: [...event.context.roles],
+        reasonCode: event.context.reasonCode ?? null,
+        timestamp: event.timestamp,
+        component: event.component ?? null,
+        summary: event.summary,
+    };
+}
+/**
+ * Export trace events as NDJSON (newline-delimited JSON) audit records.
+ * Each line is a self-contained JSON object suitable for log ingestion,
+ * SIEM forwarding, or FISMA audit evidence packages.
+ */
+function exportNDJSON(events, options = {}) {
+    const mapper = options.auditFormat ? toAuditRecord : (e) => e;
+    return events.map(e => JSON.stringify(mapper(e))).join('\n');
+}

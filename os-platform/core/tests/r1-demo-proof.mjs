@@ -10,6 +10,7 @@
  *  5) Trace lookup by correlationId
  *  6) Unauthenticated guard (401)
  *  7) Write-governance block (missing confirmation must fail)
+ *  8) Trace evidence export (blocked write → exportable NDJSON audit record)
  *
  * Output contract:
  *   STEP <n> <name>: OK correlationId=<id> key=value
@@ -432,6 +433,79 @@ async function main() {
     return {
       correlationId: result.correlationId,
       details: { errorCode, blocked: 'true' },
+    };
+  });
+
+  // Step 8: Trace evidence export proof (D1)
+  // Blocked write must produce exportable trace evidence with audit fields.
+  await runStep(8, 'trace_evidence_found', async () => {
+    const pilotMod = await import('../pilot/index.js');
+    const traceMod = await import('../trace/index.js');
+    const pilot = pilotMod.default || pilotMod;
+    const trace = traceMod.default || traceMod;
+
+    const registry = new pilot.ToolRegistry();
+    await registry.initialize();
+
+    const traceStore = new trace.InMemoryTraceStore({ maxEvents: 100 });
+    const traceService = new trace.TraceService({ store: traceStore });
+    const runner = new pilot.ToolRunner({ registry, trace: traceService });
+    pilot.registerPhase84Handlers(runner);
+    pilot.registerWriteGateHandlers(runner);
+
+    // Execute a write that will be blocked (no confirmation)
+    const result = await runner.execute({
+      toolId: 'assemble_boe_packet',
+      params: { county: COUNTY, caseId: 'BOE-2026-TRACE', sections: ['cover_sheet'] },
+      context: {
+        countyId: COUNTY,
+        userId: 'r1-demo-proof',
+        roles: ['viewer'],
+        mode: 'pilot',
+      },
+    });
+
+    if (result.ok) {
+      fail('expected blocked write for trace evidence', result.correlationId);
+    }
+
+    // Query trace by correlationId → must find tool_failed event
+    const events = traceService.getByCorrelationId(result.correlationId);
+    const blocked = events.find(e => e.type === 'tool_failed');
+    if (!blocked) {
+      fail('no tool_failed trace event for blocked write', result.correlationId);
+    }
+
+    // Verify audit fields present
+    const ctx = blocked.context || {};
+    if (!blocked.errorCode) fail('trace event missing errorCode', result.correlationId);
+    if (!blocked.toolId)    fail('trace event missing toolId', result.correlationId);
+    if (!ctx.userId)        fail('trace event missing userId', result.correlationId);
+    if (!ctx.countyId)      fail('trace event missing countyId', result.correlationId);
+
+    // Convert to audit record and verify decision
+    const record = trace.toAuditRecord(blocked);
+    if (record.decision !== 'blocked') {
+      fail(`expected decision "blocked", got "${record.decision}"`, result.correlationId);
+    }
+
+    // Export as NDJSON and verify parseable
+    const ndjson = trace.exportNDJSON(events, { auditFormat: true });
+    const lines = ndjson.trim().split('\n').filter(Boolean);
+    const parsed = lines.map(l => JSON.parse(l));
+    const blockedRecord = parsed.find(r => r.decision === 'blocked');
+    if (!blockedRecord) {
+      fail('NDJSON export missing blocked audit record', result.correlationId);
+    }
+
+    return {
+      correlationId: result.correlationId,
+      details: {
+        decision: record.decision,
+        errorCode: record.errorCode,
+        toolId: record.toolId,
+        ndjsonLines: String(lines.length),
+      },
     };
   });
 }
