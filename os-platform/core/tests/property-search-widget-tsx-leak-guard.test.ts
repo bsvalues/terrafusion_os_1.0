@@ -3,16 +3,16 @@ import path from 'node:path';
 import { assertNoRawColorLeaks } from '../../../tools/ui-tokens/leak-guard';
 
 /**
- * Leak guard for TerraFusionEliteIntegrationNexus.tsx (Phase 203).
+ * Leak guard for PropertySearchWidget.tsx (Phase 203).
  */
-describe('TerraFusionEliteIntegrationNexus.tsx leak guard', () => {
+describe('PropertySearchWidget.tsx leak guard', () => {
   it('contains no raw color values', () => {
     const filePath = path.join(
       process.cwd(),
-      'frontend/apps/os-shell/src/components/nexus/TerraFusionEliteIntegrationNexus.tsx'
+      'frontend/apps/os-shell/src/components/PropertySearchWidget.tsx'
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'TerraFusionEliteIntegrationNexus.tsx' });
+    assertNoRawColorLeaks(content, { label: 'PropertySearchWidget.tsx' });
   });
 });

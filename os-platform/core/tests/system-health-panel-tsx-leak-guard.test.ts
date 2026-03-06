@@ -3,16 +3,16 @@ import path from 'node:path';
 import { assertNoRawColorLeaks } from '../../../tools/ui-tokens/leak-guard';
 
 /**
- * Leak guard for ElitePerformanceIndicator.tsx (Phase 203).
+ * Leak guard for SystemHealthPanel.tsx (Phase 203).
  */
-describe('ElitePerformanceIndicator.tsx leak guard', () => {
+describe('SystemHealthPanel.tsx leak guard', () => {
   it('contains no raw color values', () => {
     const filePath = path.join(
       process.cwd(),
-      'frontend/apps/os-shell/src/components/performance/ElitePerformanceIndicator.tsx'
+      'frontend/apps/os-shell/src/components/SystemHealthPanel.tsx'
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'ElitePerformanceIndicator.tsx' });
+    assertNoRawColorLeaks(content, { label: 'SystemHealthPanel.tsx' });
   });
 });

@@ -2,13 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { assertNoRawColorLeaks } from '../../../tools/ui-tokens/leak-guard';
 
-describe('css-in-js-bridge.ts leak guard', () => {
+describe('PolicyGuardUI.tsx leak guard', () => {
   it('contains no raw color values', () => {
-    const filePath = path.resolve(__dirname, '../../..', 'frontend/apps/os-shell/src/styles/css-in-js-bridge.ts');
-
+    const filePath = path.resolve(
+      __dirname,
+      '../../..',
+      'frontend/apps/os-shell/src/components/workbench/PolicyGuardUI.tsx',
+    );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
-
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'css-in-js-bridge.ts' });
+    assertNoRawColorLeaks(content, { label: 'PolicyGuardUI.tsx' });
   });
 });
