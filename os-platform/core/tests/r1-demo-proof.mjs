@@ -562,6 +562,7 @@ async function main() {
     return {
       correlationId: piiEvent.correlationId,
       details: {
+        redaction: 'ON',
         piiSanitized: 'true',
         redactionDecision: redactRecord.decision,
         windowFiltered: String(windowLines.length),
