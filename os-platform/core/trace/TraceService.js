@@ -363,6 +363,7 @@ const AUDIT_PHONE_PATTERN = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g;
 const AUDIT_EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}\b/gi;
 /**
  * Sanitize an audit summary string by replacing PII tokens.
+ * This ensures SSNs, phone numbers, and emails never appear in NDJSON exports.
  */
 function sanitizeAuditSummary(summary) {
     return summary
@@ -418,11 +419,6 @@ function toAuditRecord(event) {
         summary: sanitizeAuditSummary(event.summary),
     };
 }
-/**
- * Export trace events as NDJSON (newline-delimited JSON) audit records.
- * Each line is a self-contained JSON object suitable for log ingestion,
- * SIEM forwarding, or FISMA audit evidence packages.
- */
 function exportNDJSON(events, options = {}) {
     let filtered = events;
     const fromBound = options.from;
