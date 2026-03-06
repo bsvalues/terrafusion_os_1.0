@@ -439,7 +439,7 @@ export const traceService = new TraceService();
 export interface AuditRecord {
   correlationId: string;
   toolId: string;
-  decision: 'blocked' | 'allowed' | 'failed';
+  decision: 'blocked' | 'allowed' | 'failed' | 'redaction';
   errorCode: string | null;
   userId: string;
   countyId: string;
@@ -448,6 +448,28 @@ export interface AuditRecord {
   timestamp: string;
   component: string | null;
   summary: string;
+}
+
+/** Event types that represent redaction workflow events. */
+const REDACTION_EVENT_TYPES: ReadonlySet<string> = new Set([
+  'redaction_requested',
+  'redaction_ticket_created',
+]);
+
+/** PII patterns for audit summary sanitization. */
+const AUDIT_SSN_PATTERN = /\b\d{3}-\d{2}-\d{4}\b/g;
+const AUDIT_PHONE_PATTERN = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g;
+const AUDIT_EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}\b/gi;
+
+/**
+ * Sanitize an audit summary string by replacing PII tokens.
+ * This ensures SSNs, phone numbers, and emails never appear in NDJSON exports.
+ */
+function sanitizeAuditSummary(summary: string): string {
+  return summary
+    .replace(AUDIT_SSN_PATTERN, '[SSN_REDACTED]')
+    .replace(AUDIT_PHONE_PATTERN, '[PHONE_REDACTED]')
+    .replace(AUDIT_EMAIL_PATTERN, '[EMAIL_REDACTED]');
 }
 
 /** Governance error codes that indicate a policy-blocked write attempt. */
@@ -474,7 +496,9 @@ const GOVERNANCE_ERROR_CODES: ReadonlySet<string> = new Set([
  */
 export function toAuditRecord(event: TraceEvent): AuditRecord {
   let decision: AuditRecord['decision'];
-  if (event.type === 'tool_failed') {
+  if (REDACTION_EVENT_TYPES.has(event.type)) {
+    decision = 'redaction';
+  } else if (event.type === 'tool_failed') {
     decision = event.errorCode && GOVERNANCE_ERROR_CODES.has(event.errorCode)
       ? 'blocked'
       : 'failed';
@@ -493,7 +517,7 @@ export function toAuditRecord(event: TraceEvent): AuditRecord {
     reasonCode: event.context.reasonCode ?? null,
     timestamp: event.timestamp,
     component: event.component ?? null,
-    summary: event.summary,
+    summary: sanitizeAuditSummary(event.summary),
   };
 }
 
@@ -502,12 +526,28 @@ export function toAuditRecord(event: TraceEvent): AuditRecord {
  * Each line is a self-contained JSON object suitable for log ingestion,
  * SIEM forwarding, or FISMA audit evidence packages.
  */
+/** Options for NDJSON export with optional retention window and audit format. */
+export interface ExportNDJSONOptions {
+  auditFormat?: boolean;
+  /** ISO 8601 lower bound (inclusive). Events before this are excluded. */
+  from?: string;
+  /** ISO 8601 upper bound (inclusive). Events after this are excluded. */
+  to?: string;
+}
+
 export function exportNDJSON(
   events: TraceEvent[],
-  options: { auditFormat?: boolean } = {}
+  options: ExportNDJSONOptions = {}
 ): string {
-  const mapper = options.auditFormat ? toAuditRecord : (e: TraceEvent) => e;
-  return events.map(e => JSON.stringify(mapper(e))).join('\n');
+  let filtered = events;
+  if (options.from) {
+    filtered = filtered.filter(e => e.timestamp >= options.from);
+  }
+  if (options.to) {
+    filtered = filtered.filter(e => e.timestamp <= options.to);
+  }
+  const mapper = options.auditFormat ? toAuditRecord : (e) => e;
+  return filtered.map(e => JSON.stringify(mapper(e))).join('\n');
 }
 
 // ============================================================================

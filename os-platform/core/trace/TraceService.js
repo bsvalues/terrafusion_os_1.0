@@ -352,6 +352,24 @@ exports.TraceService = TraceService;
 // Singleton Instance
 // ============================================================================
 exports.traceService = new TraceService();
+/** Event types that represent redaction workflow events. */
+const REDACTION_EVENT_TYPES = new Set([
+    'redaction_requested',
+    'redaction_ticket_created',
+]);
+/** PII patterns for audit summary sanitization. */
+const AUDIT_SSN_PATTERN = /\b\d{3}-\d{2}-\d{4}\b/g;
+const AUDIT_PHONE_PATTERN = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g;
+const AUDIT_EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}\b/gi;
+/**
+ * Sanitize an audit summary string by replacing PII tokens.
+ */
+function sanitizeAuditSummary(summary) {
+    return summary
+        .replace(AUDIT_SSN_PATTERN, '[SSN_REDACTED]')
+        .replace(AUDIT_PHONE_PATTERN, '[PHONE_REDACTED]')
+        .replace(AUDIT_EMAIL_PATTERN, '[EMAIL_REDACTED]');
+}
 /** Governance error codes that indicate a policy-blocked write attempt. */
 const GOVERNANCE_ERROR_CODES = new Set([
     'CONFIRMATION_REQUIRED',
@@ -375,7 +393,10 @@ const GOVERNANCE_ERROR_CODES = new Set([
  */
 function toAuditRecord(event) {
     let decision;
-    if (event.type === 'tool_failed') {
+    if (REDACTION_EVENT_TYPES.has(event.type)) {
+        decision = 'redaction';
+    }
+    else if (event.type === 'tool_failed') {
         decision = event.errorCode && GOVERNANCE_ERROR_CODES.has(event.errorCode)
             ? 'blocked'
             : 'failed';
@@ -394,7 +415,7 @@ function toAuditRecord(event) {
         reasonCode: event.context.reasonCode ?? null,
         timestamp: event.timestamp,
         component: event.component ?? null,
-        summary: event.summary,
+        summary: sanitizeAuditSummary(event.summary),
     };
 }
 /**
@@ -403,6 +424,13 @@ function toAuditRecord(event) {
  * SIEM forwarding, or FISMA audit evidence packages.
  */
 function exportNDJSON(events, options = {}) {
+    let filtered = events;
+    if (options.from) {
+        filtered = filtered.filter(e => e.timestamp >= options.from);
+    }
+    if (options.to) {
+        filtered = filtered.filter(e => e.timestamp <= options.to);
+    }
     const mapper = options.auditFormat ? toAuditRecord : (e) => e;
-    return events.map(e => JSON.stringify(mapper(e))).join('\n');
+    return filtered.map(e => JSON.stringify(mapper(e))).join('\n');
 }

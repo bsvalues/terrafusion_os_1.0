@@ -13,6 +13,7 @@ export {
     toAuditRecord,
     traceService,
     type AuditRecord,
+    type ExportNDJSONOptions,
     type TraceServiceOptions
 } from './TraceService.js';
 
