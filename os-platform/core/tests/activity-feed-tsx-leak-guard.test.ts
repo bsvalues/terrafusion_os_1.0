@@ -2,17 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { assertNoRawColorLeaks } from '../../../tools/ui-tokens/leak-guard';
 
-/**
- * Leak guard for EliteQuantumDashboard.tsx (Phase 203).
- */
-describe('EliteQuantumDashboard.tsx leak guard', () => {
+describe('ActivityFeed.tsx leak guard', () => {
   it('contains no raw color values', () => {
-    const filePath = path.join(
-      process.cwd(),
-      'frontend/apps/os-shell/src/components/performance/EliteQuantumDashboard.tsx'
+    const filePath = path.resolve(
+      __dirname,
+      '../../..',
+      'frontend/apps/os-shell/src/components/workbench/ActivityFeed.tsx',
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'EliteQuantumDashboard.tsx' });
+    assertNoRawColorLeaks(content, { label: 'ActivityFeed.tsx' });
   });
 });
