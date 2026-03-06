@@ -508,6 +508,66 @@ async function main() {
       },
     };
   });
+
+  // Step 9: Evidence retention + redaction contract (D2)
+  // PII sanitization, redaction classification, retention window filtering.
+  await runStep(9, 'evidence_retention_redaction', async () => {
+    const traceMod = await import('../trace/index.js');
+    const trace = traceMod.default || traceMod;
+
+    // --- PII Leak Guard ---
+    const piiEvent = {
+      id: 'evt-pii-proof', correlationId: 'corr-pii-proof',
+      toolId: 'test_pii', type: 'tool_completed',
+      timestamp: '2026-03-01T12:00:00.000Z',
+      summary: 'Owner SSN: 123-45-6789, phone: 509-555-1234, email: owner@county.gov',
+      component: 'DemoProof',
+      context: { userId: 'r1-demo-proof', countyId: COUNTY, roles: ['appraiser'], reasonCode: null },
+    };
+    const record = trace.toAuditRecord(piiEvent);
+    if (record.summary.includes('123-45-6789')) {
+      fail('SSN leaked into audit record summary', piiEvent.correlationId);
+    }
+    if (record.summary.includes('owner@county.gov')) {
+      fail('email leaked into audit record summary', piiEvent.correlationId);
+    }
+
+    // --- Redaction Classification ---
+    const redactEvent = {
+      id: 'evt-redact-proof', correlationId: 'corr-redact-proof',
+      toolId: 'redaction_handler', type: 'redaction_requested',
+      timestamp: '2026-03-01T13:00:00.000Z',
+      summary: 'Redaction requested for payload',
+      component: 'DemoProof',
+      context: { userId: 'r1-demo-proof', countyId: COUNTY, roles: ['admin'], reasonCode: null },
+    };
+    const redactRecord = trace.toAuditRecord(redactEvent);
+    if (redactRecord.decision !== 'redaction') {
+      fail('expected decision redaction, got ' + redactRecord.decision, redactEvent.correlationId);
+    }
+
+    // --- Retention Window ---
+    const earlyEvt = { ...piiEvent, id: 'evt-early', timestamp: '2026-01-01T00:00:00.000Z', summary: 'Early' };
+    const midEvt   = { ...piiEvent, id: 'evt-mid',   timestamp: '2026-06-15T00:00:00.000Z', summary: 'Mid' };
+    const lateEvt  = { ...piiEvent, id: 'evt-late',  timestamp: '2026-12-01T00:00:00.000Z', summary: 'Late' };
+    const windowNdjson = trace.exportNDJSON([earlyEvt, midEvt, lateEvt], {
+      from: '2026-03-01T00:00:00.000Z',
+      to:   '2026-09-01T00:00:00.000Z',
+    });
+    const windowLines = windowNdjson.trim().split('\n').filter(Boolean);
+    if (windowLines.length !== 1) {
+      fail('retention window expected 1 event, got ' + windowLines.length, 'corr-window-proof');
+    }
+
+    return {
+      correlationId: piiEvent.correlationId,
+      details: {
+        piiSanitized: 'true',
+        redactionDecision: redactRecord.decision,
+        windowFiltered: String(windowLines.length),
+      },
+    };
+  });
 }
 
 main()
