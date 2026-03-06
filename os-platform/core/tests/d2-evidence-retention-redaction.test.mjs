@@ -160,3 +160,102 @@ describe('D2 Backward Compatibility: existing decision mappings unaffected', () 
     assert.equal(toAuditRecord(evt).decision, 'failed');
   });
 });
+
+// Suite 5: Merge-Check Hardening (backwards compat, invalid timestamps, long summary)
+describe('D2 Merge-Check: backwards compatibility with no options arg', () => {
+  it('exportNDJSON(events) with no second argument returns all events', () => {
+    const events = [
+      makeEvent({ id: 'evt-a', timestamp: '2026-01-01T00:00:00.000Z' }),
+      makeEvent({ id: 'evt-b', timestamp: '2026-06-01T00:00:00.000Z' }),
+    ];
+    const ndjson = exportNDJSON(events);
+    const lines = ndjson.split('\n');
+    assert.equal(lines.length, 2, 'all events returned with no options');
+  });
+
+  it('exportNDJSON(events) with only auditFormat returns all events as audit records', () => {
+    const events = [
+      makeEvent({ id: 'evt-c', timestamp: '2026-01-01T00:00:00.000Z' }),
+    ];
+    const ndjson = exportNDJSON(events, { auditFormat: true });
+    const lines = ndjson.split('\n');
+    assert.equal(lines.length, 1);
+    const record = JSON.parse(lines[0]);
+    assert.ok('decision' in record, 'audit record has decision field');
+    assert.ok(!('type' in record), 'audit record does not have raw type field');
+  });
+});
+
+describe('D2 Merge-Check: invalid/missing timestamps are handled safely', () => {
+  function makeRawEvent(overrides = {}) {
+    return {
+      id: overrides.id || 'evt-raw',
+      correlationId: 'corr-raw',
+      toolId: 'test_tool',
+      type: 'tool_completed',
+      timestamp: overrides.timestamp,
+      summary: overrides.summary || 'Raw event',
+      errorCode: undefined,
+      component: 'TestComponent',
+      context: { userId: 'u', countyId: 'c', roles: ['r'], reasonCode: null },
+    };
+  }
+
+  it('event with undefined timestamp is included when no from/to', () => {
+    const events = [
+      makeEvent({ id: 'evt-ok', timestamp: '2026-06-01T00:00:00.000Z' }),
+      makeRawEvent({ id: 'evt-undef', timestamp: undefined }),
+    ];
+    const ndjson = exportNDJSON(events);
+    const lines = ndjson.split('\n');
+    assert.equal(lines.length, 2, 'both events included');
+  });
+
+  it('event with undefined timestamp is excluded by from filter (no crash)', () => {
+    const events = [
+      makeEvent({ id: 'evt-ok', timestamp: '2026-06-01T00:00:00.000Z' }),
+      makeRawEvent({ id: 'evt-undef', timestamp: undefined }),
+    ];
+    const ndjson = exportNDJSON(events, { from: '2026-01-01T00:00:00.000Z' });
+    const lines = ndjson.split('\n').filter(l => l.length > 0);
+    // undefined >= 'any string' is false, so it should be excluded
+    assert.equal(lines.length, 1, 'undefined timestamp excluded by from');
+  });
+
+  it('event with empty string timestamp is excluded by from filter (no crash)', () => {
+    const events = [
+      makeEvent({ id: 'evt-ok', timestamp: '2026-06-01T00:00:00.000Z' }),
+      makeRawEvent({ id: 'evt-empty', timestamp: '' }),
+    ];
+    const ndjson = exportNDJSON(events, { from: '2026-01-01T00:00:00.000Z' });
+    const lines = ndjson.split('\n').filter(l => l.length > 0);
+    assert.equal(lines.length, 1, 'empty timestamp excluded by from');
+  });
+});
+
+describe('D2 Merge-Check: PII regex performance on long summaries', () => {
+  it('10K character summary with embedded PII completes in < 50ms', () => {
+    const padding = 'A'.repeat(5000);
+    const longSummary = padding + ' SSN: 999-88-7777 phone: 360-555-9999 email: long@test.gov ' + padding;
+    const evt = makeEvent({ summary: longSummary });
+    const start = performance.now();
+    const record = toAuditRecord(evt);
+    const elapsed = performance.now() - start;
+    assert.ok(elapsed < 50, 'PII sanitization completes in < 50ms, got ' + elapsed.toFixed(2) + 'ms');
+    assert.ok(!record.summary.includes('999-88-7777'), 'SSN redacted in long summary');
+    assert.ok(!record.summary.includes('360-555-9999'), 'phone redacted in long summary');
+    assert.ok(!record.summary.includes('long@test.gov'), 'email redacted in long summary');
+  });
+
+  it('100K character summary does not cause catastrophic backtracking', () => {
+    const hugeSummary = 'X'.repeat(100000);
+    const evt = makeEvent({ summary: hugeSummary });
+    const start = performance.now();
+    const record = toAuditRecord(evt);
+    const elapsed = performance.now() - start;
+    assert.ok(elapsed < 200, '100K summary processed in < 200ms, got ' + elapsed.toFixed(2) + 'ms');
+    assert.equal(record.summary, hugeSummary, 'no-PII summary passes through unchanged');
+  });
+});
+
+// Suite 5: Merge-Check Hardening (backwards compat, invalid timestamps, long summary)
