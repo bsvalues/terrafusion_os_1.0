@@ -14,6 +14,9 @@ describe('Slider.stories.tsx leak guard', () => {
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'Slider.stories.tsx' });
+    assertNoRawColorLeaks(content, {
+      label: 'Slider.stories.tsx',
+      knownViolationBaseline: 6, // False positive: HTML entities &#123;/&#125; in storybook markdown descriptions
+    });
   });
 });

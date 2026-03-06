@@ -11,6 +11,9 @@ describe('motion.ts leak guard', () => {
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'motion.ts' });
+    assertNoRawColorLeaks(content, {
+      label: 'motion.ts',
+      knownViolationBaseline: 2, // Design system: keyframe glow animation rgba() values
+    });
   });
 });

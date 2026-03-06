@@ -56,18 +56,18 @@ const fmt = (n: number) =>
 
 const STATUS_CONFIG: Record<AppealStatus, { label: string; color: string; icon: typeof Clock }> = {
   DRAFT: { label: 'Draft', color: 'hsl(var(--tf-muted))', icon: FileText },
-  SUBMITTED: { label: 'Submitted', color: 'hsl(210 100% 55%)', icon: ChevronRight },
-  UNDER_REVIEW: { label: 'Under Review', color: 'hsl(38 92% 50%)', icon: Eye },
+  SUBMITTED: { label: 'Submitted', color: 'hsl(var(--tf-network-blue-hs) 55%)', icon: ChevronRight },
+  UNDER_REVIEW: { label: 'Under Review', color: 'hsl(var(--tf-warning-hs) 50%)', icon: Eye },
   SCHEDULED: { label: 'Scheduled', color: 'hsl(262 83% 58%)', icon: Calendar },
-  HEARD: { label: 'Heard', color: 'hsl(210 100% 55%)', icon: Gavel },
-  DECIDED: { label: 'Decided', color: 'hsl(142 71% 45%)', icon: CheckCircle2 },
+  HEARD: { label: 'Heard', color: 'hsl(var(--tf-network-blue-hs) 55%)', icon: Gavel },
+  DECIDED: { label: 'Decided', color: 'hsl(var(--tf-success-hs) 45%)', icon: CheckCircle2 },
   WITHDRAWN: { label: 'Withdrawn', color: 'hsl(var(--tf-muted))', icon: AlertCircle },
 };
 
 const DECISION_COLORS: Record<AppealDecision, string> = {
-  GRANTED: 'hsl(142 71% 45%)',
-  DENIED: 'hsl(0 84% 60%)',
-  PARTIAL: 'hsl(38 92% 50%)',
+  GRANTED: 'hsl(var(--tf-success-hs) 45%)',
+  DENIED: 'hsl(var(--tf-error-hs) 60%)',
+  PARTIAL: 'hsl(var(--tf-warning-hs) 50%)',
   PENDING: 'hsl(var(--tf-muted))',
 };
 
@@ -272,7 +272,7 @@ export default function AppealForgeModule() {
           className='gap-2'
           style={{
             background: 'hsl(var(--tf-suite-forge))',
-            color: '#fff',
+            color: 'var(--tf-text-primary)',
           }}
         >
           <Plus size={16} /> New Appeal
@@ -283,8 +283,8 @@ export default function AppealForgeModule() {
       <div className='grid grid-cols-4 gap-4'>
         {[
           { label: 'Total Appeals', value: stats.total.toString(), color: 'hsl(var(--tf-fg))' },
-          { label: 'Pending', value: stats.pending.toString(), color: 'hsl(38 92% 50%)' },
-          { label: 'Success Rate', value: `${stats.successRate}%`, color: 'hsl(142 71% 45%)' },
+          { label: 'Pending', value: stats.pending.toString(), color: 'hsl(var(--tf-warning-hs) 50%)' },
+          { label: 'Success Rate', value: `${stats.successRate}%`, color: 'hsl(var(--tf-success-hs) 45%)' },
           { label: 'Total Reduction', value: fmt(stats.totalReduction), color: 'hsl(var(--tf-suite-forge))' },
         ].map((stat, i) => (
           <Card key={i} style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
@@ -493,7 +493,7 @@ export default function AppealForgeModule() {
                           size='sm'
                           variant='outline'
                           onClick={() => handleDeleteAppeal(activeAppeal.id)}
-                          style={{ borderColor: 'hsl(0 84% 60% / 0.4)', color: 'hsl(0 84% 60%)' }}
+                          style={{ borderColor: 'hsl(0 84% 60% / 0.4)', color: 'hsl(var(--tf-error-hs) 60%)' }}
                         >
                           <Trash2 size={14} />
                         </Button>
@@ -517,7 +517,7 @@ export default function AppealForgeModule() {
                         {fmt(activeAppeal.requestedValue)}
                       </p>
                       {activeAppeal.currentValue > 0 && (
-                        <p className='text-xs' style={{ color: 'hsl(0 84% 60%)' }}>
+                        <p className='text-xs' style={{ color: 'hsl(var(--tf-error-hs) 60%)' }}>
                           {(((activeAppeal.requestedValue - activeAppeal.currentValue) / activeAppeal.currentValue) * 100).toFixed(1)}%
                         </p>
                       )}
