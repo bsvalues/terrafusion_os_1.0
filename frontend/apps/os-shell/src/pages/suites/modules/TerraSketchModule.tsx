@@ -221,9 +221,9 @@ export default function TerraSketchModule() {
             <CardHeader className='pb-2'>
               <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
                 {validation.valid ? (
-                  <CheckCircle2 size={16} style={{ color: 'hsl(142 71% 45%)' }} />
+                  <CheckCircle2 size={16} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
                 ) : (
-                  <AlertTriangle size={16} style={{ color: 'hsl(0 84% 60%)' }} />
+                  <AlertTriangle size={16} style={{ color: 'hsl(var(--tf-error-hs) 60%)' }} />
                 )}
                 Validation
               </CardTitle>
@@ -242,8 +242,8 @@ export default function TerraSketchModule() {
               ))}
               {validation.warnings.map((w, i) => (
                 <div key={i} className='flex items-start gap-1.5 p-2 rounded' style={{ background: 'hsl(38 92% 50% / 0.1)' }}>
-                  <AlertTriangle size={12} style={{ color: 'hsl(38 92% 50%)' }} className='mt-0.5 shrink-0' />
-                  <p className='text-xs' style={{ color: 'hsl(38 92% 50%)' }}>{w}</p>
+                  <AlertTriangle size={12} style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }} className='mt-0.5 shrink-0' />
+                  <p className='text-xs' style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }}>{w}</p>
                 </div>
               ))}
             </CardContent>

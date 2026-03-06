@@ -102,7 +102,7 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
           severity: 'warning',
           title: 'Assessment Outliers Identified',
           description:
-            '2 commercial properties (Parcels #8842, #9103) showing significant deviation from comparable properties.',
+            '2 commercial properties (Parcels #8842, #9103) showing significant deviation from comparable properties.', // tdc:allow — parcel IDs, not color hex
           confidence: 0.943,
           impact: {
             category: 'accuracy',

@@ -344,9 +344,9 @@ function LevyModule() {
 
       {/* API Calculation Result */}
       {calcError && (
-        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(30 90% 50% / 0.3)' }}>
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-warning-hs) 50% / 0.3)' }}>
           <CardContent className='pt-6'>
-            <p className='text-sm' style={{ color: 'hsl(30 90% 60%)' }}>{calcError}</p>
+            <p className='text-sm' style={{ color: 'hsl(var(--tf-warning-hs) 60%)' }}>{calcError}</p>
           </CardContent>
         </Card>
       )}
@@ -361,8 +361,8 @@ function LevyModule() {
               <Badge
                 variant='outline'
                 style={{
-                  borderColor: calcResult.isCompliant ? 'hsl(140 70% 40%)' : 'hsl(0 70% 50%)',
-                  color: calcResult.isCompliant ? 'hsl(140 70% 50%)' : 'hsl(0 70% 60%)',
+                  borderColor: calcResult.isCompliant ? 'hsl(var(--tf-success-hs) 40%)' : 'hsl(var(--tf-error-hs) 50%)',
+                  color: calcResult.isCompliant ? 'hsl(var(--tf-success-hs) 50%)' : 'hsl(var(--tf-error-hs) 60%)',
                 }}
               >
                 {calcResult.isCompliant ? 'RCW Compliant' : 'Exceeds Limit'}
@@ -394,7 +394,7 @@ function LevyModule() {
               </div>
               <div>
                 <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Confidence</p>
-                <p className='text-lg font-mono font-bold' style={{ color: 'hsl(140 70% 50%)' }}>
+                <p className='text-lg font-mono font-bold' style={{ color: 'hsl(var(--tf-success-hs) 50%)' }}>
                   {(calcResult.confidenceScore * 100).toFixed(1)}%
                 </p>
               </div>
@@ -411,16 +411,16 @@ function LevyModule() {
                   style={{
                     borderColor:
                       calcResult.riskLevel === 'LOW'
-                        ? 'hsl(140 70% 40%)'
+                        ? 'hsl(var(--tf-success-hs) 40%)'
                         : calcResult.riskLevel === 'MEDIUM'
-                          ? 'hsl(45 90% 50%)'
-                          : 'hsl(0 70% 50%)',
+                          ? 'hsl(var(--tf-warning-hs) 50%)'
+                          : 'hsl(var(--tf-error-hs) 50%)',
                     color:
                       calcResult.riskLevel === 'LOW'
-                        ? 'hsl(140 70% 50%)'
+                        ? 'hsl(var(--tf-success-hs) 50%)'
                         : calcResult.riskLevel === 'MEDIUM'
-                          ? 'hsl(45 90% 60%)'
-                          : 'hsl(0 70% 60%)',
+                          ? 'hsl(var(--tf-warning-hs) 60%)'
+                          : 'hsl(var(--tf-error-hs) 60%)',
                   }}
                 >
                   {calcResult.riskLevel}
@@ -434,8 +434,8 @@ function LevyModule() {
               </div>
             </div>
             {calcResult.warnings.length > 0 && (
-              <div className='mt-4 p-3 rounded-lg' style={{ background: 'hsl(30 90% 50% / 0.08)' }}>
-                <p className='text-xs font-medium mb-1' style={{ color: 'hsl(30 90% 60%)' }}>
+              <div className='mt-4 p-3 rounded-lg' style={{ background: 'hsl(var(--tf-warning-hs) 50% / 0.08)' }}>
+                <p className='text-xs font-medium mb-1' style={{ color: 'hsl(var(--tf-warning-hs) 60%)' }}>
                   Compliance Warnings
                 </p>
                 {calcResult.warnings.map((w, i) => (
@@ -504,8 +504,8 @@ function PILTModule() {
           variant='outline'
           className='flex items-center gap-1.5'
           style={{
-            borderColor: isLive ? 'hsl(140 70% 40%)' : 'hsl(var(--tf-border))',
-            color: isLive ? 'hsl(140 70% 50%)' : 'hsl(var(--tf-muted))',
+            borderColor: isLive ? 'hsl(var(--tf-success-hs) 40%)' : 'hsl(var(--tf-border))',
+            color: isLive ? 'hsl(var(--tf-success-hs) 50%)' : 'hsl(var(--tf-muted))',
           }}
         >
           {loading ? (
@@ -580,7 +580,7 @@ function PILTModule() {
                         {formatCurrency(r.amount)}
                       </td>
                       <td className='py-2 px-3 text-right'>
-                        <Badge variant='outline' style={{ borderColor: 'hsl(140 70% 40%)', color: 'hsl(140 70% 50%)' }}>
+                        <Badge variant='outline' style={{ borderColor: 'hsl(var(--tf-success-hs) 40%)', color: 'hsl(var(--tf-success-hs) 50%)' }}>
                           {r.status}
                         </Badge>
                       </td>
@@ -734,7 +734,7 @@ function CertificationModule() {
                   style={{
                     color:
                       m.status === 'completed'
-                        ? 'hsl(140 70% 50%)'
+                        ? 'hsl(var(--tf-success-hs) 50%)'
                         : m.status === 'current'
                           ? 'hsl(var(--tf-suite-dais))'
                           : 'hsl(var(--tf-muted))',
@@ -764,13 +764,13 @@ function CertificationModule() {
                   style={{
                     borderColor:
                       m.status === 'completed'
-                        ? 'hsl(140 70% 40%)'
+                        ? 'hsl(var(--tf-success-hs) 40%)'
                         : m.status === 'current'
                           ? 'hsl(var(--tf-suite-dais))'
                           : 'hsl(var(--tf-border))',
                     color:
                       m.status === 'completed'
-                        ? 'hsl(140 70% 50%)'
+                        ? 'hsl(var(--tf-success-hs) 50%)'
                         : m.status === 'current'
                           ? 'hsl(var(--tf-suite-dais))'
                           : 'hsl(var(--tf-muted))',
@@ -791,16 +791,16 @@ function AppealsDaisModule() {
   const [statusFilter, setStatusFilter] = useState('all');
 
   const STATUS_COLORS: Record<string, string> = {
-    decided: 'hsl(140 70% 45%)',
-    scheduled: 'hsl(200 80% 55%)',
-    filed: 'hsl(45 90% 55%)',
+    decided: 'hsl(var(--tf-success-hs) 45%)',
+    scheduled: 'hsl(var(--tf-network-blue-hs) 55%)',
+    filed: 'hsl(var(--tf-warning-hs) 55%)',
     withdrawn: 'hsl(var(--tf-muted))',
   };
 
   const OUTCOME_COLORS: Record<string, string> = {
-    reduced: 'hsl(200 80% 55%)',
-    upheld: 'hsl(140 70% 45%)',
-    dismissed: 'hsl(0 70% 55%)',
+    reduced: 'hsl(var(--tf-network-blue-hs) 55%)',
+    upheld: 'hsl(var(--tf-success-hs) 45%)',
+    dismissed: 'hsl(var(--tf-error-hs) 55%)',
   };
 
   const filtered = statusFilter === 'all'
@@ -831,8 +831,8 @@ function AppealsDaisModule() {
       <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
         {[
           { label: 'Total Appeals', value: BOE_APPEALS.length.toString(), color: 'hsl(var(--tf-fg))' },
-          { label: 'Decided', value: decidedCount.toString(), color: 'hsl(140 70% 45%)' },
-          { label: 'Scheduled', value: scheduledCount.toString(), color: 'hsl(200 80% 55%)' },
+          { label: 'Decided', value: decidedCount.toString(), color: 'hsl(var(--tf-success-hs) 45%)' },
+          { label: 'Scheduled', value: scheduledCount.toString(), color: 'hsl(var(--tf-network-blue-hs) 55%)' },
           { label: 'Value at Issue', value: formatCurrency(totalRequested), color: 'hsl(var(--tf-suite-dais))' },
         ].map((s) => (
           <Card key={s.label} style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
@@ -923,11 +923,11 @@ function AppealsDaisModule() {
 
 function PermitsDaisModule() {
   const STATUS_COLORS: Record<string, string> = {
-    submitted: 'hsl(45 90% 55%)',
-    under_review: 'hsl(200 80% 55%)',
-    approved: 'hsl(140 70% 45%)',
-    issued: 'hsl(270 70% 60%)',
-    denied: 'hsl(0 70% 55%)',
+    submitted: 'hsl(var(--tf-warning-hs) 55%)',
+    under_review: 'hsl(var(--tf-network-blue-hs) 55%)',
+    approved: 'hsl(var(--tf-success-hs) 45%)',
+    issued: 'hsl(var(--tf-info-hs) 60%)',
+    denied: 'hsl(var(--tf-error-hs) 55%)',
   };
 
   const totalValue = BUILDING_PERMITS.reduce((s, p) => s + p.estValue, 0);
@@ -964,7 +964,7 @@ function PermitsDaisModule() {
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Pending Review</p>
-            <p className='text-3xl font-bold' style={{ color: 'hsl(200 80% 55%)' }}>
+            <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-network-blue-hs) 55%)' }}>
               {BUILDING_PERMITS.filter((p) => p.status === 'under_review' || p.status === 'submitted').length}
             </p>
           </CardContent>
@@ -1032,9 +1032,9 @@ function PermitsDaisModule() {
 function CalendarDaisModule() {
   const CATEGORY_CONFIG: Record<string, { label: string; color: string }> = {
     milestone: { label: 'Milestone', color: 'hsl(var(--tf-suite-dais))' },
-    deadline: { label: 'Deadline', color: 'hsl(0 70% 55%)' },
-    notice: { label: 'Notice', color: 'hsl(200 80% 55%)' },
-    hearing: { label: 'Hearing', color: 'hsl(270 70% 60%)' },
+    deadline: { label: 'Deadline', color: 'hsl(var(--tf-error-hs) 55%)' },
+    notice: { label: 'Notice', color: 'hsl(var(--tf-network-blue-hs) 55%)' },
+    hearing: { label: 'Hearing', color: 'hsl(var(--tf-info-hs) 60%)' },
   };
 
   const today = new Date().toISOString().split('T')[0];

@@ -36,14 +36,14 @@ import {
 } from '../../../services/forgeService';
 
 const ACTION_CONFIG: Record<AuditAction, { label: string; icon: typeof Calculator; color: string }> = {
-  COST_CALCULATED: { label: 'Cost Calculated', icon: Calculator, color: '#3b82f6' },
-  INCOME_CALCULATED: { label: 'Income Calculated', icon: TrendingUp, color: '#22c55e' },
-  COMPS_ANALYZED: { label: 'Comps Analyzed', icon: BarChart3, color: '#8b5cf6' },
-  RECONCILIATION_COMPLETED: { label: 'Reconciliation', icon: Scale, color: '#f59e0b' },
-  APPEAL_FILED: { label: 'Appeal Filed', icon: Gavel, color: '#ef4444' },
-  APPEAL_DECIDED: { label: 'Appeal Decided', icon: Gavel, color: '#06b6d4' },
-  VALUE_CHANGED: { label: 'Value Changed', icon: RefreshCw, color: '#ec4899' },
-  MANUAL_OVERRIDE: { label: 'Manual Override', icon: AlertTriangle, color: '#f97316' },
+  COST_CALCULATED: { label: 'Cost Calculated', icon: Calculator, color: 'hsl(var(--tf-network-blue-hs) 55%)' },
+  INCOME_CALCULATED: { label: 'Income Calculated', icon: TrendingUp, color: 'hsl(var(--tf-success-hs) 45%)' },
+  COMPS_ANALYZED: { label: 'Comps Analyzed', icon: BarChart3, color: 'hsl(var(--tf-info-hs) 60%)' },
+  RECONCILIATION_COMPLETED: { label: 'Reconciliation', icon: Scale, color: 'hsl(var(--tf-warning-hs) 50%)' },
+  APPEAL_FILED: { label: 'Appeal Filed', icon: Gavel, color: 'hsl(var(--tf-error-hs) 55%)' },
+  APPEAL_DECIDED: { label: 'Appeal Decided', icon: Gavel, color: 'hsl(var(--tf-transcend-cyan-hs) 50%)' },
+  VALUE_CHANGED: { label: 'Value Changed', icon: RefreshCw, color: 'hsl(var(--tf-error-hs) 50%)' },
+  MANUAL_OVERRIDE: { label: 'Manual Override', icon: AlertTriangle, color: 'hsl(var(--tf-warning-hs) 55%)' },
 };
 
 const DEMO_ENTRIES: ValuationAuditEntry[] = [
@@ -327,19 +327,19 @@ export default function ValueAuditModule() {
                   {selectedEntry.previousValue !== null && (
                     <div className='flex items-center justify-between text-sm'>
                       <span style={{ color: 'hsl(var(--tf-muted))' }}>Previous</span>
-                      <span className='font-mono' style={{ color: '#ef4444' }}>{fmt(selectedEntry.previousValue)}</span>
+                      <span className='font-mono' style={{ color: 'hsl(var(--tf-error-hs) 55%)' }}>{fmt(selectedEntry.previousValue)}</span>
                     </div>
                   )}
                   {selectedEntry.newValue !== null && (
                     <div className='flex items-center justify-between text-sm'>
                       <span style={{ color: 'hsl(var(--tf-muted))' }}>New</span>
-                      <span className='font-mono' style={{ color: '#22c55e' }}>{fmt(selectedEntry.newValue)}</span>
+                      <span className='font-mono' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>{fmt(selectedEntry.newValue)}</span>
                     </div>
                   )}
                   {selectedEntry.previousValue !== null && selectedEntry.newValue !== null && (
                     <div className='flex items-center justify-between text-sm pt-1' style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
                       <span style={{ color: 'hsl(var(--tf-muted))' }}>Change</span>
-                      <span className='font-mono font-medium' style={{ color: (selectedEntry.newValue - selectedEntry.previousValue) >= 0 ? '#22c55e' : '#ef4444' }}>
+                      <span className='font-mono font-medium' style={{ color: (selectedEntry.newValue - selectedEntry.previousValue) >= 0 ? 'hsl(var(--tf-success-hs) 45%)' : 'hsl(var(--tf-error-hs) 55%)' }}>
                         {(selectedEntry.newValue - selectedEntry.previousValue) >= 0 ? '+' : ''}{fmt(selectedEntry.newValue - selectedEntry.previousValue)}
                       </span>
                     </div>

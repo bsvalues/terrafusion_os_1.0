@@ -17,7 +17,7 @@ if (import.meta.env.DEV && import.meta.env.VITE_FORCE_REDUCE_MOTION === '1') {
   document.documentElement.classList.add('reduce-motion-force');
   console.log(
     '%c[TerraFusion] Forced reduced motion enabled (VITE_FORCE_REDUCE_MOTION=1).',
-    'color: #00e5ff'
+    'color: hsl(var(--tf-transcend-cyan-hs) 50%)'
   );
 }
 

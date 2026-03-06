@@ -11,6 +11,9 @@ describe('AIAssistantPanel.tsx leak guard', () => {
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'AIAssistantPanel.tsx' });
+    assertNoRawColorLeaks(content, {
+      label: 'AIAssistantPanel.tsx',
+      knownViolationBaseline: 2, // False positive: parcel IDs #8842, #9103 in demo conversation string
+    });
   });
 });

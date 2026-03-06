@@ -855,7 +855,7 @@ export default function CostForgeModule() {
                   Governed API
                 </span>
                 {apiResult ? (
-                  <Wifi size={14} style={{ color: 'hsl(140 70% 50%)' }} />
+                  <Wifi size={14} style={{ color: 'hsl(var(--tf-success-hs) 50%)' }} />
                 ) : apiError ? (
                   <WifiOff size={14} style={{ color: 'hsl(var(--tf-muted))' }} />
                 ) : null}
@@ -879,7 +879,7 @@ export default function CostForgeModule() {
                 <div className='space-y-1 text-sm'>
                   <div className='flex justify-between'>
                     <span style={{ color: 'hsl(var(--tf-muted))' }}>API Value</span>
-                    <span style={{ color: 'hsl(140 70% 50%)' }}>
+                    <span style={{ color: 'hsl(var(--tf-success-hs) 50%)' }}>
                       {formatCurrency(apiResult.totalCost)}
                     </span>
                   </div>
@@ -894,8 +894,8 @@ export default function CostForgeModule() {
                         style={{
                           color:
                             Math.abs(result.rcnld - apiResult.totalCost) / result.rcnld < 0.05
-                              ? 'hsl(140 70% 50%)'
-                              : 'hsl(45 90% 55%)',
+                              ? 'hsl(var(--tf-success-hs) 50%)'
+                              : 'hsl(var(--tf-warning-hs) 55%)',
                         }}
                       >
                         {((Math.abs(result.rcnld - apiResult.totalCost) / result.rcnld) * 100).toFixed(1)}%

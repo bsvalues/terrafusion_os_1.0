@@ -127,10 +127,10 @@ export default function IncomeForgeModule() {
   }, [propertyType, region, pgi, vacancyRate, otherIncome, expenses, effectiveCapRate, capRateSource, selectedComps]);
 
   const confidenceColor = result.confidence === 'HIGH'
-    ? 'hsl(142 71% 45%)'
+    ? 'hsl(var(--tf-success-hs) 45%)'
     : result.confidence === 'MEDIUM'
-      ? 'hsl(38 92% 50%)'
-      : 'hsl(0 84% 60%)';
+      ? 'hsl(var(--tf-warning-hs) 50%)'
+      : 'hsl(var(--tf-error-hs) 60%)';
 
   return (
     <div className='p-6 space-y-6 max-w-[1400px] mx-auto'>
@@ -278,8 +278,8 @@ export default function IncomeForgeModule() {
                   className='font-medium'
                   style={{
                     color: result.expenseRatio >= 0.3 && result.expenseRatio <= 0.5
-                      ? 'hsl(142 71% 45%)'
-                      : 'hsl(38 92% 50%)',
+                      ? 'hsl(var(--tf-success-hs) 45%)'
+                      : 'hsl(var(--tf-warning-hs) 50%)',
                   }}
                 >
                   {fmtPct(result.expenseRatio)}
@@ -381,15 +381,15 @@ export default function IncomeForgeModule() {
               <Badge
                 style={{
                   background: result.capRateSupport === 'strong'
-                    ? 'hsl(142 71% 45% / 0.15)'
+                    ? 'hsl(var(--tf-success-hs) 45% / 0.15)'
                     : result.capRateSupport === 'moderate'
-                      ? 'hsl(38 92% 50% / 0.15)'
+                      ? 'hsl(var(--tf-warning-hs) 50% / 0.15)'
                       : 'hsl(0 84% 60% / 0.15)',
                   color: result.capRateSupport === 'strong'
-                    ? 'hsl(142 71% 45%)'
+                    ? 'hsl(var(--tf-success-hs) 45%)'
                     : result.capRateSupport === 'moderate'
-                      ? 'hsl(38 92% 50%)'
-                      : 'hsl(0 84% 60%)',
+                      ? 'hsl(var(--tf-warning-hs) 50%)'
+                      : 'hsl(var(--tf-error-hs) 60%)',
                 }}
               >
                 {result.capRateSupport} cap rate support
@@ -473,7 +473,7 @@ export default function IncomeForgeModule() {
                   <span style={{ color: 'hsl(var(--tf-muted))' }}>{row.label}</span>
                   <span
                     className='font-mono'
-                    style={{ color: row.positive ? 'hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}
+                    style={{ color: row.positive ? 'hsl(var(--tf-success-hs) 45%)' : 'hsl(var(--tf-error-hs) 60%)' }}
                   >
                     {row.value < 0 ? `(${fmt(Math.abs(row.value))})` : fmt(row.value)}
                   </span>
@@ -491,7 +491,7 @@ export default function IncomeForgeModule() {
 
               <div className='flex justify-between text-sm'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Less: Operating Expenses</span>
-                <span className='font-mono' style={{ color: 'hsl(0 84% 60%)' }}>
+                <span className='font-mono' style={{ color: 'hsl(var(--tf-error-hs) 60%)' }}>
                   ({fmt(result.totalExpenses)})
                 </span>
               </div>
@@ -502,7 +502,7 @@ export default function IncomeForgeModule() {
                 <span style={{ color: 'hsl(var(--tf-fg))' }}>Net Operating Income (NOI)</span>
                 <span
                   className='font-mono'
-                  style={{ color: result.netOperatingIncome > 0 ? 'hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}
+                  style={{ color: result.netOperatingIncome > 0 ? 'hsl(var(--tf-success-hs) 45%)' : 'hsl(var(--tf-error-hs) 60%)' }}
                 >
                   {fmt(result.netOperatingIncome)}
                 </span>
@@ -550,12 +550,12 @@ export default function IncomeForgeModule() {
 
           {/* Warnings */}
           {result.warnings.length > 0 && (
-            <Card style={{ background: 'hsl(38 92% 50% / 0.05)', borderColor: 'hsl(38 92% 50% / 0.3)' }}>
+            <Card style={{ background: 'hsl(var(--tf-warning-hs) 50% / 0.05)', borderColor: 'hsl(var(--tf-warning-hs) 50% / 0.3)' }}>
               <CardContent className='pt-4 space-y-2'>
                 {result.warnings.map((w, i) => (
                   <div key={i} className='flex items-start gap-2'>
-                    <AlertTriangle size={14} className='mt-0.5 shrink-0' style={{ color: 'hsl(38 92% 50%)' }} />
-                    <p className='text-xs' style={{ color: 'hsl(38 92% 50%)' }}>{w}</p>
+                    <AlertTriangle size={14} className='mt-0.5 shrink-0' style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }} />
+                    <p className='text-xs' style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }}>{w}</p>
                   </div>
                 ))}
               </CardContent>
@@ -580,7 +580,7 @@ export default function IncomeForgeModule() {
                   <span style={{ color: 'hsl(var(--tf-muted))' }}>{metric.label}</span>
                   <span
                     className='font-medium'
-                    style={{ color: metric.ok ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)' }}
+                    style={{ color: metric.ok ? 'hsl(var(--tf-success-hs) 45%)' : 'hsl(var(--tf-warning-hs) 50%)' }}
                   >
                     {metric.value}
                   </span>

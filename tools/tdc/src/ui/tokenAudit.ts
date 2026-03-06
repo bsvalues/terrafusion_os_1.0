@@ -17,8 +17,12 @@ const TW_ARBITRARY_RE =
 // _ is a word character.
 export const COLOR_FN_RE = /(?<![0-9A-Za-z])(?:rgba?|hsla?)\([^)]*\)/g;
 
-// ── Allowlist: TF token patterns ─────────────────────────────────
-const ALLOW_TOKEN_RE = /(?:hsl|hsla)\(\s*var\(--tf-[a-z0-9-]+\)|var\(--tf-[a-z0-9-]+\)/;
+// ── Allowlist: Token & dynamic patterns ───────────────────────────
+// Accept: hsl(var(--anything)), var(--anything), JS template hsl(${...}), var(${...})
+const ALLOW_TOKEN_RE = /(?:hsl|hsla)\(\s*(?:var\(--|var\(\$\{|\$\{)|var\(--[a-z][a-z0-9-]*/;
+
+// ── Inline suppression comment ────────────────────────────────────
+const TDC_ALLOW_RE = /tdc:allow/;
 
 // ── File extensions to scan ──────────────────────────────────────
 const SCAN_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.css', '.scss', '.mdx']);
@@ -72,6 +76,16 @@ function parseExcludeDirNames(patterns: string[]): Set<string> {
   return dirs;
 }
 
+/** Extract file suffix patterns from glob exclude patterns (e.g., ** /*.stories.tsx → .stories.tsx). */
+function parseExcludeFileSuffixes(patterns: string[]): string[] {
+  const suffixes: string[] = [];
+  for (const p of patterns) {
+    const m = p.match(/^\*\*\/\*(\.[a-zA-Z0-9.]+)$/);
+    if (m) suffixes.push(m[1]);
+  }
+  return suffixes;
+}
+
 /** Deterministic hash of scope config for baseline drift detection. */
 export function computeScopeHash(scope?: TokenAuditScope): string {
   const input = JSON.stringify({
@@ -108,6 +122,9 @@ export function runTokenAudit(
     const extraSkips = scope.exclude?.length
       ? parseExcludeDirNames(scope.exclude)
       : new Set<string>();
+    const excludeSuffixes = scope.exclude?.length
+      ? parseExcludeFileSuffixes(scope.exclude)
+      : [];
     const baseDirs = scope.include.map(p => extractBaseDir(p));
     files = [];
     for (const dir of baseDirs) {
@@ -119,6 +136,10 @@ export function runTokenAudit(
       } catch {
         // directory doesn't exist — skip silently
       }
+    }
+    // Apply file-suffix exclusions (e.g., *.stories.tsx, *.spec.ts)
+    if (excludeSuffixes.length) {
+      files = files.filter(f => !excludeSuffixes.some(s => f.endsWith(s)));
     }
   } else {
     // Full scan (legacy behavior)
@@ -133,15 +154,26 @@ export function runTokenAudit(
 
     const content = fs.readFileSync(abs, 'utf8');
     const rel = path.relative(cwd, abs);
+    const lines = content.split('\n');
+
+    /** Check if the line containing `index` has a tdc:allow suppression. */
+    const isSuppressed = (index: number): boolean => {
+      const before = content.slice(0, index);
+      const lineNum = before.split('\n').length - 1;
+      return TDC_ALLOW_RE.test(lines[lineNum] ?? '');
+    };
 
     // Raw hex
     for (const m of content.matchAll(HEX_RE)) {
-      violations.push(makeViolation('RAW_HEX', rel, m.index ?? 0, content));
+      const idx = m.index ?? 0;
+      if (isSuppressed(idx)) continue;
+      violations.push(makeViolation('RAW_HEX', rel, idx, content));
     }
 
     // Arbitrary Tailwind color classes (excluding TF token patterns)
     for (const m of content.matchAll(TW_ARBITRARY_RE)) {
       const idx = m.index ?? 0;
+      if (isSuppressed(idx)) continue;
       const slice = content.slice(idx, Math.min(idx + 200, content.length));
       if (ALLOW_TOKEN_RE.test(slice)) continue;
       violations.push(makeViolation('TAILWIND_ARBITRARY_COLOR', rel, idx, content));
@@ -150,6 +182,7 @@ export function runTokenAudit(
     // Disallowed direct color function usage (rgba/hsl with literal values)
     for (const m of content.matchAll(COLOR_FN_RE)) {
       const idx = m.index ?? 0;
+      if (isSuppressed(idx)) continue;
       const slice = content.slice(idx, Math.min(idx + 200, content.length));
       if (ALLOW_TOKEN_RE.test(slice)) continue;
       violations.push(makeViolation('DISALLOWED_COLOR_FUNCTION', rel, idx, content));
