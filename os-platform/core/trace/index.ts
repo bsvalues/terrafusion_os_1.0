@@ -8,8 +8,11 @@ export {
     DEFAULT_RING_BUFFER_SIZE,
     SCHEMA_VERSION,
     TraceService,
+    exportNDJSON,
     isAuditEventType,
+    toAuditRecord,
     traceService,
+    type AuditRecord,
     type TraceServiceOptions
 } from './TraceService.js';
 
