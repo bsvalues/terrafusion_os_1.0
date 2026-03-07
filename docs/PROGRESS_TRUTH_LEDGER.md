@@ -212,5 +212,55 @@ However, R1 is not yet fully "real end-to-end" because `PiltController` is entir
 
 ---
 
+## Evidence Verification Gate (March 7, 2026 — Session 2)
+
+### Evidence Verifier Deployed
+
+`tools/r1/verify-evidence.mjs` — plain Node .mjs, no TS runtime. Enforces:
+- Required signoff metadata fields per lane
+- Same branch-head SHA across CC/CX/CP
+- Same command canon version across CC/CX/CP
+- Evidence links restricted to `docs/evidence/<lane>/` or `docs/evidence/final/`
+- Linked evidence files exist on disk
+- Optional: `docs/evidence/final/manifest.json` SHA256 tamper-evidence
+
+`tools/r1/generate-final-manifest.mjs` — scans all evidence dirs, records repo-relative paths + SHA256 hashes.
+
+Wired into root `package.json`:
+- `pnpm -w run r1:verify-evidence` — deterministic pass/fail gate
+- `pnpm -w run r1:finalize-manifest <SHA> <VERSION>` — tamper-evident manifest generation
+
+### Evidence Packet Status
+
+| Lane | Signoff | Artifacts | Verifier | Manifest |
+|------|---------|-----------|----------|----------|
+| CC | `docs/evidence/cc/signoff.md` | 4 files (forge-cutover, dossier-cutover, atlas-cutover, fake-path-elimination) | **PASS** | **PASS** |
+| CX | `docs/evidence/cx/signoff.md` | 3 files (backend-hardening, endpoint-matrix, auth-audit) | **PASS** | **PASS** |
+| CP | `docs/evidence/cp/signoff.md` | 4 files (handler-registry, trace-persistence, governance-contracts, r1-proof-tools) | **PASS** | **PASS** |
+| Final | `docs/evidence/final/manifest.json` | 14 artifacts with SHA256 hashes | **PASS** | N/A |
+
+### Verification Gate Output
+
+```
+✅ R1 evidence verification passed.
+- Verified branch-head SHA: 210071157d5e756f5920113472522ef4c3d50928
+- Canon version: r1-canon-2026-03-07
+```
+
+### What Was Delivered This Session
+
+1. **Evidence verifier + manifest generator** — `tools/r1/verify-evidence.mjs`, `tools/r1/generate-final-manifest.mjs`
+2. **CC lane evidence** — forge cutover proof, dossier cutover proof, atlas cutover proof, fake-path elimination proof
+3. **CX lane evidence** — backend hardening audit, endpoint contract matrix, auth/county isolation audit
+4. **CP lane evidence** — handler registry (10 real), trace persistence (JSONL), governance contracts (frozen), R1 proof tools (5-tool set)
+5. **Final manifest** — 14 artifacts, SHA256 tamper-evident, verifier-validated
+6. **Three-lane signoff** — same SHA, same canon version, same verification date
+
+### Remaining Blockers (Unchanged)
+
+2-6 from the original blocker list remain open. Items 1 and 7 are closed. Item 8 (5-tool acceptance proof) is structurally ready but not yet executed with live correlation IDs.
+
+---
+
 *Classification: Internal working document*
-*Source: `handlers.real.ts`, `PilotController.ts`, `TraceStore.ts`, service files, controller source code, gate output*
+*Source: `handlers.real.ts`, `PilotController.ts`, `TraceStore.ts`, service files, controller source code, gate output, evidence verification gate*
