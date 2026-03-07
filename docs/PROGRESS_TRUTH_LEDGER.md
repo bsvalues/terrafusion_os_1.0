@@ -61,7 +61,7 @@ Frozen scope authority remains:
 | Controller / Surface | Current truth | Verification |
 |---|---|---|
 | `AtlasController.cs` | Real, authenticated, county-isolated controller | Source-verified |
-| `DossierController.cs` | Real, authenticated, county-isolated controller with notes, casefile, evidence snapshot, and SHA-256 evidence hash | Source-verified |
+| `DossierController.cs` | Real, authenticated, county-isolated controller with notes, casefile, evidence snapshot, and SHA-256 evidence hash. Suite-visible document-management routes are now explicit `Post-R1` / `501`. | Source-verified |
 | `CostForgeController.cs` | Real for the active single-property valuation path. Batch valuation and Harris PACS sync are now explicit `Post-R1` / `501`, not fake-success stubs. | Source-verified |
 | `LevyCalculationController.cs` | Real, authenticated, county-scoped levy calculation surface | Source-verified |
 | `PropertyValuationController.cs` | **Closed in code, verified by targeted tests**. Now authenticated and county-scoped on active requests. | Source + `R1Week5CxR1ClosureTests` |
@@ -99,6 +99,7 @@ Frozen scope authority remains:
 - 10 real handlers on the active governed surface
 - Atlas and Dossier backend controllers with auth and county isolation
 - Dossier details, casefile, notes, evidence snapshot, and SHA-256 evidence hashing
+- Dossier document-management backend routes reclassified from silent absence to explicit Post-R1 disablement
 - Correlation middleware
 - `PropertyValuationController` hardening on the active backend surface
 - `PiltController` reclassified from fake-live to explicit Post-R1 disablement

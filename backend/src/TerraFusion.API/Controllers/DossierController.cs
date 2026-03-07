@@ -210,6 +210,87 @@ public class DossierController : ControllerBase
         );
     }
 
+    private ActionResult BuildPostR1DisabledResponse(string operation, string featureName, string detail, string problemType)
+    {
+        HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
+
+        _logger.LogWarning(
+            "Dossier endpoint {Operation} was invoked, but {FeatureName} remains Post-R1 and is intentionally disabled",
+            operation,
+            featureName);
+
+        var problem = new ProblemDetails
+        {
+            Title = $"{featureName} is not enabled for R1",
+            Detail = detail,
+            Status = StatusCodes.Status501NotImplemented,
+            Type = $"https://terrafusion.local/problems/{problemType}"
+        };
+
+        problem.Extensions["scope"] = "Post-R1";
+        problem.Extensions["operation"] = operation;
+        problem.Extensions["feature"] = featureName;
+
+        return StatusCode(StatusCodes.Status501NotImplemented, problem);
+    }
+
+    // ── Post-R1 Dossier Document Management Carve-Out ───────────────
+
+    [HttpPost("documents/search")]
+    [RequiresPermission("read:dossier")]
+    public IActionResult SearchDocuments([FromBody] object? request)
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(SearchDocuments),
+            "Dossier document search",
+            "The document-management backend is not part of strict R1. This endpoint is intentionally disabled until a real county-scoped document index ships.",
+            "dossier-document-search-post-r1");
+    }
+
+    [HttpGet("documents/{id}")]
+    [RequiresPermission("read:dossier")]
+    public IActionResult GetDocument(string id)
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(GetDocument),
+            "Dossier document retrieval",
+            "The document-management backend is not part of strict R1. This endpoint is intentionally disabled until a real county-scoped document store ships.",
+            "dossier-document-get-post-r1");
+    }
+
+    [HttpPost("evidence/search")]
+    [RequiresPermission("read:dossier")]
+    public IActionResult SearchEvidence([FromBody] object? request)
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(SearchEvidence),
+            "Dossier evidence search",
+            "The document-management backend is not part of strict R1. This endpoint is intentionally disabled until a real county-scoped evidence index ships.",
+            "dossier-evidence-search-post-r1");
+    }
+
+    [HttpGet("evidence/{evidenceId}/chain")]
+    [RequiresPermission("read:dossier")]
+    public IActionResult GetChainOfCustody(string evidenceId)
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(GetChainOfCustody),
+            "Dossier chain of custody",
+            "The document-management backend is not part of strict R1. This endpoint is intentionally disabled until a real county-scoped evidence chain service ships.",
+            "dossier-chain-of-custody-post-r1");
+    }
+
+    [HttpGet("stats")]
+    [RequiresPermission("read:dossier")]
+    public IActionResult GetStats()
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(GetStats),
+            "Dossier document-management stats",
+            "The document-management backend is not part of strict R1. This endpoint is intentionally disabled until a real county-scoped document-management implementation ships.",
+            "dossier-stats-post-r1");
+    }
+
     // ── GET /api/dossier/{parcelId}/notes ────────────────────────────
 
     /// <summary>

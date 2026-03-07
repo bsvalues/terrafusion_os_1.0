@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
@@ -277,6 +278,64 @@ public sealed class R1Week5CxR1ClosureTests
         problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
         problem.Extensions["scope"].Should().Be("Post-R1");
         problem.Extensions["feature"].Should().Be("Harris PACS sync");
+        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+    }
+
+    [Fact]
+    public void DossierController_SearchDocuments_ReturnsExplicitPostR1ProblemDetails()
+    {
+        using var db = CreateDbContext(nameof(DossierController_SearchDocuments_ReturnsExplicitPostR1ProblemDetails));
+        var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+        var hostEnvironment = new Mock<IHostEnvironment>();
+        hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Production");
+
+        var controller = new DossierController(
+            db,
+            costForgeService.Object,
+            NullLogger<DossierController>.Instance,
+            hostEnvironment.Object);
+
+        AttachPrincipal(controller, CreateEmptyPrincipal());
+
+        var result = controller.SearchDocuments(new { limit = 50 });
+
+        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+
+        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problem.Title.Should().Be("Dossier document search is not enabled for R1");
+        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
+        problem.Extensions["scope"].Should().Be("Post-R1");
+        problem.Extensions["feature"].Should().Be("Dossier document search");
+        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+    }
+
+    [Fact]
+    public void DossierController_Stats_ReturnsExplicitPostR1ProblemDetails()
+    {
+        using var db = CreateDbContext(nameof(DossierController_Stats_ReturnsExplicitPostR1ProblemDetails));
+        var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+        var hostEnvironment = new Mock<IHostEnvironment>();
+        hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Production");
+
+        var controller = new DossierController(
+            db,
+            costForgeService.Object,
+            NullLogger<DossierController>.Instance,
+            hostEnvironment.Object);
+
+        AttachPrincipal(controller, CreateEmptyPrincipal());
+
+        var result = controller.GetStats();
+
+        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+
+        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problem.Title.Should().Be("Dossier document-management stats is not enabled for R1");
+        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
+        problem.Extensions["scope"].Should().Be("Post-R1");
+        problem.Extensions["feature"].Should().Be("Dossier document-management stats");
         controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
     }
 }

@@ -3,7 +3,7 @@
 Date: March 7, 2026
 Lane: `cx`
 Scope: active backend truth closure for Property Valuation, CostForge non-R1 surfaces,
-PILT, and runtime theater cleanup
+Dossier document-management carve-outs, PILT, and runtime theater cleanup
 
 ## Implemented
 
@@ -36,6 +36,22 @@ PILT, and runtime theater cleanup
 - The active single-property Forge calculation path remains live; only the non-R1
   surfaces were converted from placeholder success to honest disablement.
 
+### Dossier Document Management
+
+- [DossierController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/DossierController.cs)
+  now answers these suite-visible document-management routes with explicit Post-R1
+  semantics instead of silent backend absence:
+  - `POST /api/dossier/documents/search`
+  - `GET /api/dossier/documents/{id}`
+  - `POST /api/dossier/evidence/search`
+  - `GET /api/dossier/evidence/{evidenceId}/chain`
+  - `GET /api/dossier/stats`
+- Those endpoints now return explicit `501 Not Implemented` `ProblemDetails` with
+  `scope=Post-R1` and `X-R1-Scope: Post-R1`.
+- This does not make document management real for R1. It makes the backend contract
+  honest so the frontend can render explicit deferred states instead of relying on
+  missing-route ambiguity.
+
 ### Quantum Metrics Background Service
 
 - [Program.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Program.cs)
@@ -61,5 +77,7 @@ PILT, and runtime theater cleanup
 - This does not make PILT real. It makes PILT honest.
 - This does not make CostForge batch valuation or Harris PACS sync real. It makes those
   surfaces explicit Post-R1 instead of fake-success.
+- This does not make Dossier document management real. It makes the suite-visible
+  backend routes explicit Post-R1 instead of silent no-contract behavior.
 - This does not complete CC fake-path removal for the PILT UI fallback.
 - This does not finalize cross-lane signoff or the branch-head evidence manifest.
