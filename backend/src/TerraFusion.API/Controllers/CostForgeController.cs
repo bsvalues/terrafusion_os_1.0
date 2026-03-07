@@ -26,6 +26,7 @@ public class CostForgeController : ControllerBase
   private readonly ICostForgeService _costForgeService;
   private readonly ICostForgeAIService _costForgeAIService;
   private readonly IIncomeApproachService _incomeApproachService;
+  private readonly ISalesComparisonService _salesComparisonService;
   private readonly DataDbContext _db;
   private readonly TerraFusion.Abstractions.Interfaces.IAuditLogger _auditLogger;
   private readonly ILogger<CostForgeController> _logger;
@@ -34,6 +35,7 @@ public class CostForgeController : ControllerBase
       ICostForgeService costForgeService,
       ICostForgeAIService costForgeAIService,
       IIncomeApproachService incomeApproachService,
+      ISalesComparisonService salesComparisonService,
       DataDbContext db,
       TerraFusion.Abstractions.Interfaces.IAuditLogger auditLogger,
       ILogger<CostForgeController> logger)
@@ -41,6 +43,7 @@ public class CostForgeController : ControllerBase
     _costForgeService = costForgeService;
     _costForgeAIService = costForgeAIService;
     _incomeApproachService = incomeApproachService;
+    _salesComparisonService = salesComparisonService;
     _db = db;
     _auditLogger = auditLogger;
     _logger = logger;
@@ -616,6 +619,59 @@ public class CostForgeController : ControllerBase
     {
       await _auditLogger.LogErrorAsync("CostForge:IncomeParameters", ex, User.FindFirst("sub")?.Value);
       _logger.LogError(ex, "Error retrieving income parameters");
+      return StatusCode(500, "Internal server error");
+    }
+  }
+
+  // ── Sales Comparison Endpoints ──
+
+  /// <summary>
+  /// Run sales comparison analysis (USPAP paired-sales adjustment grid)
+  /// </summary>
+  [HttpPost("sales/analyze")]
+  [RequiresPermission("write:valuation")]
+  public async Task<ActionResult<SalesComparisonResultDto>> AnalyzeSales([FromBody] SalesComparisonRequest request)
+  {
+    try
+    {
+      if (request.Comparables == null || request.Comparables.Count == 0)
+        return BadRequest("At least one comparable sale required");
+      if (request.Subject == null)
+        return BadRequest("Subject characteristics required");
+
+      await _auditLogger.LogDataAccessAsync("SalesComparison", request.PropertyId.ToString(), "ANALYZE",
+          User.FindFirst("sub")?.Value);
+
+      var result = await _salesComparisonService.AnalyzeSalesAsync(request);
+      return Ok(result);
+    }
+    catch (Exception ex)
+    {
+      await _auditLogger.LogErrorAsync("CostForge:SalesComparison", ex, User.FindFirst("sub")?.Value);
+      _logger.LogError(ex, "Sales comparison analysis failed for property {PropertyId}", request.PropertyId);
+      return StatusCode(500, "Internal server error");
+    }
+  }
+
+  /// <summary>
+  /// Get sales comparison parameters (default adjustment rates, condition/location grids)
+  /// </summary>
+  [HttpGet("sales/parameters")]
+  [RequiresPermission("read:valuation")]
+  public async Task<ActionResult<SalesComparisonParametersDto>> GetSalesParameters()
+  {
+    try
+    {
+      await _auditLogger.LogDataAccessAsync("SalesParameters", "all", "READ",
+          User.FindFirst("sub")?.Value);
+
+      var result = await _salesComparisonService.GetSalesParametersAsync();
+      return Ok(result);
+    }
+    catch (Exception ex)
+    {
+      await _auditLogger.LogErrorAsync("CostForge:SalesParameters", ex, User.FindFirst("sub")?.Value);
+      _logger.LogError(ex, "Error retrieving sales comparison parameters");
       return StatusCode(500, "Internal server error");
     }
   }

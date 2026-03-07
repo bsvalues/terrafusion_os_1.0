@@ -394,6 +394,9 @@ builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeService, TerraFus
 // CX-9: Register IIncomeApproachService for income approach valuation (W1-FORGE-02)
 builder.Services.AddScoped<TerraFusion.Core.Services.IIncomeApproachService, TerraFusion.Core.Services.IncomeApproachService>();
 
+// CX-10: Register ISalesComparisonService for sales comparison valuation (W1-FORGE-03)
+builder.Services.AddScoped<TerraFusion.Core.Services.ISalesComparisonService, TerraFusion.Core.Services.SalesComparisonService>();
+
 // Register ITerraFusionDbContext interface
 builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
     provider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());

@@ -18,6 +18,7 @@ using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
 using CostForgeService = TerraFusion.Core.Services.ICostForgeService;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using IncomeApproachService = TerraFusion.Core.Services.IIncomeApproachService;
+using SalesComparisonService = TerraFusion.Core.Services.ISalesComparisonService;
 using Task = System.Threading.Tasks.Task;
 
 namespace TerraFusion.Unit.Tests.R1Week5;
@@ -226,6 +227,7 @@ public sealed class R1Week5CxR1ClosureTests
         costForgeService.Object,
         costForgeAiService.Object,
         new Mock<IncomeApproachService>(MockBehavior.Strict).Object,
+        new Mock<SalesComparisonService>(MockBehavior.Strict).Object,
         db,
         auditLogger.Object,
         NullLogger<CostForgeController>.Instance);
@@ -261,6 +263,7 @@ public sealed class R1Week5CxR1ClosureTests
         costForgeService.Object,
         costForgeAiService.Object,
         new Mock<IncomeApproachService>(MockBehavior.Strict).Object,
+        new Mock<SalesComparisonService>(MockBehavior.Strict).Object,
         db,
         auditLogger.Object,
         NullLogger<CostForgeController>.Instance);
