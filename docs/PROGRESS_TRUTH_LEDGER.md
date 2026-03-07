@@ -181,7 +181,7 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 4. `QuantumMetricsBackgroundService` still registered (theater cleanup incomplete)
 5. `CostForgeController` batch-calculate and PACS sync are stubs
 6. 14 of 24 manifest tools have no real handler — only canned stubs
-7. ~~Fake-path elimination not yet finished~~ **PARTIALLY CLOSED March 7** — Forge localStorage eliminated, Dossier mock docs removed, Atlas labeled honestly. Remaining: PILT fake backend, other frontend surfaces
+7. ~~Fake-path elimination not yet finished~~ **CLOSED March 7** — Forge localStorage eliminated, Dossier mock docs removed, Atlas labeled honestly, PILT frontend fallback made explicit with deferred notice, old suite modules classified as post-R1. Remaining: PILT fake backend (CX scope)
 8. R1 acceptance: 5+ tools through governed path with all 11 acceptance criteria,
    logged correlation IDs, and fake-path grep returning zero
 
@@ -234,7 +234,7 @@ Wired into root `package.json`:
 
 | Lane | Signoff | Artifacts | Verifier | Manifest |
 |------|---------|-----------|----------|----------|
-| CC | `docs/evidence/cc/signoff.md` | 4 files (forge-cutover, dossier-cutover, atlas-cutover, fake-path-elimination) | **PASS** | **PASS** |
+| CC | `docs/evidence/cc/signoff.md` | 5 files (surface-inventory, forge-cutover, dossier-cutover, atlas-cutover, fake-path-elimination) | **PASS** | **PASS** |
 | CX | `docs/evidence/cx/signoff.md` | 3 files (backend-hardening, endpoint-matrix, auth-audit) | **PASS** | **PASS** |
 | CP | `docs/evidence/cp/signoff.md` | 4 files (handler-registry, trace-persistence, governance-contracts, r1-proof-tools) | **PASS** | **PASS** |
 | Final | `docs/evidence/final/manifest.json` | 14 artifacts with SHA256 hashes | **PASS** | N/A |
@@ -256,9 +256,9 @@ Wired into root `package.json`:
 5. **Final manifest** — 14 artifacts, SHA256 tamper-evident, verifier-validated
 6. **Three-lane signoff** — same SHA, same canon version, same verification date
 
-### Remaining Blockers (Unchanged)
+### Remaining Blockers
 
-2-6 from the original blocker list remain open. Items 1 and 7 are closed. Item 8 (5-tool acceptance proof) is structurally ready but not yet executed with live correlation IDs.
+Items 2-6 from the original blocker list remain open (CX/backend scope). Items 1 and 7 are closed. Item 8 (5-tool acceptance proof) is structurally ready but not yet executed with live correlation IDs. CC lane is now fully closed with surface inventory, PILT deferred notice, and post-R1 module classification.
 
 ---
 

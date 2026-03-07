@@ -18,6 +18,7 @@
 
 | Artifact | Path |
 |----------|------|
+| Surface Inventory (CC-R1-00) | [./surface-inventory.md](./surface-inventory.md) |
 | Forge Cutover (Phase 1 + Phase 5) | [./forge-cutover.md](./forge-cutover.md) |
 | Dossier Cutover (Phase 2) | [./dossier-cutover.md](./dossier-cutover.md) |
 | Atlas Cutover (Phase 3) | [./atlas-cutover.md](./atlas-cutover.md) |
@@ -49,6 +50,14 @@ The following items were identified during CC lane work but are **owned by the C
 | QuantumMetrics | CX | Quantum metrics infrastructure is CX scope |
 
 CC lane's responsibility boundary is the frontend service layer. All frontend service files (`forgeService.ts`, `dossierService.ts`, `atlasService.ts`) and UI components (`PropertyDossier.tsx`, `PropertyAtlas.tsx`, `ForgeExecutionPanel.tsx`) have been verified to call real backend APIs with no fake data paths remaining.
+
+### Additional Items Closed (Session 2)
+
+| Item | Description | Status |
+|------|-------------|--------|
+| CC-R1-00 | Frontend surface inventory classification | **CLOSED** — `surface-inventory.md` |
+| CC-PILT-01 | PILT fallback made explicit with deferred notice | **CLOSED** — DaisSuiteHome.tsx updated |
+| CC-LEGACY-01 | Old suite modules classified as post-R1 | **CLOSED** — documented in surface inventory |
 
 ---
 
