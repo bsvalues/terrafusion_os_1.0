@@ -2,7 +2,7 @@
 
 Date: March 7, 2026
 Baseline branch: `r1/integration`
-Purpose: turn the current "governed spine is real, data cutover is partial" state into a fully evidenced end-to-end R1 release, then define the next sequence needed to get the suites fully real beyond R1.
+Purpose: record the now-complete R1 code state, identify the remaining release-evidence mechanics, and define the next sequence needed to get the suites fully real beyond R1.
 
 ## Ground Rules
 
@@ -33,24 +33,37 @@ R1 is only complete when all of the following are true:
 - Governed invoke/trace surface in [PilotController.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/api/PilotController.ts)
 - Real handler registration in [handlers.real.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/pilot/handlers.real.ts)
 - File-backed trace durability in [TraceStore.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/trace/TraceStore.ts)
+- 10 real handlers on the active governed surface
 - Atlas and Dossier backend controllers with county isolation
+- Forge production valuation cutover to governed execution is complete
+- Dossier active sections are real or explicitly disabled
+- Atlas active sections are real within current R1 scope and explicitly non-GIS-complete
+- Backend hardening cleanup is complete on the strict R1 surface:
+  - `PropertyValuationController` is authenticated and county-scoped
+  - `PiltController` is authenticated and explicit `Post-R1` / `501`
+  - `QuantumMetricsBackgroundService` is opt-in only
+  - CostForge non-R1 batch and PACS surfaces are explicit `Post-R1` / `501`
 - Execution Console, Evidence Rail, Context Ribbon, Policy Guard, Risk Confirmation modal
 - Freshly passing gates: `type-check`, `phase83`, `phase85`, `phase86`
+- AC-1 through AC-11 evidence exists and passes in `os-platform/core/tests/r1-acceptance-criteria.test.mjs`
+- Evidence verifier currently passes for converged target SHA `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`
 
 ### Partial now
 
-- Forge service cutover
-- Dossier frontend completion
-- Atlas frontend completion
-- Full R1 acceptance proof
-- Backend hardening cleanup
+- Final release-candidate SHA selection and evidence refresh if a newer candidate than
+  `0afe584756ffd60aa2c986bde8ea2e0edc7bede6` is chosen
 
 ### Not closed now
 
-- `[Authorize]` on `PropertyValuationController`
-- Removal or justification of `QuantumMetricsBackgroundService`
-- Full fake-path elimination in targeted production paths
-- Documented endpoint matrix under the exact file strategy the plan originally expected
+- No strict-R1 feature or hardening item remains code-open on this branch
+- Remaining release work is mechanical: same-SHA signoff convergence and manifest refresh
+  on the final chosen release candidate
+
+## Execution Status Note
+
+Phases 1 through 6 below are retained as the execution record for the work that was
+completed. They are no longer the live blocker list. The current blocker set is the
+baseline above plus the evidence-target convergence work in Phase 6A.
 
 ## Phase 0 - Truth Lock
 
@@ -907,6 +920,7 @@ The governance-runtime lane is done for R1 only when all of the following are tr
 ## Phase 1 - Forge Full Cutover
 
 Goal: remove the biggest remaining fake production path.
+Status: complete on `r1/integration`
 
 ### CC Tasks
 
@@ -942,6 +956,7 @@ Phase 1 exit:
 ## Phase 2 - Dossier Completion
 
 Goal: make Dossier honestly real for the active workbench flow.
+Status: complete on `r1/integration`
 
 ### CC Tasks
 
@@ -973,6 +988,7 @@ Phase 2 exit:
 ## Phase 3 - Atlas Completion
 
 Goal: make Atlas honestly real for the currently shipped workbench flow.
+Status: complete on `r1/integration`
 
 ### CC Tasks
 
@@ -1003,6 +1019,7 @@ Phase 3 exit:
 ## Phase 4 - Backend Hardening and Theater Cleanup
 
 Goal: close the visible backend trust gaps.
+Status: complete on `r1/integration`
 
 ### CX Tasks
 
@@ -1027,6 +1044,7 @@ Phase 4 exit:
 ## Phase 5 - Fake-Path Elimination
 
 Goal: prove the active R1 surfaces no longer rely on hidden mock or legacy production paths.
+Status: complete on `r1/integration`
 
 ### Targeted grep surface
 
@@ -1062,6 +1080,7 @@ Phase 5 exit:
 ## Phase 6 - Governed Proof and Release Evidence
 
 Goal: close the acceptance gap with evidence.
+Status: complete for verification target `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`
 
 ### Required R1 proven tools
 
@@ -1089,6 +1108,7 @@ Phase 6 exit:
 ## Phase 6A - Evidence Verifier and Final Manifest Gate
 
 Goal: make the release evidence gate deterministic, lane-contained, and tamper-evident.
+Status: converged for verification target `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`; rerun only if a newer release candidate is chosen
 
 ### Minimum Success Criteria
 
@@ -1164,17 +1184,17 @@ all agree.
 
 ## Non-Tool Surface Closure Matrix
 
-These are not fully captured by the tool manifest, but they still block an honest
-"end to end" claim.
+These are not fully captured by the tool manifest. They previously blocked an honest
+"end to end" claim and are now recorded here in their closed state.
 
 | Surface | Current Truth | Required Closure |
 |---|---|---|
-| Forge suite screens | Production path still dual-runs with client calculator logic | Governed path only for production valuation flows |
-| Dossier document management | Active tab still contains mock-labeled slice | Real backend or explicit disabled contract |
-| Atlas GIS depth | Current backend is parcel/layer truth, not full GIS | Honest UI that reflects current backend depth |
-| PILT | Frontend calls live endpoints, backend is entirely hardcoded | Either real backend or explicit out-of-R1 disablement |
-| PropertyValuationController | Missing auth and county proof | Add auth/county enforcement or remove from active R1 surface |
-| Background-service theater | `QuantumMetricsBackgroundService` still registered | Remove or justify explicitly |
+| Forge suite screens | Governed path is the sole production valuation path | Complete for R1 |
+| Dossier document management | Active tab is explicitly disabled / deferred, not mock-live | Complete for R1 |
+| Atlas GIS depth | Current backend remains parcel/layer truth, and UI presents it honestly as non-full-GIS | Complete for R1 |
+| PILT | Frontend calls live endpoints; backend responds with explicit `Post-R1` / `501`; UI shows deferred state | Complete for R1 |
+| PropertyValuationController | Auth and county proof are present on the active R1 surface | Complete for R1 |
+| Background-service theater | `QuantumMetricsBackgroundService` is opt-in only, not default-active | Complete for R1 |
 
 ## Evidence Packet Checklist
 
@@ -1190,12 +1210,15 @@ truth ledger can be updated mechanically instead of narratively.
 
 ## Branch and Merge Strategy
 
-- Documentation correction work: `claude/review-progress-ledger-a8iw5`
+- Current integration branch: `r1/integration`
+- Evidence packet currently converges on verification target SHA `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`
 - Feature work continues on agent-owned branches:
   - `claude/r1-*`
   - `copilot/r1-*`
   - `codex/r1-*`
 - Merge target remains `r1/integration` until the proof phase is complete.
+- If a newer release candidate than `0afe584756ffd60aa2c986bde8ea2e0edc7bede6` is chosen,
+  rerun manifest generation and `r1:verify-evidence` on that target before release.
 - `main` is only eligible after release evidence is assembled.
 
 ## Board-Safe Definition of Done

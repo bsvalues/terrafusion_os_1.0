@@ -1,7 +1,7 @@
 # TerraFusion OS — Progress Truth Ledger v3
 
 Date: March 7, 2026
-Branch: `claude/review-progress-ledger-a8iw5`
+Branch: `r1/integration`
 
 ## Context
 
@@ -26,9 +26,11 @@ Frozen scope authority remains:
 | `node --test os-platform/core/tests/phase83-tools.test.mjs` | **32/32 pass** |
 | `node --test os-platform/core/tests/phase85-tools.test.mjs` | **20/20 pass** |
 | `node --test os-platform/core/tests/phase86-toolrunner.test.mjs` | **7/7 pass** |
+| `node --test os-platform/core/tests/r1-acceptance-criteria.test.mjs` | **17/17 pass** |
 | `dotnet build backend/TerraFusion.sln -c Release -v:minimal /nologo` | **pass** |
 | `dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter "FullyQualifiedName~R1Week5CxR1ClosureTests" -c Release -v:minimal /nologo` | **13/13 pass** |
-| Working tree | Active R1 work in progress; not branch-head clean |
+| `node tools/r1/verify-evidence.mjs` | **pass** for target SHA `0afe584756ffd60aa2c986bde8ea2e0edc7bede6` |
+| Working tree at verification time | Tracked files clean; unrelated untracked files present |
 
 ## Agent Ledger
 
@@ -94,13 +96,12 @@ Frozen scope authority remains:
 #### CX lane truth
 
 - Backend hardening is code-complete for the strict R1 surface. Remaining release work
-  is shared evidence convergence, not another backend honesty pass.
+  is release-target selection and evidence reuse or refresh, not another backend honesty pass.
 - CX has real closure evidence in
   `docs/evidence/cx/cx-r1-active-surface-closure.md`.
 - CX code closure is complete. Final lane convergence still depends on:
-  - shared SHA/canon alignment across all lane signoffs
-  - refreshed final manifest generation
-  - a passing evidence verifier run on the converged evidence packet
+  - accepting the current converged verification target `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`, or
+  - refreshing manifest generation and verifier output for a newer release candidate
 
 ## Corrections to the March 6 Ledger
 
@@ -109,7 +110,7 @@ Frozen scope authority remains:
 | Trace persistence is SQLite/Drizzle | `TraceStore.ts` is file-backed JSONL |
 | AtlasController is missing | `AtlasController.cs` exists and is authenticated |
 | Atlas and Dossier services are mock-only | `atlasService.ts` and `dossierService.ts` hit real endpoints |
-| Forge is not wired through governed execution | Governed path exists, but legacy production behavior still co-exists |
+| Forge is not wired through governed execution | Governed path is now the sole production valuation flow |
 | `PropertyValuationController.cs` auth hardening not completed | **Closed in code, verified by targeted tests** |
 | `PiltController.cs` is fake-live hardcoded backend | **Now explicit Post-R1 / 501; no longer pretending to be live** |
 | `QuantumMetricsBackgroundService` is silent default-active theater | **Now opt-in only; disabled by default** |
@@ -149,7 +150,10 @@ Frozen scope authority remains:
 
 ### Partial
 
-- Branch-head evidence convergence across CC, CX, and CP (same SHA, same canon, refreshed manifest)
+- No strict-R1 code path remains partial
+- Release-candidate selection remains conditional:
+  - if `0afe584756ffd60aa2c986bde8ea2e0edc7bede6` is accepted, the evidence packet is already converged
+  - if a newer candidate is chosen, signoffs and manifest must be refreshed on that target
 
 ### Post-R1 / Not Strict R1
 
@@ -169,7 +173,7 @@ Frozen scope authority remains:
 5. ~~`CostForgeController` batch-calculate and PACS sync are stubs~~ **CLOSED March 7 (CX)** — explicit Post-R1 / 501
 6. 14 of 24 manifest tools have no real handler — **NOT A BLOCKER** per R1 plan (5-proof set is sufficient; 14 stubs are Post-R1)
 7. ~~Fake-path elimination not yet finished~~ **CLOSED March 7 (CC+CP)** — Forge localStorage eliminated, Dossier mock docs removed, Atlas labeled honestly, PILT frontend deferred badge, CP anti-regression tests
-8. Branch-head evidence convergence: **current evidence packet now passes** for target SHA `c7510f143a1a2b98888ecef48e7c4c41afece4e2`, but the manifest and verifier must be rerun after the final release-candidate commit
+8. Branch-head evidence convergence: **current evidence packet passes** for target SHA `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`; if a newer release candidate is chosen, the manifest and verifier must be rerun on that target
 
 ## Truth Statement
 
@@ -185,16 +189,18 @@ propagation, and substantial shell UX are present and currently passing core gat
 - **CC lane**: Forge cutover closed (governed path is sole production path, localStorage=0),
   Dossier mock docs removed, Atlas schematic-labeled, PILT frontend deferred badge.
 
-**Remaining to close R1:** shared evidence convergence only. The lane work is code-complete;
-the final manifest and signoff packet must still be refreshed together on the same verification target.
+**Remaining to close R1:** no additional strict-R1 code work. The current evidence packet
+already converges on `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`; only a newer release-candidate
+choice would require a manifest and signoff refresh.
 
 **The governance spine is solid. Forge cutover is closed. Backend hardening is delivered.
 Frontend honesty is complete. The remaining work is mechanical: SHA convergence and
 evidence finalization.**
 
 **Current honest posture:** All three agent lanes are code-complete. The governance
-spine, backend hardening, and frontend honesty closure are all delivered. Final release
-depends on branch-head SHA convergence and evidence manifest finalization.
+spine, backend hardening, and frontend honesty closure are all delivered. The evidence
+packet is converged on `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`; only a newer release
+candidate would reopen manifest/signoff work.
 
 ## What This Session's AI Tool Got Wrong
 
@@ -232,17 +238,17 @@ Wired into root `package.json`:
 
 ### Verification Gate Output
 
-Current working-tree verification output:
+Current verification output on this branch:
 
 ```
 ✅ R1 evidence verification passed.
-- Verified branch-head SHA: c7510f143a1a2b98888ecef48e7c4c41afece4e2
+- Verified branch-head SHA: 0afe584756ffd60aa2c986bde8ea2e0edc7bede6
 - Canon version: r1-canon-2026-03-07
 ```
 
-This pass reflects the current evidence packet targeting the committed head
-`c7510f143a1a2b98888ecef48e7c4c41afece4e2`. Any subsequent commit requires rerunning
-manifest generation and evidence verification.
+This pass reflects the current evidence packet targeting
+`0afe584756ffd60aa2c986bde8ea2e0edc7bede6`. Any newer release-candidate selection
+requires rerunning manifest generation and evidence verification on that target.
 
 ### ALL-PROOF-02: Acceptance Criteria (AC-1 through AC-11)
 
@@ -279,8 +285,9 @@ Combined gate run (all 4 test files): **72/72 pass, 0 fail.**
 ### Remaining Blockers
 
 The backend blockers previously listed here are closed on the current branch. The
-current evidence packet passes verification, but final release still requires one last
-manifest refresh and verifier rerun after the final release-candidate commit.
+current evidence packet passes verification on target
+`0afe584756ffd60aa2c986bde8ea2e0edc7bede6`. Only a newer release-candidate choice would
+require one more manifest refresh and verifier rerun.
 
 ---
 
