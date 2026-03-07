@@ -125,6 +125,7 @@ public class R1Week4Cx15BackendValidationSuiteTests
         new Mock<ICostForgeAIService>().Object,
         new Mock<IIncomeApproachService>().Object,
         new Mock<ISalesComparisonService>().Object,
+        new Mock<IReconciliationService>().Object,
         db,
         CreateAuditLoggerMock().Object,
         NullLogger<CostForgeController>.Instance);
@@ -160,6 +161,7 @@ public class R1Week4Cx15BackendValidationSuiteTests
         new Mock<ICostForgeAIService>().Object,
         new Mock<IIncomeApproachService>().Object,
         new Mock<ISalesComparisonService>().Object,
+        new Mock<IReconciliationService>().Object,
         db,
         CreateAuditLoggerMock().Object,
         NullLogger<CostForgeController>.Instance);

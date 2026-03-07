@@ -27,6 +27,7 @@ public class CostForgeController : ControllerBase
   private readonly ICostForgeAIService _costForgeAIService;
   private readonly IIncomeApproachService _incomeApproachService;
   private readonly ISalesComparisonService _salesComparisonService;
+  private readonly IReconciliationService _reconciliationService;
   private readonly DataDbContext _db;
   private readonly TerraFusion.Abstractions.Interfaces.IAuditLogger _auditLogger;
   private readonly ILogger<CostForgeController> _logger;
@@ -36,6 +37,7 @@ public class CostForgeController : ControllerBase
       ICostForgeAIService costForgeAIService,
       IIncomeApproachService incomeApproachService,
       ISalesComparisonService salesComparisonService,
+      IReconciliationService reconciliationService,
       DataDbContext db,
       TerraFusion.Abstractions.Interfaces.IAuditLogger auditLogger,
       ILogger<CostForgeController> logger)
@@ -44,6 +46,7 @@ public class CostForgeController : ControllerBase
     _costForgeAIService = costForgeAIService;
     _incomeApproachService = incomeApproachService;
     _salesComparisonService = salesComparisonService;
+    _reconciliationService = reconciliationService;
     _db = db;
     _auditLogger = auditLogger;
     _logger = logger;
@@ -672,6 +675,65 @@ public class CostForgeController : ControllerBase
     {
       await _auditLogger.LogErrorAsync("CostForge:SalesParameters", ex, User.FindFirst("sub")?.Value);
       _logger.LogError(ex, "Error retrieving sales comparison parameters");
+      return StatusCode(500, "Internal server error");
+    }
+  }
+
+  // ── Reconciliation Endpoints ──
+
+  /// <summary>
+  /// Reconcile multiple valuation approaches (USPAP three-approach reconciliation)
+  /// </summary>
+  [HttpPost("reconcile")]
+  [RequiresPermission("write:valuation")]
+  public async Task<ActionResult<ReconciliationResultDto>> Reconcile([FromBody] ReconciliationRequest request)
+  {
+    try
+    {
+      var hasAnyApproach = request.SalesApproach is { IndicatedValue: > 0 }
+          || request.IncomeApproach is { IndicatedValue: > 0 }
+          || request.CostApproach is { IndicatedValue: > 0 };
+
+      if (!hasAnyApproach)
+        return BadRequest("At least one approach with a positive indicated value is required");
+
+      await _auditLogger.LogDataAccessAsync("Reconciliation", request.PropertyId.ToString(), "RECONCILE",
+          User.FindFirst("sub")?.Value);
+
+      var result = await _reconciliationService.ReconcileAsync(request);
+      return Ok(result);
+    }
+    catch (ArgumentException ex)
+    {
+      return BadRequest(ex.Message);
+    }
+    catch (Exception ex)
+    {
+      await _auditLogger.LogErrorAsync("CostForge:Reconciliation", ex, User.FindFirst("sub")?.Value);
+      _logger.LogError(ex, "Reconciliation failed for property {PropertyId}", request.PropertyId);
+      return StatusCode(500, "Internal server error");
+    }
+  }
+
+  /// <summary>
+  /// Get reconciliation parameters (default weights by property type, confidence multipliers)
+  /// </summary>
+  [HttpGet("reconcile/parameters")]
+  [RequiresPermission("read:valuation")]
+  public async Task<ActionResult<ReconciliationParametersDto>> GetReconciliationParameters()
+  {
+    try
+    {
+      await _auditLogger.LogDataAccessAsync("ReconciliationParameters", "all", "READ",
+          User.FindFirst("sub")?.Value);
+
+      var result = await _reconciliationService.GetReconciliationParametersAsync();
+      return Ok(result);
+    }
+    catch (Exception ex)
+    {
+      await _auditLogger.LogErrorAsync("CostForge:ReconciliationParameters", ex, User.FindFirst("sub")?.Value);
+      _logger.LogError(ex, "Error retrieving reconciliation parameters");
       return StatusCode(500, "Internal server error");
     }
   }

@@ -120,6 +120,7 @@ public class SecurityIsolationAuditGuardsTests
         aiMock.Object,
         new Mock<IIncomeApproachService>().Object,
         new Mock<ISalesComparisonService>().Object,
+        new Mock<IReconciliationService>().Object,
         db,
         auditMock.Object,
         NullLogger<CostForgeController>.Instance);
@@ -158,6 +159,7 @@ public class SecurityIsolationAuditGuardsTests
         aiMock.Object,
         new Mock<IIncomeApproachService>().Object,
         new Mock<ISalesComparisonService>().Object,
+        new Mock<IReconciliationService>().Object,
         db,
         auditMock.Object,
         NullLogger<CostForgeController>.Instance);
@@ -191,6 +193,7 @@ public class SecurityIsolationAuditGuardsTests
         new Mock<ICostForgeAIService>().Object,
         new Mock<IIncomeApproachService>().Object,
         new Mock<ISalesComparisonService>().Object,
+        new Mock<IReconciliationService>().Object,
         db,
         CreateAuditLoggerMock().Object,
         NullLogger<CostForgeController>.Instance);
@@ -224,6 +227,7 @@ public class SecurityIsolationAuditGuardsTests
         new Mock<ICostForgeAIService>().Object,
         new Mock<IIncomeApproachService>().Object,
         new Mock<ISalesComparisonService>().Object,
+        new Mock<IReconciliationService>().Object,
         db,
         CreateAuditLoggerMock().Object,
         NullLogger<CostForgeController>.Instance);
