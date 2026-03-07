@@ -4,102 +4,134 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TerraFusion.Core.Entities;
+using TerraFusion.Core.Services;
+using TerraFusion.Data;
+using TerraFusion.API.Security;
 
 namespace TerraFusion.API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
-    public class PiltController : ControllerBase
+  [ApiController]
+  [Route("api/[controller]")]
+  [Authorize]
+  public class PiltController : ControllerBase
+  {
+    private readonly ILogger<PiltController> _logger;
+    private readonly IPiltService _piltService;
+    private readonly Data.TerraFusionDbContext _db;
+
+    public PiltController(ILogger<PiltController> logger, IPiltService piltService, Data.TerraFusionDbContext db)
     {
-        private readonly ILogger<PiltController> _logger;
-
-        public PiltController(ILogger<PiltController> logger)
-        {
-            _logger = logger;
-        }
-
-        private ActionResult BuildPostR1DisabledResponse(string operation)
-        {
-            HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
-
-            _logger.LogWarning(
-                "PILT endpoint {Operation} was invoked, but the backend remains Post-R1 and is intentionally disabled",
-                operation);
-
-            var problem = new ProblemDetails
-            {
-                Title = "PILT backend is not enabled for R1",
-                Detail = "The current PILT API was serving hardcoded placeholder data. It is intentionally disabled until a real county-scoped implementation ships.",
-                Status = StatusCodes.Status501NotImplemented,
-                Type = "https://terrafusion.local/problems/pilt-post-r1"
-            };
-
-            problem.Extensions["scope"] = "Post-R1";
-            problem.Extensions["operation"] = operation;
-
-            return StatusCode(StatusCodes.Status501NotImplemented, problem);
-        }
-
-        public record PiltStatusResponse
-        (
-            string Status,
-            int FiscalYear,
-            decimal TotalPayments,
-            int Districts,
-            int FederalAcres,
-            decimal AverageRate
-        );
-
-        public record District(string Id, string Name, string Type);
-        public record Receipt(string Id, int FiscalYear, string Source, decimal Amount, string Status);
-        public record CalculationRequest(string ReceiptId, Dictionary<string, decimal>? Weights);
-        public record Distribution(string DistrictId, decimal Amount);
-        public record CalculationResult(string CalculationId, string ReceiptId, int FiscalYear, decimal TotalAmount, List<Distribution> Distributions, string Status);
-
-        [HttpGet("status")]
-        public ActionResult<PiltStatusResponse> GetStatus()
-        {
-            return BuildPostR1DisabledResponse(nameof(GetStatus));
-        }
-
-        [HttpGet("districts")]
-        public IActionResult GetDistricts()
-        {
-            return BuildPostR1DisabledResponse(nameof(GetDistricts));
-        }
-
-        [HttpGet("receipts")]
-        public IActionResult GetReceipts([FromQuery] int? fiscalYear)
-        {
-            return BuildPostR1DisabledResponse(nameof(GetReceipts));
-        }
-
-        public record CreateReceiptRequest(int FiscalYear, string Source, decimal Amount);
-
-        [HttpPost("receipts")]
-        public IActionResult CreateReceipt([FromBody] CreateReceiptRequest request)
-        {
-            return BuildPostR1DisabledResponse(nameof(CreateReceipt));
-        }
-
-        [HttpPost("calculate/{receiptId}")]
-        public IActionResult Calculate(string receiptId, [FromBody] CalculationRequest? request)
-        {
-            return BuildPostR1DisabledResponse(nameof(Calculate));
-        }
-
-        [HttpPost("approve/{calculationId}")]
-        public IActionResult Approve(string calculationId)
-        {
-            return BuildPostR1DisabledResponse(nameof(Approve));
-        }
-
-        [HttpGet("reports/{year:int}")]
-        public IActionResult GetReport(int year)
-        {
-            return BuildPostR1DisabledResponse(nameof(GetReport));
-        }
+      _logger = logger;
+      _piltService = piltService;
+      _db = db;
     }
+
+    // ── County Isolation ──────────────────────────────────────────
+
+    private async Task<Guid?> ResolveCountyIdAsync()
+    {
+      var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+      if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+        return directCountyId;
+
+      var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+      if (string.IsNullOrWhiteSpace(countyIdClaim) && string.IsNullOrWhiteSpace(countyCodeClaim))
+        return null;
+
+      var candidates = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+      if (!string.IsNullOrWhiteSpace(countyIdClaim)) candidates.Add(countyIdClaim);
+      if (!string.IsNullOrWhiteSpace(countyCodeClaim)) candidates.Add(countyCodeClaim);
+
+      var candidateArray = candidates.ToArray();
+      return await _db.Counties
+          .Where(c => candidateArray.Contains(c.Name) || (c.FipsCode != null && candidateArray.Contains(c.FipsCode)))
+          .Select(c => (Guid?)c.Id)
+          .FirstOrDefaultAsync();
+    }
+
+    private string ResolveUserId() =>
+        User.FindFirst("userId")?.Value ?? User.FindFirst("sub")?.Value ?? "unknown";
+
+    // ── R2 PILT Endpoints (real Benton County calculator) ────────
+
+    [HttpGet("status")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> GetStatus()
+    {
+      var countyId = await ResolveCountyIdAsync();
+      if (countyId is null) return Forbid();
+
+      var status = await _piltService.GetStatusAsync(countyId.Value);
+      return Ok(status);
+    }
+
+    [HttpGet("districts")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> GetDistricts()
+    {
+      var countyId = await ResolveCountyIdAsync();
+      if (countyId is null) return Forbid();
+
+      var districts = await _piltService.GetDistrictsAsync(countyId.Value);
+      return Ok(new { count = districts.Count, districts });
+    }
+
+    [HttpGet("receipts")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> GetReceipts([FromQuery] int? fiscalYear)
+    {
+      var countyId = await ResolveCountyIdAsync();
+      if (countyId is null) return Forbid();
+
+      var receipts = await _piltService.GetReceiptsAsync(countyId.Value, fiscalYear);
+      return Ok(new { count = receipts.Count, receipts });
+    }
+
+    [HttpPost("receipts")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> CreateReceipt([FromBody] PiltCreateReceiptRequest request)
+    {
+      var countyId = await ResolveCountyIdAsync();
+      if (countyId is null) return Forbid();
+
+      var receipt = await _piltService.CreateReceiptAsync(request, countyId.Value, ResolveUserId());
+      return CreatedAtAction(nameof(GetReceipts), new { fiscalYear = receipt.FiscalYear }, receipt);
+    }
+
+    [HttpPost("calculate/{receiptId}")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> Calculate(string receiptId, [FromBody] PiltCalculateRequest? request)
+    {
+      var countyId = await ResolveCountyIdAsync();
+      if (countyId is null) return Forbid();
+
+      var result = await _piltService.CalculateAsync(receiptId, request, countyId.Value);
+      return Ok(result);
+    }
+
+    [HttpPost("approve/{calculationId}")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> Approve(string calculationId)
+    {
+      var countyId = await ResolveCountyIdAsync();
+      if (countyId is null) return Forbid();
+
+      var result = await _piltService.ApproveAsync(calculationId, countyId.Value, ResolveUserId());
+      return Ok(result);
+    }
+
+    [HttpGet("reports/{year:int}")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> GetReport(int year)
+    {
+      var countyId = await ResolveCountyIdAsync();
+      if (countyId is null) return Forbid();
+
+      var report = await _piltService.GetReportAsync(year, countyId.Value);
+      return Ok(report);
+    }
+  }
 }

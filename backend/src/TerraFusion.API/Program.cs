@@ -42,40 +42,40 @@ var builder = WebApplication.CreateBuilder(args);
 
 static bool TryReadBoolean(string? value, out bool parsed)
 {
-    if (bool.TryParse(value, out parsed))
-    {
-        return true;
-    }
+  if (bool.TryParse(value, out parsed))
+  {
+    return true;
+  }
 
-    if (string.Equals(value, "1", StringComparison.OrdinalIgnoreCase))
-    {
-        parsed = true;
-        return true;
-    }
+  if (string.Equals(value, "1", StringComparison.OrdinalIgnoreCase))
+  {
+    parsed = true;
+    return true;
+  }
 
-    if (string.Equals(value, "0", StringComparison.OrdinalIgnoreCase))
-    {
-        parsed = false;
-        return true;
-    }
-
+  if (string.Equals(value, "0", StringComparison.OrdinalIgnoreCase))
+  {
     parsed = false;
-    return false;
+    return true;
+  }
+
+  parsed = false;
+  return false;
 }
 
 static bool IsFeatureEnabled(IConfiguration configuration, string configKey, string envVar, bool defaultValue = false)
 {
-    if (TryReadBoolean(configuration[configKey], out var configValue))
-    {
-        return configValue;
-    }
+  if (TryReadBoolean(configuration[configKey], out var configValue))
+  {
+    return configValue;
+  }
 
-    if (TryReadBoolean(Environment.GetEnvironmentVariable(envVar), out var envValue))
-    {
-        return envValue;
-    }
+  if (TryReadBoolean(Environment.GetEnvironmentVariable(envVar), out var envValue))
+  {
+    return envValue;
+  }
 
-    return defaultValue;
+  return defaultValue;
 }
 
 // 🔍 TELEMETRY: Phase 9.1 Nervous System
@@ -96,30 +96,30 @@ builder.Services.AddOpenTelemetry()
 // Relax DI validation for local/dev to allow graceful fallbacks
 builder.Host.UseDefaultServiceProvider(options =>
 {
-    options.ValidateOnBuild = false;
-    options.ValidateScopes = false;
+  options.ValidateOnBuild = false;
+  options.ValidateScopes = false;
 });
 
 // Redis Configuration (Optional - graceful degradation)
 var redisAvailable = false;
 try
 {
-    var redisConnection = builder.Configuration.GetConnectionString("Redis");
-    if (!string.IsNullOrEmpty(redisConnection))
-    {
-        var redis = StackExchange.Redis.ConnectionMultiplexer.Connect(redisConnection);
-        builder.Services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(redis);
-        Console.WriteLine("✅ Redis connected: {0}", redisConnection.Split(',')[0]);
-        redisAvailable = true;
-    }
-    else
-    {
-        Console.WriteLine("ℹ️  Redis not configured - using NoOp cache");
-    }
+  var redisConnection = builder.Configuration.GetConnectionString("Redis");
+  if (!string.IsNullOrEmpty(redisConnection))
+  {
+    var redis = StackExchange.Redis.ConnectionMultiplexer.Connect(redisConnection);
+    builder.Services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(redis);
+    Console.WriteLine("✅ Redis connected: {0}", redisConnection.Split(',')[0]);
+    redisAvailable = true;
+  }
+  else
+  {
+    Console.WriteLine("ℹ️  Redis not configured - using NoOp cache");
+  }
 }
 catch (Exception ex)
 {
-    Console.WriteLine("⚠️  Redis unavailable: {0} - using NoOp cache", ex.Message);
+  Console.WriteLine("⚠️  Redis unavailable: {0} - using NoOp cache", ex.Message);
 }
 
 // 🎯 SOVEREIGN BINDING (Phase 9.2)
@@ -137,36 +137,36 @@ builder.Logging.AddDebug();
 builder.Services.AddControllers()
     .ConfigureApplicationPartManager(manager =>
     {
-        var defaultProvider = manager.FeatureProviders
-            .FirstOrDefault(p => p is Microsoft.AspNetCore.Mvc.Controllers.ControllerFeatureProvider);
-        if (defaultProvider != null)
-        {
-            manager.FeatureProviders.Remove(defaultProvider);
-        }
+      var defaultProvider = manager.FeatureProviders
+          .FirstOrDefault(p => p is Microsoft.AspNetCore.Mvc.Controllers.ControllerFeatureProvider);
+      if (defaultProvider != null)
+      {
+        manager.FeatureProviders.Remove(defaultProvider);
+      }
 
-        manager.FeatureProviders.Add(
-            new TerraFusion.API.Controllers.NamespaceExcludingControllerFeatureProvider(
-                "TerraFusion.AI.Controllers"));
+      manager.FeatureProviders.Add(
+          new TerraFusion.API.Controllers.NamespaceExcludingControllerFeatureProvider(
+              "TerraFusion.AI.Controllers"));
     })
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-        options.JsonSerializerOptions.WriteIndented = false;
-        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never;
+      options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+      options.JsonSerializerOptions.WriteIndented = false;
+      options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never;
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 builder.Services.AddRateLimiter(options =>
 {
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    options.AddFixedWindowLimiter("ApiPolicy", policy =>
-    {
-        policy.PermitLimit = 10;
-        policy.Window = TimeSpan.FromMinutes(1);
-        policy.QueueLimit = 0;
-        policy.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-    });
+  options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+  options.AddFixedWindowLimiter("ApiPolicy", policy =>
+  {
+    policy.PermitLimit = 10;
+    policy.Window = TimeSpan.FromMinutes(1);
+    policy.QueueLimit = 0;
+    policy.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+  });
 });
 
 // Add SignalR for module hot-reload
@@ -276,11 +276,11 @@ builder.Services.AddPacsAdapter();
 // Conditionally register Redis-backed cache or NoOp fallback
 if (redisAvailable)
 {
-    builder.Services.AddScoped<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.RedisCacheService>();
+  builder.Services.AddScoped<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.RedisCacheService>();
 }
 else
 {
-    builder.Services.AddSingleton<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.NoOpRedisCacheService>();
+  builder.Services.AddSingleton<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.NoOpRedisCacheService>();
 }
 
 // 🔍 Register Property Data Validation Service - Championship-level data integrity verification
@@ -348,48 +348,51 @@ builder.Services.AddAutoMapper(typeof(TerraFusion.API.Program).Assembly, typeof(
 // Register database context with SQLite fallback
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
-    var provider = builder.Configuration["DatabaseProvider"];
+  var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+  var provider = builder.Configuration["DatabaseProvider"];
 
-    if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
-    {
-        options.UseSqlServer(connectionString);
-    }
-    else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
-    {
-        // PostgreSQL for production
-        options.UseNpgsql(connectionString);
-    }
-    else
-    {
-        // SQLite for development
-        options.UseSqlite(connectionString);
-    }
+  if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+  {
+    options.UseSqlServer(connectionString);
+  }
+  else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
+  {
+    // PostgreSQL for production
+    options.UseNpgsql(connectionString);
+  }
+  else
+  {
+    // SQLite for development
+    options.UseSqlite(connectionString);
+  }
 });
 
 // Register TerraFusionContext (Identity context for TerraGaiaService)
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
-    var provider = builder.Configuration["DatabaseProvider"];
+  var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+  var provider = builder.Configuration["DatabaseProvider"];
 
-    if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
-    {
-        options.UseSqlServer(connectionString);
-    }
-    else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
-    {
-        options.UseNpgsql(connectionString);
-    }
-    else
-    {
-        options.UseSqlite(connectionString);
-    }
+  if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+  {
+    options.UseSqlServer(connectionString);
+  }
+  else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
+  {
+    options.UseNpgsql(connectionString);
+  }
+  else
+  {
+    options.UseSqlite(connectionString);
+  }
 });
 
 // CX-8: Register ICostForgeService for real property-backed cost calculation
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeAIService, TerraFusion.AI.Services.CostForgeAIService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeService, TerraFusion.API.Services.CostForgeService>();
+
+// R2-W3: Register IPiltService for real Benton County PILT calculations
+builder.Services.AddScoped<TerraFusion.Core.Services.IPiltService, TerraFusion.Core.Services.PiltService>();
 
 // Register ITerraFusionDbContext interface
 builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
@@ -398,22 +401,22 @@ builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
 // Register IDbConnection factory for services requiring direct connections (e.g., DynamicPropertyService)
 builder.Services.AddScoped<IDbConnection>(sp =>
 {
-    var cfg = sp.GetRequiredService<IConfiguration>();
-    var connStr = cfg.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
-    var provider = cfg["DatabaseProvider"];
+  var cfg = sp.GetRequiredService<IConfiguration>();
+  var connStr = cfg.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+  var provider = cfg["DatabaseProvider"];
 
-    if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
-    {
-        return new SqlConnection(connStr);
-    }
-    else if (connStr.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
-    {
-        return new NpgsqlConnection(connStr);
-    }
-    else
-    {
-        return new SqliteConnection(connStr);
-    }
+  if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+  {
+    return new SqlConnection(connStr);
+  }
+  else if (connStr.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
+  {
+    return new NpgsqlConnection(connStr);
+  }
+  else
+  {
+    return new SqliteConnection(connStr);
+  }
 });
 
 // 📊 TerraFlow Quantum Command Center Repositories (Phase 1 Week 4)
@@ -445,23 +448,23 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTOrchestrationService, T
 builder.Services.AddHttpClient<TerraFusion.AI.Services.OpenAIEmbeddingService>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
 {
-    var options = sp.GetRequiredService<TerraFusion.AI.Configuration.GptRagOptions>();
+  var options = sp.GetRequiredService<TerraFusion.AI.Configuration.GptRagOptions>();
 
-    if (options.UseRealEmbeddings)
-    {
-        // 🟢 OpenAI embeddings - production mode
-        var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
-        var httpClient = httpClientFactory.CreateClient();
-        var configuration = sp.GetRequiredService<IConfiguration>();
-        var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.OpenAIEmbeddingService>>();
-        return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClient, configuration, logger);
-    }
-    else
-    {
-        // 🟡 Simulated embeddings - dev/CI safe mode
-        var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.SimulatedEmbeddingService>>();
-        return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
-    }
+  if (options.UseRealEmbeddings)
+  {
+    // 🟢 OpenAI embeddings - production mode
+    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient();
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.OpenAIEmbeddingService>>();
+    return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClient, configuration, logger);
+  }
+  else
+  {
+    // 🟡 Simulated embeddings - dev/CI safe mode
+    var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.SimulatedEmbeddingService>>();
+    return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
+  }
 });
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
@@ -500,16 +503,16 @@ builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptAtlasService, Terra
 // Phase 29: SystemGPT Atlas Live - Real-Time Telemetry & Alert Engine (SSE streaming)
 builder.Services.Configure<TerraFusion.AI.Models.SystemGptAtlasThresholds>(options =>
 {
-    options.WarningHealthScore = 0.80;
-    options.CriticalHealthScore = 0.60;
-    options.WarningErrorRatePercent = 1.0;
-    options.CriticalErrorRatePercent = 5.0;
-    options.WarningP95Ms = 300;
-    options.CriticalP95Ms = 1000;
+  options.WarningHealthScore = 0.80;
+  options.CriticalHealthScore = 0.60;
+  options.WarningErrorRatePercent = 1.0;
+  options.CriticalErrorRatePercent = 5.0;
+  options.WarningP95Ms = 300;
+  options.CriticalP95Ms = 1000;
 });
 builder.Services.Configure<TerraFusion.AI.Models.SystemGptAtlasLiveOptions>(options =>
 {
-    options.IntervalMs = 3000; // 3-second updates
+  options.IntervalMs = 3000; // 3-second updates
 });
 builder.Services.AddSingleton<TerraFusion.AI.Services.SystemGptAtlasClassifier>();
 builder.Services.AddScoped<TerraFusion.AI.Services.ISystemGptAtlasTelemetrySource, TerraFusion.AI.Services.SystemGptAtlasTelemetrySource>();
@@ -524,33 +527,33 @@ builder.Services.AddScoped<IDatabaseInitializationService, DatabaseInitializatio
 // Register TerraLevy DbContext (PostgreSQL with SQLite fallback for dev)
 builder.Services.AddDbContext<LevyDbContext>(options =>
 {
-    var levyConn = Environment.GetEnvironmentVariable("LEVY_DATABASE_URL")
-                  ?? builder.Configuration.GetConnectionString("LevyDatabase")
-                  ?? Environment.GetEnvironmentVariable("DATABASE_URL");
-    var provider = builder.Configuration["DatabaseProvider"];
+  var levyConn = Environment.GetEnvironmentVariable("LEVY_DATABASE_URL")
+                ?? builder.Configuration.GetConnectionString("LevyDatabase")
+                ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+  var provider = builder.Configuration["DatabaseProvider"];
 
-    if (!string.IsNullOrWhiteSpace(levyConn) && string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
-    {
-        options.UseSqlServer(levyConn);
-        return;
-    }
+  if (!string.IsNullOrWhiteSpace(levyConn) && string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+  {
+    options.UseSqlServer(levyConn);
+    return;
+  }
 
-    if (string.IsNullOrWhiteSpace(levyConn))
-    {
-        Console.WriteLine("[LevyDb] WARNING: No PostgreSQL connection configured. Falling back to SQLite (levy-dev.db) for development.");
-        options.UseSqlite("Data Source=levy-dev.db");
-        return;
-    }
+  if (string.IsNullOrWhiteSpace(levyConn))
+  {
+    Console.WriteLine("[LevyDb] WARNING: No PostgreSQL connection configured. Falling back to SQLite (levy-dev.db) for development.");
+    options.UseSqlite("Data Source=levy-dev.db");
+    return;
+  }
 
-    if (levyConn.Contains("Host="))
-    {
-        options.UseNpgsql(levyConn);
-    }
-    else
-    {
-        // Allow SQLite connection string if explicitly provided
-        options.UseSqlite(levyConn);
-    }
+  if (levyConn.Contains("Host="))
+  {
+    options.UseNpgsql(levyConn);
+  }
+  else
+  {
+    // Allow SQLite connection string if explicitly provided
+    options.UseSqlite(levyConn);
+  }
 });
 
 // Register TerraLevy services for championship-level tax assessment
@@ -584,12 +587,12 @@ builder.Services.AddScoped<IElitePerformanceOptimizer, ElitePerformanceOptimizer
 // Advanced FISMA Moderate security for government-grade system protection
 builder.Services.Configure<EliteSecurityOptions>(options =>
 {
-    options.MaxRequestsPerWindow = 1000;
-    options.RateLimitWindowMinutes = 15;
-    options.RateLimitThreshold = 100;
-    options.EnableThreatDetection = true;
-    options.RequireGovernmentClaims = true;
-    options.RequiredSecurityHeaders = new[] { "Authorization", "X-API-Key" };
+  options.MaxRequestsPerWindow = 1000;
+  options.RateLimitWindowMinutes = 15;
+  options.RateLimitThreshold = 100;
+  options.EnableThreatDetection = true;
+  options.RequireGovernmentClaims = true;
+  options.RequiredSecurityHeaders = new[] { "Authorization", "X-API-Key" };
 });
 builder.Services.AddScoped<IEliteSecurityHardening, EliteSecurityHardening>();
 
@@ -613,7 +616,7 @@ var isDevPipelineDisabled = string.Equals(disableDevPipeline, "1", StringCompari
     || string.Equals(disableDevPipeline, "true", StringComparison.OrdinalIgnoreCase);
 if (!isDevPipelineDisabled)
 {
-    builder.Services.AddDevelopmentPipeline();
+  builder.Services.AddDevelopmentPipeline();
 }
 
 // Register TIER 5+ Multi-County Federation System
@@ -636,12 +639,12 @@ builder.Services.AddUltimateCostForgeAPI(builder.Configuration, builder.Environm
 Console.WriteLine("⚡ Configuring Quantum Metrics Real-Time Integration");
 builder.Services.AddSignalR(options =>
 {
-    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
-    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
-    options.HandshakeTimeout = TimeSpan.FromSeconds(15);
-    options.MaximumReceiveMessageSize = 64 * 1024; // 64KB
-    options.StreamBufferCapacity = 10;
+  options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+  options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+  options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+  options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+  options.MaximumReceiveMessageSize = 64 * 1024; // 64KB
+  options.StreamBufferCapacity = 10;
 });
 
 // Register Quantum Metrics Background Service for real-time broadcasting
@@ -652,30 +655,30 @@ var enableQuantumMetricsBackgroundService = IsFeatureEnabled(
 
 if (enableQuantumMetricsBackgroundService)
 {
-    builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
+  builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
 }
 else
 {
-    Console.WriteLine("ℹ️ QuantumMetricsBackgroundService disabled by default. Set TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE=true to enable.");
+  Console.WriteLine("ℹ️ QuantumMetricsBackgroundService disabled by default. Set TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE=true to enable.");
 }
 
 // Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-    {
-        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-            ?? new[]
-            {
+  options.AddDefaultPolicy(policy =>
+  {
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+          ?? new[]
+          {
                 $"http://localhost:{Environment.GetEnvironmentVariable("TF_FRONTEND_PORT") ?? "3102"}",
                 "http://localhost:5173",  // Vite dev server
                 "http://localhost:3000",  // Legacy frontend port
-            };
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
-    });
+          };
+    policy.WithOrigins(allowedOrigins)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+  });
 });
 
 var app = builder.Build();
@@ -683,45 +686,45 @@ var app = builder.Build();
 // 🤖 Seed GPT configurations on startup (PropertyAssessmentGPT, etc.)
 using (var scope = app.Services.CreateScope())
 {
-    try
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
+  try
+  {
+    var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
 
-        // Ensure database is created
-        await dbContext.Database.EnsureCreatedAsync();
+    // Ensure database is created
+    await dbContext.Database.EnsureCreatedAsync();
 
-        var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
-            scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
-        await seeder.SeedAllGPTsAsync();
+    var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
+        scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
+    await seeder.SeedAllGPTsAsync();
 
-        logger.LogInformation("GPT configurations seeded successfully");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"GPT seeding skipped: {ex.Message}");
-    }
+    logger.LogInformation("GPT configurations seeded successfully");
+  }
+  catch (Exception ex)
+  {
+    Console.WriteLine($"GPT seeding skipped: {ex.Message}");
+  }
 }
 
 // DX-01: Seed dossier runtime data in Development
 if (app.Environment.IsDevelopment())
 {
-    using var seedScope = app.Services.CreateScope();
-    try
-    {
-        var db = seedScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
-        await TerraFusion.API.Seeds.DatabaseSeeder.SeedDossierRuntimeDataAsync(db);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[DX-01] Dossier seed skipped: {ex.Message}");
-    }
+  using var seedScope = app.Services.CreateScope();
+  try
+  {
+    var db = seedScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    await TerraFusion.API.Seeds.DatabaseSeeder.SeedDossierRuntimeDataAsync(db);
+  }
+  catch (Exception ex)
+  {
+    Console.WriteLine($"[DX-01] Dossier seed skipped: {ex.Message}");
+  }
 }
 
 // Configure pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+  app.UseDeveloperExceptionPage();
 }
 
 app.UseCors();
@@ -741,16 +744,16 @@ Console.WriteLine($"[STARTUP] UI path exists: {Directory.Exists(uiPath)}");
 
 if (Directory.Exists(uiPath))
 {
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        FileProvider = new PhysicalFileProvider(uiPath),
-        RequestPath = ""
-    });
-    Console.WriteLine($"[STARTUP] Static files configured for: {uiPath}");
+  app.UseStaticFiles(new StaticFileOptions
+  {
+    FileProvider = new PhysicalFileProvider(uiPath),
+    RequestPath = ""
+  });
+  Console.WriteLine($"[STARTUP] Static files configured for: {uiPath}");
 }
 else
 {
-    Console.WriteLine($"[ERROR] UI directory not found at {uiPath}");
+  Console.WriteLine($"[ERROR] UI directory not found at {uiPath}");
 }
 
 app.UseRouting();
@@ -773,91 +776,91 @@ app.MapControllers();
 // GUARDED: Only available when app.Environment.IsDevelopment() is true.
 if (app.Environment.IsDevelopment())
 {
-    app.MapGet("/api/auth/dev-token", (
-        TerraFusion.API.Services.IJwtTokenService jwtService,
-        IConfiguration config) =>
-    {
-        var defaultCountyId = config["DefaultCounty:Id"] ?? TerraFusion.API.Seeds.DatabaseSeeder.BentonCountyId.ToString();
-        var defaultCountyCode = config["DefaultCounty:Code"] ?? "benton";
+  app.MapGet("/api/auth/dev-token", (
+      TerraFusion.API.Services.IJwtTokenService jwtService,
+      IConfiguration config) =>
+  {
+    var defaultCountyId = config["DefaultCounty:Id"] ?? TerraFusion.API.Seeds.DatabaseSeeder.BentonCountyId.ToString();
+    var defaultCountyCode = config["DefaultCounty:Code"] ?? "benton";
 
-        var customClaims = new Dictionary<string, object>
-        {
-            ["countyId"] = defaultCountyId,
-            ["countyCode"] = defaultCountyCode,
-            ["perm"] = new List<string>
-            {
+    var customClaims = new Dictionary<string, object>
+    {
+      ["countyId"] = defaultCountyId,
+      ["countyCode"] = defaultCountyCode,
+      ["perm"] = new List<string>
+          {
                 "read:dossier",
                 "write:dossier",
                 "read:property",
                 "read:levy",
                 "read:costforge"
-            }
-        };
+          }
+    };
 
-        var token = jwtService.GenerateAccessToken(
-            userId: "dev-user-001",
-            email: "dev@terrafusion.local",
-            roles: new[] { "Developer", "Assessor" },
-            customClaims: customClaims);
+    var token = jwtService.GenerateAccessToken(
+          userId: "dev-user-001",
+          email: "dev@terrafusion.local",
+          roles: new[] { "Developer", "Assessor" },
+          customClaims: customClaims);
 
-        return Results.Ok(new
-        {
-            token,
-            expiresIn = int.Parse(config["JwtSettings:ExpirationMinutes"] ?? "120"),
-            countyId = defaultCountyId,
-            countyCode = defaultCountyCode,
-            note = "Development-only token. Not available in production."
-        });
-    })
-    .WithName("DevToken")
-    .WithTags("Auth")
-    .AllowAnonymous();
+    return Results.Ok(new
+    {
+      token,
+      expiresIn = int.Parse(config["JwtSettings:ExpirationMinutes"] ?? "120"),
+      countyId = defaultCountyId,
+      countyCode = defaultCountyCode,
+      note = "Development-only token. Not available in production."
+    });
+  })
+  .WithName("DevToken")
+  .WithTags("Auth")
+  .AllowAnonymous();
 
-    Console.WriteLine("[DX-01] Development auth endpoint registered: GET /api/auth/dev-token");
+  Console.WriteLine("[DX-01] Development auth endpoint registered: GET /api/auth/dev-token");
 }
 
 // SPA Fallback - serve index.html for all non-API routes
 if (Directory.Exists(uiPath))
 {
-    var indexPath = Path.Combine(uiPath, "index.html");
-    Console.WriteLine($"[FALLBACK] Configured with indexPath: {indexPath}, Exists: {File.Exists(indexPath)}");
+  var indexPath = Path.Combine(uiPath, "index.html");
+  Console.WriteLine($"[FALLBACK] Configured with indexPath: {indexPath}, Exists: {File.Exists(indexPath)}");
 
-    app.MapFallback(async context =>
+  app.MapFallback(async context =>
+  {
+    // Don't fallback for API routes
+    if (context.Request.Path.StartsWithSegments("/api") ||
+          context.Request.Path.StartsWithSegments("/hubs"))
     {
-        // Don't fallback for API routes
-        if (context.Request.Path.StartsWithSegments("/api") ||
-            context.Request.Path.StartsWithSegments("/hubs"))
-        {
-            context.Response.StatusCode = 404;
-            return;
-        }
+      context.Response.StatusCode = 404;
+      return;
+    }
 
-        Console.WriteLine($"[FALLBACK] Serving: {context.Request.Path}, indexPath exists: {File.Exists(indexPath)}");
+    Console.WriteLine($"[FALLBACK] Serving: {context.Request.Path}, indexPath exists: {File.Exists(indexPath)}");
 
-        if (File.Exists(indexPath))
-        {
-            try
-            {
-                context.Response.ContentType = "text/html; charset=utf-8";
-                context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-                var html = await File.ReadAllTextAsync(indexPath);
-                Console.WriteLine($"[FALLBACK] Read {html.Length} bytes from index.html");
-                await context.Response.WriteAsync(html);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[FALLBACK ERROR] {ex.Message}");
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsync($"Error serving index.html: {ex.Message}");
-            }
-        }
-        else
-        {
-            Console.WriteLine($"[FALLBACK] File not found: {indexPath}");
-            context.Response.StatusCode = 404;
-            await context.Response.WriteAsync($"index.html not found at {indexPath}");
-        }
-    });
+    if (File.Exists(indexPath))
+    {
+      try
+      {
+        context.Response.ContentType = "text/html; charset=utf-8";
+        context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        var html = await File.ReadAllTextAsync(indexPath);
+        Console.WriteLine($"[FALLBACK] Read {html.Length} bytes from index.html");
+        await context.Response.WriteAsync(html);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[FALLBACK ERROR] {ex.Message}");
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync($"Error serving index.html: {ex.Message}");
+      }
+    }
+    else
+    {
+      Console.WriteLine($"[FALLBACK] File not found: {indexPath}");
+      context.Response.StatusCode = 404;
+      await context.Response.WriteAsync($"index.html not found at {indexPath}");
+    }
+  });
 }
 
 // Map Prometheus metrics endpoint
@@ -884,55 +887,55 @@ app.MapMarketplaceOps();
 // /healthz/ready  → readiness (can I serve traffic?)
 app.MapHealthChecks("/healthz", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {
-    Predicate = _ => false, // Always healthy if process is alive
-    ResponseWriter = async (ctx, _) =>
-    {
-        ctx.Response.ContentType = "application/json; charset=utf-8";
-        await ctx.Response.WriteAsync("{\"status\":\"ok\",\"probe\":\"liveness\"}");
-    }
+  Predicate = _ => false, // Always healthy if process is alive
+  ResponseWriter = async (ctx, _) =>
+  {
+    ctx.Response.ContentType = "application/json; charset=utf-8";
+    await ctx.Response.WriteAsync("{\"status\":\"ok\",\"probe\":\"liveness\"}");
+  }
 });
 
 app.MapHealthChecks("/healthz/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {
-    Predicate = hc => hc.Tags.Contains("readiness") || hc.Name == "speclock",
-    ResponseWriter = async (ctx, report) =>
+  Predicate = hc => hc.Tags.Contains("readiness") || hc.Name == "speclock",
+  ResponseWriter = async (ctx, report) =>
+  {
+    ctx.Response.ContentType = "application/json; charset=utf-8";
+
+    // NO MERCY: Hard gate on SpecLock + State Mesh verification
+    if (!TerraFusion.API.Services.SpecLock.SpecLockGuardHostedService.Verified)
     {
-        ctx.Response.ContentType = "application/json; charset=utf-8";
-
-        // NO MERCY: Hard gate on SpecLock + State Mesh verification
-        if (!TerraFusion.API.Services.SpecLock.SpecLockGuardHostedService.Verified)
-        {
-            ctx.Response.StatusCode = 503;
-            await ctx.Response.WriteAsync("{\"status\":\"not_ready\",\"probe\":\"readiness\",\"reason\":\"speclock_failed\"}");
-            return;
-        }
-
-        if (!TerraFusion.API.Services.SpecLock.StateMeshGuardHostedService.Verified)
-        {
-            ctx.Response.StatusCode = 503;
-            var reason = TerraFusion.API.Services.SpecLock.StateMeshGuardHostedService.FailureReason;
-            var payload = System.Text.Json.JsonSerializer.Serialize(new
-            {
-                status = "not_ready",
-                probe = "readiness",
-                reason = "state_mesh_unverified",
-                detail = reason
-            });
-            await ctx.Response.WriteAsync(payload);
-            return;
-        }
-
-        var status = report.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy ? "ok" : "not_ready";
-        var responsePayload = System.Text.Json.JsonSerializer.Serialize(new
-        {
-            status,
-            probe = "readiness",
-            speclock_verified = true,
-            state_mesh_verified = true,
-            checks = report.Entries.Select(e => new { name = e.Key, status = e.Value.Status.ToString() })
-        });
-        await ctx.Response.WriteAsync(responsePayload);
+      ctx.Response.StatusCode = 503;
+      await ctx.Response.WriteAsync("{\"status\":\"not_ready\",\"probe\":\"readiness\",\"reason\":\"speclock_failed\"}");
+      return;
     }
+
+    if (!TerraFusion.API.Services.SpecLock.StateMeshGuardHostedService.Verified)
+    {
+      ctx.Response.StatusCode = 503;
+      var reason = TerraFusion.API.Services.SpecLock.StateMeshGuardHostedService.FailureReason;
+      var payload = System.Text.Json.JsonSerializer.Serialize(new
+      {
+        status = "not_ready",
+        probe = "readiness",
+        reason = "state_mesh_unverified",
+        detail = reason
+      });
+      await ctx.Response.WriteAsync(payload);
+      return;
+    }
+
+    var status = report.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy ? "ok" : "not_ready";
+    var responsePayload = System.Text.Json.JsonSerializer.Serialize(new
+    {
+      status,
+      probe = "readiness",
+      speclock_verified = true,
+      state_mesh_verified = true,
+      checks = report.Entries.Select(e => new { name = e.Key, status = e.Value.Status.ToString() })
+    });
+    await ctx.Response.WriteAsync(responsePayload);
+  }
 });
 
 // Map SignalR hubs
@@ -949,22 +952,22 @@ app.MapHub<TerraFusion.AI.Hubs.CollaborationHub>("/hubs/collaboration");
 // Add test endpoints
 app.MapGet("/api/test", () => new
 {
-    message = "TerraFusion API is running!",
-    timestamp = DateTime.UtcNow,
-    version = "1.0.0",
-    environment = app.Environment.EnvironmentName
+  message = "TerraFusion API is running!",
+  timestamp = DateTime.UtcNow,
+  version = "1.0.0",
+  environment = app.Environment.EnvironmentName
 });
 
 // Minimal transcendence health probe (previously returned 404 in some checks)
 // Returns a simple OK payload without invoking heavy services
 app.MapGet("/api/transcendence/health", () =>
 {
-    return Results.Ok(new
-    {
-        status = "ok",
-        service = "transcendence",
-        timestamp = DateTime.UtcNow
-    });
+  return Results.Ok(new
+  {
+    status = "ok",
+    service = "transcendence",
+    timestamp = DateTime.UtcNow
+  });
 });
 
 // --- TerraLevy minimal endpoints ---
@@ -972,26 +975,26 @@ var levy = app.MapGroup("/levy").WithTags("Levy");
 
 levy.MapGet("/health", async (LevyDbContext ctx) =>
 {
-    try
-    {
-        var provider = ctx.Database.ProviderName ?? string.Empty;
+  try
+  {
+    var provider = ctx.Database.ProviderName ?? string.Empty;
 
-        // Auto-provision SQLite dev database for local runs
-        if (provider.Contains("Sqlite", StringComparison.OrdinalIgnoreCase))
-        {
-            await ctx.Database.EnsureCreatedAsync();
-            return Results.Ok(new { status = "healthy", provider, mode = "sqlite-dev", timestamp = DateTime.UtcNow });
-        }
-
-        var canConnect = await ctx.Database.CanConnectAsync();
-        return canConnect
-            ? Results.Ok(new { status = "healthy", provider, timestamp = DateTime.UtcNow })
-            : Results.Problem("Cannot connect to Levy database.", statusCode: 503);
-    }
-    catch (Exception ex)
+    // Auto-provision SQLite dev database for local runs
+    if (provider.Contains("Sqlite", StringComparison.OrdinalIgnoreCase))
     {
-        return Results.Problem($"Levy DB error: {ex.Message}", statusCode: 503);
+      await ctx.Database.EnsureCreatedAsync();
+      return Results.Ok(new { status = "healthy", provider, mode = "sqlite-dev", timestamp = DateTime.UtcNow });
     }
+
+    var canConnect = await ctx.Database.CanConnectAsync();
+    return canConnect
+        ? Results.Ok(new { status = "healthy", provider, timestamp = DateTime.UtcNow })
+        : Results.Problem("Cannot connect to Levy database.", statusCode: 503);
+  }
+  catch (Exception ex)
+  {
+    return Results.Problem($"Levy DB error: {ex.Message}", statusCode: 503);
+  }
 });
 
 levy.MapGet("/districts", async (
@@ -1001,38 +1004,38 @@ levy.MapGet("/districts", async (
     int skip = 0
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    take = Math.Clamp(take, 1, 200);
-    skip = Math.Max(0, skip);
+  take = Math.Clamp(take, 1, 200);
+  skip = Math.Max(0, skip);
 
-    var query = db.Districts.AsNoTracking();
-    if (!string.IsNullOrWhiteSpace(county))
-    {
-        query = query.Where(d => d.CountyId == county);
-    }
+  var query = db.Districts.AsNoTracking();
+  if (!string.IsNullOrWhiteSpace(county))
+  {
+    query = query.Where(d => d.CountyId == county);
+  }
 
-    var items = await query
-        .OrderBy(d => d.CountyId).ThenBy(d => d.DistrictCode)
-        .Skip(skip)
-        .Take(take)
-        .Select(d => new
-        {
-            d.Id,
-            d.CountyId,
-            d.DistrictCode,
-            d.Name,
-            d.DistrictType,
-            d.ParcelCount,
-            d.TotalAssessedValue,
-            d.IsActive
-        })
-        .ToListAsync();
+  var items = await query
+      .OrderBy(d => d.CountyId).ThenBy(d => d.DistrictCode)
+      .Skip(skip)
+      .Take(take)
+      .Select(d => new
+      {
+        d.Id,
+        d.CountyId,
+        d.DistrictCode,
+        d.Name,
+        d.DistrictType,
+        d.ParcelCount,
+        d.TotalAssessedValue,
+        d.IsActive
+      })
+      .ToListAsync();
 
-    return Results.Ok(new { count = items.Count, items });
+  return Results.Ok(new { count = items.Count, items });
 });
 
 // Calculate optimal rate for a levy measure (quantum-enhanced)
@@ -1042,19 +1045,19 @@ levy.MapPost("/calculate", async (
     CalculateRequest req
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    var measure = await db.LevyMeasures.AsNoTracking().FirstOrDefaultAsync(m => m.Id == req.MeasureId);
-    if (measure is null)
-    {
-        return Results.NotFound(new { error = $"LevyMeasure {req.MeasureId} not found" });
-    }
+  var measure = await db.LevyMeasures.AsNoTracking().FirstOrDefaultAsync(m => m.Id == req.MeasureId);
+  if (measure is null)
+  {
+    return Results.NotFound(new { error = $"LevyMeasure {req.MeasureId} not found" });
+  }
 
-    var result = await calc.CalculateOptimalRateAsync(measure, useQuantumOptimization: true);
-    return Results.Ok(result);
+  var result = await calc.CalculateOptimalRateAsync(measure, useQuantumOptimization: true);
+  return Results.Ok(result);
 });
 
 // Validate a proposed rate for statutory compliance
@@ -1065,19 +1068,19 @@ levy.MapGet("/measures/{id:guid}/compliance", async (
     decimal rate
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    var measure = await db.LevyMeasures.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
-    if (measure is null)
-    {
-        return Results.NotFound(new { error = $"LevyMeasure {id} not found" });
-    }
+  var measure = await db.LevyMeasures.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
+  if (measure is null)
+  {
+    return Results.NotFound(new { error = $"LevyMeasure {id} not found" });
+  }
 
-    var result = await calc.ValidateRateComplianceAsync(measure, rate);
-    return Results.Ok(result);
+  var result = await calc.ValidateRateComplianceAsync(measure, rate);
+  return Results.Ok(result);
 });
 
 // Analyze multiple rate scenarios for a measure
@@ -1087,19 +1090,19 @@ levy.MapPost("/scenarios/analyze", async (
     AnalyzeScenariosRequest req
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    var measure = await db.LevyMeasures.AsNoTracking().FirstOrDefaultAsync(m => m.Id == req.MeasureId);
-    if (measure is null)
-    {
-        return Results.NotFound(new { error = $"LevyMeasure {req.MeasureId} not found" });
-    }
+  var measure = await db.LevyMeasures.AsNoTracking().FirstOrDefaultAsync(m => m.Id == req.MeasureId);
+  if (measure is null)
+  {
+    return Results.NotFound(new { error = $"LevyMeasure {req.MeasureId} not found" });
+  }
 
-    var result = await calc.AnalyzeScenariosAsync(measure, req.Rates ?? new List<decimal>());
-    return Results.Ok(result);
+  var result = await calc.AnalyzeScenariosAsync(measure, req.Rates ?? new List<decimal>());
+  return Results.Ok(result);
 });
 
 // Generate multi-year revenue projections for a scenario
@@ -1109,19 +1112,19 @@ levy.MapPost("/projections/generate", async (
     GenerateProjectionsRequest req
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    var scenario = await db.LevyScenarios.AsNoTracking().FirstOrDefaultAsync(s => s.Id == req.ScenarioId);
-    if (scenario is null)
-    {
-        return Results.NotFound(new { error = $"LevyScenario {req.ScenarioId} not found" });
-    }
+  var scenario = await db.LevyScenarios.AsNoTracking().FirstOrDefaultAsync(s => s.Id == req.ScenarioId);
+  if (scenario is null)
+  {
+    return Results.NotFound(new { error = $"LevyScenario {req.ScenarioId} not found" });
+  }
 
-    var list = await projections.GenerateProjectionsAsync(scenario, Math.Clamp(req.Years, 1, 10), useQuantumForecasting: true);
-    return Results.Ok(list);
+  var list = await projections.GenerateProjectionsAsync(scenario, Math.Clamp(req.Years, 1, 10), useQuantumForecasting: true);
+  return Results.Ok(list);
 });
 
 // List levy measures with optional county filter
@@ -1132,41 +1135,41 @@ levy.MapGet("/measures", async (
     int skip = 0
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    take = Math.Clamp(take, 1, 200);
-    skip = Math.Max(0, skip);
+  take = Math.Clamp(take, 1, 200);
+  skip = Math.Max(0, skip);
 
-    var query = db.LevyMeasures.AsNoTracking();
-    if (!string.IsNullOrWhiteSpace(county))
-    {
-        query = query.Where(m => m.CountyId == county);
-    }
+  var query = db.LevyMeasures.AsNoTracking();
+  if (!string.IsNullOrWhiteSpace(county))
+  {
+    query = query.Where(m => m.CountyId == county);
+  }
 
-    var items = await query
-        .OrderByDescending(m => m.LevyYear).ThenBy(m => m.Name)
-        .Skip(skip)
-        .Take(take)
-        .Select(m => new
-        {
-            m.Id,
-            m.CountyId,
-            m.Name,
-            m.LevyYear,
-            m.LevyType,
-            m.Status,
-            m.TargetAmount,
-            m.CalculatedRate,
-            m.MaximumRate,
-            m.QuantumOptimized,
-            m.AiConfidenceScore
-        })
-        .ToListAsync();
+  var items = await query
+      .OrderByDescending(m => m.LevyYear).ThenBy(m => m.Name)
+      .Skip(skip)
+      .Take(take)
+      .Select(m => new
+      {
+        m.Id,
+        m.CountyId,
+        m.Name,
+        m.LevyYear,
+        m.LevyType,
+        m.Status,
+        m.TargetAmount,
+        m.CalculatedRate,
+        m.MaximumRate,
+        m.QuantumOptimized,
+        m.AiConfidenceScore
+      })
+      .ToListAsync();
 
-    return Results.Ok(new { count = items.Count, items });
+  return Results.Ok(new { count = items.Count, items });
 });
 
 // Get levy measure by id
@@ -1175,13 +1178,13 @@ levy.MapGet("/measures/{id:guid}", async (
     Guid id
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    var measure = await db.LevyMeasures.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
-    return measure is not null ? Results.Ok(measure) : Results.NotFound(new { error = $"LevyMeasure {id} not found" });
+  var measure = await db.LevyMeasures.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
+  return measure is not null ? Results.Ok(measure) : Results.NotFound(new { error = $"LevyMeasure {id} not found" });
 });
 
 // List scenarios, optionally by measure
@@ -1192,40 +1195,40 @@ levy.MapGet("/scenarios", async (
     int skip = 0
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    take = Math.Clamp(take, 1, 200);
-    skip = Math.Max(0, skip);
+  take = Math.Clamp(take, 1, 200);
+  skip = Math.Max(0, skip);
 
-    var query = db.LevyScenarios.AsNoTracking();
-    if (measureId.HasValue)
-    {
-        query = query.Where(s => s.LevyMeasureId == measureId.Value);
-    }
+  var query = db.LevyScenarios.AsNoTracking();
+  if (measureId.HasValue)
+  {
+    query = query.Where(s => s.LevyMeasureId == measureId.Value);
+  }
 
-    var items = await query
-        .OrderByDescending(s => s.CreatedAt)
-        .Skip(skip)
-        .Take(take)
-        .Select(s => new
-        {
-            s.Id,
-            s.CountyId,
-            s.LevyMeasureId,
-            s.Name,
-            s.ScenarioType,
-            s.LevyRate,
-            s.ProjectedRevenue,
-            s.CollectionRate,
-            s.IsActive,
-            s.ConfidenceScore
-        })
-        .ToListAsync();
+  var items = await query
+      .OrderByDescending(s => s.CreatedAt)
+      .Skip(skip)
+      .Take(take)
+      .Select(s => new
+      {
+        s.Id,
+        s.CountyId,
+        s.LevyMeasureId,
+        s.Name,
+        s.ScenarioType,
+        s.LevyRate,
+        s.ProjectedRevenue,
+        s.CollectionRate,
+        s.IsActive,
+        s.ConfidenceScore
+      })
+      .ToListAsync();
 
-    return Results.Ok(new { count = items.Count, items });
+  return Results.Ok(new { count = items.Count, items });
 });
 
 // List projections for a scenario
@@ -1236,34 +1239,34 @@ levy.MapGet("/projections", async (
     int skip = 0
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    take = Math.Clamp(take, 1, 200);
-    skip = Math.Max(0, skip);
+  take = Math.Clamp(take, 1, 200);
+  skip = Math.Max(0, skip);
 
-    var query = db.RevenueProjections.AsNoTracking().Where(p => p.LevyScenarioId == scenarioId);
-    var items = await query
-        .OrderBy(p => p.FiscalYear)
-        .Skip(skip)
-        .Take(take)
-        .Select(p => new
-        {
-            p.Id,
-            p.LevyScenarioId,
-            p.FiscalYear,
-            p.ProjectedAssessedValue,
-            p.ProjectedLevyAmount,
-            p.ProjectedCollectionRate,
-            p.ProjectedNetRevenue,
-            p.GrowthRate,
-            p.ConfidenceLevel
-        })
-        .ToListAsync();
+  var query = db.RevenueProjections.AsNoTracking().Where(p => p.LevyScenarioId == scenarioId);
+  var items = await query
+      .OrderBy(p => p.FiscalYear)
+      .Skip(skip)
+      .Take(take)
+      .Select(p => new
+      {
+        p.Id,
+        p.LevyScenarioId,
+        p.FiscalYear,
+        p.ProjectedAssessedValue,
+        p.ProjectedLevyAmount,
+        p.ProjectedCollectionRate,
+        p.ProjectedNetRevenue,
+        p.GrowthRate,
+        p.ConfidenceLevel
+      })
+      .ToListAsync();
 
-    return Results.Ok(new { count = items.Count, items });
+  return Results.Ok(new { count = items.Count, items });
 });
 
 // Compare scenarios and return recommended option
@@ -1273,29 +1276,29 @@ levy.MapPost("/scenarios/compare", async (
     CompareScenariosRequest req
 ) =>
 {
-    if (db is null)
-    {
-        return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
-    }
+  if (db is null)
+  {
+    return Results.Problem("LevyDbContext not configured. Set LEVY_DATABASE_URL or ConnectionStrings:LevyDatabase.", statusCode: 503);
+  }
 
-    if (req.ScenarioIds is null || req.ScenarioIds.Count < 2)
-    {
-        return Results.BadRequest(new { error = "Provide at least two scenarioIds to compare." });
-    }
+  if (req.ScenarioIds is null || req.ScenarioIds.Count < 2)
+  {
+    return Results.BadRequest(new { error = "Provide at least two scenarioIds to compare." });
+  }
 
-    // Allow duplicate IDs by de-duplicating for lookup; proceed if at least one exists
-    var requestedIds = req.ScenarioIds.Distinct().ToList();
-    var scenarios = await db.LevyScenarios.AsNoTracking()
-        .Where(s => requestedIds.Contains(s.Id))
-        .ToListAsync();
+  // Allow duplicate IDs by de-duplicating for lookup; proceed if at least one exists
+  var requestedIds = req.ScenarioIds.Distinct().ToList();
+  var scenarios = await db.LevyScenarios.AsNoTracking()
+      .Where(s => requestedIds.Contains(s.Id))
+      .ToListAsync();
 
-    if (scenarios.Count == 0)
-    {
-        return Results.NotFound(new { error = "No matching scenarios found." });
-    }
+  if (scenarios.Count == 0)
+  {
+    return Results.NotFound(new { error = "No matching scenarios found." });
+  }
 
-    var comparison = await projections.CompareScenariosAsync(scenarios, Math.Clamp(req.ProjectionYears, 1, 10));
-    return Results.Ok(comparison);
+  var comparison = await projections.CompareScenariosAsync(scenarios, Math.Clamp(req.ProjectionYears, 1, 10));
+  return Results.Ok(comparison);
 });
 
 // (moved DTOs to top of file)
@@ -1327,9 +1330,9 @@ Console.WriteLine("🧩 Module System: Active with hot-reload support");
 // Test the endpoints are configured
 app.Use(async (context, next) =>
 {
-    Console.WriteLine($"📥 Request: {context.Request.Method} {context.Request.Path}");
-    await next(context);
-    Console.WriteLine($"📤 Response: {context.Response.StatusCode}");
+  Console.WriteLine($"📥 Request: {context.Request.Method} {context.Request.Path}");
+  await next(context);
+  Console.WriteLine($"📤 Response: {context.Response.StatusCode}");
 });
 
 // API Configuration Summary
@@ -1354,50 +1357,50 @@ Console.WriteLine("💾 Database: SQLite fallback with background initialization
 
 try
 {
-    Console.WriteLine($"🚀 Starting TerraFusion API");
-    Console.WriteLine($"🔍 Configured URLs: {string.Join(", ", builder.WebHost.GetSetting("urls") ?? "NONE SET - Using Kestrel defaults")}");
-    Console.WriteLine($"🌐 Environment: {app.Environment.EnvironmentName}");
+  Console.WriteLine($"🚀 Starting TerraFusion API");
+  Console.WriteLine($"🔍 Configured URLs: {string.Join(", ", builder.WebHost.GetSetting("urls") ?? "NONE SET - Using Kestrel defaults")}");
+  Console.WriteLine($"🌐 Environment: {app.Environment.EnvironmentName}");
 
-    // 🔬 DIAGNOSTIC: Add lifetime event handlers to trace shutdown triggers
-    var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+  // 🔬 DIAGNOSTIC: Add lifetime event handlers to trace shutdown triggers
+  var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
-    lifetime.ApplicationStarted.Register(() =>
-    {
-        Console.WriteLine($"✅ ApplicationStarted event fired at {DateTime.Now:HH:mm:ss.fff}");
-        Console.WriteLine($"   Server is fully started and ready to accept requests");
-    });
+  lifetime.ApplicationStarted.Register(() =>
+  {
+    Console.WriteLine($"✅ ApplicationStarted event fired at {DateTime.Now:HH:mm:ss.fff}");
+    Console.WriteLine($"   Server is fully started and ready to accept requests");
+  });
 
-    lifetime.ApplicationStopping.Register(() =>
-    {
-        Console.WriteLine($"⚠️ ApplicationStopping event fired at {DateTime.Now:HH:mm:ss.fff}");
-        Console.WriteLine($"   Something requested application shutdown!");
-        Console.WriteLine($"   Stack trace of shutdown trigger:");
-        Console.WriteLine($"{Environment.StackTrace}");
-    });
+  lifetime.ApplicationStopping.Register(() =>
+  {
+    Console.WriteLine($"⚠️ ApplicationStopping event fired at {DateTime.Now:HH:mm:ss.fff}");
+    Console.WriteLine($"   Something requested application shutdown!");
+    Console.WriteLine($"   Stack trace of shutdown trigger:");
+    Console.WriteLine($"{Environment.StackTrace}");
+  });
 
-    lifetime.ApplicationStopped.Register(() =>
-    {
-        Console.WriteLine($"🛑 ApplicationStopped event fired at {DateTime.Now:HH:mm:ss.fff}");
-    });
+  lifetime.ApplicationStopped.Register(() =>
+  {
+    Console.WriteLine($"🛑 ApplicationStopped event fired at {DateTime.Now:HH:mm:ss.fff}");
+  });
 
-    // 🌟 Initialize Ultimate CostForge AI Consciousness
-    // RE-ENABLED: Championship-level 1M agent deployment with quantum Factor 999
-    await app.Services.InitializeUltimateCostForgeAsync();
+  // 🌟 Initialize Ultimate CostForge AI Consciousness
+  // RE-ENABLED: Championship-level 1M agent deployment with quantum Factor 999
+  await app.Services.InitializeUltimateCostForgeAsync();
 
-    Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
-    Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");
+  Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
+  Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");
 
-    app.Run();
+  app.Run();
 
-    Console.WriteLine($"⚠️ app.Run() returned! This means shutdown was requested.");
-    Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");
-    Console.WriteLine($"✅ Server stopped gracefully");
+  Console.WriteLine($"⚠️ app.Run() returned! This means shutdown was requested.");
+  Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");
+  Console.WriteLine($"✅ Server stopped gracefully");
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"❌ Failed to start server: {ex.Message}");
-    Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
-    throw;
+  Console.WriteLine($"❌ Failed to start server: {ex.Message}");
+  Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
+  throw;
 }
 
 public partial class Program { }
