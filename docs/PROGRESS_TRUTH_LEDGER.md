@@ -72,9 +72,17 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 | `dossierService.ts` | **REAL** — calls `/api/dossier/*` with bearer auth + correlation ID. Fallback removed in CC-14 | Source-verified |
 | `levyService.ts` | **REAL** — calls `/levy-calculation/calculate-rate` via axios | Source-verified |
 | `piltService.ts` | **REAL frontend calls** to `/pilt/*` via axios — BUT backend returns 100% hardcoded data | Source-verified |
-| `forgeService.ts` | **CLIENT-SIDE ONLY** — 42-entry hardcoded cost matrix, `calculateCost()` and `calculateIncome()` pure client-side, `localStorage` persistence. Does NOT call CostForgeController. Has governed path via `runGovernedValuation()` in `pilotApi.ts`, but legacy co-exists. **This is "THE BIG ONE".** | Source-verified |
+| `forgeService.ts` | **GOVERNED PATH IS SOLE PRODUCTION PATH** — `runGovernedValuation()` calls `invokePilotTool('run_valuation_model')` through pilotApi → PilotController → CostForgeController. Legacy `calculateCost()`/`calculateIncome()` marked `@deprecated` (retained for offline/preview). All localStorage persistence **removed** — scenario/appeal/audit functions are no-op stubs with console.warn. 42-entry `COST_MATRIX` retained as UI reference data only. **"THE BIG ONE" is closed.** | Source-verified, localStorage grep = 0 production calls, tsc passes |
 
-**No suite service routes through `/pilot/invoke`** — governed invocation is isolated to `pilotApi.ts`.
+**Governed execution path:** `ForgeExecutionPanel.tsx` → `useToolInvocation` → `pilotApi.invokePilotTool()` → `POST /pilot/invoke` → `PilotController` → `handlers.real.ts` → `POST /api/costforge/calculate`
+
+**Workbench tab status (updated March 7):**
+
+| Tab | Status | Evidence |
+|-----|--------|----------|
+| PropertyForge | Real governed invocation via `explain_model_results` tool | pilotApi calls verified |
+| PropertyDossier | Section 1 (Parcel Details) **REAL** via `useDossierDetails`. Section 2 (Document Management) **disabled** — mock documents removed, replaced with "coming in R2" state | MOCK_DOCUMENTS grep = 0 |
+| PropertyAtlas | Real `query_parcel_layers` tool invocation. SVG map **labeled as schematic** — "GIS integration planned for R2" | Schematic label added line 173 |
 
 ### Codex — Backend: Major enablement, some hardening/cleanup still open
 
@@ -167,13 +175,13 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 
 ## Remaining Blockers to "R1 Real"
 
-1. `forgeService.ts` still contains 100% client-side calculator / localStorage behavior
+1. ~~`forgeService.ts` still contains 100% client-side calculator / localStorage behavior~~ **CLOSED March 7** — localStorage removed, calculator deprecated, governed path is sole production path
 2. `PiltController.cs` is 100% hardcoded — no DB, no auth, no county isolation
 3. `PropertyValuationController.cs` auth hardening not completed
 4. `QuantumMetricsBackgroundService` still registered (theater cleanup incomplete)
 5. `CostForgeController` batch-calculate and PACS sync are stubs
 6. 14 of 24 manifest tools have no real handler — only canned stubs
-7. Fake-path elimination not yet finished
+7. ~~Fake-path elimination not yet finished~~ **PARTIALLY CLOSED March 7** — Forge localStorage eliminated, Dossier mock docs removed, Atlas labeled honestly. Remaining: PILT fake backend, other frontend surfaces
 8. R1 acceptance: 5+ tools through governed path with all 11 acceptance criteria,
    logged correlation IDs, and fake-path grep returning zero
 
@@ -185,11 +193,11 @@ TerraFusion R1 now has a real governed execution backbone in code: invoke contra
 trace capture/export, write-lane enforcement, county isolation, correlation propagation,
 and substantial shell UX are present and currently passing core gates.
 
-However, R1 is not yet honestly "fully real end-to-end" because Forge remains only
-partially migrated, some production UI paths still retain legacy/mock behavior,
-`PiltController` is entirely fake, and 14 of 24 tools still use canned stubs.
+Forge cutover is now closed: the governed path (`runGovernedValuation` → `pilotApi` → `PilotController` → `CostForgeController`) is the sole production path, localStorage persistence is eliminated, and legacy calculators are deprecated. Dossier mock documents are removed. Atlas is honestly labeled.
 
-**The governance spine is solid. The next frontier is wiring real data through it.**
+However, R1 is not yet fully "real end-to-end" because `PiltController` is entirely fake, `PropertyValuationController` lacks auth, and 14 of 24 tools still use canned stubs.
+
+**The governance spine is solid. Forge cutover is closed. The remaining frontier is backend hardening and stub handler closure.**
 
 ---
 

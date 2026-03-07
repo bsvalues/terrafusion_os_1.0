@@ -4,6 +4,9 @@
  * Phase 5.3: Property Atlas Tab - GIS/Mapping MWUX Slice
  * Real MWUX with layer selection, map placeholder, and query_parcel_layers tool invocation.
  *
+ * Map visualization is schematic (deterministic SVG from parcelId hash).
+ * Real GIS/ArcGIS integration is planned for R2.
+ *
  * Architecture: UI → select layers → query_parcel_layers tool → correlationId UX
  */
 
@@ -164,6 +167,11 @@ function ParcelMapVisualization({
         <circle cx='200' cy='150' r='4' fill='hsl(var(--tf-warning-hs) 50%)' />
         <circle cx='200' cy='150' r='8' fill='none' stroke='hsl(var(--tf-warning-hs) 50%)' strokeWidth='1' opacity='0.6' />
       </svg>
+
+      {/* Schematic disclaimer */}
+      <p className="tf-text-dim text-xs mt-1 text-center italic">
+        Schematic representation — GIS integration planned for R2
+      </p>
 
       {/* Map info bar */}
       <div className='flex items-center justify-between px-4 py-2 text-xs' style={{ background: 'hsl(var(--tf-text-primary-hs) 0% / 0.4)' }}>
