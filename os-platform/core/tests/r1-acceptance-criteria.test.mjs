@@ -468,9 +468,9 @@ describe('AC-10: Real Handler Registry', () => {
     registerR1Handlers(runner, traceService);
   });
 
-  it('runner has >= 10 registered handlers', () => {
+  it('runner has >= 15 registered handlers (10 R1 + 5 R2)', () => {
     const handlers = runner.getRegisteredHandlers();
-    assert.ok(handlers.length >= 10, `Expected >= 10 handlers, got ${handlers.length}`);
+    assert.ok(handlers.length >= 15, `Expected >= 15 handlers (10 R1 + 5 R2), got ${handlers.length}`);
   });
 
   it('proof tools produce real-shaped output without canned markers', async () => {

@@ -66,12 +66,20 @@ const R1_WEEK3_TOOL_IDS = [
   'query_parcel_layers',
 ];
 
+const R2_WAVE1_TOOL_IDS = [
+  'run_sales_approach',
+  'run_income_approach',
+  'run_cost_approach',
+  'run_reconciliation',
+  'get_cost_matrix',
+];
+
 // ══════════════════════════════════════════════════════════════════════
 // Registration Tests
 // ══════════════════════════════════════════════════════════════════════
 
 describe('R1 Boot Wiring', () => {
-  it('registerR1Handlers registers all 10 real handlers', async () => {
+  it('registerR1Handlers registers all 10 R1 + 5 R2 real handlers', async () => {
     const registry = new ToolRegistry();
     await registry.initialize();
     const runner = new ToolRunner({ registry });
@@ -80,7 +88,7 @@ describe('R1 Boot Wiring', () => {
     registerPhase84Handlers(runner);
     const cannedHandlers = runner.getRegisteredHandlers();
 
-    // Now override with R1 real handlers
+    // Now override with R1 + R2 real handlers
     registerR1Handlers(runner, traceService);
     const realHandlers = runner.getRegisteredHandlers();
 
@@ -89,6 +97,14 @@ describe('R1 Boot Wiring', () => {
       assert.ok(
         realHandlers.includes(toolId),
         `Expected ${toolId} to be registered after registerR1Handlers`
+      );
+    }
+
+    // All 5 R2 Wave 1 tool IDs should be registered
+    for (const toolId of R2_WAVE1_TOOL_IDS) {
+      assert.ok(
+        realHandlers.includes(toolId),
+        `Expected R2 handler ${toolId} to be registered after registerR1Handlers`
       );
     }
   });
@@ -203,5 +219,89 @@ describe('R1 Boot Wiring', () => {
     assert.equal(result.result.totalRate, 7.42);
     assert.equal(result.result.components.length, 3);
     assert.ok(result.result.explanation.includes('2026'));
+  });
+
+  it('run_cost_approach calls real backend (R2 Wave 1)', async () => {
+    const registry = new ToolRegistry();
+    await registry.initialize();
+    const runner = new ToolRunner({ registry });
+
+    registerR1Handlers(runner, traceService);
+
+    // Mock backend response for POST /api/costforge/approach/cost
+    mockFetch({
+      approach: 'cost_marshall_swift',
+      countyId: 'benton-uuid',
+      result: {
+        parcelId: 'R-001',
+        baseConstructionCost: 180000,
+        replacementCost: 165000,
+        depreciatedValue: 148500,
+        costPerSqFt: 150,
+        regionalFactor: 1.05,
+        qualityFactor: 1.0,
+        ageFactor: 0.9,
+        confidenceScore: 0.85,
+      },
+    });
+
+    const result = await runner.execute({
+      toolId: 'run_cost_approach',
+      params: {
+        county: 'benton',
+        parcelId: 'R-001',
+        buildingType: 'R1',
+        squareFootage: 1200,
+        yearBuilt: 2010,
+        region: 'Central Benton',
+      },
+      context: {
+        countyId: 'benton',
+        userId: 'test-user',
+        roles: ['appraiser'],
+        mode: 'pilot',
+        confirmation: true,
+        reasonCode: 'valuation_analysis',
+      },
+    });
+
+    assert.ok(result.ok, `Expected ok=true, got error: ${result.error}`);
+  });
+
+  it('get_cost_matrix calls real backend (R2 Wave 1)', async () => {
+    const registry = new ToolRegistry();
+    await registry.initialize();
+    const runner = new ToolRunner({ registry });
+
+    registerR1Handlers(runner, traceService);
+
+    // Mock backend response for GET /api/costforge/cost-matrix/{buildingType}/{region}
+    mockFetch({
+      buildingType: 'R1',
+      buildingTypeDescription: 'Residential - Single Family',
+      region: 'Central Benton',
+      baseCost: 157.5,
+      matrixYear: 2025,
+      matrixId: 1001,
+      matrixDescription: 'CAMA Residential Base Cost',
+      dataPoints: 1247,
+    });
+
+    const result = await runner.execute({
+      toolId: 'get_cost_matrix',
+      params: {
+        county: 'benton',
+        buildingType: 'R1',
+        region: 'Central Benton',
+      },
+      context: {
+        countyId: 'benton',
+        userId: 'test-user',
+        roles: ['appraiser'],
+        mode: 'pilot',
+      },
+    });
+
+    assert.ok(result.ok, `Expected ok=true, got error: ${result.error}`);
   });
 });

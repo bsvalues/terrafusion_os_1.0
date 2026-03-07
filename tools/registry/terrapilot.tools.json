@@ -1,8 +1,8 @@
 {
   "$schema": "./terrapilot.tools.schema.json",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "TerraPilot tool registry - authoritative manifest for Gates 4-7 enforcement",
-  "lastUpdated": "2026-01-29",
+  "lastUpdated": "2026-03-07",
   "tools": [
     {
       "toolId": "route_to_parcel",
@@ -434,6 +434,126 @@
           }
         },
         "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "run_sales_approach",
+      "displayName": "Run Sales Comparison Approach",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "valuation"],
+      "description": "Run USPAP sales comparison approach with comparable adjustments",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["valuation_analysis", "assessment_review"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "subjectParcelId": { "type": "string", "description": "Subject property parcel ID" },
+          "comparables": { "type": "array", "items": { "type": "object" }, "description": "Comparable sales data" },
+          "adjustmentRates": { "type": "object", "description": "Adjustment rate overrides" }
+        },
+        "required": ["subjectParcelId", "comparables"]
+      }
+    },
+    {
+      "toolId": "run_income_approach",
+      "displayName": "Run Income Approach",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "valuation"],
+      "description": "Run USPAP income approach using direct capitalization (NOI / Cap Rate)",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["valuation_analysis", "assessment_review"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "subjectId": { "type": "string", "description": "Subject property identifier" },
+          "incomeData": { "type": "object", "description": "Income and expense data" },
+          "capitalizationRate": { "type": "object", "description": "Cap rate inputs" }
+        },
+        "required": ["subjectId", "incomeData"]
+      }
+    },
+    {
+      "toolId": "run_cost_approach",
+      "displayName": "Run Cost Approach",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "valuation"],
+      "description": "Run USPAP cost approach using Marshall-Swift methodology",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["valuation_analysis", "assessment_review"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel ID for cost analysis" },
+          "buildingType": { "type": "string", "description": "Building type code (R1, C1, etc.)" },
+          "squareFootage": { "type": "number", "description": "Building area in square feet" },
+          "yearBuilt": { "type": "integer", "description": "Year of construction" },
+          "region": { "type": "string", "description": "Geographic region" }
+        },
+        "required": ["parcelId", "buildingType", "squareFootage", "yearBuilt"]
+      }
+    },
+    {
+      "toolId": "run_reconciliation",
+      "displayName": "Run Reconciliation",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "valuation"],
+      "description": "Run USPAP reconciliation combining sales, income, and cost approach results",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["valuation_analysis", "final_value_opinion"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "subjectId": { "type": "string", "description": "Subject property identifier" },
+          "sales": { "type": "object", "description": "Sales approach result" },
+          "income": { "type": "object", "description": "Income approach result" },
+          "cost": { "type": "object", "description": "Cost approach result" },
+          "propertyType": { "type": "string", "description": "Property type for weight selection" }
+        },
+        "required": ["subjectId"]
+      }
+    },
+    {
+      "toolId": "get_cost_matrix",
+      "displayName": "Get Cost Matrix",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["valuation"],
+      "description": "Retrieve cost matrix data for a building type and region (real Benton County CAMA data)",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "buildingType": { "type": "string", "description": "Building type code (A1, C1, C4, I1, R1, R2, S1)" },
+          "region": { "type": "string", "description": "Region name (Central Benton, East Benton, West Benton)" }
+        },
+        "required": ["buildingType", "region"]
       }
     }
   ]

@@ -17,18 +17,18 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 
 ---
 
-### Freshly Verified (March 7, 2026)
+### Freshly Verified (March 7, 2026 — R2 Wave 1 Complete)
 
 | Check | Result |
 |-------|--------|
-| Branch | `r1/integration` |
-| `pnpm run type-check` | **pass** |
-| `node --test phase83-tools.test.mjs` | **32/32 pass** |
+| Branch | `claude/review-progress-ledger-a8iw5` |
+| `node --test phase83-tools.test.mjs` | **32/32 pass** (manifest v1.4.0, 29 tools) |
 | `node --test phase85-tools.test.mjs` | **20/20 pass** |
 | `node --test phase86-toolrunner.test.mjs` | **7/7 pass** |
-| `node --test r1-acceptance-criteria.test.mjs` | **22/22 pass** (AC-1 through AC-11) |
-| Total gate suite | **81/81 pass, 0 fail** |
-| Working tree | clean (only untracked `.codex_split/`, worktree snapshot files) |
+| `node --test r1-acceptance-criteria.test.mjs` | **22/22 pass** (AC-1 through AC-11, >= 15 handlers) |
+| `node --test r1-boot-wiring.test.mjs` | **6/6 pass** (R2 handlers registered + backend calls) |
+| Total gate suite | **87/87 pass, 0 fail** |
+| Manifest version | **1.4.0** (29 tools, up from 1.3.0 / 24 tools) |
 
 ---
 

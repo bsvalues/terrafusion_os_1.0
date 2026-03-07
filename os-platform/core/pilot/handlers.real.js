@@ -681,8 +681,46 @@ const draftNoticeRealHandler = async (params, context, _tool) => {
     };
 };
 exports.draftNoticeRealHandler = draftNoticeRealHandler;
+// ============================================================================
+// R2 Wave 1: USPAP Three-Approach Valuation Handlers (5)
+// ============================================================================
+const runSalesApproachHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/costforge/approach/sales', { parcelId: params.parcelId, ...(params.data ?? {}) }, { token });
+    return (0, backendClient_js_1.unwrapBackend)(raw, 'Sales approach failed');
+};
+exports.runSalesApproachHandler = runSalesApproachHandler;
+const runIncomeApproachHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/costforge/approach/income', { parcelId: params.parcelId, ...(params.data ?? {}) }, { token });
+    return (0, backendClient_js_1.unwrapBackend)(raw, 'Income approach failed');
+};
+exports.runIncomeApproachHandler = runIncomeApproachHandler;
+const runCostApproachHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/costforge/approach/cost', { parcelId: params.parcelId, ...(params.data ?? {}) }, { token });
+    return (0, backendClient_js_1.unwrapBackend)(raw, 'Cost approach failed');
+};
+exports.runCostApproachHandler = runCostApproachHandler;
+const runReconciliationHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/costforge/approach/reconcile', { parcelId: params.parcelId, ...(params.data ?? {}) }, { token });
+    return (0, backendClient_js_1.unwrapBackend)(raw, 'Reconciliation failed');
+};
+exports.runReconciliationHandler = runReconciliationHandler;
+const getCostMatrixHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/costforge/cost-matrix/${encodeURIComponent(params.buildingType)}/${encodeURIComponent(params.region)}`, { token });
+    return (0, backendClient_js_1.unwrapBackend)(raw, 'Cost matrix lookup failed');
+};
+exports.getCostMatrixHandler = getCostMatrixHandler;
 /**
- * Register R1 real handlers for ALL 24 tools.
+ * Register R1 real handlers for ALL 29 tools (24 R1 + 5 R2 Wave 1).
  * These OVERRIDE canned stubs when called after registerAllHandlers().
  *
  * @param runner - ToolRunner instance (must have initialized registry)
@@ -717,4 +755,10 @@ function registerR1Handlers(runner, traceService) {
     runner.registerHandler('assign_task', exports.assignTaskRealHandler);
     runner.registerHandler('check_cert_status', exports.checkCertStatusRealHandler);
     runner.registerHandler('draft_notice', exports.draftNoticeRealHandler);
+    // R2 Wave 1: USPAP three-approach valuation handlers (5)
+    runner.registerHandler('run_sales_approach', exports.runSalesApproachHandler);
+    runner.registerHandler('run_income_approach', exports.runIncomeApproachHandler);
+    runner.registerHandler('run_cost_approach', exports.runCostApproachHandler);
+    runner.registerHandler('run_reconciliation', exports.runReconciliationHandler);
+    runner.registerHandler('get_cost_matrix', exports.getCostMatrixHandler);
 }
