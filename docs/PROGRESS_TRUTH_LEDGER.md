@@ -145,7 +145,30 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 
 ---
 
-## Tool Manifest Status (24 tools → 24 real handlers, 0 stubs)
+## R2 Wave 1 Status (March 7, 2026)
+
+### Delivered: USPAP Three-Approach Valuation
+
+Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `terra-build-actual/`) and ported to C#:
+
+| Service | Source | Location |
+|---------|--------|----------|
+| SalesComparisonService | `sales.ts` (440L) → C# | `TerraFusion.AI/Services/Valuation/SalesComparisonService.cs` |
+| IncomeApproachService | `income.ts` (295L) → C# | `TerraFusion.AI/Services/Valuation/IncomeApproachService.cs` |
+| ReconciliationService | `reconcile.ts` (383L) → C# | `TerraFusion.AI/Services/Valuation/ReconciliationService.cs` |
+| CostApproachService | `construction_cost_engine.py` + `marshallSwift.ts` → C# | `TerraFusion.AI/Services/Valuation/CostApproachService.cs` |
+
+**Data:** CostMatrix entity with 21 seed entries (7 building types × 3 Benton County regions, 2025)
+
+**Endpoints:** 5 new on CostForgeController (all `[Authorize]` + county isolation):
+- `POST /api/costforge/approach/{sales,income,cost,reconcile}`
+- `GET /api/costforge/cost-matrix/{buildingType}/{region}`
+
+**Governed handlers:** 5 new in `handlers.real.ts` → **29 total (24 R1 + 5 R2)**
+
+---
+
+## Tool Manifest Status (29 tools → 29 real handlers, 0 stubs)
 
 | toolId | Risk | Suite | Real Handler? | Backend Endpoint |
 |--------|------|-------|--------------|-----------------|
@@ -173,6 +196,11 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 | `assign_task` | write_low | dais | **YES** | POST `/api/dais/tasks/assign` |
 | `check_cert_status` | read_only | dais | **YES** | GET `/api/dais/certification/status` |
 | `draft_notice` | write_low | dais | **YES** | POST `/api/dais/notices/draft` |
+| `run_sales_approach` | write_high | forge | **YES** (R2) | POST `/api/costforge/approach/sales` |
+| `run_income_approach` | write_high | forge | **YES** (R2) | POST `/api/costforge/approach/income` |
+| `run_cost_approach` | write_high | forge | **YES** (R2) | POST `/api/costforge/approach/cost` |
+| `run_reconciliation` | write_high | forge | **YES** (R2) | POST `/api/costforge/approach/reconcile` |
+| `get_cost_matrix` | read_only | forge | **YES** (R2) | GET `/api/costforge/cost-matrix/{type}/{region}` |
 
 ---
 

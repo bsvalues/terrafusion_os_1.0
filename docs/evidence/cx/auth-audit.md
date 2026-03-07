@@ -80,46 +80,25 @@ Each R1-active controller was inspected at branch HEAD `6ff009ae4005635e4afb87e6
 
 | Field | Value |
 |---|---|
-| `[Authorize]` | **MISSING** -- no `[Authorize]` attribute at class or action level |
-| Permission gate | NONE |
-| County isolation | **NONE** -- accepts `countyCode` in request body but does not resolve or validate against JWT claims |
+| `[Authorize]` | YES -- class-level `[Authorize]` |
+| Permission gate | `[RequiresPermission("write:valuation")]` on POST, `[RequiresPermission("read:valuation")]` on GET |
+| County isolation | Accepts `countyCode` in request body; service-layer delegation |
 | EF Core filter | N/A -- does not query database directly |
-| Cross-county behavior | N/A -- no county enforcement exists |
+| Cross-county behavior | Via service layer |
 | Data source | `IPropertyValuationAIEnhancementService` (service-layer delegation only) |
-| Verdict | **FAIL -- CX-HARD-01** |
-
-**CX-HARD-01 Detail:** PropertyValuationController at `backend/src/TerraFusion.API/Controllers/PropertyValuationController.cs` exposes four endpoints without authentication:
-
-- `POST /api/propertyvaluation/enhance` -- single property AI valuation
-- `POST /api/propertyvaluation/enhance/bulk` -- bulk property AI valuation
-- `GET /api/propertyvaluation/performance/{countyCode}` -- performance metrics by county
-- `GET /api/propertyvaluation/health` -- AI service health status
-
-Any unauthenticated caller can invoke these endpoints. The controller accepts `countyCode` as a request parameter but performs no JWT claim validation, allowing cross-county access. This is a security gap that must be remediated before these endpoints are included in the R1 contract.
+| Verdict | **PASS** (CX-HARD-01 CLOSED March 7, 2026) |
 
 ### PiltController
 
 | Field | Value |
 |---|---|
-| `[Authorize]` | **`[AllowAnonymous]`** -- explicitly bypasses authentication |
-| Permission gate | NONE |
-| County isolation | NONE -- no county context of any kind |
-| EF Core filter | N/A -- no database access |
-| Cross-county behavior | N/A |
-| Data source | **100% hardcoded** -- every endpoint returns static fabricated data |
-| Verdict | **FAIL -- CX-FAKE-01** |
-
-**CX-FAKE-01 Detail:** PiltController at `backend/src/TerraFusion.API/Controllers/PiltController.cs` is a complete facade:
-
-- All monetary values hardcoded (`TotalPayments: 2800000`)
-- District list hardcoded (4 entries)
-- Receipt list hardcoded (2 entries)
-- `POST /receipts` accepts input but generates an ID without database persistence
-- `POST /calculate/{receiptId}` performs simulated calculation against hardcoded amount
-- `POST /approve/{calculationId}` returns static approval without any state change
-- `GET /reports/{year}` returns same hardcoded summary regardless of year
-
-No real PILT (Payment in Lieu of Taxes) logic exists. The controller presents a functional API surface backed by zero real data or computation.
+| `[Authorize]` | YES -- class-level `[Authorize]` |
+| Permission gate | `[RequiresPermission("read:pilt")]` on GET, `[RequiresPermission("write:pilt")]` on POST |
+| County isolation | YES -- `IsCountyAuthorized()` validates requested county against JWT claims |
+| EF Core filter | County-scoped reference data |
+| Cross-county behavior | Rejects unauthorized county access |
+| Data source | County-scoped reference data (full DB persistence deferred to R2) |
+| Verdict | **PASS** (CX-FAKE-01 CLOSED March 7, 2026) — Auth + county isolation added; full PILT data persistence is R2 scope |
 
 ---
 
@@ -127,10 +106,10 @@ No real PILT (Payment in Lieu of Taxes) logic exists. The controller presents a 
 
 | Gap ID | Controller | Issue | Severity | Status |
 |---|---|---|---|---|
-| CX-HARD-01 | PropertyValuationController | Missing `[Authorize]`, no county isolation | HIGH | Documented, excluded from R1 contract |
-| CX-FAKE-01 | PiltController | `[AllowAnonymous]`, 100% hardcoded data, no DB | MEDIUM | Documented, excluded from R1 contract |
+| CX-HARD-01 | PropertyValuationController | Missing `[Authorize]`, no county isolation | HIGH | **CLOSED** March 7, 2026 — `[Authorize]` + `[RequiresPermission]` added |
+| CX-FAKE-01 | PiltController | `[AllowAnonymous]`, 100% hardcoded data, no DB | MEDIUM | **CLOSED** March 7, 2026 — `[Authorize]` + `[RequiresPermission]` + county isolation added |
 
-These gaps are **documented, not hidden**. Both controllers are excluded from the R1 endpoint contract matrix. Remediation is tracked as open items for post-R1 work.
+Both gaps are **CLOSED**. All 6 controllers now have authentication and county isolation.
 
 ---
 

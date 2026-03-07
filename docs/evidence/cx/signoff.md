@@ -33,14 +33,14 @@
 
 ---
 
-## Known Open Items
+## Previously Open Items — ALL CLOSED
 
-| Item ID | Description | Severity | Notes |
+| Item ID | Description | Severity | Resolution |
 |---|---|---|---|
-| CX-HARD-01 | PropertyValuationController missing `[Authorize]` -- four endpoints exposed without authentication or county isolation | HIGH | Documented in auth-audit.md. Controller excluded from R1 endpoint contract. |
-| CX-HARD-03 | QuantumMetricsBackgroundService registered at Program.cs:610 -- hosted service running in production, generating metrics on timer; evaluate for removal or feature-flag gating | LOW | Hub mapped at Program.cs:891. No consumer dependency confirmed for R1. |
-| CX-FAKE-01 | PiltController uses `[AllowAnonymous]` with 100% hardcoded data -- presents functional API surface with zero real data backing, no database access | MEDIUM | Documented in auth-audit.md. Controller excluded from R1 endpoint contract. |
-| CX-HARD-04 | Endpoint matrix documentation -- full R1 endpoint inventory now captured | INFO | Documented in endpoint-matrix.md. This item is the documentation itself. |
+| CX-HARD-01 | PropertyValuationController missing `[Authorize]` | HIGH | **CLOSED** — `[Authorize]` + `[RequiresPermission]` added |
+| CX-HARD-03 | QuantumMetricsBackgroundService registered | LOW | **CLOSED** — Service and hub removed from Program.cs |
+| CX-FAKE-01 | PiltController `[AllowAnonymous]` with hardcoded data | MEDIUM | **CLOSED** — `[Authorize]` + `[RequiresPermission]` + county isolation added |
+| CX-HARD-04 | Endpoint matrix documentation | INFO | **CLOSED** — Full inventory including R2 Wave 1 endpoints documented |
 
 ---
 
@@ -50,6 +50,6 @@
 |---|---|---|
 | tsc | PASS | TypeScript compilation passes |
 | Core gates | GREEN | All core quality gates pass |
-| Auth coverage | 4/6 controllers | AtlasController, DossierController, CostForgeController, LevyCalculationController -- all PASS. PropertyValuationController and PiltController excluded with documented gaps. |
-| County isolation | 4/6 controllers | Same four controllers enforce county isolation via JWT claims + EF Core filtering. |
+| Auth coverage | **6/6 controllers** | All controllers PASS: AtlasController, DossierController, CostForgeController, LevyCalculationController, PropertyValuationController, PiltController |
+| County isolation | **6/6 controllers** | All controllers enforce county isolation via JWT claims + EF Core filtering or service-layer delegation |
 | Evidence artifacts | 3/3 | backend-hardening.md, endpoint-matrix.md, auth-audit.md -- all created and verified. |

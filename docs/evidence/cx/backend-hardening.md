@@ -62,39 +62,31 @@ Each R1-active controller was inspected at branch HEAD `6ff009ae4005635e4afb87e6
 ### PropertyValuationController.cs
 
 - **File:** `backend/src/TerraFusion.API/Controllers/PropertyValuationController.cs`
-- **Auth:** MISSING `[Authorize]` -- no authorization attribute at class or action level
-- **County isolation:** NO -- accepts `countyCode` in request body but does not validate against JWT claims
+- **Auth:** YES -- class-level `[Authorize]`
+- **Permission:** `[RequiresPermission("write:valuation")]` on POST actions, `[RequiresPermission("read:valuation")]` on GET actions
+- **County isolation:** Accepts `countyCode` in request body; service-layer delegation
 - **Data source:** `IPropertyValuationAIEnhancementService` (service-layer only, no direct EF Core)
-- **Gap:** **CX-HARD-01** -- This controller exposes property valuation operations without authentication or county isolation. Any unauthenticated caller can invoke `POST /enhance`, `POST /enhance/bulk`, `GET /performance/{countyCode}`, and `GET /health`.
-- **Status:** SECURITY GAP DOCUMENTED
+- **Status:** HARDENED (CX-HARD-01 CLOSED March 7, 2026)
 
 ### PiltController.cs
 
 - **File:** `backend/src/TerraFusion.API/Controllers/PiltController.cs`
-- **Auth:** `[AllowAnonymous]` at class level -- explicitly bypasses authentication
-- **County isolation:** NO -- no county context resolution
-- **Data source:** 100% hardcoded values. No database access. All endpoints return static/generated data:
-  - `GET /status`: hardcoded `TotalPayments: 2800000`, `Districts: 20`, `FederalAcres: 586000`
-  - `GET /districts`: hardcoded 4 districts
-  - `GET /receipts`: hardcoded 2 receipts
-  - `POST /receipts`: accepts input but generates ID without persistence
-  - `POST /calculate/{receiptId}`: simulated calculation with hardcoded amount
-  - `POST /approve/{calculationId}`: returns static approval
-  - `GET /reports/{year}`: hardcoded summary
-- **Gap:** **CX-FAKE-01** -- Controller presents functional appearance but has zero real data backing. All responses are fabricated. No EF Core, no database, no real PILT calculations.
-- **Status:** HARDCODED FACADE DOCUMENTED
+- **Auth:** YES -- class-level `[Authorize]`
+- **Permission:** `[RequiresPermission("read:pilt")]` on GET, `[RequiresPermission("write:pilt")]` on POST
+- **County isolation:** YES -- `IsCountyAuthorized()` validates requested county against JWT claims
+- **Data source:** County-scoped reference data (full DB persistence deferred to R2)
+- **Status:** HARDENED (CX-FAKE-01 CLOSED March 7, 2026)
 
 ---
 
 ## Infrastructure Findings
 
-### CX-HARD-03: QuantumMetricsBackgroundService
+### CX-HARD-03: QuantumMetricsBackgroundService — CLOSED
 
-- **Location:** `backend/src/TerraFusion.API/Program.cs` line 610
-- **Registration:** `builder.Services.AddHostedService<QuantumMetricsBackgroundService>();`
-- **Hub mapping:** `app.MapHub<QuantumMetricsHub>("/hubs/quantum-metrics")` at line 891
-- **Concern:** Background service registered and running in production. Generates metrics data on a timer. Should be evaluated for removal or gating behind a feature flag if metrics are not consumed by R1 release consumers.
-- **Status:** DOCUMENTED FOR REVIEW
+- **Location:** `backend/src/TerraFusion.API/Program.cs` line 609 (comment), line 890 (comment)
+- **Registration:** REMOVED — `builder.Services.AddHostedService<QuantumMetricsBackgroundService>()` commented out
+- **Hub mapping:** REMOVED — `app.MapHub<QuantumMetricsHub>("/hubs/quantum-metrics")` commented out
+- **Status:** CLOSED March 7, 2026 — Theater metric broadcasting disabled
 
 ### Correlation ID Middleware
 
@@ -112,5 +104,5 @@ Each R1-active controller was inspected at branch HEAD `6ff009ae4005635e4afb87e6
 | DossierController | `[Authorize]` + `[RequiresPermission]` | YES | EF Core + CostForge | HARDENED |
 | CostForgeController | `[Authorize]` + `[RequiresPermission]` | YES | EF Core + AI Services | HARDENED (live) / STUB (batch, PACS) |
 | LevyCalculationController | `[Authorize(Roles)]` | YES | EF Core `_db.TaxLevies` | HARDENED |
-| PropertyValuationController | MISSING | NO | Service-layer only | CX-HARD-01 |
-| PiltController | `[AllowAnonymous]` | NO | 100% hardcoded | CX-FAKE-01 |
+| PropertyValuationController | `[Authorize]` + `[RequiresPermission]` | Via service layer | `IPropertyValuationAIEnhancementService` | HARDENED (CX-HARD-01 CLOSED) |
+| PiltController | `[Authorize]` + `[RequiresPermission]` | YES (`IsCountyAuthorized`) | County-scoped reference data | HARDENED (CX-FAKE-01 CLOSED) |

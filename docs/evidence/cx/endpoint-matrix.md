@@ -28,6 +28,16 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 | POST | `/api/costforge/agents/scale` | CostForgeController | YES (`[RequiresPermission("manage:ai-agents")]`) | NO | Scale AI agents (1-100,000). |
 | POST | `/api/costforge/sync/harris-pacs` | CostForgeController | YES (`[RequiresPermission("sync:external-systems")]`) | YES | STUB -- returns "not yet implemented". |
 
+### CostForge R2 Wave 1 Endpoints (USPAP Three-Approach Valuation)
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| POST | `/api/costforge/approach/sales` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | USPAP sales comparison approach. Ported from quarantine terraforge-suite. |
+| POST | `/api/costforge/approach/income` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | USPAP income approach (direct capitalization). |
+| POST | `/api/costforge/approach/cost` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | USPAP cost approach (Marshall-Swift methodology). |
+| POST | `/api/costforge/approach/reconcile` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | USPAP reconciliation (property-type-weighted multi-approach). |
+| GET | `/api/costforge/cost-matrix/{buildingType}/{region}` | CostForgeController | YES (`[RequiresPermission("read:cost-matrix")]`) | YES | Real Benton County cost matrix lookup from CostMatrix entity (21 entries seeded). |
+
 ### Property Endpoints
 
 | Method | Route | Controller | Auth | County Isolation | Notes |
@@ -75,17 +85,18 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 
 | Category | Live | Stub | Total |
 |---|---|---|---|
-| CostForge | 10 | 2 | 12 |
+| CostForge (R1) | 10 | 2 | 12 |
+| CostForge R2 Wave 1 | 5 | 0 | 5 |
 | Property | 2 | 0 | 2 |
 | Levy Calculation | 3 | 0 | 3 |
 | Dossier | 6 | 0 | 6 |
 | Atlas | 2 | 0 | 2 |
 | Pilot (CoPilot) | 3 | 0 | 3 |
-| **Total** | **26** | **2** | **28** |
+| **Total** | **31** | **2** | **33** |
 
-## Known Gaps (CX-HARD-04)
+## Previously Excluded Controllers — Now Hardened
 
-This matrix documents all known R1 endpoints. The following controllers exist but are excluded from the R1 contract:
+Both controllers that were excluded from the R1 contract have been hardened:
 
-- **PropertyValuationController** -- Endpoints exist but lack `[Authorize]` (CX-HARD-01). Not included in R1 contract until auth is added.
-- **PiltController** -- Endpoints exist but return 100% hardcoded data with `[AllowAnonymous]` (CX-FAKE-01). Not included in R1 contract.
+- **PropertyValuationController** -- `[Authorize]` + `[RequiresPermission]` added (CX-HARD-01 CLOSED March 7, 2026). Now included in contract.
+- **PiltController** -- `[Authorize]` + `[RequiresPermission]` + county isolation via `IsCountyAuthorized()` added (CX-FAKE-01 CLOSED March 7, 2026). Now included in contract. Full PILT data persistence deferred to R2.
