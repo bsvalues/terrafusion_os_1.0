@@ -669,3 +669,408 @@ describe('AC-11: Role Presets / RBAC', () => {
     console.log('  ✅ AC-11c PASS: INVOKE_CONTRACT error codes structurally present');
   });
 });
+
+// ============================================================================
+// R1.1 ACCEPTANCE CRITERIA (AC-12 through AC-15)
+//
+// Expand proof-certification from 5 original tools to all 9 governed tools.
+// Each AC proves a specific R1.1 tool produces correct results through the
+// governed ToolRunner → real handler → mock backend pipeline with trace evidence.
+// ============================================================================
+
+// ============================================================================
+// AC-12: explain_model_inputs — Muse Tool Proof
+//
+// GIVEN role "appraiser" in mode "muse" on county "benton",
+// WHEN they invoke `explain_model_inputs` with modelId and asOfYear,
+// THEN handler calls CostForge backend → returns sorted input factors with PII flags
+//   → trace events emitted with correlationId.
+// ============================================================================
+
+describe('AC-12: explain_model_inputs (Muse Proof)', () => {
+  it('returns structured model inputs with PII flags from CostForge backend', async () => {
+    const { runner, traceService } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('costforge/models')) {
+        return {
+          modelId: 'cost-sfr-2026',
+          modelVersion: 'v2.1',
+          inputs: [
+            { name: 'squareFeet', source: 'CAMA', pii: false },
+            { name: 'ownerSSN', source: 'taxpayer_records', pii: true },
+            { name: 'effectiveAge', source: 'CAMA', pii: false },
+            { name: 'qualityGrade', source: 'CAMA', pii: false },
+          ],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'explain_model_inputs',
+      params: { county: 'benton', modelId: 'cost-sfr-2026', asOfYear: 2026 },
+      context: museContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    assert.ok(result.correlationId, 'must have correlationId');
+
+    const data = result.result;
+    assert.ok(Array.isArray(data.inputs), 'inputs must be an array');
+    assert.ok(data.inputs.length === 4, 'must return all 4 inputs');
+    assert.ok(data.summary, 'must have summary string');
+
+    // Inputs must be sorted alphabetically by name
+    const names = data.inputs.map(i => i.name);
+    const sorted = [...names].sort();
+    assert.deepEqual(names, sorted, 'inputs must be sorted by name');
+
+    // PII flag must be propagated
+    const piiInput = data.inputs.find(i => i.name === 'ownerSSN');
+    assert.equal(piiInput.pii, true, 'PII inputs must be flagged');
+
+    // Trace evidence
+    const events = await traceService.getByCorrelationIdAsync(result.correlationId);
+    assert.ok(events.length >= 2, 'must have tool_invoked + tool_completed');
+    assert.ok(events.some(e => e.type === 'tool_invoked'), 'must have tool_invoked');
+    assert.ok(events.some(e => e.type === 'tool_completed'), 'must have tool_completed');
+
+    console.log(`  ✅ AC-12 PASS: explain_model_inputs returned ${data.inputs.length} inputs, PII flagged, trace=${events.length} events`);
+  });
+
+  it('manifest declares correct mode/risk/suite for explain_model_inputs', () => {
+    const tool = getTool('explain_model_inputs');
+    assert.ok(tool, 'must exist in manifest');
+    assert.equal(tool.mode, 'muse', 'must be muse mode');
+    assert.equal(tool.risk, 'read_only', 'must be read_only');
+    assert.equal(tool.suite, 'forge', 'must be forge suite');
+    assert.equal(tool.writeLane, null, 'read_only tool must have null writeLane');
+    console.log('  ✅ AC-12b PASS: manifest contract correct for explain_model_inputs');
+  });
+});
+
+// ============================================================================
+// AC-13: compare_assessed_value_history — Muse Tool Proof
+//
+// GIVEN role "appraiser" in mode "muse" on county "benton",
+// WHEN they invoke `compare_assessed_value_history` with parcelId + years,
+// THEN handler calls property backend → returns year-over-year trend with narrative
+//   → trace events emitted with correlationId.
+// ============================================================================
+
+describe('AC-13: compare_assessed_value_history (Muse Proof)', () => {
+  it('returns year-over-year trend with narrative from property backend', async () => {
+    const { runner, traceService } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('properties')) {
+        return {
+          propertyId: 'P-TREND-001',
+          assessedValue: 310000,
+          previousAssessedValue: 285000,
+          valuationHistory: [
+            { year: 2024, value: 265000, taxableValue: 250000 },
+            { year: 2025, value: 285000, taxableValue: 270000 },
+            { year: 2026, value: 310000, taxableValue: 295000 },
+          ],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'compare_assessed_value_history',
+      params: { county: 'benton', parcelId: 'P-TREND-001', years: [2024, 2025, 2026], includeBreakdown: true },
+      context: museContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    assert.ok(result.correlationId, 'must have correlationId');
+
+    const data = result.result;
+    assert.ok(Array.isArray(data.trend), 'trend must be an array');
+    assert.equal(data.trend.length, 3, 'must have 3 years of data');
+
+    // Verify trend structure
+    assert.equal(data.trend[0].year, 2024, 'first year must be 2024');
+    assert.equal(data.trend[0].av, 265000, 'first year AV must match');
+    assert.equal(data.trend[2].year, 2026, 'last year must be 2026');
+    assert.equal(data.trend[2].av, 310000, 'last year AV must match');
+
+    // Breakdown included
+    assert.ok(data.trend[0].tv !== undefined, 'taxableValue must be present when includeBreakdown=true');
+
+    // Narrative
+    assert.ok(data.narrative, 'must have narrative');
+    assert.ok(data.narrative.includes('265,000') || data.narrative.includes('310,000'),
+      'narrative must reference actual values');
+
+    // Trace evidence
+    const events = await traceService.getByCorrelationIdAsync(result.correlationId);
+    assert.ok(events.length >= 2, 'must have tool_invoked + tool_completed');
+
+    console.log(`  ✅ AC-13 PASS: compare_assessed_value_history returned ${data.trend.length} years, narrative present, trace=${events.length} events`);
+  });
+
+  it('produces different results for different parcels (not canned)', async () => {
+    const { runner } = makeRunner();
+
+    mockFetch((url) => {
+      if (url.includes('P-A')) {
+        return { propertyId: 'P-A', valuationHistory: [{ year: 2025, value: 200000 }, { year: 2026, value: 220000 }] };
+      }
+      if (url.includes('P-B')) {
+        return { propertyId: 'P-B', valuationHistory: [{ year: 2025, value: 500000 }, { year: 2026, value: 480000 }] };
+      }
+      return { valuationHistory: [] };
+    });
+
+    const r1 = await runner.execute({
+      toolId: 'compare_assessed_value_history',
+      params: { county: 'benton', parcelId: 'P-A', years: [2025, 2026] },
+      context: museContext(),
+    });
+    const r2 = await runner.execute({
+      toolId: 'compare_assessed_value_history',
+      params: { county: 'benton', parcelId: 'P-B', years: [2025, 2026] },
+      context: museContext(),
+    });
+
+    assert.equal(r1.ok, true);
+    assert.equal(r2.ok, true);
+    assert.notDeepEqual(r1.result.trend, r2.result.trend, 'different parcels must produce different trends');
+    assert.notEqual(r1.result.narrative, r2.result.narrative, 'different parcels must produce different narratives');
+
+    console.log('  ✅ AC-13b PASS: differentiated results per parcel');
+  });
+
+  it('manifest declares correct mode/risk/suite for compare_assessed_value_history', () => {
+    const tool = getTool('compare_assessed_value_history');
+    assert.ok(tool, 'must exist in manifest');
+    assert.equal(tool.mode, 'muse', 'must be muse mode');
+    assert.equal(tool.risk, 'read_only', 'must be read_only');
+    assert.equal(tool.suite, 'forge', 'must be forge suite');
+    console.log('  ✅ AC-13c PASS: manifest contract correct for compare_assessed_value_history');
+  });
+});
+
+// ============================================================================
+// AC-14: add_dossier_note — Write-Low Confirmation Gate Proof
+//
+// GIVEN role "appraiser" in mode "pilot" on county "benton",
+// WHEN they invoke `add_dossier_note` with confirmation + reasonCode,
+// THEN handler POSTs note to Dossier backend → returns noteId + payloadRef
+//   → trace events emitted.
+// WHEN confirmation or reasonCode is missing,
+// THEN gate rejects with appropriate error code.
+// ============================================================================
+
+describe('AC-14: add_dossier_note (Write-Low Gate Proof)', () => {
+  it('creates note with confirmation + reasonCode, returns noteId + payloadRef', async () => {
+    const { runner, traceService } = makeRunner();
+    mockFetch((url, opts) => {
+      if (url.includes('dossier') && url.includes('notes')) {
+        return { noteId: 'note-abc-123', parcelId: 'P-NOTE-001', createdAt: '2026-03-07T12:00:00Z' };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'add_dossier_note',
+      params: { county: 'benton', parcelId: 'P-NOTE-001', note: 'Field inspection completed. No discrepancies found.', tags: ['inspection'] },
+      context: {
+        ...appraiserContext(),
+        confirmation: true,
+        reasonCode: 'workflow_update',
+      },
+    });
+
+    assert.equal(result.ok, true, 'must succeed with confirmation + reasonCode');
+    assert.ok(result.correlationId, 'must have correlationId');
+
+    const data = result.result;
+    assert.equal(data.noteId, 'note-abc-123', 'noteId must match backend response');
+    assert.equal(data.appended, true, 'must indicate note was appended');
+    assert.ok(data.payloadRef, 'must have payloadRef for PII-safe trace');
+    assert.ok(data.payloadRef.includes('benton'), 'payloadRef must include county');
+
+    // Trace evidence
+    const events = await traceService.getByCorrelationIdAsync(result.correlationId);
+    assert.ok(events.length >= 2, 'must have tool_invoked + tool_completed');
+
+    console.log(`  ✅ AC-14a PASS: add_dossier_note created noteId=${data.noteId}, trace=${events.length} events`);
+  });
+
+  it('rejects without confirmation (write_low gate)', async () => {
+    const { runner } = makeRunner();
+    mockFetch(() => ({ noteId: 'should-not-reach' }));
+
+    const result = await runner.execute({
+      toolId: 'add_dossier_note',
+      params: { county: 'benton', parcelId: 'P-NOTE-001', note: 'Test note' },
+      context: {
+        ...appraiserContext(),
+        // confirmation intentionally missing
+        reasonCode: 'workflow_update',
+      },
+    });
+
+    assert.equal(result.ok, false, 'must fail without confirmation');
+    const errMsg = result.errorCode || result.error || '';
+    assert.ok(
+      errMsg.includes('CONFIRMATION_REQUIRED') || errMsg.includes('confirmation'),
+      `must require confirmation, got: ${errMsg}`
+    );
+    console.log('  ✅ AC-14b PASS: CONFIRMATION_REQUIRED enforced for write_low');
+  });
+
+  it('rejects without reasonCode (write_low gate)', async () => {
+    const { runner } = makeRunner();
+    mockFetch(() => ({ noteId: 'should-not-reach' }));
+
+    const result = await runner.execute({
+      toolId: 'add_dossier_note',
+      params: { county: 'benton', parcelId: 'P-NOTE-001', note: 'Test note' },
+      context: {
+        ...appraiserContext(),
+        confirmation: true,
+        // reasonCode intentionally missing
+      },
+    });
+
+    assert.equal(result.ok, false, 'must fail without reasonCode');
+    const errMsg = result.errorCode || result.error || '';
+    assert.ok(
+      errMsg.includes('REASON_CODE_REQUIRED') || errMsg.includes('reason'),
+      `must require reasonCode, got: ${errMsg}`
+    );
+    console.log('  ✅ AC-14c PASS: REASON_CODE_REQUIRED enforced for write_low');
+  });
+
+  it('manifest declares correct mode/risk/suite/writeLane for add_dossier_note', () => {
+    const tool = getTool('add_dossier_note');
+    assert.ok(tool, 'must exist in manifest');
+    assert.equal(tool.mode, 'pilot', 'must be pilot mode');
+    assert.equal(tool.risk, 'write_low', 'must be write_low');
+    assert.equal(tool.suite, 'dossier', 'must be dossier suite');
+    assert.equal(tool.writeLane, 'dossier', 'writeLane must be dossier');
+    assert.equal(tool.requiresConfirmation, true, 'must require confirmation');
+    assert.equal(tool.reasonCodeRequired, true, 'must require reasonCode');
+    console.log('  ✅ AC-14d PASS: manifest contract correct for add_dossier_note');
+  });
+});
+
+// ============================================================================
+// AC-15: query_parcel_layers — Atlas Read-Only Proof
+//
+// GIVEN role "appraiser" in mode "pilot" on county "benton",
+// WHEN they invoke `query_parcel_layers` with parcelId,
+// THEN handler calls Atlas backend → returns layer list with availability
+//   → trace events emitted.
+// ============================================================================
+
+describe('AC-15: query_parcel_layers (Atlas Read-Only Proof)', () => {
+  it('returns structured layer list from Atlas backend', async () => {
+    const { runner, traceService } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('atlas') && url.includes('layers')) {
+        return {
+          parcelId: 'P-GIS-001',
+          layers: [
+            { id: 'boundary', name: 'Parcel Boundary', available: true },
+            { id: 'zoning', name: 'Zoning Districts', available: true },
+            { id: 'flood', name: 'FEMA Flood Zones', available: true },
+            { id: 'aerial', name: 'Aerial Imagery', available: false },
+          ],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'query_parcel_layers',
+      params: { county: 'benton', parcelId: 'P-GIS-001' },
+      context: appraiserContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    assert.ok(result.correlationId, 'must have correlationId');
+
+    const data = result.result;
+    assert.equal(data.parcelId, 'P-GIS-001', 'parcelId must match');
+    assert.ok(Array.isArray(data.layers), 'layers must be an array');
+    assert.equal(data.layers.length, 4, 'must return all 4 layers');
+    assert.equal(data.format, 'summary', 'default format must be summary');
+
+    // Verify layer structure
+    const boundary = data.layers.find(l => l.id === 'boundary');
+    assert.ok(boundary, 'must include boundary layer');
+    assert.equal(boundary.available, true, 'boundary must be available');
+
+    const aerial = data.layers.find(l => l.id === 'aerial');
+    assert.ok(aerial, 'must include aerial layer');
+    assert.equal(aerial.available, false, 'aerial must be unavailable');
+
+    // Trace evidence
+    const events = await traceService.getByCorrelationIdAsync(result.correlationId);
+    assert.ok(events.length >= 2, 'must have tool_invoked + tool_completed');
+
+    console.log(`  ✅ AC-15a PASS: query_parcel_layers returned ${data.layers.length} layers, trace=${events.length} events`);
+  });
+
+  it('filters layers when specific layers requested', async () => {
+    const { runner } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('atlas') && url.includes('layers')) {
+        return {
+          parcelId: 'P-GIS-002',
+          layers: [
+            { id: 'boundary', name: 'Parcel Boundary', available: true },
+            { id: 'zoning', name: 'Zoning Districts', available: true },
+            { id: 'flood', name: 'FEMA Flood Zones', available: true },
+          ],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'query_parcel_layers',
+      params: { county: 'benton', parcelId: 'P-GIS-002', layers: ['boundary', 'flood'] },
+      context: appraiserContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    const data = result.result;
+    assert.equal(data.layers.length, 2, 'must filter to requested 2 layers');
+    const layerIds = data.layers.map(l => l.id);
+    assert.ok(layerIds.includes('boundary'), 'must include boundary');
+    assert.ok(layerIds.includes('flood'), 'must include flood');
+    assert.ok(!layerIds.includes('zoning'), 'must NOT include unrequested zoning');
+
+    console.log('  ✅ AC-15b PASS: layer filtering works correctly');
+  });
+
+  it('enforces county isolation for query_parcel_layers', async () => {
+    const { runner } = makeRunner();
+    mockFetch(() => ({ parcelId: 'P-001', layers: [] }));
+
+    const result = await runner.execute({
+      toolId: 'query_parcel_layers',
+      params: { county: 'yakima', parcelId: 'P-001' },
+      context: appraiserContext({ countyId: 'benton' }),
+    });
+
+    assert.equal(result.ok, false, 'must fail on county mismatch');
+    console.log('  ✅ AC-15c PASS: county isolation enforced for Atlas tool');
+  });
+
+  it('manifest declares correct mode/risk/suite for query_parcel_layers', () => {
+    const tool = getTool('query_parcel_layers');
+    assert.ok(tool, 'must exist in manifest');
+    assert.equal(tool.mode, 'pilot', 'must be pilot mode');
+    assert.equal(tool.risk, 'read_only', 'must be read_only');
+    assert.equal(tool.suite, 'atlas', 'must be atlas suite');
+    assert.equal(tool.writeLane, null, 'read_only tool must have null writeLane');
+    console.log('  ✅ AC-15d PASS: manifest contract correct for query_parcel_layers');
+  });
+});
