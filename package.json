@@ -243,7 +243,9 @@
     "perf:custody": "npx tsx tools/registry/autonomy-viewer/src/custody-cli.ts",
     "perf:custody-attest": "npx tsx tools/registry/autonomy-viewer/src/custody-attest.ts",
     "perf:verify-custody": "npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts",
-    "tdc:ui:tokens:check": "tsx tools/registry/tdc-ui-tokens-check.ts"
+    "tdc:ui:tokens:check": "tsx tools/registry/tdc-ui-tokens-check.ts",
+    "r1:verify-evidence": "node tools/r1/verify-evidence.mjs",
+    "r1:finalize-manifest": "node tools/r1/generate-final-manifest.mjs"
   },
   "keywords": [
     "government",

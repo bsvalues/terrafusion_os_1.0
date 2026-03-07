@@ -537,6 +537,7 @@ export function createPilotRouter(runner?: ToolRunner): Router {
         risk: t.risk,
         description: t.description,
         requiresConfirmation: t.requiresConfirmation,
+        reasonCodeRequired: t.reasonCodeRequired,
         reasonCodes: t.reasonCodes,
       })),
     });
