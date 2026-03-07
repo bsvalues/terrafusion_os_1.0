@@ -244,6 +244,29 @@ This pass reflects the current evidence packet targeting the committed head
 `c7510f143a1a2b98888ecef48e7c4c41afece4e2`. Any subsequent commit requires rerunning
 manifest generation and evidence verification.
 
+### ALL-PROOF-02: Acceptance Criteria (AC-1 through AC-11)
+
+Executed: March 7, 2026 (Session 3)
+Test file: `os-platform/core/tests/r1-acceptance-criteria.test.mjs`
+
+| AC | Name | Tests | Result |
+|----|------|-------|--------|
+| AC-1 | Governed Tool Execution | run_valuation_model end-to-end with trace evidence | **PASS** |
+| AC-2 | Confirmation Gate | (a) CONFIRMATION_REQUIRED enforced, (b) REASON_CODE_REQUIRED enforced | **PASS** |
+| AC-3 | Execution Console (Trace Lifecycle) | 4 proof tools produce structured trace with lifecycle fields | **PASS** |
+| AC-4 | Evidence Rail (Trace Retrieval) | search_trace_by_correlation retrieves paired events by correlationId | **PASS** |
+| AC-5 | Context Ribbon (Context Propagation) | Execution context carries countyId, roles, mode to trace events | **PASS** |
+| AC-6 | County Isolation | Cross-county invocation rejected with county mismatch error | **PASS** |
+| AC-7 | Write Lane Enforcement | (a) manifest writeLane=forge, (b) read_only tools bypass write-lane | **PASS** |
+| AC-8 | Forge End-to-End | Two parcels produce materially different governed results | **PASS** |
+| AC-9 | Atlas/Dossier Real Backend | (a) Dossier real-shaped response, (b) Atlas real-shaped response | **PASS** |
+| AC-10 | No Fake Services | (a) 10 real handlers registered, (b) no canned-fixture markers | **PASS** |
+| AC-11 | Role Presets / RBAC | (a) mode classification correct, (b) risk levels correct, (c) error codes frozen set | **PASS** |
+
+**Summary: 17/17 tests pass, 0 fail.**
+
+Combined gate run (all 4 test files): **72/72 pass, 0 fail.**
+
 ### What Was Delivered This Session
 
 1. **Evidence verifier + manifest generator** — `tools/r1/verify-evidence.mjs`, `tools/r1/generate-final-manifest.mjs`
