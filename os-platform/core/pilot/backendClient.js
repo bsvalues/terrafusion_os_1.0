@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.unwrapBackend = unwrapBackend;
 exports.backendPost = backendPost;
 exports.backendGet = backendGet;
+exports.backendPut = backendPut;
 // ============================================================================
 // Configuration
 // ============================================================================
@@ -79,6 +80,34 @@ async function backendGet(path, options) {
         const res = await fetch(url, {
             method: 'GET',
             headers,
+            signal: AbortSignal.timeout(15000),
+        });
+        const text = await res.text();
+        if (!res.ok) {
+            return { ok: false, status: res.status, error: `Backend ${res.status}: ${res.statusText}`, raw: text };
+        }
+        const data = text ? JSON.parse(text) : {};
+        return { ok: true, status: res.status, data };
+    }
+    catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return { ok: false, status: 0, error: `Backend unreachable: ${message}` };
+    }
+}
+/**
+ * PUT JSON to a backend endpoint. Returns typed result.
+ */
+async function backendPut(path, body, options) {
+    const url = `${resolveBaseUrl()}${path}`;
+    try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (options?.token) {
+            headers['Authorization'] = `Bearer ${options.token}`;
+        }
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(body),
             signal: AbortSignal.timeout(15000),
         });
         const text = await res.text();
