@@ -12,6 +12,9 @@
 |-------------------|-----|-------------------|-----------------|
 | `costforge-ai-workspace/` | ~41 MB (Node/React/Express/PG) | **THE GOLD MINE** — complete CostForge platform with real Benton County cost matrices, 10+ MCP agents, Drizzle ORM schema, 30+ API routes, 94,149 properties | **CRITICAL — P0** |
 | `costforge-ai/` | ~1.1 MB (Python) | CostForge AI engine — building cost matrices, regional multipliers, depreciation tables, quality adjustments, batch processing | **CRITICAL — P0** |
+| `applications/terraforge-suite/` | ~1,120 (TypeScript) | **USPAP three-approach valuation**: sales comparison (440 lines), income/direct cap (295 lines), reconciliation (383 lines) — complete appraisal methodology | **CRITICAL — P0** |
+| `applications/terra-build-actual/` | ~117 (TypeScript) | Marshall-Swift cost engine facade — base cost × region × quality × condition × age calculation | **CRITICAL — P0** |
+| `marketplace/government-core/terra-levy/` | 1,118 (TypeScript) | MCP tax calculation server — 9 tools, 7 Zod schemas, property assessment/tax calculation/compliance/forecasting/equity analysis (mixed with marketing fiction) | **HIGH** (extract real tax logic, discard "quantum consciousness") |
 | `applications/terra-flow-production/` | 183,825 (Python) | Property valuation agent (ML: RandomForest, GradientBoosting, ElasticNet), assessment API, spatial service, data governance, sync service, DB models | **HIGH** |
 | `BS_PACS/` | 86,558 (SQL) | 2,086 stored procedures, 2,133 table definitions, views, functions — actual Harris PACS 9.0 database | **REFERENCE ONLY** (county approval required) |
 | `terra-flow/` | ~14,000 (TS/Python) | Privacy engines (DP, FL, HE), WebSocket service | **LOW** (no Assessor logic) |
@@ -217,6 +220,133 @@ Port `CostForgeEngine.calculate_construction_cost()` to C# in `TerraFusion.AI/Se
 
 ---
 
+## P0: `applications/terraforge-suite/` — USPAP Three-Approach Valuation (TypeScript)
+
+**Tech stack:** TypeScript / USPAP-aligned appraisal methodology
+**Total:** 1,120 lines across 3 files — complete three-approach valuation engine
+
+This is the **most domain-critical find** — complete USPAP-compliant appraisal methodology ready for extraction.
+
+### Sales Comparison Approach (`harness/src/approaches/sales.ts` — 440 lines)
+
+| Function | What It Does |
+|----------|-------------|
+| `runSalesApproach()` | Main execution — adjusts comparable sales to subject property |
+| `calculateAdjustments()` | GLA, lot size, age, condition, location adjustments |
+| `calculateWeight()` | Weights comparables by adjustment magnitude |
+| `determineConfidence()` | Confidence scoring based on comp quality |
+| `generateFlags()` | Quality control flags for review |
+| `generateExplanation()` | Narrative explanation of analysis |
+
+**Output:** Indicated value via median, weighted average, bracketed mean with audit events.
+
+### Income Approach (`harness/src/approaches/income.ts` — 295 lines)
+
+| Function | What It Does |
+|----------|-------------|
+| `runIncomeApproach()` | Direct capitalization: Value = NOI / Cap Rate |
+| `extractCapRate()` | Market-extracted capitalization rates |
+| `generateExplanation()` | Detailed calculation narrative |
+
+**Calculation chain:** Potential Gross Income → Vacancy → Effective Gross Income → Operating Expenses (taxes, insurance, utilities, maintenance, management, reserves) → NOI → Cap Rate → Indicated Value
+
+### Reconciliation (`harness/src/approaches/reconcile.ts` — 383 lines)
+
+| Function | What It Does |
+|----------|-------------|
+| `runReconciliation()` | Combines all three approaches into final opinion of value |
+| `calculateWeights()` | Adaptive weighting by property type and confidence |
+| `calculateBracketedValue()` | Midpoint between approaches |
+| `getPrimaryApproachValue()` | Selects highest-weighted approach |
+
+**Property-type default weights:**
+- Residential: 60% sales, 20% cost, 20% income
+- Commercial: 20% sales, 30% cost, 50% income
+- Industrial/Special: custom distributions
+
+**Three reconciliation methods:** weighted average, bracketed, primary approach
+
+### EXTRACTION PLAN
+
+Already TypeScript — port to `TerraFusion.AI/Services/` as C# services:
+1. `SalesComparisonService.cs` ← `sales.ts` (adjustment grid, comp weighting, confidence scoring)
+2. `IncomeApproachService.cs` ← `income.ts` (NOI calculation, direct capitalization)
+3. `ReconciliationService.cs` ← `reconcile.ts` (multi-approach synthesis, property-type weighting)
+4. Wire through existing `CostForgeController.cs` or new `ValuationController.cs`
+5. Expose via governed invoke path: pilotApi → PilotController → handler → endpoint
+
+---
+
+## P0: `applications/terra-build-actual/` — Marshall-Swift Cost Engine (TypeScript)
+
+**Tech stack:** TypeScript
+**File:** `server/services/costEngine/marshallSwift.ts` — 117 lines
+
+Facade service for Marshall-Swift cost factors. Clean, extractable calculation:
+
+```
+Total Cost = Base Cost × Region Factor × Quality Factor × Condition Factor × Age Factor × Area
+```
+
+| Function | What It Does |
+|----------|-------------|
+| `getBaseCost()` | Base cost rates by building type |
+| `getRegionFactor()` | Regional cost adjustment |
+| `getQualityFactor()` | Quality level multiplier |
+| `getConditionFactor()` | Condition-based adjustment |
+| `calculateAgeFactor()` | Age bracket depreciation |
+| `calculateCostEstimation()` | Full adjusted cost calculation |
+
+### EXTRACTION PLAN
+
+Merge with `costforge-ai/core-engine/construction_cost_engine.py` — both implement the same cost approach pattern. Port to single `CostApproachService.cs` in `TerraFusion.AI/Services/` with:
+- Marshall-Swift factor tables from this file
+- Regional/quality/depreciation matrices from the Python engine
+- Real Benton County cost data from `costforge-ai-workspace/benton_cost_matrix*.json`
+
+---
+
+## HIGH: `marketplace/government-core/terra-levy/` — Tax Calculation MCP Server
+
+**Tech stack:** TypeScript / MCP SDK / Zod validation
+**File:** `index.ts` — 1,118 lines
+
+**MIXED SIGNAL:** Contains real tax domain logic wrapped in marketing fiction ("quantum consciousness", "4D spatiotemporal analysis"). Extract the real parts, discard the fiction.
+
+### REAL (Extract)
+
+| Tool/Schema | What It Does |
+|-------------|-------------|
+| `terralevy_property_assessment` | Property tax assessment calculation |
+| `terralevy_tax_calculation` | Tax computation with rate components |
+| `terralevy_tax_compliance` | Regulatory compliance validation |
+| `terralevy_tax_forecasting` | Revenue forecasting |
+| `terralevy_equity_analysis` | Assessment fairness/uniformity analysis |
+| `terralevy_tax_reporting` | Government report generation |
+| `PropertyAssessment` schema | Zod-validated assessment input/output |
+| `TaxCalculation` schema | Tax calculation with breakdowns |
+| `TaxCompliance` schema | Compliance check structures |
+
+### FICTION (Discard)
+
+| Component | Why It's Fiction |
+|-----------|-----------------|
+| "Consciousness levels" (reactive → transcendent) | Marketing fiction, not domain logic |
+| "Quantum optimization" (12x speedup) | No quantum computing present |
+| "4D spatiotemporal analysis" | Standard time-series with marketing wrapper |
+| `terralevy_consciousness_evolution` tool | Pure fiction |
+| `terralevy_quantum_optimization` tool | Pure fiction |
+
+### EXTRACTION PLAN
+
+1. Extract Zod schemas → port to C# DTOs/validation in `TerraFusion.Core/DTOs/`
+2. Extract real tax calculation logic → port to `TerraFusion.AI/Services/TaxCalculationService.cs`
+3. Extract compliance validation → port to `TerraFusion.AI/Services/TaxComplianceService.cs`
+4. Wire through existing `LevyCalculationController.cs` (already has auth + county isolation)
+5. Discard all "consciousness" and "quantum" wrappers
+
+---
+
 ## P1: `terra-flow/` — Visualization Shell (Low Extraction Value)
 
 **Finding:** This is NOT the Assessor app. It's a visualization/privacy prototype.
@@ -267,15 +397,18 @@ Metadata indexing framework, NOT GIS/ArcGIS. Python scripts (classifier, validat
 | Priority | Source | Target Suite | Method | Estimated Effort |
 |----------|--------|-------------|--------|-----------------|
 | **1** | `costforge-ai-workspace/benton_cost_matrix*.json` | TerraForge | Seed real cost matrices into EF Core CostMatrix entity | Low — data import |
-| **2** | `costforge-ai/core-engine/construction_cost_engine.py` | TerraForge | Port CostForgeEngine to `TerraFusion.AI/Services/CostApproachService.cs` | Medium — straightforward algorithm port |
-| **3** | `costforge-ai-workspace/server/mcp/agents/` | TerraForge | Port MCP agent logic to TerraFusion.AI services | Medium |
-| **4** | `costforge-ai-workspace/shared/schema.ts` | TerraFusion.Data | Map Drizzle ORM schema to EF Core entities | Low — schema mapping |
-| **5** | `terra-flow-production/property_valuation_agent.py` | TerraForge | Port Python ML models to C# ML.NET or keep as Python microservice | Medium-High |
-| **6** | `terra-flow-production/api/assessment.py` + `models.py` | TerraForge | Port Flask routes to .NET controllers, SQLAlchemy models to EF Core | Medium |
-| **7** | `BS_PACS` tables/SPs (reference) | All suites | Study data structures, build compatible entities | Low (reference only) |
-| **8** | `terra-flow-production/api/spatial*` | TerraAtlas | Port spatial queries to PostGIS | Medium |
-| **9** | `terra-flow-production/data_governance/` | TerraDais | Port sovereignty/classification to .NET | Low |
-| **10** | `terra-flow/privacy engines` | TerraFusion.Security | Port Python DP/FL/HE to .NET | Low (nice-to-have) |
+| **2** | `terraforge-suite/harness/src/approaches/{sales,income,reconcile}.ts` | TerraForge | **CRITICAL** — Port USPAP three-approach valuation to C# services (SalesComparisonService, IncomeApproachService, ReconciliationService) | Medium — clean TypeScript, straightforward port |
+| **3** | `costforge-ai/core-engine/construction_cost_engine.py` + `terra-build-actual/marshallSwift.ts` | TerraForge | Merge both cost engines into single `CostApproachService.cs` with Marshall-Swift factors | Medium — two sources, one target |
+| **4** | `costforge-ai-workspace/server/mcp/agents/` | TerraForge | Port MCP agent logic to TerraFusion.AI services | Medium |
+| **5** | `costforge-ai-workspace/shared/schema.ts` | TerraFusion.Data | Map Drizzle ORM schema to EF Core entities | Low — schema mapping |
+| **6** | `marketplace/government-core/terra-levy/index.ts` | TerraDais | Extract real tax calculation/compliance/forecasting logic (discard "quantum" fiction), port to `TaxCalculationService.cs` | Medium — requires separating real from fiction |
+| **7** | `terra-flow-production/property_valuation_agent.py` | TerraForge | Port Python ML models to C# ML.NET or keep as Python microservice | Medium-High |
+| **8** | `terra-flow-production/api/assessment.py` + `models.py` | TerraForge | Port Flask routes to .NET controllers, SQLAlchemy models to EF Core | Medium |
+| **9** | `BS_PACS/Database/` (C# .NET Core API) | TerraForge/TerraDais | Port DataSyncService, CostApproachModels, BillingService — **same stack** | Low-Medium — direct C# port |
+| **10** | `BS_PACS` tables/SPs (reference) | All suites | Study data structures, build compatible entities | Low (reference only) |
+| **11** | `terra-flow-production/api/spatial*` | TerraAtlas | Port spatial queries to PostGIS | Medium |
+| **12** | `terra-flow-production/data_governance/` | TerraDais | Port sovereignty/classification to .NET | Low |
+| **13** | `terra-flow/privacy engines` | TerraFusion.Security | Port Python DP/FL/HE to .NET | Low (nice-to-have) |
 
 ---
 
@@ -304,19 +437,26 @@ The main quarantine asset (`terra-flow-production`) is **Python/Flask/SQLAlchemy
 
 ## Honest Assessment
 
-The quarantine is **richer than the first pass found**, but different than originally claimed:
+The quarantine is **significantly richer than any single pass found**, with domain logic spread across 6+ directories:
 
-**What's real and extractable:**
-- `costforge-ai-workspace/` — Complete CostForge platform with real Benton County cost matrices (7 building types, 3 regions, 2025 data), 10+ MCP agents, Drizzle ORM schema, 30+ API routes. This is the #1 extraction target
-- `costforge-ai/core-engine/` — Real cost estimation algorithm with regional multipliers, quality factors, depreciation tables. Straightforward port to C#
-- `terra-flow-production/` (under `applications/`) — 183K lines Python with ML valuation agent (scikit-learn), assessment API, spatial service
-- `BS_PACS/` — Actual Harris PACS 9.0 database schema (86K SQL, 2,086 SPs, 2,133 tables) — **reference only**
+**What's real and extractable (by value):**
+1. `terraforge-suite/` — **CROWN JEWEL** — Complete USPAP three-approach valuation (sales comparison, income/direct cap, reconciliation) in clean TypeScript. 1,120 lines of pure domain logic with property-type-specific weighting, confidence scoring, and audit trails. This is THE appraisal methodology engine.
+2. `costforge-ai-workspace/` — Complete CostForge platform with real Benton County cost matrices (7 building types, 3 regions, 2025 data), 10+ MCP agents, Drizzle ORM schema, 30+ API routes
+3. `terra-build-actual/marshallSwift.ts` — Clean Marshall-Swift cost engine facade (117 lines) — merges with #4
+4. `costforge-ai/core-engine/` — Real cost estimation algorithm with regional multipliers, quality factors, depreciation tables
+5. `marketplace/government-core/terra-levy/` — Real tax calculation logic (9 tools, 7 Zod schemas) wrapped in "quantum consciousness" marketing fiction — extract real, discard fiction
+6. `terra-flow-production/` (under `applications/`) — 183K lines Python with ML valuation agent (scikit-learn), assessment API, spatial service
+7. `BS_PACS/Database/` — C# .NET Core API (same stack!) with DataSyncService, CostApproachModels, BillingService
+8. `BS_PACS/` SQL — Actual Harris PACS 9.0 database schema (86K SQL, 2,086 SPs, 2,133 tables) — **reference only**
 
 **What's NOT extractable:**
 - `terra-flow/` (originally cited "gold mine") — mostly visualization scaffolding, no Assessor logic
+- `terrafusion-atlas/` — metadata registry, NOT GIS
+- `terra-levy/` — zero implementation (203 lines of copilot instructions)
 - Achievement/marketing docs in quarantine — fiction
+- "Quantum consciousness" wrappers in terra-levy MCP — fiction
 
-**Bottom line:** R2 extraction is viable. The CostForge workspace has real cost matrices and a working platform to port from. The Python ML agent adds depth. But it IS a porting effort (Node→C#, Python→C#), not just moving files
+**Bottom line:** R2 extraction is not just viable — it's stronger than expected. The quarantine contains a **complete USPAP-compliant appraisal methodology** (cost + sales + income + reconciliation), real county cost matrices, a Marshall-Swift engine, and tax calculation logic. The porting effort (TypeScript→C#, Python→C#) is straightforward because the domain logic is clean and well-structured. The terraforge-suite approaches are the most valuable find — they represent the actual Assessor methodology that R2 needs to deliver.
 
 ---
 
