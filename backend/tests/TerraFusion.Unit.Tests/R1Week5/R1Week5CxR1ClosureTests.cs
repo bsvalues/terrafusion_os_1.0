@@ -338,4 +338,44 @@ public sealed class R1Week5CxR1ClosureTests
         problem.Extensions["feature"].Should().Be("Dossier document-management stats");
         controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
     }
+
+    [Fact]
+    public void AtlasController_GetLayers_ReturnsExplicitPostR1ProblemDetails()
+    {
+        using var db = CreateDbContext(nameof(AtlasController_GetLayers_ReturnsExplicitPostR1ProblemDetails));
+        var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+        AttachPrincipal(controller, CreateEmptyPrincipal());
+
+        var result = controller.GetLayers();
+
+        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+
+        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problem.Title.Should().Be("Atlas layer catalog is not enabled for R1");
+        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
+        problem.Extensions["scope"].Should().Be("Post-R1");
+        problem.Extensions["feature"].Should().Be("Atlas layer catalog");
+        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+    }
+
+    [Fact]
+    public void AtlasController_SearchParcels_ReturnsExplicitPostR1ProblemDetails()
+    {
+        using var db = CreateDbContext(nameof(AtlasController_SearchParcels_ReturnsExplicitPostR1ProblemDetails));
+        var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+        AttachPrincipal(controller, CreateEmptyPrincipal());
+
+        var result = controller.SearchParcels(new { query = "123 Main", limit = 10 });
+
+        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+
+        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problem.Title.Should().Be("Atlas parcel search is not enabled for R1");
+        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
+        problem.Extensions["scope"].Should().Be("Post-R1");
+        problem.Extensions["feature"].Should().Be("Atlas parcel search");
+        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+    }
 }

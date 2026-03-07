@@ -37,6 +37,11 @@ Post-R1 carve-outs that still touch suite-visible APIs.
 | `GET /api/dossier/stats` | `[Authorize]` + `read:dossier` | Not applicable while disabled | Global middleware + `X-R1-Scope` | None active | Documents/Evidence modules | `Post-R1` | Explicit `501` |
 | `GET /api/atlas/parcels/{parcelId}` | `[Authorize]` + `read:parcel` | Yes | Global middleware | `Properties` | Atlas UI | `R1-required` | Real parcel shell; geometry intentionally null |
 | `GET /api/atlas/parcels/{parcelId}/layers` | `[Authorize]` + `read:parcel` | Yes | Global middleware | `Properties` + static layer list | Atlas UI, `query_parcel_layers` | `R1-required` | Real current-scope path |
+| `GET /api/atlas/layers` | `[Authorize]` + `read:parcel` | Not applicable while disabled | Global middleware + `X-R1-Scope` | None active | GIS / LayerWorks modules | `Post-R1` | Explicit `501` |
+| `POST /api/atlas/parcels/search` | `[Authorize]` + `read:parcel` | Not applicable while disabled | Global middleware + `X-R1-Scope` | None active | ParcelLens / GIS modules | `Post-R1` | Explicit `501` |
+| `GET /api/atlas/zoning` | `[Authorize]` + `read:parcel` | Not applicable while disabled | Global middleware + `X-R1-Scope` | None active | GIS modules | `Post-R1` | Explicit `501` |
+| `GET /api/atlas/flood-zones` | `[Authorize]` + `read:parcel` | Not applicable while disabled | Global middleware + `X-R1-Scope` | None active | GIS modules | `Post-R1` | Explicit `501` |
+| `GET /api/atlas/stats` | `[Authorize]` + `read:parcel` | Not applicable while disabled | Global middleware + `X-R1-Scope` | None active | GIS / ParcelLens modules | `Post-R1` | Explicit `501` |
 | `POST /api/propertyvaluation/enhance` | `[Authorize]` | Yes | Global middleware | `IPropertyValuationAIEnhancementService` + `Properties` scope check | Active backend surface | `R1-required` | Real active path |
 | `POST /api/propertyvaluation/enhance/bulk` | `[Authorize]` | Yes | Global middleware | `IPropertyValuationAIEnhancementService` + `Properties` scope check | Active backend surface | `R1-required` | Real active path |
 | `GET /api/propertyvaluation/performance/{countyCode}` | `[Authorize]` | Yes | Global middleware | `IPropertyValuationAIEnhancementService` | Active backend surface | `R1-optional` | Real active path |
@@ -48,6 +53,9 @@ Post-R1 carve-outs that still touch suite-visible APIs.
   are absent. That is a DX aid for local development and is not production truth.
 - Dossier document-management routes are now explicit Post-R1 carve-outs. They remain
   intentionally disabled until a real county-scoped document/evidence backend ships.
+- Atlas suite-level GIS routes are now explicit Post-R1 carve-outs. The parcel-specific
+  Atlas shell remains real; the broader GIS/search/catalog surfaces are intentionally
+  disabled until a real GIS backend ships.
 - `AtlasController` intentionally returns `geometryAvailable=false` with null geometry
   instead of fabricating GIS data. That is honest current-scope behavior.
 - `CostForgeController` remains R1-real for the single-property governed path while the

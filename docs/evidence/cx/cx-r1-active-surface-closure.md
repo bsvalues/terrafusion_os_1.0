@@ -3,7 +3,7 @@
 Date: March 7, 2026
 Lane: `cx`
 Scope: active backend truth closure for Property Valuation, CostForge non-R1 surfaces,
-Dossier document-management carve-outs, PILT, and runtime theater cleanup
+Dossier and Atlas Post-R1 carve-outs, PILT, and runtime theater cleanup
 
 ## Implemented
 
@@ -52,6 +52,21 @@ Dossier document-management carve-outs, PILT, and runtime theater cleanup
   honest so the frontend can render explicit deferred states instead of relying on
   missing-route ambiguity.
 
+### Atlas Suite-Level GIS Surfaces
+
+- [AtlasController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/AtlasController.cs)
+  now answers these suite-visible GIS routes with explicit Post-R1 semantics instead of
+  silent backend absence:
+  - `GET /api/atlas/layers`
+  - `POST /api/atlas/parcels/search`
+  - `GET /api/atlas/zoning`
+  - `GET /api/atlas/flood-zones`
+  - `GET /api/atlas/stats`
+- Those endpoints now return explicit `501 Not Implemented` `ProblemDetails` with
+  `scope=Post-R1` and `X-R1-Scope: Post-R1`.
+- The parcel-specific Atlas routes remain real for R1. Only the broader GIS suite
+  surfaces were converted from no-contract behavior to explicit deferment.
+
 ### Quantum Metrics Background Service
 
 - [Program.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Program.cs)
@@ -78,6 +93,8 @@ Dossier document-management carve-outs, PILT, and runtime theater cleanup
 - This does not make CostForge batch valuation or Harris PACS sync real. It makes those
   surfaces explicit Post-R1 instead of fake-success.
 - This does not make Dossier document management real. It makes the suite-visible
+  backend routes explicit Post-R1 instead of silent no-contract behavior.
+- This does not make the broader Atlas GIS suite real. It makes the suite-visible
   backend routes explicit Post-R1 instead of silent no-contract behavior.
 - This does not complete CC fake-path removal for the PILT UI fallback.
 - This does not finalize cross-lane signoff or the branch-head evidence manifest.

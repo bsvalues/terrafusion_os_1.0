@@ -39,6 +39,11 @@ Frozen scope authority remains:
 - `os-platform/core/trace/TraceStore.ts` is **file-backed append-only JSONL**, not
   SQLite/Drizzle.
 - Core governance gates are currently green.
+- **All 9 CP R1-Required tickets are SHIPPED** (March 7, 2026):
+  - CP-FORGE-01/02/03, CP-DOS-01/02, CP-ATL-01, CP-HARD-01, CP-FAKE-01, Phase 6 proof
+  - 104/104 tests passing (32 phase83 + 20 phase85 + 7 phase86 + 45 R1 contract/proof tests)
+  - Five-tool proof orchestrator passes: all 5 tools governed, traced, and verified
+  - CP lane signoff populated at `docs/evidence/cp/signoff.md`
 
 ### Claude Code — OS Shell
 
@@ -60,7 +65,7 @@ Frozen scope authority remains:
 
 | Controller / Surface | Current truth | Verification |
 |---|---|---|
-| `AtlasController.cs` | Real, authenticated, county-isolated controller | Source-verified |
+| `AtlasController.cs` | Real, authenticated, county-isolated parcel controller. Suite-level GIS routes are now explicit `Post-R1` / `501` instead of silent backend absence. | Source-verified |
 | `DossierController.cs` | Real, authenticated, county-isolated controller with notes, casefile, evidence snapshot, and SHA-256 evidence hash. Suite-visible document-management routes are now explicit `Post-R1` / `501`. | Source-verified |
 | `CostForgeController.cs` | Real for the active single-property valuation path. Batch valuation and Harris PACS sync are now explicit `Post-R1` / `501`, not fake-success stubs. | Source-verified |
 | `LevyCalculationController.cs` | Real, authenticated, county-scoped levy calculation surface | Source-verified |
@@ -105,15 +110,24 @@ Frozen scope authority remains:
 - `PiltController` reclassified from fake-live to explicit Post-R1 disablement
 - `QuantumMetricsBackgroundService` moved from silent theater to opt-in only
 - `CostForgeController` non-R1 batch and PACS surfaces reclassified from fake-success to explicit Post-R1 disablement
+- Atlas suite-level GIS routes reclassified from silent absence to explicit Post-R1 disablement
 - CX targeted proof and backend build/test verification
+- **CP lane fully complete (March 7, 2026):**
+  - `GET /pilot/tools` metadata serialization fix (reasonCodeRequired)
+  - `paramsSchema` added to manifest for all 6 governed tools
+  - Five-tool governed proof: run_valuation_model, explain_value_change, search_trace_by_correlation, summarize_levy_rate_components, summarize_parcel_casefile
+  - Anti fake-path regression tests (7 tests, no canned markers)
+  - Contract alignment tests (16 tests, handler↔manifest↔INVOKE_CONTRACT)
+  - Atlas architecture decision documented (excluded from 5-proof)
+  - All core test suites green: 104/104 after changes
+  - CP lane signoff populated
 
 ### Partial
 
-- Forge end-to-end cutover
-- Dossier frontend honesty closure
-- Atlas frontend honesty closure
-- Active-surface fake-path elimination on the frontend
-- Final governed proof packet for the 5 release tools
+- Forge end-to-end cutover (CC lane)
+- Dossier frontend honesty closure (CC lane)
+- Atlas frontend honesty closure (CC lane)
+- Active-surface fake-path elimination on the frontend (CC lane)
 - Branch-head evidence convergence across CC, CX, and CP
 
 ### Post-R1 / Not Strict R1
