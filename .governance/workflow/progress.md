@@ -1,12 +1,12 @@
-# Progress: Workbench Shell Materials + Suite UX Clarity + Launcher + Compositor + Polish
+# Progress: Workbench Shell Materials + Suite UX Clarity + Launcher + Compositor + Polish + R2 Backend Waves
 
-> **Purpose:** Track execution status for Visual Renaissance materials adoption + Suite tile clarity + Launcher redesign + Compositor stabilization + Launcher polish.
+> **Purpose:** Track execution status for Visual Renaissance materials adoption + Suite tile clarity + Launcher redesign + Compositor stabilization + Launcher polish + R2 backend delivery.
 
 ---
 
-* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions
-* **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-02-08 02:30
+* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions + R2 Backend Waves
+* **Branch/PR:** `claude/review-progress-ledger-a8iw5`
+* **Last Updated:** 2026-03-07 (R2 Waves 1-4 Complete)
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 24.2.1: Policy Export/Import Deterministic Tests** ✅ COMPLETE |
-| **Phase** | Phase 3: Implementation Complete - All Tests Green |
-| **Task** | All core implementation + 29/29 tests deterministic and passing |
+| **Slice** | **R2 Waves 1-4: Backend USPAP + Atlas + DAIS DB + Model Inputs** ✅ COMPLETE |
+| **Phase** | R2 Backend Delivery Complete — All 4 Waves Shipped |
+| **Task** | 47 endpoints (45 live, 2 stubs), 29 manifest tools, 87/87 core gates, 242 total tests |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `a3552e345` (Slice 24.2.1 complete - 29/29 tests, FileReader timing fixed) |
+| **Latest Commit** | `f846d196c` (R2 Waves 2+4 — Atlas nearby/layers, Dossier assessment history, CostForge model-inputs) |
 
 ---
 
@@ -349,17 +349,67 @@
 
 ---
 
+## R2 Wave 1: USPAP Three-Approach Valuation ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Port SalesComparisonService from TS→C# | `1ef886259` | DI registered | 2026-03-07 |
+| ✅ 1.2 | Port IncomeApproachService from TS→C# | `1ef886259` | DI registered | 2026-03-07 |
+| ✅ 1.3 | Port CostApproachService from Python/TS→C# | `1ef886259` | DI registered | 2026-03-07 |
+| ✅ 1.4 | Port ReconciliationService from TS→C# | `1ef886259` | DI registered | 2026-03-07 |
+| ✅ 1.5 | CostMatrix entity + BentonCostMatrixSeeder (21 entries) | `1ef886259` | EF Core | 2026-03-07 |
+| ✅ 1.6 | 5 CostForgeController USPAP endpoints | `1ef886259` | Auth+County | 2026-03-07 |
+| ✅ 1.7 | 5 new handlers in handlers.real.ts (29 total) | `b90eb639b` | 87/87 gates | 2026-03-07 |
+| ✅ 1.8 | Manifest v1.4.0 (29 tools) | `b90eb639b` | 32/32 phase83 | 2026-03-07 |
+
+**Key Achievement:** Full USPAP three-approach valuation extracted from quarantine, ported to C#, wired end-to-end. Sales comparison, income capitalization, cost (Marshall-Swift), and reconciliation with property-type weighting. 21 cost matrix entries for 7 building types × 3 Benton County regions.
+
+---
+
+## R2 Wave 2: Atlas GIS Catalog ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 2.1 | GET /api/atlas/parcels/{parcelId}/nearby (prefix heuristic + type filter) | `f846d196c` | Auth+County | 2026-03-07 |
+| ✅ 2.2 | GET /api/atlas/layers/{layerId} (layer metadata catalog) | `f846d196c` | Auth | 2026-03-07 |
+
+**Key Achievement:** Atlas infrastructure expanded with neighbor search (prefix-heuristic, county-isolated) and layer metadata detail for 5 layer types (boundary, zoning, flood, aerial, parcels).
+
+---
+
+## R2 Wave 3: DaisController Real DB Queries ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 3.1 | Certification status → real PropertyAssessments DB query | `d79f3e5f6` | Auth+County | 2026-03-07 |
+| ✅ 3.2 | Exemption impact → real TaxLevies DB query + RCW 84.36.381 tiers | `d79f3e5f6` | Auth+County | 2026-03-07 |
+| ✅ 3.3 | Sales comps rationale → real Properties DB lookup | `d79f3e5f6` | Auth+County | 2026-03-07 |
+| ✅ 3.4 | Update endpoint matrix (43→47 endpoints) | `d79f3e5f6` | Documented | 2026-03-07 |
+
+**Key Achievement:** Three DaisController endpoints upgraded from hardcoded responses to real EF Core DB queries. Certification uses PropertyAssessments for actual year progress. Exemptions use TaxLevies for real levy rates with Washington state statutory tiers.
+
+---
+
+## R2 Wave 4: Model Inputs + Assessment History ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 4.1 | GET /api/costforge/{propertyId}/model-inputs (explainability) | `f846d196c` | Auth+County | 2026-03-07 |
+| ✅ 4.2 | GET /api/dossier/parcels/{parcelId}/assessment-history (year-over-year) | `f846d196c` | Auth+County | 2026-03-07 |
+| ✅ 4.3 | Endpoint matrix updated to 47 total | `f846d196c` | Documented | 2026-03-07 |
+
+**Key Achievement:** Two high-value analytical endpoints. Model inputs provides USPAP approach weights, cost matrix factors, property attributes, and data quality signals driving valuations. Assessment history gives year-over-year assessed value comparison with percent-change deltas.
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| ✅ 1 | 1.1 | Write standaloneHomes.contract.test.tsx | Done |
-| ✅ 2 | 1.2 | Write standaloneHomes.navigation.test.tsx | Done |
-| ✅ 3 | 1.3 | Write standaloneHomes.accessibility.test.tsx | Done |
-| ✅ 4 | 2.1-2.2 | Create StandaloneHomeShell + contracts | Done |
-| ✅ 5 | 3.1 | Migrate PilotConsole | Done |
-| ✅ 6 | 4.1 | Run all gates | Done |
-| 🔵 7 | Commit | Create Slice 6 commit | - |
+| 🔵 1 | R2.5 | GIS geometry storage (PostGIS parcel boundaries) | Infrastructure |
+| 🔵 2 | R2.6 | Document blob management for dossier attachments | Architecture |
+| 🔵 3 | R2.7 | Muse tool backends (AI-powered NLP explanation) | Claude API |
+| 🔵 4 | R2.8 | Frontend tool invocation wiring (TerraPilot → endpoints) | R2.5-R2.7 |
 
 ---
 
@@ -381,31 +431,35 @@
 
 ---
 
-## Test Results (latest run)
+## Test Results (latest run — March 7, 2026)
 
 | Suite | Passed | Failed | Skipped |
 |-------|--------|--------|---------|
-| type-check | ✅ | 0 | - |
 | phase83-tools | 32 | 0 | - |
+| phase85-tools | 20 | 0 | - |
+| phase86-toolrunner | 7 | 0 | - |
+| r1-acceptance-criteria | 22 | 0 | - |
+| r1-boot-wiring | 6 | 0 | - |
+| **Core gates total** | **87** | **0** | - |
+| All gate tests (incl. extended) | 242 | 0 | - |
 | launcher tests | 57 | 0 | - |
 | ranking tests | 26 | 0 | - |
 | pins tests | 15 | 0 | - |
 | recents tests | 15 | 0 | - |
-| standalone contract | 0 | 0 | 14 (TDD) |
-| standalone nav | 0 | 0 | 7 (TDD) |
 | standalone a11y | 12 | 0 | 0 |
-| build | ✅ | - | - |
+| Endpoint matrix | 47 (45 live, 2 stubs) | - | - |
+| Manifest tools | 29 | 0 handlers missing | - |
 
 ---
 
 ## Gates Before Merge
 
-- [x] All planned tasks complete
-- [x] All tests passing
+- [x] All planned tasks complete (R2 Waves 1-4)
+- [x] All tests passing (87/87 core, 242 total)
 - [x] Build succeeds
-- [x] No blockers
+- [x] No blockers (all 8 R1 blockers closed)
 - [x] Known debt documented
-- [x] Latest commit hash in this document (`234b06ec1`)
+- [x] Latest commit hash in this document (`f846d196c`)
 
 ---
 
