@@ -23,6 +23,7 @@ import {
   LayoutDashboard,
   Receipt,
   Landmark,
+  AlertTriangle,
   CheckCircle2,
   Scale,
   HardHat,
@@ -37,6 +38,7 @@ import {
   getPiltStatus,
   getPiltDistricts,
   getPiltReceipts,
+  PiltApiError,
   type PiltStatus,
   type PiltDistrict,
   type PiltReceipt,
@@ -458,6 +460,7 @@ function PILTModule() {
   const [apiReceipts, setApiReceipts] = useState<PiltReceipt[]>([]);
   const [isLive, setIsLive] = useState(false);
   const [apiDeferred, setApiDeferred] = useState(false);
+  const [apiError, setApiError] = useState<{ message: string; correlationId: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -474,9 +477,34 @@ function PILTModule() {
         setApiDistricts(distRes.districts);
         setApiReceipts(rcptRes.receipts);
         setIsLive(true);
-      } catch {
-        // PILT API returns 501 (deferred to R2) — show reference data with notice
-        if (!cancelled) setApiDeferred(true);
+        setApiDeferred(false);
+        setApiError(null);
+      } catch (error) {
+        if (cancelled) return;
+
+        if (error instanceof PiltApiError && error.deferred) {
+          setApiDeferred(true);
+          setApiError(null);
+        } else {
+          const normalized =
+            error instanceof PiltApiError
+              ? error
+              : new PiltApiError(
+                  error instanceof Error ? error.message : 'PILT data unavailable',
+                  `net-${Date.now().toString(36)}`,
+                );
+
+          setApiDeferred(false);
+          setApiError({
+            message: normalized.message,
+            correlationId: normalized.correlationId,
+          });
+        }
+
+        setIsLive(false);
+        setApiStatus(null);
+        setApiDistricts([]);
+        setApiReceipts([]);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -486,6 +514,7 @@ function PILTModule() {
 
   const totalAcres = PILT_CATEGORIES.reduce((s, c) => s + c.acres, 0);
   const totalValue = PILT_CATEGORIES.reduce((s, c) => s + c.totalValue, 0);
+  const showReferenceFallback = apiDeferred;
 
   return (
     <div className='p-6 space-y-6'>
@@ -506,18 +535,28 @@ function PILTModule() {
           variant='outline'
           className='flex items-center gap-1.5'
           style={{
-            borderColor: isLive ? 'hsl(var(--tf-success-hs) 40%)' : 'hsl(var(--tf-border))',
-            color: isLive ? 'hsl(var(--tf-success-hs) 50%)' : 'hsl(var(--tf-muted))',
+            borderColor: isLive
+              ? 'hsl(var(--tf-success-hs) 40%)'
+              : apiError
+                ? 'hsl(var(--tf-error-hs) 45%)'
+                : 'hsl(var(--tf-border))',
+            color: isLive
+              ? 'hsl(var(--tf-success-hs) 50%)'
+              : apiError
+                ? 'hsl(var(--tf-error-hs) 60%)'
+                : 'hsl(var(--tf-muted))',
           }}
         >
           {loading ? (
             <Loader2 size={12} className='animate-spin' />
           ) : isLive ? (
             <Wifi size={12} />
+          ) : apiError ? (
+            <AlertTriangle size={12} />
           ) : (
             <WifiOff size={12} />
           )}
-          {loading ? 'Connecting…' : isLive ? 'Live' : apiDeferred ? 'Deferred' : 'Local'}
+          {loading ? 'Connecting…' : isLive ? 'Live' : apiDeferred ? 'Deferred' : apiError ? 'Error' : 'Unavailable'}
         </Badge>
       </div>
 
@@ -534,35 +573,50 @@ function PILTModule() {
         </div>
       )}
 
+      {apiError && !apiDeferred && (
+        <div
+          className='rounded-lg p-3 text-sm space-y-1'
+          style={{ background: 'hsl(var(--tf-error-hs, 0 84%) / 0.08)', borderColor: 'hsl(var(--tf-border))' }}
+          role='alert'
+        >
+          <p style={{ color: 'hsl(var(--tf-fg))' }}>
+            PILT live data is currently unavailable. {apiError.message}
+          </p>
+          <p className='font-mono text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Correlation ID: {apiError.correlationId}
+          </p>
+        </div>
+      )}
+
       {/* Summary cards — live API data when available */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-              {isLive ? 'Total Payments' : 'Total Acreage'}
+              {isLive ? 'Total Payments' : showReferenceFallback ? 'Total Acreage' : 'Total Payments'}
             </p>
             <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {isLive ? formatCurrency(apiStatus!.totalPayments) : totalAcres.toLocaleString()}
+              {isLive ? formatCurrency(apiStatus!.totalPayments) : showReferenceFallback ? totalAcres.toLocaleString() : '—'}
             </p>
           </CardContent>
         </Card>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-              {isLive ? 'Federal Acres' : 'Total Assessed Value'}
+              {isLive ? 'Federal Acres' : showReferenceFallback ? 'Total Assessed Value' : 'Federal Acres'}
             </p>
             <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {isLive ? apiStatus!.federalAcres.toLocaleString() : formatCurrency(totalValue)}
+              {isLive ? apiStatus!.federalAcres.toLocaleString() : showReferenceFallback ? formatCurrency(totalValue) : '—'}
             </p>
           </CardContent>
         </Card>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-              {isLive ? 'Fiscal Year' : 'Categories'}
+              {isLive ? 'Fiscal Year' : showReferenceFallback ? 'Categories' : 'Status'}
             </p>
             <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {isLive ? apiStatus!.fiscalYear : PILT_CATEGORIES.length}
+              {isLive ? apiStatus!.fiscalYear : showReferenceFallback ? PILT_CATEGORIES.length : '—'}
             </p>
           </CardContent>
         </Card>
@@ -637,9 +691,13 @@ function PILTModule() {
       {/* Land categories — always shown */}
       <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
         <CardHeader>
-          <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>PILT Land Categories</CardTitle>
+          <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>
+            {isLive ? 'Reference Land Categories' : 'PILT Land Categories'}
+          </CardTitle>
           <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-            Benton County Payment In Lieu of Taxes — assessed land values
+            {isLive
+              ? 'Status, receipts, and districts above are live. This land-category breakout remains reference-only until the calculation surface ships.'
+              : 'Benton County Payment In Lieu of Taxes — assessed land values'}
           </CardDescription>
         </CardHeader>
         <CardContent>
