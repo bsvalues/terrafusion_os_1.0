@@ -4,21 +4,21 @@
 
 - Lane: cx
 - Lane branch name: claude/review-progress-ledger-a8iw5
-- Lane branch HEAD SHA (pre-merge): 6ff009ae4005635e4afb87e61f3fe2ce88b70545
+- Lane branch HEAD SHA (pre-merge): f130778be4b5b71296e89e8122da5a196dd22f9e
 - Merge commit SHA (into r1/integration): 0111b25ddabd3c4ab5ec89aefd307d1c50d630cc
 - Baseline r1/integration SHA used for lane work: 81577b071e5ac6aeaa1fb781e805ee9c3a4a7cd6
-- Final branch-head SHA used for verification: 210071157d5e756f5920113472522ef4c3d50928
+- Final branch-head SHA used for verification: c7510f143a1a2b98888ecef48e7c4c41afece4e2
 - Date (local): 2026-03-07
-- Verified by: Claude Code (CX lane agent)
+- Verified by: Codex (CX lane agent)
 - Command canon version: r1-canon-2026-03-07
 
 ---
 
 ## Evidence Artifacts
 
-- [Backend Hardening Evidence](./backend-hardening.md) -- Phase 4 controller hardening audit for all R1-active controllers
-- [Endpoint Contract Matrix](./endpoint-matrix.md) -- Complete R1 endpoint inventory with auth and county isolation status
-- [Auth and County Isolation Audit](./auth-audit.md) -- Per-controller authorization and data isolation verification
+- [CX R1 Active Surface Closure](./cx-r1-active-surface-closure.md) -- active-surface hardening and explicit Post-R1 carve-outs
+- [CX R1 Route Matrix](./cx-r1-route-matrix.md) -- authoritative active-route inventory and scope classification
+- [CX R1 Forge Contract](./cx-r1-forge-contract.md) -- frozen Forge request/response semantics plus explicit Post-R1 route behavior
 
 ---
 
@@ -26,21 +26,26 @@
 
 | Item ID | Description | Status |
 |---|---|---|
-| CX-FORGE-01 | Normalize CostForge output -- consistent response shape across calculate, breakdown, compare, forecast endpoints | COMPLETE |
-| CX-FORGE-02 | Auth verification -- confirmed `[Authorize]` + `[RequiresPermission]` on all CostForge endpoints; county isolation via `ResolveCountyContextAsync()` + `PropertyExistsInCountyAsync()` | COMPLETE |
-| CX-DOS-01 | Dossier gap closure -- notes CRUD, casefile summary, composed dossier, evidence snapshot with SHA-256 hash, selective includes, PII redaction, correlation ID propagation | COMPLETE |
-| CX-ATL-01 | Atlas response shape -- parcel geometry endpoint returns explicit nulls with `geometryAvailable=false` (R1 guardrail: no fabricated GIS data); layer list endpoint returns structured layer metadata | COMPLETE |
+| CX-HARD-01 | `PropertyValuationController` authenticated and county-scoped on active requests | COMPLETE |
+| CX-R1-01 | `PiltController` converted from fake-live facade to explicit authenticated `501` / `Post-R1` | COMPLETE |
+| CX-HARD-03 | `QuantumMetricsBackgroundService` moved to opt-in gate (`TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE`) | COMPLETE |
+| CX-FORGE-01 | CostForge single-property path kept real; batch valuation and Harris PACS sync converted to explicit `501` / `Post-R1` | COMPLETE |
+| CX-DOS-02 | Dossier document-management endpoints converted to explicit `501` / `Post-R1` | COMPLETE |
+| CX-ATL-02 | Atlas suite-level GIS/search/catalog endpoints converted to explicit `501` / `Post-R1` | COMPLETE |
+| CX-R1-00 | Route matrix and Forge contract evidence published for the active R1 backend surface | COMPLETE |
 
 ---
 
-## Known Open Items
+## Remaining Items
 
-| Item ID | Description | Severity | Notes |
-|---|---|---|---|
-| CX-HARD-01 | PropertyValuationController missing `[Authorize]` -- four endpoints exposed without authentication or county isolation | HIGH | Documented in auth-audit.md. Controller excluded from R1 endpoint contract. |
-| CX-HARD-03 | QuantumMetricsBackgroundService registered at Program.cs:610 -- hosted service running in production, generating metrics on timer; evaluate for removal or feature-flag gating | LOW | Hub mapped at Program.cs:891. No consumer dependency confirmed for R1. |
-| CX-FAKE-01 | PiltController uses `[AllowAnonymous]` with 100% hardcoded data -- presents functional API surface with zero real data backing, no database access | MEDIUM | Documented in auth-audit.md. Controller excluded from R1 endpoint contract. |
-| CX-HARD-04 | Endpoint matrix documentation -- full R1 endpoint inventory now captured | INFO | Documented in endpoint-matrix.md. This item is the documentation itself. |
+No active CX code blockers remain on the strict R1 backend surface.
+
+Shared release finalization still remains:
+
+| Item | Owner | Notes |
+|---|---|---|
+| Same-SHA / same-canon convergence | All lanes | Signoffs and final manifest must point at the same verification target |
+| Final evidence verification | All lanes | `node tools/r1/verify-evidence.mjs` must pass after manifest refresh |
 
 ---
 
@@ -48,8 +53,7 @@
 
 | Gate | Result | Notes |
 |---|---|---|
-| tsc | PASS | TypeScript compilation passes |
-| Core gates | GREEN | All core quality gates pass |
-| Auth coverage | 4/6 controllers | AtlasController, DossierController, CostForgeController, LevyCalculationController -- all PASS. PropertyValuationController and PiltController excluded with documented gaps. |
-| County isolation | 4/6 controllers | Same four controllers enforce county isolation via JWT claims + EF Core filtering. |
-| Evidence artifacts | 3/3 | backend-hardening.md, endpoint-matrix.md, auth-audit.md -- all created and verified. |
+| backend build | PASS | `dotnet build backend/TerraFusion.sln -c Release -v:minimal /nologo` |
+| CX closure tests | PASS | `R1Week5CxR1ClosureTests` = **13/13** |
+| Active-route auth/county hardening | PASS | PropertyValuation, CostForge, Dossier, Atlas, Levy verified on active surface |
+| Evidence artifacts | PASS | `cx-r1-active-surface-closure.md`, `cx-r1-route-matrix.md`, `cx-r1-forge-contract.md` |

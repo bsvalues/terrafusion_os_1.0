@@ -3,14 +3,14 @@
 ## Metadata
 
 - Lane: cp
-- Lane branch name: r1/integration (direct, solo-dev)
-- Lane branch HEAD SHA (pre-merge): (pending final branch-head convergence)
-- Merge commit SHA (into r1/integration): (N/A — working directly on r1/integration)
-- Baseline r1/integration SHA used for lane work: (pending)
-- Final branch-head SHA used for verification: (pending final run)
+- Lane branch name: claude/review-progress-ledger-a8iw5
+- Lane branch HEAD SHA (pre-merge): c7510f143a1a2b98888ecef48e7c4c41afece4e2
+- Merge commit SHA (into r1/integration): c7510f143a1a2b98888ecef48e7c4c41afece4e2
+- Baseline r1/integration SHA used for lane work: 0111b25ddabd3c4ab5ec89aefd307d1c50d630cc
+- Final branch-head SHA used for verification: c7510f143a1a2b98888ecef48e7c4c41afece4e2
 - Date (local): 2026-03-07
 - Verified by: Copilot (CP)
-- Command canon version: 1.3.0
+- Command canon version: r1-canon-2026-03-07
 
 ## Evidence Summary
 
@@ -83,8 +83,9 @@ Evidence artifact: `os-platform/core/tests/proofs/five-tool-proof.mjs`
 
 ## Remaining for Final Signoff
 
-- Final branch-head SHA (after CC + CX work lands)
-- Shared evidence verification (`pnpm run r1:verify-evidence`)
-- Final manifest generation (`pnpm run r1:finalize-manifest`)
+No CP-specific blockers remain. Any further repository change requires rerunning:
+
+- `pnpm -w run r1:finalize-manifest <SHA> <CANON_VERSION>`
+- `pnpm -w run r1:verify-evidence`
 
 *Classification: Internal R1 evidence document*

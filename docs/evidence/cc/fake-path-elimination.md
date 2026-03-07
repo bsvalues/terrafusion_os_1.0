@@ -102,9 +102,11 @@ See `surface-inventory.md` for the full classification.
 
 ---
 
-## Remaining Known Fake: PilotController Backend (CX Scope)
+## Backend Alignment Note
 
-`PiltController.cs` (`backend/src/TerraFusion.API/Controllers/PiltController.cs`) is a backend controller that is **CX lane scope**, not CC. CC's responsibility ends at the frontend service layer boundary. The PiltController's behavior (mock vs. real handler routing) is tracked and owned by the CX lane.
+`PiltController.cs` is no longer fake-live on the current branch. CX converted it to an
+explicit authenticated `501` / `Post-R1` contract, and the CC lane now renders that
+truth as a deferred UI state instead of silently presenting reference data as live.
 
 ---
 
@@ -121,7 +123,7 @@ See `surface-inventory.md` for the full classification.
 | PropertyAtlas.tsx | Fake GIS layers | None — SVG labeled schematic | CC-ATL-02 |
 | DaisSuiteHome.tsx (PILT) | Silent fallback to hardcoded data | **FIXED** — explicit deferred notice | CC-PILT-01 |
 | Suite modules (5) | Client-side deprecated calc | **Post-R1** — not in R1 active surface | CC-LEGACY-01 |
-| PiltController.cs | Mock handler routing | **CX scope, not CC** | N/A |
+| PiltController.cs | Fake-live backend surface | **CLOSED cross-lane** — explicit `501` / `Post-R1` plus deferred UI | CC-PILT-01 + CX-R1-01 |
 
 ---
 

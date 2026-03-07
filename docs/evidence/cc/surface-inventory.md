@@ -8,7 +8,8 @@
 
 ## R1 Active Surface (Workbench Tabs)
 
-These are the three tabs rendered inside the R1 workbench. All use real backend APIs via the governed pilot path.
+These are the three tabs rendered inside the R1 workbench. Forge and Atlas use the
+governed pilot path. Dossier uses a real county-scoped backend service path.
 
 | Surface | File | Data Source | Status |
 |---------|------|-------------|--------|
@@ -16,15 +17,21 @@ These are the three tabs rendered inside the R1 workbench. All use real backend 
 | PropertyDossier | `pages/workbench/tabs/PropertyDossier.tsx` | `useDossierDetails()` -> `dossierService.getDetails()` -> `GET /api/dossier/parcels/{id}/details` | **REAL** |
 | PropertyAtlas | `pages/workbench/tabs/PropertyAtlas.tsx` | `invokeTool({ toolId: 'query_parcel_layers' })` -> `POST /pilot/invoke` | **REAL** (SVG labeled schematic) |
 
-### R1 Proof Tools (5-tool set)
+### Approved R1 Proof Set
 
-| Tool | Handler | UI Surface |
-|------|---------|------------|
-| `run_valuation_model` | `handlers.real.ts` -> `POST /api/costforge/calculate` | ForgeExecutionPanel |
-| `lookup_parcel` | `handlers.real.ts` -> `GET /api/properties/{parcelId}` | PropertyDossier |
-| `summarize_dossier` | `handlers.real.ts` -> dossier aggregation | PropertyDossier |
-| `add_dossier_note` | `handlers.real.ts` -> `POST /api/dossier/parcels/{id}/notes` | PropertyDossier |
-| `query_parcel_layers` | `handlers.real.ts` -> atlas layer query | PropertyAtlas |
+The release-proof tool set is defined by the execution plan and CP proof harness, not
+by whichever governed tools happen to be visible from a given screen.
+
+| Tool | R1 proof status | CC-relevant UI support |
+|------|-----------------|------------------------|
+| `run_valuation_model` | **Included** | ForgeExecutionPanel |
+| `explain_value_change` | **Included** | Governed result and evidence surfaces |
+| `search_trace_by_correlation` | **Included** | Correlation-aware evidence and trace surfaces |
+| `summarize_levy_rate_components` | **Included** | TerraDais levy result surfaces |
+| `summarize_parcel_casefile` | **Included** | PropertyDossier and dossier evidence surfaces |
+
+The following governed tools are real but are **not** in the approved 5-tool R1 proof
+set: `add_dossier_note`, `query_parcel_layers`.
 
 ---
 

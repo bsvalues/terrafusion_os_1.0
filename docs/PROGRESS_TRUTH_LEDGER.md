@@ -1,7 +1,7 @@
 # TerraFusion OS — Progress Truth Ledger v3
 
 Date: March 7, 2026
-Branch: `r1/integration`
+Branch: `claude/review-progress-ledger-a8iw5`
 
 ## Context
 
@@ -27,7 +27,7 @@ Frozen scope authority remains:
 | `node --test os-platform/core/tests/phase85-tools.test.mjs` | **20/20 pass** |
 | `node --test os-platform/core/tests/phase86-toolrunner.test.mjs` | **7/7 pass** |
 | `dotnet build backend/TerraFusion.sln -c Release -v:minimal /nologo` | **pass** |
-| `dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter "FullyQualifiedName~R1Week5CxR1ClosureTests" -c Release -v:minimal /nologo` | **7/7 pass** |
+| `dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter "FullyQualifiedName~R1Week5CxR1ClosureTests" -c Release -v:minimal /nologo` | **13/13 pass** |
 | Working tree | Active R1 work in progress; not branch-head clean |
 
 ## Agent Ledger
@@ -93,14 +93,14 @@ Frozen scope authority remains:
 
 #### CX lane truth
 
-- Backend hardening is now **substantially complete**, pending final branch-head
-  convergence and shared evidence verification.
+- Backend hardening is code-complete for the strict R1 surface. Remaining release work
+  is shared evidence convergence, not another backend honesty pass.
 - CX has real closure evidence in
   `docs/evidence/cx/cx-r1-active-surface-closure.md`.
-- CX is **not** fully signed off yet. Final signoff still depends on:
-  - CC removing remaining frontend fake-path behavior on strict R1 surfaces
-  - CP landing branch-head evidence verification and manifest convergence
-  - all lanes regenerating evidence against the same verified branch head and canon
+- CX code closure is complete. Final lane convergence still depends on:
+  - shared SHA/canon alignment across all lane signoffs
+  - refreshed final manifest generation
+  - a passing evidence verifier run on the converged evidence packet
 
 ## Corrections to the March 6 Ledger
 
@@ -149,7 +149,7 @@ Frozen scope authority remains:
 
 ### Partial
 
-- Branch-head evidence convergence across CC, CX, and CP (SHA/canon alignment)
+- Branch-head evidence convergence across CC, CX, and CP (same SHA, same canon, refreshed manifest)
 
 ### Post-R1 / Not Strict R1
 
@@ -169,7 +169,7 @@ Frozen scope authority remains:
 5. ~~`CostForgeController` batch-calculate and PACS sync are stubs~~ **CLOSED March 7 (CX)** — explicit Post-R1 / 501
 6. 14 of 24 manifest tools have no real handler — **NOT A BLOCKER** per R1 plan (5-proof set is sufficient; 14 stubs are Post-R1)
 7. ~~Fake-path elimination not yet finished~~ **CLOSED March 7 (CC+CP)** — Forge localStorage eliminated, Dossier mock docs removed, Atlas labeled honestly, PILT frontend deferred badge, CP anti-regression tests
-8. Branch-head evidence convergence: SHA/canon alignment + final manifest generation needed
+8. Branch-head evidence convergence: **current evidence packet now passes** for target SHA `c7510f143a1a2b98888ecef48e7c4c41afece4e2`, but the manifest and verifier must be rerun after the final release-candidate commit
 
 ## Truth Statement
 
@@ -185,8 +185,8 @@ propagation, and substantial shell UX are present and currently passing core gat
 - **CC lane**: Forge cutover closed (governed path is sole production path, localStorage=0),
   Dossier mock docs removed, Atlas schematic-labeled, PILT frontend deferred badge.
 
-**Remaining to close R1:** Branch-head SHA/canon convergence across all three lane
-signoffs, final manifest generation, and evidence verification gate pass.
+**Remaining to close R1:** shared evidence convergence only. The lane work is code-complete;
+the final manifest and signoff packet must still be refreshed together on the same verification target.
 
 **The governance spine is solid. Forge cutover is closed. Backend hardening is delivered.
 Frontend honesty is complete. The remaining work is mechanical: SHA convergence and
@@ -226,17 +226,23 @@ Wired into root `package.json`:
 | Lane | Signoff | Artifacts | Verifier | Manifest |
 |------|---------|-----------|----------|----------|
 | CC | `docs/evidence/cc/signoff.md` | 5 files (surface-inventory, forge-cutover, dossier-cutover, atlas-cutover, fake-path-elimination) | **PASS** | **PASS** |
-| CX | `docs/evidence/cx/signoff.md` | 3 files (backend-hardening, endpoint-matrix, auth-audit) | **PASS** | **PASS** |
+| CX | `docs/evidence/cx/signoff.md` | 3 files (cx-r1-active-surface-closure, cx-r1-route-matrix, cx-r1-forge-contract) | **PASS** | **PASS** |
 | CP | `docs/evidence/cp/signoff.md` | 4 files (handler-registry, trace-persistence, governance-contracts, r1-proof-tools) | **PASS** | **PASS** |
-| Final | `docs/evidence/final/manifest.json` | 14 artifacts with SHA256 hashes | **PASS** | N/A |
+| Final | `docs/evidence/final/manifest.json` | 19 artifacts with SHA256 hashes | **PASS** | N/A |
 
 ### Verification Gate Output
 
+Current working-tree verification output:
+
 ```
 ✅ R1 evidence verification passed.
-- Verified branch-head SHA: 210071157d5e756f5920113472522ef4c3d50928
+- Verified branch-head SHA: c7510f143a1a2b98888ecef48e7c4c41afece4e2
 - Canon version: r1-canon-2026-03-07
 ```
+
+This pass reflects the current evidence packet targeting the committed head
+`c7510f143a1a2b98888ecef48e7c4c41afece4e2`. Any subsequent commit requires rerunning
+manifest generation and evidence verification.
 
 ### What Was Delivered This Session
 
@@ -244,12 +250,14 @@ Wired into root `package.json`:
 2. **CC lane evidence** — forge cutover proof, dossier cutover proof, atlas cutover proof, fake-path elimination proof
 3. **CX lane evidence** — backend hardening audit, endpoint contract matrix, auth/county isolation audit
 4. **CP lane evidence** — handler registry (10 real), trace persistence (JSONL), governance contracts (frozen), R1 proof tools (5-tool set)
-5. **Final manifest** — 14 artifacts, SHA256 tamper-evident, verifier-validated
+5. **Final manifest** — 19 artifacts, SHA256 tamper-evident, verifier-validated
 6. **Three-lane signoff** — same SHA, same canon version, same verification date
 
 ### Remaining Blockers
 
-Items 2-6 from the original blocker list remain open (CX/backend scope). Items 1 and 7 are closed. Item 8 (5-tool acceptance proof) is structurally ready but not yet executed with live correlation IDs. CC lane is now fully closed with surface inventory, PILT deferred notice, and post-R1 module classification.
+The backend blockers previously listed here are closed on the current branch. The
+current evidence packet passes verification, but final release still requires one last
+manifest refresh and verifier rerun after the final release-candidate commit.
 
 ---
 

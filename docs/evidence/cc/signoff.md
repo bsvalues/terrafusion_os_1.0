@@ -4,10 +4,10 @@
 
 - Lane: cc
 - Lane branch name: claude/review-progress-ledger-a8iw5
-- Lane branch HEAD SHA (pre-merge): 6ff009ae4005635e4afb87e61f3fe2ce88b70545
+- Lane branch HEAD SHA (pre-merge): 118453ca7543da93e537c1369e9a2a607a309a00
 - Merge commit SHA (into r1/integration): 0111b25ddabd3c4ab5ec89aefd307d1c50d630cc
 - Baseline r1/integration SHA used for lane work: 81577b071e5ac6aeaa1fb781e805ee9c3a4a7cd6
-- Final branch-head SHA used for verification: 210071157d5e756f5920113472522ef4c3d50928
+- Final branch-head SHA used for verification: c7510f143a1a2b98888ecef48e7c4c41afece4e2
 - Date (local): 2026-03-07
 - Verified by: Claude Code (CC lane agent)
 - Command canon version: r1-canon-2026-03-07
@@ -39,17 +39,23 @@ All CC lane changes pass TypeScript compilation and all applicable test phases w
 
 ---
 
-## Remaining Items (Not CC Scope)
+## Shared Finalization Items
 
-The following items were identified during CC lane work but are **owned by the CX lane**, not CC:
+The backend issues originally flagged during CC work are closed on the current branch:
+`PiltController` is explicit `501` / `Post-R1`, `PropertyValuationController` is now
+authenticated and county-scoped, and `QuantumMetricsBackgroundService` is opt-in only.
+
+Remaining release work is now shared convergence work, not outstanding CC implementation:
 
 | Item | Owner | Notes |
 |------|-------|-------|
-| PiltController backend mock routing | CX | `backend/src/TerraFusion.API/Controllers/PiltController.cs` — handler routing between mock and real backends is CX scope |
-| PropertyValuationController auth | CX | Authentication enforcement on valuation endpoints is CX scope |
-| QuantumMetrics | CX | Quantum metrics infrastructure is CX scope |
+| Same-SHA / same-canon convergence | All lanes | Signoffs and final manifest must reference the same verification target |
+| Final evidence verification | All lanes | `node tools/r1/verify-evidence.mjs` must pass after final manifest refresh |
 
-CC lane's responsibility boundary is the frontend service layer. All frontend service files (`forgeService.ts`, `dossierService.ts`, `atlasService.ts`) and UI components (`PropertyDossier.tsx`, `PropertyAtlas.tsx`, `ForgeExecutionPanel.tsx`) have been verified to call real backend APIs with no fake data paths remaining.
+CC lane's responsibility boundary remains the frontend service layer. All frontend
+service files (`forgeService.ts`, `dossierService.ts`, `atlasService.ts`, `piltService.ts`)
+and active UI surfaces have been verified to call real backend APIs or render explicit
+deferred states with no hidden fake-data fallback.
 
 ### Additional Items Closed (Session 2)
 
