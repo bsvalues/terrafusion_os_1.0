@@ -10,6 +10,8 @@ using TerraFusion.Abstractions.DTOs.Responses;
 using TerraFusion.Core.Entities;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
+using TerraFusion.AI.Services.Valuation;
 
 namespace TerraFusion.API.Controllers;
 
@@ -28,19 +30,32 @@ public class CostForgeController : ControllerBase
     private readonly DataDbContext _db;
     private readonly TerraFusion.Abstractions.Interfaces.IAuditLogger _auditLogger;
     private readonly ILogger<CostForgeController> _logger;
+    // R2 Wave 1: USPAP Three-Approach Valuation Services
+    private readonly TerraFusion.AI.Services.Valuation.SalesComparisonService _salesService;
+    private readonly TerraFusion.AI.Services.Valuation.IncomeApproachService _incomeService;
+    private readonly TerraFusion.AI.Services.Valuation.CostApproachService _costApproachService;
+    private readonly TerraFusion.AI.Services.Valuation.ReconciliationService _reconciliationService;
 
     public CostForgeController(
         ICostForgeService costForgeService,
         ICostForgeAIService costForgeAIService,
         DataDbContext db,
         TerraFusion.Abstractions.Interfaces.IAuditLogger auditLogger,
-        ILogger<CostForgeController> logger)
+        ILogger<CostForgeController> logger,
+        TerraFusion.AI.Services.Valuation.SalesComparisonService salesService,
+        TerraFusion.AI.Services.Valuation.IncomeApproachService incomeService,
+        TerraFusion.AI.Services.Valuation.CostApproachService costApproachService,
+        TerraFusion.AI.Services.Valuation.ReconciliationService reconciliationService)
     {
         _costForgeService = costForgeService;
         _costForgeAIService = costForgeAIService;
         _db = db;
         _auditLogger = auditLogger;
         _logger = logger;
+        _salesService = salesService;
+        _incomeService = incomeService;
+        _costApproachService = costApproachService;
+        _reconciliationService = reconciliationService;
     }
 
     private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
@@ -571,25 +586,37 @@ public class CostForgeController : ControllerBase
 
     /// <summary>
     /// Run USPAP sales comparison approach for a property.
+    /// Accepts SalesApproachInput JSON, returns adjusted comparable analysis.
     /// </summary>
     [HttpPost("approach/sales")]
     [RequiresPermission("calculate:property-cost")]
-    public async Task<ActionResult> RunSalesApproach([FromBody] object request)
+    public async Task<ActionResult> RunSalesApproach([FromBody] JsonElement request)
     {
         try
         {
             var countyContext = await ResolveCountyContextAsync();
             if (countyContext is null) return Forbid();
 
+            var input = JsonSerializer.Deserialize<SalesApproachInput>(request.GetRawText(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (input is null)
+                return BadRequest("Invalid sales comparison input");
+
             await _auditLogger.LogUserActionAsync("CostForge:SalesApproach",
-                User.FindFirst("sub")?.Value ?? "anonymous", "Sales comparison approach invoked");
+                User.FindFirst("sub")?.Value ?? "anonymous",
+                $"Sales comparison for parcel {input.SubjectParcelId}");
+
+            var result = _salesService.RunSalesApproach(input);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { error = result.Error });
 
             return Ok(new
             {
                 approach = "sales_comparison",
-                status = "available",
                 countyId = countyContext.CountyId,
-                message = "Sales comparison approach endpoint active. Wired via TerraFusion.AI.Services.Valuation.SalesComparisonService.",
+                result = result.Data,
             });
         }
         catch (Exception ex)
@@ -601,25 +628,34 @@ public class CostForgeController : ControllerBase
 
     /// <summary>
     /// Run USPAP income approach (direct capitalization).
+    /// Accepts IncomeApproachInput JSON, returns NOI-based valuation.
     /// </summary>
     [HttpPost("approach/income")]
     [RequiresPermission("calculate:property-cost")]
-    public async Task<ActionResult> RunIncomeApproach([FromBody] object request)
+    public async Task<ActionResult> RunIncomeApproach([FromBody] JsonElement request)
     {
         try
         {
             var countyContext = await ResolveCountyContextAsync();
             if (countyContext is null) return Forbid();
 
+            var input = JsonSerializer.Deserialize<IncomeApproachInput>(request.GetRawText(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (input is null)
+                return BadRequest("Invalid income approach input");
+
             await _auditLogger.LogUserActionAsync("CostForge:IncomeApproach",
-                User.FindFirst("sub")?.Value ?? "anonymous", "Income approach invoked");
+                User.FindFirst("sub")?.Value ?? "anonymous",
+                $"Income approach for subject {input.SubjectId}");
+
+            var result = _incomeService.RunIncomeApproach(input);
 
             return Ok(new
             {
                 approach = "income_direct_capitalization",
-                status = "available",
                 countyId = countyContext.CountyId,
-                message = "Income approach endpoint active. Wired via TerraFusion.AI.Services.Valuation.IncomeApproachService.",
+                result = result.Output,
             });
         }
         catch (Exception ex)
@@ -631,25 +667,34 @@ public class CostForgeController : ControllerBase
 
     /// <summary>
     /// Run USPAP cost approach using Marshall-Swift methodology.
+    /// Accepts CostApproachRequest JSON, returns depreciated replacement cost.
     /// </summary>
     [HttpPost("approach/cost")]
     [RequiresPermission("calculate:property-cost")]
-    public async Task<ActionResult> RunCostApproach([FromBody] object request)
+    public async Task<ActionResult> RunCostApproach([FromBody] JsonElement request)
     {
         try
         {
             var countyContext = await ResolveCountyContextAsync();
             if (countyContext is null) return Forbid();
 
+            var input = JsonSerializer.Deserialize<CostApproachRequest>(request.GetRawText(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (input is null)
+                return BadRequest("Invalid cost approach input");
+
             await _auditLogger.LogUserActionAsync("CostForge:CostApproach",
-                User.FindFirst("sub")?.Value ?? "anonymous", "Cost approach invoked");
+                User.FindFirst("sub")?.Value ?? "anonymous",
+                $"Cost approach for parcel {input.ParcelId}");
+
+            var result = _costApproachService.CalculateCost(input);
 
             return Ok(new
             {
                 approach = "cost_marshall_swift",
-                status = "available",
                 countyId = countyContext.CountyId,
-                message = "Cost approach endpoint active. Wired via TerraFusion.AI.Services.Valuation.CostApproachService.",
+                result,
             });
         }
         catch (Exception ex)
@@ -661,25 +706,34 @@ public class CostForgeController : ControllerBase
 
     /// <summary>
     /// Run USPAP reconciliation combining all three approaches.
+    /// Accepts ReconciliationInput JSON, returns weighted final opinion of value.
     /// </summary>
     [HttpPost("approach/reconcile")]
     [RequiresPermission("calculate:property-cost")]
-    public async Task<ActionResult> RunReconciliation([FromBody] object request)
+    public async Task<ActionResult> RunReconciliation([FromBody] JsonElement request)
     {
         try
         {
             var countyContext = await ResolveCountyContextAsync();
             if (countyContext is null) return Forbid();
 
+            var input = JsonSerializer.Deserialize<ReconciliationInput>(request.GetRawText(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (input is null)
+                return BadRequest("Invalid reconciliation input");
+
             await _auditLogger.LogUserActionAsync("CostForge:Reconciliation",
-                User.FindFirst("sub")?.Value ?? "anonymous", "Reconciliation approach invoked");
+                User.FindFirst("sub")?.Value ?? "anonymous",
+                $"Reconciliation for subject {input.SubjectId}");
+
+            var result = _reconciliationService.RunReconciliation(input);
 
             return Ok(new
             {
                 approach = "uspap_reconciliation",
-                status = "available",
                 countyId = countyContext.CountyId,
-                message = "Reconciliation endpoint active. Wired via TerraFusion.AI.Services.Valuation.ReconciliationService.",
+                result,
             });
         }
         catch (Exception ex)

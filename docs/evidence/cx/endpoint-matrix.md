@@ -32,11 +32,11 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 
 | Method | Route | Controller | Auth | County Isolation | Notes |
 |---|---|---|---|---|---|
-| POST | `/api/costforge/approach/sales` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | USPAP sales comparison approach. Ported from quarantine terraforge-suite. |
-| POST | `/api/costforge/approach/income` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | USPAP income approach (direct capitalization). |
-| POST | `/api/costforge/approach/cost` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | USPAP cost approach (Marshall-Swift methodology). |
-| POST | `/api/costforge/approach/reconcile` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | USPAP reconciliation (property-type-weighted multi-approach). |
-| GET | `/api/costforge/cost-matrix/{buildingType}/{region}` | CostForgeController | YES (`[RequiresPermission("read:cost-matrix")]`) | YES | Real Benton County cost matrix lookup from CostMatrix entity (21 entries seeded). |
+| POST | `/api/costforge/approach/sales` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | LIVE — SalesComparisonService.RunSalesApproach(). Typed DTO input, deterministic output. |
+| POST | `/api/costforge/approach/income` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | LIVE — IncomeApproachService.RunIncomeApproach(). Direct capitalization (NOI/CapRate). |
+| POST | `/api/costforge/approach/cost` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | LIVE — CostApproachService.CalculateCost(). Marshall-Swift with depreciation. |
+| POST | `/api/costforge/approach/reconcile` | CostForgeController | YES (`[RequiresPermission("calculate:property-cost")]`) | YES | LIVE — ReconciliationService.RunReconciliation(). Property-type-weighted multi-approach. |
+| GET | `/api/costforge/cost-matrix/{buildingType}/{region}` | CostForgeController | YES (`[RequiresPermission("read:cost-matrix")]`) | YES | LIVE — EF Core CostMatrices DbSet query. 21 entries seeded (7 types × 3 regions). |
 
 ### Property Endpoints
 

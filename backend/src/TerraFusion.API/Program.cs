@@ -353,6 +353,12 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeAIService, TerraFusion.AI.Services.CostForgeAIService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeService, TerraFusion.API.Services.CostForgeService>();
 
+// R2 Wave 1: USPAP Three-Approach Valuation Services (extracted from quarantine)
+builder.Services.AddScoped<TerraFusion.AI.Services.Valuation.SalesComparisonService>();
+builder.Services.AddScoped<TerraFusion.AI.Services.Valuation.IncomeApproachService>();
+builder.Services.AddScoped<TerraFusion.AI.Services.Valuation.CostApproachService>();
+builder.Services.AddScoped<TerraFusion.AI.Services.Valuation.ReconciliationService>();
+
 // Register ITerraFusionDbContext interface
 builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
     provider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
@@ -664,6 +670,26 @@ if (app.Environment.IsDevelopment())
     catch (Exception ex)
     {
         Console.WriteLine($"[DX-01] Dossier seed skipped: {ex.Message}");
+    }
+}
+
+// R2 Wave 1: Seed Benton County cost matrix data
+using (var costMatrixScope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = costMatrixScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+        if (!await db.CostMatrices.AnyAsync())
+        {
+            var seedData = TerraFusion.AI.Seeds.BentonCostMatrixSeeder.GetSeedData();
+            db.CostMatrices.AddRange(seedData);
+            await db.SaveChangesAsync();
+            Console.WriteLine($"[R2-W1] Seeded {seedData.Count} Benton County cost matrix entries");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[R2-W1] Cost matrix seed skipped: {ex.Message}");
     }
 }
 

@@ -91,6 +91,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Dossier Entities (R1 Week 3 — CX-11)
     public DbSet<DossierNote> DossierNotes { get; set; }
 
+    // R2 Wave 1: Cost Matrix (real Benton County CAMA data)
+    public DbSet<TerraFusion.Data.Entities.CostMatrix> CostMatrices { get; set; }
+
     // TerraFlow Quantum Command Center Entities (Phase 1 Week 3)
     public DbSet<QuantumNotebook> QuantumNotebooks { get; set; }
     public DbSet<AnalysisResult> AnalysisResults { get; set; }
@@ -193,6 +196,27 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
             entity.Property(e => e.CreatedBy).HasMaxLength(200);
             entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
             entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+        });
+
+        // Configure CostMatrix entity (R2 Wave 1)
+        modelBuilder.Entity<TerraFusion.Data.Entities.CostMatrix>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("cost_matrices");
+            entity.Property(e => e.CountyCode).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.BuildingType).IsRequired().HasMaxLength(10);
+            entity.Property(e => e.BuildingTypeDescription).HasMaxLength(100);
+            entity.Property(e => e.Region).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.BaseCost).HasPrecision(18, 6);
+            entity.Property(e => e.MinCost).HasPrecision(18, 2);
+            entity.Property(e => e.MaxCost).HasPrecision(18, 2);
+            entity.Property(e => e.ComplexityFactor).HasPrecision(8, 4);
+            entity.Property(e => e.QualityFactor).HasPrecision(8, 4);
+            entity.Property(e => e.ConditionFactor).HasPrecision(8, 4);
+            entity.Property(e => e.MatrixDescription).HasMaxLength(200);
+            entity.Property(e => e.DataSource).HasMaxLength(100);
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
+            entity.HasIndex(e => new { e.CountyCode, e.BuildingType, e.Region, e.MatrixYear });
         });
 
         // Configure GovernmentUser entity

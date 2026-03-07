@@ -147,24 +147,31 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 
 ## R2 Wave 1 Status (March 7, 2026)
 
-### Delivered: USPAP Three-Approach Valuation
+### Delivered: USPAP Three-Approach Valuation — FULLY WIRED
 
 Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `terra-build-actual/`) and ported to C#:
 
-| Service | Source | Location |
-|---------|--------|----------|
-| SalesComparisonService | `sales.ts` (440L) → C# | `TerraFusion.AI/Services/Valuation/SalesComparisonService.cs` |
-| IncomeApproachService | `income.ts` (295L) → C# | `TerraFusion.AI/Services/Valuation/IncomeApproachService.cs` |
-| ReconciliationService | `reconcile.ts` (383L) → C# | `TerraFusion.AI/Services/Valuation/ReconciliationService.cs` |
-| CostApproachService | `construction_cost_engine.py` + `marshallSwift.ts` → C# | `TerraFusion.AI/Services/Valuation/CostApproachService.cs` |
+| Service | Source | Location | DI | Endpoint Wired |
+|---------|--------|----------|----|---------------|
+| SalesComparisonService | `sales.ts` (440L) → C# | `TerraFusion.AI/Services/Valuation/SalesComparisonService.cs` | YES | YES |
+| IncomeApproachService | `income.ts` (295L) → C# | `TerraFusion.AI/Services/Valuation/IncomeApproachService.cs` | YES | YES |
+| ReconciliationService | `reconcile.ts` (383L) → C# | `TerraFusion.AI/Services/Valuation/ReconciliationService.cs` | YES | YES |
+| CostApproachService | `construction_cost_engine.py` + `marshallSwift.ts` → C# | `TerraFusion.AI/Services/Valuation/CostApproachService.cs` | YES | YES |
 
-**Data:** CostMatrix entity with 21 seed entries (7 building types × 3 Benton County regions, 2025)
+**DI Registration:** All 4 services registered as `Scoped` in `Program.cs` (lines 356-359).
+
+**Data:** `CostMatrix` entity registered in `TerraFusionDbContext.CostMatrices` DbSet with EF Core configuration. 21 seed entries (7 building types × 3 Benton County regions, 2025) auto-seeded on startup via `BentonCostMatrixSeeder`.
 
 **Endpoints:** 5 new on CostForgeController (all `[Authorize]` + county isolation):
-- `POST /api/costforge/approach/{sales,income,cost,reconcile}`
-- `GET /api/costforge/cost-matrix/{buildingType}/{region}`
+- `POST /api/costforge/approach/sales` → `SalesComparisonService.RunSalesApproach()`
+- `POST /api/costforge/approach/income` → `IncomeApproachService.RunIncomeApproach()`
+- `POST /api/costforge/approach/cost` → `CostApproachService.CalculateCost()`
+- `POST /api/costforge/approach/reconcile` → `ReconciliationService.RunReconciliation()`
+- `GET /api/costforge/cost-matrix/{buildingType}/{region}` → EF Core `CostMatrices` query
 
 **Governed handlers:** 5 new in `handlers.real.ts` → **29 total (24 R1 + 5 R2)**
+
+**Integration chain:** Controller → DI-injected service → typed DTOs → deterministic calculation → JSON response. No stubs remaining on approach endpoints.
 
 ---
 
