@@ -80,6 +80,18 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 | POST | `/api/dossier/{parcelId}/notes` | DossierController | YES (`[RequiresPermission("write:dossier")]`) | YES | Create append-only note. 2000-char limit. write-low. |
 | GET | `/api/dossier/parcels/{parcelId}/assessment-history` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | LIVE — R2 Wave 4. Year-over-year assessment history with pct-change deltas. PropertyAssessments + Property join. |
 
+### Dossier R2.5 Document Management Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| POST | `/api/dossier/{parcelId}/documents` | DossierController | YES (`[RequiresPermission("write:dossier")]`) | YES | LIVE — R2.5. Upload document (multipart/form-data, 10MB max). SHA-256 hash, chain-of-custody init. |
+| POST | `/api/dossier/documents/search` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | LIVE — R2.5. Search documents with type/status/query filters. Paginated. |
+| GET | `/api/dossier/{parcelId}/documents/{documentId}` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | LIVE — R2.5. Document metadata (name, type, hash, custody chain count). |
+| GET | `/api/dossier/{parcelId}/documents/{documentId}/download` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | LIVE — R2.5. Binary download. Records chain-of-custody event. |
+| GET | `/api/dossier/{parcelId}/documents/{documentId}/chain` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | LIVE — R2.5. Chain-of-custody events (append-only audit trail). |
+| GET | `/api/dossier/stats` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | LIVE — R2.5. County-scoped document statistics. |
+| PATCH | `/api/dossier/{parcelId}/documents/{documentId}/status` | DossierController | YES (`[RequiresPermission("write:dossier")]`) | YES | LIVE — R2.5. Status transitions (active→archived→sealed). Sealed is terminal. |
+
 ### CostForge R2 Wave 4 Endpoints
 
 | Method | Route | Controller | Auth | County Isolation | Notes |
@@ -115,10 +127,11 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 | Property | 2 | 0 | 2 |
 | Levy Calculation | 3 | 0 | 3 |
 | DAIS (Assessment Workflow) | 10 | 0 | 10 |
-| Dossier | 7 | 0 | 7 |
+| Dossier (R1) | 7 | 0 | 7 |
+| Dossier R2.5 Document Mgmt | 7 | 0 | 7 |
 | Atlas | 4 | 0 | 4 |
 | Pilot (CoPilot) | 3 | 0 | 3 |
-| **Total** | **45** | **2** | **47** |
+| **Total** | **52** | **2** | **54** |
 
 ## Previously Excluded Controllers — Now Hardened
 

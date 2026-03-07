@@ -225,9 +225,10 @@ Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `t
 | **Wave 2** | Atlas Nearby/Layers | 2 | `f846d196c` | ✅ COMPLETE |
 | **Wave 3** | DaisController DB Queries | 3 upgraded | `d79f3e5f6` | ✅ COMPLETE |
 | **Wave 4** | Model Inputs + Assessment History | 2 | `f846d196c` | ✅ COMPLETE |
-| **Total** | | **9 new + 3 upgraded = 12** | 4 commits | ✅ ALL WAVES COMPLETE |
+| **R2.5** | Dossier Document Management | 7 | pending | ✅ COMPLETE |
+| **Total** | | **16 new + 3 upgraded = 19** | 5 commits | ✅ ALL WAVES COMPLETE |
 
-**Endpoint matrix:** 47 total (45 live, 2 stubs). Up from 35 at R1 close.
+**Endpoint matrix:** 54 total (52 live, 2 stubs). Up from 35 at R1 close.
 
 **Gate status:** 87/87 core gates + 242 total gate tests passing.
 

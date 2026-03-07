@@ -969,4 +969,402 @@ public class DossierController : ControllerBase
             correlationId = GetOrCreateCorrelationId(),
         });
     }
+
+    // ══════════════════════════════════════════════════════════════════
+    // R2.5: Document Management — Upload, Search, Download, Chain
+    // ══════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Upload a document attachment for a parcel dossier.
+    /// Stores blob on filesystem (production: swap via DI).
+    /// Creates initial chain-of-custody event.
+    /// </summary>
+    [HttpPost("{parcelId}/documents")]
+    [RequiresPermission("write:dossier")]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB max
+    public async Task<IActionResult> UploadDocument(
+        string parcelId,
+        [FromForm] IFormFile file,
+        [FromForm] string documentType = "report",
+        [FromForm] string? name = null)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        // Verify parcel exists in caller's county
+        var parcelExists = await _db.Properties
+            .AsNoTracking()
+            .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+        if (!parcelExists) return NotFound(new { error = "Parcel not found" });
+
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "File is required" });
+
+        // Validate document type
+        var validTypes = new[] { "deed", "photo", "appraisal", "appeal", "correspondence", "sketch", "report" };
+        if (!validTypes.Contains(documentType.ToLowerInvariant()))
+            return BadRequest(new { error = $"Invalid documentType. Must be one of: {string.Join(", ", validTypes)}" });
+
+        // Compute content hash
+        string contentHash;
+        using (var stream = file.OpenReadStream())
+        {
+            var hashBytes = await SHA256.HashDataAsync(stream);
+            contentHash = Convert.ToHexString(hashBytes).ToLowerInvariant();
+        }
+
+        // Store blob — local filesystem for now, swap to blob storage via DI in production
+        var storageDir = Path.Combine("dossier-blobs", countyId.Value.ToString(), parcelId);
+        Directory.CreateDirectory(storageDir);
+        var storageRef = Path.Combine(storageDir, $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}");
+
+        using (var outStream = System.IO.File.Create(storageRef))
+        {
+            await file.CopyToAsync(outStream);
+        }
+
+        var userName = User.Identity?.Name ?? "system";
+        var doc = new DossierDocument
+        {
+            ParcelId = parcelId,
+            Name = name ?? file.FileName,
+            DocumentType = documentType.ToLowerInvariant(),
+            MimeType = file.ContentType ?? "application/octet-stream",
+            SizeBytes = file.Length,
+            Status = "active",
+            ContentHash = contentHash,
+            StorageRef = storageRef,
+            CountyId = countyId.Value,
+            UploadedBy = userName,
+            UploadedAt = DateTime.UtcNow,
+        };
+
+        _db.DossierDocuments.Add(doc);
+
+        // Initial chain-of-custody event
+        _db.DocumentChainEvents.Add(new DocumentChainEvent
+        {
+            DocumentId = doc.Id,
+            Action = "uploaded",
+            Actor = userName,
+            Hash = contentHash,
+            Timestamp = DateTime.UtcNow,
+        });
+
+        await _db.SaveChangesAsync();
+
+        _logger.LogInformation("Document uploaded for parcel {ParcelId}: {DocId} ({Size} bytes)",
+            parcelId, doc.Id, doc.SizeBytes);
+
+        return CreatedAtAction(nameof(GetDocument), new { parcelId, documentId = doc.Id }, new
+        {
+            documentId = doc.Id,
+            name = doc.Name,
+            type = doc.DocumentType,
+            mimeType = doc.MimeType,
+            sizeBytes = doc.SizeBytes,
+            contentHash = doc.ContentHash,
+            status = doc.Status,
+            uploadedBy = doc.UploadedBy,
+            uploadedAt = doc.UploadedAt,
+            correlationId = GetOrCreateCorrelationId(),
+        });
+    }
+
+    /// <summary>
+    /// Search documents for a parcel (county-isolated).
+    /// Supports type and status filters.
+    /// </summary>
+    [HttpPost("documents/search")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(403)]
+    public async Task<IActionResult> SearchDocuments([FromBody] DocumentSearchDto request)
+    {
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        var query = _db.DossierDocuments
+            .AsNoTracking()
+            .Where(d => d.CountyId == countyId.Value);
+
+        if (!string.IsNullOrWhiteSpace(request.ParcelId))
+            query = query.Where(d => d.ParcelId == request.ParcelId.Trim());
+
+        if (!string.IsNullOrWhiteSpace(request.Type) && request.Type != "all")
+            query = query.Where(d => d.DocumentType == request.Type);
+
+        if (!string.IsNullOrWhiteSpace(request.Status) && request.Status != "all")
+            query = query.Where(d => d.Status == request.Status);
+
+        if (!string.IsNullOrWhiteSpace(request.Query))
+        {
+            var q = request.Query.Trim();
+            query = query.Where(d => d.Name.Contains(q));
+        }
+
+        var total = await query.CountAsync();
+        var offset = Math.Max(0, request.Offset ?? 0);
+        var limit = Math.Clamp(request.Limit ?? 25, 1, 100);
+
+        var results = await query
+            .OrderByDescending(d => d.UploadedAt)
+            .Skip(offset)
+            .Take(limit)
+            .Select(d => new
+            {
+                id = d.Id,
+                name = d.Name,
+                type = d.DocumentType,
+                parcelId = d.ParcelId,
+                uploadedBy = d.UploadedBy,
+                uploadedAt = d.UploadedAt,
+                size = FormatFileSize(d.SizeBytes),
+                status = d.Status,
+                custodyChain = _db.DocumentChainEvents.Count(e => e.DocumentId == d.Id),
+                mimeType = d.MimeType,
+                hash = d.ContentHash,
+            })
+            .ToListAsync();
+
+        return Ok(new
+        {
+            results,
+            total,
+            hasMore = offset + limit < total,
+        });
+    }
+
+    /// <summary>
+    /// Get a specific document's metadata (county-isolated).
+    /// </summary>
+    [HttpGet("{parcelId}/documents/{documentId:guid}")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> GetDocument(string parcelId, Guid documentId)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        var doc = await _db.DossierDocuments
+            .AsNoTracking()
+            .Where(d => d.Id == documentId && d.ParcelId == parcelId && d.CountyId == countyId.Value)
+            .FirstOrDefaultAsync();
+
+        if (doc is null) return NotFound(new { error = "Document not found" });
+
+        var chainCount = await _db.DocumentChainEvents.CountAsync(e => e.DocumentId == documentId);
+
+        return Ok(new
+        {
+            id = doc.Id,
+            name = doc.Name,
+            type = doc.DocumentType,
+            parcelId = doc.ParcelId,
+            uploadedBy = doc.UploadedBy,
+            uploadedAt = doc.UploadedAt,
+            size = FormatFileSize(doc.SizeBytes),
+            status = doc.Status,
+            custodyChain = chainCount,
+            mimeType = doc.MimeType,
+            hash = doc.ContentHash,
+        });
+    }
+
+    /// <summary>
+    /// Download a document's binary content (county-isolated).
+    /// </summary>
+    [HttpGet("{parcelId}/documents/{documentId:guid}/download")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> DownloadDocument(string parcelId, Guid documentId)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        var doc = await _db.DossierDocuments
+            .AsNoTracking()
+            .Where(d => d.Id == documentId && d.ParcelId == parcelId && d.CountyId == countyId.Value)
+            .FirstOrDefaultAsync();
+
+        if (doc is null) return NotFound(new { error = "Document not found" });
+
+        if (!System.IO.File.Exists(doc.StorageRef))
+        {
+            _logger.LogError("Document blob not found on disk: {StorageRef}", doc.StorageRef);
+            return NotFound(new { error = "Document blob not found" });
+        }
+
+        // Record download in chain-of-custody
+        _db.DocumentChainEvents.Add(new DocumentChainEvent
+        {
+            DocumentId = doc.Id,
+            Action = "downloaded",
+            Actor = User.Identity?.Name ?? "system",
+            Hash = doc.ContentHash,
+            Timestamp = DateTime.UtcNow,
+        });
+        await _db.SaveChangesAsync();
+
+        var stream = System.IO.File.OpenRead(doc.StorageRef);
+        return File(stream, doc.MimeType, doc.Name);
+    }
+
+    /// <summary>
+    /// Get chain-of-custody events for a document (county-isolated).
+    /// </summary>
+    [HttpGet("{parcelId}/documents/{documentId:guid}/chain")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> GetDocumentChain(string parcelId, Guid documentId)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        var docExists = await _db.DossierDocuments
+            .AsNoTracking()
+            .AnyAsync(d => d.Id == documentId && d.ParcelId == parcelId && d.CountyId == countyId.Value);
+
+        if (!docExists) return NotFound(new { error = "Document not found" });
+
+        var events = await _db.DocumentChainEvents
+            .AsNoTracking()
+            .Where(e => e.DocumentId == documentId)
+            .OrderBy(e => e.Timestamp)
+            .Select(e => new
+            {
+                timestamp = e.Timestamp,
+                actor = e.Actor,
+                action = e.Action,
+                hash = e.Hash,
+            })
+            .ToListAsync();
+
+        return Ok(events);
+    }
+
+    /// <summary>
+    /// Get dossier statistics for the caller's county.
+    /// </summary>
+    [HttpGet("stats")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(403)]
+    public async Task<IActionResult> GetStats()
+    {
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        var docs = _db.DossierDocuments.AsNoTracking().Where(d => d.CountyId == countyId.Value);
+
+        var totalDocuments = await docs.CountAsync();
+        var activeDocuments = await docs.CountAsync(d => d.Status == "active");
+        var sealedRecords = await docs.CountAsync(d => d.Status == "sealed");
+        var archivedDocuments = await docs.CountAsync(d => d.Status == "archived");
+        var documentTypes = await docs.Select(d => d.DocumentType).Distinct().CountAsync();
+
+        return Ok(new
+        {
+            totalDocuments,
+            activeDocuments,
+            sealedRecords,
+            archivedDocuments,
+            documentTypes,
+            totalEvidence = 0,
+            verifiedEvidence = 0,
+            pendingEvidence = 0,
+            disputedEvidence = 0,
+        });
+    }
+
+    /// <summary>
+    /// Archive or seal a document (county-isolated). Append-only status transitions.
+    /// </summary>
+    [HttpPatch("{parcelId}/documents/{documentId:guid}/status")]
+    [RequiresPermission("write:dossier")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> UpdateDocumentStatus(
+        string parcelId,
+        Guid documentId,
+        [FromBody] DocumentStatusUpdateDto update)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        var doc = await _db.DossierDocuments
+            .Where(d => d.Id == documentId && d.ParcelId == parcelId && d.CountyId == countyId.Value)
+            .FirstOrDefaultAsync();
+
+        if (doc is null) return NotFound(new { error = "Document not found" });
+
+        var validStatuses = new[] { "active", "archived", "sealed" };
+        if (!validStatuses.Contains(update.Status?.ToLowerInvariant()))
+            return BadRequest(new { error = $"Invalid status. Must be one of: {string.Join(", ", validStatuses)}" });
+
+        // Sealed is terminal — cannot transition out
+        if (doc.Status == "sealed")
+            return BadRequest(new { error = "Sealed documents cannot be modified" });
+
+        var oldStatus = doc.Status;
+        doc.Status = update.Status!.ToLowerInvariant();
+
+        _db.DocumentChainEvents.Add(new DocumentChainEvent
+        {
+            DocumentId = doc.Id,
+            Action = $"status_changed:{oldStatus}→{doc.Status}",
+            Actor = User.Identity?.Name ?? "system",
+            Hash = doc.ContentHash,
+            Timestamp = DateTime.UtcNow,
+        });
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new { documentId = doc.Id, status = doc.Status, previousStatus = oldStatus });
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        string[] sizes = ["B", "KB", "MB", "GB"];
+        int order = 0;
+        double size = bytes;
+        while (size >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+        return $"{size:0.#} {sizes[order]}";
+    }
 }

@@ -254,22 +254,80 @@ async function dossierGetWithCorrelation<T>(
 
 export const dossierService = {
   /**
-   * Search documents
+   * R2.5: Search documents across parcels (county-isolated).
+   * POST /api/dossier/documents/search
    */
   searchDocuments: async (request: DocumentSearchRequest): Promise<DocumentSearchResponse> => {
     return dossierPost<DocumentSearchResponse>('/documents/search', request);
   },
 
   /**
-   * Get document by ID
+   * R2.5: Get document metadata by parcel + documentId.
+   * GET /api/dossier/{parcelId}/documents/{documentId}
    */
-  getDocument: async (id: string): Promise<DossierDocument | null> => {
+  getDocument: async (parcelId: string, documentId: string): Promise<DossierDocument | null> => {
     try {
-      return await dossierGet<DossierDocument>(`/documents/${encodeURIComponent(id)}`);
+      return await dossierGet<DossierDocument>(
+        `/${encodeURIComponent(parcelId)}/documents/${encodeURIComponent(documentId)}`,
+      );
     } catch (err) {
       if (err instanceof Error && err.message.includes('404')) return null;
       throw err;
     }
+  },
+
+  /**
+   * R2.5: Upload a document attachment for a parcel.
+   * POST /api/dossier/{parcelId}/documents (multipart/form-data)
+   */
+  uploadDocument: async (
+    parcelId: string,
+    file: File,
+    documentType: DocumentType = 'report',
+    name?: string,
+  ): Promise<DossierDocument> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('documentType', documentType);
+    if (name) formData.append('name', name);
+
+    const headers: Record<string, string> = {};
+    const token = getToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const response = await fetch(
+      `${DOSSIER_API}/${encodeURIComponent(parcelId)}/documents`,
+      { method: 'POST', headers, body: formData },
+    );
+    if (!response.ok) throw new Error(`Dossier API error: ${response.statusText}`);
+    return response.json();
+  },
+
+  /**
+   * R2.5: Download a document's binary content.
+   * GET /api/dossier/{parcelId}/documents/{documentId}/download
+   */
+  downloadDocument: async (parcelId: string, documentId: string): Promise<Blob> => {
+    const headers: Record<string, string> = {};
+    const token = getToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const response = await fetch(
+      `${DOSSIER_API}/${encodeURIComponent(parcelId)}/documents/${encodeURIComponent(documentId)}/download`,
+      { headers },
+    );
+    if (!response.ok) throw new Error(`Dossier API error: ${response.statusText}`);
+    return response.blob();
+  },
+
+  /**
+   * R2.5: Get chain-of-custody events for a document.
+   * GET /api/dossier/{parcelId}/documents/{documentId}/chain
+   */
+  getDocumentChain: async (parcelId: string, documentId: string): Promise<ChainEvent[]> => {
+    return dossierGet<ChainEvent[]>(
+      `/${encodeURIComponent(parcelId)}/documents/${encodeURIComponent(documentId)}/chain`,
+    );
   },
 
   /**
@@ -280,14 +338,15 @@ export const dossierService = {
   },
 
   /**
-   * Get evidence chain-of-custody events
+   * Get evidence chain-of-custody events (legacy — use getDocumentChain for R2.5+)
    */
   getChainOfCustody: async (evidenceId: string): Promise<ChainEvent[]> => {
     return dossierGet<ChainEvent[]>(`/evidence/${encodeURIComponent(evidenceId)}/chain`);
   },
 
   /**
-   * Get dossier statistics
+   * R2.5: Get dossier statistics for caller's county.
+   * GET /api/dossier/stats
    */
   getStats: async (): Promise<DossierStats> => {
     return dossierGet<DossierStats>('/stats');

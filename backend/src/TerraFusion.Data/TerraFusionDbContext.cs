@@ -91,6 +91,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Dossier Entities (R1 Week 3 — CX-11)
     public DbSet<DossierNote> DossierNotes { get; set; }
 
+    // Dossier Document Management (R2.5)
+    public DbSet<DossierDocument> DossierDocuments { get; set; }
+    public DbSet<DocumentChainEvent> DocumentChainEvents { get; set; }
+
     // R2 Wave 1: Cost Matrix (real Benton County CAMA data)
     public DbSet<TerraFusion.Data.Entities.CostMatrix> CostMatrices { get; set; }
 
@@ -196,6 +200,34 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
             entity.Property(e => e.CreatedBy).HasMaxLength(200);
             entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
             entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+        });
+
+        // Configure DossierDocument entity (R2.5)
+        modelBuilder.Entity<DossierDocument>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.DocumentType).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.MimeType).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.ContentHash).IsRequired().HasMaxLength(64);
+            entity.Property(e => e.StorageRef).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.UploadedBy).HasMaxLength(200);
+            entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
+            entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+            entity.HasIndex(e => e.ContentHash);
+        });
+
+        // Configure DocumentChainEvent entity (R2.5)
+        modelBuilder.Entity<DocumentChainEvent>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Action).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Actor).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Hash).IsRequired().HasMaxLength(64);
+            entity.HasOne(e => e.Document).WithMany().HasForeignKey(e => e.DocumentId);
+            entity.HasIndex(e => e.DocumentId);
         });
 
         // Configure CostMatrix entity (R2 Wave 1)
