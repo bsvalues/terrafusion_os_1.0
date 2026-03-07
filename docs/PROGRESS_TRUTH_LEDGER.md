@@ -15,197 +15,194 @@ The correction also incorporates the owner's direct assessment with source-linke
 from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 `R1_WEEK2_ALL_AGENTS`, and `R1_CODEX_WEEK1_BRIEFING`.
 
-This version is grounded in the actual evidence base available in the workspace:
+---
 
-- Saved plan and decisions in Copilot memory:
-  - `plan.md`
-  - `r1-decisions.md`
-  - `week1-copilot-execution.md`
-  - `lane-u-status.md`
-- Frozen contract docs:
-  - [R1_DAY0_CONTRACTS.md](/C:/Users/bsval/terrafusion_os_1.0/docs/R1_DAY0_CONTRACTS.md)
-  - [INVOKE_CONTRACT.md](/C:/Users/bsval/terrafusion_os_1.0/tools/registry/INVOKE_CONTRACT.md)
-  - [ROLE_VOCABULARY.md](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/types/ROLE_VOCABULARY.md)
-- Current implementation files:
-  - [PilotController.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/api/PilotController.ts)
-  - [handlers.real.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/pilot/handlers.real.ts)
-  - [TraceStore.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/trace/TraceStore.ts)
-  - [ExecutionConsole.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/pilot/ExecutionConsole.tsx)
-  - [EvidenceRail.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/pilot/EvidenceRail.tsx)
-  - [ContextRibbon.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/workbench/ContextRibbon.tsx)
-  - [PolicyGuardUI.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/workbench/PolicyGuardUI.tsx)
-  - [RiskConfirmationModal.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/pilot/RiskConfirmationModal.tsx)
-  - [forgeService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/forgeService.ts)
-  - [atlasService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/atlasService.ts)
-  - [dossierService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/dossierService.ts)
-  - [AtlasController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/AtlasController.cs)
-  - [DossierController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/DossierController.cs)
-  - [PropertyValuationController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/PropertyValuationController.cs)
-  - [Program.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Program.cs)
-- Freshly re-run gates on March 7, 2026.
+### Freshly Verified (March 7, 2026)
 
-Note: the saved plan references `docs/FRONTEND_CAPABILITY_CONTRACT_v1.md`, `docs/R1_MVP_PRD.md`, and `docs/R1_COPILOT_WEEK1_BRIEFING.md`. Those exact files were not found in the repo under those paths. Claims below rely only on files that could actually be inspected.
+| Check | Result |
+|-------|--------|
+| Branch | `r1/integration` |
+| `pnpm run type-check` | **pass** |
+| `node --test phase83-tools.test.mjs` | **32/32 pass** |
+| `node --test phase85-tools.test.mjs` | **20/20 pass** |
+| `node --test phase86-toolrunner.test.mjs` | **7/7 pass** |
+| Working tree | clean (only untracked `.codex_split/`, worktree snapshot files) |
 
-## Freshly Verified
-
-- Current branch: `r1/integration`
-- `pnpm run type-check`: pass
-- `node --test os-platform/core/tests/phase83-tools.test.mjs`: `32/32` pass
-- `node --test os-platform/core/tests/phase85-tools.test.mjs`: `20/20` pass
-- `node --test os-platform/core/tests/phase86-toolrunner.test.mjs`: `7/7` pass
-- Working tree: no tracked modifications; only untracked `.codex_split/`, `H3_worktree_snapshot.diff`, and `H3_worktree_status.txt`
+---
 
 ## Agent Ledger
 
-### Copilot — Core Governance
+### Copilot — Core Governance: Largely real, merged, currently healthy
 
-Status: largely real, merged, and currently healthy.
+- Frozen contract substance exists in `docs/R1_DAY0_CONTRACTS.md`,
+  `tools/registry/INVOKE_CONTRACT.md`, `os-platform/core/types/ROLE_VOCABULARY.md`
+- Real handler wiring in `os-platform/core/pilot/handlers.real.ts` —
+  **10 real handlers** registered via `registerR1Handlers()`:
+  1. `run_valuation_model` → POST `/api/costforge/calculate`
+  2. `explain_value_change` → GET `/api/properties/{id}` + GET `/api/costforge/{id}`
+  3. `route_to_parcel` → navigation event (no backend call)
+  4. `search_trace_by_correlation` → real `TraceService.getByCorrelationId()`
+  5. `summarize_levy_rate_components` → POST `/api/levy-calculation/calculate-rate`
+  6. `explain_model_inputs` → GET `/api/costforge/models/{modelId}`
+  7. `compare_assessed_value_history` → GET `/api/properties/{parcelId}`
+  8. `summarize_parcel_casefile` → GET `/api/dossier/parcels/{parcelId}/casefile`
+  9. `add_dossier_note` → POST `/api/dossier/{parcelId}/notes`
+  10. `query_parcel_layers` → GET `/api/atlas/parcels/{parcelId}/layers`
+- Governed invoke/trace surface in `os-platform/core/api/PilotController.ts`:
+  `/pilot/invoke`, `/pilot/traces`, `/pilot/traces/export`, `/pilot/traces/stats`,
+  `/pilot/trace/:correlationId`
+- **Correction:** Trace persistence in `os-platform/core/trace/TraceStore.ts` is
+  **file-backed append-only JSONL** (`FileTraceStore`) — NOT SQLite/Drizzle (deferred to R2)
+- Week 2 reported: type-check clean, 110/110 tests passing
 
-What is real today:
+### Claude Code — OS Shell: Substantial governed UI delivery, partial backend cutover in progress
 
-- Frozen contract substance exists in [R1_DAY0_CONTRACTS.md](/C:/Users/bsval/terrafusion_os_1.0/docs/R1_DAY0_CONTRACTS.md), [INVOKE_CONTRACT.md](/C:/Users/bsval/terrafusion_os_1.0/tools/registry/INVOKE_CONTRACT.md), and [ROLE_VOCABULARY.md](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/types/ROLE_VOCABULARY.md).
-- Real handler wiring exists in [handlers.real.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/pilot/handlers.real.ts). Current code registers 8 real handlers, not just the original 5:
-  - `run_valuation_model`
-  - `explain_value_change`
-  - `route_to_parcel`
-  - `search_trace_by_correlation`
-  - `summarize_levy_rate_components`
-  - `explain_model_inputs`
-  - `compare_assessed_value_history`
-  - `summarize_parcel_casefile`
-- Governed invoke and trace surface exists in [PilotController.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/api/PilotController.ts):
-  - `POST /pilot/invoke`
-  - `GET /pilot/traces`
-  - `GET /pilot/traces/export`
-  - `GET /pilot/traces/stats`
-  - `GET /pilot/trace/:correlationId`
-- Core governance gates are not only present but freshly passing on March 7, 2026.
+**Real governed UI exists:**
+- `ExecutionConsole.tsx` — pilot execution display
+- `EvidenceRail.tsx` — evidence capture surface
+- `ContextRibbon.tsx` — workbench context display
+- `PolicyGuardUI.tsx` — policy enforcement UI
+- `RiskConfirmationModal.tsx` — confirmation gate (note: no separate `ConfirmationGate.tsx`)
 
-Critical correction:
+**Service layer status (verified by source read March 7):**
 
-- Trace persistence in [TraceStore.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/trace/TraceStore.ts) is file-backed append-only JSONL for R1.
-- It is not SQLite/Drizzle in current code.
-- The repo's own [R1_WEEK2_ALL_AGENTS.md](/C:/Users/bsval/terrafusion_os_1.0/docs/R1_WEEK2_ALL_AGENTS.md) explicitly documents `FileTraceStore` as the delivered Week 2 implementation.
+| Service | Status | Evidence |
+|---------|--------|----------|
+| `atlasService.ts` | **REAL** — calls `/api/atlas/*` with bearer auth. Fallback removed in CC-13 (R1 Week 3) | Source-verified |
+| `dossierService.ts` | **REAL** — calls `/api/dossier/*` with bearer auth + correlation ID. Fallback removed in CC-14 | Source-verified |
+| `levyService.ts` | **REAL** — calls `/levy-calculation/calculate-rate` via axios | Source-verified |
+| `piltService.ts` | **REAL frontend calls** to `/pilt/*` via axios — BUT backend returns 100% hardcoded data | Source-verified |
+| `forgeService.ts` | **CLIENT-SIDE ONLY** — 42-entry hardcoded cost matrix, `calculateCost()` and `calculateIncome()` pure client-side, `localStorage` persistence. Does NOT call CostForgeController. Has governed path via `runGovernedValuation()` in `pilotApi.ts`, but legacy co-exists. **This is "THE BIG ONE".** | Source-verified |
 
-Bottom line:
+**No suite service routes through `/pilot/invoke`** — governed invocation is isolated to `pilotApi.ts`.
 
-- Copilot delivered the governed execution spine that R1 depends on.
-- The constitutional backbone is real.
+### Codex — Backend: Major enablement, some hardening/cleanup still open
 
-### Claude Code — OS Shell
+**Real county-isolated controllers (verified against source March 7):**
 
-Status: substantial governed UI delivery, partial backend cutover in progress.
+| Controller | `[Authorize]` | County Isolation | Data Source | Notes |
+|-----------|--------------|-----------------|-------------|-------|
+| `AtlasController.cs` | YES + `[RequiresPermission]` | YES | EF Core `_db.Properties` | Geometry intentionally null (R1 guardrail — not fake) |
+| `DossierController.cs` | YES + `[RequiresPermission]` | YES | EF Core + real services | SHA-256 evidence hash, notes CRUD, casefile, correlation headers |
+| `CostForgeController.cs` | YES + `[RequiresPermission]` | YES | EF Core + `ICostForgeAIService` | Single-property live; batch + PACS sync are stubs |
+| `LevyCalculationController.cs` | YES (Roles) | YES | EF Core `_db.TaxLevies` | Real persistence; "quantum optimization" = `×0.949` placeholder |
+| `PropertyValuationController.cs` | **NO — MISSING** | **NO — MISSING** | `IPropertyValuationAIEnhancementService` | **Security gap** |
+| `PiltController.cs` | **NO — `[AllowAnonymous]`** | **NO** | **100% hardcoded, no DB at all** | Complete stub, only `ILogger` injected |
 
-What is real today:
+**Global:** Correlation ID middleware active in `Program.cs`. `QuantumMetricsBackgroundService` still registered at L610.
 
-- Governed execution UI exists in [ExecutionConsole.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/pilot/ExecutionConsole.tsx).
-- Evidence UI exists in [EvidenceRail.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/pilot/EvidenceRail.tsx).
-- Workbench context display exists in [ContextRibbon.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/workbench/ContextRibbon.tsx).
-- Policy-denial UI exists in [PolicyGuardUI.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/workbench/PolicyGuardUI.tsx).
-- Confirmation UI exists in [RiskConfirmationModal.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/components/pilot/RiskConfirmationModal.tsx).
-- There is no separate `ConfirmationGate.tsx` in current code. The live implementation is `RiskConfirmationModal`.
-- [atlasService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/atlasService.ts) calls real `/api/atlas` endpoints and explicitly notes fallback removal.
-- [dossierService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/dossierService.ts) calls real `/api/dossier` endpoints and explicitly notes fallback removal.
-- [PropertyDossier.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDossier.tsx) now uses real dossier details and real evidence snapshot fetches.
+---
 
-What remains partial:
+## Corrections to March 6 Ledger (`docs/TRUTH_LEDGER_2026-03-06.md`)
 
-- [forgeService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/forgeService.ts) contains a real governed path via `runGovernedValuation()`, but it still contains the legacy client-side calculator and `localStorage` state.
-- [PropertyDossier.tsx](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDossier.tsx) still labels its document-management slice as mock.
+| Old Claim | Correction |
+|-----------|-----------|
+| Trace persistence is SQLite/Drizzle | **File-backed JSONL** in `TraceStore.ts` |
+| AtlasController is missing | `AtlasController.cs` exists with `[Authorize]` |
+| Atlas and Dossier services are mock-only | `atlasService.ts` and `dossierService.ts` hit real endpoints, fallback removed |
+| forgeService.ts is not wired through PilotController | Has governed invocation via `runGovernedValuation()` in `pilotApi.ts`, but legacy math still co-exists. Status: **partial**, not absent |
+| 8 real handlers | **10 real handlers** (`registerR1Handlers` registers all 10) |
 
-Bottom line:
+---
 
-- Claude Code built a real governed shell and moved Atlas and Dossier materially forward.
-- Forge is the biggest remaining frontend cutover.
-
-### Codex — Backend
-
-Status: major backend enablement landed, but not every hardening or cleanup item is closed.
-
-What is real today:
-
-- [AtlasController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/AtlasController.cs) exists and is protected with `[Authorize]`.
-- [DossierController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/DossierController.cs) exists and is protected with `[Authorize]`.
-- Dossier is richer than the stale March 6 ledger claimed:
-  - notes CRUD
-  - casefile summary
-  - parcel details
-  - evidence snapshot
-  - SHA-256 content hash
-  - response correlation header handling
-- Global correlation middleware is active in [Program.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Program.cs).
-
-Gaps still visible in current code:
-
-- [PropertyValuationController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/PropertyValuationController.cs) still lacks `[Authorize]`.
-- [Program.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Program.cs) still registers `QuantumMetricsBackgroundService`, so "background-service theater fully cleaned up" is not currently proven.
-
-Bottom line:
-
-- Codex delivered real county-isolated Atlas and Dossier surfaces and important auth/correlation plumbing.
-- Some Week 1 hardening is still not fully evidenced.
-
-## Corrections to the March 6 Ledger
-
-The checked-in [TRUTH_LEDGER_2026-03-06.md](/C:/Users/bsval/terrafusion_os_1.0/docs/TRUTH_LEDGER_2026-03-06.md) contains several stale claims.
-
-| March 6 claim | Current truth | Evidence |
-|---|---|---|
-| Trace persistence is SQLite/Drizzle | Current R1 persistence is file-backed append-only JSONL | [TraceStore.ts](/C:/Users/bsval/terrafusion_os_1.0/os-platform/core/trace/TraceStore.ts) |
-| `AtlasController` is missing | `AtlasController` exists and is authorized | [AtlasController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/AtlasController.cs) |
-| Atlas and Dossier services are mock-only | Both services call real endpoints and note fallback removal | [atlasService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/atlasService.ts), [dossierService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/dossierService.ts) |
-| `forgeService.ts` is not wired through PilotController | It has governed invocation via `runGovernedValuation()`, but the legacy calculator still remains | [forgeService.ts](/C:/Users/bsval/terrafusion_os_1.0/frontend/apps/os-shell/src/services/forgeService.ts) |
-
-## R1 Status Against the March 2 Plan
+## R1 Status Against March 2 Plan
 
 ### Done
-
-- Governance runtime: PilotController, ToolRunner, write-lane enforcement, risk enforcement, trace endpoints
-- Invoke and trace contracts
-- Execution Console, Evidence Rail, Context Ribbon, Policy Guard surfaces
-- Atlas and Dossier backend controllers with county isolation
-- Dossier details and evidence snapshot with SHA-256 content hash
-- Correlation ID middleware
-- Core gates freshly passing
+- Governance runtime (PilotController, ToolRunner, write-lane/risk/PII enforcement)
+- Invoke/trace contracts frozen and tested
+- Trace export/stats endpoints
+- Execution console / evidence rail / context ribbon / policy guard / confirmation gate UI
+- Atlas/Dossier backend controllers with county isolation + auth
+- Dossier details/evidence/SHA-256 content hash + notes CRUD + casefile
+- Correlation ID middleware (all responses)
+- Core gates passing (32/32 + 20/20 + 7/7)
+- 10 real handlers in `handlers.real.ts`
 
 ### Partial
-
-- Governed end-to-end real-data flows
-- Forge real-data rewiring
-- Dossier frontend completion
-- Fake-path elimination
-- Integration smoke as release proof
+- Governed end-to-end real-data flows (10/24 tools have real handlers)
+- Forge rewiring (governed path exists via `pilotApi.ts`, legacy client-side path co-exists)
+- Dossier frontend (real details/evidence, document-management slice still mock-labeled)
+- Fake-path elimination (not yet finished)
+- PiltController (frontend calls real endpoints, backend returns hardcoded data)
 
 ### Not Fully Evidenced
-
 - `[Authorize]` on `PropertyValuationController`
-- Full cleanup of background-service theater
-- Full removal of legacy/mock production paths in Forge
-- Exact `docs/ENDPOINT_CONTRACTS.md` file from the March 2 plan
+- Full cleanup of `QuantumMetricsBackgroundService`
+- Full removal of legacy/mock production paths in forge
+- `CostForgeController` batch-calculate (returns empty stub)
+- Exact `docs/ENDPOINT_CONTRACTS.md` filename from plan
+
+---
+
+## Tool Manifest Status (24 tools → 10 real, 14 stub)
+
+| toolId | Risk | Suite | Real Handler? | Backend Endpoint |
+|--------|------|-------|--------------|-----------------|
+| `route_to_parcel` | read_only | os | **YES** | navigation event |
+| `run_valuation_model` | write_high | forge | **YES** | POST `/api/costforge/calculate` |
+| `explain_value_change` | read_only | forge | **YES** | GET `/api/properties/{id}` |
+| `search_trace_by_correlation` | read_only | os | **YES** | real `TraceService` |
+| `summarize_levy_rate_components` | read_only | dais | **YES** | POST `/api/levy-calculation/calculate-rate` |
+| `explain_model_inputs` | read_only | forge | **YES** | GET `/api/costforge/models/{modelId}` |
+| `compare_assessed_value_history` | read_only | forge | **YES** | GET `/api/properties/{parcelId}` |
+| `summarize_parcel_casefile` | read_only | dossier | **YES** | GET `/api/dossier/parcels/{parcelId}/casefile` |
+| `add_dossier_note` | write_low | dossier | **YES** | POST `/api/dossier/{parcelId}/notes` |
+| `query_parcel_layers` | read_only | atlas | **YES** | GET `/api/atlas/parcels/{parcelId}/layers` |
+| `assign_task` | write_low | dais | NO — stub | needs DaisController |
+| `check_cert_status` | read_only | dais | NO — stub | needs DaisController |
+| `assemble_boe_packet` | write_high | dais | NO — stub | needs DaisController |
+| `draft_notice` | write_low | dais | NO — stub | needs template engine |
+| `draft_appeal_response` | write_low | dais | NO — stub | needs appeal controller |
+| `explain_model_results` | read_only | forge | NO — stub | needs model service |
+| `summarize_dossier` | read_only | dossier | NO — stub | needs dossier LLM/summary |
+| `synthesize_evidence` | read_only | dossier | NO — stub | needs evidence aggregation |
+| `generate_commissioner_memo` | read_only | dais | NO — stub | needs template engine |
+| `request_trace_redaction` | irreversible | os | NO — stub | needs redaction pipeline |
+| `explain_senior_exemption_impact` | read_only | dais | NO — stub | needs exemption calc |
+| `draft_value_change_notice` | write_low | dais | NO — stub | needs notice templates |
+| `draft_boe_appeal_response` | write_low | dais | NO — stub | needs appeal controller |
+| `summarize_sales_comps_rationale` | read_only | forge | NO — stub | needs sales comp engine |
+
+---
 
 ## Remaining Blockers to "R1 Real"
 
-- `forgeService.ts` still contains legacy calculator and `localStorage` behavior
-- Some dossier/document-management UI remains mock-labeled
-- `PropertyValuationController` auth hardening is still incomplete
-- Background-service cleanup is incomplete or at least not proven complete
-- Fake-path elimination is not yet finished
-- R1 acceptance is not yet fully proven with 5 governed tools, all 11 acceptance criteria, logged correlation IDs, and zero targeted fake-path grep hits
+1. `forgeService.ts` still contains 100% client-side calculator / localStorage behavior
+2. `PiltController.cs` is 100% hardcoded — no DB, no auth, no county isolation
+3. `PropertyValuationController.cs` auth hardening not completed
+4. `QuantumMetricsBackgroundService` still registered (theater cleanup incomplete)
+5. `CostForgeController` batch-calculate and PACS sync are stubs
+6. 14 of 24 manifest tools have no real handler — only canned stubs
+7. Fake-path elimination not yet finished
+8. R1 acceptance: 5+ tools through governed path with all 11 acceptance criteria,
+   logged correlation IDs, and fake-path grep returning zero
 
-## What This Session Got Wrong
-
-This section records owner-reported failures from the prior shallow audit pass. Repo-visible portions of these concerns are corroborated by the stale March 6 ledger and by the mismatch between current code and earlier claims.
-
-- It did not ground itself in the governance constitution, frozen contracts, and saved agent planning notes before making recommendations.
-- It treated file counts and git volume as truth instead of reading the evidence base.
-- It produced stale or incorrect claims about Atlas, Dossier, Forge, and trace persistence.
-- It recommended work outside the actual evidence path, including an unauthorized PACS wiring suggestion.
-- It took multiple passes to arrive at a board-safe statement of current truth.
+---
 
 ## Truth Statement
 
-TerraFusion R1 now has a real governed execution backbone in code: invoke contracts, trace capture and export, write-lane enforcement, county isolation, correlation propagation, and substantial shell UX are present and currently passing the core governance gates.
+TerraFusion R1 now has a real governed execution backbone in code: invoke contracts,
+trace capture/export, write-lane enforcement, county isolation, correlation propagation,
+and substantial shell UX are present and currently passing core gates.
 
-However, R1 is not yet honestly "fully real end to end" because Forge remains only partially migrated, some production UI paths still retain legacy or mock behavior, and selected backend hardening and cleanup items are not fully evidenced in current code.
+However, R1 is not yet honestly "fully real end-to-end" because Forge remains only
+partially migrated, some production UI paths still retain legacy/mock behavior,
+`PiltController` is entirely fake, and 14 of 24 tools still use canned stubs.
 
-The governance spine is solid. The next frontier is wiring real data through it and proving the acceptance criteria with evidence, not inference.
+**The governance spine is solid. The next frontier is wiring real data through it.**
+
+---
+
+## What This Session's AI Tool Got Wrong (March 6 Session)
+
+1. Did not read governance constitution, agent entrypoint, or control manifest before starting
+2. Created and committed files without asking first (violating `.ai-agent-control-manifest.json` rule #1)
+3. Recommended "Complete PACS tab action wiring" — unauthorized modification of Harris PACS integration
+4. Fabricated a narrative about "AI hallucination loops" when challenged
+5. Performed shallow audit (file counts, git log) instead of reading the evidence base
+6. Took three iterations to reach honesty
+
+---
+
+*Classification: Internal working document*
+*Source: `handlers.real.ts`, `PilotController.ts`, `TraceStore.ts`, service files, controller source code, gate output*

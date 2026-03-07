@@ -244,6 +244,65 @@ Phase 6 exit:
 
 - R1 is described by evidence, not by aspiration.
 
+## Full Manifest Closure Matrix
+
+This section is the "everything" list for tool-level closure. A tool is not done until
+the manifest entry, handler behavior, backend endpoint, UI surface, and evidence packet
+all agree.
+
+| Tool | Current Truth | CP Scope | CX Scope | CC Scope | Release Bucket |
+|---|---|---|---|---|---|
+| `route_to_parcel` | Real handler; navigation-only | Keep payload contract stable | None beyond route integrity | Keep parcel navigation UX stable | R1 proof |
+| `run_valuation_model` | Real handler; backend live | Freeze request/response + proof harness | Normalize CostForge output, auth, county isolation | Make governed path the only production flow | R1 proof |
+| `explain_value_change` | Real handler; property-backed | Keep contract + trace proof | Verify property/costforge reads are county-safe | Show result + evidence cleanly | R1 proof |
+| `search_trace_by_correlation` | Real handler; trace-backed | Keep trace query contract stable | Maintain trace service durability/access | Surface query + copy UX cleanly | R1 proof |
+| `summarize_levy_rate_components` | Real handler; levy-backed | Keep governed contract stable | Validate levy engine and county isolation | Show result and trace in UI | R1 proof |
+| `explain_model_inputs` | Real handler; backend-backed | Keep contract stable | Verify model endpoint truthfulness | Surface model-input explanation cleanly | R1.1 |
+| `compare_assessed_value_history` | Real handler; property-backed | Keep contract stable | Verify history query truthfulness | Add governed result presentation if needed | R1.1 |
+| `summarize_parcel_casefile` | Real handler; dossier-backed | Keep contract + proof harness | Keep casefile endpoint stable | Show dossier summary/evidence cleanly | R1 proof |
+| `add_dossier_note` | Real handler; write-low | Keep write governance semantics stable | Verify note write auth/county scope | Add clear write confirmation UX | R1.1 |
+| `query_parcel_layers` | Real handler; atlas-backed | Keep contract stable | Verify atlas layer response truthfulness | Render current layer truth without fake GIS depth | R1.1 |
+| `assign_task` | Stub | Define final contract + golden fixtures | Build Dais task endpoint/service | Add UI only after endpoint exists | Post-R1 |
+| `check_cert_status` | Stub | Define final contract + fixtures | Build certification status backend | Add UI only after endpoint exists | Post-R1 |
+| `assemble_boe_packet` | Stub | Define governed write-high contract | Build packet assembly backend + storage path | Add packet UX after endpoint truth exists | Post-R1 |
+| `draft_notice` | Stub | Define template contract | Build notice-generation backend | Add document preview/send UX | Post-R1 |
+| `draft_appeal_response` | Stub | Define contract | Build appeal-response backend | Add governed drafting UI | Post-R1 |
+| `explain_model_results` | Stub | Define contract | Build model-result explanation service | Add result view only after backend truth exists | Post-R1 |
+| `summarize_dossier` | Stub | Define contract | Build dossier summarization backend | Add UI after summary endpoint exists | Post-R1 |
+| `synthesize_evidence` | Stub | Define contract | Build evidence aggregation pipeline | Add evidence synthesis UX | Post-R1 |
+| `generate_commissioner_memo` | Stub | Define contract | Build memo generation backend | Add memo review/export UX | Post-R1 |
+| `request_trace_redaction` | Stub; irreversible | Freeze irreversible contract + policy gates | Build redaction workflow/audit trail | Add guarded UX only after backend exists | Post-R1 |
+| `explain_senior_exemption_impact` | Stub | Define contract | Build exemption calculation backend | Add result UI after backend truth exists | Post-R1 |
+| `draft_value_change_notice` | Stub | Define contract | Build notice backend | Add governed drafting UI | Post-R1 |
+| `draft_boe_appeal_response` | Stub | Define contract | Build appeal backend | Add governed drafting UI | Post-R1 |
+| `summarize_sales_comps_rationale` | Stub | Define contract | Build sales-comps reasoning backend | Add result UI after backend truth exists | Post-R1 |
+
+## Non-Tool Surface Closure Matrix
+
+These are not fully captured by the tool manifest, but they still block an honest
+"end to end" claim.
+
+| Surface | Current Truth | Required Closure |
+|---|---|---|
+| Forge suite screens | Production path still dual-runs with client calculator logic | Governed path only for production valuation flows |
+| Dossier document management | Active tab still contains mock-labeled slice | Real backend or explicit disabled contract |
+| Atlas GIS depth | Current backend is parcel/layer truth, not full GIS | Honest UI that reflects current backend depth |
+| PILT | Frontend calls live endpoints, backend is entirely hardcoded | Either real backend or explicit out-of-R1 disablement |
+| PropertyValuationController | Missing auth and county proof | Add auth/county enforcement or remove from active R1 surface |
+| Background-service theater | `QuantumMetricsBackgroundService` still registered | Remove or justify explicitly |
+
+## Evidence Packet Checklist
+
+Every major branch from CC, CP, or CX should ship with the same evidence shape so the
+truth ledger can be updated mechanically instead of narratively.
+
+1. Scope statement: what active production path changed.
+2. Source proof: file references and exact endpoints/contracts touched.
+3. Gate proof: `type-check`, `phase83`, `phase85`, `phase86` as applicable.
+4. Runtime proof: correlation IDs, trace IDs, and payload samples.
+5. Fake-path proof: targeted grep or code search result for removed fallback logic.
+6. Remaining truth: explicit statement of what is still partial or deferred.
+
 ## Branch and Merge Strategy
 
 - Documentation correction work: `claude/review-progress-ledger-a8iw5`
