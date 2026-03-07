@@ -1,7 +1,7 @@
 {
-  "branchHeadSha": "c7510f143a1a2b98888ecef48e7c4c41afece4e2",
+  "branchHeadSha": "0afe584756ffd60aa2c986bde8ea2e0edc7bede6",
   "canonVersion": "r1-canon-2026-03-07",
-  "generatedAt": "2026-03-07T10:03:09.336Z",
+  "generatedAt": "2026-03-07T15:48:16.519Z",
   "artifacts": [
     {
       "path": "docs/evidence/cc/atlas-cutover.md",
@@ -21,7 +21,7 @@
     },
     {
       "path": "docs/evidence/cc/signoff.md",
-      "sha256": "27b9c43d43e318cb0fd4ca8fe90284395fd33522487ebc53fb4b5df02dbdb197"
+      "sha256": "86e761b838eb5ad1f4a82015b3afdd45d1904e2f956e5653e6242c29bc3f732c"
     },
     {
       "path": "docs/evidence/cc/surface-inventory.md",
@@ -41,7 +41,7 @@
     },
     {
       "path": "docs/evidence/cp/signoff.md",
-      "sha256": "e6abd580cae40c29dbf8e5036f9568481e503b359cc6261092893a9058c0d12f"
+      "sha256": "5c1a49f7466666a704e4571f93cb0cb695fc833f66175bd6d99f22d758eeb19e"
     },
     {
       "path": "docs/evidence/cp/trace-persistence.md",
@@ -73,7 +73,7 @@
     },
     {
       "path": "docs/evidence/cx/signoff.md",
-      "sha256": "1cd4237e959b495e024adcdcda34cf6d6e0b377d13e29cc89a701397b95c7822"
+      "sha256": "d0606138fba2f90fe3cb2a1370939ef387e8074ea75cec81f95d37a13b76f0f5"
     },
     {
       "path": "docs/evidence/final/.gitkeep",
