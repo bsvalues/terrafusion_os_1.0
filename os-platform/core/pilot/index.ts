@@ -98,6 +98,10 @@ export {
     type AddDossierNoteRealResult,
     type QueryParcelLayersParams,
     type QueryParcelLayersResult,
+    type ExplainModelResultsRealParams,
+    type ExplainModelResultsRealResult,
+    type SummarizeSalesCompsRealParams,
+    type SummarizeSalesCompsRealResult,
 } from './handlers.real.js';
 
 // Backend HTTP Client

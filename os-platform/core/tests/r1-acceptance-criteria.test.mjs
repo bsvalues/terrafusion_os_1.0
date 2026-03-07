@@ -1,8 +1,10 @@
 /**
- * TerraFusion OS — R1 Acceptance Criteria Tests (ALL-PROOF-02)
+ * TerraFusion OS — Acceptance Criteria Tests (R1 + Wave 1)
  *
- * Formal execution of AC-1 through AC-11 as defined in the
- * R1 End-to-End Execution Plan (docs/planning/R1_END_TO_END_EXECUTION_PLAN_2026-03-07.md).
+ * Formal execution of AC-1 through AC-17 covering:
+ *   - R1 MVP tools (AC-1 through AC-11)
+ *   - R1.1 expansion (AC-12 through AC-15)
+ *   - Wave 1 Forge extraction (AC-16 through AC-17)
  *
  * Each AC is exercised against the real governed runtime (ToolRunner + handlers.real)
  * with evidence: correlation IDs, trace events, error codes, and contract assertions.
@@ -558,17 +560,18 @@ describe('AC-9: Atlas/Dossier Real Backend', () => {
 //
 // GIVEN R1 deployment,
 // THEN no canned/stub/fake markers appear in real handler output.
-// (Structural: handlers.real.ts overrides canned stubs for all 10 active tools.)
+// (Structural: handlers.real.ts overrides canned stubs for all 12 active tools.)
 // ============================================================================
 
 describe('AC-10: No Fake Services Running', () => {
-  it('all 10 real handlers are registered and override canned stubs', () => {
+  it('all 12 real handlers are registered and override canned stubs', () => {
     const { runner } = makeRunner();
     const realTools = [
       'run_valuation_model', 'explain_value_change', 'route_to_parcel',
       'search_trace_by_correlation', 'summarize_levy_rate_components',
       'explain_model_inputs', 'compare_assessed_value_history',
       'summarize_parcel_casefile', 'add_dossier_note', 'query_parcel_layers',
+      'explain_model_results', 'summarize_sales_comps_rationale',
     ];
 
     for (const toolId of realTools) {
@@ -578,7 +581,7 @@ describe('AC-10: No Fake Services Running', () => {
         `${toolId} must have a registered handler`);
     }
 
-    console.log('  ✅ AC-10 PASS: All 10 real handlers are registered');
+    console.log('  ✅ AC-10 PASS: All 12 real handlers are registered');
   });
 
   it('real handlers do not produce canned-fixture markers', async () => {
@@ -1072,5 +1075,334 @@ describe('AC-15: query_parcel_layers (Atlas Read-Only Proof)', () => {
     assert.equal(tool.suite, 'atlas', 'must be atlas suite');
     assert.equal(tool.writeLane, null, 'read_only tool must have null writeLane');
     console.log('  ✅ AC-15d PASS: manifest contract correct for query_parcel_layers');
+  });
+});
+
+// ============================================================================
+// AC-16: explain_model_results — Wave 1 Forge Extraction (Muse Proof)
+//
+// GIVEN role "appraiser" in mode "muse" on county "benton",
+// WHEN they invoke `explain_model_results` with parcelId + taxYear,
+// THEN handler calls CostForge breakdown endpoint + properties endpoint
+//   → returns explanation, keyDrivers, confidenceScore
+//   → trace events emitted with correlationId.
+// ============================================================================
+
+describe('AC-16: explain_model_results (Wave 1 Forge Muse Proof)', () => {
+  it('returns structured explanation with real drivers from CostForge breakdown', async () => {
+    const { runner, traceService } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('costforge') && url.includes('breakdown')) {
+        return {
+          propertyId: 'P-FORGE-001',
+          totalValue: 310000,
+          categories: [
+            { name: 'Structure', amount: 195000, percentage: 62.9, components: [{ name: 'Base cost', amount: 180000 }, { name: 'Quality adj', amount: 15000 }] },
+            { name: 'Land', amount: 85000, percentage: 27.4, components: [] },
+            { name: 'Site Improvements', amount: 30000, percentage: 9.7, components: [] },
+          ],
+        };
+      }
+      if (url.includes('properties')) {
+        return {
+          propertyId: 'P-FORGE-001',
+          assessedValue: 310000,
+          previousAssessedValue: 285000,
+          valuationHistory: [
+            { year: 2025, value: 285000 },
+            { year: 2024, value: 260000 },
+          ],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'explain_model_results',
+      params: { county: 'benton', parcelId: 'P-FORGE-001', taxYear: 2026 },
+      context: museContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    assert.ok(result.correlationId, 'must have correlationId');
+
+    const data = result.result;
+    assert.equal(data.parcelId, 'P-FORGE-001', 'parcelId must match');
+    assert.equal(data.taxYear, 2026, 'taxYear must match');
+    assert.ok(data.explanation, 'must have explanation string');
+    assert.ok(data.explanation.includes('310,000'), 'explanation must reference assessed value');
+    assert.ok(Array.isArray(data.keyDrivers), 'keyDrivers must be an array');
+    assert.ok(data.keyDrivers.length >= 1, 'must have at least one key driver');
+    assert.equal(data.keyDrivers[0], 'structure', 'top driver must be structure (highest amount)');
+    assert.equal(typeof data.confidenceScore, 'number', 'confidenceScore must be a number');
+    assert.ok(data.confidenceScore >= 0.5 && data.confidenceScore <= 1.0, 'confidenceScore must be in [0.5, 1.0]');
+
+    // Trace evidence
+    const events = await traceService.getByCorrelationIdAsync(result.correlationId);
+    assert.ok(events.length >= 2, 'must have tool_invoked + tool_completed');
+    assert.ok(events.some(e => e.type === 'tool_invoked'), 'must have tool_invoked');
+    assert.ok(events.some(e => e.type === 'tool_completed'), 'must have tool_completed');
+
+    console.log(`  ✅ AC-16a PASS: explain_model_results returned ${data.keyDrivers.length} drivers, confidence=${data.confidenceScore}, trace=${events.length} events`);
+  });
+
+  it('produces audience-differentiated explanations', async () => {
+    const { runner } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('costforge') && url.includes('breakdown')) {
+        return { totalValue: 250000, categories: [{ name: 'Structure', amount: 175000, percentage: 70.0 }, { name: 'Land', amount: 75000, percentage: 30.0 }] };
+      }
+      if (url.includes('properties')) {
+        return { assessedValue: 250000 };
+      }
+      return {};
+    });
+
+    // Internal audience
+    const internalResult = await runner.execute({
+      toolId: 'explain_model_results',
+      params: { county: 'benton', parcelId: 'P-AUD-001', taxYear: 2026, audience: 'internal' },
+      context: museContext(),
+    });
+    assert.equal(internalResult.ok, true, 'internal must succeed');
+    assert.ok(internalResult.result.explanation.includes('internal review'), 'internal must reference internal review');
+
+    // Taxpayer audience
+    const taxpayerResult = await runner.execute({
+      toolId: 'explain_model_results',
+      params: { county: 'benton', parcelId: 'P-AUD-001', taxYear: 2026, audience: 'taxpayer' },
+      context: museContext(),
+    });
+    assert.equal(taxpayerResult.ok, true, 'taxpayer must succeed');
+    assert.ok(taxpayerResult.result.explanation.includes('Your property'), 'taxpayer must use friendly language');
+
+    // Explanations must differ
+    assert.notEqual(internalResult.result.explanation, taxpayerResult.result.explanation, 'audiences must produce different text');
+
+    console.log('  ✅ AC-16b PASS: audience-differentiated explanations');
+  });
+
+  it('includes comparison narrative when compareToYear provided', async () => {
+    const { runner } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('costforge') && url.includes('breakdown')) {
+        return { totalValue: 310000, categories: [{ name: 'Structure', amount: 195000, percentage: 62.9 }] };
+      }
+      if (url.includes('properties')) {
+        return { assessedValue: 310000, valuationHistory: [{ year: 2025, value: 285000 }, { year: 2024, value: 260000 }] };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'explain_model_results',
+      params: { county: 'benton', parcelId: 'P-COMP-001', taxYear: 2026, compareToYear: 2025 },
+      context: museContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    assert.ok(result.result.explanation.includes('2025'), 'must reference comparison year');
+    assert.ok(result.result.explanation.includes('285,000'), 'must reference comparison value');
+
+    console.log('  ✅ AC-16c PASS: compareToYear narrative included');
+  });
+
+  it('enforces county isolation for explain_model_results', async () => {
+    const { runner } = makeRunner();
+    mockFetch(() => ({ totalValue: 0, categories: [] }));
+
+    const result = await runner.execute({
+      toolId: 'explain_model_results',
+      params: { county: 'yakima', parcelId: 'P-001', taxYear: 2026 },
+      context: museContext({ countyId: 'benton' }),
+    });
+
+    assert.equal(result.ok, false, 'must fail on county mismatch');
+    console.log('  ✅ AC-16d PASS: county isolation enforced for explain_model_results');
+  });
+
+  it('manifest declares correct mode/risk/suite for explain_model_results', () => {
+    const tool = getTool('explain_model_results');
+    assert.ok(tool, 'must exist in manifest');
+    assert.equal(tool.mode, 'muse', 'must be muse mode');
+    assert.equal(tool.risk, 'read_only', 'must be read_only');
+    assert.equal(tool.suite, 'forge', 'must be forge suite');
+    assert.equal(tool.writeLane, null, 'read_only tool must have null writeLane');
+    assert.equal(tool.piiHandling, 'sanitize', 'must sanitize PII');
+    assert.equal(tool.tracePolicy, 'summary_only', 'trace policy must be summary_only');
+    console.log('  ✅ AC-16e PASS: manifest contract correct for explain_model_results');
+  });
+});
+
+// ============================================================================
+// AC-17: summarize_sales_comps_rationale — Wave 1 Forge Extraction (Muse Proof)
+//
+// GIVEN role "appraiser" in mode "muse" on county "benton",
+// WHEN they invoke `summarize_sales_comps_rationale` with subjectId + compIds,
+// THEN handler calls CostForge comps endpoint
+//   → returns rationale string + comps array (no PII)
+//   → trace events emitted with correlationId.
+// ============================================================================
+
+describe('AC-17: summarize_sales_comps_rationale (Wave 1 Forge Muse Proof)', () => {
+  it('returns structured rationale with comp similarity from CostForge', async () => {
+    const { runner, traceService } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('costforge/comps')) {
+        return {
+          subjectId: 'P-SUBJ-001',
+          selectionMethod: 'proximity and recency weighting',
+          comps: [
+            { id: 'C-001', salePrice: 290000, saleDate: '2025-08-15', similarity: 0.94, notes: ['Same neighborhood'] },
+            { id: 'C-002', salePrice: 305000, saleDate: '2025-06-20', similarity: 0.88, notes: ['Similar SF'] },
+            { id: 'C-003', salePrice: 275000, saleDate: '2025-09-01', similarity: 0.82, notes: ['Slightly older'] },
+          ],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'summarize_sales_comps_rationale',
+      params: { county: 'benton', subjectId: 'P-SUBJ-001', compIds: ['C-001', 'C-002', 'C-003'] },
+      context: museContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    assert.ok(result.correlationId, 'must have correlationId');
+
+    const data = result.result;
+    assert.ok(data.rationale, 'must have rationale string');
+    assert.ok(data.rationale.includes('P-SUBJ-001'), 'rationale must reference subject');
+    assert.ok(data.rationale.includes('3'), 'rationale must mention comp count');
+    assert.ok(data.rationale.includes('proximity and recency'), 'rationale must mention selection method');
+    assert.ok(data.rationale.includes('PII'), 'rationale must mention PII exclusion');
+
+    assert.ok(Array.isArray(data.comps), 'comps must be an array');
+    assert.equal(data.comps.length, 3, 'must return all 3 comps');
+
+    // Comps must be sorted by similarity descending
+    assert.equal(data.comps[0].id, 'C-001', 'first comp must be highest similarity');
+    assert.ok(data.comps[0].similarity >= data.comps[1].similarity, 'comps must be sorted by similarity desc');
+    assert.ok(data.comps[1].similarity >= data.comps[2].similarity, 'comps must be sorted by similarity desc');
+
+    // Each comp must have governed shape
+    for (const comp of data.comps) {
+      assert.ok(comp.id, 'comp must have id');
+      assert.equal(typeof comp.similarity, 'number', 'comp must have numeric similarity');
+      assert.ok(Array.isArray(comp.notes), 'comp must have notes array');
+    }
+
+    // No raw PII leaking (no SSNs, addresses, phone numbers in comp data)
+    const compsJson = JSON.stringify(data.comps);
+    assert.ok(!compsJson.includes('SSN'), 'comp data must not contain SSN');
+    assert.ok(!/\d{3}-\d{2}-\d{4}/.test(compsJson), 'comp data must not contain SSN pattern');
+    assert.ok(!/\d{3}-\d{3}-\d{4}/.test(compsJson), 'comp data must not contain phone pattern');
+
+    // Trace evidence
+    const events = await traceService.getByCorrelationIdAsync(result.correlationId);
+    assert.ok(events.length >= 2, 'must have tool_invoked + tool_completed');
+    assert.ok(events.some(e => e.type === 'tool_invoked'), 'must have tool_invoked');
+    assert.ok(events.some(e => e.type === 'tool_completed'), 'must have tool_completed');
+
+    console.log(`  ✅ AC-17a PASS: summarize_sales_comps_rationale returned ${data.comps.length} comps, trace=${events.length} events`);
+  });
+
+  it('includes adjustment notes when adjustments=true', async () => {
+    const { runner } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('costforge/comps')) {
+        return {
+          subjectId: 'P-ADJ-001',
+          selectionMethod: 'paired sales',
+          comps: [
+            { id: 'C-ADJ-001', similarity: 0.91, notes: ['Close match'], adjustments: [{ type: 'time', amount: 5000 }, { type: 'size', amount: -3000 }] },
+            { id: 'C-ADJ-002', similarity: 0.85, notes: [], adjustments: [{ type: 'location', amount: 8000 }] },
+          ],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'summarize_sales_comps_rationale',
+      params: { county: 'benton', subjectId: 'P-ADJ-001', compIds: ['C-ADJ-001', 'C-ADJ-002'], adjustments: true },
+      context: museContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    const data = result.result;
+
+    // First comp should have original note + 2 adjustment notes
+    const c1 = data.comps.find(c => c.id === 'C-ADJ-001');
+    assert.ok(c1, 'C-ADJ-001 must be present');
+    assert.ok(c1.notes.length >= 3, 'must include original note + 2 adjustments');
+    assert.ok(c1.notes.some(n => n.includes('time')), 'must include time adjustment');
+    assert.ok(c1.notes.some(n => n.includes('size')), 'must include size adjustment');
+
+    // Second comp should have 1 adjustment note
+    const c2 = data.comps.find(c => c.id === 'C-ADJ-002');
+    assert.ok(c2, 'C-ADJ-002 must be present');
+    assert.ok(c2.notes.some(n => n.includes('location')), 'must include location adjustment');
+
+    // Rationale must mention adjustments
+    assert.ok(data.rationale.includes('Adjustments were applied'), 'rationale must note adjustments applied');
+
+    console.log('  ✅ AC-17b PASS: adjustment notes included when adjustments=true');
+  });
+
+  it('omits adjustments when adjustments=false (default)', async () => {
+    const { runner } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('costforge/comps')) {
+        return {
+          subjectId: 'P-NO-ADJ',
+          comps: [{ id: 'C-NA-001', similarity: 0.90, notes: ['Base match'], adjustments: [{ type: 'time', amount: 2000 }] }],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'summarize_sales_comps_rationale',
+      params: { county: 'benton', subjectId: 'P-NO-ADJ', compIds: ['C-NA-001'] },
+      context: museContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    const data = result.result;
+    const c1 = data.comps.find(c => c.id === 'C-NA-001');
+    assert.ok(c1, 'must be present');
+    // Without adjustments flag, should only have original notes
+    assert.equal(c1.notes.length, 1, 'should only have original notes when adjustments=false');
+    assert.ok(data.rationale.includes('not applied'), 'rationale must note adjustments not applied');
+
+    console.log('  ✅ AC-17c PASS: adjustments omitted in default mode');
+  });
+
+  it('enforces county isolation for summarize_sales_comps_rationale', async () => {
+    const { runner } = makeRunner();
+    mockFetch(() => ({ subjectId: 'P-001', comps: [] }));
+
+    const result = await runner.execute({
+      toolId: 'summarize_sales_comps_rationale',
+      params: { county: 'yakima', subjectId: 'P-001', compIds: ['C-001'] },
+      context: museContext({ countyId: 'benton' }),
+    });
+
+    assert.equal(result.ok, false, 'must fail on county mismatch');
+    console.log('  ✅ AC-17d PASS: county isolation enforced for summarize_sales_comps_rationale');
+  });
+
+  it('manifest declares correct mode/risk/suite for summarize_sales_comps_rationale', () => {
+    const tool = getTool('summarize_sales_comps_rationale');
+    assert.ok(tool, 'must exist in manifest');
+    assert.equal(tool.mode, 'muse', 'must be muse mode');
+    assert.equal(tool.risk, 'read_only', 'must be read_only');
+    assert.equal(tool.suite, 'forge', 'must be forge suite');
+    assert.equal(tool.writeLane, null, 'read_only tool must have null writeLane');
+    assert.equal(tool.piiHandling, 'sanitize', 'must sanitize PII');
+    assert.equal(tool.tracePolicy, 'summary_only', 'trace policy must be summary_only');
+    console.log('  ✅ AC-17e PASS: manifest contract correct for summarize_sales_comps_rationale');
   });
 });
