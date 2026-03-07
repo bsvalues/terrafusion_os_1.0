@@ -78,6 +78,13 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 | GET | `/api/dossier/parcels/{parcelId}/evidence` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | Evidence snapshot with SHA-256 content hash. |
 | GET | `/api/dossier/{parcelId}/notes` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | List notes for parcel. |
 | POST | `/api/dossier/{parcelId}/notes` | DossierController | YES (`[RequiresPermission("write:dossier")]`) | YES | Create append-only note. 2000-char limit. write-low. |
+| GET | `/api/dossier/parcels/{parcelId}/assessment-history` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | LIVE — R2 Wave 4. Year-over-year assessment history with pct-change deltas. PropertyAssessments + Property join. |
+
+### CostForge R2 Wave 4 Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| GET | `/api/costforge/{propertyId}/model-inputs` | CostForgeController | YES (`[RequiresPermission("read:cost-breakdown")]`) | YES | LIVE — R2 Wave 4. Explains model inputs: property attributes, USPAP approach weights, cost matrix factors, data quality. |
 
 ### Atlas Endpoints
 
@@ -85,6 +92,8 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 |---|---|---|---|---|---|
 | GET | `/api/atlas/parcels/{parcelId}` | AtlasController | YES (`[RequiresPermission("read:parcel")]`) | YES | Parcel geometry (R1: geometry fields null, `geometryAvailable=false`). |
 | GET | `/api/atlas/parcels/{parcelId}/layers` | AtlasController | YES (`[RequiresPermission("read:parcel")]`) | YES | Available layer list for parcel. |
+| GET | `/api/atlas/parcels/{parcelId}/nearby` | AtlasController | YES (`[RequiresPermission("read:parcel")]`) | YES | LIVE — R2 Wave 2. Nearby parcels by prefix heuristic + type filter. County-isolated. |
+| GET | `/api/atlas/layers/{layerId}` | AtlasController | YES (`[RequiresPermission("read:parcel")]`) | NO | LIVE — R2 Wave 2. Layer metadata detail (static catalog). |
 
 ### Pilot Endpoints
 
@@ -102,13 +111,14 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 |---|---|---|---|
 | CostForge (R1) | 10 | 2 | 12 |
 | CostForge R2 Wave 1 | 5 | 0 | 5 |
+| CostForge R2 Wave 4 | 1 | 0 | 1 |
 | Property | 2 | 0 | 2 |
 | Levy Calculation | 3 | 0 | 3 |
 | DAIS (Assessment Workflow) | 10 | 0 | 10 |
-| Dossier | 6 | 0 | 6 |
-| Atlas | 2 | 0 | 2 |
+| Dossier | 7 | 0 | 7 |
+| Atlas | 4 | 0 | 4 |
 | Pilot (CoPilot) | 3 | 0 | 3 |
-| **Total** | **41** | **2** | **43** |
+| **Total** | **45** | **2** | **47** |
 
 ## Previously Excluded Controllers — Now Hardened
 

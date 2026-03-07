@@ -851,4 +851,122 @@ public class DossierController : ControllerBase
 
         return "human";
     }
+
+    // ── GET /api/dossier/parcels/{parcelId}/assessment-history ────────
+    // R2 Wave 4: compare_assessed_value_history
+    //   Returns year-over-year assessment values from PropertyAssessments
+    //   joined with the Property record. County-isolated.
+
+    /// <summary>
+    /// Assessment value history for a parcel (county-isolated).
+    /// Returns year-over-year assessed, land, and improvement values
+    /// with computed percent-change deltas for trend analysis.
+    /// </summary>
+    [HttpGet("parcels/{parcelId}/assessment-history")]
+    [RequiresPermission("read:dossier")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> GetAssessmentHistory(
+        string parcelId,
+        [FromQuery] int? fromYear = null,
+        [FromQuery] int? toYear = null)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        // Verify parcel exists in caller's county
+        var property = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)
+            .Select(p => new { p.Id, p.ParcelId, p.Address, p.AssessedValue, p.LandValue, p.ImprovementValue, p.TaxYear })
+            .FirstOrDefaultAsync();
+
+        if (property is null)
+            return NotFound(new { error = "Parcel not found" });
+
+        // Query PropertyAssessments for this property
+        var query = _db.PropertyAssessments
+            .AsNoTracking()
+            .Where(a => a.PropertyId == property.Id);
+
+        if (fromYear.HasValue)
+            query = query.Where(a => a.AssessmentYear >= fromYear.Value);
+        if (toYear.HasValue)
+            query = query.Where(a => a.AssessmentYear <= toYear.Value);
+
+        var assessments = await query
+            .OrderBy(a => a.AssessmentYear)
+            .Select(a => new
+            {
+                a.AssessmentYear,
+                a.AssessedValue,
+                a.LandValue,
+                a.ImprovementValue,
+                a.MarketValue,
+                a.AssessmentMethod,
+                a.AssessmentDate,
+            })
+            .ToListAsync();
+
+        // Build year-over-year entries with computed deltas
+        var history = new List<object>();
+        decimal? prevAssessed = null;
+
+        foreach (var a in assessments)
+        {
+            decimal? pctChange = null;
+            if (prevAssessed.HasValue && prevAssessed.Value != 0)
+                pctChange = Math.Round((a.AssessedValue - prevAssessed.Value) / prevAssessed.Value * 100, 2);
+
+            history.Add(new
+            {
+                year = a.AssessmentYear,
+                assessedValue = a.AssessedValue,
+                landValue = a.LandValue,
+                improvementValue = a.ImprovementValue,
+                marketValue = a.MarketValue,
+                assessmentMethod = a.AssessmentMethod,
+                assessmentDate = a.AssessmentDate,
+                yearOverYearPctChange = pctChange,
+            });
+
+            prevAssessed = a.AssessedValue;
+        }
+
+        // Include current Property record as the "latest" if no assessment matches its year
+        if (!assessments.Any(a => a.AssessmentYear == property.TaxYear))
+        {
+            decimal? pctChange = null;
+            if (prevAssessed.HasValue && prevAssessed.Value != 0)
+                pctChange = Math.Round((property.AssessedValue - prevAssessed.Value) / prevAssessed.Value * 100, 2);
+
+            history.Add(new
+            {
+                year = property.TaxYear,
+                assessedValue = property.AssessedValue,
+                landValue = property.LandValue,
+                improvementValue = property.ImprovementValue,
+                marketValue = (decimal?)null,
+                assessmentMethod = (string?)"current",
+                assessmentDate = (DateTime?)null,
+                yearOverYearPctChange = pctChange,
+            });
+        }
+
+        return Ok(new
+        {
+            parcelId,
+            address = property.Address,
+            totalYears = history.Count,
+            assessments = history,
+            correlationId = GetOrCreateCorrelationId(),
+        });
+    }
 }

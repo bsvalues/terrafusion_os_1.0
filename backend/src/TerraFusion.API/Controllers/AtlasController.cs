@@ -235,4 +235,161 @@ public class AtlasController : ControllerBase
             }),
         });
     }
+
+    // ── GET /api/atlas/parcels/{parcelId}/nearby ──────────────────────
+    // R2 Wave 2: Nearby parcels search (same county, optional type filter)
+
+    /// <summary>
+    /// Return nearby parcels in the same county.
+    /// Uses property-type matching and parcel-ID prefix proximity
+    /// as a heuristic until full GIS geometry is available.
+    /// County isolation enforced.
+    /// </summary>
+    [HttpGet("parcels/{parcelId}/nearby")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> GetNearbyParcels(
+        string parcelId,
+        [FromQuery] string? propertyType = null,
+        [FromQuery] int limit = 10)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        limit = Math.Clamp(limit, 1, 50);
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        _logger.LogDebug("Atlas nearby request for parcel {ParcelId} in county {CountyId}", parcelId, countyId);
+
+        var subject = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)
+            .Select(p => new { p.ParcelId, p.PropertyType, p.Address })
+            .FirstOrDefaultAsync();
+
+        if (subject is null)
+            return NotFound(new { error = "Parcel not found" });
+
+        // Heuristic proximity: parcels sharing a prefix (common in county numbering)
+        var prefix = parcelId.Length >= 4 ? parcelId[..4] : parcelId;
+        var effectiveType = propertyType ?? subject.PropertyType;
+
+        var query = _db.Properties
+            .AsNoTracking()
+            .Where(p => p.CountyId == countyId.Value && p.ParcelId != parcelId);
+
+        if (!string.IsNullOrWhiteSpace(effectiveType))
+            query = query.Where(p => p.PropertyType == effectiveType);
+
+        // Prefer parcels with same prefix (neighbors in numbering scheme)
+        var nearby = await query
+            .OrderByDescending(p => p.ParcelId.StartsWith(prefix))
+            .ThenBy(p => p.ParcelId)
+            .Take(limit)
+            .Select(p => new
+            {
+                parcelId = p.ParcelId,
+                address = p.Address,
+                propertyType = p.PropertyType,
+                assessedValue = p.AssessedValue,
+                yearBuilt = p.YearBuilt,
+            })
+            .ToListAsync();
+
+        return Ok(new
+        {
+            subjectParcelId = parcelId,
+            propertyTypeFilter = effectiveType,
+            total = nearby.Count,
+            gisProximity = false, // R2: no GIS geometry yet, prefix-based heuristic
+            parcels = nearby,
+        });
+    }
+
+    // ── GET /api/atlas/layers/{layerId} ───────────────────────────────
+    // R2 Wave 2: Layer metadata detail
+
+    /// <summary>
+    /// Return metadata for a specific map layer.
+    /// Static layer catalog for R2 — real tile/WMS sources deferred to R3.
+    /// </summary>
+    [HttpGet("layers/{layerId}")]
+    [RequiresPermission("read:parcel")]
+    public IActionResult GetLayerDetail(string layerId)
+    {
+        layerId = layerId.Trim().ToLowerInvariant();
+
+        var layer = layerId switch
+        {
+            "boundary" => new
+            {
+                id = "boundary",
+                name = "Parcel Boundary",
+                description = "Legal parcel boundaries from county assessor records.",
+                format = "vector",
+                source = "county_assessor",
+                attribution = "County Assessor Office",
+                minZoom = 12,
+                maxZoom = 20,
+                available = true,
+            },
+            "zoning" => new
+            {
+                id = "zoning",
+                name = "Zoning Districts",
+                description = "Municipal and county zoning classifications.",
+                format = "vector",
+                source = "planning_department",
+                attribution = "County Planning Department",
+                minZoom = 10,
+                maxZoom = 20,
+                available = true,
+            },
+            "flood" => new
+            {
+                id = "flood",
+                name = "FEMA Flood Zones",
+                description = "FEMA National Flood Hazard Layer (NFHL) zones.",
+                format = "vector",
+                source = "fema_nfhl",
+                attribution = "FEMA",
+                minZoom = 8,
+                maxZoom = 20,
+                available = true,
+            },
+            "aerial" => new
+            {
+                id = "aerial",
+                name = "Aerial Imagery (2025)",
+                description = "High-resolution aerial orthoimagery, latest available.",
+                format = "raster",
+                source = "naip_usda",
+                attribution = "USDA NAIP",
+                minZoom = 5,
+                maxZoom = 20,
+                available = true,
+            },
+            "parcels" => new
+            {
+                id = "parcels",
+                name = "All Parcels",
+                description = "County-wide parcel overlay with assessed value shading.",
+                format = "vector",
+                source = "county_assessor",
+                attribution = "County Assessor Office",
+                minZoom = 10,
+                maxZoom = 20,
+                available = true,
+            },
+            _ => (object?)null,
+        };
+
+        if (layer is null)
+            return NotFound(new { error = $"Layer '{layerId}' not found" });
+
+        return Ok(layer);
+    }
 }
