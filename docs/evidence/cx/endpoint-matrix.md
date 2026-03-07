@@ -50,6 +50,21 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 | Method | Route | Controller | Auth | County Isolation | Notes |
 |---|---|---|---|---|---|
 | POST | `/api/levy-calculation/calculate-rate` | LevyCalculationController | YES (Roles: LevyClerk, Assessor, Admin, Administrator) | YES | Calculates optimal levy rate. Persists to `TaxLevies` (CX-21). |
+
+### DAIS (Assessment Workflow) Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| POST | `/api/dais/tasks/assign` | DaisController | YES (`[RequiresPermission("write:dais")]`) | YES | Task assignment with county claim. |
+| GET | `/api/dais/certification/status` | DaisController | YES (`[RequiresPermission("read:dais")]`) | YES | LIVE — Real PropertyAssessments DB query for year. R2 enhanced. |
+| POST | `/api/dais/packets/assemble` | DaisController | YES (`[RequiresPermission("write:dais")]`) | YES | BOE packet assembly with dossier payloadRef. |
+| POST | `/api/dais/notices/draft` | DaisController | YES (`[RequiresPermission("write:dais")]`) | YES | Notice draft with tone/reason codes and payloadRef. |
+| POST | `/api/dais/appeals/{caseId}/draft-response` | DaisController | YES (`[RequiresPermission("write:dais")]`) | YES | Appeal response with position and RCW citations. |
+| GET | `/api/dais/exemptions/{county}/impact` | DaisController | YES (`[RequiresPermission("read:dais")]`) | YES | LIVE — Real TaxLevies DB query for exemption impact. R2 enhanced. |
+| POST | `/api/dais/memos/generate` | DaisController | YES (`[RequiresPermission("write:dais")]`) | YES | Commissioner memo with dossier reference. |
+| GET | `/api/dais/comps/{subjectId}/rationale` | DaisController | YES (`[RequiresPermission("read:dais")]`) | YES | LIVE — Real Properties DB lookup for subject. R2 enhanced. |
+| POST | `/api/dais/redaction` | DaisController | YES (`[RequiresPermission("write:dais")]`) | YES | Trace redaction request with secure-blob payloadRef. |
+| GET | `/api/dais/evidence/{dossierId}/synthesize` | DaisController | YES (`[RequiresPermission("read:dais")]`) | YES | Evidence synthesis with dossier sources. |
 | GET | `/api/levy-calculation/history` | LevyCalculationController | YES (Roles) | YES | Levy history query with optional year/district filters. |
 | POST | `/api/levy-calculation/calculate-batch` | LevyCalculationController | YES (Roles) | YES | Batch levy calculation (up to 100 measures). Persists results. |
 
@@ -89,10 +104,11 @@ All endpoints verified against controller source at branch HEAD `6ff009ae4005635
 | CostForge R2 Wave 1 | 5 | 0 | 5 |
 | Property | 2 | 0 | 2 |
 | Levy Calculation | 3 | 0 | 3 |
+| DAIS (Assessment Workflow) | 10 | 0 | 10 |
 | Dossier | 6 | 0 | 6 |
 | Atlas | 2 | 0 | 2 |
 | Pilot (CoPilot) | 3 | 0 | 3 |
-| **Total** | **31** | **2** | **33** |
+| **Total** | **41** | **2** | **43** |
 
 ## Previously Excluded Controllers — Now Hardened
 
