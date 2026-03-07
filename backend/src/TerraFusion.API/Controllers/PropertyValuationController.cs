@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.Core.Entities;
 using TerraFusion.Core.Models;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Controllers
 {
@@ -14,17 +18,177 @@ namespace TerraFusion.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
+    [Authorize]
     public class PropertyValuationController : ControllerBase
     {
         private readonly IPropertyValuationAIEnhancementService _valuationService;
+        private readonly DataDbContext _db;
         private readonly ILogger<PropertyValuationController> _logger;
 
         public PropertyValuationController(
             IPropertyValuationAIEnhancementService valuationService,
+            DataDbContext db,
             ILogger<PropertyValuationController> logger)
         {
             _valuationService = valuationService;
+            _db = db;
             _logger = logger;
+        }
+
+        private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
+
+        private async Task<CountyContext?> ResolveCountyContextAsync()
+        {
+            var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+            var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+            {
+                var county = await _db.Counties
+                    .AsNoTracking()
+                    .Where(c => c.Id == directCountyId)
+                    .Select(c => new { c.Name, c.FipsCode })
+                    .FirstOrDefaultAsync();
+
+                return new CountyContext(directCountyId, county?.Name, county?.FipsCode, countyCodeClaim);
+            }
+
+            var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
+            var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
+
+            IQueryable<County> countyQuery = _db.Counties.AsNoTracking();
+
+            if (nameCandidates.Length > 0 && fipsCandidates.Length > 0)
+            {
+                countyQuery = countyQuery.Where(c =>
+                    nameCandidates.Contains(c.Name) ||
+                    (c.FipsCode != null && fipsCandidates.Contains(c.FipsCode)));
+            }
+            else if (nameCandidates.Length > 0)
+            {
+                countyQuery = countyQuery.Where(c => nameCandidates.Contains(c.Name));
+            }
+            else if (fipsCandidates.Length > 0)
+            {
+                countyQuery = countyQuery.Where(c => c.FipsCode != null && fipsCandidates.Contains(c.FipsCode));
+            }
+            else
+            {
+                return null;
+            }
+
+            var match = await countyQuery
+                .Select(c => new { c.Id, c.Name, c.FipsCode })
+                .FirstOrDefaultAsync();
+
+            return match is null
+                ? null
+                : new CountyContext(match.Id, match.Name, match.FipsCode, countyCodeClaim);
+        }
+
+        private static string[] BuildCountyNameCandidates(params string?[] claims)
+        {
+            var candidates = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var claim in claims)
+            {
+                if (string.IsNullOrWhiteSpace(claim))
+                    continue;
+
+                var trimmed = claim.Trim();
+                AddCandidate(candidates, trimmed);
+
+                var withoutSuffix = StripCountySuffix(trimmed);
+                AddCandidate(candidates, withoutSuffix);
+
+                var titleCase = ToTitleCaseWords(withoutSuffix);
+                AddCandidate(candidates, titleCase);
+                AddCandidate(candidates, $"{titleCase} County");
+            }
+
+            return candidates.ToArray();
+        }
+
+        private static string[] BuildFipsCandidates(params string?[] claims)
+        {
+            var candidates = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var claim in claims)
+            {
+                if (string.IsNullOrWhiteSpace(claim))
+                    continue;
+
+                var trimmed = claim.Trim();
+                AddCandidate(candidates, trimmed);
+
+                var digitsOnly = new string(trimmed.Where(char.IsDigit).ToArray());
+                AddCandidate(candidates, digitsOnly);
+            }
+
+            return candidates.ToArray();
+        }
+
+        private static string StripCountySuffix(string value)
+        {
+            return value.EndsWith(" County", StringComparison.OrdinalIgnoreCase)
+                ? value[..^7].TrimEnd()
+                : value;
+        }
+
+        private static string ToTitleCaseWords(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            var words = value
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(word => word.Length == 1
+                    ? char.ToUpperInvariant(word[0]).ToString()
+                    : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
+
+            return string.Join(' ', words);
+        }
+
+        private static void AddCandidate(HashSet<string> candidates, string? value)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+                candidates.Add(value.Trim());
+        }
+
+        private static string NormalizeCountyToken(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            return value.Trim()
+                .ToUpperInvariant()
+                .Replace(" COUNTY", string.Empty)
+                .Replace(" ", string.Empty)
+                .Replace("-", string.Empty)
+                .Replace("_", string.Empty);
+        }
+
+        private static bool CountyCodeMatchesContext(string requestedCounty, CountyContext context)
+        {
+            if (string.IsNullOrWhiteSpace(requestedCounty))
+                return false;
+
+            var requested = NormalizeCountyToken(requestedCounty);
+            if (requested.Length == 0)
+                return false;
+
+            var claimCode = NormalizeCountyToken(context.ClaimCountyCode);
+            var countyName = NormalizeCountyToken(context.CountyName);
+            var countyFips = NormalizeCountyToken(context.CountyFipsCode);
+
+            return requested == claimCode || requested == countyName || requested == countyFips;
+        }
+
+        private async Task<bool> ParcelExistsInCountyAsync(string parcelId, Guid countyId)
+        {
+            return await _db.Properties
+                .AsNoTracking()
+                .AnyAsync(p =>
+                    p.CountyId == countyId &&
+                    (p.ParcelId == parcelId || p.ParcelNumber == parcelId));
         }
 
         /// <summary>
@@ -66,6 +230,27 @@ namespace TerraFusion.API.Controllers
                         Title = "Invalid parcel ID",
                         Detail = "Parcel ID is required for property valuation",
                         Status = StatusCodes.Status400BadRequest
+                    });
+                }
+
+                var countyContext = await ResolveCountyContextAsync();
+                if (countyContext is null)
+                {
+                    return Forbid();
+                }
+
+                if (!CountyCodeMatchesContext(request.CountyCode, countyContext))
+                {
+                    return Forbid();
+                }
+
+                if (!await ParcelExistsInCountyAsync(request.ParcelId.Trim(), countyContext.CountyId))
+                {
+                    return NotFound(new ProblemDetails
+                    {
+                        Title = "Parcel not found",
+                        Detail = $"Parcel '{request.ParcelId}' was not found in the authorized county scope",
+                        Status = StatusCodes.Status404NotFound
                     });
                 }
 
@@ -132,6 +317,17 @@ namespace TerraFusion.API.Controllers
                 }
 
                 _logger.LogInformation("📊 Fetching performance metrics for County={CountyCode}", countyCode);
+
+                var countyContext = await ResolveCountyContextAsync();
+                if (countyContext is null)
+                {
+                    return Forbid();
+                }
+
+                if (!CountyCodeMatchesContext(countyCode, countyContext))
+                {
+                    return Forbid();
+                }
 
                 var metrics = await _valuationService.GetValuationPerformanceMetricsAsync(countyCode);
 
@@ -221,6 +417,70 @@ namespace TerraFusion.API.Controllers
                 }
 
                 _logger.LogInformation("🎯 API Request: Bulk property valuation for {Count} properties", requests.Length);
+
+                var countyContext = await ResolveCountyContextAsync();
+                if (countyContext is null)
+                {
+                    return Forbid();
+                }
+
+                if (requests.Any(r => string.IsNullOrWhiteSpace(r.CountyCode) || string.IsNullOrWhiteSpace(r.ParcelId)))
+                {
+                    return BadRequest(new ValidationProblemDetails
+                    {
+                        Title = "Invalid batch request",
+                        Detail = "Each request must include CountyCode and ParcelId",
+                        Status = StatusCodes.Status400BadRequest
+                    });
+                }
+
+                var requestedCounties = requests
+                    .Select(r => NormalizeCountyToken(r.CountyCode))
+                    .Where(c => c.Length > 0)
+                    .Distinct(StringComparer.Ordinal)
+                    .ToArray();
+
+                if (requestedCounties.Length != 1)
+                {
+                    return BadRequest(new ValidationProblemDetails
+                    {
+                        Title = "Mixed county batch is not supported",
+                        Detail = "All bulk valuation requests must target the same authorized county",
+                        Status = StatusCodes.Status400BadRequest
+                    });
+                }
+
+                if (!CountyCodeMatchesContext(requests[0].CountyCode, countyContext))
+                {
+                    return Forbid();
+                }
+
+                var requestedParcelIds = requests
+                    .Select(r => r.ParcelId.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                var authorizedParcelIds = await _db.Properties
+                    .AsNoTracking()
+                    .Where(p => p.CountyId == countyContext.CountyId &&
+                                requestedParcelIds.Contains(p.ParcelId))
+                    .Select(p => p.ParcelId)
+                    .Distinct()
+                    .ToListAsync();
+
+                var missingParcelIds = requestedParcelIds
+                    .Except(authorizedParcelIds, StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                if (missingParcelIds.Length > 0)
+                {
+                    return NotFound(new ProblemDetails
+                    {
+                        Title = "One or more parcels were not found",
+                        Detail = $"The authorized county scope does not contain: {string.Join(", ", missingParcelIds)}",
+                        Status = StatusCodes.Status404NotFound
+                    });
+                }
 
                 var results = new PropertyValuationResult[requests.Length];
 

@@ -1,208 +1,164 @@
 # TerraFusion OS — Progress Truth Ledger v3
 
 Date: March 7, 2026
-Branch: `r1/integration` (2,847 commits, 350+ merged PRs)
+Branch: `r1/integration`
 
 ## Context
 
-Previous truth-ledger drafts (v1, v2) were shallow — counting files and commits instead
-of reading the governance constitution, agent instructions, frozen contracts, and
-execution evidence. This version is grounded in the actual evidence base:
-Copilot's persisted plan/decisions, Codex backend execution, Claude Code shell delivery,
-and freshly verified gate results.
+Previous truth-ledger drafts over-counted files and under-read the evidence base. This
+version is grounded in current source, current plan language, persisted agent notes,
+and fresh gate results. It treats R1 as a bounded release target, not as shorthand for
+"finish the whole platform."
 
-The correction also incorporates the owner's direct assessment with source-linked evidence
-from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
-`R1_WEEK2_ALL_AGENTS`, and `R1_CODEX_WEEK1_BRIEFING`.
+Frozen scope authority remains:
 
----
+- `docs/R1_DAY0_CONTRACTS.md`
+- `tools/registry/INVOKE_CONTRACT.md`
+- `os-platform/core/types/ROLE_VOCABULARY.md`
+- `docs/planning/R1_END_TO_END_EXECUTION_PLAN_2026-03-07.md`
 
-### Freshly Verified (March 7, 2026)
+## Freshly Verified (March 7, 2026)
 
 | Check | Result |
-|-------|--------|
+|---|---|
 | Branch | `r1/integration` |
 | `pnpm run type-check` | **pass** |
-| `node --test phase83-tools.test.mjs` | **32/32 pass** |
-| `node --test phase85-tools.test.mjs` | **20/20 pass** |
-| `node --test phase86-toolrunner.test.mjs` | **7/7 pass** |
-| Working tree | clean (only untracked `.codex_split/`, worktree snapshot files) |
-
----
+| `node --test os-platform/core/tests/phase83-tools.test.mjs` | **32/32 pass** |
+| `node --test os-platform/core/tests/phase85-tools.test.mjs` | **20/20 pass** |
+| `node --test os-platform/core/tests/phase86-toolrunner.test.mjs` | **7/7 pass** |
+| `dotnet build backend/TerraFusion.sln -c Release -v:minimal /nologo` | **pass** |
+| `dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter "FullyQualifiedName~R1Week5CxR1ClosureTests" -c Release -v:minimal /nologo` | **7/7 pass** |
+| Working tree | Active R1 work in progress; not branch-head clean |
 
 ## Agent Ledger
 
-### Copilot — Core Governance: Largely real, merged, currently healthy
+### Copilot — Core Governance
 
-- Frozen contract substance exists in `docs/R1_DAY0_CONTRACTS.md`,
-  `tools/registry/INVOKE_CONTRACT.md`, `os-platform/core/types/ROLE_VOCABULARY.md`
-- Real handler wiring in `os-platform/core/pilot/handlers.real.ts` —
-  **10 real handlers** registered via `registerR1Handlers()`:
-  1. `run_valuation_model` → POST `/api/costforge/calculate`
-  2. `explain_value_change` → GET `/api/properties/{id}` + GET `/api/costforge/{id}`
-  3. `route_to_parcel` → navigation event (no backend call)
-  4. `search_trace_by_correlation` → real `TraceService.getByCorrelationId()`
-  5. `summarize_levy_rate_components` → POST `/api/levy-calculation/calculate-rate`
-  6. `explain_model_inputs` → GET `/api/costforge/models/{modelId}`
-  7. `compare_assessed_value_history` → GET `/api/properties/{parcelId}`
-  8. `summarize_parcel_casefile` → GET `/api/dossier/parcels/{parcelId}/casefile`
-  9. `add_dossier_note` → POST `/api/dossier/{parcelId}/notes`
-  10. `query_parcel_layers` → GET `/api/atlas/parcels/{parcelId}/layers`
-- Governed invoke/trace surface in `os-platform/core/api/PilotController.ts`:
-  `/pilot/invoke`, `/pilot/traces`, `/pilot/traces/export`, `/pilot/traces/stats`,
-  `/pilot/trace/:correlationId`
-- **Correction:** Trace persistence in `os-platform/core/trace/TraceStore.ts` is
-  **file-backed append-only JSONL** (`FileTraceStore`) — NOT SQLite/Drizzle (deferred to R2)
-- Week 2 reported: type-check clean, 110/110 tests passing
+- Governed invoke and trace surface is real in `os-platform/core/api/PilotController.ts`.
+- `os-platform/core/pilot/handlers.real.ts` registers **10** real handlers.
+- `os-platform/core/trace/TraceStore.ts` is **file-backed append-only JSONL**, not
+  SQLite/Drizzle.
+- Core governance gates are currently green.
 
-### Claude Code — OS Shell: Substantial governed UI delivery, partial backend cutover in progress
+### Claude Code — OS Shell
 
-**Real governed UI exists:**
-- `ExecutionConsole.tsx` — pilot execution display
-- `EvidenceRail.tsx` — evidence capture surface
-- `ContextRibbon.tsx` — workbench context display
-- `PolicyGuardUI.tsx` — policy enforcement UI
-- `RiskConfirmationModal.tsx` — confirmation gate (note: no separate `ConfirmationGate.tsx`)
+- Governed UX is real in:
+  - `ExecutionConsole.tsx`
+  - `EvidenceRail.tsx`
+  - `ContextRibbon.tsx`
+  - `PolicyGuardUI.tsx`
+  - `RiskConfirmationModal.tsx`
+- `atlasService.ts` and `dossierService.ts` hit real backend endpoints.
+- `forgeService.ts` is still only partially cut over. Governed execution exists, but
+  legacy client-side calculator and `localStorage` production behavior still remain.
+- Dossier and Atlas are ahead of the old ledgers, but frontend honesty closure is still
+  incomplete on strict R1 surfaces.
 
-**Service layer status (verified by source read March 7):**
+### Codex — Backend
 
-| Service | Status | Evidence |
-|---------|--------|----------|
-| `atlasService.ts` | **REAL** — calls `/api/atlas/*` with bearer auth. Fallback removed in CC-13 (R1 Week 3) | Source-verified |
-| `dossierService.ts` | **REAL** — calls `/api/dossier/*` with bearer auth + correlation ID. Fallback removed in CC-14 | Source-verified |
-| `levyService.ts` | **REAL** — calls `/levy-calculation/calculate-rate` via axios | Source-verified |
-| `piltService.ts` | **REAL frontend calls** to `/pilt/*` via axios — BUT backend returns 100% hardcoded data | Source-verified |
-| `forgeService.ts` | **CLIENT-SIDE ONLY** — 42-entry hardcoded cost matrix, `calculateCost()` and `calculateIncome()` pure client-side, `localStorage` persistence. Does NOT call CostForgeController. Has governed path via `runGovernedValuation()` in `pilotApi.ts`, but legacy co-exists. **This is "THE BIG ONE".** | Source-verified |
+#### Active backend surface
 
-**No suite service routes through `/pilot/invoke`** — governed invocation is isolated to `pilotApi.ts`.
+| Controller / Surface | Current truth | Verification |
+|---|---|---|
+| `AtlasController.cs` | Real, authenticated, county-isolated controller | Source-verified |
+| `DossierController.cs` | Real, authenticated, county-isolated controller with notes, casefile, evidence snapshot, and SHA-256 evidence hash | Source-verified |
+| `CostForgeController.cs` | Real for active single-property valuation path; some non-R1 surfaces remain stubbed | Source-verified |
+| `LevyCalculationController.cs` | Real, authenticated, county-scoped levy calculation surface | Source-verified |
+| `PropertyValuationController.cs` | **Closed in code, verified by targeted tests**. Now authenticated and county-scoped on active requests. | Source + `R1Week5CxR1ClosureTests` |
+| `PiltController.cs` | **No longer fake-live; now explicit Post-R1 / 501**. Authenticated, intentionally disabled, returns explicit `ProblemDetails`. | Source + `R1Week5CxR1ClosureTests` |
+| `QuantumMetricsBackgroundService` | **No longer default-active; opt-in only** via config/env gate | Source-verified |
 
-### Codex — Backend: Major enablement, some hardening/cleanup still open
+#### CX lane truth
 
-**Real county-isolated controllers (verified against source March 7):**
+- Backend hardening is now **substantially complete**, pending final branch-head
+  convergence and shared evidence verification.
+- CX has real closure evidence in
+  `docs/evidence/cx/cx-r1-active-surface-closure.md`.
+- CX is **not** fully signed off yet. Final signoff still depends on:
+  - CC removing remaining frontend fake-path behavior on strict R1 surfaces
+  - CP landing branch-head evidence verification and manifest convergence
+  - all lanes regenerating evidence against the same verified branch head and canon
 
-| Controller | `[Authorize]` | County Isolation | Data Source | Notes |
-|-----------|--------------|-----------------|-------------|-------|
-| `AtlasController.cs` | YES + `[RequiresPermission]` | YES | EF Core `_db.Properties` | Geometry intentionally null (R1 guardrail — not fake) |
-| `DossierController.cs` | YES + `[RequiresPermission]` | YES | EF Core + real services | SHA-256 evidence hash, notes CRUD, casefile, correlation headers |
-| `CostForgeController.cs` | YES + `[RequiresPermission]` | YES | EF Core + `ICostForgeAIService` | Single-property live; batch + PACS sync are stubs |
-| `LevyCalculationController.cs` | YES (Roles) | YES | EF Core `_db.TaxLevies` | Real persistence; "quantum optimization" = `×0.949` placeholder |
-| `PropertyValuationController.cs` | **NO — MISSING** | **NO — MISSING** | `IPropertyValuationAIEnhancementService` | **Security gap** |
-| `PiltController.cs` | **NO — `[AllowAnonymous]`** | **NO** | **100% hardcoded, no DB at all** | Complete stub, only `ILogger` injected |
+## Corrections to the March 6 Ledger
 
-**Global:** Correlation ID middleware active in `Program.cs`. `QuantumMetricsBackgroundService` still registered at L610.
+| Old claim | Current truth |
+|---|---|
+| Trace persistence is SQLite/Drizzle | `TraceStore.ts` is file-backed JSONL |
+| AtlasController is missing | `AtlasController.cs` exists and is authenticated |
+| Atlas and Dossier services are mock-only | `atlasService.ts` and `dossierService.ts` hit real endpoints |
+| Forge is not wired through governed execution | Governed path exists, but legacy production behavior still co-exists |
+| `PropertyValuationController.cs` auth hardening not completed | **Closed in code, verified by targeted tests** |
+| `PiltController.cs` is fake-live hardcoded backend | **Now explicit Post-R1 / 501; no longer pretending to be live** |
+| `QuantumMetricsBackgroundService` is silent default-active theater | **Now opt-in only; disabled by default** |
 
----
-
-## Corrections to March 6 Ledger (`docs/TRUTH_LEDGER_2026-03-06.md`)
-
-| Old Claim | Correction |
-|-----------|-----------|
-| Trace persistence is SQLite/Drizzle | **File-backed JSONL** in `TraceStore.ts` |
-| AtlasController is missing | `AtlasController.cs` exists with `[Authorize]` |
-| Atlas and Dossier services are mock-only | `atlasService.ts` and `dossierService.ts` hit real endpoints, fallback removed |
-| forgeService.ts is not wired through PilotController | Has governed invocation via `runGovernedValuation()` in `pilotApi.ts`, but legacy math still co-exists. Status: **partial**, not absent |
-| 8 real handlers | **10 real handlers** (`registerR1Handlers` registers all 10) |
-
----
-
-## R1 Status Against March 2 Plan
+## R1 Status Against the Current Plan
 
 ### Done
-- Governance runtime (PilotController, ToolRunner, write-lane/risk/PII enforcement)
-- Invoke/trace contracts frozen and tested
-- Trace export/stats endpoints
-- Execution console / evidence rail / context ribbon / policy guard / confirmation gate UI
-- Atlas/Dossier backend controllers with county isolation + auth
-- Dossier details/evidence/SHA-256 content hash + notes CRUD + casefile
-- Correlation ID middleware (all responses)
-- Core gates passing (32/32 + 20/20 + 7/7)
-- 10 real handlers in `handlers.real.ts`
+
+- Governed runtime, invoke contracts, trace capture/export, and core gates
+- 10 real handlers on the active governed surface
+- Atlas and Dossier backend controllers with auth and county isolation
+- Dossier details, casefile, notes, evidence snapshot, and SHA-256 evidence hashing
+- Correlation middleware
+- `PropertyValuationController` hardening on the active backend surface
+- `PiltController` reclassified from fake-live to explicit Post-R1 disablement
+- `QuantumMetricsBackgroundService` moved from silent theater to opt-in only
+- CX targeted proof and backend build/test verification
 
 ### Partial
-- Governed end-to-end real-data flows (10/24 tools have real handlers)
-- Forge rewiring (governed path exists via `pilotApi.ts`, legacy client-side path co-exists)
-- Dossier frontend (real details/evidence, document-management slice still mock-labeled)
-- Fake-path elimination (not yet finished)
-- PiltController (frontend calls real endpoints, backend returns hardcoded data)
 
-### Not Fully Evidenced
-- `[Authorize]` on `PropertyValuationController`
-- Full cleanup of `QuantumMetricsBackgroundService`
-- Full removal of legacy/mock production paths in forge
-- `CostForgeController` batch-calculate (returns empty stub)
-- Exact `docs/ENDPOINT_CONTRACTS.md` filename from plan
+- Forge end-to-end cutover
+- Dossier frontend honesty closure
+- Atlas frontend honesty closure
+- Active-surface fake-path elimination on the frontend
+- Final governed proof packet for the 5 release tools
+- Branch-head evidence convergence across CC, CX, and CP
 
----
+### Post-R1 / Not Strict R1
 
-## Tool Manifest Status (24 tools → 10 real, 14 stub)
+- Full PILT implementation
+- Full Dais backend completion
+- 24/24 real handler closure
+- `request_trace_redaction`
+- Full Dossier document-management backend
+- Broad suite completion beyond the bounded R1 release target
 
-| toolId | Risk | Suite | Real Handler? | Backend Endpoint |
-|--------|------|-------|--------------|-----------------|
-| `route_to_parcel` | read_only | os | **YES** | navigation event |
-| `run_valuation_model` | write_high | forge | **YES** | POST `/api/costforge/calculate` |
-| `explain_value_change` | read_only | forge | **YES** | GET `/api/properties/{id}` |
-| `search_trace_by_correlation` | read_only | os | **YES** | real `TraceService` |
-| `summarize_levy_rate_components` | read_only | dais | **YES** | POST `/api/levy-calculation/calculate-rate` |
-| `explain_model_inputs` | read_only | forge | **YES** | GET `/api/costforge/models/{modelId}` |
-| `compare_assessed_value_history` | read_only | forge | **YES** | GET `/api/properties/{parcelId}` |
-| `summarize_parcel_casefile` | read_only | dossier | **YES** | GET `/api/dossier/parcels/{parcelId}/casefile` |
-| `add_dossier_note` | write_low | dossier | **YES** | POST `/api/dossier/{parcelId}/notes` |
-| `query_parcel_layers` | read_only | atlas | **YES** | GET `/api/atlas/parcels/{parcelId}/layers` |
-| `assign_task` | write_low | dais | NO — stub | needs DaisController |
-| `check_cert_status` | read_only | dais | NO — stub | needs DaisController |
-| `assemble_boe_packet` | write_high | dais | NO — stub | needs DaisController |
-| `draft_notice` | write_low | dais | NO — stub | needs template engine |
-| `draft_appeal_response` | write_low | dais | NO — stub | needs appeal controller |
-| `explain_model_results` | read_only | forge | NO — stub | needs model service |
-| `summarize_dossier` | read_only | dossier | NO — stub | needs dossier LLM/summary |
-| `synthesize_evidence` | read_only | dossier | NO — stub | needs evidence aggregation |
-| `generate_commissioner_memo` | read_only | dais | NO — stub | needs template engine |
-| `request_trace_redaction` | irreversible | os | NO — stub | needs redaction pipeline |
-| `explain_senior_exemption_impact` | read_only | dais | NO — stub | needs exemption calc |
-| `draft_value_change_notice` | write_low | dais | NO — stub | needs notice templates |
-| `draft_boe_appeal_response` | write_low | dais | NO — stub | needs appeal controller |
-| `summarize_sales_comps_rationale` | read_only | forge | NO — stub | needs sales comp engine |
+## Release-Critical Remaining Blockers
 
----
-
-## Remaining Blockers to "R1 Real"
-
-1. `forgeService.ts` still contains 100% client-side calculator / localStorage behavior
-2. `PiltController.cs` is 100% hardcoded — no DB, no auth, no county isolation
-3. `PropertyValuationController.cs` auth hardening not completed
-4. `QuantumMetricsBackgroundService` still registered (theater cleanup incomplete)
-5. `CostForgeController` batch-calculate and PACS sync are stubs
-6. 14 of 24 manifest tools have no real handler — only canned stubs
-7. Fake-path elimination not yet finished
-8. R1 acceptance: 5+ tools through governed path with all 11 acceptance criteria,
-   logged correlation IDs, and fake-path grep returning zero
-
----
+1. `forgeService.ts` still contains legacy client-side valuation and `localStorage`
+   production behavior.
+2. Some active frontend surfaces still need fake-path elimination or explicit disabled
+   states.
+3. PILT frontend fallback behavior still needs to be removed or made explicitly deferred.
+4. The final 5-tool governed proof and AC-1 through AC-11 evidence packet are not yet
+   complete at branch head.
+5. Branch-head evidence verification and manifest convergence are not yet complete
+   across CC, CX, and CP.
 
 ## Truth Statement
 
 TerraFusion R1 now has a real governed execution backbone in code: invoke contracts,
-trace capture/export, write-lane enforcement, county isolation, correlation propagation,
-and substantial shell UX are present and currently passing core gates.
+trace capture/export, risk and write-lane controls, county isolation, correlation
+propagation, and substantial shell UX are present and currently passing core gates.
 
-However, R1 is not yet honestly "fully real end-to-end" because Forge remains only
-partially migrated, some production UI paths still retain legacy/mock behavior,
-`PiltController` is entirely fake, and 14 of 24 tools still use canned stubs.
+The backend lane has materially advanced from planned hardening to delivered hardening.
+`PropertyValuationController` is closed in code and verified by targeted tests.
+`PiltController` no longer pretends to be live and now returns explicit Post-R1 `501`
+semantics. `QuantumMetricsBackgroundService` is no longer default-active theater.
 
-**The governance spine is solid. The next frontier is wiring real data through it.**
+R1 is still not ready for a final "real end-to-end" claim because Forge cutover,
+frontend fake-path elimination, and branch-head evidence convergence remain open.
 
----
+**Current honest posture:** the governance spine is solid, backend hardening is
+substantially complete, and final release truth now depends mainly on CC cutover work,
+CP evidence enforcement, and shared branch-head proof.
 
-## What This Session's AI Tool Got Wrong (March 6 Session)
+## What This Session's AI Tool Got Wrong
 
-1. Did not read governance constitution, agent entrypoint, or control manifest before starting
-2. Created and committed files without asking first (violating `.ai-agent-control-manifest.json` rule #1)
-3. Recommended "Complete PACS tab action wiring" — unauthorized modification of Harris PACS integration
-4. Fabricated a narrative about "AI hallucination loops" when challenged
-5. Performed shallow audit (file counts, git log) instead of reading the evidence base
-6. Took three iterations to reach honesty
-
----
+1. It treated file counts and surface area as proof instead of reading the evidence base.
+2. It recommended unauthorized PACS work that was outside the approved scope.
+3. It overstated unfinished surfaces instead of separating R1-required work from
+   Post-R1 backlog.
 
 *Classification: Internal working document*
-*Source: `handlers.real.ts`, `PilotController.ts`, `TraceStore.ts`, service files, controller source code, gate output*
+*Source: current source read, current test/build output, CX evidence artifact, current R1 plan*
