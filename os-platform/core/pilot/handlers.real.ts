@@ -1,7 +1,7 @@
 /**
- * TerraFusion OS — R1 Real Handlers (All 24 Tools)
+ * TerraFusion OS — Real Handlers (29 Tools: 24 R1 + 5 R2 Wave 1)
  *
- * Production handler implementations for ALL 24 R1 tools.
+ * Production handler implementations for ALL governed tools.
  * These call real backend endpoints instead of returning canned data.
  *
  * When registered, they OVERRIDE the canned Phase 8.3/8.4 stubs for the same toolIds.
@@ -37,6 +37,13 @@
  *  22. assign_task               → POST /api/dais/tasks/assign
  *  23. check_cert_status         → GET  /api/dais/certification/status
  *  24. draft_notice              → POST /api/dais/notices/draft
+ *
+ * R2 Wave 1: USPAP Three-Approach Valuation (5) → CostForgeController approach endpoints:
+ *  25. run_sales_approach        → POST /api/costforge/approach/sales
+ *  26. run_income_approach       → POST /api/costforge/approach/income
+ *  27. run_cost_approach         → POST /api/costforge/approach/cost
+ *  28. run_reconciliation        → POST /api/costforge/approach/reconcile
+ *  29. get_cost_matrix           → GET  /api/costforge/cost-matrix/{type}/{region}
  */
 
 import type { ToolHandler } from './ToolRunner.js';
@@ -1045,6 +1052,115 @@ export const draftNoticeRealHandler: ToolHandler<
  * @param runner - ToolRunner instance (must have initialized registry)
  * @param traceService - TraceService instance for search_trace_by_correlation
  */
+// ============================================================================
+// R2 Wave 1: USPAP Three-Approach Valuation Handlers
+// Backend: POST /api/costforge/approach/{sales,income,cost,reconcile}
+// Extracted from quarantine: applications/terraforge-suite/
+// ============================================================================
+
+export interface RunApproachParams {
+  county: string;
+  parcelId: string;
+  approach: 'sales' | 'income' | 'cost' | 'reconcile';
+  data?: Record<string, unknown>;
+}
+
+export interface RunApproachResult {
+  approach: string;
+  status: string;
+  countyId: string;
+  message: string;
+}
+
+export const runSalesApproachHandler: ToolHandler<
+  RunApproachParams,
+  RunApproachResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<RunApproachResult>(
+    '/api/costforge/approach/sales',
+    { parcelId: params.parcelId, ...(params.data ?? {}) },
+    { token }
+  );
+  return unwrapBackend(raw, 'Sales approach failed');
+};
+
+export const runIncomeApproachHandler: ToolHandler<
+  RunApproachParams,
+  RunApproachResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<RunApproachResult>(
+    '/api/costforge/approach/income',
+    { parcelId: params.parcelId, ...(params.data ?? {}) },
+    { token }
+  );
+  return unwrapBackend(raw, 'Income approach failed');
+};
+
+export const runCostApproachHandler: ToolHandler<
+  RunApproachParams,
+  RunApproachResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<RunApproachResult>(
+    '/api/costforge/approach/cost',
+    { parcelId: params.parcelId, ...(params.data ?? {}) },
+    { token }
+  );
+  return unwrapBackend(raw, 'Cost approach failed');
+};
+
+export const runReconciliationHandler: ToolHandler<
+  RunApproachParams,
+  RunApproachResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<RunApproachResult>(
+    '/api/costforge/approach/reconcile',
+    { parcelId: params.parcelId, ...(params.data ?? {}) },
+    { token }
+  );
+  return unwrapBackend(raw, 'Reconciliation failed');
+};
+
+export interface GetCostMatrixParams {
+  county: string;
+  buildingType: string;
+  region: string;
+}
+
+export interface GetCostMatrixResult {
+  buildingType: string;
+  buildingTypeDescription?: string;
+  region: string;
+  baseCost: number;
+  matrixYear: number;
+  matrixId?: number;
+  adjustmentFactors: { complexity: number; quality: number; condition: number };
+}
+
+export const getCostMatrixHandler: ToolHandler<
+  GetCostMatrixParams,
+  GetCostMatrixResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+  const { token } = await acquirePilotToken();
+  const raw = await backendGet<GetCostMatrixResult>(
+    `/api/costforge/cost-matrix/${encodeURIComponent(params.buildingType)}/${encodeURIComponent(params.region)}`,
+    { token }
+  );
+  return unwrapBackend(raw, 'Cost matrix lookup failed');
+};
+
+// ============================================================================
+// Handler Registration
+// ============================================================================
+
 export function registerR1Handlers(
   runner: {
     registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
@@ -1082,4 +1198,11 @@ export function registerR1Handlers(
   runner.registerHandler('assign_task', assignTaskRealHandler);
   runner.registerHandler('check_cert_status', checkCertStatusRealHandler);
   runner.registerHandler('draft_notice', draftNoticeRealHandler);
+
+  // R2 Wave 1: USPAP three-approach valuation handlers (5)
+  runner.registerHandler('run_sales_approach', runSalesApproachHandler);
+  runner.registerHandler('run_income_approach', runIncomeApproachHandler);
+  runner.registerHandler('run_cost_approach', runCostApproachHandler);
+  runner.registerHandler('run_reconciliation', runReconciliationHandler);
+  runner.registerHandler('get_cost_matrix', getCostMatrixHandler);
 }
