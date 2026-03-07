@@ -105,6 +105,15 @@ Correlation:
 - Global correlation middleware applies on the API surface.
 - Governed proof should capture the correlation ID returned through the invoke path.
 
+Existing backend proof:
+
+- `backend/tests/TerraFusion.Unit.Tests/R1Week2/R1Week2Cx8CostForgeRealOutputTests.cs`
+  already proves:
+  - non-zero CostForge output for seeded Benton properties
+  - parcel-variable output (`Property A != Property B`)
+  - response `propertyId` matches the requested property
+  - parcel-number lookup succeeds on the live endpoint
+
 ## Explicit Post-R1 Forge Routes
 
 These routes are now intentionally disabled rather than pretending to succeed:
