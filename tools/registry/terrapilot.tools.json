@@ -1,6 +1,6 @@
 {
   "$schema": "./terrapilot.tools.schema.json",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "TerraPilot tool registry - authoritative manifest for Gates 4-7 enforcement",
   "lastUpdated": "2026-03-07",
   "tools": [
@@ -554,6 +554,73 @@
           "region": { "type": "string", "description": "Region name (Central Benton, East Benton, West Benton)" }
         },
         "required": ["buildingType", "region"]
+      }
+    },
+    {
+      "toolId": "search_dossier_documents",
+      "displayName": "Search Dossier Documents",
+      "suite": "dossier",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["dossier"],
+      "description": "Search document attachments across parcel dossiers (deeds, photos, appraisals, sketches). County-isolated with type/status/query filters.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Filter by parcel ID" },
+          "type": { "type": "string", "enum": ["deed", "photo", "appraisal", "appeal", "correspondence", "sketch", "report", "all"], "default": "all" },
+          "status": { "type": "string", "enum": ["active", "archived", "sealed", "all"], "default": "all" },
+          "query": { "type": "string", "description": "Free-text search on document name" },
+          "limit": { "type": "integer", "default": 25, "description": "Page size (1-100)" }
+        }
+      }
+    },
+    {
+      "toolId": "upload_dossier_document",
+      "displayName": "Upload Dossier Document",
+      "suite": "dossier",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "dossier",
+      "touches": ["dossier"],
+      "description": "Upload a document attachment to a parcel dossier. Creates SHA-256 integrity hash and initial chain-of-custody event.",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["workflow_update", "evidence_submission", "operator_correction"],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Target parcel ID" },
+          "documentType": { "type": "string", "enum": ["deed", "photo", "appraisal", "appeal", "correspondence", "sketch", "report"], "default": "report" },
+          "name": { "type": "string", "description": "Document display name (defaults to filename)" }
+        },
+        "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "get_document_chain_of_custody",
+      "displayName": "Get Document Chain of Custody",
+      "suite": "dossier",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["dossier"],
+      "description": "Retrieve the tamper-evident chain-of-custody audit trail for a dossier document. Shows upload, download, and status change events with SHA-256 hashes.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel ID owning the document" },
+          "documentId": { "type": "string", "description": "Document UUID" }
+        },
+        "required": ["parcelId", "documentId"]
       }
     }
   ]

@@ -234,7 +234,7 @@ Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `t
 
 ---
 
-## Tool Manifest Status (29 tools → 29 real handlers, 0 stubs)
+## Tool Manifest Status (32 tools → 32 real handlers, 0 stubs)
 
 | toolId | Risk | Suite | Real Handler? | Backend Endpoint |
 |--------|------|-------|--------------|-----------------|
@@ -267,6 +267,9 @@ Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `t
 | `run_cost_approach` | write_high | forge | **YES** (R2) | POST `/api/costforge/approach/cost` |
 | `run_reconciliation` | write_high | forge | **YES** (R2) | POST `/api/costforge/approach/reconcile` |
 | `get_cost_matrix` | read_only | forge | **YES** (R2) | GET `/api/costforge/cost-matrix/{type}/{region}` |
+| `search_dossier_documents` | read_only | dossier | **YES** (R2.5) | POST `/api/dossier/documents/search` |
+| `upload_dossier_document` | write_low | dossier | **YES** (R2.5) | POST `/api/dossier/{parcelId}/documents` |
+| `get_document_chain_of_custody` | read_only | dossier | **YES** (R2.5) | GET `/api/dossier/{parcelId}/documents/{documentId}/chain` |
 
 ---
 

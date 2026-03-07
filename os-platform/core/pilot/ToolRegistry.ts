@@ -16,7 +16,7 @@ import type { Mode, Risk, Suite, Tool, ToolManifest } from '../types/index.js';
 // Constants
 // ============================================================================
 
-const MANIFEST_VERSION = '1.3.0';
+const MANIFEST_VERSION = '1.5.0';
 const BASE_DIR = __dirname;
 const CANONICAL_MANIFEST_PATH = resolve(
   BASE_DIR,

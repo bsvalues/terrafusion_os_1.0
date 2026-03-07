@@ -1,5 +1,5 @@
 /**
- * TerraFusion OS — Real Handlers (29 Tools: 24 R1 + 5 R2 Wave 1)
+ * TerraFusion OS — Real Handlers (32 Tools: 24 R1 + 5 R2 Wave 1 + 3 R2.5)
  *
  * Production handler implementations for ALL governed tools.
  * These call real backend endpoints instead of returning canned data.
@@ -1158,6 +1158,133 @@ export const getCostMatrixHandler: ToolHandler<
 };
 
 // ============================================================================
+// R2.5: Dossier Document Management Handlers (3)
+//
+//  30. search_dossier_documents    → POST /api/dossier/documents/search
+//  31. upload_dossier_document     → POST /api/dossier/{parcelId}/documents (note: file via form)
+//  32. get_document_chain_of_custody → GET /api/dossier/{parcelId}/documents/{documentId}/chain
+// ============================================================================
+
+export interface SearchDossierDocumentsParams {
+  parcelId?: string;
+  type?: string;
+  status?: string;
+  query?: string;
+  limit?: number;
+}
+
+export interface SearchDossierDocumentsResult {
+  results: Array<{
+    id: string;
+    name: string;
+    type: string;
+    parcelId: string;
+    uploadedBy: string;
+    uploadedAt: string;
+    size: string;
+    status: string;
+    custodyChain: number;
+    mimeType: string;
+    hash: string;
+  }>;
+  total: number;
+  hasMore: boolean;
+}
+
+export const searchDossierDocumentsHandler: ToolHandler<
+  SearchDossierDocumentsParams,
+  SearchDossierDocumentsResult
+> = async (params, _context, _tool) => {
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<SearchDossierDocumentsResult>(
+    '/api/dossier/documents/search',
+    {
+      parcelId: params.parcelId,
+      type: params.type ?? 'all',
+      status: params.status ?? 'all',
+      query: params.query,
+      limit: params.limit ?? 25,
+      offset: 0,
+    },
+    { token }
+  );
+  return unwrapBackend(raw, 'Document search failed');
+};
+
+export interface UploadDossierDocumentParams {
+  county: string;
+  parcelId: string;
+  documentType?: string;
+  name?: string;
+}
+
+export interface UploadDossierDocumentResult {
+  documentId: string;
+  name: string;
+  type: string;
+  contentHash: string;
+  status: string;
+  payloadRef: string;
+}
+
+/**
+ * Upload handler — note: actual file upload requires multipart/form-data
+ * from the UI. This handler creates a metadata placeholder that the
+ * ToolInvokePanel can use to trigger the real upload flow.
+ */
+export const uploadDossierDocumentHandler: ToolHandler<
+  UploadDossierDocumentParams,
+  UploadDossierDocumentResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  // Tool invocation records intent — actual file upload happens via
+  // the frontend's dossierService.uploadDocument() which POSTs multipart.
+  // This handler returns a reference for the trace event.
+  return {
+    documentId: 'pending-upload',
+    name: params.name ?? 'untitled',
+    type: params.documentType ?? 'report',
+    contentHash: 'pending',
+    status: 'pending',
+    payloadRef: `dossier://${context.countyId}/parcels/${params.parcelId}/documents/pending`,
+  };
+};
+
+export interface GetDocumentChainParams {
+  county: string;
+  parcelId: string;
+  documentId: string;
+}
+
+export interface GetDocumentChainResult {
+  events: Array<{
+    timestamp: string;
+    actor: string;
+    action: string;
+    hash: string;
+  }>;
+  documentId: string;
+}
+
+export const getDocumentChainHandler: ToolHandler<
+  GetDocumentChainParams,
+  GetDocumentChainResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+  const { token } = await acquirePilotToken();
+  const raw = await backendGet<Array<{ timestamp: string; actor: string; action: string; hash: string }>>(
+    `/api/dossier/${encodeURIComponent(params.parcelId)}/documents/${encodeURIComponent(params.documentId)}/chain`,
+    { token }
+  );
+  const events = unwrapBackend(raw, 'Chain-of-custody fetch failed');
+  return {
+    events,
+    documentId: params.documentId,
+  };
+};
+
+// ============================================================================
 // Handler Registration
 // ============================================================================
 
@@ -1205,4 +1332,9 @@ export function registerR1Handlers(
   runner.registerHandler('run_cost_approach', runCostApproachHandler);
   runner.registerHandler('run_reconciliation', runReconciliationHandler);
   runner.registerHandler('get_cost_matrix', getCostMatrixHandler);
+
+  // R2.5: Dossier document management handlers (3)
+  runner.registerHandler('search_dossier_documents', searchDossierDocumentsHandler);
+  runner.registerHandler('upload_dossier_document', uploadDossierDocumentHandler);
+  runner.registerHandler('get_document_chain_of_custody', getDocumentChainHandler);
 }

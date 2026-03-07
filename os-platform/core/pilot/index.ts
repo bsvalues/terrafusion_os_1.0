@@ -98,6 +98,15 @@ export {
     type AddDossierNoteRealResult,
     type QueryParcelLayersParams,
     type QueryParcelLayersResult,
+    searchDossierDocumentsHandler,
+    uploadDossierDocumentHandler,
+    getDocumentChainHandler,
+    type SearchDossierDocumentsParams,
+    type SearchDossierDocumentsResult,
+    type UploadDossierDocumentParams,
+    type UploadDossierDocumentResult,
+    type GetDocumentChainParams,
+    type GetDocumentChainResult,
 } from './handlers.real.js';
 
 // Backend HTTP Client
