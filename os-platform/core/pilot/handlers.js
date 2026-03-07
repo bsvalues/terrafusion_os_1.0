@@ -1,4 +1,3 @@
-// GENERATED - DO NOT EDIT
 "use strict";
 /**
  * TerraFusion OS - Tool Handlers (Phase 8.3)

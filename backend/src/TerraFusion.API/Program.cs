@@ -606,8 +606,7 @@ builder.Services.AddSignalR(options =>
     options.StreamBufferCapacity = 10;
 });
 
-// Register Quantum Metrics Background Service for real-time broadcasting
-builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
+// QuantumMetricsBackgroundService removed — theater metric broadcasting disabled (R1 cleanup)
 
 // Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
@@ -888,7 +887,7 @@ app.MapHealthChecks("/healthz/ready", new Microsoft.AspNetCore.Diagnostics.Healt
 // Map SignalR hubs
 app.MapHub<OSCoreHub>("/hubs/oscore");
 app.MapHub<EnhancementHub>("/hubs/enhancement");
-app.MapHub<QuantumMetricsHub>("/hubs/quantum-metrics");
+// QuantumMetricsHub removed — theater metrics endpoint disabled (R1 cleanup)
 
 // 📊 Phase 2 Real-Time Collaboration Hubs (Week 5 Day 1-2)
 app.MapHub<TerraFusion.AI.Hubs.NotebookHub>("/hubs/notebook");

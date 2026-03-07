@@ -1,4 +1,3 @@
-// GENERATED - DO NOT EDIT
 "use strict";
 /**
  * TerraFusion OS Core Types

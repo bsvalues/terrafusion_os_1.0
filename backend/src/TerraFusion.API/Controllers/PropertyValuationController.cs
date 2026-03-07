@@ -1,19 +1,21 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using TerraFusion.API.Security;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Models;
 
 namespace TerraFusion.API.Controllers
 {
     /// <summary>
-    /// Elite Property Valuation AI Controller
-    /// Championship-level property assessment API coordinating 7 AI services
-    /// Government. Transcended. - Property valuation excellence
+    /// Property Valuation AI Controller
+    /// AI-enhanced property assessment API coordinating valuation services
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
+    [Authorize]
     public class PropertyValuationController : ControllerBase
     {
         private readonly IPropertyValuationAIEnhancementService _valuationService;
@@ -36,6 +38,7 @@ namespace TerraFusion.API.Controllers
         /// <response code="400">Invalid request parameters</response>
         /// <response code="500">Internal server error during valuation</response>
         [HttpPost("enhance")]
+        [RequiresPermission("write:valuation")]
         [ProducesResponseType(typeof(PropertyValuationResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -115,6 +118,7 @@ namespace TerraFusion.API.Controllers
         /// <response code="200">Performance metrics retrieved successfully</response>
         /// <response code="400">Invalid county code</response>
         [HttpGet("performance/{countyCode}")]
+        [RequiresPermission("read:valuation")]
         [ProducesResponseType(typeof(ValuationPerformanceMetrics), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ValuationPerformanceMetrics>> GetPerformanceMetrics(string countyCode)
@@ -162,6 +166,7 @@ namespace TerraFusion.API.Controllers
         /// <returns>Health status for Consciousness, CostForge, TerraGaia, TerraFusionGPT, TerraLevy, TerraFlow, TerraSync</returns>
         /// <response code="200">AI service health status retrieved successfully</response>
         [HttpGet("health")]
+        [RequiresPermission("read:valuation")]
         [ProducesResponseType(typeof(AIServiceHealthStatus), StatusCodes.Status200OK)]
         public async Task<ActionResult<AIServiceHealthStatus>> GetAIServiceHealth()
         {
@@ -203,6 +208,7 @@ namespace TerraFusion.API.Controllers
         /// <response code="200">Bulk valuations completed successfully</response>
         /// <response code="400">Invalid request parameters</response>
         [HttpPost("enhance/bulk")]
+        [RequiresPermission("write:valuation")]
         [ProducesResponseType(typeof(PropertyValuationResult[]), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PropertyValuationResult[]>> EnhanceBulkPropertyValuations(

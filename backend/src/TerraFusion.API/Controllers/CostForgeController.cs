@@ -317,15 +317,58 @@ public class CostForgeController : ControllerBase
                 return BadRequest("Batch size cannot exceed 1000 properties");
             }
 
-            // TODO: Implement batch calculation when ICostForgeAIService supports it
+            // County isolation: resolve and enforce
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+            if (!string.IsNullOrWhiteSpace(request.CountyId) && !CountyCodeMatchesContext(request.CountyId, countyContext))
+            {
+                return Forbid();
+            }
+
+            // Filter to properties that exist within the caller's county
+            var validPropertyIds = await _db.Properties
+                .AsNoTracking()
+                .Where(p => request.PropertyIds.Contains(p.Id) && p.CountyId == countyContext.CountyId)
+                .Select(p => p.Id)
+                .ToListAsync();
+
             var result = new BatchValuationResultDto
             {
                 TotalProperties = request.PropertyIds.Count,
                 SuccessfulCalculations = 0,
-                FailedCalculations = 0,
+                FailedCalculations = request.PropertyIds.Count - validPropertyIds.Count,
                 AverageProcessingTime = 0,
-                Errors = new List<string> { "Batch processing not yet implemented" }
+                Errors = new List<string>()
             };
+
+            if (validPropertyIds.Count < request.PropertyIds.Count)
+            {
+                var missing = request.PropertyIds.Count - validPropertyIds.Count;
+                result.Errors.Add($"{missing} property ID(s) not found in county or do not exist");
+            }
+
+            var durations = new List<double>();
+            foreach (var propertyId in validPropertyIds)
+            {
+                var propStart = DateTime.UtcNow;
+                try
+                {
+                    var analysis = await _costForgeService.AnalyzeCostAsync(propertyId);
+                    result.SuccessfulCalculations++;
+                    durations.Add((DateTime.UtcNow - propStart).TotalMilliseconds);
+                }
+                catch (Exception propEx)
+                {
+                    result.FailedCalculations++;
+                    result.Errors.Add($"Property {propertyId}: {propEx.Message}");
+                    _logger.LogWarning(propEx, "Batch calculation failed for property {PropertyId}", propertyId);
+                }
+            }
+
+            result.AverageProcessingTime = durations.Count > 0 ? durations.Average() : 0;
             var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
             await _auditLogger.LogApiCallAsync("POST", "/api/costforge/batch-calculate", 200, duration,
