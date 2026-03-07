@@ -86,6 +86,8 @@ Dossier and Atlas Post-R1 carve-outs, PILT, and runtime theater cleanup
 
 - [cx-r1-route-matrix.md](/C:/Users/bsval/terrafusion_os_1.0/docs/evidence/cx/cx-r1-route-matrix.md)
   is the authoritative CX route matrix for the active R1 backend surface.
+- [cx-r1-forge-contract.md](/C:/Users/bsval/terrafusion_os_1.0/docs/evidence/cx/cx-r1-forge-contract.md)
+  captures the live Forge request, response, normalization, and explicit Post-R1 route semantics.
 
 ## Remaining Truth
 

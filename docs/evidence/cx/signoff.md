@@ -16,5 +16,6 @@
 
 - Active surface closure: [cx-r1-active-surface-closure.md](./cx-r1-active-surface-closure.md)
 - Route matrix: [cx-r1-route-matrix.md](./cx-r1-route-matrix.md)
+- Forge contract: [cx-r1-forge-contract.md](./cx-r1-forge-contract.md)
 - Remaining posture: CX backend hardening is substantially complete, but final signoff
   remains pending branch-head SHA/canon convergence and cross-lane evidence verification.
