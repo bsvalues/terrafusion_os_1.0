@@ -126,3 +126,35 @@ export async function backendGet<T = unknown>(
     return { ok: false, status: 0, error: `Backend unreachable: ${message}` };
   }
 }
+
+/**
+ * PUT JSON to a backend endpoint. Returns typed result.
+ */
+export async function backendPut<T = unknown>(
+  path: string,
+  body: unknown,
+  options?: BackendCallOptions
+): Promise<BackendResult<T>> {
+  const url = `${resolveBaseUrl()}${path}`;
+  try {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (options?.token) {
+      headers['Authorization'] = `Bearer ${options.token}`;
+    }
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15_000),
+    });
+    const text = await res.text();
+    if (!res.ok) {
+      return { ok: false, status: res.status, error: `Backend ${res.status}: ${res.statusText}`, raw: text };
+    }
+    const data = text ? (JSON.parse(text) as T) : ({} as T);
+    return { ok: true, status: res.status, data };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { ok: false, status: 0, error: `Backend unreachable: ${message}` };
+  }
+}
