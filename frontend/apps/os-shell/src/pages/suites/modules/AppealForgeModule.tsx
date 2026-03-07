@@ -80,64 +80,6 @@ const EVIDENCE_TYPES: Array<{ value: AppealEvidence['type']; label: string }> = 
   { value: 'other', label: 'Other Document' },
 ];
 
-// Demo appeals with realistic Benton County data
-const DEMO_APPEALS: AppealRecord[] = [
-  {
-    id: 'demo-appeal-1',
-    parcelId: '1-0455-100-0001-001',
-    appealType: 'VALUATION',
-    status: 'SCHEDULED',
-    filedDate: '2025-06-15',
-    hearingDate: '2025-08-12',
-    decision: 'PENDING',
-    currentValue: 485000,
-    requestedValue: 425000,
-    finalValue: null,
-    evidence: [
-      { id: 'ev-1', type: 'comparable_sale', title: 'Comp Sale — 1250 Jadwin Ave', description: 'Similar SFR sold 03/2025 for $418,000', addedAt: '2025-06-15' },
-      { id: 'ev-2', type: 'photo', title: 'Foundation Crack Photos', description: 'Documented structural issues not reflected in assessment', addedAt: '2025-06-16' },
-      { id: 'ev-3', type: 'repair_estimate', title: 'ABC Contractors Estimate', description: '$42,000 foundation repair estimate dated 05/2025', addedAt: '2025-06-18' },
-    ],
-    notes: 'Taxpayer contends assessed value does not reflect structural deficiencies. Three comps within 0.5 miles support requested value.',
-    createdAt: '2025-06-15T10:30:00Z',
-  },
-  {
-    id: 'demo-appeal-2',
-    parcelId: '1-0935-200-0004-002',
-    appealType: 'VALUATION',
-    status: 'DECIDED',
-    filedDate: '2025-04-01',
-    hearingDate: '2025-05-20',
-    decision: 'PARTIAL',
-    currentValue: 2100000,
-    requestedValue: 1750000,
-    finalValue: 1925000,
-    evidence: [
-      { id: 'ev-4', type: 'income_statement', title: '2024 P&L Statement', description: 'Shows NOI decline of 18% from prior year', addedAt: '2025-04-01' },
-      { id: 'ev-5', type: 'appraisal', title: 'MAI Appraisal Report', description: 'Independent appraisal by certified MAI appraiser', addedAt: '2025-04-10' },
-    ],
-    notes: 'Multi-family property. Board found partial merit — reduced from $2.1M to $1.925M. Income decline supported a 8.3% reduction.',
-    createdAt: '2025-04-01T09:00:00Z',
-  },
-  {
-    id: 'demo-appeal-3',
-    parcelId: '1-1250-300-0002-000',
-    appealType: 'CLASSIFICATION',
-    status: 'UNDER_REVIEW',
-    filedDate: '2025-07-01',
-    hearingDate: null,
-    decision: 'PENDING',
-    currentValue: 890000,
-    requestedValue: 890000,
-    finalValue: null,
-    evidence: [
-      { id: 'ev-6', type: 'other', title: 'Zoning Change Documentation', description: 'Property rezoned from Commercial to Mixed-Use 01/2025', addedAt: '2025-07-01' },
-    ],
-    notes: 'Classification appeal — property should be reclassified to mixed-use following zoning change. No value dispute.',
-    createdAt: '2025-07-01T14:00:00Z',
-  },
-];
-
 export default function AppealForgeModule() {
   const [appeals, setAppeals] = useState<AppealRecord[]>([]);
   const [selectedAppeal, setSelectedAppeal] = useState<string | null>(null);
@@ -156,13 +98,10 @@ export default function AppealForgeModule() {
   const [newEvidenceTitle, setNewEvidenceTitle] = useState('');
   const [newEvidenceDesc, setNewEvidenceDesc] = useState('');
 
-  // Load appeals on mount (demo + localStorage)
+  // Appeal data — disabled pending R2 backend integration
   useEffect(() => {
     const stored = loadAppeals();
-    // Merge demo appeals with stored, avoiding duplicates
-    const demoIds = new Set(DEMO_APPEALS.map((a) => a.id));
-    const merged = [...DEMO_APPEALS, ...stored.filter((a) => !demoIds.has(a.id))];
-    setAppeals(merged);
+    setAppeals(stored);
   }, []);
 
   const filteredAppeals = useMemo(() => {
@@ -488,16 +427,14 @@ export default function AppealForgeModule() {
                           Advance Status
                         </TactileButton>
                       )}
-                      {!activeAppeal.id.startsWith('demo-') && (
-                        <Button
-                          size='sm'
-                          variant='outline'
-                          onClick={() => handleDeleteAppeal(activeAppeal.id)}
-                          style={{ borderColor: 'hsl(0 84% 60% / 0.4)', color: 'hsl(var(--tf-error-hs) 60%)' }}
-                        >
-                          <Trash2 size={14} />
-                        </Button>
-                      )}
+                      <Button
+                        size='sm'
+                        variant='outline'
+                        onClick={() => handleDeleteAppeal(activeAppeal.id)}
+                        style={{ borderColor: 'hsl(0 84% 60% / 0.4)', color: 'hsl(var(--tf-error-hs) 60%)' }}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
                     </div>
                   </div>
 
