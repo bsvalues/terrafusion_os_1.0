@@ -2,7 +2,8 @@
 
 Date: March 7, 2026
 Lane: `cx`
-Scope: active backend truth closure for Property Valuation, PILT, and runtime theater cleanup
+Scope: active backend truth closure for Property Valuation, CostForge non-R1 surfaces,
+PILT, and runtime theater cleanup
 
 ## Implemented
 
@@ -24,6 +25,17 @@ Scope: active backend truth closure for Property Valuation, PILT, and runtime th
   `ProblemDetails` with `scope=Post-R1`.
 - This reclassifies PILT from fake runtime behavior to explicit deferred scope.
 
+### CostForge Non-R1 Surfaces
+
+- [CostForgeController.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Controllers/CostForgeController.cs)
+  no longer returns fake-success payloads for:
+  - `POST /api/costforge/batch-calculate`
+  - `POST /api/costforge/sync/harris-pacs`
+- Those endpoints now return explicit `501 Not Implemented` `ProblemDetails` with
+  `scope=Post-R1` and `X-R1-Scope: Post-R1`.
+- The active single-property Forge calculation path remains live; only the non-R1
+  surfaces were converted from placeholder success to honest disablement.
+
 ### Quantum Metrics Background Service
 
 - [Program.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/src/TerraFusion.API/Program.cs)
@@ -37,9 +49,17 @@ Scope: active backend truth closure for Property Valuation, PILT, and runtime th
 - [R1Week5CxR1ClosureTests.cs](/C:/Users/bsval/terrafusion_os_1.0/backend/tests/TerraFusion.Unit.Tests/R1Week5/R1Week5CxR1ClosureTests.cs)
 - backend build
 - targeted unit tests for controller auth/county gating and PILT disablement
+- targeted unit tests for explicit CostForge Post-R1 endpoint semantics
+
+## Route Matrix
+
+- [cx-r1-route-matrix.md](/C:/Users/bsval/terrafusion_os_1.0/docs/evidence/cx/cx-r1-route-matrix.md)
+  is the authoritative CX route matrix for the active R1 backend surface.
 
 ## Remaining Truth
 
 - This does not make PILT real. It makes PILT honest.
+- This does not make CostForge batch valuation or Harris PACS sync real. It makes those
+  surfaces explicit Post-R1 instead of fake-success.
 - This does not complete CC fake-path removal for the PILT UI fallback.
 - This does not finalize cross-lane signoff or the branch-head evidence manifest.

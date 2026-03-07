@@ -12,6 +12,9 @@ using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Models;
 using Xunit;
+using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
+using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
+using CostForgeService = TerraFusion.Core.Services.ICostForgeService;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
 
@@ -206,6 +209,74 @@ public sealed class R1Week5CxR1ClosureTests
         problem.Title.Should().Be("PILT backend is not enabled for R1");
         problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
         problem.Extensions["scope"].Should().Be("Post-R1");
+        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+    }
+
+    [Fact]
+    public void CostForgeController_BatchCalculate_ReturnsExplicitPostR1ProblemDetails()
+    {
+        using var db = CreateDbContext(nameof(CostForgeController_BatchCalculate_ReturnsExplicitPostR1ProblemDetails));
+        var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+        var costForgeAiService = new Mock<CostForgeAIService>(MockBehavior.Strict);
+        var auditLogger = new Mock<AuditLogger>(MockBehavior.Strict);
+
+        var controller = new CostForgeController(
+            costForgeService.Object,
+            costForgeAiService.Object,
+            db,
+            auditLogger.Object,
+            NullLogger<CostForgeController>.Instance);
+
+        AttachPrincipal(controller, CreateEmptyPrincipal());
+
+        var result = controller.BatchCalculateValuations(new BatchValuationRequestDto
+        {
+            CountyId = "BENTON",
+            PropertyIds = [Guid.NewGuid(), Guid.NewGuid()],
+        });
+
+        var objectResult = result.Result.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+
+        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problem.Title.Should().Be("CostForge batch valuation is not enabled for R1");
+        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
+        problem.Extensions["scope"].Should().Be("Post-R1");
+        problem.Extensions["feature"].Should().Be("CostForge batch valuation");
+        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+    }
+
+    [Fact]
+    public void CostForgeController_HarrisSync_ReturnsExplicitPostR1ProblemDetails()
+    {
+        using var db = CreateDbContext(nameof(CostForgeController_HarrisSync_ReturnsExplicitPostR1ProblemDetails));
+        var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+        var costForgeAiService = new Mock<CostForgeAIService>(MockBehavior.Strict);
+        var auditLogger = new Mock<AuditLogger>(MockBehavior.Strict);
+
+        var controller = new CostForgeController(
+            costForgeService.Object,
+            costForgeAiService.Object,
+            db,
+            auditLogger.Object,
+            NullLogger<CostForgeController>.Instance);
+
+        AttachPrincipal(controller, CreateEmptyPrincipal());
+
+        var result = controller.SyncWithHarrisPACS(new HarrisSyncRequestDto
+        {
+            CountyId = "BENTON",
+            SyncType = "full",
+        });
+
+        var objectResult = result.Result.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+
+        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problem.Title.Should().Be("Harris PACS sync is not enabled for R1");
+        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
+        problem.Extensions["scope"].Should().Be("Post-R1");
+        problem.Extensions["feature"].Should().Be("Harris PACS sync");
         controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
     }
 }

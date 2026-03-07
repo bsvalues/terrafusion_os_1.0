@@ -62,7 +62,7 @@ Frozen scope authority remains:
 |---|---|---|
 | `AtlasController.cs` | Real, authenticated, county-isolated controller | Source-verified |
 | `DossierController.cs` | Real, authenticated, county-isolated controller with notes, casefile, evidence snapshot, and SHA-256 evidence hash | Source-verified |
-| `CostForgeController.cs` | Real for active single-property valuation path; some non-R1 surfaces remain stubbed | Source-verified |
+| `CostForgeController.cs` | Real for the active single-property valuation path. Batch valuation and Harris PACS sync are now explicit `Post-R1` / `501`, not fake-success stubs. | Source-verified |
 | `LevyCalculationController.cs` | Real, authenticated, county-scoped levy calculation surface | Source-verified |
 | `PropertyValuationController.cs` | **Closed in code, verified by targeted tests**. Now authenticated and county-scoped on active requests. | Source + `R1Week5CxR1ClosureTests` |
 | `PiltController.cs` | **No longer fake-live; now explicit Post-R1 / 501**. Authenticated, intentionally disabled, returns explicit `ProblemDetails`. | Source + `R1Week5CxR1ClosureTests` |
@@ -103,6 +103,7 @@ Frozen scope authority remains:
 - `PropertyValuationController` hardening on the active backend surface
 - `PiltController` reclassified from fake-live to explicit Post-R1 disablement
 - `QuantumMetricsBackgroundService` moved from silent theater to opt-in only
+- `CostForgeController` non-R1 batch and PACS surfaces reclassified from fake-success to explicit Post-R1 disablement
 - CX targeted proof and backend build/test verification
 
 ### Partial
