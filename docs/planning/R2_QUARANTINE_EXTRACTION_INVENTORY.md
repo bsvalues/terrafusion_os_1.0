@@ -15,9 +15,10 @@
 | `applications/terra-flow-production/` | 183,825 (Python) | Property valuation agent (ML: RandomForest, GradientBoosting, ElasticNet), assessment API, spatial service, data governance, sync service, DB models | **HIGH** |
 | `BS_PACS/` | 86,558 (SQL) | 2,086 stored procedures, 2,133 table definitions, views, functions — actual Harris PACS 9.0 database | **REFERENCE ONLY** (county approval required) |
 | `terra-flow/` | ~14,000 (TS/Python) | Privacy engines (DP, FL, HE), WebSocket service | **LOW** (no Assessor logic) |
-| `terrafusion-atlas/` | TBD | ArcGIS integration, layer definitions | **MEDIUM** |
-| `terra-levy/` | TBD | Levy calculation logic | **MEDIUM** |
-| `terra-collections/` | TBD | Tax collection workflows | **LOW** (R3) |
+| `BS_PACS/Database/` | ~5,000+ (C#) | **REAL C# .NET Core API** — DataSyncService (actual PACS connector via Dapper), CostApproachController, CostApproachModels (CostFactor, DepreciationRate, LandValue), BillingService, JWT auth, Hangfire, ~10K county data files | **HIGH** (same tech stack as production!) |
+| `terrafusion-atlas/` | ~2,000 (Python/JSON) | Metadata indexing framework with Python automation scripts — **NOT GIS/ArcGIS** (empty registries) | **LOW** |
+| `terra-levy/` | 203 lines (MD) | **100% DEAD** — only a copilot instructions file, zero implementation | **NONE** |
+| `terra-collections/` | ~2,000 (Python) | Privacy engines (DP, FL, HE) — same tier_17/18 as terra-flow | **LOW** (nice-to-have for TerraFusion.Security) |
 
 ---
 
@@ -231,15 +232,33 @@ Port `CostForgeEngine.calculate_construction_cost()` to C# in `TerraFusion.AI/Se
 
 ---
 
-## P1: `terrafusion-atlas/` — GIS Components (Pending Deep Read)
+## UPGRADED: `BS_PACS/Database/` — Real C# .NET Core API (Same Stack!)
 
-To be inventoried. Expected: ArcGIS REST service integration, layer definitions, map rendering components.
+**Tech stack:** C# .NET Core / Dapper ORM / SQL Server / JWT / Hangfire / Azure Blob Storage
+
+Not just SQL schemas — has a production-ready .NET backend:
+
+| File | Classification | What It Contains |
+|------|---------------|-----------------|
+| `Services/DataSyncService.cs` | **REAL — CRITICAL** | Harris PACS 9.0 connector via Dapper. Reads prop_id, geo_id, market_value, owner_name from PACS SQL Server. Maps to TerraFusion schema. |
+| `Models/CostApproach/CostApproachModels.cs` | **REAL** | `CostFactor` (building type, cost/sqft, material/labor), `DepreciationRate` (age-based %), `LandValue` (geography-based) |
+| `Services/BillingService.cs` | **REAL** | 311 lines — payment processing, delinquency, revenue forecasting |
+| `Program.cs` | **REAL** | ASP.NET Core with JWT, Hangfire (daily sync), Serilog, Azure Blob Storage |
+| `PACS DATA/` | **REAL DATA** | ~10K files of actual Benton County property data |
+
+**Extraction:** Already C#/.NET — port directly to production `TerraFusion.Data/Entities/` and `TerraFusion.AI/Services/`.
 
 ---
 
-## P1: `terra-levy/` — Levy Engine (Pending Deep Read)
+## DEAD: `terrafusion-atlas/` — Metadata Registry (NOT GIS)
 
-To be inventoried. Expected: Statutory levy calculation logic, rate tables, RCW formula implementations.
+Metadata indexing framework, NOT GIS/ArcGIS. Python scripts (classifier, validator) with empty registries. No map components, no spatial data. **Real GIS code does not exist in quarantine — TerraAtlas GIS must be built new.**
+
+---
+
+## DEAD: `terra-levy/` — Never Built
+
+203-line copilot instructions file only. Zero implementation. TerraDais TerraLevy must be built from existing `LevyCalculationController.cs` and BS_PACS stored procedures.
 
 ---
 
