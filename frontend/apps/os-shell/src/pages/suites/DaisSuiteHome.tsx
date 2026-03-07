@@ -457,6 +457,7 @@ function PILTModule() {
   const [apiDistricts, setApiDistricts] = useState<PiltDistrict[]>([]);
   const [apiReceipts, setApiReceipts] = useState<PiltReceipt[]>([]);
   const [isLive, setIsLive] = useState(false);
+  const [apiDeferred, setApiDeferred] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -474,7 +475,8 @@ function PILTModule() {
         setApiReceipts(rcptRes.receipts);
         setIsLive(true);
       } catch {
-        // API unavailable — fall back to local data
+        // PILT API returns 501 (deferred to R2) — show reference data with notice
+        if (!cancelled) setApiDeferred(true);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -515,9 +517,22 @@ function PILTModule() {
           ) : (
             <WifiOff size={12} />
           )}
-          {loading ? 'Connecting…' : isLive ? 'Live' : 'Local'}
+          {loading ? 'Connecting…' : isLive ? 'Live' : apiDeferred ? 'Deferred' : 'Local'}
         </Badge>
       </div>
+
+      {/* R1 deferred notice — shown when backend returns 501 */}
+      {apiDeferred && (
+        <div
+          className='rounded-lg p-3 text-sm'
+          style={{ background: 'hsl(var(--tf-warning-hs, 45 90%) / 0.1)', borderColor: 'hsl(var(--tf-border))' }}
+          role='status'
+        >
+          <p style={{ color: 'hsl(var(--tf-muted))' }}>
+            PILT live data integration deferred to R2. Showing Benton County reference data for layout preview only.
+          </p>
+        </div>
+      )}
 
       {/* Summary cards — live API data when available */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>

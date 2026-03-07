@@ -288,6 +288,7 @@ export function getRegionalComparison(buildingType: string): {
 // Calculation Engine
 // ============================================================================
 
+/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
 function calculateAgeFactor(age: number, buildingType: string): number {
   if (age <= 0) return 1.0;
   const cfg = DEPRECIATION_CONFIG[buildingType] ?? { annualRate: 0.01333, minRetained: 0.30, maxAge: 60 };
@@ -296,6 +297,7 @@ function calculateAgeFactor(age: number, buildingType: string): number {
   return Math.max(calculated, cfg.minRetained);
 }
 
+/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
 function calculateAreaMultiplier(squareFeet: number): number {
   if (squareFeet <= 1000) return 1.1;
   if (squareFeet <= 2000) return 1.0;
@@ -305,6 +307,7 @@ function calculateAreaMultiplier(squareFeet: number): number {
   return 0.8;
 }
 
+/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
 function determineConfidence(inputs: CostCalculationInput, hasMatrix: boolean): 'LOW' | 'MEDIUM' | 'HIGH' {
   let score = 0;
   if (inputs.squareFeet > 0) score++;
@@ -320,6 +323,7 @@ function determineConfidence(inputs: CostCalculationInput, hasMatrix: boolean): 
   return 'LOW';
 }
 
+/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
 export function calculateCost(inputs: CostCalculationInput): CostCalculationResult {
   const buildingTypeInfo = BUILDING_TYPES.find((t) => t.id === inputs.buildingType);
   const qualityInfo = QUALITY_LEVELS.find((q) => q.id === inputs.quality);
@@ -417,37 +421,27 @@ export function calculateCost(inputs: CostCalculationInput): CostCalculationResu
 }
 
 // ============================================================================
-// Scenario Management (localStorage)
+// Scenario Management (localStorage removed in R1)
 // ============================================================================
 
-const SCENARIOS_KEY = 'costforge-scenarios';
-
 export function saveScenario(name: string, inputs: CostCalculationInput, result: CostCalculationResult): CostScenario {
-  const scenario: CostScenario = {
-    id: `scenario-${Date.now()}`,
+  console.warn('[forgeService] saveScenario: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  return {
+    id: 'deprecated',
     name,
     inputs,
     result,
     createdAt: new Date().toISOString(),
   };
-  const existing = loadScenarios();
-  existing.push(scenario);
-  localStorage.setItem(SCENARIOS_KEY, JSON.stringify(existing));
-  return scenario;
 }
 
 export function loadScenarios(): CostScenario[] {
-  try {
-    const raw = localStorage.getItem(SCENARIOS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  console.warn('[forgeService] loadScenarios: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  return [];
 }
 
 export function deleteScenario(id: string): void {
-  const existing = loadScenarios().filter((s) => s.id !== id);
-  localStorage.setItem(SCENARIOS_KEY, JSON.stringify(existing));
+  console.warn('[forgeService] deleteScenario: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
 }
 
 // ============================================================================
@@ -492,6 +486,7 @@ export interface IncomeResult {
   warnings: string[];
 }
 
+/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
 export function calculateIncome(input: IncomeInput): IncomeResult {
   const pgi = input.potentialGrossIncome;
   const vacancyLoss = Math.round(pgi * input.vacancyRate);
@@ -546,6 +541,7 @@ export function calculateIncome(input: IncomeInput): IncomeResult {
   };
 }
 
+/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
 export function extractCapRate(comps: Array<{ salePrice: number; noi: number }>): number {
   if (comps.length === 0) return 0;
   const rates = comps.map((c) => c.noi / c.salePrice);
@@ -595,37 +591,26 @@ export interface AppealRecord {
   createdAt: string;
 }
 
-const APPEALS_KEY = 'appealforge-appeals';
-
 export function saveAppeal(appeal: Omit<AppealRecord, 'id' | 'createdAt'>): AppealRecord {
-  const record: AppealRecord = {
+  console.warn('[forgeService] saveAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  return {
     ...appeal,
-    id: `appeal-${Date.now()}`,
+    id: 'deprecated',
     createdAt: new Date().toISOString(),
   };
-  const existing = loadAppeals();
-  existing.push(record);
-  localStorage.setItem(APPEALS_KEY, JSON.stringify(existing));
-  return record;
 }
 
 export function loadAppeals(): AppealRecord[] {
-  try {
-    const raw = localStorage.getItem(APPEALS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  console.warn('[forgeService] loadAppeals: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  return [];
 }
 
 export function updateAppeal(id: string, updates: Partial<AppealRecord>): void {
-  const appeals = loadAppeals().map((a) => (a.id === id ? { ...a, ...updates } : a));
-  localStorage.setItem(APPEALS_KEY, JSON.stringify(appeals));
+  console.warn('[forgeService] updateAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
 }
 
 export function deleteAppeal(id: string): void {
-  const existing = loadAppeals().filter((a) => a.id !== id);
-  localStorage.setItem(APPEALS_KEY, JSON.stringify(existing));
+  console.warn('[forgeService] deleteAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
 }
 
 // ============================================================================
@@ -698,6 +683,7 @@ export const DEFAULT_RECONCILIATION_WEIGHTS: Record<PropertyCategory, Record<App
 
 const CONFIDENCE_MULTIPLIERS: Record<string, number> = { high: 1.0, medium: 0.75, low: 0.5 };
 
+/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
 export function runReconciliation(input: ReconciliationInput): ReconciliationOutput {
   const { subjectId, effectiveDate, approaches, propertyType, reconciliationMethod, forcedWeights } = input;
   const approachKeys = (Object.keys(approaches) as ApproachKey[]).filter(k => approaches[k]);
@@ -795,7 +781,7 @@ export function runReconciliation(input: ReconciliationInput): ReconciliationOut
 }
 
 // ============================================================================
-// Value Audit Trail (localStorage)
+// Value Audit Trail (localStorage removed in R1)
 // ============================================================================
 
 export type AuditAction = 'COST_CALCULATED' | 'INCOME_CALCULATED' | 'COMPS_ANALYZED' | 'RECONCILIATION_COMPLETED' | 'APPEAL_FILED' | 'APPEAL_DECIDED' | 'VALUE_CHANGED' | 'MANUAL_OVERRIDE';
@@ -813,35 +799,27 @@ export interface ValuationAuditEntry {
   notes: string;
 }
 
-const AUDIT_KEY = 'forgeaudit-entries';
-
 export function appendAuditEntry(entry: Omit<ValuationAuditEntry, 'id' | 'timestamp'>): ValuationAuditEntry {
-  const record: ValuationAuditEntry = {
+  console.warn('[forgeService] appendAuditEntry: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  return {
     ...entry,
-    id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    id: 'deprecated',
     timestamp: new Date().toISOString(),
   };
-  const existing = loadAuditEntries();
-  existing.push(record);
-  localStorage.setItem(AUDIT_KEY, JSON.stringify(existing));
-  return record;
 }
 
 export function loadAuditEntries(): ValuationAuditEntry[] {
-  try {
-    const raw = localStorage.getItem(AUDIT_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  console.warn('[forgeService] loadAuditEntries: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  return [];
 }
 
 export function loadAuditEntriesForParcel(parcelId: string): ValuationAuditEntry[] {
-  return loadAuditEntries().filter(e => e.parcelId === parcelId);
+  console.warn('[forgeService] loadAuditEntriesForParcel: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  return [];
 }
 
 export function clearAuditEntries(): void {
-  localStorage.removeItem(AUDIT_KEY);
+  console.warn('[forgeService] clearAuditEntries: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
 }
 
 // ============================================================================
@@ -856,6 +834,7 @@ export interface ForgeStats {
   lastUpdated: string;
 }
 
+/** @deprecated Hardcoded stats placeholder. Real stats should come from backend API. */
 export async function getForgeStats(): Promise<ForgeStats> {
   return {
     totalParcels: 89247,

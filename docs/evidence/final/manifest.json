@@ -1,0 +1,63 @@
+{
+  "branchHeadSha": "210071157d5e756f5920113472522ef4c3d50928",
+  "canonVersion": "r1-canon-2026-03-07",
+  "generatedAt": "2026-03-07T08:56:39.246Z",
+  "artifacts": [
+    {
+      "path": "docs/evidence/cc/atlas-cutover.md",
+      "sha256": "6d424ef020aacb4fe57faa0ad88526d43658ee34d83a9174f52eaf5742ec1ec8"
+    },
+    {
+      "path": "docs/evidence/cc/dossier-cutover.md",
+      "sha256": "8a3303efb4670ae4ac78ab422d4eb6861b3a070500821ec317aaa2b0af11be38"
+    },
+    {
+      "path": "docs/evidence/cc/fake-path-elimination.md",
+      "sha256": "d48839a83991a24f760a46cac2c401249a4da2f579da2474a37df0c48b67fa15"
+    },
+    {
+      "path": "docs/evidence/cc/forge-cutover.md",
+      "sha256": "51b7fcfd04d34ef205920ddbd20bdd749d60430d9d7b5a38ee08e46628aa1517"
+    },
+    {
+      "path": "docs/evidence/cc/signoff.md",
+      "sha256": "e327296b8b128afb7b1ae819a8192e649509cff13f8ed2e5f12ec450821cca88"
+    },
+    {
+      "path": "docs/evidence/cp/governance-contracts.md",
+      "sha256": "f1fc7658d9486d168910bd6019374337a972919d5f3006b710f2d467e3696e4f"
+    },
+    {
+      "path": "docs/evidence/cp/handler-registry.md",
+      "sha256": "a984dfcf4452dd705627c90ff823d9379a76f23c21aba1c049524ca9bcc77f8a"
+    },
+    {
+      "path": "docs/evidence/cp/r1-proof-tools.md",
+      "sha256": "8d91aa9882fe47f9eb141ba91cb6630f25960b3e743d04ea7cbee5694139c427"
+    },
+    {
+      "path": "docs/evidence/cp/signoff.md",
+      "sha256": "bbda109867e623f81e643fee6b4e5301672eddcc1808d65111827d0b05bf9da5"
+    },
+    {
+      "path": "docs/evidence/cp/trace-persistence.md",
+      "sha256": "3239317dc52aba96cef53f502156d28611669766607dd054eb657d319446e7f2"
+    },
+    {
+      "path": "docs/evidence/cx/auth-audit.md",
+      "sha256": "a9fac1df2820c2ec72483719c03c8a8f2efb5af4f0eb5de44c95f89220ae1517"
+    },
+    {
+      "path": "docs/evidence/cx/backend-hardening.md",
+      "sha256": "316757379d4476da89b26f8f055958ebde14c6770efa17b1bd1f46d69ad3bf3b"
+    },
+    {
+      "path": "docs/evidence/cx/endpoint-matrix.md",
+      "sha256": "331770d5a863379a5b535649179c01c55872cf902f14703426b1640f21543703"
+    },
+    {
+      "path": "docs/evidence/cx/signoff.md",
+      "sha256": "968484faacae760d8f5ea3355c508b96563372023f6957d571079ab246724c5e"
+    }
+  ]
+}
