@@ -10,12 +10,101 @@
 
 | Quarantine Source | LOC | Real Domain Logic | Extraction Value |
 |-------------------|-----|-------------------|-----------------|
-| `applications/terra-flow-production/` | 183,825 (Python) | Property valuation agent, assessment API, spatial service, data governance, sync service, DB models | **HIGH** |
-| `BS_PACS/` | 86,558 (SQL) | 2,086 stored procedures, 2,133 table definitions, views, functions — actual Harris PACS 9.0 database | **CRITICAL** (reference only — county approval required) |
+| `costforge-ai-workspace/` | ~41 MB (Node/React/Express/PG) | **THE GOLD MINE** — complete CostForge platform with real Benton County cost matrices, 10+ MCP agents, Drizzle ORM schema, 30+ API routes, 94,149 properties | **CRITICAL — P0** |
+| `costforge-ai/` | ~1.1 MB (Python) | CostForge AI engine — building cost matrices, regional multipliers, depreciation tables, quality adjustments, batch processing | **CRITICAL — P0** |
+| `applications/terra-flow-production/` | 183,825 (Python) | Property valuation agent (ML: RandomForest, GradientBoosting, ElasticNet), assessment API, spatial service, data governance, sync service, DB models | **HIGH** |
+| `BS_PACS/` | 86,558 (SQL) | 2,086 stored procedures, 2,133 table definitions, views, functions — actual Harris PACS 9.0 database | **REFERENCE ONLY** (county approval required) |
 | `terra-flow/` | ~14,000 (TS/Python) | Privacy engines (DP, FL, HE), WebSocket service | **LOW** (no Assessor logic) |
 | `terrafusion-atlas/` | TBD | ArcGIS integration, layer definitions | **MEDIUM** |
 | `terra-levy/` | TBD | Levy calculation logic | **MEDIUM** |
 | `terra-collections/` | TBD | Tax collection workflows | **LOW** (R3) |
+
+---
+
+## P0: `costforge-ai-workspace/` — THE CostForge Gold Mine (41 MB)
+
+**Tech stack:** Node.js / React 18 / Express / PostgreSQL / Drizzle ORM / MCP Agent Framework
+**Port:** 5000 (single-port architecture)
+
+### REAL DOMAIN LOGIC (Extract First)
+
+| Category | Files | What It Contains |
+|----------|-------|-----------------|
+| **Cost Matrices** | `benton_cost_matrix.json` (3.4KB), `benton_cost_matrix_live.json` (21KB), `benton_cost_matrix_proper.json` (17KB) | Real Benton County cost data — 7 building types (A1 Agricultural, C1 Commercial Retail, C4 Warehouse, I1 Industrial, R1 Residential SF, R2 Residential MF, S1 Special Purpose), 3 regions (Central/East/West Benton), matrix year 2025, matrix IDs from actual PACS data |
+| **County Data** | `benton_county_data.json` (30KB), `benton_county_data_summary.json` | 94,149 Benton County property records |
+| **MCP Agents** | `server/mcp/agents/` (10+ agents) | conversionAgent (Marshall Swift→CFT), costEstimationAgent, dataAnalysisAgent, dataQualityAgent, complianceAgent, geospatialAnalysisAgent, documentProcessingAgent |
+| **DB Schema** | `shared/schema.ts` | Drizzle ORM tables: properties, improvements, costMatrix, users, sessions, agentStatus, calculationHistory |
+| **API Routes** | `server/routes/` (30+ modules) | Cost calculation, data import/export, property management, FTP integration |
+| **Cost Engine** | `server/services/` | Building cost estimation with quality/complexity factors, material breakdown |
+
+### EXTRACTION PLAN
+
+1. **Cost matrices** → Seed into `TerraFusion.Data` EF Core entities (CostMatrix table with building type, region, base cost, adjustment factors)
+2. **MCP agents** → Port agent logic to `TerraFusion.AI` services (conversionAgent → CostMatrixConversionService, costEstimationAgent → CostEstimationService)
+3. **Drizzle schema** → Map to existing EF Core entities or create new ones in `TerraFusion.Data/Entities/`
+4. **API routes** → Port to `CostForgeController.cs` endpoints (already has scaffolding with auth + county isolation)
+5. **County data** → Import into PostgreSQL via EF Core seed or migration
+
+---
+
+## P0: `costforge-ai/` — CostForge AI Engine (Python)
+
+**Tech stack:** Python 3 / pandas / numpy / asyncio
+
+### Core Engine: `core-engine/construction_cost_engine.py`
+
+**Real calculation logic with:**
+
+| Component | Values | Use |
+|-----------|--------|-----|
+| **Building cost matrices** | Residential $150/sqft, Commercial $200, Industrial $120, Government $180 — with breakdown (foundation, framing, roofing, exterior, interior, mechanical, electrical, plumbing) | Base cost calculation |
+| **Regional multipliers** | Urban 1.20x, Suburban 1.00x, Rural 0.85x | Location adjustment |
+| **Quality factors** | Excellent 1.25x, Good 1.10x, Average 1.00x, Fair 0.85x, Poor 0.70x | Quality adjustment |
+| **Depreciation tables** | 2% annual rate, max 60% depreciation, condition factors (new 1.00 → poor 0.50) | Age/condition depreciation |
+| **Inflation** | 3% annual construction inflation, base year 2024 | Replacement cost |
+| **Batch processing** | County-wide assessment capability for 94,149 properties | Bulk valuation |
+
+### Data Types (Port to C#)
+
+```python
+@dataclass
+class ConstructionCostRequest:
+    parcel_id: str
+    building_type: str       # residential, commercial, industrial, government
+    square_footage: float
+    year_built: int
+    quality_grade: str       # excellent, good, average, fair, poor
+    region: str              # urban, suburban, rural
+    condition: str           # new, good, average, fair, poor
+    stories: Optional[int]
+    basement: Optional[bool]
+    garage: Optional[bool]
+
+@dataclass
+class ConstructionCostResult:
+    parcel_id: str
+    base_construction_cost: float
+    replacement_cost: float
+    depreciated_value: float
+    cost_per_sqft: float
+    regional_factor: float
+    quality_factor: float
+    age_factor: float
+    confidence_score: float
+    processing_time_ms: float
+    cost_breakdown: Dict[str, float]
+    recommendations: List[str]
+```
+
+### EXTRACTION PLAN
+
+Port `CostForgeEngine.calculate_construction_cost()` to C# in `TerraFusion.AI/Services/CostApproachService.cs`. The algorithm is straightforward:
+1. Look up base cost per sqft by building type
+2. Apply regional multiplier
+3. Apply quality factor
+4. Calculate depreciation from age and condition
+5. Apply inflation adjustment
+6. Produce breakdown with confidence score
 
 ---
 
@@ -158,12 +247,16 @@ To be inventoried. Expected: Statutory levy calculation logic, rate tables, RCW 
 
 | Priority | Source | Target Suite | Method | Estimated Effort |
 |----------|--------|-------------|--------|-----------------|
-| **1** | `terra-flow-production/property_valuation_agent.py` | TerraForge | Port Python ML models to C# ML.NET or keep as Python microservice | Medium |
-| **2** | `terra-flow-production/api/assessment.py` + `models.py` | TerraForge | Port Flask routes to .NET controllers, SQLAlchemy models to EF Core | Medium |
-| **3** | `BS_PACS` tables/SPs (reference) | All suites | Study data structures, build compatible entities | Low (reference only) |
-| **4** | `terra-flow-production/api/spatial*` | TerraAtlas | Port spatial queries to PostGIS | Medium |
-| **5** | `terra-flow-production/data_governance/` | TerraDais | Port sovereignty/classification to .NET | Low |
-| **6** | `terra-flow/privacy engines` | TerraFusion.Security | Port Python DP/FL/HE to .NET | Low (nice-to-have) |
+| **1** | `costforge-ai-workspace/benton_cost_matrix*.json` | TerraForge | Seed real cost matrices into EF Core CostMatrix entity | Low — data import |
+| **2** | `costforge-ai/core-engine/construction_cost_engine.py` | TerraForge | Port CostForgeEngine to `TerraFusion.AI/Services/CostApproachService.cs` | Medium — straightforward algorithm port |
+| **3** | `costforge-ai-workspace/server/mcp/agents/` | TerraForge | Port MCP agent logic to TerraFusion.AI services | Medium |
+| **4** | `costforge-ai-workspace/shared/schema.ts` | TerraFusion.Data | Map Drizzle ORM schema to EF Core entities | Low — schema mapping |
+| **5** | `terra-flow-production/property_valuation_agent.py` | TerraForge | Port Python ML models to C# ML.NET or keep as Python microservice | Medium-High |
+| **6** | `terra-flow-production/api/assessment.py` + `models.py` | TerraForge | Port Flask routes to .NET controllers, SQLAlchemy models to EF Core | Medium |
+| **7** | `BS_PACS` tables/SPs (reference) | All suites | Study data structures, build compatible entities | Low (reference only) |
+| **8** | `terra-flow-production/api/spatial*` | TerraAtlas | Port spatial queries to PostGIS | Medium |
+| **9** | `terra-flow-production/data_governance/` | TerraDais | Port sovereignty/classification to .NET | Low |
+| **10** | `terra-flow/privacy engines` | TerraFusion.Security | Port Python DP/FL/HE to .NET | Low (nice-to-have) |
 
 ---
 
@@ -192,11 +285,19 @@ The main quarantine asset (`terra-flow-production`) is **Python/Flask/SQLAlchemy
 
 ## Honest Assessment
 
-The quarantine is **not as rich as previously claimed**:
-- `terra-flow/` (the originally cited "gold mine") is mostly scaffolding — no Assessor logic
-- `terra-flow-production/` (under `applications/`) IS the real app — 183K lines Python with actual domain logic
-- `BS_PACS/` is the actual Harris PACS database — 86K lines SQL, 2,086 SPs, 2,133 tables — but is **reference only** (county approval required for any use)
-- The R2 extraction program will produce real results, but it's a porting effort, not just "move files"
+The quarantine is **richer than the first pass found**, but different than originally claimed:
+
+**What's real and extractable:**
+- `costforge-ai-workspace/` — Complete CostForge platform with real Benton County cost matrices (7 building types, 3 regions, 2025 data), 10+ MCP agents, Drizzle ORM schema, 30+ API routes. This is the #1 extraction target
+- `costforge-ai/core-engine/` — Real cost estimation algorithm with regional multipliers, quality factors, depreciation tables. Straightforward port to C#
+- `terra-flow-production/` (under `applications/`) — 183K lines Python with ML valuation agent (scikit-learn), assessment API, spatial service
+- `BS_PACS/` — Actual Harris PACS 9.0 database schema (86K SQL, 2,086 SPs, 2,133 tables) — **reference only**
+
+**What's NOT extractable:**
+- `terra-flow/` (originally cited "gold mine") — mostly visualization scaffolding, no Assessor logic
+- Achievement/marketing docs in quarantine — fiction
+
+**Bottom line:** R2 extraction is viable. The CostForge workspace has real cost matrices and a working platform to port from. The Python ML agent adds depth. But it IS a porting effort (Node→C#, Python→C#), not just moving files
 
 ---
 
