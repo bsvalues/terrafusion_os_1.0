@@ -25,6 +25,7 @@ public class CostForgeController : ControllerBase
 {
   private readonly ICostForgeService _costForgeService;
   private readonly ICostForgeAIService _costForgeAIService;
+  private readonly IIncomeApproachService _incomeApproachService;
   private readonly DataDbContext _db;
   private readonly TerraFusion.Abstractions.Interfaces.IAuditLogger _auditLogger;
   private readonly ILogger<CostForgeController> _logger;
@@ -32,12 +33,14 @@ public class CostForgeController : ControllerBase
   public CostForgeController(
       ICostForgeService costForgeService,
       ICostForgeAIService costForgeAIService,
+      IIncomeApproachService incomeApproachService,
       DataDbContext db,
       TerraFusion.Abstractions.Interfaces.IAuditLogger auditLogger,
       ILogger<CostForgeController> logger)
   {
     _costForgeService = costForgeService;
     _costForgeAIService = costForgeAIService;
+    _incomeApproachService = incomeApproachService;
     _db = db;
     _auditLogger = auditLogger;
     _logger = logger;
@@ -530,6 +533,89 @@ public class CostForgeController : ControllerBase
     {
       await _auditLogger.LogErrorAsync("CostForge:GetMatrices", ex, User.FindFirst("sub")?.Value);
       _logger.LogError(ex, "Error retrieving cost matrix catalog");
+      return StatusCode(500, "Internal server error");
+    }
+  }
+
+  // ── Income Approach Endpoints ──
+
+  /// <summary>
+  /// Run income approach valuation (direct capitalization: NOI / Cap Rate)
+  /// </summary>
+  [HttpPost("income/analyze")]
+  [RequiresPermission("write:valuation")]
+  public async Task<ActionResult<IncomeAnalysisDto>> AnalyzeIncome([FromBody] IncomeApproachRequest request)
+  {
+    try
+    {
+      if (request.PotentialGrossIncome <= 0)
+        return BadRequest("PotentialGrossIncome must be positive");
+      if (request.CapitalizationRate <= 0)
+        return BadRequest("CapitalizationRate must be positive");
+
+      await _auditLogger.LogDataAccessAsync("IncomeApproach", request.PropertyId.ToString(), "ANALYZE",
+          User.FindFirst("sub")?.Value);
+
+      var result = await _incomeApproachService.AnalyzeIncomeAsync(request);
+      return Ok(result);
+    }
+    catch (Exception ex)
+    {
+      await _auditLogger.LogErrorAsync("CostForge:IncomeAnalysis", ex, User.FindFirst("sub")?.Value);
+      _logger.LogError(ex, "Income approach analysis failed for property {PropertyId}", request.PropertyId);
+      return StatusCode(500, "Internal server error");
+    }
+  }
+
+  /// <summary>
+  /// Extract cap rate from comparable sales (market extraction method)
+  /// </summary>
+  [HttpPost("income/extract-cap-rate")]
+  [RequiresPermission("read:valuation")]
+  public async Task<ActionResult<object>> ExtractCapRate([FromBody] List<CapRateComparable> comparables)
+  {
+    try
+    {
+      if (comparables == null || comparables.Count == 0)
+        return BadRequest("At least one comparable required");
+
+      await _auditLogger.LogDataAccessAsync("CapRateExtraction", "comparables", "EXTRACT",
+          User.FindFirst("sub")?.Value);
+
+      var rate = await _incomeApproachService.ExtractCapRateAsync(comparables);
+      return Ok(new { ExtractedCapRate = rate, ComparableCount = comparables.Count, Method = "market_extraction" });
+    }
+    catch (ArgumentException ex)
+    {
+      return BadRequest(ex.Message);
+    }
+    catch (Exception ex)
+    {
+      await _auditLogger.LogErrorAsync("CostForge:CapRateExtraction", ex, User.FindFirst("sub")?.Value);
+      _logger.LogError(ex, "Cap rate extraction failed");
+      return StatusCode(500, "Internal server error");
+    }
+  }
+
+  /// <summary>
+  /// Get income approach parameters (cap rate ranges, vacancy rates, expense bounds)
+  /// </summary>
+  [HttpGet("income/parameters")]
+  [RequiresPermission("read:valuation")]
+  public async Task<ActionResult<IncomeParametersDto>> GetIncomeParameters()
+  {
+    try
+    {
+      await _auditLogger.LogDataAccessAsync("IncomeParameters", "all", "READ",
+          User.FindFirst("sub")?.Value);
+
+      var result = await _incomeApproachService.GetIncomeParametersAsync();
+      return Ok(result);
+    }
+    catch (Exception ex)
+    {
+      await _auditLogger.LogErrorAsync("CostForge:IncomeParameters", ex, User.FindFirst("sub")?.Value);
+      _logger.LogError(ex, "Error retrieving income parameters");
       return StatusCode(500, "Internal server error");
     }
   }
