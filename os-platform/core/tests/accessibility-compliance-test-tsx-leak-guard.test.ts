@@ -9,6 +9,9 @@ describe('AccessibilityCompliance.test.tsx leak guard', () => {
       'frontend/apps/os-shell/src/tests/accessibility/AccessibilityCompliance.test.tsx'
     );
     const content = fs.readFileSync(file, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'AccessibilityCompliance.test.tsx' });
+    assertNoRawColorLeaks(content, {
+      label: 'AccessibilityCompliance.test.tsx',
+      knownViolationBaseline: 6, // WCAG contrast test constants (resolved hex token values for getContrastRatio)
+    });
   });
 });

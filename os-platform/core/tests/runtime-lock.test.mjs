@@ -162,6 +162,7 @@ describe('RuntimeLock: Enforcement cannot be bypassed', () => {
         toolId: 'request_trace_redaction',
         params: { traceEventId: 'evt-123' },
         context: createTestContext({
+          roles: ['administrator'], // needs approve:irreversible + admin:trace + write:os
           confirmation: true,
           reasonCode: 'court_order',
           supervisorApproval: createSupervisorApproval(),
@@ -234,6 +235,7 @@ describe('RuntimeLock: Enforcement cannot be bypassed', () => {
         toolId: 'request_trace_redaction',
         params: {},
         context: createTestContext({
+          roles: ['administrator'], // needs approve:irreversible + admin:trace + write:os
           confirmation: true,
           reasonCode: 'court_order',
           supervisorApproval: createSupervisorApproval(),

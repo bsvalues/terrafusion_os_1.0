@@ -27,6 +27,8 @@
       "touches": ["workflow"],
       "description": "Assign a workflow task to a user or queue",
       "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["workflow_update", "operator_correction"],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only"
     },
@@ -60,7 +62,28 @@
         "correction"
       ],
       "piiHandling": "none",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "taxYear": {
+            "type": "integer",
+            "description": "Assessment tax year"
+          },
+          "modelType": {
+            "type": "string",
+            "enum": ["cost", "income", "sales"],
+            "default": "cost",
+            "description": "Valuation approach"
+          }
+        },
+        "required": ["county", "parcelId", "taxYear"]
+      }
     },
     {
       "toolId": "assemble_boe_packet",
@@ -89,6 +112,8 @@
       "touches": ["notice"],
       "description": "Generate draft notice document for review",
       "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["taxpayer_request", "operator_correction"],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only"
     },
@@ -101,9 +126,9 @@
       "writeLane": "dais",
       "touches": ["notice", "dossier"],
       "description": "Draft an appeal response letter/memo for assessor review. Full draft stored as payloadRef in dossier store; trace records only summary and payload reference.",
-      "requiresConfirmation": false,
-      "reasonCodeRequired": false,
-      "reasonCodes": [],
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["appeal_response", "operator_correction"],
       "requiresSupervisorApproval": false,
       "supervisorRoles": [],
       "piiHandling": "payload_ref",
@@ -142,7 +167,32 @@
       "touches": ["parcel", "model"],
       "description": "Generate natural language explanation of value delta",
       "piiHandling": "none",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "fromYear": {
+            "type": "integer",
+            "description": "Starting comparison year"
+          },
+          "toYear": {
+            "type": "integer",
+            "description": "Ending comparison year"
+          },
+          "audience": {
+            "type": "string",
+            "enum": ["internal", "taxpayer"],
+            "default": "internal",
+            "description": "Target audience for explanation"
+          }
+        },
+        "required": ["county", "parcelId", "fromYear", "toYear"]
+      }
     },
     {
       "toolId": "explain_model_results",
@@ -293,7 +343,26 @@
       "description": "Summarizes the dossier/casefile for a parcel (appeal history, key events, documents) with PII-safe trace handling.",
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
-      "payloadStore": "dossier"
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "include": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["notices", "appeals", "permits", "sales"]
+            },
+            "description": "Sections to include in summary"
+          }
+        },
+        "required": ["county", "parcelId"]
+      }
     },
     {
       "toolId": "compare_assessed_value_history",
@@ -317,7 +386,25 @@
       "touches": ["levy", "parcel"],
       "description": "Breaks down estimated levy rate components (state/school/local) and explains why taxes can change without value change.",
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year for levy calculation"
+          },
+          "districtCode": {
+            "type": "string",
+            "description": "Taxing district code"
+          }
+        },
+        "required": ["county", "taxYear"]
+      }
     },
     {
       "toolId": "explain_model_inputs",
@@ -340,6 +427,9 @@
       "writeLane": "dais",
       "touches": ["notice", "parcel"],
       "description": "Drafts a value change notice text for review (non-final), including rationale and next-step instructions.",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["annual_certification", "operator_correction"],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier"
@@ -353,6 +443,9 @@
       "writeLane": "dais",
       "touches": ["notice", "dossier"],
       "description": "Drafts an initial appeal response narrative (position-aware) for BOE review—facts, rationale, and recommended resolution.",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["appeal_response", "operator_correction"],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier"
@@ -379,7 +472,17 @@
       "touches": ["workflow"],
       "description": "OS-only trace lookup helper used by admins/auditors to fetch events by correlationId (visibility still enforced by access control).",
       "piiHandling": "none",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "correlationId": {
+            "type": "string",
+            "description": "Correlation ID to search for trace events"
+          }
+        },
+        "required": ["correlationId"]
+      }
     },
     {
       "toolId": "add_dossier_note",
@@ -390,9 +493,30 @@
       "writeLane": "dossier",
       "touches": ["dossier"],
       "description": "Adds a case note to the dossier for internal workflow continuity (PII-safe trace via payload ref).",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["workflow_update", "operator_correction"],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
-      "payloadStore": "dossier"
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "content": { "type": "string", "description": "Note content" },
+          "type": {
+            "type": "string",
+            "enum": ["case_note", "review_note", "correction"],
+            "default": "case_note",
+            "description": "Note type"
+          }
+        },
+        "required": ["county", "parcelId", "content"]
+      }
     },
     {
       "toolId": "query_parcel_layers",

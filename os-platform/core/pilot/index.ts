@@ -36,6 +36,10 @@ export {
     draftValueChangeNoticeHandler,
     explainModelInputsHandler, explainModelResultsHandler, explainSeniorExemptionHandler, phase83Handlers, phase84Handlers,
     registerAllHandlers, registerPhase83Handlers, registerPhase84Handlers,
+    registerWriteGateHandlers,
+    assembleBoePacketHandler,
+    requestTraceRedactionHandler,
+    writeGateHandlers,
     searchTraceByCorrelationHandler, summarizeDossierHandler, summarizeLevyRateHandler,
     summarizeParcelCasefileHandler,
     summarizeSalesCompsHandler,
@@ -58,6 +62,59 @@ export {
     type SummarizeParcelCasefileParams,
     type SummarizeParcelCasefileResult,
     type SummarizeSalesCompsParams,
-    type SummarizeSalesCompsResult
+    type SummarizeSalesCompsResult,
+    type AssembleBoePacketParams,
+    type AssembleBoePacketResult,
+    type RequestTraceRedactionParams,
+    type RequestTraceRedactionResult
 } from './handlers.js';
+
+// R1 Real Handlers (override canned stubs when backend is available)
+export {
+    registerR1Handlers,
+    runValuationModelHandler,
+    explainValueChangeHandler,
+    routeToParcelHandler,
+    createSearchTraceHandler,
+    summarizeLevyRateRealHandler,
+    explainModelInputsRealHandler,
+    compareAssessedValueHistoryRealHandler,
+    summarizeParcelCasefileRealHandler,
+    addDossierNoteRealHandler,
+    queryParcelLayersRealHandler,
+    type RunValuationModelParams,
+    type RunValuationModelResult,
+    type ExplainValueChangeParams,
+    type ExplainValueChangeResult,
+    type RouteToParcelParams,
+    type RouteToParcelResult,
+    type ExplainModelInputsParams as ExplainModelInputsRealParams,
+    type ExplainModelInputsResult as ExplainModelInputsRealResult,
+    type CompareAssessedValueHistoryParams,
+    type CompareAssessedValueHistoryResult,
+    type SummarizeParcelCasefileParams as SummarizeParcelCasefileRealParams,
+    type SummarizeParcelCasefileResult as SummarizeParcelCasefileRealResult,
+    type AddDossierNoteRealParams,
+    type AddDossierNoteRealResult,
+    type QueryParcelLayersParams,
+    type QueryParcelLayersResult,
+} from './handlers.real.js';
+
+// Backend HTTP Client
+export {
+    backendPost,
+    backendGet,
+    unwrapBackend,
+    type BackendCallOptions,
+    type BackendResponse,
+    type BackendError,
+    type BackendResult,
+} from './backendClient.js';
+
+// Pilot Auth
+export {
+    acquirePilotToken,
+    clearPilotToken,
+    type PilotToken,
+} from './pilotAuth.js';
 

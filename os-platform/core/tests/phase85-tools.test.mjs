@@ -39,11 +39,22 @@ const BENTON_MUSE = {
   mode: 'muse',
 };
 
+const BENTON_MUSE_SUPERVISOR = {
+  countyId: 'benton',
+  userId: 'supervisor-001',
+  roles: ['supervisor'],
+  mode: 'muse',
+  confirmation: true,
+  reasonCode: 'operator_correction',
+};
+
 const BENTON_PILOT = {
   countyId: 'benton',
   userId: 'supervisor-001',
   roles: ['supervisor'],
   mode: 'pilot',
+  confirmation: true,
+  reasonCode: 'workflow_update',
 };
 
 const YAKIMA_MUSE = {
@@ -246,7 +257,7 @@ describe('Phase 8.5 Tools - Muse write_low', () => {
     const result = await runner.execute({
       toolId: 'draft_value_change_notice',
       params: fx.params,
-      context: BENTON_MUSE,
+      context: BENTON_MUSE_SUPERVISOR,
     });
 
     assertFixture(result, fx);
@@ -273,7 +284,7 @@ describe('Phase 8.5 Tools - Muse write_low', () => {
     const result = await runner.execute({
       toolId: 'draft_boe_appeal_response',
       params: fx.params,
-      context: BENTON_MUSE,
+      context: BENTON_MUSE_SUPERVISOR,
     });
 
     assertFixture(result, fx);

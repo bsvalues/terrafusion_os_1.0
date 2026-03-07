@@ -18,5 +18,7 @@ export { SuiteCompass, type SuiteCompassItem, type SuiteCompassProps } from './S
 export { ContextRibbon, type ContextRibbonProps } from './ContextRibbon';
 export { WorkModeSelector, type WorkModeSelectorProps } from './WorkModeSelector';
 export { ActivityFeed, type ActivityEntry, type ActivityFeedProps, type ActivitySeverity } from './ActivityFeed';
+export { EvidenceSnapshotPanel, type EvidenceSnapshotPanelProps } from './EvidenceSnapshotPanel';
 export { ParcelContextBanner, type ParcelContextBannerProps } from './ParcelContextBanner';
+export { PolicyGuardUI, type PolicyGuardUIProps, type RiskLevel, type PilotMode } from './PolicyGuardUI';
 

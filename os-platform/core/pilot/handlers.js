@@ -13,9 +13,10 @@
  *   - Document generation service (draft_appeal_response)
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.phase84Handlers = exports.phase83Handlers = exports.addDossierNoteHandler = exports.searchTraceByCorrelationHandler = exports.summarizeSalesCompsHandler = exports.draftBoeAppealResponseHandler = exports.draftValueChangeNoticeHandler = exports.explainModelInputsHandler = exports.summarizeLevyRateHandler = exports.compareAssessedValueHandler = exports.summarizeParcelCasefileHandler = exports.explainSeniorExemptionHandler = exports.draftAppealResponseHandler = exports.explainModelResultsHandler = exports.summarizeDossierHandler = void 0;
+exports.writeGateHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.requestTraceRedactionHandler = exports.assembleBoePacketHandler = exports.addDossierNoteHandler = exports.searchTraceByCorrelationHandler = exports.summarizeSalesCompsHandler = exports.draftBoeAppealResponseHandler = exports.draftValueChangeNoticeHandler = exports.explainModelInputsHandler = exports.summarizeLevyRateHandler = exports.compareAssessedValueHandler = exports.summarizeParcelCasefileHandler = exports.explainSeniorExemptionHandler = exports.draftAppealResponseHandler = exports.explainModelResultsHandler = exports.summarizeDossierHandler = void 0;
 exports.registerPhase83Handlers = registerPhase83Handlers;
 exports.registerPhase84Handlers = registerPhase84Handlers;
+exports.registerWriteGateHandlers = registerWriteGateHandlers;
 exports.registerAllHandlers = registerAllHandlers;
 // ============================================================================
 // Handler Implementations
@@ -362,6 +363,49 @@ const addDossierNoteHandler = async (params, context, _tool) => {
 };
 exports.addDossierNoteHandler = addDossierNoteHandler;
 // ============================================================================
+// Phase C2: Write-Lane Governance Handlers
+// ============================================================================
+/**
+ * Assemble BOE Packet - Pilot/write_high/payload_ref
+ * Requires confirmation + reasonCode.
+ */
+const assembleBoePacketHandler = async (params, context, _tool) => {
+    const { county, caseId, include = [] } = params;
+    assertCountyMatch(county, context.countyId);
+    const sections = [
+        'cover_sheet',
+        ...include.map(i => `section_${i}`),
+        'certification',
+    ];
+    const packetRef = buildPayloadRef(`dossier://${context.countyId}/boe/${caseId}/packet`, `${context.countyId}:${caseId}:${include.sort().join(',')}`);
+    return {
+        caseId,
+        packetRef,
+        sections,
+        payloadRef: packetRef,
+    };
+};
+exports.assembleBoePacketHandler = assembleBoePacketHandler;
+/**
+ * Request Trace Redaction - Pilot/irreversible/payload_ref
+ * Requires confirmation + reasonCode + supervisorApproval.
+ */
+const requestTraceRedactionHandler = async (params, context, _tool) => {
+    const { county, traceEventIds, reason } = params;
+    assertCountyMatch(county, context.countyId);
+    if (!traceEventIds || traceEventIds.length === 0) {
+        throw new Error('At least one trace event ID is required');
+    }
+    const ticketId = `redact-${stableHash(`${context.countyId}:${traceEventIds.join(',')}:${reason}`)}`;
+    return {
+        redactionTicketId: ticketId,
+        status: 'pending_review',
+        eventsMarked: traceEventIds.length,
+        payloadRef: buildPayloadRef(`secure-blob://${context.countyId}/redaction/${ticketId}`, `${context.countyId}:${ticketId}`),
+    };
+};
+exports.requestTraceRedactionHandler = requestTraceRedactionHandler;
+// ============================================================================
 // Handler Registry
 // ============================================================================
 /**
@@ -388,11 +432,19 @@ function registerPhase84Handlers(runner) {
     runner.registerHandler('add_dossier_note', exports.addDossierNoteHandler);
 }
 /**
- * Register all tool handlers (Phase 8.3 + 8.4).
+ * Register C2 write-lane governance handlers (write_high + irreversible).
+ */
+function registerWriteGateHandlers(runner) {
+    runner.registerHandler('assemble_boe_packet', exports.assembleBoePacketHandler);
+    runner.registerHandler('request_trace_redaction', exports.requestTraceRedactionHandler);
+}
+/**
+ * Register all tool handlers (Phase 8.3 + 8.4 + C2).
  */
 function registerAllHandlers(runner) {
     registerPhase83Handlers(runner);
     registerPhase84Handlers(runner);
+    registerWriteGateHandlers(runner);
 }
 /**
  * Map of all Phase 8.3 handlers for direct access.
@@ -416,4 +468,11 @@ exports.phase84Handlers = {
     summarize_sales_comps_rationale: exports.summarizeSalesCompsHandler,
     search_trace_by_correlation: exports.searchTraceByCorrelationHandler,
     add_dossier_note: exports.addDossierNoteHandler,
+};
+/**
+ * Map of C2 write-lane governance handlers for direct access.
+ */
+exports.writeGateHandlers = {
+    assemble_boe_packet: exports.assembleBoePacketHandler,
+    request_trace_redaction: exports.requestTraceRedactionHandler,
 };

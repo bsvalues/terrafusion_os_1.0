@@ -109,9 +109,9 @@ const MOCK_RESULTS: Record<string, QueryResult> = {
 
 const CATEGORY_STYLES: Record<string, { bg: string; fg: string; border: string }> = {
   assessment: { bg: 'hsl(var(--tf-suite-atlas) / 0.15)', fg: 'hsl(var(--tf-suite-atlas))', border: 'hsl(var(--tf-suite-atlas) / 0.3)' },
-  zoning: { bg: 'hsl(38 92% 50% / 0.15)', fg: 'hsl(38 92% 50%)', border: 'hsl(38 92% 50% / 0.3)' },
+  zoning: { bg: 'hsl(var(--tf-warning-hs) 50% / 0.15)', fg: 'hsl(var(--tf-warning-hs) 50%)', border: 'hsl(var(--tf-warning-hs) 50% / 0.3)' },
   analysis: { bg: 'hsl(280 65% 60% / 0.15)', fg: 'hsl(280 65% 60%)', border: 'hsl(280 65% 60% / 0.3)' },
-  compliance: { bg: 'hsl(142 71% 45% / 0.15)', fg: 'hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },
+  compliance: { bg: 'hsl(var(--tf-success-hs) 45% / 0.15)', fg: 'hsl(var(--tf-success-hs) 45%)', border: 'hsl(var(--tf-success-hs) 45% / 0.3)' },
 };
 
 /* -------------------------------------------------------------------------- */
@@ -275,7 +275,7 @@ export default function TerraQueryModule() {
               <CardHeader className='pb-2'>
                 <div className='flex items-center justify-between'>
                   <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
-                    <CheckCircle2 size={16} style={{ color: 'hsl(142 71% 45%)' }} />
+                    <CheckCircle2 size={16} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
                     Results
                   </CardTitle>
                   <div className='flex items-center gap-3'>

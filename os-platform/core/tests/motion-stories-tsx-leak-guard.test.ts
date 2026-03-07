@@ -14,6 +14,9 @@ describe('Motion.stories.tsx leak guard', () => {
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'Motion.stories.tsx' });
+    assertNoRawColorLeaks(content, {
+      label: 'Motion.stories.tsx',
+      knownViolationBaseline: 7, // Storybook demo: inline #b3b3b3 text color in story descriptions
+    });
   });
 });

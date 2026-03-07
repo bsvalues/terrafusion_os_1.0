@@ -12,6 +12,7 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { NextFunction, Request, Response, Router } from 'express';
 import { toolRegistry, ToolRunner, toolRunner } from '../pilot/index.js';
+import { handleTraceExport } from '../pilot/traceExport.js';
 import {
     createMetricsService,
     getMetricsService,
@@ -536,6 +537,7 @@ export function createPilotRouter(runner?: ToolRunner): Router {
         risk: t.risk,
         description: t.description,
         requiresConfirmation: t.requiresConfirmation,
+        reasonCodeRequired: t.reasonCodeRequired,
         reasonCodes: t.reasonCodes,
       })),
     });
@@ -554,6 +556,229 @@ export function createPilotRouter(runner?: ToolRunner): Router {
     }
 
     return res.json(tool);
+  });
+
+  /**
+   * GET /pilot/traces
+   *
+   * List trace events with parcel-scoped filtering and date range.
+   * Newest-first ordering with offset/limit pagination.
+   *
+   * Query params:
+   *   - parcelId (required) — scope to a single parcel
+   *   - toolId (optional)   — filter by tool
+   *   - from (optional)     — ISO 8601 lower bound (inclusive)
+   *   - to (optional)       — ISO 8601 upper bound (inclusive)
+   *   - limit (optional)    — page size, default 50, max 200
+   *   - offset (optional)   — pagination offset, default 0
+   *
+   * ACCESS RULES: same county isolation as /trace/:correlationId.
+   */
+  router.get('/traces', async (req: AuthenticatedRequest, res: Response) => {
+    const parcelId = req.query.parcelId as string | undefined;
+    if (!parcelId) {
+      return res.status(400).json({
+        error: 'INVALID_REQUEST',
+        message: 'parcelId query parameter is required',
+      });
+    }
+
+    // Parse and validate limit
+    const rawLimit = req.query.limit as string | undefined;
+    const limit = rawLimit ? Math.min(Math.max(1, parseInt(rawLimit, 10) || 50), 200) : 50;
+
+    // Parse and validate offset
+    const rawOffset = req.query.offset as string | undefined;
+    const offset = rawOffset ? Math.max(0, parseInt(rawOffset, 10) || 0) : 0;
+
+    // Parse date bounds
+    const from = req.query.from as string | undefined;
+    const to = req.query.to as string | undefined;
+
+    if (from && isNaN(new Date(from).getTime())) {
+      return res.status(400).json({
+        error: 'INVALID_REQUEST',
+        message: 'from must be a valid ISO 8601 timestamp',
+      });
+    }
+    if (to && isNaN(new Date(to).getTime())) {
+      return res.status(400).json({
+        error: 'INVALID_REQUEST',
+        message: 'to must be a valid ISO 8601 timestamp',
+      });
+    }
+    if (from && to && new Date(from).getTime() > new Date(to).getTime()) {
+      return res.status(400).json({
+        error: 'INVALID_REQUEST',
+        message: 'from must not be after to',
+      });
+    }
+
+    const toolId = req.query.toolId as string | undefined;
+
+    // Default from=now-30d when no date bounds specified (retention window)
+    const effectiveFrom = from || (to ? undefined : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+
+    // Build access principal from auth context
+    const user = req.user ?? {
+      userId: 'anonymous',
+      roles: ['viewer'],
+      countyId: 'benton',
+    };
+
+    const principal: TraceAccessPrincipal = {
+      userId: user.userId,
+      roles: user.roles,
+      countyId: user.countyId,
+    };
+
+    // Audit: emit trace_accessed event for this request
+    // NOTE: parcelId intentionally omitted from context to prevent audit events
+    // from appearing in parcel-scoped queries (avoids audit noise in feed)
+    const accessCorrelationId = `trace-list-${randomUUID().slice(0, 8)}`;
+    traceService.emit({
+      type: 'trace_accessed',
+      toolId: 'pilot:traces:list',
+      correlationId: accessCorrelationId,
+      summary: `Trace list accessed: parcelId=${parcelId}`,
+      context: {
+        countyId: principal.countyId,
+        userId: principal.userId,
+        sessionId: '',
+        mode: 'pilot',
+      },
+    });
+
+    // Query trace events (async path for persistent store)
+    const events = await traceService.queryAsync({
+      parcelId,
+      toolId,
+      from: effectiveFrom || undefined,
+      to: to || undefined,
+      limit,
+      offset,
+    });
+
+    // Filter by county isolation + access control
+    let filteredCount = 0;
+    const visibleEvents = events.filter(e => {
+      // Always deny cross-county
+      if (e.context.countyId.toLowerCase() !== principal.countyId.toLowerCase()) {
+        recordAccessDenied('cross_county');
+        filteredCount++;
+        return false;
+      }
+      // Elevated roles see all in-county; others only own
+      if (hasElevatedTraceRole(principal)) return true;
+      if (e.context.userId !== principal.userId) {
+        recordAccessDenied('user_mismatch');
+        filteredCount++;
+        return false;
+      }
+      return true;
+    });
+
+    // Audit: emit permission_denied if events were filtered out
+    if (filteredCount > 0) {
+      traceService.emit({
+        type: 'permission_denied',
+        toolId: 'pilot:traces:list',
+        correlationId: accessCorrelationId,
+        summary: `Trace list: ${filteredCount} event(s) filtered by access control`,
+        context: {
+          countyId: principal.countyId,
+          userId: principal.userId,
+          sessionId: '',
+          mode: 'pilot',
+        },
+      });
+    }
+
+    return res.json({
+      events: visibleEvents,
+      pagination: { offset, limit, returned: visibleEvents.length },
+      nextCursor: null, // Reserved for future cursor-based pagination
+    });
+  });
+
+  /**
+   * GET /pilot/traces/export
+   *
+   * Export trace events for a parcel as NDJSON (admin/elevated only).
+   *
+   * Query params:
+   *   - parcelId (required)
+   *   - correlationId (optional)
+   *   - from (optional ISO 8601, inclusive)
+   *   - to (optional ISO 8601, inclusive)
+   *   - limit (optional, default 500, max 2000)
+   *   - format (optional, only "ndjson" supported)
+   *
+   * Bounds:
+   *   - window must be <= 30 days
+   *   - if no bounds: defaults to [now-30d, now]
+   *   - if only one bound is provided, the other is inferred to maintain bounded export
+   */
+  router.get('/traces/export', async (req: AuthenticatedRequest, res: Response) => {
+    return handleTraceExport(req, res, traceService);
+  });
+
+  /**
+   * GET /pilot/traces/stats
+   *
+   * Trace store statistics for operability dashboards.
+   * Returns total event count, oldest/newest timestamps.
+   * Requires elevated trace role (admin, compliance_officer).
+   */
+  router.get('/traces/stats', async (req: AuthenticatedRequest, res: Response) => {
+    const user = req.user ?? {
+      userId: 'anonymous',
+      roles: ['viewer'],
+      countyId: 'benton',
+    };
+
+    const principal: TraceAccessPrincipal = {
+      userId: user.userId,
+      roles: user.roles,
+      countyId: user.countyId,
+    };
+
+    if (!hasElevatedTraceRole(principal)) {
+      traceService.emit({
+        type: 'permission_denied',
+        toolId: 'pilot:traces:stats',
+        correlationId: `trace-stats-${randomUUID().slice(0, 8)}`,
+        summary: `Trace stats access denied: user=${principal.userId}`,
+        context: {
+          countyId: principal.countyId,
+          userId: principal.userId,
+          sessionId: '',
+          mode: 'pilot',
+        },
+      });
+      recordAccessDenied('user_mismatch');
+      return res.status(403).json({
+        error: 'ACCESS_DENIED',
+        message: 'Trace stats require elevated role',
+      });
+    }
+
+    // Audit: emit trace_accessed for stats
+    traceService.emit({
+      type: 'trace_accessed',
+      toolId: 'pilot:traces:stats',
+      correlationId: `trace-stats-${randomUUID().slice(0, 8)}`,
+      summary: `Trace stats accessed by ${principal.userId}`,
+      context: {
+        countyId: principal.countyId,
+        userId: principal.userId,
+        sessionId: '',
+        mode: 'pilot',
+      },
+    });
+
+    const stats = await traceService.stats();
+    return res.json(stats);
   });
 
   /**

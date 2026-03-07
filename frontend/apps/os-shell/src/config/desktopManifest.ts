@@ -45,12 +45,6 @@ export interface DesktopIconEntry {
 // Presentation Mapping (keyed by canonical IDs only)
 // ============================================================================
 
-/**
- * @deprecated No longer used — desktop icons route to suite homes, not hardcoded parcels.
- * Retained for reference; will be removed in future cleanup.
- */
-const _DEMO_PARCEL_ID = '1234567890';
-
 /** Category mapping for suites (keyed by canonical suite ID) */
 const SUITE_CATEGORY: Record<string, Category> = {
   forge: 'assessment',

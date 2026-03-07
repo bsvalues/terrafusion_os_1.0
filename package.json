@@ -42,6 +42,8 @@
     ]
   },
   "scripts": {
+    "r1:verify-evidence": "node tools/r1/verify-evidence.mjs",
+    "r1:finalize-manifest": "node tools/r1/generate-final-manifest.mjs",
     "prepare": "husky install",
     "tf": "node tools/tf.js",
     "tf:ship": "node tools/dev/tf-ship.mjs",
@@ -175,7 +177,7 @@
     "start:mcp": "claude-code --mcp-config ./mcp.config.js",
     "workflow:government": "node -e \"import('./claude-code-workflows.js').then(m => m.WorkflowOrchestrator.executeWorkflow('government-compliance-audit'))\"",
     "workflow:ai-swarm": "node -e \"import('./claude-code-workflows.js').then(m => m.WorkflowOrchestrator.executeWorkflow('ai-swarm-development'))\"",
-    "security:scan": "node -e \"import('./mcp-security-config.js').then(m => new m.SecurityValidator(m.securityConfig).validateSecurityPosture())\"",
+    "security:scan": "node tools/registry/security-scan-runner.mjs",
     "audit:contracts": "deno task -c tools/deno/terra_audit/deno.json audit:contracts",
     "compliance:audit": "npm run mcp:validate && npm run security:scan",
     "validate:compliance": "npm run compliance:audit",
@@ -242,7 +244,10 @@
     "perf:verify-signature": "npx tsx tools/registry/autonomy-viewer/src/verify-signature.ts",
     "perf:custody": "npx tsx tools/registry/autonomy-viewer/src/custody-cli.ts",
     "perf:custody-attest": "npx tsx tools/registry/autonomy-viewer/src/custody-attest.ts",
-    "perf:verify-custody": "npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts"
+    "perf:verify-custody": "npx tsx tools/registry/autonomy-viewer/src/verify-custody.ts",
+    "tdc:ui:tokens:check": "tsx tools/registry/tdc-ui-tokens-check.ts",
+    "r1:verify-evidence": "node tools/r1/verify-evidence.mjs",
+    "r1:finalize-manifest": "node tools/r1/generate-final-manifest.mjs"
   },
   "keywords": [
     "government",

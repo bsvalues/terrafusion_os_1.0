@@ -41,6 +41,15 @@ const BENTON_MUSE = {
   mode: 'muse',
 };
 
+const BENTON_MUSE_SUPERVISOR = {
+  countyId: 'benton',
+  userId: 'supervisor-001',
+  roles: ['supervisor'],
+  mode: 'muse',
+  confirmation: true,
+  reasonCode: 'operator_correction',
+};
+
 const BENTON_PILOT = {
   countyId: 'benton',
   userId: 'supervisor-001',
@@ -80,7 +89,7 @@ describe('Phase 8.6 ToolRunner - canonical execution', () => {
   it('runs muse write_low tool via ToolRunner.run', async () => {
     const { runner, traceService } = await setupRunner();
     const fx = loadToolFixture('draft_value_change_notice', 'happy');
-    const result = await runner.run('draft_value_change_notice', fx.params, BENTON_MUSE);
+    const result = await runner.run('draft_value_change_notice', fx.params, BENTON_MUSE_SUPERVISOR);
 
     assert.strictEqual(result.ok, true);
     assert.strictEqual(result.toolId, 'draft_value_change_notice');

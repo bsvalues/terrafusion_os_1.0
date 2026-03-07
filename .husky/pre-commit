@@ -56,11 +56,27 @@ if [ -n "$TOPLEVEL_RAW" ] && [ "$TOPLEVEL_CANON" != "$EXPECTED_CANON" ]; then
   echo "   expected:     $EXPECTED_RAW"
   exit 1
 fi
+# Gate 0b: Untracked-file guard — no mystery files in governed paths
+# Prevents "Claude branch-switching" contamination of the evidence record
+UNTRACKED_GOVERNED="$(git ls-files --others --exclude-standard \
+  os-platform/core/ \
+  tools/registry/ \
+  packages/os-core/ \
+  frontend/apps/os-shell/ \
+  2>/dev/null)"
 
+if [ -n "$UNTRACKED_GOVERNED" ]; then
+  echo "❌ Untracked files detected in governed paths:"
+  echo "$UNTRACKED_GOVERNED" | sed 's/^/   /'
+  echo ""
+  echo "   Either: git add them, .gitignore them, or delete them."
+  echo "   Governed paths: os-platform/core/, tools/registry/, packages/os-core/, frontend/apps/os-shell/"
+  exit 1
+fi
 # Gate 1: UI Token Contract (Lumin design system — scoped Gen2 + ratchet)
 if command -v pnpm >/dev/null 2>&1; then
-  echo "🎨 Running UI token contract audit (scoped + ratchet)..."
-  pnpm -s tdc:ui:tokens || exit 1
+  echo "🎨 Running UI token contract check (read-only ratchet)..."
+  pnpm -s tdc:ui:tokens:check || exit 1
 else
   echo "⚠️  pnpm not available - skipping UI token audit"
 fi

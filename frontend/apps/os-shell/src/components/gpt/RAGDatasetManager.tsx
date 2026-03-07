@@ -208,39 +208,8 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
       // const data = await response.json();
       // setDatasets(data);
 
-      // Mock data for now
-      const mockDatasets: RAGDataset[] = [
-        {
-          id: 1,
-          name: 'Government Policies',
-          description: 'County government policies and procedures',
-          category: 'Policy',
-          embeddingProvider: 'OpenAI',
-          embeddingModel: 'text-embedding-3-small',
-          documentCount: 45,
-          totalChunks: 1234,
-          totalEmbeddings: 1234,
-          storageSize: 5242880,
-          status: 'Active',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          name: 'Property Assessment Guidelines',
-          description: 'Assessment methodology and best practices',
-          category: 'Assessment',
-          embeddingProvider: 'OpenAI',
-          embeddingModel: 'text-embedding-3-small',
-          documentCount: 23,
-          totalChunks: 678,
-          totalEmbeddings: 678,
-          storageSize: 3145728,
-          status: 'Active',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ];
+      // RAG dataset loading — disabled pending R2 knowledge base backend
+      const mockDatasets: RAGDataset[] = [];
 
       setDatasets(mockDatasets);
     } catch (err) {
@@ -263,23 +232,8 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
       // const data = await response.json();
       // setDocuments(data);
 
-      // Mock data
-      const mockDocuments: RAGDocument[] = [
-        {
-          id: 1,
-          datasetId,
-          title: 'Property Assessment Manual',
-          content: 'Full manual content...',
-          sourceUrl: 'https://example.com/manual.pdf',
-          documentType: 'PDF',
-          author: 'County Assessor',
-          chunkCount: 156,
-          embeddingCount: 156,
-          status: 'Indexed',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ];
+      // RAG dataset loading — disabled pending R2 knowledge base backend
+      const mockDocuments: RAGDocument[] = [];
 
       setDocuments(mockDocuments);
     } catch (err) {
@@ -302,16 +256,8 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
       // const data = await response.json();
       // setChunks(data);
 
-      // Mock data
-      const mockChunks: RAGDocumentChunk[] = Array.from({ length: 20 }, (_, i) => ({
-        id: i + 1,
-        documentId,
-        chunkIndex: i,
-        content: `This is chunk ${i + 1} of the document. It contains approximately 512 tokens of text content that will be embedded and used for semantic search. The content is automatically chunked from the original document with a 50-token overlap to maintain context continuity between chunks.`,
-        tokenCount: 512,
-        hasEmbedding: true,
-        createdAt: new Date().toISOString(),
-      }));
+      // RAG dataset loading — disabled pending R2 knowledge base backend
+      const mockChunks: RAGDocumentChunk[] = [];
 
       setChunks(mockChunks);
     } catch (err) {

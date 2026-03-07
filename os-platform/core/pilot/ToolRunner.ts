@@ -43,6 +43,9 @@ export const ErrorCodes = {
   SUPERVISOR_APPROVAL_REQUIRED: 'SUPERVISOR_APPROVAL_REQUIRED',
   SUPERVISOR_ROLE_INVALID: 'SUPERVISOR_ROLE_INVALID',
 
+  // Gate 5b: RBAC Permission
+  PERMISSION_DENIED: 'PERMISSION_DENIED',
+
   // Gate 6: PII / Trace
   PAYLOAD_STORE_REQUIRED: 'PAYLOAD_STORE_REQUIRED',
 
@@ -61,7 +64,8 @@ export type RunnerErrorCode =
   | 'VALIDATION'
   | 'PII_BLOCKED'
   | 'EXECUTION_FAILED'
-  | 'TOOL_NOT_FOUND';
+  | 'TOOL_NOT_FOUND'
+  | 'PERMISSION_DENIED';
 
 export class ToolRunnerError extends Error {
   constructor(
@@ -161,6 +165,87 @@ function enforcePiiPolicy(tool: Tool): string[] {
   if (tool.tracePolicy === 'payload_ref' && !tool.payloadStore) {
     violations.push(
       `[${ErrorCodes.PAYLOAD_STORE_REQUIRED}] Tool ${tool.toolId}: payload_ref trace policy requires payloadStore`
+    );
+  }
+
+  return violations;
+}
+
+// ============================================================================
+// Gate 5b: RBAC Permission Enforcement (ported from packages/os-core)
+// ============================================================================
+
+/**
+ * Role → claims mapping per ROLE_VOCABULARY.md contract.
+ * This is the canonical source; if the contract changes, update here.
+ */
+const ROLE_CLAIMS: Record<string, string[]> = {
+  viewer:        ['read:parcel', 'read:dossier'],
+  appraiser:     ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier'],
+  supervisor:    ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier', 'write:dais', 'approve:irreversible'],
+  administrator: ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier', 'write:dais', 'approve:irreversible', 'admin:trace', 'admin:system'],
+  auditor:       ['read:parcel', 'read:dossier', 'read:trace', 'audit:all'],
+};
+
+/**
+ * Derive the claims a tool requires based on its manifest properties.
+ */
+function deriveRequiredClaims(tool: Tool): string[] {
+  const claims: string[] = [];
+
+  // Read tools need read claims for their touch targets
+  if (tool.touches?.includes('parcel')) claims.push('read:parcel');
+  if (tool.touches?.includes('dossier')) claims.push('read:dossier');
+
+  // Write tools need write claims for their suite
+  // OS-lane tools are governed by admin:trace (no write:os claim in vocabulary)
+  if (tool.writeLane && tool.writeLane !== 'os') {
+    claims.push(`write:${tool.writeLane}`);
+  }
+
+  // Irreversible tools need approval claim
+  if (tool.risk === 'irreversible') {
+    claims.push('approve:irreversible');
+  }
+
+  // Trace admin tools
+  if (tool.suite === 'os' && tool.touches?.includes('workflow') && tool.risk !== 'read_only') {
+    claims.push('admin:trace');
+  }
+
+  return [...new Set(claims)];
+}
+
+/**
+ * Resolve effective claims for a user's roles.
+ */
+function resolveClaimsForRoles(roles: string[]): Set<string> {
+  const claims = new Set<string>();
+  for (const role of roles) {
+    const roleClaims = ROLE_CLAIMS[role.toLowerCase()];
+    if (roleClaims) {
+      for (const c of roleClaims) claims.add(c);
+    }
+  }
+  return claims;
+}
+
+/**
+ * Gate 5b: RBAC permission check.
+ * Derives required claims from tool manifest and checks against user's roles.
+ */
+function enforceRbacPermissions(tool: Tool, context: ToolExecutionContext): string[] {
+  const violations: string[] = [];
+
+  const required = deriveRequiredClaims(tool);
+  if (required.length === 0) return violations;
+
+  const userClaims = resolveClaimsForRoles(context.roles);
+  const missing = required.filter(c => !userClaims.has(c));
+
+  if (missing.length > 0) {
+    violations.push(
+      `[${ErrorCodes.PERMISSION_DENIED}] User lacks claims: ${missing.join(', ')} (required by ${tool.toolId})`
     );
   }
 
@@ -311,6 +396,7 @@ export class ToolRunner {
     const violations: string[] = [
       ...enforceWriteLane(tool, context),
       ...enforceRiskPolicy(tool, context),
+      ...enforceRbacPermissions(tool, context),
       ...enforcePiiPolicy(tool),
     ];
 
@@ -398,6 +484,7 @@ export class ToolRunner {
     const violations = [
       ...enforceWriteLane(tool, context),
       ...enforceRiskPolicy(tool, context),
+      ...enforceRbacPermissions(tool, context),
       ...enforcePiiPolicy(tool),
     ];
 
@@ -475,6 +562,8 @@ function mapErrorCode(code: ErrorCode): RunnerErrorCode {
       return 'PII_BLOCKED';
     case ErrorCodes.TOOL_NOT_FOUND:
       return 'TOOL_NOT_FOUND';
+    case ErrorCodes.PERMISSION_DENIED:
+      return 'PERMISSION_DENIED';
     case ErrorCodes.POLICY_DENIED:
     case ErrorCodes.WRITE_LANE_MISMATCH:
     case ErrorCodes.WRITE_LANE_REQUIRED:

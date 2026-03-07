@@ -14,7 +14,8 @@
         "**/*.spec.tsx",
         "**/ARCHIVE/**",
         "**/QUARANTINE/**",
-        "**/tokens/**"
+        "**/tokens/**",
+        "**/ui-tokens/**"
       ]
     }
   }

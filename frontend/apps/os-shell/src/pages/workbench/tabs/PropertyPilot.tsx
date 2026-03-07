@@ -1,134 +1,137 @@
 /**
  * PropertyPilot.tsx
  *
- * Phase 5: Property Workbench Pilot Tab - Real MWUX Slice
- * First tab to go fully real with parcel-context tool invocation.
+ * PR-UI1: Property Workbench Pilot Tab — Governed Tool Invocation
  *
- * Architecture: UI → pilotApi.invokeTool(parcelId) → correlationId-first UX
- * Uses ToolInvokePanel pattern with parcel context.
+ * Dynamically loads tools from the Pilot manifest via listPilotTools().
+ * All invocations go through useToolInvocation → preflight → confirm → execute.
+ * Write-risk tools enforce Gate 5 (confirmation + reason code) via RiskConfirmationModal.
  *
- * Phase 6.2: Migrated to shared workbench primitives
+ * Production-only tool and trace flows.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
-import { invokeTool } from '../../../api/pilotApi';
-import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
+import { listPilotTools, type PilotTool, type Risk } from '../../../api/pilotApi';
 import {
-    InvocationHistory,
-    ParcelContextHeader,
-    type InvocationRecord,
+  InvocationHistory,
+  ParcelContextHeader,
+  type InvocationRecord,
 } from '../../../components/workbench';
-import type { ErrorInfo } from '../../../hooks/useErrorHandler';
-import { getEnv } from '../../../runtime/env';
+import { ExecutionConsole } from '../../../components/pilot/ExecutionConsole';
+import { EvidenceRail } from '../../../components/pilot/EvidenceRail';
+import { useToolInvocation } from '../../../hooks/useToolInvocation';
+import { usePilotTraceList } from '../../../hooks/usePilotTraceList';
 
-/** Available parcel-context tools for quick invocation */
-const PARCEL_TOOLS = [
-  {
-    toolId: 'registry.list_tools',
-    label: 'List Tools',
-    description: 'List all available tools (read-only)',
-    icon: '📋',
-  },
-  {
-    toolId: 'dossier.summarize',
-    label: 'Summarize Dossier',
-    description: 'Generate parcel dossier summary',
-    icon: '📄',
-  },
-] as const;
+// ============================================================================
+// Risk level display helpers
+// ============================================================================
 
-interface InvocationState {
-  status: 'idle' | 'loading' | 'success' | 'error';
-  currentTool?: string;
-  result?: { toolId: string; output: string };
-  correlationId?: string;
-  error?: ErrorInfo;
-}
+const RISK_ICON: Record<Risk, string> = {
+  read_only: '📋',
+  write_low: '✏️',
+  write_high: '🔶',
+  irreversible: '🛑',
+};
+
+const RISK_LABEL: Record<Risk, string> = {
+  read_only: 'Read-Only',
+  write_low: 'Write (Low)',
+  write_high: 'Write (High)',
+  irreversible: 'Irreversible',
+};
+
+const RISK_BADGE_CLASS: Record<Risk, string> = {
+  read_only: 'tf-status-success',
+  write_low: 'tf-status-info',
+  write_high: 'tf-status-warning',
+  irreversible: 'tf-status-error',
+};
+
+// ============================================================================
+// Component
+// ============================================================================
 
 export const PropertyPilot: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const invocation = useToolInvocation();
 
-  const [invocationState, setInvocationState] = useState<InvocationState>({
-    status: 'idle',
-  });
+  // Dynamic tool list from manifest
+  const [tools, setTools] = useState<PilotTool[]>([]);
+  const [toolsLoading, setToolsLoading] = useState(true);
+  const [toolsError, setToolsError] = useState<string | null>(null);
+
+  // Invocation history (accumulated across tool runs)
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
-  const handleInvokeTool = useCallback(
-    async (toolId: string) => {
-      setInvocationState({ status: 'loading', currentTool: toolId });
+  // Track the selected tool for ExecutionConsole metadata display
+  const [activeTool, setActiveTool] = useState<PilotTool | null>(null);
 
-      try {
-        const response = await invokeTool({
-          toolId,
-          params: {},
-          parcelId, // Pass parcel context
-        });
+  // Load tools from the Pilot manifest on mount
+  useEffect(() => {
+    let cancelled = false;
+    setToolsLoading(true);
+    setToolsError(null);
 
-        const record: InvocationRecord = {
-          id: `inv-${Date.now()}`,
-          toolId,
-          status: response.success ? 'success' : 'error',
-          correlationId: response.correlationId,
-          timestamp: new Date(),
-          errorCode: response.error?.code,
-        };
-
-        setInvocationHistory((prev) => [record, ...prev]);
-
-        if (response.success && response.result) {
-          setInvocationState({
-            status: 'success',
-            currentTool: toolId,
-            result: response.result,
-            correlationId: response.correlationId,
-          });
-        } else if (response.error) {
-          setInvocationState({
-            status: 'error',
-            currentTool: toolId,
-            correlationId: response.correlationId,
-            error: {
-              message: response.error.message,
-              code: response.error.code,
-              correlationId: response.correlationId,
-              severity: response.error.severity || 'error',
-            },
-          });
+    listPilotTools()
+      .then((response) => {
+        if (!cancelled) {
+          setTools(response.tools);
+          setToolsLoading(false);
         }
-      } catch (err) {
-        const correlationId = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-        const errorInfo: ErrorInfo = {
-          message: err instanceof Error ? err.message : 'Network error occurred',
-          code: 'NETWORK_ERROR',
-          correlationId,
-          severity: 'error',
-        };
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setToolsError(err instanceof Error ? err.message : 'Failed to load tools');
+          setToolsLoading(false);
+        }
+      });
 
+    return () => { cancelled = true; };
+  }, []);
+
+  // Record completed invocations into history
+  useEffect(() => {
+    const { phase, toolId, correlationId, errorCode } = invocation.state;
+    if ((phase === 'succeeded' || phase === 'failed') && toolId && correlationId) {
+      setInvocationHistory((prev) => {
+        // Avoid duplicate entries for the same correlationId
+        if (prev.some((r) => r.correlationId === correlationId)) return prev;
         const record: InvocationRecord = {
           id: `inv-${Date.now()}`,
           toolId,
-          status: 'error',
+          status: phase === 'succeeded' ? 'success' : 'error',
           correlationId,
           timestamp: new Date(),
-          errorCode: 'NETWORK_ERROR',
+          errorCode: errorCode ?? undefined,
         };
+        return [record, ...prev];
+      });
+    }
+  }, [invocation.state.phase, invocation.state.toolId, invocation.state.correlationId, invocation.state.errorCode]);
 
-        setInvocationHistory((prev) => [record, ...prev]);
-        setInvocationState({
-          status: 'error',
-          currentTool: toolId,
-          correlationId,
-          error: errorInfo,
-        });
-      }
+  // Invoke a tool through the governed lifecycle
+  const handleInvokeTool = useCallback(
+    (tool: PilotTool) => {
+      setActiveTool(tool);
+      invocation.invoke(tool.toolId, { parcelId });
     },
-    [parcelId]
+    [invocation, parcelId]
   );
 
-  const clearState = useCallback(() => {
-    setInvocationState({ status: 'idle' });
-  }, []);
+  // Memoize the tool currently being invoked (for ExecutionConsole display)
+  const activeToolMeta = useMemo(() => {
+    if (activeTool) return activeTool;
+    if (invocation.state.toolId) {
+      return tools.find((t) => t.toolId === invocation.state.toolId) ?? null;
+    }
+    return null;
+  }, [activeTool, invocation.state.toolId, tools]);
+
+  const isInvoking = invocation.state.phase !== 'idle';
+
+  // Evidence Rail — parcel-scoped trace list feed
+  const traceList = usePilotTraceList({ parcelId });
 
   return (
     <div className='tf-suite-pilot space-y-6' data-testid='property-pilot-tab'>
@@ -148,123 +151,100 @@ export const PropertyPilot: React.FC = () => {
         }
       />
 
-      {/* Tool Cards */}
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        {PARCEL_TOOLS.map((tool) => (
-          <div
-            key={tool.toolId}
-            className='tf-suite-card rounded-xl p-5'
-          >
-            <div className='flex items-start justify-between mb-3'>
-              <div className='flex items-center gap-2'>
-                <span className='text-2xl'>{tool.icon}</span>
-                <div>
-                  <h3 className='tf-text font-semibold'>{tool.label}</h3>
-                  <code className='text-xs tf-text-muted'>{tool.toolId}</code>
-                </div>
-              </div>
-              <span className='px-2 py-0.5 text-xs tf-status-success rounded'>
-                Read-Only
-              </span>
-            </div>
-            <p className='tf-text-secondary text-sm mb-4'>{tool.description}</p>
-            <button
-              onClick={() => handleInvokeTool(tool.toolId)}
-              disabled={invocationState.status === 'loading'}
-              className='tf-suite-pilot-cta w-full px-4 py-2 rounded-lg transition-colors'
-            >
-              {invocationState.status === 'loading' && invocationState.currentTool === tool.toolId
-                ? 'Running...'
-                : 'Run Tool'}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Current Invocation Result */}
-      {invocationState.status === 'loading' && (
+      {/* Tool loading states */}
+      {toolsLoading && (
         <div className='tf-status-info rounded-xl p-4' role='status'>
           <div className='flex items-center gap-3'>
             <div className='w-5 h-5 border-2 rounded-full animate-spin' style={{ borderColor: 'hsl(var(--tf-text) / 0.3)', borderTopColor: 'hsl(var(--tf-text))' }} />
-            <span className='tf-text'>Invoking {invocationState.currentTool}...</span>
+            <span className='tf-text'>Loading tools from manifest…</span>
           </div>
         </div>
       )}
 
-      {invocationState.status === 'success' && invocationState.result && (
-        <div className='tf-status-success rounded-xl p-5'>
-          <div className='flex items-center justify-between mb-4'>
-            <h3 className='font-semibold flex items-center gap-2' style={{ color: 'hsl(var(--tf-success))' }}>
-              <span>✅</span> Tool Execution Successful
-            </h3>
-            <div className='flex items-center gap-2'>
-              <span className='tf-text-muted text-sm'>Correlation ID:</span>
-              <code className='tf-overlay px-2 py-1 rounded text-sm tf-text-secondary'>
-                {invocationState.correlationId}
-              </code>
+      {toolsError && (
+        <div className='tf-status-error rounded-xl p-4'>
+          <p className='tf-text'>Failed to load tools: {toolsError}</p>
+          <button
+            onClick={() => {
+              setToolsLoading(true);
+              setToolsError(null);
+              listPilotTools()
+                .then((r) => { setTools(r.tools); setToolsLoading(false); })
+                .catch((e) => { setToolsError(e instanceof Error ? e.message : 'Retry failed'); setToolsLoading(false); });
+            }}
+            className='mt-2 px-3 py-1 text-sm tf-hover-surface rounded'
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Tool Cards — dynamically loaded from manifest */}
+      {!toolsLoading && !toolsError && tools.length > 0 && (
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          {tools.map((tool) => (
+            <div
+              key={tool.toolId}
+              className='tf-suite-card rounded-xl p-5'
+            >
+              <div className='flex items-start justify-between mb-3'>
+                <div className='flex items-center gap-2'>
+                  <span className='text-2xl'>{RISK_ICON[tool.risk]}</span>
+                  <div>
+                    <h3 className='tf-text font-semibold'>
+                      {tool.displayName ?? tool.toolId}
+                    </h3>
+                    <code className='text-xs tf-text-muted'>{tool.toolId}</code>
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 text-xs ${RISK_BADGE_CLASS[tool.risk]} rounded`}>
+                  {RISK_LABEL[tool.risk]}
+                </span>
+              </div>
+              {tool.description && (
+                <p className='tf-text-secondary text-sm mb-4'>{tool.description}</p>
+              )}
+              {tool.suite && (
+                <p className='tf-text-muted text-xs mb-3'>Suite: {tool.suite}</p>
+              )}
               <button
-                onClick={() => navigator.clipboard.writeText(invocationState.correlationId || '')}
-                className='px-2 py-1 text-xs tf-hover-surface rounded'
-                title='Copy correlation ID'
+                onClick={() => handleInvokeTool(tool)}
+                disabled={isInvoking}
+                className='tf-suite-pilot-cta w-full px-4 py-2 rounded-lg transition-colors disabled:opacity-50'
               >
-                Copy
-              </button>
-              <button
-                onClick={clearState}
-                className='px-2 py-1 text-xs tf-hover-surface rounded'
-              >
-                Dismiss
+                {isInvoking && invocation.state.toolId === tool.toolId
+                  ? 'Running…'
+                  : 'Run Tool'}
               </button>
             </div>
-          </div>
-
-          <div className='tf-overlay rounded-lg p-4 overflow-x-auto'>
-            <pre className='text-sm tf-text-secondary font-mono whitespace-pre-wrap'>
-              {(() => {
-                try {
-                  return JSON.stringify(JSON.parse(invocationState.result.output), null, 2);
-                } catch {
-                  return invocationState.result.output;
-                }
-              })()}
-            </pre>
-          </div>
-
-          {getEnv().DEV && (
-            <details className='mt-4'>
-              <summary className='tf-text-muted text-sm cursor-pointer hover:text-[hsl(var(--tf-text)/0.7)]'>
-                🔍 Developer Info
-              </summary>
-              <div className='mt-2 tf-overlay rounded p-3'>
-                <code className='text-xs tf-text-tertiary block'>
-                  pnpm run trace:query --correlation {invocationState.correlationId}
-                </code>
-              </div>
-            </details>
-          )}
+          ))}
         </div>
       )}
 
-      {invocationState.status === 'error' && invocationState.error && (
-        <div className='tf-status-error rounded-xl p-5'>
-          <div className='flex justify-end mb-2'>
-            <button
-              onClick={clearState}
-              className='px-2 py-1 text-xs tf-hover-surface rounded'
-            >
-              Dismiss
-            </button>
-          </div>
-          <ErrorDisplay error={invocationState.error} />
+      {!toolsLoading && !toolsError && tools.length === 0 && (
+        <div className='tf-status-info rounded-xl p-4'>
+          <p className='tf-text-muted text-center'>No tools available in the manifest.</p>
         </div>
       )}
 
-      {/* Invocation History */}
-      <InvocationHistory
-        records={invocationHistory}
-        title='Invocation History'
-        emptyMessage='No tool invocations for this parcel yet.'
-      />
+      <div className='grid grid-cols-1 xl:grid-cols-3 gap-4 items-start'>
+        <div className='xl:col-span-2 space-y-4'>
+          {/* Execution Console — lifecycle + confirmation gate + correlationId */}
+          <ExecutionConsole
+            invocation={invocation}
+            tool={activeToolMeta}
+          />
+
+          {/* Invocation History */}
+          <InvocationHistory
+            records={invocationHistory}
+            title='Invocation History'
+            emptyMessage='No tool invocations for this parcel yet.'
+          />
+        </div>
+
+        <EvidenceRail phase={traceList.phase} events={traceList.events} error={traceList.error} onRetry={traceList.refresh} />
+      </div>
     </div>
   );
 };

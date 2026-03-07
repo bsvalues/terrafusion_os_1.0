@@ -18,6 +18,8 @@
   },
   "include": [
     "os-platform/core/pilot/**/*.ts",
+    "os-platform/core/trace/**/*.ts",
+    "os-platform/core/terratrc/**/*.ts",
     "os-platform/core/types/**/*.ts",
     "os-platform/core/types/**/*.d.ts",
     "tools/registry/**/*.ts"
@@ -31,6 +33,8 @@
     "**/legacy/**",
     "development/tools/**",
     "specialized/**",
+    "os-platform/core/trace/drizzle.config.ts",
+    "os-platform/core/trace/schema.ts",
     "**/*.js",
     "**/*.mjs",
     "**/*.cjs",

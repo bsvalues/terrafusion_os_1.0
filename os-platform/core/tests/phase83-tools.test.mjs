@@ -123,6 +123,8 @@ const BENTON_SUPERVISOR = {
   userId: 'supervisor-001',
   roles: ['supervisor', 'appraiser'],
   mode: 'muse',
+  confirmation: true,
+  reasonCode: 'appeal_response',
 };
 
 const YAKIMA_APPRAISER = {
@@ -248,10 +250,11 @@ describe('Phase 8.3 Tools - Gate Validation', () => {
       assert.strictEqual(tool.writeLane, 'dais');
     });
 
-    it('Gate 5: write_low does not require confirmation', () => {
+    it('Gate 5: write_low requires confirmation + reason code', () => {
       const tool = registry.getTool('draft_appeal_response');
-      assert.strictEqual(tool.requiresConfirmation, false);
-      assert.strictEqual(tool.reasonCodeRequired, false);
+      assert.strictEqual(tool.requiresConfirmation, true);
+      assert.strictEqual(tool.reasonCodeRequired, true);
+      assert.ok(tool.reasonCodes.length > 0);
     });
 
     it('Gate 6: has payload_ref PII handling', () => {
@@ -393,7 +396,7 @@ describe('Phase 8.3 Tools - Handler Execution', () => {
       const result = await runner.execute({
         toolId: 'draft_appeal_response',
         params: { parcelId: 'P-001-237', appealId: 'A-2026-001' },
-        context: BENTON_APPRAISER,
+        context: BENTON_SUPERVISOR,
       });
 
       assert.strictEqual(result.ok, true);
@@ -406,7 +409,7 @@ describe('Phase 8.3 Tools - Handler Execution', () => {
       const result = await runner.execute({
         toolId: 'draft_appeal_response',
         params: { parcelId: 'P-001-238', appealId: 'A-2026-002', position: 'adjust' },
-        context: BENTON_APPRAISER,
+        context: BENTON_SUPERVISOR,
       });
 
       assert.strictEqual(result.ok, true);
@@ -418,7 +421,7 @@ describe('Phase 8.3 Tools - Handler Execution', () => {
       await runner.execute({
         toolId: 'draft_appeal_response',
         params: { parcelId: 'P-001-239', appealId: 'A-2026-003' },
-        context: BENTON_APPRAISER,
+        context: BENTON_SUPERVISOR,
       });
 
       const events = traceService.query({ toolId: 'draft_appeal_response' });
@@ -516,7 +519,7 @@ describe('Phase 8.3 Tools - Dashboard Metrics', () => {
     await runner.execute({
       toolId: 'draft_appeal_response',
       params: { parcelId: 'P-001-251', appealId: 'A-2026-010' },
-      context: BENTON_APPRAISER,
+      context: BENTON_SUPERVISOR,
     });
 
     const metricsService = new MetricsService(traceService);
@@ -542,7 +545,7 @@ describe('Phase 8.3 Tools - Dashboard Metrics', () => {
     await runner.execute({
       toolId: 'draft_appeal_response',
       params: { parcelId: 'P-001-253', appealId: 'A-2026-011' },
-      context: BENTON_APPRAISER,
+      context: BENTON_SUPERVISOR,
     });
 
     const metricsService = new MetricsService(traceService);

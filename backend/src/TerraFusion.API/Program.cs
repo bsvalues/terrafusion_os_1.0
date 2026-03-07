@@ -40,6 +40,44 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+static bool TryReadBoolean(string? value, out bool parsed)
+{
+    if (bool.TryParse(value, out parsed))
+    {
+        return true;
+    }
+
+    if (string.Equals(value, "1", StringComparison.OrdinalIgnoreCase))
+    {
+        parsed = true;
+        return true;
+    }
+
+    if (string.Equals(value, "0", StringComparison.OrdinalIgnoreCase))
+    {
+        parsed = false;
+        return true;
+    }
+
+    parsed = false;
+    return false;
+}
+
+static bool IsFeatureEnabled(IConfiguration configuration, string configKey, string envVar, bool defaultValue = false)
+{
+    if (TryReadBoolean(configuration[configKey], out var configValue))
+    {
+        return configValue;
+    }
+
+    if (TryReadBoolean(Environment.GetEnvironmentVariable(envVar), out var envValue))
+    {
+        return envValue;
+    }
+
+    return defaultValue;
+}
+
 // 🔍 TELEMETRY: Phase 9.1 Nervous System
 var serviceName = "terrafusion-iron";
 var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://otel-collector:4317";
@@ -229,6 +267,8 @@ builder.Services.AddScoped<TerraFusion.Core.Services.LegacyDatabaseService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
 // Register Dynamic Property Service (REQUIRED by HarrisPacsLegacyService)
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
+// Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
+builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
 
 
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
@@ -346,6 +386,10 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
         options.UseSqlite(connectionString);
     }
 });
+
+// CX-8: Register ICostForgeService for real property-backed cost calculation
+builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeAIService, TerraFusion.AI.Services.CostForgeAIService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeService, TerraFusion.API.Services.CostForgeService>();
 
 // Register ITerraFusionDbContext interface
 builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
@@ -601,7 +645,19 @@ builder.Services.AddSignalR(options =>
 });
 
 // Register Quantum Metrics Background Service for real-time broadcasting
-builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
+var enableQuantumMetricsBackgroundService = IsFeatureEnabled(
+    builder.Configuration,
+    "Features:EnableQuantumMetricsBackgroundService",
+    "TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE");
+
+if (enableQuantumMetricsBackgroundService)
+{
+    builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
+}
+else
+{
+    Console.WriteLine("ℹ️ QuantumMetricsBackgroundService disabled by default. Set TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE=true to enable.");
+}
 
 // Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
@@ -639,11 +695,26 @@ using (var scope = app.Services.CreateScope())
             scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
         await seeder.SeedAllGPTsAsync();
 
-        logger.LogInformation("✅ GPT configurations seeded successfully");
+        logger.LogInformation("GPT configurations seeded successfully");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"⚠️ GPT seeding skipped: {ex.Message}");
+        Console.WriteLine($"GPT seeding skipped: {ex.Message}");
+    }
+}
+
+// DX-01: Seed dossier runtime data in Development
+if (app.Environment.IsDevelopment())
+{
+    using var seedScope = app.Services.CreateScope();
+    try
+    {
+        var db = seedScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+        await TerraFusion.API.Seeds.DatabaseSeeder.SeedDossierRuntimeDataAsync(db);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[DX-01] Dossier seed skipped: {ex.Message}");
     }
 }
 
@@ -654,6 +725,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+
+// DX-05: Correlation ID — ensure every response (including 400/403/404/500) carries
+// X-Correlation-ID for traceability. Registered early so it wraps all downstream middleware.
+app.UseCorrelationId();
 
 // Prometheus metrics middleware
 app.UseHttpMetrics();
@@ -692,6 +767,54 @@ app.UseAuditLogging();
 app.UseUltimateCostForgeAPI(app.Environment);
 
 app.MapControllers();
+
+// DX-01: Development-only JWT token endpoint for local testing.
+// Returns a valid JWT with countyId, countyCode, role, and permission claims.
+// GUARDED: Only available when app.Environment.IsDevelopment() is true.
+if (app.Environment.IsDevelopment())
+{
+    app.MapGet("/api/auth/dev-token", (
+        TerraFusion.API.Services.IJwtTokenService jwtService,
+        IConfiguration config) =>
+    {
+        var defaultCountyId = config["DefaultCounty:Id"] ?? TerraFusion.API.Seeds.DatabaseSeeder.BentonCountyId.ToString();
+        var defaultCountyCode = config["DefaultCounty:Code"] ?? "benton";
+
+        var customClaims = new Dictionary<string, object>
+        {
+            ["countyId"] = defaultCountyId,
+            ["countyCode"] = defaultCountyCode,
+            ["perm"] = new List<string>
+            {
+                "read:dossier",
+                "write:dossier",
+                "read:property",
+                "read:levy",
+                "read:costforge"
+            }
+        };
+
+        var token = jwtService.GenerateAccessToken(
+            userId: "dev-user-001",
+            email: "dev@terrafusion.local",
+            roles: new[] { "Developer", "Assessor" },
+            customClaims: customClaims);
+
+        return Results.Ok(new
+        {
+            token,
+            expiresIn = int.Parse(config["JwtSettings:ExpirationMinutes"] ?? "120"),
+            countyId = defaultCountyId,
+            countyCode = defaultCountyCode,
+            note = "Development-only token. Not available in production."
+        });
+    })
+    .WithName("DevToken")
+    .WithTags("Auth")
+    .AllowAnonymous();
+
+    Console.WriteLine("[DX-01] Development auth endpoint registered: GET /api/auth/dev-token");
+}
 
 // SPA Fallback - serve index.html for all non-API routes
 if (Directory.Exists(uiPath))

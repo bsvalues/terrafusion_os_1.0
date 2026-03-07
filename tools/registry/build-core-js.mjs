@@ -22,12 +22,44 @@ const targets = [
     out: 'os-platform/core/pilot/handlers.js',
   },
   {
+    source: 'os-platform/core/pilot/handlers.real.ts',
+    out: 'os-platform/core/pilot/handlers.real.js',
+  },
+  {
+    source: 'os-platform/core/pilot/backendClient.ts',
+    out: 'os-platform/core/pilot/backendClient.js',
+  },
+  {
+    source: 'os-platform/core/pilot/pilotAuth.ts',
+    out: 'os-platform/core/pilot/pilotAuth.js',
+  },
+  {
     source: 'os-platform/core/pilot/ToolRunner.ts',
     out: 'os-platform/core/pilot/ToolRunner.js',
   },
   {
     source: 'os-platform/core/pilot/index.ts',
     out: 'os-platform/core/pilot/index.js',
+  },
+  {
+    source: 'os-platform/core/pilot/traceExport.ts',
+    out: 'os-platform/core/pilot/traceExport.js',
+  },
+  {
+    source: 'os-platform/core/trace/TraceStore.ts',
+    out: 'os-platform/core/trace/TraceStore.js',
+  },
+  {
+    source: 'os-platform/core/trace/TraceService.ts',
+    out: 'os-platform/core/trace/TraceService.js',
+  },
+  {
+    source: 'os-platform/core/trace/index.ts',
+    out: 'os-platform/core/trace/index.js',
+  },
+  {
+    source: 'os-platform/core/terratrc/trace-feed-adapter.ts',
+    out: 'os-platform/core/terratrc/trace-feed-adapter.js',
   },
 ];
 

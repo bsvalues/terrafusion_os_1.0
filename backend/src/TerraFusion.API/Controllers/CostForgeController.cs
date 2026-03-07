@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 using TerraFusion.API.Security;
 using TerraFusion.API.Models;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Abstractions.DTOs.Responses;
+using TerraFusion.Core.Entities;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using System.ComponentModel.DataAnnotations;
 
 namespace TerraFusion.API.Controllers;
@@ -22,22 +25,200 @@ public class CostForgeController : ControllerBase
 {
     private readonly ICostForgeService _costForgeService;
     private readonly ICostForgeAIService _costForgeAIService;
-    private readonly IPropertyService _propertyService;
+    private readonly DataDbContext _db;
     private readonly TerraFusion.Abstractions.Interfaces.IAuditLogger _auditLogger;
     private readonly ILogger<CostForgeController> _logger;
 
     public CostForgeController(
         ICostForgeService costForgeService,
         ICostForgeAIService costForgeAIService,
-        IPropertyService propertyService,
+        DataDbContext db,
         TerraFusion.Abstractions.Interfaces.IAuditLogger auditLogger,
         ILogger<CostForgeController> logger)
     {
         _costForgeService = costForgeService;
         _costForgeAIService = costForgeAIService;
-        _propertyService = propertyService;
+        _db = db;
         _auditLogger = auditLogger;
         _logger = logger;
+    }
+
+    private ActionResult BuildPostR1DisabledResponse(string operation, string featureName, string detail, string problemType)
+    {
+        HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
+
+        _logger.LogWarning(
+            "CostForge endpoint {Operation} was invoked, but {FeatureName} remains Post-R1 and is intentionally disabled",
+            operation,
+            featureName);
+
+        var problem = new ProblemDetails
+        {
+            Title = $"{featureName} is not enabled for R1",
+            Detail = detail,
+            Status = StatusCodes.Status501NotImplemented,
+            Type = $"https://terrafusion.local/problems/{problemType}"
+        };
+
+        problem.Extensions["scope"] = "Post-R1";
+        problem.Extensions["operation"] = operation;
+        problem.Extensions["feature"] = featureName;
+
+        return StatusCode(StatusCodes.Status501NotImplemented, problem);
+    }
+
+    private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
+
+    private async Task<CountyContext?> ResolveCountyContextAsync()
+    {
+        var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+        var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+        {
+            var county = await _db.Counties
+                .AsNoTracking()
+                .Where(c => c.Id == directCountyId)
+                .Select(c => new { c.Name, c.FipsCode })
+                .FirstOrDefaultAsync();
+
+            return new CountyContext(directCountyId, county?.Name, county?.FipsCode, countyCodeClaim);
+        }
+
+        var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
+        var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
+
+        IQueryable<County> countyQuery = _db.Counties.AsNoTracking();
+
+        if (nameCandidates.Length > 0 && fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c =>
+                nameCandidates.Contains(c.Name) ||
+                (c.FipsCode != null && fipsCandidates.Contains(c.FipsCode)));
+        }
+        else if (nameCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => nameCandidates.Contains(c.Name));
+        }
+        else if (fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => c.FipsCode != null && fipsCandidates.Contains(c.FipsCode));
+        }
+        else
+        {
+            return null;
+        }
+
+        var match = await countyQuery
+            .Select(c => new { c.Id, c.Name, c.FipsCode })
+            .FirstOrDefaultAsync();
+
+        return match is null
+            ? null
+            : new CountyContext(match.Id, match.Name, match.FipsCode, countyCodeClaim);
+    }
+
+    private static string[] BuildCountyNameCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var withoutSuffix = StripCountySuffix(trimmed);
+            AddCandidate(candidates, withoutSuffix);
+
+            var titleCase = ToTitleCaseWords(withoutSuffix);
+            AddCandidate(candidates, titleCase);
+            AddCandidate(candidates, $"{titleCase} County");
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string[] BuildFipsCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var digitsOnly = new string(trimmed.Where(char.IsDigit).ToArray());
+            AddCandidate(candidates, digitsOnly);
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string StripCountySuffix(string value)
+    {
+        return value.EndsWith(" County", StringComparison.OrdinalIgnoreCase)
+            ? value[..^7].TrimEnd()
+            : value;
+    }
+
+    private static string ToTitleCaseWords(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        var words = value
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(word => word.Length == 1
+                ? char.ToUpperInvariant(word[0]).ToString()
+                : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
+
+        return string.Join(' ', words);
+    }
+
+    private static void AddCandidate(HashSet<string> candidates, string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            candidates.Add(value.Trim());
+    }
+
+    private static string NormalizeCountyToken(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        return value.Trim()
+            .ToUpperInvariant()
+            .Replace(" COUNTY", string.Empty)
+            .Replace(" ", string.Empty)
+            .Replace("-", string.Empty)
+            .Replace("_", string.Empty);
+    }
+
+    private static bool CountyCodeMatchesContext(string requestedCounty, CountyContext context)
+    {
+        if (string.IsNullOrWhiteSpace(requestedCounty))
+            return false;
+
+        var requested = NormalizeCountyToken(requestedCounty);
+        if (requested.Length == 0)
+            return false;
+
+        var claimCode = NormalizeCountyToken(context.ClaimCountyCode);
+        var countyName = NormalizeCountyToken(context.CountyName);
+        var countyFips = NormalizeCountyToken(context.CountyFipsCode);
+
+        return requested == claimCode || requested == countyName || requested == countyFips;
+    }
+
+    private async Task<bool> PropertyExistsInCountyAsync(Guid propertyId, Guid countyId)
+    {
+        return await _db.Properties
+            .AsNoTracking()
+            .AnyAsync(p => p.Id == propertyId && p.CountyId == countyId);
     }
 
     /// <summary>
@@ -61,21 +242,52 @@ public class CostForgeController : ControllerBase
                 return BadRequest("Either PropertyId or ParcelNumber must be provided");
             }
 
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+
+            var requestedCounty = !string.IsNullOrWhiteSpace(request.CountyCode)
+                ? request.CountyCode
+                : request.Region;
+            if (string.IsNullOrWhiteSpace(requestedCounty))
+            {
+                return BadRequest("CountyCode or Region is required");
+            }
+
+            if (!CountyCodeMatchesContext(requestedCounty, countyContext))
+            {
+                return Forbid();
+            }
+
             CostAnalysisDto result;
 
             if (request.PropertyId != Guid.Empty)
             {
+                var propertyExistsInCounty = await _db.Properties
+                    .AsNoTracking()
+                    .AnyAsync(p => p.Id == request.PropertyId && p.CountyId == countyContext.CountyId);
+
+                if (!propertyExistsInCounty)
+                {
+                    return NotFound($"Property not found for id: {request.PropertyId}");
+                }
+
                 result = await _costForgeService.AnalyzeCostAsync(request.PropertyId);
             }
             else
             {
-                // Get property by parcel number first
-                var property = await _propertyService.GetPropertyByParcelAsync(request.ParcelNumber!);
+                var property = await _db.Properties
+                    .AsNoTracking()
+                    .Where(p => p.ParcelNumber == request.ParcelNumber && p.CountyId == countyContext.CountyId)
+                    .Select(p => new { p.Id })
+                    .FirstOrDefaultAsync();
                 if (property == null)
                 {
                     return NotFound($"Property not found for parcel: {request.ParcelNumber}");
                 }
-                result = await _costForgeService.AnalyzeCostAsync(property);
+                result = await _costForgeService.AnalyzeCostAsync(property.Id);
             }
 
             // Calculate performance metrics - target <150ms
@@ -109,49 +321,13 @@ public class CostForgeController : ControllerBase
     /// </summary>
     [HttpPost("batch-calculate")]
     [RequiresPermission("calculate:batch-valuation")]
-    public async Task<ActionResult<BatchValuationResultDto>> BatchCalculateValuations([FromBody] BatchValuationRequestDto request)
+    public ActionResult<BatchValuationResultDto> BatchCalculateValuations([FromBody] BatchValuationRequestDto request)
     {
-        var startTime = DateTime.UtcNow;
-
-        try
-        {
-            await _auditLogger.LogUserActionAsync("CostForge:BatchCalculate", User.FindFirst("sub")?.Value ?? "anonymous",
-                $"PropertyCount: {request.PropertyIds?.Count ?? 0}, County: {request.CountyId}");
-
-            if (request.PropertyIds == null || !request.PropertyIds.Any())
-            {
-                return BadRequest("PropertyIds collection cannot be empty");
-            }
-
-            // Validate batch size for performance
-            if (request.PropertyIds.Count > 1000)
-            {
-                return BadRequest("Batch size cannot exceed 1000 properties");
-            }
-
-            // TODO: Implement batch calculation when ICostForgeAIService supports it
-            var result = new BatchValuationResultDto
-            {
-                TotalProperties = request.PropertyIds.Count,
-                SuccessfulCalculations = 0,
-                FailedCalculations = 0,
-                AverageProcessingTime = 0,
-                Errors = new List<string> { "Batch processing not yet implemented" }
-            };
-            var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
-
-            await _auditLogger.LogApiCallAsync("POST", "/api/costforge/batch-calculate", 200, duration,
-                User.FindFirst("sub")?.Value);
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            await _auditLogger.LogErrorAsync("CostForge:BatchCalculate", ex, User.FindFirst("sub")?.Value);
-
-            _logger.LogError(ex, "Error in batch valuation calculation");
-            return StatusCode(500, "Internal server error in batch calculation");
-        }
+        return BuildPostR1DisabledResponse(
+            nameof(BatchCalculateValuations),
+            "CostForge batch valuation",
+            "The batch valuation API was returning placeholder success semantics. It is intentionally disabled until a real county-scoped implementation ships.",
+            "costforge-batch-post-r1");
     }
 
     /// <summary>
@@ -164,6 +340,18 @@ public class CostForgeController : ControllerBase
     {
         try
         {
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+
+            var propertyExistsInCounty = await PropertyExistsInCountyAsync(propertyId, countyContext.CountyId);
+            if (!propertyExistsInCounty)
+            {
+                return NotFound();
+            }
+
             await _auditLogger.LogDataAccessAsync("CostBreakdown", propertyId.ToString(), "READ",
                 User.FindFirst("sub")?.Value);
 
@@ -189,6 +377,24 @@ public class CostForgeController : ControllerBase
     {
         try
         {
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+
+            var property1ExistsInCounty = await PropertyExistsInCountyAsync(propertyId1, countyContext.CountyId);
+            if (!property1ExistsInCounty)
+            {
+                return NotFound();
+            }
+
+            var property2ExistsInCounty = await PropertyExistsInCountyAsync(propertyId2, countyContext.CountyId);
+            if (!property2ExistsInCounty)
+            {
+                return NotFound();
+            }
+
             await _auditLogger.LogDataAccessAsync("CostComparison", $"{propertyId1}:{propertyId2}", "READ",
                 User.FindFirst("sub")?.Value);
 
@@ -218,6 +424,18 @@ public class CostForgeController : ControllerBase
             if (years < 1 || years > 20)
             {
                 return BadRequest("Forecast years must be between 1 and 20");
+            }
+
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+            {
+                return Forbid();
+            }
+
+            var propertyExistsInCounty = await PropertyExistsInCountyAsync(propertyId, countyContext.CountyId);
+            if (!propertyExistsInCounty)
+            {
+                return NotFound();
             }
 
             await _auditLogger.LogDataAccessAsync("CostForecast", propertyId.ToString(), "READ",
@@ -401,35 +619,13 @@ public class CostForgeController : ControllerBase
     /// </summary>
     [HttpPost("sync/harris-pacs")]
     [RequiresPermission("sync:external-systems")]
-    public async Task<ActionResult<HarrisSyncResultDto>> SyncWithHarrisPACS([FromBody] HarrisSyncRequestDto request)
+    public ActionResult<HarrisSyncResultDto> SyncWithHarrisPACS([FromBody] HarrisSyncRequestDto request)
     {
-        try
-        {
-            await _auditLogger.LogUserActionAsync("CostForge:HarrisSync", User.FindFirst("sub")?.Value ?? "system",
-                $"County: {request.CountyId}, SyncType: {request.SyncType}");
-
-            // TODO: Implement Harris PACS sync when ICostForgeAIService supports it
-            var result = new HarrisSyncResultDto
-            {
-                Success = true,
-                CountyId = request.CountyId,
-                PropertiesSynced = 0,
-                SyncDate = DateTime.UtcNow,
-                SyncErrors = new List<string> { "Harris PACS sync not yet implemented" }
-            };
-
-            await _auditLogger.LogSystemEventAsync("CostForge:HarrisSyncCompleted",
-                $"Harris PACS sync completed for county {request.CountyId}");
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            await _auditLogger.LogErrorAsync("CostForge:HarrisSync", ex, User.FindFirst("sub")?.Value);
-
-            _logger.LogError(ex, "Error syncing with Harris PACS for county {CountyId}", request.CountyId);
-            return StatusCode(500, "Internal server error");
-        }
+        return BuildPostR1DisabledResponse(
+            nameof(SyncWithHarrisPACS),
+            "Harris PACS sync",
+            "The Harris PACS sync endpoint was returning placeholder success semantics. It is intentionally disabled until a real governed integration is implemented.",
+            "costforge-harris-sync-post-r1");
     }
 }
 
@@ -440,6 +636,7 @@ public class PropertyCostCalculationRequest
 {
     public Guid PropertyId { get; set; }
     public string? ParcelNumber { get; set; }
+    public string? CountyCode { get; set; }
     public string Region { get; set; } = string.Empty;
     public string BuildingType { get; set; } = string.Empty;
     public Dictionary<string, object>? AdditionalParameters { get; set; }

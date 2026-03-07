@@ -88,6 +88,13 @@ export interface PilotToolListResponse {
   tools: PilotTool[];
 }
 
+/** Nested confirmation payload (preferred form) */
+export interface ConfirmationPayload {
+  confirmed: boolean;
+  reasonCode?: string;
+  supervisorApproval?: { approvedBy: string; role: string };
+}
+
 /** Request to invoke a tool */
 export interface PilotInvokeRequest {
   toolId: string;
@@ -95,8 +102,16 @@ export interface PilotInvokeRequest {
   mode?: Mode;
   parcelId?: string;
   dossierId?: string;
-  confirmation?: boolean;
+  /**
+   * Confirmation gate payload.
+   * - `boolean`: legacy flat form (backward compat for PilotConsole callers)
+   * - `ConfirmationPayload`: nested form (preferred, used by useToolInvocation)
+   * invokePilotTool normalizes both to the flat wire format per INVOKE_CONTRACT.
+   */
+  confirmation?: boolean | ConfirmationPayload;
+  /** @deprecated Use confirmation.reasonCode instead */
   reasonCode?: string;
+  /** @deprecated Use confirmation.supervisorApproval instead */
   supervisorApproval?: {
     approvedBy: string;
     role: string;
@@ -156,6 +171,7 @@ export interface PilotInvokeResponse {
   error?: string;
   errorCode?: string;
   traceEventId?: string;
+  status?: number;
 }
 
 /** Request to validate a tool invocation */
@@ -213,6 +229,36 @@ export interface PilotTraceEvent {
 /** Trace query response */
 export interface PilotTraceResponse {
   events: PilotTraceEvent[];
+}
+
+/** Trace list query params */
+export interface PilotTraceListParams {
+  parcelId: string;
+  toolId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  offset?: number;
+}
+
+/** Trace list response (with pagination metadata) */
+export interface PilotTraceListResponse {
+  events: PilotTraceEvent[];
+  pagination: {
+    offset: number;
+    limit: number;
+    returned: number;
+  };
+}
+
+/** Trace-store diagnostics response (global, elevated-role only). */
+export interface PilotTraceStatsResponse {
+  totalEvents: number;
+  oldestTimestamp: string | null;
+  newestTimestamp: string | null;
+  perParcelCap?: number;
+  cappedParcelsCount?: number;
+  maxEventsInParcel?: number;
 }
 
 /** Health check response */
@@ -286,14 +332,33 @@ export async function getPilotTool(toolId: string): Promise<PilotToolFull> {
 export async function invokePilotTool(request: PilotInvokeRequest): Promise<PilotInvokeResponse> {
   const url = `${API_BASE_URL}/pilot/invoke`;
 
+  // Normalize confirmation to flat wire format (INVOKE_CONTRACT.md)
+  const { confirmation, reasonCode, supervisorApproval, ...rest } = request;
+  let wireBody: Record<string, unknown> = { ...rest };
+
+  if (typeof confirmation === 'object' && confirmation !== null) {
+    // Nested form → flatten
+    wireBody.confirmation = confirmation.confirmed;
+    if (confirmation.reasonCode) wireBody.reasonCode = confirmation.reasonCode;
+    if (confirmation.supervisorApproval) wireBody.supervisorApproval = confirmation.supervisorApproval;
+  } else {
+    // Legacy flat form (boolean or undefined)
+    if (confirmation !== undefined) wireBody.confirmation = confirmation;
+    if (reasonCode) wireBody.reasonCode = reasonCode;
+    if (supervisorApproval) wireBody.supervisorApproval = supervisorApproval;
+  }
+
   const response = await fetch(url, {
     method: 'POST',
     headers: buildPilotHeaders(),
-    body: JSON.stringify(request),
+    body: JSON.stringify(wireBody),
   });
 
   // Always parse JSON response even for errors
   const data = (await response.json()) as PilotInvokeResponse;
+
+  // Propagate HTTP status so callers can distinguish 401/403/500
+  data.status = response.status;
 
   // Return the response directly - it contains ok: true/false
   return data;
@@ -389,6 +454,110 @@ export async function getPilotTrace(correlationId: string): Promise<PilotTraceRe
   }
 
   return (await response.json()) as PilotTraceResponse;
+}
+
+/**
+ * List trace events with parcel-scoped filtering and date range.
+ * Newest-first ordering with offset/limit pagination.
+ *
+ * @param params - Query parameters (parcelId required, rest optional)
+ */
+export async function listPilotTraces(params: PilotTraceListParams): Promise<PilotTraceListResponse> {
+  const qs = new URLSearchParams();
+  qs.set('parcelId', params.parcelId);
+  if (params.toolId) qs.set('toolId', params.toolId);
+  if (params.from) qs.set('from', params.from);
+  if (params.to) qs.set('to', params.to);
+  if (params.limit !== undefined) qs.set('limit', String(params.limit));
+  if (params.offset !== undefined) qs.set('offset', String(params.offset));
+
+  const url = `${API_BASE_URL}/pilot/traces?${qs.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: buildPilotHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`Failed to list traces (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as PilotTraceListResponse;
+}
+
+/** Parameters for trace export (NDJSON download). */
+export interface TraceExportParams {
+  parcelId: string;
+  correlationId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+}
+
+/** Error shape returned by the export endpoint on 4xx/5xx. */
+export interface TraceExportError {
+  error: string;
+  correlationId?: string;
+}
+
+/**
+ * Export trace events as an NDJSON blob (admin/elevated only).
+ * Hits GET /pilot/traces/export with query parameters.
+ *
+ * @returns NDJSON Blob on success; throws with correlationId on failure.
+ */
+export async function exportTraces(params: TraceExportParams): Promise<Blob> {
+  const qs = new URLSearchParams();
+  qs.set('parcelId', params.parcelId);
+  qs.set('format', 'ndjson');
+  if (params.correlationId) qs.set('correlationId', params.correlationId);
+  if (params.from) qs.set('from', params.from);
+  if (params.to) qs.set('to', params.to);
+  if (params.limit !== undefined) qs.set('limit', String(params.limit));
+
+  const url = `${API_BASE_URL}/pilot/traces/export?${qs.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: buildPilotHeaders(),
+  });
+
+  if (!response.ok) {
+    let errBody: TraceExportError | undefined;
+    try {
+      errBody = (await response.json()) as TraceExportError;
+    } catch {
+      // non-JSON error body
+    }
+    const msg = errBody?.error ?? `Export failed (${response.status})`;
+    const err = new Error(msg) as Error & { correlationId?: string; status?: number };
+    err.correlationId = errBody?.correlationId;
+    err.status = response.status;
+    throw err;
+  }
+
+  return response.blob();
+}
+
+/**
+ * Get global trace-store diagnostics.
+ * Requires elevated trace role (enforced server-side).
+ */
+export async function getTraceStats(): Promise<PilotTraceStatsResponse> {
+  const url = `${API_BASE_URL}/pilot/traces/stats`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: buildPilotHeaders(),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`Failed to get trace stats (${response.status}): ${errorText}`);
+  }
+
+  return (await response.json()) as PilotTraceStatsResponse;
 }
 
 /**

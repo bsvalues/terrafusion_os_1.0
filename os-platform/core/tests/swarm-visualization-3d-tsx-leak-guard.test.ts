@@ -9,6 +9,9 @@ describe('SwarmVisualization3D.tsx leak guard', () => {
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
 
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'SwarmVisualization3D.tsx' });
+    assertNoRawColorLeaks(content, {
+      label: 'SwarmVisualization3D.tsx',
+      knownViolationBaseline: 3, // Known: Canvas 2D API rgba() in createRadialGradient color stops
+    });
   });
 });

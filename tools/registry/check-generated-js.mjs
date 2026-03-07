@@ -13,6 +13,8 @@ const SKIP_DIRS = new Set([
   'node_modules',
   '.git',
   '.venv',
+  '.claude',
+  'dist',
   '_archive',
   '_pre_restore_safety_20260108_144218',
 ]);

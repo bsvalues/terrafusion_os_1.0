@@ -8,18 +8,24 @@ export {
     DEFAULT_RING_BUFFER_SIZE,
     SCHEMA_VERSION,
     TraceService,
+    exportNDJSON,
+    isAuditEventType,
+    toAuditRecord,
     traceService,
+    type AuditRecord,
+    type ExportNDJSONOptions,
     type TraceServiceOptions
 } from './TraceService.js';
 
 export {
+    FileTraceStore,
     InMemoryTraceStore,
-    PostgresTraceStore,
     createTraceStore,
+    type FileTraceStoreOptions,
     type InMemoryTraceStoreOptions,
-    type PostgresTraceStoreOptions,
     type TraceStore,
     type TraceStoreConfig,
+    type TraceStoreStats,
     type TraceStoreType
 } from './TraceStore.js';
 

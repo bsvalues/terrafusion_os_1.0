@@ -9,6 +9,7 @@
 
 import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
+import type { DossierDetailsOptions, DossierDetailsResponse } from '@/contracts/dossierDetails';
 
 const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 const DOSSIER_API = `${API_BASE_URL}/api/dossier`;
@@ -113,6 +114,78 @@ export interface DossierStats {
 }
 
 // ============================================================================
+// CX-25: Evidence Snapshot Types (backend contract)
+// ============================================================================
+
+export interface EvidenceSnapshotResourceLinks {
+  self: string;
+  summary: string | null;
+  details: string | null;
+  notes: string;
+  casefile: string;
+}
+
+export interface EvidencePropertySummary {
+  propertyId: string;
+  parcelNumber: string;
+  address: string;
+  propertyType: string | null;
+  assessedValue: number;
+  landValue: number;
+  improvementValue: number;
+  marketValue: number;
+  taxYear: number;
+  assessmentDate: string;
+}
+
+export interface EvidenceValuationSummary {
+  totalValue: number;
+  categoryCount: number;
+}
+
+export interface EvidenceLevySummary {
+  totalCount: number;
+  includedCount: number;
+  totalLevyAmount: number;
+}
+
+export interface EvidenceNoteSummary {
+  totalCount: number;
+  includedCount: number;
+  noteTypes: string[];
+}
+
+/**
+ * CX-25 evidence snapshot — self-contained, hash-verifiable evidence
+ * document for a parcel. Suitable for audit, appeals, regulatory handoff.
+ *
+ * IMPORTANT: `contentHash` is a **snapshot hash**, NOT a content-only
+ * digest. It includes `snapshotTimestamp`, so two requests for the same
+ * parcel at different times will produce different hashes even if the
+ * underlying data has not changed. This is by design — the hash proves
+ * "this exact data at this exact time."
+ */
+export interface EvidenceSnapshot {
+  parcelId: string;
+  countyId: string;
+  snapshotTimestamp: string;
+  correlationId: string;
+  contentHash: string;
+  property: EvidencePropertySummary;
+  valuation: EvidenceValuationSummary | null;
+  levies: EvidenceLevySummary;
+  notes: EvidenceNoteSummary;
+  links: EvidenceSnapshotResourceLinks;
+}
+
+/** Response wrapper for evidence fetch — includes HTTP correlation header */
+export interface EvidenceSnapshotResult {
+  snapshot: EvidenceSnapshot;
+  /** X-Correlation-ID from response header (may differ from body correlationId) */
+  headerCorrelationId: string | null;
+}
+
+// ============================================================================
 // HELPERS
 // ============================================================================
 
@@ -139,37 +212,41 @@ async function dossierPost<T>(path: string, body: unknown): Promise<T> {
   return response.json();
 }
 
+/** Generate a correlation ID matching the CostForge pattern. */
+function generateCorrelationId(): string {
+  return `tf-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+/**
+ * GET with X-Correlation-ID header injection.
+ * Returns both the parsed body and the correlation ID echoed by the server.
+ */
+async function dossierGetWithCorrelation<T>(
+  path: string,
+  correlationId?: string,
+): Promise<{ data: T; correlationId: string }> {
+  const cid = correlationId || generateCorrelationId();
+  const headers: Record<string, string> = {
+    ...authHeaders(),
+    'X-Correlation-ID': cid,
+  };
+
+  const response = await fetch(`${DOSSIER_API}${path}`, { headers });
+  if (!response.ok) {
+    throw new Error(`Dossier API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data: T = await response.json();
+
+  // Prefer the server-echoed header; fall back to what we sent
+  const echoed = response.headers.get('X-Correlation-ID') || cid;
+  return { data, correlationId: echoed };
+}
+
 // ============================================================================
-// DEFAULT DATA (fallback when API is offline)
+// NOTE: DEFAULT fallback data removed in CC-14 (R1 Week 3).
+// All service methods now propagate errors from the real backend.
 // ============================================================================
-
-const DEFAULT_DOCUMENTS: DossierDocument[] = [
-  { id: '1', name: 'Warranty Deed - 3210 W Clearwater Ave.pdf', type: 'deed', parcelId: '104841000002000', uploadedBy: 'County Recorder', uploadedAt: '2026-01-15 09:22', size: '245 KB', status: 'active', custodyChain: 3 },
-  { id: '2', name: 'Exterior Photo Set - Front/Side/Rear.jpg', type: 'photo', parcelId: '104841000002000', uploadedBy: 'Field Appraiser B. Smith', uploadedAt: '2026-02-10 14:35', size: '8.2 MB', status: 'active', custodyChain: 2 },
-  { id: '3', name: 'Cost Approach Worksheet - 2026 Reval.xlsx', type: 'appraisal', parcelId: '104841000002000', uploadedBy: 'Appraiser D. Wilson', uploadedAt: '2026-02-18 11:14', size: '156 KB', status: 'active', custodyChain: 1 },
-  { id: '4', name: 'BOE Appeal Petition #2026-042.pdf', type: 'appeal', parcelId: '104841000015200', uploadedBy: 'Property Owner', uploadedAt: '2026-03-01 16:45', size: '342 KB', status: 'active', custodyChain: 4 },
-  { id: '5', name: 'Sales Verification Letter.pdf', type: 'correspondence', parcelId: '104841000016300', uploadedBy: 'Appraiser M. Lee', uploadedAt: '2026-01-28 10:30', size: '89 KB', status: 'active', custodyChain: 2 },
-  { id: '6', name: 'Floor Plan Sketch - Main Level.svg', type: 'sketch', parcelId: '104841000002000', uploadedBy: 'Field Appraiser B. Smith', uploadedAt: '2026-02-10 15:12', size: '45 KB', status: 'active', custodyChain: 1 },
-  { id: '7', name: 'Annual Assessment Report - District 12.pdf', type: 'report', parcelId: '-', uploadedBy: 'Chief Appraiser', uploadedAt: '2025-12-15 17:00', size: '1.8 MB', status: 'sealed', custodyChain: 5 },
-  { id: '8', name: 'Previous Owner Deed - Transfer 2019.pdf', type: 'deed', parcelId: '104841000002000', uploadedBy: 'County Recorder', uploadedAt: '2019-06-22 09:10', size: '198 KB', status: 'archived', custodyChain: 6 },
-];
-
-const DEFAULT_EVIDENCE: EvidenceItem[] = [
-  { id: 'E-2026-001', title: 'Comparable Sales Grid \u2014 3210 W Clearwater', parcelId: '104841000002000', evidenceType: 'market-data', createdBy: 'Appraiser D. Wilson', createdAt: '2026-02-15', integrity: 'verified', chainLength: 4, lastAction: 'Supervisor review complete' },
-  { id: 'E-2026-002', title: 'Field Inspection Report \u2014 3210 W Clearwater', parcelId: '104841000002000', evidenceType: 'field-inspection', createdBy: 'Field Appraiser B. Smith', createdAt: '2026-02-10', integrity: 'verified', chainLength: 3, lastAction: 'Photos attached & geotagged' },
-  { id: 'E-2026-003', title: 'RCNLD Worksheet \u2014 3210 W Clearwater', parcelId: '104841000002000', evidenceType: 'cost-analysis', createdBy: 'CostForge AI', createdAt: '2026-02-18', integrity: 'verified', chainLength: 2, lastAction: 'AI model output verified by appraiser' },
-  { id: 'E-2026-004', title: 'BOE Appeal Defense Packet \u2014 #2026-042', parcelId: '104841000015200', evidenceType: 'appeal-evidence', createdBy: 'Appraiser M. Lee', createdAt: '2026-03-01', integrity: 'pending', chainLength: 6, lastAction: 'Defense packet assembled, pending review' },
-  { id: 'E-2026-005', title: 'Income Approach \u2014 810 N Morain (Commercial)', parcelId: '104841000018500', evidenceType: 'income-analysis', createdBy: 'Appraiser K. Patel', createdAt: '2026-01-28', integrity: 'verified', chainLength: 3, lastAction: 'Cap rate verified against market' },
-  { id: 'E-2026-006', title: 'DOR Ratio Study Compliance \u2014 District 12', parcelId: '-', evidenceType: 'regulatory', createdBy: 'Chief Appraiser', createdAt: '2026-02-20', integrity: 'verified', chainLength: 5, lastAction: 'Filed with WA DOR' },
-  { id: 'E-2026-007', title: 'Sales Verification \u2014 5501 W Canal Dr', parcelId: '104841000017400', evidenceType: 'market-data', createdBy: 'Appraiser D. Wilson', createdAt: '2026-01-22', integrity: 'disputed', chainLength: 7, lastAction: 'Owner disputes sale conditions' },
-];
-
-const DEFAULT_CHAIN: ChainEvent[] = [
-  { timestamp: '2026-02-15 09:14:22', actor: 'CostForge AI', action: 'Evidence created \u2014 AI-generated comparable grid', hash: 'a3f2...c891' },
-  { timestamp: '2026-02-15 14:30:05', actor: 'Appraiser D. Wilson', action: 'Human review \u2014 adjustments verified', hash: 'b7e1...d432' },
-  { timestamp: '2026-02-16 10:22:18', actor: 'Supervisor R. Chen', action: 'Supervisory review \u2014 approved', hash: 'c5a8...e765' },
-  { timestamp: '2026-02-18 08:00:00', actor: 'TerraTrace', action: 'Evidence sealed \u2014 immutable audit record', hash: 'd912...f098' },
-];
 
 // ============================================================================
 // DOSSIER SERVICE
@@ -180,27 +257,7 @@ export const dossierService = {
    * Search documents
    */
   searchDocuments: async (request: DocumentSearchRequest): Promise<DocumentSearchResponse> => {
-    try {
-      return await dossierPost<DocumentSearchResponse>('/documents/search', request);
-    } catch {
-      let results = DEFAULT_DOCUMENTS;
-      if (request.query) {
-        const q = request.query.toLowerCase();
-        results = results.filter(
-          (d) =>
-            d.name.toLowerCase().includes(q) ||
-            d.parcelId.includes(q) ||
-            d.uploadedBy.toLowerCase().includes(q)
-        );
-      }
-      if (request.type && request.type !== 'all') {
-        results = results.filter((d) => d.type === request.type);
-      }
-      if (request.status && request.status !== 'all') {
-        results = results.filter((d) => d.status === request.status);
-      }
-      return { results, total: results.length, hasMore: false };
-    }
+    return dossierPost<DocumentSearchResponse>('/documents/search', request);
   },
 
   /**
@@ -208,9 +265,10 @@ export const dossierService = {
    */
   getDocument: async (id: string): Promise<DossierDocument | null> => {
     try {
-      return await dossierGet<DossierDocument>(`/documents/${id}`);
-    } catch {
-      return DEFAULT_DOCUMENTS.find((d) => d.id === id) ?? null;
+      return await dossierGet<DossierDocument>(`/documents/${encodeURIComponent(id)}`);
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('404')) return null;
+      throw err;
     }
   },
 
@@ -218,55 +276,64 @@ export const dossierService = {
    * Search evidence items
    */
   searchEvidence: async (request: EvidenceSearchRequest): Promise<EvidenceSearchResponse> => {
-    try {
-      return await dossierPost<EvidenceSearchResponse>('/evidence/search', request);
-    } catch {
-      let results = DEFAULT_EVIDENCE;
-      if (request.parcelId) {
-        results = results.filter((e) => e.parcelId === request.parcelId);
-      }
-      if (request.evidenceType && request.evidenceType !== 'all') {
-        results = results.filter((e) => e.evidenceType === request.evidenceType);
-      }
-      if (request.integrity && request.integrity !== 'all') {
-        results = results.filter((e) => e.integrity === request.integrity);
-      }
-      return { results, total: results.length, hasMore: false };
-    }
+    return dossierPost<EvidenceSearchResponse>('/evidence/search', request);
   },
 
   /**
    * Get evidence chain-of-custody events
    */
   getChainOfCustody: async (evidenceId: string): Promise<ChainEvent[]> => {
-    try {
-      return await dossierGet<ChainEvent[]>(`/evidence/${evidenceId}/chain`);
-    } catch {
-      return DEFAULT_CHAIN;
-    }
+    return dossierGet<ChainEvent[]>(`/evidence/${encodeURIComponent(evidenceId)}/chain`);
   },
 
   /**
    * Get dossier statistics
    */
   getStats: async (): Promise<DossierStats> => {
-    try {
-      return await dossierGet<DossierStats>('/stats');
-    } catch {
-      const docs = DEFAULT_DOCUMENTS;
-      const evid = DEFAULT_EVIDENCE;
-      return {
-        totalDocuments: docs.length,
-        activeDocuments: docs.filter((d) => d.status === 'active').length,
-        sealedRecords: docs.filter((d) => d.status === 'sealed').length,
-        archivedDocuments: docs.filter((d) => d.status === 'archived').length,
-        documentTypes: new Set(docs.map((d) => d.type)).size,
-        totalEvidence: evid.length,
-        verifiedEvidence: evid.filter((e) => e.integrity === 'verified').length,
-        pendingEvidence: evid.filter((e) => e.integrity === 'pending').length,
-        disputedEvidence: evid.filter((e) => e.integrity === 'disputed').length,
-      };
+    return dossierGet<DossierStats>('/stats');
+  },
+
+  /**
+   * CX-25: Get structured parcel dossier details.
+   * Calls GET /api/dossier/parcels/{parcelId}/details with:
+   *   - X-Correlation-ID header (generated and returned alongside data)
+   *   - ?include=, ?levyLimit=, ?noteLimit= query parameters
+   *
+   * Returns the full DossierDetailsResponse with nullable sections and
+   * the generated correlationId used for the request.
+   */
+  getDetails: async (
+    parcelId: string,
+    options?: DossierDetailsOptions,
+  ): Promise<{ data: DossierDetailsResponse; correlationId: string }> => {
+    const params = new URLSearchParams();
+    if (options?.include) params.set('include', options.include);
+    if (options?.levyLimit != null) params.set('levyLimit', String(options.levyLimit));
+    if (options?.noteLimit != null) params.set('noteLimit', String(options.noteLimit));
+
+    const qs = params.toString();
+    const path = `/parcels/${encodeURIComponent(parcelId)}/details${qs ? `?${qs}` : ''}`;
+    return dossierGetWithCorrelation<DossierDetailsResponse>(path);
+  },
+
+  /**
+   * CX-26: Fetch the evidence snapshot for a parcel.
+   * Returns the snapshot data plus the X-Correlation-ID response header.
+   *
+   * Endpoint: GET /api/dossier/parcels/{parcelId}/evidence
+   * County-isolated: cross-county → 404
+   */
+  getEvidenceSnapshot: async (parcelId: string): Promise<EvidenceSnapshotResult> => {
+    const response = await fetch(
+      `${DOSSIER_API}/parcels/${encodeURIComponent(parcelId)}/evidence`,
+      { headers: authHeaders() },
+    );
+    if (!response.ok) {
+      throw new Error(`Dossier API error: ${response.status} ${response.statusText}`);
     }
+    const snapshot: EvidenceSnapshot = await response.json();
+    const headerCorrelationId = response.headers.get('X-Correlation-ID');
+    return { snapshot, headerCorrelationId };
   },
 };
 

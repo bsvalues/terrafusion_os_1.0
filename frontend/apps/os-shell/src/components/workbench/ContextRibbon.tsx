@@ -45,6 +45,14 @@ export interface ContextRibbonProps {
   onQuickAction?: (action: QuickActionDefinition) => void;
   /** Optional "Pop out" callback for window mode */
   onPopOut?: () => void;
+  /** CC-11: Current pilot/muse mode */
+  pilotMode?: 'pilot' | 'muse';
+  /** CC-11: Current user role */
+  userRole?: string;
+  /** CC-11: Active risk level of current invocation */
+  activeRisk?: 'read_only' | 'write_low' | 'write_high' | 'irreversible' | null;
+  /** CC-11: Active correlationId from current/last invocation */
+  activeCorrelationId?: string | null;
 }
 
 // ============================================================================
@@ -78,6 +86,25 @@ function badgeSeverityStyle(severity?: 'info' | 'warn' | 'danger') {
 // Component
 // ============================================================================
 
+// ============================================================================
+// Risk Level → Style Mapping (CC-11)
+// ============================================================================
+
+function riskLevelStyle(risk?: string | null) {
+  switch (risk) {
+    case 'irreversible':
+      return { bg: 'hsl(var(--tf-error) / 0.2)', color: 'hsl(var(--tf-error))', label: '🔴 irreversible' };
+    case 'write_high':
+      return { bg: 'hsl(var(--tf-warning) / 0.2)', color: 'hsl(var(--tf-warning))', label: '🟠 write_high' };
+    case 'write_low':
+      return { bg: 'hsl(var(--tf-accent) / 0.15)', color: 'hsl(var(--tf-accent))', label: '🟡 write_low' };
+    case 'read_only':
+      return { bg: 'hsl(var(--tf-success) / 0.15)', color: 'hsl(var(--tf-success))', label: '🟢 read_only' };
+    default:
+      return null;
+  }
+}
+
 export const ContextRibbon: React.FC<ContextRibbonProps> = ({
   parcelId,
   address,
@@ -89,6 +116,10 @@ export const ContextRibbon: React.FC<ContextRibbonProps> = ({
   onWorkModeChange,
   onQuickAction,
   onPopOut,
+  pilotMode,
+  userRole,
+  activeRisk,
+  activeCorrelationId,
 }) => {
   // Filter out RESTRICTED badges (user would need higher clearance)
   const visibleBadges = useMemo(
@@ -190,6 +221,78 @@ export const ContextRibbon: React.FC<ContextRibbonProps> = ({
               {badge.label}
             </span>
           ))}
+        </div>
+      )}
+
+      {/* Row 3: Pilot status indicators (CC-11) */}
+      {(pilotMode || userRole || activeRisk || activeCorrelationId) && (
+        <div
+          className="flex items-center gap-3 mt-2 flex-wrap text-xs"
+          data-testid="pilot-status-row"
+        >
+          {/* Role badge */}
+          {userRole && (
+            <span
+              className="px-2 py-0.5 rounded font-medium"
+              style={{
+                background: 'hsl(var(--tf-bg-surface) / 0.5)',
+                color: 'hsl(var(--tf-text) / 0.7)',
+                border: '1px solid hsl(var(--tf-text) / 0.1)',
+              }}
+              data-testid="role-badge"
+            >
+              👤 {userRole}
+            </span>
+          )}
+
+          {/* Mode indicator */}
+          {pilotMode && (
+            <span
+              className="px-2 py-0.5 rounded font-medium"
+              style={{
+                background: pilotMode === 'pilot'
+                  ? 'hsl(var(--tf-accent) / 0.15)'
+                  : 'hsl(var(--tf-info-hs) 50% / 0.15)',
+                color: pilotMode === 'pilot'
+                  ? 'hsl(var(--tf-accent))'
+                  : 'hsl(var(--tf-info-hs) 65%)',
+              }}
+              data-testid="mode-badge"
+            >
+              {pilotMode === 'pilot' ? '🧭 Pilot' : '✨ Muse'}
+            </span>
+          )}
+
+          {/* Risk level */}
+          {activeRisk && (() => {
+            const rs = riskLevelStyle(activeRisk);
+            return rs ? (
+              <span
+                className="px-2 py-0.5 rounded font-medium"
+                style={{ background: rs.bg, color: rs.color }}
+                data-testid="risk-badge"
+              >
+                {rs.label}
+              </span>
+            ) : null;
+          })()}
+
+          {/* Active correlationId */}
+          {activeCorrelationId && (
+            <span
+              className="px-2 py-0.5 rounded font-mono"
+              style={{
+                background: 'hsl(var(--tf-bg-surface) / 0.4)',
+                color: 'hsl(var(--tf-text) / 0.5)',
+              }}
+              data-testid="correlation-badge"
+              title={`Trace: ${activeCorrelationId}`}
+            >
+              🔗 {activeCorrelationId.length > 20
+                ? `${activeCorrelationId.slice(0, 8)}…${activeCorrelationId.slice(-6)}`
+                : activeCorrelationId}
+            </span>
+          )}
         </div>
       )}
     </LiquidPanel>

@@ -1,3 +1,14 @@
+/**
+ * @deprecated — This ToolRunner is superseded by os-platform/core/pilot/ToolRunner.ts
+ *
+ * The canonical ToolRunner now includes RBAC permission checking (Gate 5b)
+ * ported from this file's requiredPermissions pattern. Use the canonical
+ * version for all new development.
+ *
+ * Migration: Import from 'os-platform/core/pilot/index.js' instead.
+ * Removal target: R1 Week 3 (after integration smoke passes)
+ */
+
 import { TerraTraceService } from '../trace/TerraTraceService';
 
 // --- Types ---

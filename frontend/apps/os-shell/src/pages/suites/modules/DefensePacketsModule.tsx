@@ -24,9 +24,9 @@ interface DefensePacket {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  draft: { label: 'Draft', color: 'hsl(45 90% 55%)', icon: Clock },
-  review: { label: 'In Review', color: 'hsl(200 80% 55%)', icon: AlertTriangle },
-  final: { label: 'Finalized', color: 'hsl(140 70% 45%)', icon: CheckCircle2 },
+  draft: { label: 'Draft', color: 'hsl(var(--tf-warning-hs) 55%)', icon: Clock },
+  review: { label: 'In Review', color: 'hsl(var(--tf-network-blue-hs) 55%)', icon: AlertTriangle },
+  final: { label: 'Finalized', color: 'hsl(var(--tf-success-hs) 45%)', icon: CheckCircle2 },
 };
 
 /** Demo defense packets — Benton County 2025 cycle */
@@ -144,9 +144,9 @@ export default function DefensePacketsModule() {
       {/* Stats */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
         {[
-          { label: 'Finalized', value: finalCount, color: 'hsl(140 70% 45%)' },
-          { label: 'In Review', value: reviewCount, color: 'hsl(200 80% 55%)' },
-          { label: 'Drafts', value: draftCount, color: 'hsl(45 90% 55%)' },
+          { label: 'Finalized', value: finalCount, color: 'hsl(var(--tf-success-hs) 45%)' },
+          { label: 'In Review', value: reviewCount, color: 'hsl(var(--tf-network-blue-hs) 55%)' },
+          { label: 'Drafts', value: draftCount, color: 'hsl(var(--tf-warning-hs) 55%)' },
         ].map((s) => (
           <Card key={s.label} style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardContent className='pt-6 text-center'>

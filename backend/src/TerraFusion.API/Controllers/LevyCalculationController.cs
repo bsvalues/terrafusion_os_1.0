@@ -10,6 +10,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using TerraFusion.Data;
+using TerraFusion.Core.Entities;
+using CountyEntity = TerraFusion.Core.Entities.County;
+using Task = System.Threading.Tasks.Task;
 
 namespace TerraFusion.API.Controllers;
 
@@ -35,14 +40,160 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/levy-calculation")]
-[Authorize(Roles = "LevyClerk,Assessor,Admin")]
+[Authorize(Roles = "LevyClerk,Assessor,Admin,Administrator")]
 public class LevyCalculationController : ControllerBase
 {
     private readonly ILogger<LevyCalculationController> _logger;
+    private readonly TerraFusionDbContext _db;
 
-    public LevyCalculationController(ILogger<LevyCalculationController> logger)
+    public LevyCalculationController(ILogger<LevyCalculationController> logger, TerraFusionDbContext db)
     {
         _logger = logger;
+        _db = db;
+    }
+
+    private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
+
+    private async Task<CountyContext?> ResolveCountyContextAsync()
+    {
+        var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+        var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+        {
+            var county = await _db.Counties
+                .AsNoTracking()
+                .Where(c => c.Id == directCountyId)
+                .Select(c => new { c.Name, c.FipsCode })
+                .FirstOrDefaultAsync();
+
+            return new CountyContext(directCountyId, county?.Name, county?.FipsCode, countyCodeClaim);
+        }
+
+        var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
+        var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
+
+        IQueryable<CountyEntity> countyQuery = _db.Counties.AsNoTracking();
+
+        if (nameCandidates.Length > 0 && fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c =>
+                nameCandidates.Contains(c.Name) ||
+                (c.FipsCode != null && fipsCandidates.Contains(c.FipsCode)));
+        }
+        else if (nameCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => nameCandidates.Contains(c.Name));
+        }
+        else if (fipsCandidates.Length > 0)
+        {
+            countyQuery = countyQuery.Where(c => c.FipsCode != null && fipsCandidates.Contains(c.FipsCode));
+        }
+        else
+        {
+            return null;
+        }
+
+        var match = await countyQuery
+            .Select(c => new { c.Id, c.Name, c.FipsCode })
+            .FirstOrDefaultAsync();
+
+        return match is null
+            ? null
+            : new CountyContext(match.Id, match.Name, match.FipsCode, countyCodeClaim);
+    }
+
+    private static string[] BuildCountyNameCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var withoutSuffix = StripCountySuffix(trimmed);
+            AddCandidate(candidates, withoutSuffix);
+
+            var titleCase = ToTitleCaseWords(withoutSuffix);
+            AddCandidate(candidates, titleCase);
+            AddCandidate(candidates, $"{titleCase} County");
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string[] BuildFipsCandidates(params string?[] claims)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var claim in claims)
+        {
+            if (string.IsNullOrWhiteSpace(claim))
+                continue;
+
+            var trimmed = claim.Trim();
+            AddCandidate(candidates, trimmed);
+
+            var digitsOnly = new string(trimmed.Where(char.IsDigit).ToArray());
+            AddCandidate(candidates, digitsOnly);
+        }
+
+        return candidates.ToArray();
+    }
+
+    private static string StripCountySuffix(string value)
+    {
+        return value.EndsWith(" County", StringComparison.OrdinalIgnoreCase)
+            ? value[..^7].TrimEnd()
+            : value;
+    }
+
+    private static string ToTitleCaseWords(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        var words = value
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(word => word.Length == 1
+                ? char.ToUpperInvariant(word[0]).ToString()
+                : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
+
+        return string.Join(' ', words);
+    }
+
+    private static void AddCandidate(HashSet<string> candidates, string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            candidates.Add(value.Trim());
+    }
+
+    private static string NormalizeCountyToken(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        return value.Trim()
+            .ToUpperInvariant()
+            .Replace(" COUNTY", string.Empty)
+            .Replace(" ", string.Empty)
+            .Replace("-", string.Empty)
+            .Replace("_", string.Empty);
+    }
+
+    private static bool CountyCodeMatchesContext(string requestedCounty, CountyContext context)
+    {
+        if (string.IsNullOrWhiteSpace(requestedCounty))
+            return false;
+
+        var requested = NormalizeCountyToken(requestedCounty);
+        var claimCode = NormalizeCountyToken(context.ClaimCountyCode);
+        var countyName = NormalizeCountyToken(context.CountyName);
+        var countyFips = NormalizeCountyToken(context.CountyFipsCode);
+
+        return requested == claimCode || requested == countyName || requested == countyFips;
     }
 
     /// <summary>
@@ -86,6 +237,16 @@ public class LevyCalculationController : ControllerBase
 
             if (request.BudgetAmount <= 0)
                 return BadRequest("Budget amount must be greater than zero");
+
+            if (string.IsNullOrWhiteSpace(request.CountyCode))
+                return BadRequest("CountyCode is required");
+
+            var countyContext = await ResolveCountyContextAsync();
+            if (countyContext is null)
+                return Forbid();
+
+            if (!CountyCodeMatchesContext(request.CountyCode, countyContext))
+                return Forbid();
 
             // Calculate base rate (per $1,000 assessed value)
             var baseRate = (request.BudgetAmount / request.AssessedValue) * 1000.0;
@@ -135,8 +296,25 @@ public class LevyCalculationController : ControllerBase
                 projectedRevenue,
                 riskLevel);
 
+            // CX-21: Persist calculation to TaxLevies for audit trail
+            var taxLevy = new TaxLevy
+            {
+                Id = Guid.NewGuid(),
+                CountyId = countyContext.CountyId,
+                TaxingDistrict = request.DistrictId,
+                TaxRate = (decimal)quantumOptimizedRate.Rate,
+                LevyAmount = (decimal)projectedRevenue,
+                TaxYear = DateTime.UtcNow.Year,
+                Purpose = $"{request.DistrictType}/{request.MeasureType}",
+                EffectiveDate = DateTime.UtcNow,
+                IsActive = true
+            };
+            _db.TaxLevies.Add(taxLevy);
+            await _db.SaveChangesAsync();
+
             return Ok(new LevyCalculationResultDto
             {
+                TaxLevyId = taxLevy.Id,
                 DistrictId = request.DistrictId,
                 DistrictName = request.DistrictName,
                 BaseRate = baseRate,
@@ -147,7 +325,7 @@ public class LevyCalculationController : ControllerBase
                 ProjectedRevenue = projectedRevenue,
                 RiskLevel = riskLevel,
                 Warnings = compliance.Warnings,
-                CalculationTimestamp = DateTime.UtcNow,
+                CalculationTimestamp = taxLevy.EffectiveDate,
                 QuantumFactor = 949,
                 OptimizationMethod = "QuantumGradientBoosting_v1.0"
             });
@@ -162,6 +340,49 @@ public class LevyCalculationController : ControllerBase
                 Status = 500
             });
         }
+    }
+
+    /// <summary>
+    /// Retrieve persisted levy calculation history for the caller's county.
+    /// </summary>
+    [HttpGet("history")]
+    [ProducesResponseType(typeof(List<LevyHistoryDto>), 200)]
+    [ProducesResponseType(403)]
+    public async Task<ActionResult<List<LevyHistoryDto>>> GetHistory(
+        [FromQuery] int? taxYear = null,
+        [FromQuery] string? districtId = null)
+    {
+        var countyContext = await ResolveCountyContextAsync();
+        if (countyContext is null)
+            return Forbid();
+
+        var query = _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.CountyId == countyContext.CountyId && t.IsActive);
+
+        if (taxYear.HasValue)
+            query = query.Where(t => t.TaxYear == taxYear.Value);
+
+        if (!string.IsNullOrWhiteSpace(districtId))
+            query = query.Where(t => t.TaxingDistrict == districtId);
+
+        var records = await query
+            .OrderByDescending(t => t.EffectiveDate)
+            .Take(200)
+            .Select(t => new LevyHistoryDto
+            {
+                TaxLevyId = t.Id,
+                CountyId = t.CountyId,
+                TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+                TaxRate = (double)t.TaxRate,
+                LevyAmount = (double)t.LevyAmount,
+                TaxYear = t.TaxYear,
+                Purpose = t.Purpose ?? string.Empty,
+                EffectiveDate = t.EffectiveDate,
+            })
+            .ToListAsync();
+
+        return Ok(records);
     }
 
     /// <summary>
@@ -182,32 +403,56 @@ public class LevyCalculationController : ControllerBase
         if (requests.Count > 100)
             return BadRequest("Batch size limited to 100 measures per request");
 
+        var countyContext = await ResolveCountyContextAsync();
+        if (countyContext is null)
+            return Forbid();
+
+        var hasMissingCountyCode = requests.Any(r => string.IsNullOrWhiteSpace(r.CountyCode));
+        if (hasMissingCountyCode)
+            return BadRequest("CountyCode is required for all batch items");
+
+        var hasCrossCountyRequest = requests.Any(r => !CountyCodeMatchesContext(r.CountyCode, countyContext));
+        if (hasCrossCountyRequest)
+            return Forbid();
+
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var results = new List<LevyCalculationResultDto>();
         var errors = new List<string>();
 
-        // Process in parallel for performance (max 8 concurrent)
-        var options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
-
-        await Parallel.ForEachAsync(requests, options, async (request, ct) =>
+        // Compute rates (pure math, parallelizable)
+        foreach (var request in requests)
         {
             try
             {
                 var result = await CalculateOptimalRateInternalAsync(request);
-                lock (results)
-                {
-                    results.Add(result);
-                }
+                results.Add(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to calculate levy for district {District}", request.DistrictId);
-                lock (errors)
-                {
-                    errors.Add($"District {request.DistrictId}: {ex.Message}");
-                }
+                errors.Add($"District {request.DistrictId}: {ex.Message}");
             }
-        });
+        }
+
+        // CX-21: Persist all successful calculations as TaxLevy records
+        foreach (var result in results)
+        {
+            var taxLevy = new TaxLevy
+            {
+                Id = Guid.NewGuid(),
+                CountyId = countyContext.CountyId,
+                TaxingDistrict = result.DistrictId,
+                TaxRate = (decimal)result.AiOptimalRate,
+                LevyAmount = (decimal)result.ProjectedRevenue,
+                TaxYear = DateTime.UtcNow.Year,
+                Purpose = $"batch/{result.DistrictName}",
+                EffectiveDate = DateTime.UtcNow,
+                IsActive = true
+            };
+            _db.TaxLevies.Add(taxLevy);
+            result.TaxLevyId = taxLevy.Id;
+        }
+        await _db.SaveChangesAsync();
 
         stopwatch.Stop();
 
@@ -401,11 +646,25 @@ public class LevyMeasureRequest
     [Required]
     public string MeasureType { get; set; } = "regular";
 
+    [Required]
     public string CountyCode { get; set; } = string.Empty;
+}
+
+public class LevyHistoryDto
+{
+    public Guid TaxLevyId { get; set; }
+    public Guid CountyId { get; set; }
+    public string TaxingDistrict { get; set; } = string.Empty;
+    public double TaxRate { get; set; }
+    public double LevyAmount { get; set; }
+    public int TaxYear { get; set; }
+    public string Purpose { get; set; } = string.Empty;
+    public DateTime EffectiveDate { get; set; }
 }
 
 public class LevyCalculationResultDto
 {
+    public Guid? TaxLevyId { get; set; }
     public string DistrictId { get; set; } = string.Empty;
     public string DistrictName { get; set; } = string.Empty;
     public double BaseRate { get; set; }

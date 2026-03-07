@@ -29,6 +29,8 @@ exports.ErrorCodes = {
     REASON_CODE_INVALID: 'REASON_CODE_INVALID',
     SUPERVISOR_APPROVAL_REQUIRED: 'SUPERVISOR_APPROVAL_REQUIRED',
     SUPERVISOR_ROLE_INVALID: 'SUPERVISOR_ROLE_INVALID',
+    // Gate 5b: RBAC Permission
+    PERMISSION_DENIED: 'PERMISSION_DENIED',
     // Gate 6: PII / Trace
     PAYLOAD_STORE_REQUIRED: 'PAYLOAD_STORE_REQUIRED',
     // General
@@ -110,6 +112,75 @@ function enforcePiiPolicy(tool) {
     // payload_ref requires payloadStore
     if (tool.tracePolicy === 'payload_ref' && !tool.payloadStore) {
         violations.push(`[${exports.ErrorCodes.PAYLOAD_STORE_REQUIRED}] Tool ${tool.toolId}: payload_ref trace policy requires payloadStore`);
+    }
+    return violations;
+}
+// ============================================================================
+// Gate 5b: RBAC Permission Enforcement (ported from packages/os-core)
+// ============================================================================
+/**
+ * Role → claims mapping per ROLE_VOCABULARY.md contract.
+ * This is the canonical source; if the contract changes, update here.
+ */
+const ROLE_CLAIMS = {
+    viewer: ['read:parcel', 'read:dossier'],
+    appraiser: ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier'],
+    supervisor: ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier', 'write:dais', 'approve:irreversible'],
+    administrator: ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier', 'write:dais', 'approve:irreversible', 'admin:trace', 'admin:system'],
+    auditor: ['read:parcel', 'read:dossier', 'read:trace', 'audit:all'],
+};
+/**
+ * Derive the claims a tool requires based on its manifest properties.
+ */
+function deriveRequiredClaims(tool) {
+    const claims = [];
+    // Read tools need read claims for their touch targets
+    if (tool.touches?.includes('parcel'))
+        claims.push('read:parcel');
+    if (tool.touches?.includes('dossier'))
+        claims.push('read:dossier');
+    // Write tools need write claims for their suite
+    // OS-lane tools are governed by admin:trace (no write:os claim in vocabulary)
+    if (tool.writeLane && tool.writeLane !== 'os') {
+        claims.push(`write:${tool.writeLane}`);
+    }
+    // Irreversible tools need approval claim
+    if (tool.risk === 'irreversible') {
+        claims.push('approve:irreversible');
+    }
+    // Trace admin tools
+    if (tool.suite === 'os' && tool.touches?.includes('workflow') && tool.risk !== 'read_only') {
+        claims.push('admin:trace');
+    }
+    return [...new Set(claims)];
+}
+/**
+ * Resolve effective claims for a user's roles.
+ */
+function resolveClaimsForRoles(roles) {
+    const claims = new Set();
+    for (const role of roles) {
+        const roleClaims = ROLE_CLAIMS[role.toLowerCase()];
+        if (roleClaims) {
+            for (const c of roleClaims)
+                claims.add(c);
+        }
+    }
+    return claims;
+}
+/**
+ * Gate 5b: RBAC permission check.
+ * Derives required claims from tool manifest and checks against user's roles.
+ */
+function enforceRbacPermissions(tool, context) {
+    const violations = [];
+    const required = deriveRequiredClaims(tool);
+    if (required.length === 0)
+        return violations;
+    const userClaims = resolveClaimsForRoles(context.roles);
+    const missing = required.filter(c => !userClaims.has(c));
+    if (missing.length > 0) {
+        violations.push(`[${exports.ErrorCodes.PERMISSION_DENIED}] User lacks claims: ${missing.join(', ')} (required by ${tool.toolId})`);
     }
     return violations;
 }
@@ -205,6 +276,7 @@ class ToolRunner {
         const violations = [
             ...enforceWriteLane(tool, context),
             ...enforceRiskPolicy(tool, context),
+            ...enforceRbacPermissions(tool, context),
             ...enforcePiiPolicy(tool),
         ];
         if (violations.length > 0) {
@@ -274,6 +346,7 @@ class ToolRunner {
         const violations = [
             ...enforceWriteLane(tool, context),
             ...enforceRiskPolicy(tool, context),
+            ...enforceRbacPermissions(tool, context),
             ...enforcePiiPolicy(tool),
         ];
         return { valid: violations.length === 0, violations };
@@ -329,6 +402,8 @@ function mapErrorCode(code) {
             return 'PII_BLOCKED';
         case exports.ErrorCodes.TOOL_NOT_FOUND:
             return 'TOOL_NOT_FOUND';
+        case exports.ErrorCodes.PERMISSION_DENIED:
+            return 'PERMISSION_DENIED';
         case exports.ErrorCodes.POLICY_DENIED:
         case exports.ErrorCodes.WRITE_LANE_MISMATCH:
         case exports.ErrorCodes.WRITE_LANE_REQUIRED:

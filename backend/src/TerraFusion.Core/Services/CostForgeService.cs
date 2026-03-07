@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ public class CostForgeService : ICostForgeService
 {
     private readonly ILogger<CostForgeService> _logger;
     private readonly ICostForgeAIService _aiService;
+    private readonly ITerraFusionDbContext _context;
 
     // Washington State regional multipliers for accurate county assessments
     private readonly Dictionary<string, double> _regionalMultipliers = new()
@@ -72,31 +74,42 @@ public class CostForgeService : ICostForgeService
 
     public CostForgeService(
         ILogger<CostForgeService> logger,
-        ICostForgeAIService aiService)
+        ICostForgeAIService aiService,
+        ITerraFusionDbContext context)
     {
         _logger = logger;
         _aiService = aiService;
+        _context = context;
     }
 
     public async Task<CostAnalysisDto> AnalyzeCostAsync(Guid propertyId)
     {
         try
         {
-            // For now, create a default property for demonstration
-            // In a real implementation, this would fetch from database
+            // CX-8 fix: Query real property data from the database
+            var property = await _context.Properties
+                .Include(p => p.County)
+                .FirstOrDefaultAsync(p => p.Id == propertyId);
+
+            if (property == null)
+            {
+                throw new KeyNotFoundException($"Property {propertyId} not found");
+            }
+
+            // Build PropertyDto manually (avoids broken AutoMapper Guid->int mapping)
             var propertyDto = new PropertyDto
             {
-                Id = propertyId.GetHashCode(), // Convert Guid to int for existing DTO
-                ParcelNumber = $"DEMO-{propertyId.ToString()[..8]}",
-                Address = "Demo Property Address",
-                AssessedValue = 275000m,
-                LandValue = 125000m,
-                ImprovementValue = 150000m,
-                CountyId = 1,
-                CountyName = "BENTON"
+                ParcelNumber = property.ParcelNumber,
+                Address = property.Address ?? "Unknown",
+                AssessedValue = property.AssessedValue,
+                LandValue = property.LandValue,
+                ImprovementValue = property.ImprovementValue,
+                CountyName = property.County?.Name ?? "UNKNOWN"
             };
 
-            return await AnalyzeCostAsync(propertyDto);
+            var result = await AnalyzeCostAsync(propertyDto);
+            result.PropertyId = propertyId;
+            return result;
         }
         catch (Exception ex)
         {
