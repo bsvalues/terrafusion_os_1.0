@@ -26,6 +26,8 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 | `node --test phase83-tools.test.mjs` | **32/32 pass** |
 | `node --test phase85-tools.test.mjs` | **20/20 pass** |
 | `node --test phase86-toolrunner.test.mjs` | **7/7 pass** |
+| `node --test r1-acceptance-criteria.test.mjs` | **22/22 pass** (AC-1 through AC-11) |
+| Total gate suite | **81/81 pass, 0 fail** |
 | Working tree | clean (only untracked `.codex_split/`, worktree snapshot files) |
 
 ---
@@ -123,8 +125,9 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 - Atlas/Dossier backend controllers with county isolation + auth
 - Dossier details/evidence/SHA-256 content hash + notes CRUD + casefile
 - Correlation ID middleware (all responses)
-- Core gates passing (32/32 + 20/20 + 7/7)
+- Core gates passing (32/32 + 20/20 + 7/7 + 22/22 AC = 81/81)
 - 10 real handlers in `handlers.real.ts`
+- AC-1 through AC-11 acceptance criteria (22 tests, all pass)
 
 ### Partial
 - Governed end-to-end real-data flows (10/24 tools have real handlers)
@@ -182,8 +185,7 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 5. `CostForgeController` batch-calculate and PACS sync are stubs
 6. 14 of 24 manifest tools have no real handler — only canned stubs
 7. ~~Fake-path elimination not yet finished~~ **CLOSED March 7** — Forge localStorage eliminated, Dossier mock docs removed, Atlas labeled honestly, PILT frontend fallback made explicit with deferred notice, old suite modules classified as post-R1. Remaining: PILT fake backend (CX scope)
-8. R1 acceptance: 5+ tools through governed path with all 11 acceptance criteria,
-   logged correlation IDs, and fake-path grep returning zero
+8. ~~R1 acceptance: 5+ tools through governed path with all 11 acceptance criteria~~ **CLOSED March 7** — `r1-acceptance-criteria.test.mjs` exercises AC-1 through AC-11 (22 tests, 22 pass). Covers: governed execution with trace (AC-1), confirmation gates (AC-2), trace lifecycle for proof tools (AC-3), evidence rail retrieval (AC-4), context propagation (AC-5), county isolation (AC-6), write-lane enforcement (AC-7), forge differentiated output (AC-8), real response shapes (AC-9), 10 real handler registry (AC-10), mode/risk/error classification (AC-11)
 
 ---
 
@@ -258,7 +260,7 @@ Wired into root `package.json`:
 
 ### Remaining Blockers
 
-Items 2-6 from the original blocker list remain open (CX/backend scope). Items 1 and 7 are closed. Item 8 (5-tool acceptance proof) is structurally ready but not yet executed with live correlation IDs. CC lane is now fully closed with surface inventory, PILT deferred notice, and post-R1 module classification.
+Items 2-6 from the original blocker list remain open (CX/backend scope). Items 1, 7, and 8 are **CLOSED**. Item 8 acceptance criteria tests (AC-1 through AC-11) pass 22/22 with full gate suite at 81/81. CC lane is fully closed with surface inventory, PILT deferred notice, post-R1 module classification, and acceptance criteria proof.
 
 ---
 
