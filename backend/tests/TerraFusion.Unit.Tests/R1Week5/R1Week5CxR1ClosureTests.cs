@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -54,6 +55,13 @@ public sealed class R1Week5CxR1ClosureTests
         return new ClaimsPrincipal(new ClaimsIdentity());
     }
 
+    private static IHostEnvironment CreateHostEnvironment(string environmentName = "Production")
+    {
+        var hostEnvironment = new Mock<IHostEnvironment>();
+        hostEnvironment.SetupGet(h => h.EnvironmentName).Returns(environmentName);
+        return hostEnvironment.Object;
+    }
+
     private static void AttachPrincipal(ControllerBase controller, ClaimsPrincipal principal)
     {
         controller.ControllerContext = new ControllerContext
@@ -80,6 +88,45 @@ public sealed class R1Week5CxR1ClosureTests
             TaxYear = 2026,
             CountyId = countyId,
         };
+    }
+
+    private static async Task SeedDossierIndexDataAsync(DataDbContext db, Guid countyId, string parcelId)
+    {
+        db.Counties.Add(new County
+        {
+            Id = countyId,
+            Name = "Benton",
+            State = "WA",
+            FipsCode = "003",
+        });
+
+        var property = CreateProperty(countyId, parcelId);
+        property.Address = "456 Oak Ave, Kennewick, WA";
+        property.AssessmentDate = new DateTime(2026, 03, 05, 10, 30, 0, DateTimeKind.Utc);
+        property.LastUpdated = new DateTime(2026, 03, 06, 08, 45, 0, DateTimeKind.Utc);
+        db.Properties.Add(property);
+
+        db.DossierNotes.AddRange(
+            new DossierNote
+            {
+                ParcelId = parcelId,
+                CountyId = countyId,
+                NoteType = "inspection",
+                CreatedBy = "Field Appraiser",
+                CreatedAt = new DateTime(2026, 03, 05, 11, 00, 0, DateTimeKind.Utc),
+                Content = "Inspection completed and measurements verified on site.",
+            },
+            new DossierNote
+            {
+                ParcelId = parcelId,
+                CountyId = countyId,
+                NoteType = "appeal_evidence",
+                CreatedBy = "County Clerk",
+                CreatedAt = new DateTime(2026, 03, 05, 12, 15, 0, DateTimeKind.Utc),
+                Content = "Appeal packet received with comparable sales schedule, appraisal narrative, and supporting correspondence attached for BOE review.",
+            });
+
+        await db.SaveChangesAsync();
     }
 
     [Fact]
@@ -196,18 +243,72 @@ public sealed class R1Week5CxR1ClosureTests
     }
 
     [Fact]
-    public void PiltController_Status_ReturnsExplicitPostR1ProblemDetails()
+    public async Task PiltController_Status_BentonCounty_ReturnsLiveSnapshot()
     {
-        var controller = new PiltController(NullLogger<PiltController>.Instance);
+        await using var db = CreateDbContext(nameof(PiltController_Status_BentonCounty_ReturnsLiveSnapshot));
+        var countyId = Guid.NewGuid();
+        db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+        await db.SaveChangesAsync();
+
+        var controller = new PiltController(
+            db,
+            NullLogger<PiltController>.Instance,
+            CreateHostEnvironment());
+        AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+        var result = await controller.GetStatus();
+
+        var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
+        json.RootElement.GetProperty("status").GetString().Should().Be("active");
+        json.RootElement.GetProperty("fiscalYear").GetInt32().Should().Be(2025);
+        json.RootElement.GetProperty("districts").GetInt32().Should().Be(5);
+        json.RootElement.GetProperty("federalAcres").GetInt32().Should().Be(1123800);
+        controller.HttpContext.Response.Headers["X-PILT-Source"].ToString().Should().Be("benton-fy2025-snapshot");
+    }
+
+    [Fact]
+    public async Task PiltController_Districts_WithoutCountyClaims_ReturnsUnauthorized()
+    {
+        await using var db = CreateDbContext(nameof(PiltController_Districts_WithoutCountyClaims_ReturnsUnauthorized));
+        db.Counties.Add(new County { Id = Guid.NewGuid(), Name = "Benton", State = "WA", FipsCode = "003" });
+        await db.SaveChangesAsync();
+
+        var controller = new PiltController(
+            db,
+            NullLogger<PiltController>.Instance,
+            CreateHostEnvironment());
         AttachPrincipal(controller, CreateEmptyPrincipal());
 
-        var result = controller.GetStatus();
+        var result = await controller.GetDistricts();
 
-        var objectResult = result.Result.Should().BeOfType<ObjectResult>().Subject;
+        var objectResult = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
+        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problem.Title.Should().Be("County context required");
+        problem.Status.Should().Be(StatusCodes.Status401Unauthorized);
+    }
+
+    [Fact]
+    public async Task PiltController_Receipts_UnsupportedCounty_ReturnsExplicitPostR1ProblemDetails()
+    {
+        await using var db = CreateDbContext(nameof(PiltController_Receipts_UnsupportedCounty_ReturnsExplicitPostR1ProblemDetails));
+        var countyId = Guid.NewGuid();
+        db.Counties.Add(new County { Id = countyId, Name = "King", State = "WA", FipsCode = "033" });
+        await db.SaveChangesAsync();
+
+        var controller = new PiltController(
+            db,
+            NullLogger<PiltController>.Instance,
+            CreateHostEnvironment());
+        AttachPrincipal(controller, CreatePrincipal(countyId, "KING"));
+
+        var result = await controller.GetReceipts(2025);
+
+        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
         objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
 
         var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        problem.Title.Should().Be("PILT backend is not enabled for R1");
+        problem.Title.Should().Be("PILT backend is not enabled for this operation");
         problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
         problem.Extensions["scope"].Should().Be("Post-R1");
         controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
@@ -282,9 +383,12 @@ public sealed class R1Week5CxR1ClosureTests
     }
 
     [Fact]
-    public void DossierController_SearchDocuments_ReturnsExplicitPostR1ProblemDetails()
+    public async Task DossierController_SearchDocuments_ReturnsLiveReadOnlyResults()
     {
-        using var db = CreateDbContext(nameof(DossierController_SearchDocuments_ReturnsExplicitPostR1ProblemDetails));
+        using var db = CreateDbContext(nameof(DossierController_SearchDocuments_ReturnsLiveReadOnlyResults));
+        var countyId = Guid.NewGuid();
+        await SeedDossierIndexDataAsync(db, countyId, "PARCEL-101");
+
         var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
         var hostEnvironment = new Mock<IHostEnvironment>();
         hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Production");
@@ -295,25 +399,34 @@ public sealed class R1Week5CxR1ClosureTests
             NullLogger<DossierController>.Instance,
             hostEnvironment.Object);
 
-        AttachPrincipal(controller, CreateEmptyPrincipal());
+        AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
 
-        var result = controller.SearchDocuments(new { limit = 50 });
+        var result = await controller.SearchDocuments(new DossierController.DocumentSearchRequest(
+            Query: null,
+            Type: null,
+            Status: null,
+            ParcelId: "PARCEL-101",
+            Limit: 50,
+            Offset: 0));
 
-        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
-        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
-
-        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        problem.Title.Should().Be("Dossier document search is not enabled for R1");
-        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
-        problem.Extensions["scope"].Should().Be("Post-R1");
-        problem.Extensions["feature"].Should().Be("Dossier document search");
-        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+        var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
+        json.RootElement.GetProperty("total").GetInt32().Should().Be(4);
+        json.RootElement.GetProperty("hasMore").GetBoolean().Should().BeFalse();
+        json.RootElement.GetProperty("results")[0].GetProperty("name").GetString()
+            .Should().NotBeNullOrWhiteSpace();
+        json.RootElement.GetProperty("results").EnumerateArray()
+            .Select(r => r.GetProperty("name").GetString())
+            .Should().Contain("Casefile summary - PARCEL-101");
     }
 
     [Fact]
-    public void DossierController_Stats_ReturnsExplicitPostR1ProblemDetails()
+    public async Task DossierController_SearchEvidence_And_Chain_ReturnLiveResults()
     {
-        using var db = CreateDbContext(nameof(DossierController_Stats_ReturnsExplicitPostR1ProblemDetails));
+        using var db = CreateDbContext(nameof(DossierController_SearchEvidence_And_Chain_ReturnLiveResults));
+        var countyId = Guid.NewGuid();
+        await SeedDossierIndexDataAsync(db, countyId, "PARCEL-101");
+
         var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
         var hostEnvironment = new Mock<IHostEnvironment>();
         hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Production");
@@ -324,19 +437,62 @@ public sealed class R1Week5CxR1ClosureTests
             NullLogger<DossierController>.Instance,
             hostEnvironment.Object);
 
-        AttachPrincipal(controller, CreateEmptyPrincipal());
+        AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
 
-        var result = controller.GetStats();
+        var searchResult = await controller.SearchEvidence(new DossierController.EvidenceSearchRequest(
+            ParcelId: "PARCEL-101",
+            EvidenceType: null,
+            Integrity: null,
+            Limit: 50,
+            Offset: 0));
 
-        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
-        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+        var searchObject = searchResult.Should().BeOfType<OkObjectResult>().Subject;
+        using var searchJson = JsonDocument.Parse(JsonSerializer.Serialize(searchObject.Value));
+        searchJson.RootElement.GetProperty("total").GetInt32().Should().Be(3);
+        searchJson.RootElement.GetProperty("results").EnumerateArray()
+            .Select(r => r.GetProperty("title").GetString())
+            .Should().Contain("Parcel evidence snapshot - PARCEL-101");
 
-        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        problem.Title.Should().Be("Dossier document-management stats is not enabled for R1");
-        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
-        problem.Extensions["scope"].Should().Be("Post-R1");
-        problem.Extensions["feature"].Should().Be("Dossier document-management stats");
-        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+        var chainResult = await controller.GetChainOfCustody("evid-snapshot-parcel-101");
+        var chainObject = chainResult.Should().BeOfType<OkObjectResult>().Subject;
+        using var chainJson = JsonDocument.Parse(JsonSerializer.Serialize(chainObject.Value));
+        chainJson.RootElement.GetArrayLength().Should().Be(3);
+        chainJson.RootElement[0].GetProperty("action").GetString()
+            .Should().Be("Captured parcel assessment snapshot");
+        chainJson.RootElement[2].GetProperty("action").GetString()
+            .Should().Be("Verified evidence hash");
+    }
+
+    [Fact]
+    public async Task DossierController_Stats_ReturnsLiveDocumentAndEvidenceCounts()
+    {
+        using var db = CreateDbContext(nameof(DossierController_Stats_ReturnsLiveDocumentAndEvidenceCounts));
+        var countyId = Guid.NewGuid();
+        await SeedDossierIndexDataAsync(db, countyId, "PARCEL-101");
+
+        var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+        var hostEnvironment = new Mock<IHostEnvironment>();
+        hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Production");
+
+        var controller = new DossierController(
+            db,
+            costForgeService.Object,
+            NullLogger<DossierController>.Instance,
+            hostEnvironment.Object);
+
+        AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+        var result = await controller.GetStats();
+
+        var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
+        json.RootElement.GetProperty("totalDocuments").GetInt32().Should().Be(4);
+        json.RootElement.GetProperty("activeDocuments").GetInt32().Should().Be(4);
+        json.RootElement.GetProperty("documentTypes").GetInt32().Should().Be(3);
+        json.RootElement.GetProperty("totalEvidence").GetInt32().Should().Be(3);
+        json.RootElement.GetProperty("verifiedEvidence").GetInt32().Should().Be(2);
+        json.RootElement.GetProperty("pendingEvidence").GetInt32().Should().Be(1);
+        json.RootElement.GetProperty("disputedEvidence").GetInt32().Should().Be(0);
     }
 
     [Fact]
