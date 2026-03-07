@@ -4,21 +4,31 @@ import { useStartMenuStore } from '../stores/startMenuStore';
 
 class PluginService {
   /**
-   * Simulates fetching a plugin manifest from a remote registry
+   * Fetches a plugin manifest from a remote registry.
+   *
+   * R2 HONESTY: Replaced mock response with real fetch.
+   * Returns parsed manifest or throws on failure.
    */
   async fetchPluginManifest(url: string): Promise<PluginManifest> {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Plugin manifest fetch failed: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
 
-    // Mock response
+    // Validate required manifest fields
+    if (!data.id || !data.name || !data.version || !data.entryPoint) {
+      throw new Error('Invalid plugin manifest: missing required fields (id, name, version, entryPoint)');
+    }
+
     return {
-      id: `plugin-${Date.now()}`,
-      name: 'External Plugin',
-      version: '1.0.0',
-      description: 'A dynamically loaded plugin',
-      author: 'Third Party',
-      entryPoint: url,
-      icon: '🧩',
+      id: data.id,
+      name: data.name,
+      version: data.version,
+      description: data.description ?? '',
+      author: data.author ?? 'Unknown',
+      entryPoint: data.entryPoint,
+      icon: data.icon ?? '🧩',
     };
   }
 
