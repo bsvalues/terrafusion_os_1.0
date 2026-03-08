@@ -1478,6 +1478,752 @@ public class DossierController : ControllerBase
     ];
   }
 
+  // ══════════════════════════════════════════════════════════════
+  // WAVE 24 — Persistent Document Management + Evidence Chain
+  // Replaces synthesized-only document/evidence indexes with real
+  // DB-backed entities while keeping synthesized views for backward compat.
+  // ══════════════════════════════════════════════════════════════
+
+  // ── Document CRUD ────────────────────────────────────────────
+
+  public sealed record RegisterDocumentRequest(
+      string ParcelId,
+      string Name,
+      string DocumentType,
+      string MimeType,
+      long SizeBytes,
+      string ContentHash,
+      string? Description,
+      string? RetentionClass,
+      string? StoragePath);
+
+  /// <summary>
+  /// Register a new document for a parcel. Creates persistent document metadata record.
+  /// </summary>
+  [HttpPost("documents")]
+  [RequiresPermission("write:dossier")]
+  public async Task<IActionResult> RegisterDocument([FromBody] RegisterDocumentRequest? request)
+  {
+    if (request is null)
+      return BadRequest(new { error = "Request body is required" });
+
+    if (string.IsNullOrWhiteSpace(request.ParcelId) || !IsValidParcelId(request.ParcelId.Trim()))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    if (string.IsNullOrWhiteSpace(request.Name))
+      return BadRequest(new { error = "Document name is required" });
+
+    if (request.Name.Length > 200)
+      return BadRequest(new { error = "Document name must be at most 200 characters" });
+
+    if (string.IsNullOrWhiteSpace(request.DocumentType))
+      return BadRequest(new { error = "Document type is required" });
+
+    if (string.IsNullOrWhiteSpace(request.MimeType))
+      return BadRequest(new { error = "Mime type is required" });
+
+    if (request.SizeBytes < 0)
+      return BadRequest(new { error = "SizeBytes must be non-negative" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var parcelId = request.ParcelId.Trim();
+    var property = await _db.Properties
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+    if (property is null)
+      return NotFound(new { error = "Parcel not found" });
+
+    var entersCustody = BentonDocumentData.DocumentTypes
+        .FirstOrDefault(t => t.Type.Equals(request.DocumentType, StringComparison.OrdinalIgnoreCase))
+        ?.EntersCustodyChain ?? false;
+
+    var document = new DossierDocument
+    {
+      ParcelId = parcelId,
+      Name = request.Name.Trim(),
+      DocumentType = request.DocumentType.Trim(),
+      MimeType = request.MimeType.Trim(),
+      SizeBytes = request.SizeBytes,
+      ContentHash = request.ContentHash?.Trim() ?? "",
+      Description = request.Description?.Trim(),
+      RetentionClass = request.RetentionClass?.Trim(),
+      StoragePath = request.StoragePath?.Trim(),
+      EntersCustodyChain = entersCustody,
+      CountyId = countyId.Value,
+      UploadedBy = User.Identity?.Name ?? "system",
+    };
+
+    _db.DossierDocuments.Add(document);
+    await _db.SaveChangesAsync();
+
+    _logger.LogInformation("Document {DocumentId} registered for parcel {ParcelId}", document.Id, parcelId);
+
+    return CreatedAtAction(nameof(GetPersistentDocument), new { id = document.Id }, new
+    {
+      id = document.Id,
+      parcelId = document.ParcelId,
+      name = document.Name,
+      documentType = document.DocumentType,
+      status = document.Status,
+      uploadedBy = document.UploadedBy,
+      uploadedAt = document.UploadedAt,
+      correlationId = GetOrCreateCorrelationId(),
+    });
+  }
+
+  /// <summary>
+  /// Get a persistent document record by ID.
+  /// </summary>
+  [HttpGet("documents/persistent/{id}")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetPersistentDocument(string id)
+  {
+    if (!Guid.TryParse(id, out var documentId))
+      return BadRequest(new { error = "Invalid document id" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var document = await _db.DossierDocuments
+        .AsNoTracking()
+        .FirstOrDefaultAsync(d => d.Id == documentId && d.CountyId == countyId.Value);
+    if (document is null)
+      return NotFound(new { error = "Document not found" });
+
+    return Ok(new
+    {
+      id = document.Id,
+      parcelId = document.ParcelId,
+      name = document.Name,
+      documentType = document.DocumentType,
+      status = document.Status,
+      mimeType = document.MimeType,
+      sizeBytes = document.SizeBytes,
+      contentHash = document.ContentHash,
+      storagePath = document.StoragePath,
+      description = document.Description,
+      retentionClass = document.RetentionClass,
+      entersCustodyChain = document.EntersCustodyChain,
+      uploadedBy = document.UploadedBy,
+      uploadedAt = document.UploadedAt,
+      createdAt = document.CreatedAt,
+      updatedAt = document.UpdatedAt,
+    });
+  }
+
+  public sealed record UpdateDocumentStatusRequest(string Status, string? Reason);
+
+  /// <summary>
+  /// Update document status (active → sealed → archived). Append-only status transitions.
+  /// </summary>
+  [HttpPatch("documents/persistent/{id}/status")]
+  [RequiresPermission("write:dossier")]
+  public async Task<IActionResult> UpdateDocumentStatus(string id, [FromBody] UpdateDocumentStatusRequest? request)
+  {
+    if (!Guid.TryParse(id, out var documentId))
+      return BadRequest(new { error = "Invalid document id" });
+
+    if (request is null || string.IsNullOrWhiteSpace(request.Status))
+      return BadRequest(new { error = "Status is required" });
+
+    var newStatus = request.Status.Trim().ToLowerInvariant();
+    if (newStatus is not ("active" or "sealed" or "archived"))
+      return BadRequest(new { error = "Status must be one of: active, sealed, archived" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var document = await _db.DossierDocuments
+        .FirstOrDefaultAsync(d => d.Id == documentId && d.CountyId == countyId.Value);
+    if (document is null)
+      return NotFound(new { error = "Document not found" });
+
+    // Validate transition: active → sealed → archived (no backward transitions)
+    var validTransitions = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+    {
+      ["active"] = new[] { "sealed", "archived" },
+      ["sealed"] = new[] { "archived" },
+      ["archived"] = Array.Empty<string>(),
+    };
+
+    if (!validTransitions.TryGetValue(document.Status, out var allowed) ||
+        !allowed.Contains(newStatus, StringComparer.OrdinalIgnoreCase))
+      return BadRequest(new { error = $"Cannot transition from '{document.Status}' to '{newStatus}'" });
+
+    document.Status = newStatus;
+    document.UpdatedAt = DateTime.UtcNow;
+    await _db.SaveChangesAsync();
+
+    _logger.LogInformation("Document {DocumentId} status updated to {Status}", document.Id, newStatus);
+
+    return Ok(new
+    {
+      id = document.Id,
+      status = document.Status,
+      updatedAt = document.UpdatedAt,
+      correlationId = GetOrCreateCorrelationId(),
+    });
+  }
+
+  /// <summary>
+  /// List persistent documents for a parcel (county-isolated).
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/documents")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> ListParcelDocuments(string parcelId, [FromQuery] int? limit, [FromQuery] int? offset)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var effectiveLimit = NormalizeLimit(limit);
+    var effectiveOffset = NormalizeOffset(offset);
+
+    var query = _db.DossierDocuments
+        .AsNoTracking()
+        .Where(d => d.ParcelId == parcelId && d.CountyId == countyId.Value)
+        .OrderByDescending(d => d.UploadedAt);
+
+    var total = await query.CountAsync();
+    var documents = await query
+        .Skip(effectiveOffset)
+        .Take(effectiveLimit)
+        .Select(d => new
+        {
+          id = d.Id,
+          name = d.Name,
+          documentType = d.DocumentType,
+          status = d.Status,
+          mimeType = d.MimeType,
+          sizeBytes = d.SizeBytes,
+          uploadedBy = d.UploadedBy,
+          uploadedAt = d.UploadedAt,
+        })
+        .ToListAsync();
+
+    return Ok(new
+    {
+      results = documents,
+      total,
+      hasMore = effectiveOffset + documents.Count < total,
+    });
+  }
+
+  // ── Evidence CRUD ────────────────────────────────────────────
+
+  public sealed record RegisterEvidenceRequest(
+      string ParcelId,
+      string Title,
+      string EvidenceType,
+      Guid? DocumentId);
+
+  /// <summary>
+  /// Register a new evidence item for a parcel. Creates initial "created" custody event.
+  /// </summary>
+  [HttpPost("evidence")]
+  [RequiresPermission("write:dossier")]
+  public async Task<IActionResult> RegisterEvidence([FromBody] RegisterEvidenceRequest? request)
+  {
+    if (request is null)
+      return BadRequest(new { error = "Request body is required" });
+
+    if (string.IsNullOrWhiteSpace(request.ParcelId) || !IsValidParcelId(request.ParcelId.Trim()))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    if (string.IsNullOrWhiteSpace(request.Title))
+      return BadRequest(new { error = "Evidence title is required" });
+
+    if (request.Title.Length > 200)
+      return BadRequest(new { error = "Title must be at most 200 characters" });
+
+    if (string.IsNullOrWhiteSpace(request.EvidenceType))
+      return BadRequest(new { error = "Evidence type is required" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var parcelId = request.ParcelId.Trim();
+    var property = await _db.Properties
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+    if (property is null)
+      return NotFound(new { error = "Parcel not found" });
+
+    // Validate DocumentId if provided
+    if (request.DocumentId.HasValue)
+    {
+      var doc = await _db.DossierDocuments
+          .AsNoTracking()
+          .FirstOrDefaultAsync(d => d.Id == request.DocumentId.Value && d.CountyId == countyId.Value);
+      if (doc is null)
+        return BadRequest(new { error = "Referenced document not found" });
+    }
+
+    var actor = User.Identity?.Name ?? "system";
+    var evidence = new DossierEvidence
+    {
+      ParcelId = parcelId,
+      Title = request.Title.Trim(),
+      EvidenceType = request.EvidenceType.Trim(),
+      DocumentId = request.DocumentId,
+      CountyId = countyId.Value,
+      CreatedBy = actor,
+    };
+
+    _db.DossierEvidenceItems.Add(evidence);
+
+    // Create initial custody event
+    var custodyEvent = new DossierCustodyEvent
+    {
+      EvidenceId = evidence.Id,
+      Action = "created",
+      Actor = actor,
+      Hash = ComputeSha256($"evidence:{evidence.Id:N}:{evidence.CreatedAt:O}:{parcelId}"),
+      CountyId = countyId.Value,
+    };
+
+    _db.DossierCustodyEvents.Add(custodyEvent);
+    await _db.SaveChangesAsync();
+
+    _logger.LogInformation("Evidence {EvidenceId} registered for parcel {ParcelId}", evidence.Id, parcelId);
+
+    return CreatedAtAction(nameof(GetPersistentEvidence), new { id = evidence.Id }, new
+    {
+      id = evidence.Id,
+      parcelId = evidence.ParcelId,
+      title = evidence.Title,
+      evidenceType = evidence.EvidenceType,
+      integrity = evidence.Integrity,
+      createdBy = evidence.CreatedBy,
+      createdAt = evidence.CreatedAt,
+      correlationId = GetOrCreateCorrelationId(),
+    });
+  }
+
+  /// <summary>
+  /// Get a persistent evidence record by ID.
+  /// </summary>
+  [HttpGet("evidence/persistent/{id}")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetPersistentEvidence(string id)
+  {
+    if (!Guid.TryParse(id, out var evidenceId))
+      return BadRequest(new { error = "Invalid evidence id" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var evidence = await _db.DossierEvidenceItems
+        .AsNoTracking()
+        .FirstOrDefaultAsync(e => e.Id == evidenceId && e.CountyId == countyId.Value);
+    if (evidence is null)
+      return NotFound(new { error = "Evidence item not found" });
+
+    var chainLength = await _db.DossierCustodyEvents
+        .AsNoTracking()
+        .CountAsync(c => c.EvidenceId == evidenceId);
+
+    return Ok(new
+    {
+      id = evidence.Id,
+      parcelId = evidence.ParcelId,
+      title = evidence.Title,
+      evidenceType = evidence.EvidenceType,
+      integrity = evidence.Integrity,
+      documentId = evidence.DocumentId,
+      createdBy = evidence.CreatedBy,
+      createdAt = evidence.CreatedAt,
+      chainLength,
+    });
+  }
+
+  /// <summary>
+  /// List persistent evidence items for a parcel (county-isolated).
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/evidence/persistent")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> ListParcelEvidence(string parcelId, [FromQuery] int? limit, [FromQuery] int? offset)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var effectiveLimit = NormalizeLimit(limit);
+    var effectiveOffset = NormalizeOffset(offset);
+
+    var query = _db.DossierEvidenceItems
+        .AsNoTracking()
+        .Where(e => e.ParcelId == parcelId && e.CountyId == countyId.Value)
+        .OrderByDescending(e => e.CreatedAt);
+
+    var total = await query.CountAsync();
+    var evidence = await query
+        .Skip(effectiveOffset)
+        .Take(effectiveLimit)
+        .Select(e => new
+        {
+          id = e.Id,
+          title = e.Title,
+          evidenceType = e.EvidenceType,
+          integrity = e.Integrity,
+          documentId = e.DocumentId,
+          createdBy = e.CreatedBy,
+          createdAt = e.CreatedAt,
+        })
+        .ToListAsync();
+
+    return Ok(new
+    {
+      results = evidence,
+      total,
+      hasMore = effectiveOffset + evidence.Count < total,
+    });
+  }
+
+  // ── Custody Chain Operations ─────────────────────────────────
+
+  public sealed record AddCustodyEventRequest(string Action, string? Notes);
+
+  /// <summary>
+  /// Add a custody event to an evidence item (append-only). Updates integrity status.
+  /// </summary>
+  [HttpPost("evidence/persistent/{id}/custody")]
+  [RequiresPermission("write:dossier")]
+  public async Task<IActionResult> AddCustodyEvent(string id, [FromBody] AddCustodyEventRequest? request)
+  {
+    if (!Guid.TryParse(id, out var evidenceId))
+      return BadRequest(new { error = "Invalid evidence id" });
+
+    if (request is null || string.IsNullOrWhiteSpace(request.Action))
+      return BadRequest(new { error = "Action is required" });
+
+    var action = request.Action.Trim().ToLowerInvariant();
+    var validActions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+      "verified", "transferred", "sealed", "disputed", "hash-verified", "reviewed"
+    };
+
+    if (!validActions.Contains(action))
+      return BadRequest(new { error = $"Invalid action. Must be one of: {string.Join(", ", validActions)}" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var evidence = await _db.DossierEvidenceItems
+        .FirstOrDefaultAsync(e => e.Id == evidenceId && e.CountyId == countyId.Value);
+    if (evidence is null)
+      return NotFound(new { error = "Evidence item not found" });
+
+    var actor = User.Identity?.Name ?? "system";
+
+    // Get previous hash for chain integrity
+    var previousEvent = await _db.DossierCustodyEvents
+        .AsNoTracking()
+        .Where(c => c.EvidenceId == evidenceId)
+        .OrderByDescending(c => c.Timestamp)
+        .FirstOrDefaultAsync();
+
+    var newHash = ComputeSha256(
+        $"custody:{evidenceId:N}:{action}:{DateTime.UtcNow:O}:{previousEvent?.Hash ?? "genesis"}");
+
+    var custodyEvent = new DossierCustodyEvent
+    {
+      EvidenceId = evidenceId,
+      Action = action,
+      Actor = actor,
+      Hash = newHash,
+      Notes = request.Notes?.Trim(),
+      CountyId = countyId.Value,
+    };
+
+    _db.DossierCustodyEvents.Add(custodyEvent);
+
+    // Update evidence integrity based on action
+    if (action is "verified" or "hash-verified")
+      evidence.Integrity = "verified";
+    else if (action is "disputed")
+      evidence.Integrity = "disputed";
+
+    await _db.SaveChangesAsync();
+
+    var chainLength = await _db.DossierCustodyEvents
+        .AsNoTracking()
+        .CountAsync(c => c.EvidenceId == evidenceId);
+
+    _logger.LogInformation("Custody event '{Action}' added to evidence {EvidenceId}", action, evidenceId);
+
+    return Ok(new
+    {
+      eventId = custodyEvent.Id,
+      evidenceId,
+      action = custodyEvent.Action,
+      actor = custodyEvent.Actor,
+      hash = custodyEvent.Hash,
+      timestamp = custodyEvent.Timestamp,
+      chainLength,
+      integrity = evidence.Integrity,
+      correlationId = GetOrCreateCorrelationId(),
+    });
+  }
+
+  /// <summary>
+  /// Get full custody chain for a persistent evidence item.
+  /// </summary>
+  [HttpGet("evidence/persistent/{id}/chain")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetPersistentCustodyChain(string id)
+  {
+    if (!Guid.TryParse(id, out var evidenceId))
+      return BadRequest(new { error = "Invalid evidence id" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var evidence = await _db.DossierEvidenceItems
+        .AsNoTracking()
+        .FirstOrDefaultAsync(e => e.Id == evidenceId && e.CountyId == countyId.Value);
+    if (evidence is null)
+      return NotFound(new { error = "Evidence item not found" });
+
+    var events = await _db.DossierCustodyEvents
+        .AsNoTracking()
+        .Where(c => c.EvidenceId == evidenceId)
+        .OrderBy(c => c.Timestamp)
+        .Select(c => new
+        {
+          id = c.Id,
+          action = c.Action,
+          actor = c.Actor,
+          hash = c.Hash,
+          notes = c.Notes,
+          timestamp = c.Timestamp,
+        })
+        .ToListAsync();
+
+    return Ok(new
+    {
+      evidenceId,
+      title = evidence.Title,
+      integrity = evidence.Integrity,
+      chainLength = events.Count,
+      events,
+    });
+  }
+
+  // ── Packet Operations ────────────────────────────────────────
+
+  public sealed record CreatePacketRequest(string ParcelId, string PacketType);
+
+  /// <summary>
+  /// Create an assessment packet from a template. Links matching documents and computes completeness.
+  /// </summary>
+  [HttpPost("packets")]
+  [RequiresPermission("write:dossier")]
+  public async Task<IActionResult> CreatePacket([FromBody] CreatePacketRequest? request)
+  {
+    if (request is null)
+      return BadRequest(new { error = "Request body is required" });
+
+    if (string.IsNullOrWhiteSpace(request.ParcelId) || !IsValidParcelId(request.ParcelId.Trim()))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    if (string.IsNullOrWhiteSpace(request.PacketType))
+      return BadRequest(new { error = "Packet type is required" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var parcelId = request.ParcelId.Trim();
+    var packetType = request.PacketType.Trim();
+
+    var template = BentonDocumentData.PacketTemplates
+        .FirstOrDefault(t => t.PacketType.Equals(packetType, StringComparison.OrdinalIgnoreCase));
+    if (template is null)
+      return BadRequest(new { error = $"Unknown packet type: {packetType}" });
+
+    var property = await _db.Properties
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+    if (property is null)
+      return NotFound(new { error = "Parcel not found" });
+
+    // Find matching persistent documents for this parcel
+    var parcelDocuments = await _db.DossierDocuments
+        .AsNoTracking()
+        .Where(d => d.ParcelId == parcelId && d.CountyId == countyId.Value && d.Status != "archived")
+        .ToListAsync();
+
+    var actor = User.Identity?.Name ?? "system";
+    var packet = new DossierPacket
+    {
+      ParcelId = parcelId,
+      PacketType = template.PacketType,
+      Name = $"{template.Name} - {parcelId}",
+      CountyId = countyId.Value,
+      CreatedBy = actor,
+      TotalRequired = template.RequiredDocumentTypes.Length,
+    };
+
+    var satisfiedCount = 0;
+    foreach (var requiredType in template.RequiredDocumentTypes)
+    {
+      var matchingDoc = parcelDocuments
+          .FirstOrDefault(d => d.DocumentType.Equals(requiredType, StringComparison.OrdinalIgnoreCase));
+
+      var satisfied = matchingDoc is not null;
+      if (satisfied) satisfiedCount++;
+
+      var item = new DossierPacketItem
+      {
+        PacketId = packet.Id,
+        DocumentType = requiredType,
+        DocumentId = matchingDoc?.Id,
+        Required = true,
+        Satisfied = satisfied,
+        SatisfiedAt = satisfied ? matchingDoc!.UploadedAt : null,
+      };
+
+      packet.Items.Add(item);
+    }
+
+    packet.SatisfiedCount = satisfiedCount;
+    packet.CompletenessPercent = packet.TotalRequired > 0
+        ? Math.Round((double)satisfiedCount / packet.TotalRequired * 100, 1)
+        : 0;
+
+    if (packet.CompletenessPercent >= 100)
+      packet.Status = "complete";
+
+    _db.DossierPackets.Add(packet);
+    await _db.SaveChangesAsync();
+
+    _logger.LogInformation("Packet {PacketId} created for parcel {ParcelId} ({PacketType})", packet.Id, parcelId, packetType);
+
+    return CreatedAtAction(nameof(GetPacket), new { id = packet.Id }, new
+    {
+      id = packet.Id,
+      parcelId = packet.ParcelId,
+      packetType = packet.PacketType,
+      name = packet.Name,
+      status = packet.Status,
+      completeness = $"{packet.CompletenessPercent}%",
+      satisfied = packet.SatisfiedCount,
+      total = packet.TotalRequired,
+      items = packet.Items.Select(i => new
+      {
+        documentType = i.DocumentType,
+        required = i.Required,
+        satisfied = i.Satisfied,
+        documentId = i.DocumentId,
+        satisfiedAt = i.SatisfiedAt,
+      }),
+      correlationId = GetOrCreateCorrelationId(),
+    });
+  }
+
+  /// <summary>
+  /// Get a persistent packet record with its items.
+  /// </summary>
+  [HttpGet("packets/{id}")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetPacket(string id)
+  {
+    if (!Guid.TryParse(id, out var packetId))
+      return BadRequest(new { error = "Invalid packet id" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var packet = await _db.DossierPackets
+        .AsNoTracking()
+        .Include(p => p.Items)
+        .FirstOrDefaultAsync(p => p.Id == packetId && p.CountyId == countyId.Value);
+    if (packet is null)
+      return NotFound(new { error = "Packet not found" });
+
+    return Ok(new
+    {
+      id = packet.Id,
+      parcelId = packet.ParcelId,
+      packetType = packet.PacketType,
+      name = packet.Name,
+      status = packet.Status,
+      completeness = $"{packet.CompletenessPercent}%",
+      satisfied = packet.SatisfiedCount,
+      total = packet.TotalRequired,
+      createdBy = packet.CreatedBy,
+      createdAt = packet.CreatedAt,
+      updatedAt = packet.UpdatedAt,
+      items = packet.Items.Select(i => new
+      {
+        id = i.Id,
+        documentType = i.DocumentType,
+        required = i.Required,
+        satisfied = i.Satisfied,
+        documentId = i.DocumentId,
+        satisfiedAt = i.SatisfiedAt,
+      }),
+    });
+  }
+
+  /// <summary>
+  /// List packets for a parcel (county-isolated).
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/packets")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> ListParcelPackets(string parcelId)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var packets = await _db.DossierPackets
+        .AsNoTracking()
+        .Where(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)
+        .OrderByDescending(p => p.CreatedAt)
+        .Select(p => new
+        {
+          id = p.Id,
+          packetType = p.PacketType,
+          name = p.Name,
+          status = p.Status,
+          completeness = p.CompletenessPercent,
+          satisfied = p.SatisfiedCount,
+          total = p.TotalRequired,
+          createdAt = p.CreatedAt,
+        })
+        .ToListAsync();
+
+    return Ok(new
+    {
+      results = packets,
+      total = packets.Count,
+    });
+  }
+
   // ── Read-only Dossier Registry Helpers ───────────────────────
 
   private sealed record DossierDocumentIndexItem(
@@ -1623,10 +2369,58 @@ public class DossierController : ControllerBase
           Hash: ComputeSha256($"note-document:{note.Id:N}:{note.CreatedAt:O}:{note.Content}")));
     }
 
+    // Include persistent documents (Wave 24)
+    await AppendPersistentDocumentsAsync(countyId, documents);
+
     return documents
         .OrderByDescending(d => d.UploadedAt)
         .ThenBy(d => d.Name, StringComparer.OrdinalIgnoreCase)
         .ToList();
+  }
+
+  /// <summary>
+  /// Append persistent DossierDocuments to the unified index alongside synthesized entries.
+  /// </summary>
+  private async System.Threading.Tasks.Task AppendPersistentDocumentsAsync(Guid countyId, List<DossierDocumentIndexItem> documents)
+  {
+    var persistent = await _db.DossierDocuments
+        .AsNoTracking()
+        .Where(d => d.CountyId == countyId)
+        .Select(d => new
+        {
+          d.Id,
+          d.ParcelId,
+          d.Name,
+          d.DocumentType,
+          d.Status,
+          d.MimeType,
+          d.SizeBytes,
+          d.ContentHash,
+          d.UploadedBy,
+          d.UploadedAt,
+          d.EntersCustodyChain,
+        })
+        .ToListAsync();
+
+    foreach (var doc in persistent)
+    {
+      var sizeLabel = doc.SizeBytes >= 1048576
+          ? $"{doc.SizeBytes / 1048576} MB"
+          : $"{Math.Max(1, doc.SizeBytes / 1024)} KB";
+
+      documents.Add(new DossierDocumentIndexItem(
+          Id: $"pdoc-{doc.Id:N}",
+          Name: doc.Name,
+          Type: doc.DocumentType,
+          ParcelId: doc.ParcelId,
+          UploadedBy: string.IsNullOrWhiteSpace(doc.UploadedBy) ? "County Staff" : doc.UploadedBy,
+          UploadedAt: doc.UploadedAt,
+          Size: sizeLabel,
+          Status: doc.Status,
+          CustodyChain: doc.EntersCustodyChain ? 1 : 0,
+          MimeType: doc.MimeType,
+          Hash: doc.ContentHash));
+    }
   }
 
   private async Task<List<DossierEvidenceIndexItem>> BuildEvidenceIndexAsync(Guid countyId)
@@ -1688,6 +2482,38 @@ public class DossierController : ControllerBase
           Integrity: MapIntegrityStatus(note.NoteType, note.CreatedBy, note.Content),
           ChainLength: 2,
           LastAction: note.NoteType.Replace('_', '-').ToLowerInvariant()));
+    }
+
+    // Include persistent evidence items (Wave 24)
+    var persistentEvidence = await _db.DossierEvidenceItems
+        .AsNoTracking()
+        .Where(e => e.CountyId == countyId)
+        .Select(e => new { e.Id, e.ParcelId, e.Title, e.EvidenceType, e.CreatedBy, e.CreatedAt, e.Integrity })
+        .ToListAsync();
+
+    foreach (var pe in persistentEvidence)
+    {
+      var chainLen = await _db.DossierCustodyEvents
+          .AsNoTracking()
+          .CountAsync(c => c.EvidenceId == pe.Id);
+
+      var lastEvt = await _db.DossierCustodyEvents
+          .AsNoTracking()
+          .Where(c => c.EvidenceId == pe.Id)
+          .OrderByDescending(c => c.Timestamp)
+          .Select(c => c.Action)
+          .FirstOrDefaultAsync();
+
+      evidenceItems.Add(new DossierEvidenceIndexItem(
+          Id: $"pevid-{pe.Id:N}",
+          Title: pe.Title,
+          ParcelId: pe.ParcelId,
+          EvidenceType: pe.EvidenceType,
+          CreatedBy: string.IsNullOrWhiteSpace(pe.CreatedBy) ? "County Staff" : pe.CreatedBy,
+          CreatedAt: pe.CreatedAt,
+          Integrity: pe.Integrity,
+          ChainLength: chainLen,
+          LastAction: lastEvt ?? "created"));
     }
 
     return evidenceItems
