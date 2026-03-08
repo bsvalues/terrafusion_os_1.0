@@ -648,6 +648,10 @@ builder.Services.AddScoped<TerraFusion.Core.Services.Monitoring.IObservabilitySe
 builder.Services.AddScoped<TerraFusion.Abstractions.Interfaces.IPerformanceMonitor>(provider =>
     new PerformanceMonitorAdapter(provider.GetRequiredService<TerraFusion.API.Interfaces.IPerformanceMonitor>()));
 
+// Security Services - Password validation and history
+builder.Services.AddSingleton<TerraFusion.Security.Interfaces.ICommonPasswordService, TerraFusion.Security.Services.CommonPasswordService>();
+builder.Services.AddSingleton<TerraFusion.Security.Interfaces.IPasswordHistoryRepository, TerraFusion.Security.Services.InMemoryPasswordHistoryRepository>();
+
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // ⚡ QUANTUM METRICS REAL-TIME INTEGRATION - Championship-Level WebSocket Performance

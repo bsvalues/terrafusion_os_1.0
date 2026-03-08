@@ -6,7 +6,7 @@
 
 * **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions + R2 Backend Waves
 * **Branch/PR:** `claude/review-progress-ledger-a8iw5`
-* **Last Updated:** 2026-03-07 (R2 Waves 1-4 Complete)
+* **Last Updated:** 2026-03-08 (R2.9 Build Error Sweep Complete)
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **R2.8: Cross-project build fixes + frontend service wiring** ✅ COMPLETE |
-| **Phase** | R2 Backend Delivery + Build Error Resolution + Frontend Wiring |
-| **Task** | 54 endpoints (52 live, 2 stubs), 32 manifest tools, 87/87 core gates, 242 total tests |
+| **Slice** | **R2.9: Build error sweep + solution completeness** ✅ COMPLETE |
+| **Phase** | R2 Backend Delivery + Build Error Resolution + Solution Integrity |
+| **Task** | Solution file completeness, Security DI wiring, project reference fixes |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `57e5089f1` — R2.8 cross-project build fixes + frontend wiring |
+| **Latest Commit** | R2.9 — solution + DI + project reference fixes |
 
 ---
 
@@ -465,14 +465,29 @@
 
 ---
 
+## R2.9: Build Error Sweep + Solution Completeness ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 9.1 | Add TerraFusion.Security to TerraFusion.sln (was missing) | R2.9 commit | Solution fix | 2026-03-08 |
+| ✅ 9.2 | Add TerraFusion.Research to TerraFusion.sln (was missing) | R2.9 commit | Solution fix | 2026-03-08 |
+| ✅ 9.3 | Add Security project reference to API .csproj | R2.9 commit | Build fix | 2026-03-08 |
+| ✅ 9.4 | Register ICommonPasswordService + IPasswordHistoryRepository DI | R2.9 commit | DI fix | 2026-03-08 |
+| ✅ 9.5 | Verify ConsciousnessParameters duplication (3 defs, all in separate namespaces — no ambiguity) | N/A | Analysis | 2026-03-08 |
+| ✅ 9.6 | Verify TaskPriority duplication (CostForge vs Core — no cross-import) | N/A | Analysis | 2026-03-08 |
+| ✅ 9.7 | Verify ImmersiveVisualizationService DTO removal (types resolve via Consciousness.Interfaces) | N/A | Analysis | 2026-03-08 |
+
+**Key Achievement:** Solution file now includes all 13 projects (was missing Security + Research). Security DI services registered. Verified no remaining type ambiguity across 6 namespace pairs.
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| 🔵 1 | R2.9 | Remaining build error sweep + verification | None |
-| 🔵 2 | R2.10 | GIS geometry storage (PostGIS parcel boundaries) | Infrastructure |
-| 🔵 3 | R2.11 | Muse tool backends (AI-powered NLP explanation) | Claude API |
-| 🔵 4 | R2.12 | Frontend tool invocation wiring (TerraPilot → endpoints) | R2.10-R2.11 |
+| 🔵 1 | R2.10 | GIS geometry storage (PostGIS parcel boundaries) | Infrastructure |
+| 🔵 2 | R2.11 | Muse tool backends (AI-powered NLP explanation) | Claude API |
+| 🔵 3 | R2.12 | Frontend tool invocation wiring (TerraPilot → endpoints) | R2.10-R2.11 |
 
 ---
 
