@@ -104,6 +104,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<BayesianAnalysis> BayesianAnalyses { get; set; }
   public DbSet<MonteCarloSimulation> MonteCarloSimulations { get; set; }
 
+  // Forge Analytics (R2 Waves 28-35)
+  public DbSet<SpatialAnalysis> SpatialAnalyses { get; set; }
+  public DbSet<MarketAnalysis> MarketAnalyses { get; set; }
+  public DbSet<RcwCalculation> RcwCalculations { get; set; }
+  public DbSet<LevyCertification> LevyCertifications { get; set; }
+  public DbSet<DataQualityAssessment> DataQualityAssessments { get; set; }
+  public DbSet<EtlSyncJob> EtlSyncJobs { get; set; }
+  public DbSet<MlPrediction> MlPredictions { get; set; }
+  public DbSet<ValuationPipeline> ValuationPipelines { get; set; }
+
   // Dossier Document Management (R2 Wave 24)
   public DbSet<DossierDocument> DossierDocuments { get; set; }
   public DbSet<DossierEvidence> DossierEvidenceItems { get; set; }

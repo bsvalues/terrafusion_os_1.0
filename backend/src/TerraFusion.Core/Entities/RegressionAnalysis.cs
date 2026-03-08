@@ -52,7 +52,7 @@ public class RegressionAnalysis
 
   public int SampleSize { get; set; }
 
-  // ── Ownership ──
+  // ΓöÇΓöÇ Ownership ΓöÇΓöÇ
   [StringLength(100)]
   public string CreatedBy { get; set; } = "system";
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

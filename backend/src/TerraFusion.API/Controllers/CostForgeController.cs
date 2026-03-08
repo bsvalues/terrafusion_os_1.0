@@ -3412,6 +3412,1864 @@ public class CostForgeController : ControllerBase
     for (int j = 0; j < 6; j++) ser += cof[j] / ++y;
     return -tmp + Math.Log(2.5066282746310005 * ser / x);
   }
+
+
+  // r2/wave-28-forge-spatial-autocorrelation
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  //  Wave 28 ΓÇö Spatial Autocorrelation (Moran's I, Geary's C, LISA)
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  /// <summary>Compute Global Moran's I spatial autocorrelation.</summary>
+  [HttpPost("analytics/spatial/moran")]
+  public async Task<IActionResult> RunGlobalMoranI([FromBody] SpatialAutocorrelationRequest request)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    if (request.Observations is null || request.Observations.Count < 3)
+      return BadRequest(new { error = "At least 3 observations required" });
+
+    int n = request.Observations.Count;
+    var values = request.Observations.Select(o => o.Value).ToArray();
+    double mean = values.Average();
+
+    // Build spatial weight matrix based on coordinates
+    var W = BuildWeightMatrix(request.Observations, request.WeightType ?? "distance", request.DistanceThreshold ?? 0);
+
+    // Global Moran's I = (n/S0) * ╬ú_i ╬ú_j w_ij(x_i - x╠ä)(x_j - x╠ä) / ╬ú_i(x_i - x╠ä)┬▓
+    double s0 = 0;
+    double numerator = 0;
+    double denominator = 0;
+
+    for (int i = 0; i < n; i++)
+      denominator += (values[i] - mean) * (values[i] - mean);
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+      {
+        s0 += W[i, j];
+        numerator += W[i, j] * (values[i] - mean) * (values[j] - mean);
+      }
+
+    double moranI = denominator > 0 && s0 > 0
+      ? (n / s0) * (numerator / denominator)
+      : 0;
+
+    double expectedI = -1.0 / (n - 1);
+    double variance = ComputeMoranVariance(W, values, n, s0);
+    double zScore = variance > 0 ? (moranI - expectedI) / Math.Sqrt(variance) : 0;
+    double pValue = 2 * (1 - NormalCdf(Math.Abs(zScore)));
+
+    // Local Moran's I (LISA)
+    var localI = new double[n];
+    var clusters = new string[n];
+    for (int i = 0; i < n; i++)
+    {
+      double localNumerator = 0;
+      double wRowSum = 0;
+      for (int j = 0; j < n; j++)
+      {
+        localNumerator += W[i, j] * (values[j] - mean);
+        wRowSum += W[i, j];
+      }
+      double zi = values[i] - mean;
+      localI[i] = denominator > 0 ? n * zi * localNumerator / denominator : 0;
+
+      // Classify: HH, HL, LH, LL, NS
+      double lag = wRowSum > 0 ? localNumerator / wRowSum : 0;
+      double localZ = variance > 0 ? localI[i] / Math.Sqrt(variance) : 0;
+      bool significant = Math.Abs(localZ) > 1.96;
+      clusters[i] = !significant ? "NS"
+        : (zi > 0 && lag > 0) ? "HH"
+        : (zi > 0 && lag <= 0) ? "HL"
+        : (zi <= 0 && lag > 0) ? "LH"
+        : "LL";
+    }
+
+    var entity = new SpatialAnalysis
+    {
+      CountyId = county.CountyId,
+      AnalysisType = "global_moran",
+      VariableName = request.VariableName ?? "assessed_value",
+      WeightMatrixType = request.WeightType ?? "distance",
+      StatisticValue = Math.Round(moranI, 6),
+      ExpectedValue = Math.Round(expectedI, 6),
+      Variance = Math.Round(variance, 6),
+      ZScore = Math.Round(zScore, 4),
+      PValue = Math.Round(pValue, 6),
+      SampleSize = n,
+      LocalIndicators = System.Text.Json.JsonSerializer.Serialize(localI.Select(v => Math.Round(v, 6)).ToArray()),
+      ClusterMap = System.Text.Json.JsonSerializer.Serialize(clusters),
+      CreatedBy = User.Identity?.Name ?? "system"
+    };
+
+    _db.SpatialAnalyses.Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      analysisType = "global_moran",
+      moranI = entity.StatisticValue,
+      expectedI = entity.ExpectedValue,
+      variance = entity.Variance,
+      zScore = entity.ZScore,
+      pValue = entity.PValue,
+      sampleSize = n,
+      interpretation = moranI > expectedI ? "positive spatial autocorrelation (clustering)" : "negative spatial autocorrelation (dispersion)",
+      clusterSummary = new
+      {
+        highHigh = clusters.Count(c => c == "HH"),
+        highLow = clusters.Count(c => c == "HL"),
+        lowHigh = clusters.Count(c => c == "LH"),
+        lowLow = clusters.Count(c => c == "LL"),
+        notSignificant = clusters.Count(c => c == "NS")
+      },
+      localIndicators = localI.Select(v => Math.Round(v, 6)).ToArray(),
+      clusters
+    });
+  }
+
+  /// <summary>Compute Geary's C spatial autocorrelation.</summary>
+  [HttpPost("analytics/spatial/geary")]
+  public async Task<IActionResult> RunGearyC([FromBody] SpatialAutocorrelationRequest request)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    if (request.Observations is null || request.Observations.Count < 3)
+      return BadRequest(new { error = "At least 3 observations required" });
+
+    int n = request.Observations.Count;
+    var values = request.Observations.Select(o => o.Value).ToArray();
+    double mean = values.Average();
+
+    var W = BuildWeightMatrix(request.Observations, request.WeightType ?? "distance", request.DistanceThreshold ?? 0);
+
+    double s0 = 0, numerator = 0, denominator = 0;
+    for (int i = 0; i < n; i++)
+      denominator += (values[i] - mean) * (values[i] - mean);
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+      {
+        s0 += W[i, j];
+        numerator += W[i, j] * (values[i] - values[j]) * (values[i] - values[j]);
+      }
+
+    // Geary's C = ((n-1) / (2*S0)) * (╬ú w_ij(x_i - x_j)┬▓) / (╬ú(x_i - x╠ä)┬▓)
+    double gearyC = (denominator > 0 && s0 > 0)
+      ? ((n - 1.0) / (2.0 * s0)) * (numerator / denominator)
+      : 1.0; // expected value under randomness
+
+    double expectedC = 1.0;
+    double zScore = gearyC < 1 ? -(1 - gearyC) * Math.Sqrt(n) : (gearyC - 1) * Math.Sqrt(n); // simplified
+    double pValue = 2 * (1 - NormalCdf(Math.Abs(zScore)));
+
+    var entity = new SpatialAnalysis
+    {
+      CountyId = county.CountyId,
+      AnalysisType = "geary_c",
+      VariableName = request.VariableName ?? "assessed_value",
+      WeightMatrixType = request.WeightType ?? "distance",
+      StatisticValue = Math.Round(gearyC, 6),
+      ExpectedValue = expectedC,
+      Variance = 0,
+      ZScore = Math.Round(zScore, 4),
+      PValue = Math.Round(pValue, 6),
+      SampleSize = n,
+      CreatedBy = User.Identity?.Name ?? "system"
+    };
+
+    _db.SpatialAnalyses.Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      analysisType = "geary_c",
+      gearyC = entity.StatisticValue,
+      expectedC,
+      zScore = entity.ZScore,
+      pValue = entity.PValue,
+      sampleSize = n,
+      interpretation = gearyC < 1 ? "positive autocorrelation" : gearyC > 1 ? "negative autocorrelation" : "spatial randomness"
+    });
+  }
+
+  /// <summary>Retrieve stored spatial analysis by ID.</summary>
+  [HttpGet("analytics/spatial/{id:guid}")]
+  public async Task<IActionResult> GetSpatialResult(Guid id)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    var result = await _db.SpatialAnalyses
+      .FirstOrDefaultAsync(s => s.Id == id && s.CountyId == county.CountyId);
+
+    if (result is null) return NotFound(new { error = "Spatial analysis not found" });
+
+    return Ok(new
+    {
+      id = result.Id,
+      analysisType = result.AnalysisType,
+      variableName = result.VariableName,
+      statisticValue = result.StatisticValue,
+      expectedValue = result.ExpectedValue,
+      zScore = result.ZScore,
+      pValue = result.PValue,
+      sampleSize = result.SampleSize,
+      localIndicators = System.Text.Json.JsonSerializer.Deserialize<double[]>(result.LocalIndicators),
+      clusterMap = System.Text.Json.JsonSerializer.Deserialize<string[]>(result.ClusterMap),
+      createdAt = result.CreatedAt
+    });
+  }
+
+  /// <summary>List recent spatial analyses for the county.</summary>
+  [HttpGet("analytics/spatial/history")]
+  public async Task<IActionResult> GetSpatialHistory([FromQuery] int limit = 20)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    limit = Math.Clamp(limit, 1, 100);
+    var results = await _db.SpatialAnalyses
+      .Where(s => s.CountyId == county.CountyId)
+      .OrderByDescending(s => s.CreatedAt)
+      .Take(limit)
+      .Select(s => new
+      {
+        id = s.Id,
+        analysisType = s.AnalysisType,
+        variableName = s.VariableName,
+        statisticValue = s.StatisticValue,
+        pValue = s.PValue,
+        sampleSize = s.SampleSize,
+        createdAt = s.CreatedAt
+      })
+      .ToListAsync();
+
+    return Ok(new { count = results.Count, results });
+  }
+
+  // ΓöÇΓöÇ Spatial helpers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  private static double[,] BuildWeightMatrix(List<SpatialObservation> obs, string weightType, double threshold)
+  {
+    int n = obs.Count;
+    var W = new double[n, n];
+
+    // Compute pairwise distances
+    var dists = new double[n, n];
+    for (int i = 0; i < n; i++)
+      for (int j = i + 1; j < n; j++)
+      {
+        double dx = obs[i].X - obs[j].X;
+        double dy = obs[i].Y - obs[j].Y;
+        dists[i, j] = dists[j, i] = Math.Sqrt(dx * dx + dy * dy);
+      }
+
+    // Auto-threshold if not provided
+    if (threshold <= 0)
+    {
+      double maxDist = 0;
+      for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++)
+          if (dists[i, j] > maxDist) maxDist = dists[i, j];
+      threshold = maxDist / 3.0;
+    }
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+      {
+        if (i == j) continue;
+        W[i, j] = weightType switch
+        {
+          "knn" => 0, // handled below
+          "inverse_distance" => dists[i, j] > 0 ? 1.0 / dists[i, j] : 0,
+          _ => dists[i, j] <= threshold ? 1.0 : 0 // binary distance
+        };
+      }
+
+    // KNN: k nearest neighbours
+    if (weightType == "knn")
+    {
+      int k = Math.Min(4, n - 1);
+      for (int i = 0; i < n; i++)
+      {
+        var indices = Enumerable.Range(0, n)
+          .Where(j => j != i)
+          .OrderBy(j => dists[i, j])
+          .Take(k);
+        foreach (var j in indices) W[i, j] = 1.0;
+      }
+    }
+
+    // Row-standardize
+    for (int i = 0; i < n; i++)
+    {
+      double rowSum = 0;
+      for (int j = 0; j < n; j++) rowSum += W[i, j];
+      if (rowSum > 0)
+        for (int j = 0; j < n; j++) W[i, j] /= rowSum;
+    }
+
+    return W;
+  }
+
+  private static double ComputeMoranVariance(double[,] W, double[] values, int n, double s0)
+  {
+    // Simplified variance under normality assumption:
+    // Var(I) Γëê [n┬▓S1 - nS2 + 3S0┬▓] / [S0┬▓(n┬▓-1)] - E(I)┬▓
+    double s1 = 0, s2 = 0;
+    for (int i = 0; i < n; i++)
+    {
+      double rowSum = 0, colSum = 0;
+      for (int j = 0; j < n; j++)
+      {
+        s1 += (W[i, j] + W[j, i]) * (W[i, j] + W[j, i]);
+        rowSum += W[i, j];
+        colSum += W[j, i];
+      }
+      s2 += (rowSum + colSum) * (rowSum + colSum);
+    }
+    s1 /= 2.0;
+
+    double expectedI = -1.0 / (n - 1);
+    double denom = s0 * s0 * ((double)n * n - 1);
+    if (denom == 0) return 0;
+    return ((double)n * n * s1 - (double)n * s2 + 3 * s0 * s0) / denom - expectedI * expectedI;
+  }
+
+  private static double NormalCdf(double x)
+  {
+    // Abramowitz and Stegun approximation (7.1.26)
+    const double a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;
+    const double p = 0.3275911;
+    double sign = x < 0 ? -1 : 1;
+    x = Math.Abs(x) / Math.Sqrt(2);
+    double t = 1.0 / (1.0 + p * x);
+    double y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.Exp(-x * x);
+    return 0.5 * (1.0 + sign * y);
+  }
+
+
+// ΓöÇΓöÇ Wave 28 Request DTOs ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+  // r2/wave-29-forge-market-analysis
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // R2 Wave 29 ΓÇö Market Analysis (comparable sales, time-trend, ratio study)
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  /// <summary>Run a comparable-sales market analysis for a set of parcels.</summary>
+  [HttpPost("analytics/market/comparable-sales")]
+  public async Task<IActionResult> RunComparableSalesAnalysis(
+      [FromBody] MarketAnalysisRequest request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      if (request.Sales == null || request.Sales.Count < 3)
+          return BadRequest(new { error = "At least 3 sales required" });
+
+      // ΓöÇΓöÇ Basic statistics ΓöÇΓöÇ
+      var prices = request.Sales.Select(s => s.SalePrice).OrderBy(p => p).ToList();
+      var n = prices.Count;
+      var median = n % 2 == 1
+          ? prices[n / 2]
+          : (prices[n / 2 - 1] + prices[n / 2]) / 2m;
+      var mean = prices.Average();
+
+      var sqftPrices = request.Sales
+          .Where(s => s.SquareFeet > 0)
+          .Select(s => s.SalePrice / s.SquareFeet)
+          .OrderBy(p => p).ToList();
+      var medianPsf = sqftPrices.Count > 0
+          ? (sqftPrices.Count % 2 == 1
+              ? sqftPrices[sqftPrices.Count / 2]
+              : (sqftPrices[sqftPrices.Count / 2 - 1] + sqftPrices[sqftPrices.Count / 2]) / 2m)
+          : 0m;
+
+      // ΓöÇΓöÇ Ratio study (COD + PRD) ΓöÇΓöÇ
+      var ratios = request.Sales
+          .Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+          .Select(s => (double)(s.AssessedValue / s.SalePrice))
+          .ToList();
+
+      double medianRatio = 0, cod = 0, prd = 0;
+      if (ratios.Count > 0)
+      {
+          var sortedRatios = ratios.OrderBy(r => r).ToList();
+          var rn = sortedRatios.Count;
+          medianRatio = rn % 2 == 1
+              ? sortedRatios[rn / 2]
+              : (sortedRatios[rn / 2 - 1] + sortedRatios[rn / 2]) / 2.0;
+
+          if (medianRatio > 0)
+              cod = sortedRatios.Average(r => Math.Abs(r - medianRatio)) / medianRatio * 100.0;
+
+          var meanRatio = ratios.Average();
+          var totalAssessed = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+              .Sum(s => (double)s.AssessedValue);
+          var totalSale = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+              .Sum(s => (double)s.SalePrice);
+          var weightedMeanRatio = totalSale > 0 ? totalAssessed / totalSale : meanRatio;
+          prd = weightedMeanRatio > 0 ? meanRatio / weightedMeanRatio : 1.0;
+      }
+
+      var entity = new TerraFusion.Core.Entities.MarketAnalysis
+      {
+          CountyId = ctx.CountyId,
+          AnalysisType = "comparable_sales",
+          MarketAreaName = request.MarketAreaName ?? "Unnamed",
+          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+              request.Sales.Select(s => s.ParcelId).ToList()),
+          SampleSize = n,
+          MedianSalePrice = median,
+          MeanSalePrice = Math.Round(mean, 2),
+          MedianPricePerSqft = Math.Round(medianPsf, 2),
+          CoefficientOfDispersion = Math.Round(cod, 4),
+          PriceRelatedDifferential = Math.Round(prd, 4),
+          MedianRatio = Math.Round(medianRatio, 4),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          analysisType = entity.AnalysisType,
+          marketAreaName = entity.MarketAreaName,
+          sampleSize = entity.SampleSize,
+          medianSalePrice = entity.MedianSalePrice,
+          meanSalePrice = entity.MeanSalePrice,
+          medianPricePerSqft = entity.MedianPricePerSqft,
+          coefficientOfDispersion = entity.CoefficientOfDispersion,
+          priceRelatedDifferential = entity.PriceRelatedDifferential,
+          medianRatio = entity.MedianRatio,
+      });
+  }
+
+  /// <summary>Run a time-trend analysis for a set of sales.</summary>
+  [HttpPost("analytics/market/time-trend")]
+  public async Task<IActionResult> RunTimeTrendAnalysis(
+      [FromBody] TimeTrendRequest request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      if (request.Sales == null || request.Sales.Count < 3)
+          return BadRequest(new { error = "At least 3 sales required" });
+
+      var sorted = request.Sales.OrderBy(s => s.SaleDate).ToList();
+      var baseDate = sorted.First().SaleDate;
+
+      var xs = sorted.Select(s => (s.SaleDate - baseDate).TotalDays / 30.4375).ToArray();
+      var ys = sorted.Select(s => (double)s.SalePrice).ToArray();
+      var n = xs.Length;
+
+      var xMean = xs.Average();
+      var yMean = ys.Average();
+      var ssxy = 0.0;
+      var ssxx = 0.0;
+      for (int i = 0; i < n; i++)
+      {
+          ssxy += (xs[i] - xMean) * (ys[i] - yMean);
+          ssxx += (xs[i] - xMean) * (xs[i] - xMean);
+      }
+
+      var slope = ssxx > 0 ? ssxy / ssxx : 0;
+      var intercept = yMean - slope * xMean;
+
+      var ssTotal = ys.Sum(y => (y - yMean) * (y - yMean));
+      var ssResidual = 0.0;
+      for (int i = 0; i < n; i++)
+      {
+          var predicted = intercept + slope * xs[i];
+          ssResidual += (ys[i] - predicted) * (ys[i] - predicted);
+      }
+      var rSquared = ssTotal > 0 ? 1.0 - ssResidual / ssTotal : 0;
+
+      var monthlyPctChange = intercept > 0 ? slope / intercept * 100.0 : 0;
+
+      var entity = new TerraFusion.Core.Entities.MarketAnalysis
+      {
+          CountyId = ctx.CountyId,
+          AnalysisType = "time_trend",
+          MarketAreaName = request.MarketAreaName ?? "Unnamed",
+          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+              sorted.Select(s => s.ParcelId).Where(p => p != null).ToList()),
+          SampleSize = n,
+          TimeTrendCoefficient = Math.Round(monthlyPctChange, 4),
+          TimeTrendRSquared = Math.Round(rSquared, 4),
+          PeriodStart = sorted.First().SaleDate,
+          PeriodEnd = sorted.Last().SaleDate,
+          MedianSalePrice = (decimal)yMean,
+          MeanSalePrice = (decimal)Math.Round(yMean, 2),
+          AdditionalMetrics = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              slopePerMonth = Math.Round(slope, 2),
+              interceptValue = Math.Round(intercept, 2),
+              monthsSpanned = Math.Round(xs.Last(), 1),
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          analysisType = entity.AnalysisType,
+          marketAreaName = entity.MarketAreaName,
+          sampleSize = entity.SampleSize,
+          timeTrendCoefficient = entity.TimeTrendCoefficient,
+          timeTrendRSquared = entity.TimeTrendRSquared,
+          periodStart = entity.PeriodStart,
+          periodEnd = entity.PeriodEnd,
+          additionalMetrics = entity.AdditionalMetrics,
+      });
+  }
+
+  /// <summary>Run a ratio study for a set of sales with assessed values.</summary>
+  [HttpPost("analytics/market/ratio-study")]
+  public async Task<IActionResult> RunRatioStudy(
+      [FromBody] MarketAnalysisRequest request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      if (request.Sales == null || request.Sales.Count < 3)
+          return BadRequest(new { error = "At least 3 sales required" });
+
+      var valid = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0).ToList();
+      if (valid.Count < 3)
+          return BadRequest(new { error = "At least 3 sales with assessed values required" });
+
+      var ratios = valid.Select(s => (double)(s.AssessedValue / s.SalePrice)).OrderBy(r => r).ToList();
+      var n = ratios.Count;
+      var medianRatio = n % 2 == 1
+          ? ratios[n / 2]
+          : (ratios[n / 2 - 1] + ratios[n / 2]) / 2.0;
+      var meanRatio = ratios.Average();
+
+      var cod = medianRatio > 0
+          ? ratios.Average(r => Math.Abs(r - medianRatio)) / medianRatio * 100.0
+          : 0;
+
+      var totalAssessed = valid.Sum(s => (double)s.AssessedValue);
+      var totalSale = valid.Sum(s => (double)s.SalePrice);
+      var weightedMean = totalSale > 0 ? totalAssessed / totalSale : meanRatio;
+      var prd = weightedMean > 0 ? meanRatio / weightedMean : 1.0;
+
+      double W29Percentile(List<double> sorted, double p)
+      {
+          var idx = (sorted.Count - 1) * p;
+          var lo = (int)Math.Floor(idx);
+          var hi = (int)Math.Ceiling(idx);
+          if (lo == hi) return sorted[lo];
+          return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+      }
+
+      var p10 = W29Percentile(ratios, 0.10);
+      var p25 = W29Percentile(ratios, 0.25);
+      var p75 = W29Percentile(ratios, 0.75);
+      var p90 = W29Percentile(ratios, 0.90);
+
+      var iaaoCompliant = cod >= 5.0 && cod <= 15.0 && prd >= 0.98 && prd <= 1.03;
+
+      var entity = new TerraFusion.Core.Entities.MarketAnalysis
+      {
+          CountyId = ctx.CountyId,
+          AnalysisType = "ratio_study",
+          MarketAreaName = request.MarketAreaName ?? "Unnamed",
+          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+              valid.Select(s => s.ParcelId).ToList()),
+          SampleSize = n,
+          MedianRatio = Math.Round(medianRatio, 4),
+          CoefficientOfDispersion = Math.Round(cod, 4),
+          PriceRelatedDifferential = Math.Round(prd, 4),
+          AdditionalMetrics = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              meanRatio = Math.Round(meanRatio, 4),
+              p10 = Math.Round(p10, 4),
+              p25 = Math.Round(p25, 4),
+              p75 = Math.Round(p75, 4),
+              p90 = Math.Round(p90, 4),
+              iaaoCompliant,
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          analysisType = entity.AnalysisType,
+          marketAreaName = entity.MarketAreaName,
+          sampleSize = entity.SampleSize,
+          medianRatio = entity.MedianRatio,
+          coefficientOfDispersion = entity.CoefficientOfDispersion,
+          priceRelatedDifferential = entity.PriceRelatedDifferential,
+          additionalMetrics = entity.AdditionalMetrics,
+          iaaoCompliant,
+      });
+  }
+
+  /// <summary>Retrieve a market analysis result by ID.</summary>
+  [HttpGet("analytics/market/{id:int}")]
+  public async Task<IActionResult> GetMarketAnalysis(int id)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      var result = await _db.Set<TerraFusion.Core.Entities.MarketAnalysis>()
+          .FirstOrDefaultAsync(m => m.Id == id && m.CountyId == ctx.CountyId);
+
+      if (result == null)
+          return NotFound(new { error = "Market analysis not found" });
+
+      return Ok(new
+      {
+          id = result.Id,
+          analysisType = result.AnalysisType,
+          marketAreaName = result.MarketAreaName,
+          sampleSize = result.SampleSize,
+          medianSalePrice = result.MedianSalePrice,
+          meanSalePrice = result.MeanSalePrice,
+          medianPricePerSqft = result.MedianPricePerSqft,
+          coefficientOfDispersion = result.CoefficientOfDispersion,
+          priceRelatedDifferential = result.PriceRelatedDifferential,
+          medianRatio = result.MedianRatio,
+          timeTrendCoefficient = result.TimeTrendCoefficient,
+          timeTrendRSquared = result.TimeTrendRSquared,
+          periodStart = result.PeriodStart,
+          periodEnd = result.PeriodEnd,
+          additionalMetrics = result.AdditionalMetrics,
+          createdBy = result.CreatedBy,
+          createdAt = result.CreatedAt,
+      });
+  }
+
+  /// <summary>Get market analysis history for the county.</summary>
+  [HttpGet("analytics/market/history")]
+  public async Task<IActionResult> GetMarketAnalysisHistory(
+      [FromQuery] string? analysisType = null,
+      [FromQuery] int limit = 20)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      var query = _db.Set<TerraFusion.Core.Entities.MarketAnalysis>()
+          .Where(m => m.CountyId == ctx.CountyId);
+
+      if (!string.IsNullOrEmpty(analysisType))
+          query = query.Where(m => m.AnalysisType == analysisType);
+
+      var results = await query
+          .OrderByDescending(m => m.CreatedAt)
+          .Take(Math.Clamp(limit, 1, 100))
+          .Select(m => new
+          {
+              id = m.Id,
+              analysisType = m.AnalysisType,
+              marketAreaName = m.MarketAreaName,
+              sampleSize = m.SampleSize,
+              medianRatio = m.MedianRatio,
+              coefficientOfDispersion = m.CoefficientOfDispersion,
+              createdAt = m.CreatedAt,
+          })
+          .ToListAsync();
+
+      return Ok(new { count = results.Count, results });
+  }
+
+
+// ΓòÉΓòÉΓòÉ R2 Wave 29 ΓÇö Market Analysis DTOs ΓòÉΓòÉΓòÉ
+
+
+  // r2/wave-30-forge-rcw-calculators
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // R2 Wave 30 ΓÇö RCW Calculators (WA State exemption statutes)
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  /// <summary>RCW 84.34 ΓÇö Open Space / Current Use valuation.</summary>
+  [HttpPost("analytics/rcw/84-34")]
+  public async Task<IActionResult> CalculateRcw8434([FromBody] Rcw8434Request request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      // Classification rates per acre (simplified WA schedule)
+      var ratePerAcre = (request.Classification?.ToLowerInvariant()) switch
+      {
+          "farm_and_agricultural" => 500m,
+          "timber" => 300m,
+          "open_space" => 200m,
+          _ => 400m,
+      };
+
+      var currentUseValue = ratePerAcre * request.Acreage;
+      var exemption = request.MarketValue - currentUseValue;
+      if (exemption < 0) exemption = 0;
+      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+
+      var entity = new RcwCalculation
+      {
+          CountyId = ctx.CountyId,
+          Statute = "rcw_84_34",
+          ParcelId = request.ParcelId ?? "",
+          CurrentUseClassification = request.Classification ?? "open_space",
+          MarketValue = request.MarketValue,
+          ReducedValue = currentUseValue,
+          ExemptionAmount = exemption,
+          TaxSavings = Math.Round(taxSavings, 2),
+          LevyRate = request.LevyRate,
+          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+          Qualifies = request.Acreage >= 5 && request.MarketValue > 0,
+          DisqualificationReason = request.Acreage < 5
+              ? "Minimum 5 acres required for current-use classification"
+              : "",
+          Details = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              acreage = request.Acreage,
+              ratePerAcre,
+              classification = request.Classification ?? "open_space",
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<RcwCalculation>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          statute = entity.Statute,
+          parcelId = entity.ParcelId,
+          classification = entity.CurrentUseClassification,
+          marketValue = entity.MarketValue,
+          reducedValue = entity.ReducedValue,
+          exemptionAmount = entity.ExemptionAmount,
+          taxSavings = entity.TaxSavings,
+          qualifies = entity.Qualifies,
+          disqualificationReason = entity.DisqualificationReason,
+      });
+  }
+
+  /// <summary>RCW 84.26 ΓÇö Historic Property special valuation.</summary>
+  [HttpPost("analytics/rcw/84-26")]
+  public async Task<IActionResult> CalculateRcw8426([FromBody] Rcw8426Request request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      // Historic property: valuation frozen at pre-rehabilitation value
+      // for 10-year special valuation period
+      var qualifies = request.YearDesignated > 0
+                      && request.RehabilitationCost > 0
+                      && request.RehabilitationCost >= request.PreRehabValue * 0.25m; // 25% minimum
+
+      var reducedValue = qualifies ? request.PreRehabValue : request.MarketValue;
+      var exemption = request.MarketValue - reducedValue;
+      if (exemption < 0) exemption = 0;
+      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+
+      var yearsRemaining = qualifies
+          ? Math.Max(0, 10 - (request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year) + request.YearDesignated)
+          : 0;
+
+      var entity = new RcwCalculation
+      {
+          CountyId = ctx.CountyId,
+          Statute = "rcw_84_26",
+          ParcelId = request.ParcelId ?? "",
+          MarketValue = request.MarketValue,
+          ReducedValue = reducedValue,
+          ExemptionAmount = exemption,
+          TaxSavings = Math.Round(taxSavings, 2),
+          LevyRate = request.LevyRate,
+          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+          Qualifies = qualifies,
+          DisqualificationReason = !qualifies
+              ? "Rehabilitation cost must be >= 25% of pre-rehabilitation value"
+              : "",
+          Details = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              preRehabValue = request.PreRehabValue,
+              rehabilitationCost = request.RehabilitationCost,
+              yearDesignated = request.YearDesignated,
+              yearsRemaining,
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<RcwCalculation>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          statute = entity.Statute,
+          parcelId = entity.ParcelId,
+          marketValue = entity.MarketValue,
+          reducedValue = entity.ReducedValue,
+          exemptionAmount = entity.ExemptionAmount,
+          taxSavings = entity.TaxSavings,
+          qualifies = entity.Qualifies,
+          disqualificationReason = entity.DisqualificationReason,
+          yearsRemaining,
+      });
+  }
+
+  /// <summary>RCW 84.36.381 ΓÇö Senior/Disabled Persons exemption.</summary>
+  [HttpPost("analytics/rcw/84-36-381")]
+  public async Task<IActionResult> CalculateRcw8436381([FromBody] Rcw8436381Request request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      // 2025-2026 WA income thresholds (simplified)
+      const decimal tier1Limit = 40_000m;   // Full exemption on excess levy
+      const decimal tier2Limit = 50_000m;   // Partial: frozen value
+      const decimal tier3Limit = 65_000m;   // Partial: reduced rate
+
+      var income = request.Income;
+      string tier;
+      decimal reducedValue;
+      bool qualifies = request.Age >= 61 || request.IsDisabled;
+
+      if (!qualifies)
+      {
+          tier = "none";
+          reducedValue = request.MarketValue;
+      }
+      else if (income <= tier1Limit)
+      {
+          tier = "tier_1";
+          // Exempt from all excess levies, value frozen
+          reducedValue = Math.Min(request.MarketValue, 150_000m);
+      }
+      else if (income <= tier2Limit)
+      {
+          tier = "tier_2";
+          reducedValue = Math.Min(request.MarketValue, 200_000m);
+      }
+      else if (income <= tier3Limit)
+      {
+          tier = "tier_3";
+          reducedValue = Math.Min(request.MarketValue, request.MarketValue * 0.90m);
+      }
+      else
+      {
+          tier = "over_income";
+          reducedValue = request.MarketValue;
+          qualifies = false;
+      }
+
+      var exemption = request.MarketValue - reducedValue;
+      if (exemption < 0) exemption = 0;
+      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+
+      var entity = new RcwCalculation
+      {
+          CountyId = ctx.CountyId,
+          Statute = "rcw_84_36_381",
+          ParcelId = request.ParcelId ?? "",
+          MarketValue = request.MarketValue,
+          ReducedValue = reducedValue,
+          ExemptionAmount = exemption,
+          TaxSavings = Math.Round(taxSavings, 2),
+          LevyRate = request.LevyRate,
+          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+          Income = income,
+          Qualifies = qualifies,
+          DisqualificationReason = !qualifies
+              ? (request.Age < 61 && !request.IsDisabled
+                  ? "Must be age 61+ or disabled"
+                  : "Income exceeds maximum threshold")
+              : "",
+          Details = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              age = request.Age,
+              isDisabled = request.IsDisabled,
+              income,
+              tier,
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<RcwCalculation>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          statute = entity.Statute,
+          parcelId = entity.ParcelId,
+          marketValue = entity.MarketValue,
+          reducedValue = entity.ReducedValue,
+          exemptionAmount = entity.ExemptionAmount,
+          taxSavings = entity.TaxSavings,
+          qualifies = entity.Qualifies,
+          disqualificationReason = entity.DisqualificationReason,
+          tier,
+      });
+  }
+
+  /// <summary>Retrieve an RCW calculation result by ID.</summary>
+  [HttpGet("analytics/rcw/{id:int}")]
+  public async Task<IActionResult> GetRcwCalculation(int id)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      var result = await _db.Set<RcwCalculation>()
+          .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == ctx.CountyId);
+
+      if (result == null)
+          return NotFound(new { error = "RCW calculation not found" });
+
+      return Ok(new
+      {
+          id = result.Id,
+          statute = result.Statute,
+          parcelId = result.ParcelId,
+          classification = result.CurrentUseClassification,
+          marketValue = result.MarketValue,
+          reducedValue = result.ReducedValue,
+          exemptionAmount = result.ExemptionAmount,
+          taxSavings = result.TaxSavings,
+          qualifies = result.Qualifies,
+          disqualificationReason = result.DisqualificationReason,
+          income = result.Income,
+          taxYear = result.TaxYear,
+          details = result.Details,
+          createdBy = result.CreatedBy,
+          createdAt = result.CreatedAt,
+      });
+  }
+
+  /// <summary>Get RCW calculation history for the county.</summary>
+  [HttpGet("analytics/rcw/history")]
+  public async Task<IActionResult> GetRcwHistory(
+      [FromQuery] string? statute = null,
+      [FromQuery] int limit = 20)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      var query = _db.Set<RcwCalculation>()
+          .Where(r => r.CountyId == ctx.CountyId);
+
+      if (!string.IsNullOrEmpty(statute))
+          query = query.Where(r => r.Statute == statute);
+
+      var results = await query
+          .OrderByDescending(r => r.CreatedAt)
+          .Take(Math.Clamp(limit, 1, 100))
+          .Select(r => new
+          {
+              id = r.Id,
+              statute = r.Statute,
+              parcelId = r.ParcelId,
+              qualifies = r.Qualifies,
+              exemptionAmount = r.ExemptionAmount,
+              taxSavings = r.TaxSavings,
+              createdAt = r.CreatedAt,
+          })
+          .ToListAsync();
+
+      return Ok(new { count = results.Count, results });
+  }
+
+
+// ΓòÉΓòÉΓòÉ R2 Wave 30 ΓÇö RCW Calculator DTOs ΓòÉΓòÉΓòÉ
+
+
+  // r2/wave-31-forge-levy-certification
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // Wave 31 ΓÇö Levy Certification (RCW 84.52 / RCW 84.55)
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  /// <summary>Calculate levy rate for a taxing district and check statutory limits.</summary>
+  [HttpPost("analytics/levy/calculate")]
+  public async Task<IActionResult> CalculateLevy([FromBody] LevyCalculateRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    // RCW 84.55 ΓÇö 1% annual increase limit
+    var onePercentLimit = req.PriorYearLevy * 1.01m;
+    // Add new construction and annexation values at existing rate
+    var priorRate = req.AssessedValue > 0 ? (double)(req.PriorYearLevy / req.AssessedValue * 1000m) : 0;
+    var ncAddition = req.NewConstructionValue * (decimal)priorRate / 1000m;
+    var annexAddition = req.AnnexationValue * (decimal)priorRate / 1000m;
+    var statutoryLimit = onePercentLimit + ncAddition + annexAddition;
+
+    var certifiedLevy = req.RequestedLevy;
+    var wasReduced = false;
+    var reductionAmount = 0m;
+
+    // Check statutory limit
+    if (certifiedLevy > statutoryLimit)
+    {
+      reductionAmount = certifiedLevy - statutoryLimit;
+      certifiedLevy = statutoryLimit;
+      wasReduced = true;
+    }
+
+    // Compute rate per $1,000 AV
+    var levyRate = req.AssessedValue > 0 ? (double)(certifiedLevy / req.AssessedValue * 1000m) : 0;
+
+    // Constitutional limit: $10 per $1,000 AV (1%)
+    var withinConstitutionalLimit = levyRate <= 10.0;
+    // $5.90 aggregate limit (RCW 84.52.043) ΓÇö applies to regular levies only
+    var withinAggregateLimit = levyRate <= 5.90;
+
+    // Force constitutional compliance
+    if (!withinConstitutionalLimit && req.AssessedValue > 0)
+    {
+      certifiedLevy = req.AssessedValue * 10m / 1000m;
+      reductionAmount = req.RequestedLevy - certifiedLevy;
+      wasReduced = true;
+      levyRate = 10.0;
+      withinConstitutionalLimit = true;
+    }
+
+    var entity = new TerraFusion.Core.Entities.LevyCertification
+    {
+      CountyId = ctx.CountyId,
+      TaxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year,
+      DistrictCode = req.DistrictCode ?? "",
+      DistrictName = req.DistrictName ?? "",
+      PriorYearLevy = req.PriorYearLevy,
+      RequestedLevy = req.RequestedLevy,
+      CertifiedLevy = certifiedLevy,
+      AssessedValue = req.AssessedValue,
+      NewConstructionValue = req.NewConstructionValue,
+      AnnexationValue = req.AnnexationValue,
+      LevyRate = levyRate,
+      StatutoryLimit = statutoryLimit,
+      ConstitutionalLimit = 10.0,
+      AggregateLimit = 5.90,
+      WithinConstitutionalLimit = withinConstitutionalLimit,
+      WithinAggregateLimit = withinAggregateLimit,
+      WasReduced = wasReduced,
+      ReductionAmount = reductionAmount,
+      Status = "draft",
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+    };
+    _db.Set<TerraFusion.Core.Entities.LevyCertification>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      countyId = entity.CountyId,
+      taxYear = entity.TaxYear,
+      districtCode = entity.DistrictCode,
+      districtName = entity.DistrictName,
+      priorYearLevy = entity.PriorYearLevy,
+      requestedLevy = entity.RequestedLevy,
+      certifiedLevy = entity.CertifiedLevy,
+      assessedValue = entity.AssessedValue,
+      newConstructionValue = entity.NewConstructionValue,
+      annexationValue = entity.AnnexationValue,
+      levyRate = entity.LevyRate,
+      statutoryLimit = entity.StatutoryLimit,
+      constitutionalLimit = entity.ConstitutionalLimit,
+      aggregateLimit = entity.AggregateLimit,
+      withinConstitutionalLimit = entity.WithinConstitutionalLimit,
+      withinAggregateLimit = entity.WithinAggregateLimit,
+      wasReduced = entity.WasReduced,
+      reductionAmount = entity.ReductionAmount,
+      status = entity.Status,
+    });
+  }
+
+  /// <summary>Run a multi-district levy balance test (prorationing).</summary>
+  [HttpPost("analytics/levy/balance-test")]
+  public async Task<IActionResult> LevyBalanceTest([FromBody] LevyBalanceTestRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    if (req.Districts is null || req.Districts.Count == 0)
+      return BadRequest(new { error = "At least one district is required" });
+
+    var results = new List<object>();
+    var totalRate = 0.0;
+
+    foreach (var d in req.Districts)
+    {
+      var rate = d.AssessedValue > 0 ? (double)(d.RequestedLevy / d.AssessedValue * 1000m) : 0;
+      totalRate += rate;
+      results.Add(new
+      {
+        districtCode = d.DistrictCode ?? "",
+        districtName = d.DistrictName ?? "",
+        requestedLevy = d.RequestedLevy,
+        assessedValue = d.AssessedValue,
+        rate = Math.Round(rate, 6),
+      });
+    }
+
+    var aggregatePass = totalRate <= 5.90;
+    var constitutionalPass = totalRate <= 10.0;
+
+    return Ok(new
+    {
+      taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year,
+      districtCount = req.Districts.Count,
+      totalRate = Math.Round(totalRate, 6),
+      aggregateLimit = 5.90,
+      constitutionalLimit = 10.0,
+      aggregatePass,
+      constitutionalPass,
+      prorationRequired = !aggregatePass,
+      districts = results,
+    });
+  }
+
+  /// <summary>Certify a previously-calculated levy (status ΓåÆ certified).</summary>
+  [HttpPost("analytics/levy/{id}/certify")]
+  public async Task<IActionResult> CertifyLevy(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.LevyCertification>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+
+    if (entity is null) return NotFound(new { error = "Levy record not found" });
+    if (entity.Status == "certified")
+      return BadRequest(new { error = "Already certified" });
+    if (!entity.WithinConstitutionalLimit)
+      return BadRequest(new { error = "Cannot certify ΓÇö exceeds constitutional limit" });
+
+    entity.Status = "certified";
+    await _db.SaveChangesAsync();
+
+    return Ok(new { id = entity.Id, status = entity.Status, certifiedLevy = entity.CertifiedLevy });
+  }
+
+  /// <summary>Get a single levy certification by ID.</summary>
+  [HttpGet("analytics/levy/{id}")]
+  public async Task<IActionResult> GetLevyCertification(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.LevyCertification>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+
+    if (entity is null) return NotFound(new { error = "Levy record not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      taxYear = entity.TaxYear,
+      districtCode = entity.DistrictCode,
+      districtName = entity.DistrictName,
+      requestedLevy = entity.RequestedLevy,
+      certifiedLevy = entity.CertifiedLevy,
+      levyRate = entity.LevyRate,
+      withinConstitutionalLimit = entity.WithinConstitutionalLimit,
+      withinAggregateLimit = entity.WithinAggregateLimit,
+      wasReduced = entity.WasReduced,
+      reductionAmount = entity.ReductionAmount,
+      status = entity.Status,
+    });
+  }
+
+  /// <summary>Get levy certification history for the current county.</summary>
+  [HttpGet("analytics/levy/history")]
+  public async Task<IActionResult> GetLevyHistory([FromQuery] int? taxYear, [FromQuery] string? districtCode)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.LevyCertification>()
+      .Where(e => e.CountyId == ctx.CountyId);
+
+    if (taxYear.HasValue) query = query.Where(e => e.TaxYear == taxYear.Value);
+    if (!string.IsNullOrEmpty(districtCode)) query = query.Where(e => e.DistrictCode == districtCode);
+
+    var items = await query.OrderByDescending(e => e.CreatedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        taxYear = e.TaxYear,
+        districtCode = e.DistrictCode,
+        districtName = e.DistrictName,
+        certifiedLevy = e.CertifiedLevy,
+        levyRate = e.LevyRate,
+        status = e.Status,
+        createdAt = e.CreatedAt,
+      }),
+    });
+  }
+
+
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+// Wave 31 ΓÇö Levy DTOs
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+
+  // r2/wave-32-forge-data-quality
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // Wave 32 ΓÇö Data Quality Assessment
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  /// <summary>Run a data quality assessment on county property data.</summary>
+  [HttpPost("analytics/data-quality/assess")]
+  public async Task<IActionResult> AssessDataQuality([FromBody] DataQualityRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var records = req.Records ?? new List<DataQualityRecord>();
+    var total = records.Count;
+    if (total == 0) return BadRequest(new { error = "At least one record is required" });
+
+    var requiredFields = req.RequiredFields ?? new List<string> { "parcelId", "assessedValue", "landArea" };
+    var timelinessWindow = req.TimelinessWindowDays > 0 ? req.TimelinessWindowDays : 365;
+    var cutoff = DateTime.UtcNow.AddDays(-timelinessWindow);
+
+    var completeCount = 0;
+    var consistentCount = 0;
+    var timelyCount = 0;
+    var accurateCount = 0;
+    var issues = new List<string>();
+
+    foreach (var rec in records)
+    {
+      // Completeness: all required fields non-null/non-empty
+      var fields = rec.Fields ?? new Dictionary<string, string?>();
+      var allPresent = requiredFields.All(f => fields.ContainsKey(f) && !string.IsNullOrWhiteSpace(fields[f]));
+      if (allPresent) completeCount++;
+      else issues.Add($"Record '{rec.ParcelId ?? "?"}': missing required fields");
+
+      // Consistency: assessed value should be >= 0, land area should be > 0 if provided
+      var consistent = true;
+      if (fields.TryGetValue("assessedValue", out var av) && decimal.TryParse(av, out var avVal) && avVal < 0)
+      { consistent = false; issues.Add($"Record '{rec.ParcelId ?? "?"}': negative assessed value"); }
+      if (fields.TryGetValue("landArea", out var la) && decimal.TryParse(la, out var laVal) && laVal <= 0)
+      { consistent = false; issues.Add($"Record '{rec.ParcelId ?? "?"}': non-positive land area"); }
+      if (consistent) consistentCount++;
+
+      // Timeliness: last updated within window
+      if (rec.LastUpdated.HasValue && rec.LastUpdated.Value >= cutoff) timelyCount++;
+      else if (!rec.LastUpdated.HasValue) issues.Add($"Record '{rec.ParcelId ?? "?"}': no update timestamp");
+
+      // Accuracy: value within plausible range
+      if (fields.TryGetValue("assessedValue", out var avAcc) && decimal.TryParse(avAcc, out var accVal))
+      {
+        if (accVal >= 0 && accVal <= 100_000_000m) accurateCount++;
+        else issues.Add($"Record '{rec.ParcelId ?? "?"}': assessed value out of plausible range");
+      }
+      else accurateCount++; // no value field ΓåÆ skip accuracy check
+    }
+
+    var completeness = total > 0 ? Math.Round((double)completeCount / total * 100, 2) : 0;
+    var consistency = total > 0 ? Math.Round((double)consistentCount / total * 100, 2) : 0;
+    var timeliness = total > 0 ? Math.Round((double)timelyCount / total * 100, 2) : 0;
+    var accuracy = total > 0 ? Math.Round((double)accurateCount / total * 100, 2) : 0;
+
+    // Weighted overall: 30% completeness, 25% consistency, 20% timeliness, 25% accuracy
+    var overall = Math.Round(completeness * 0.30 + consistency * 0.25 + timeliness * 0.20 + accuracy * 0.25, 2);
+
+    var grade = overall switch
+    {
+      >= 90 => "A",
+      >= 80 => "B",
+      >= 70 => "C",
+      >= 60 => "D",
+      _ => "F",
+    };
+
+    var entity = new TerraFusion.Core.Entities.DataQualityAssessment
+    {
+      CountyId = ctx.CountyId,
+      Scope = req.Scope ?? "county",
+      ParcelId = req.ParcelId,
+      TotalRecords = total,
+      CompleteRecords = completeCount,
+      CompletenessScore = completeness,
+      ConsistentRecords = consistentCount,
+      ConsistencyScore = consistency,
+      TimelyRecords = timelyCount,
+      TimelinessScore = timeliness,
+      AccurateRecords = accurateCount,
+      AccuracyScore = accuracy,
+      OverallScore = overall,
+      Grade = grade,
+      IssueCount = issues.Count,
+      Issues = System.Text.Json.JsonSerializer.Serialize(issues),
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+    };
+    _db.Set<TerraFusion.Core.Entities.DataQualityAssessment>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      scope = entity.Scope,
+      totalRecords = entity.TotalRecords,
+      completenessScore = entity.CompletenessScore,
+      consistencyScore = entity.ConsistencyScore,
+      timelinessScore = entity.TimelinessScore,
+      accuracyScore = entity.AccuracyScore,
+      overallScore = entity.OverallScore,
+      grade = entity.Grade,
+      issueCount = entity.IssueCount,
+      issues,
+    });
+  }
+
+  /// <summary>Get a data quality assessment by ID.</summary>
+  [HttpGet("analytics/data-quality/{id}")]
+  public async Task<IActionResult> GetDataQualityAssessment(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.DataQualityAssessment>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+    if (entity is null) return NotFound(new { error = "Assessment not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      scope = entity.Scope,
+      totalRecords = entity.TotalRecords,
+      completenessScore = entity.CompletenessScore,
+      consistencyScore = entity.ConsistencyScore,
+      timelinessScore = entity.TimelinessScore,
+      accuracyScore = entity.AccuracyScore,
+      overallScore = entity.OverallScore,
+      grade = entity.Grade,
+      issueCount = entity.IssueCount,
+      createdAt = entity.CreatedAt,
+    });
+  }
+
+  /// <summary>Get data quality assessment history for the current county.</summary>
+  [HttpGet("analytics/data-quality/history")]
+  public async Task<IActionResult> GetDataQualityHistory([FromQuery] string? scope)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.DataQualityAssessment>()
+      .Where(e => e.CountyId == ctx.CountyId);
+    if (!string.IsNullOrEmpty(scope)) query = query.Where(e => e.Scope == scope);
+
+    var items = await query.OrderByDescending(e => e.CreatedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        scope = e.Scope,
+        overallScore = e.OverallScore,
+        grade = e.Grade,
+        issueCount = e.IssueCount,
+        createdAt = e.CreatedAt,
+      }),
+    });
+  }
+
+
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+// Wave 32 ΓÇö Data Quality DTOs
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+
+  // r2/wave-33-forge-etl-sync
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // Wave 33 ΓÇö ETL/Sync
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  /// <summary>Start a simulated ETL sync job.</summary>
+  [HttpPost("analytics/etl/sync")]
+  public async Task<IActionResult> StartEtlSync([FromBody] EtlSyncRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    if (req.Records is null || req.Records.Count == 0)
+      return BadRequest(new { error = "At least one record is required" });
+
+    var sw = System.Diagnostics.Stopwatch.StartNew();
+    var processed = 0;
+    var failed = 0;
+    var skipped = 0;
+    var errors = new List<string>();
+
+    foreach (var rec in req.Records)
+    {
+      // Validate: must have a key field
+      if (string.IsNullOrWhiteSpace(rec.Key))
+      {
+        failed++;
+        errors.Add($"Record at index {processed + failed + skipped - 1}: missing key");
+        continue;
+      }
+
+      // Duplicate check via key
+      if (req.Records.Count(r => r.Key == rec.Key) > 1 && processed > 0)
+      {
+        // Simple dedup: skip subsequent duplicates
+        var alreadyCounted = req.Records.Take(processed + failed + skipped).Any(r => r.Key == rec.Key);
+        if (alreadyCounted) { skipped++; continue; }
+      }
+
+      // Validate: data must not be empty
+      if (rec.Data is null || rec.Data.Count == 0)
+      {
+        failed++;
+        errors.Add($"Record '{rec.Key}': empty data payload");
+        continue;
+      }
+
+      processed++;
+    }
+
+    sw.Stop();
+    var totalRecords = req.Records.Count;
+    var durationMs = sw.ElapsedMilliseconds > 0 ? sw.ElapsedMilliseconds : 1;
+    var rps = (double)processed / durationMs * 1000;
+
+    var entity = new TerraFusion.Core.Entities.EtlSyncJob
+    {
+      CountyId = ctx.CountyId,
+      SourceSystem = req.SourceSystem ?? "csv_import",
+      EntityType = req.EntityType ?? "parcels",
+      Direction = req.Direction ?? "inbound",
+      Status = failed == totalRecords ? "failed" : "completed",
+      TotalRecords = totalRecords,
+      ProcessedRecords = processed,
+      FailedRecords = failed,
+      SkippedRecords = skipped,
+      DurationMs = durationMs,
+      RecordsPerSecond = Math.Round(rps, 2),
+      Errors = errors.Count > 0 ? System.Text.Json.JsonSerializer.Serialize(errors) : null,
+      Watermark = DateTime.UtcNow,
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+      StartedAt = DateTime.UtcNow.AddMilliseconds(-durationMs),
+      CompletedAt = DateTime.UtcNow,
+    };
+    _db.Set<TerraFusion.Core.Entities.EtlSyncJob>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      sourceSystem = entity.SourceSystem,
+      entityType = entity.EntityType,
+      direction = entity.Direction,
+      status = entity.Status,
+      totalRecords = entity.TotalRecords,
+      processedRecords = entity.ProcessedRecords,
+      failedRecords = entity.FailedRecords,
+      skippedRecords = entity.SkippedRecords,
+      durationMs = entity.DurationMs,
+      recordsPerSecond = entity.RecordsPerSecond,
+      errors,
+    });
+  }
+
+  /// <summary>Get an ETL sync job by ID.</summary>
+  [HttpGet("analytics/etl/{id}")]
+  public async Task<IActionResult> GetEtlSyncJob(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.EtlSyncJob>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+    if (entity is null) return NotFound(new { error = "ETL job not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      sourceSystem = entity.SourceSystem,
+      entityType = entity.EntityType,
+      direction = entity.Direction,
+      status = entity.Status,
+      totalRecords = entity.TotalRecords,
+      processedRecords = entity.ProcessedRecords,
+      failedRecords = entity.FailedRecords,
+      skippedRecords = entity.SkippedRecords,
+      durationMs = entity.DurationMs,
+      recordsPerSecond = entity.RecordsPerSecond,
+      startedAt = entity.StartedAt,
+      completedAt = entity.CompletedAt,
+    });
+  }
+
+  /// <summary>Get ETL sync job history for the current county.</summary>
+  [HttpGet("analytics/etl/history")]
+  public async Task<IActionResult> GetEtlHistory([FromQuery] string? sourceSystem, [FromQuery] string? entityType)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.EtlSyncJob>()
+      .Where(e => e.CountyId == ctx.CountyId);
+    if (!string.IsNullOrEmpty(sourceSystem)) query = query.Where(e => e.SourceSystem == sourceSystem);
+    if (!string.IsNullOrEmpty(entityType)) query = query.Where(e => e.EntityType == entityType);
+
+    var items = await query.OrderByDescending(e => e.StartedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        sourceSystem = e.SourceSystem,
+        entityType = e.EntityType,
+        status = e.Status,
+        processedRecords = e.ProcessedRecords,
+        failedRecords = e.FailedRecords,
+        startedAt = e.StartedAt,
+      }),
+    });
+  }
+
+
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+// Wave 33 ΓÇö ETL/Sync DTOs
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+
+  // r2/wave-34-forge-ml-integration
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // Wave 34 ΓÇö ML.NET Integration (Simulated)
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  /// <summary>Run a simulated ML prediction for property valuation.</summary>
+  [HttpPost("analytics/ml/predict")]
+  public async Task<IActionResult> MlPredict([FromBody] MlPredictRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    if (req.Features is null || req.Features.Count == 0)
+      return BadRequest(new { error = "At least one feature is required" });
+
+    var sw = System.Diagnostics.Stopwatch.StartNew();
+
+    // Simulated ML inference: weighted sum of features
+    var featureValues = new List<double>();
+    var importances = new Dictionary<string, double>();
+    var totalWeight = 0.0;
+    var weightedSum = 0.0;
+
+    foreach (var kvp in req.Features)
+    {
+      if (double.TryParse(kvp.Value?.ToString(), out var val))
+      {
+        featureValues.Add(val);
+        // Assign importance inversely proportional to feature index
+        var importance = 1.0 / (featureValues.Count);
+        importances[kvp.Key] = Math.Round(importance, 4);
+        totalWeight += importance;
+        weightedSum += val * importance;
+      }
+    }
+
+    // Normalize to predicted value
+    var predicted = totalWeight > 0 ? (decimal)Math.Round(weightedSum / totalWeight, 2) : 0m;
+
+    // Simulated model metrics
+    var featureCount = featureValues.Count;
+    var trainingSamples = req.TrainingSamples > 0 ? req.TrainingSamples : 1000;
+    var noise = featureCount > 0 ? 1.0 / (featureCount + 1) : 0.5;
+    var confidence = Math.Round(Math.Min(0.99, 0.75 + (featureCount * 0.03)), 4);
+    var r2 = Math.Round(Math.Min(0.99, 0.80 + (featureCount * 0.02)), 4);
+    var mae = Math.Round(Math.Abs((double)predicted) * noise * 0.05, 2);
+    var rmse = Math.Round(mae * 1.25, 2);
+
+    sw.Stop();
+
+    var entity = new TerraFusion.Core.Entities.MlPrediction
+    {
+      CountyId = ctx.CountyId,
+      ModelType = req.ModelType ?? "property_value",
+      ModelVersion = req.ModelVersion ?? "1.0",
+      ParcelId = req.ParcelId,
+      PredictedValue = predicted,
+      Confidence = confidence,
+      ModelAccuracy = r2,
+      MeanAbsoluteError = (decimal)mae,
+      RootMeanSquaredError = (decimal)rmse,
+      FeatureCount = featureCount,
+      TrainingSamples = trainingSamples,
+      InferenceTimeMs = sw.ElapsedMilliseconds,
+      InputFeatures = System.Text.Json.JsonSerializer.Serialize(req.Features),
+      FeatureImportances = System.Text.Json.JsonSerializer.Serialize(importances),
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+    };
+    _db.Set<TerraFusion.Core.Entities.MlPrediction>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      modelType = entity.ModelType,
+      modelVersion = entity.ModelVersion,
+      parcelId = entity.ParcelId,
+      predictedValue = entity.PredictedValue,
+      confidence = entity.Confidence,
+      modelAccuracy = entity.ModelAccuracy,
+      meanAbsoluteError = entity.MeanAbsoluteError,
+      rootMeanSquaredError = entity.RootMeanSquaredError,
+      featureCount = entity.FeatureCount,
+      trainingSamples = entity.TrainingSamples,
+      inferenceTimeMs = entity.InferenceTimeMs,
+      featureImportances = importances,
+    });
+  }
+
+  /// <summary>Get an ML prediction by ID.</summary>
+  [HttpGet("analytics/ml/{id}")]
+  public async Task<IActionResult> GetMlPrediction(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.MlPrediction>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+    if (entity is null) return NotFound(new { error = "Prediction not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      modelType = entity.ModelType,
+      modelVersion = entity.ModelVersion,
+      parcelId = entity.ParcelId,
+      predictedValue = entity.PredictedValue,
+      confidence = entity.Confidence,
+      modelAccuracy = entity.ModelAccuracy,
+      featureCount = entity.FeatureCount,
+      inferenceTimeMs = entity.InferenceTimeMs,
+      createdAt = entity.CreatedAt,
+    });
+  }
+
+  /// <summary>Get ML prediction history for the current county.</summary>
+  [HttpGet("analytics/ml/history")]
+  public async Task<IActionResult> GetMlHistory([FromQuery] string? modelType)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.MlPrediction>()
+      .Where(e => e.CountyId == ctx.CountyId);
+    if (!string.IsNullOrEmpty(modelType)) query = query.Where(e => e.ModelType == modelType);
+
+    var items = await query.OrderByDescending(e => e.CreatedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        modelType = e.ModelType,
+        parcelId = e.ParcelId,
+        predictedValue = e.PredictedValue,
+        confidence = e.Confidence,
+        createdAt = e.CreatedAt,
+      }),
+    });
+  }
+
+
+// ΓöÇΓöÇ Wave 34 DTOs ΓöÇΓöÇ
+
+
+  // r2/wave-35-forge-valuation-pipeline
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // Wave 35 ΓÇö Valuation Pipeline
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  private static readonly string[] PipelineStages =
+    ["ingestion", "quality", "cost", "sales", "income", "reconciliation", "review", "certified"];
+
+  /// <summary>Start a valuation pipeline run.</summary>
+  [HttpPost("pipeline/start")]
+  public async Task<IActionResult> StartPipeline([FromBody] PipelineStartRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    if (string.IsNullOrWhiteSpace(req.PipelineName))
+      return BadRequest(new { error = "Pipeline name is required" });
+    if (req.TotalParcels <= 0)
+      return BadRequest(new { error = "Total parcels must be positive" });
+
+    var sw = System.Diagnostics.Stopwatch.StartNew();
+
+    // Simulate pipeline stages
+    var stageDetails = new Dictionary<string, object>();
+    var processed = 0;
+    var failed = 0;
+    var rng = new Random(req.TotalParcels + req.TaxYear);
+    var valueChanges = new List<double>();
+
+    foreach (var stage in PipelineStages)
+    {
+      var stageCount = req.TotalParcels - failed;
+      var stageFailed = (int)(stageCount * rng.NextDouble() * 0.02); // up to 2% fail per stage
+      failed += stageFailed;
+      processed = req.TotalParcels - failed;
+
+      // simulate value change for parcels
+      for (int i = 0; i < Math.Min(stageCount, 50); i++)
+        valueChanges.Add((rng.NextDouble() - 0.3) * 20); // -6% to +14%
+
+      stageDetails[stage] = new { parcels = stageCount, failed = stageFailed, durationMs = rng.Next(100, 2000) };
+    }
+
+    sw.Stop();
+
+    var sortedChanges = valueChanges.OrderBy(x => x).ToList();
+    var avg = sortedChanges.Count > 0 ? sortedChanges.Average() : 0;
+    var median = sortedChanges.Count > 0 ? sortedChanges[sortedChanges.Count / 2] : 0;
+
+    // COD: average absolute deviation / median * 100
+    var absDeviation = sortedChanges.Count > 0 && median != 0
+      ? sortedChanges.Average(x => Math.Abs(x - median)) / Math.Abs(median) * 100
+      : 0;
+    // PRD: mean / weighted mean (simulated close to 1.0)
+    var prd = sortedChanges.Count > 0 ? 1.0 + (rng.NextDouble() - 0.5) * 0.06 : 1.0;
+
+    var entity = new TerraFusion.Core.Entities.ValuationPipeline
+    {
+      CountyId = ctx.CountyId,
+      PipelineName = req.PipelineName,
+      TaxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year,
+      TotalParcels = req.TotalParcels,
+      CompletedParcels = processed,
+      FailedParcels = failed,
+      InProgressParcels = 0,
+      CurrentStage = "certified",
+      Status = failed > req.TotalParcels / 2 ? "failed" : "completed",
+      DurationMs = sw.ElapsedMilliseconds,
+      AvgValueChangePercent = Math.Round(avg, 2),
+      MedianValueChangePercent = Math.Round(median, 2),
+      CoefficientOfDispersion = Math.Round(absDeviation, 2),
+      PriceRelatedDifferential = Math.Round(prd, 4),
+      StageDetails = System.Text.Json.JsonSerializer.Serialize(stageDetails),
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+    };
+    _db.Set<TerraFusion.Core.Entities.ValuationPipeline>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      pipelineName = entity.PipelineName,
+      taxYear = entity.TaxYear,
+      status = entity.Status,
+      totalParcels = entity.TotalParcels,
+      completedParcels = entity.CompletedParcels,
+      failedParcels = entity.FailedParcels,
+      currentStage = entity.CurrentStage,
+      durationMs = entity.DurationMs,
+      avgValueChangePercent = entity.AvgValueChangePercent,
+      medianValueChangePercent = entity.MedianValueChangePercent,
+      coefficientOfDispersion = entity.CoefficientOfDispersion,
+      priceRelatedDifferential = entity.PriceRelatedDifferential,
+    });
+  }
+
+  /// <summary>Get pipeline run by ID.</summary>
+  [HttpGet("pipeline/{id}")]
+  public async Task<IActionResult> GetPipeline(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+    if (entity is null) return NotFound(new { error = "Pipeline not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      pipelineName = entity.PipelineName,
+      taxYear = entity.TaxYear,
+      status = entity.Status,
+      totalParcels = entity.TotalParcels,
+      completedParcels = entity.CompletedParcels,
+      failedParcels = entity.FailedParcels,
+      currentStage = entity.CurrentStage,
+      durationMs = entity.DurationMs,
+      avgValueChangePercent = entity.AvgValueChangePercent,
+      medianValueChangePercent = entity.MedianValueChangePercent,
+      coefficientOfDispersion = entity.CoefficientOfDispersion,
+      priceRelatedDifferential = entity.PriceRelatedDifferential,
+      stageDetails = entity.StageDetails,
+      createdAt = entity.CreatedAt,
+    });
+  }
+
+  /// <summary>Get pipeline history.</summary>
+  [HttpGet("pipeline/history")]
+  public async Task<IActionResult> GetPipelineHistory([FromQuery] int? taxYear)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+      .Where(e => e.CountyId == ctx.CountyId);
+    if (taxYear.HasValue) query = query.Where(e => e.TaxYear == taxYear.Value);
+
+    var items = await query.OrderByDescending(e => e.CreatedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        pipelineName = e.PipelineName,
+        taxYear = e.TaxYear,
+        status = e.Status,
+        totalParcels = e.TotalParcels,
+        completedParcels = e.CompletedParcels,
+        createdAt = e.CreatedAt,
+      }),
+    });
+  }
+
+
+// ΓöÇΓöÇ Wave 35 DTOs ΓöÇΓöÇ
+
 }
 
 public class CostEstimateRequest
@@ -3594,4 +5452,145 @@ public class McVariable
   public double Max { get; set; } = 1.0;
   public double? Mode { get; set; }
   public double? Weight { get; set; }
+}
+
+public class SpatialAutocorrelationRequest
+{
+  public List<SpatialObservation> Observations { get; set; } = new();
+  public string? VariableName { get; set; }
+  public string? WeightType { get; set; }
+  public double? DistanceThreshold { get; set; }
+}
+
+public class SpatialObservation
+{
+  public double X { get; set; }
+  public double Y { get; set; }
+  public double Value { get; set; }
+  public string? ParcelId { get; set; }
+}
+
+public class MarketAnalysisRequest
+{
+  public string? MarketAreaName { get; set; }
+  public List<SaleRecord> Sales { get; set; } = new();
+}
+
+public class SaleRecord
+{
+  public string ParcelId { get; set; } = string.Empty;
+  public decimal SalePrice { get; set; }
+  public decimal AssessedValue { get; set; }
+  public decimal SquareFeet { get; set; }
+  public DateTime SaleDate { get; set; }
+}
+
+public class TimeTrendRequest
+{
+  public string? MarketAreaName { get; set; }
+  public List<SaleRecord> Sales { get; set; } = new();
+}
+
+public class Rcw8434Request
+{
+  public string? ParcelId { get; set; }
+  public string? Classification { get; set; }
+  public decimal MarketValue { get; set; }
+  public decimal Acreage { get; set; }
+  public double LevyRate { get; set; }
+  public int TaxYear { get; set; }
+}
+
+public class Rcw8426Request
+{
+  public string? ParcelId { get; set; }
+  public decimal MarketValue { get; set; }
+  public decimal PreRehabValue { get; set; }
+  public decimal RehabilitationCost { get; set; }
+  public int YearDesignated { get; set; }
+  public double LevyRate { get; set; }
+  public int TaxYear { get; set; }
+}
+
+public class Rcw8436381Request
+{
+  public string? ParcelId { get; set; }
+  public decimal MarketValue { get; set; }
+  public int Age { get; set; }
+  public bool IsDisabled { get; set; }
+  public decimal Income { get; set; }
+  public double LevyRate { get; set; }
+  public int TaxYear { get; set; }
+}
+
+public class LevyCalculateRequest
+{
+  public string? DistrictCode { get; set; }
+  public string? DistrictName { get; set; }
+  public decimal PriorYearLevy { get; set; }
+  public decimal RequestedLevy { get; set; }
+  public decimal AssessedValue { get; set; }
+  public decimal NewConstructionValue { get; set; }
+  public decimal AnnexationValue { get; set; }
+  public int TaxYear { get; set; }
+}
+
+public class LevyBalanceTestRequest
+{
+  public int TaxYear { get; set; }
+  public List<LevyDistrictInput> Districts { get; set; } = new();
+}
+
+public class LevyDistrictInput
+{
+  public string? DistrictCode { get; set; }
+  public string? DistrictName { get; set; }
+  public decimal RequestedLevy { get; set; }
+  public decimal AssessedValue { get; set; }
+}
+
+public class DataQualityRequest
+{
+  public string? Scope { get; set; }
+  public string? ParcelId { get; set; }
+  public List<string>? RequiredFields { get; set; }
+  public int TimelinessWindowDays { get; set; }
+  public List<DataQualityRecord>? Records { get; set; }
+}
+
+public class DataQualityRecord
+{
+  public string? ParcelId { get; set; }
+  public DateTime? LastUpdated { get; set; }
+  public Dictionary<string, string?>? Fields { get; set; }
+}
+
+public class EtlSyncRequest
+{
+  public string? SourceSystem { get; set; }
+  public string? EntityType { get; set; }
+  public string? Direction { get; set; }
+  public List<EtlSyncRecord>? Records { get; set; }
+}
+
+public class EtlSyncRecord
+{
+  public string? Key { get; set; }
+  public Dictionary<string, string?>? Data { get; set; }
+}
+
+public class MlPredictRequest
+{
+  public string? ModelType { get; set; }
+  public string? ModelVersion { get; set; }
+  public string? ParcelId { get; set; }
+  public Dictionary<string, object?> Features { get; set; } = new();
+  public int TrainingSamples { get; set; }
+}
+
+public class PipelineStartRequest
+{
+  public string? PipelineName { get; set; }
+  public int TaxYear { get; set; }
+  public int TotalParcels { get; set; }
 }
