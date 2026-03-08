@@ -476,8 +476,11 @@
 | ✅ 9.5 | Verify ConsciousnessParameters duplication (3 defs, all in separate namespaces — no ambiguity) | N/A | Analysis | 2026-03-08 |
 | ✅ 9.6 | Verify TaskPriority duplication (CostForge vs Core — no cross-import) | N/A | Analysis | 2026-03-08 |
 | ✅ 9.7 | Verify ImmersiveVisualizationService DTO removal (types resolve via Consciousness.Interfaces) | N/A | Analysis | 2026-03-08 |
+| ✅ 9.8 | Remove unused Models/WorkflowExecutionResult.cs (dead duplicate of DTOs + Interfaces versions) | R2.9b | Cleanup | 2026-03-08 |
+| ✅ 9.9 | Verify IPropertyValuationService (3 defs in AI/Consciousness/Core — independent, no DI conflict) | N/A | Analysis | 2026-03-08 |
+| ✅ 9.10 | Verify Consciousness→AI ref disabled intentionally (matching commented using) | N/A | Analysis | 2026-03-08 |
 
-**Key Achievement:** Solution file now includes all 13 projects (was missing Security + Research). Security DI services registered. Verified no remaining type ambiguity across 6 namespace pairs.
+**Key Achievement:** Solution file now includes all 13 projects (was missing Security + Research). Security DI services registered. Removed 1 dead duplicate type. Verified no remaining type ambiguity across 8 namespace pairs. Full deep sweep complete.
 
 ---
 
