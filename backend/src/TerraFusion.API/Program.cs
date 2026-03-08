@@ -283,13 +283,19 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyDataValidationServ
 builder.Services.Configure<TerraFusion.Core.Configuration.FeatureFlagsOptions>(
     builder.Configuration.GetSection("FeatureFlags"));
 
-// Redis lockout store (uses existing IDistributedCache from line 70-71)
+// Redis lockout store (uses existing IDistributedCache)
 builder.Services.AddScoped<TerraFusion.Core.Security.Lockout.ILockoutStore, TerraFusion.Core.Security.Lockout.RedisLockoutStore>();
+
+// Redis token revocation store (Sprint 2: persistent token revocation)
+builder.Services.AddScoped<TerraFusion.Core.Security.TokenRevocation.ITokenRevocationStore, TerraFusion.Core.Security.TokenRevocation.RedisTokenRevocationStore>();
 
 // SQL password history store (uses TerraFusionDbContext)
 builder.Services.AddScoped<TerraFusion.Core.Security.PasswordHistory.IPasswordHistoryStore, TerraFusion.Data.Security.SqlPasswordHistoryStore>();
 
-// Note: Enforcement logic wired in Sprint 2 (flags OFF for Sprint 1)
+// FIPS 140-2 startup validation (SC-13 compliance)
+builder.Services.AddHostedService<TerraFusion.API.Security.FipsValidationService>();
+
+// Note: Sprint 2 enforcement active — feature flags control behavior
 // ====================================================================
 
 // 📊 Register TerraFusion Elite Metrics Exporter - Championship-level observability for 7 AI services

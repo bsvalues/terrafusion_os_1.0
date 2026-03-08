@@ -10,7 +10,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using TerraFusion.Core.Configuration;
+using TerraFusion.Core.Security.Lockout;
+using TerraFusion.Core.Security.TokenRevocation;
+using TerraFusion.Core.Security.PasswordHistory;
 using TerraFusion.Security.Models;
 using TerraFusion.Security.Interfaces;
 
@@ -30,13 +35,19 @@ namespace TerraFusion.Security
         private readonly IMfaService _mfaService;
         private readonly ISessionManager _sessionManager;
         private readonly ILdapService _ldapService;
-        
+
+        // Phase 4 Sprint 2: Persistent stores (nullable for backward compatibility)
+        private readonly ILockoutStore _lockoutStore;
+        private readonly ITokenRevocationStore _tokenRevocationStore;
+        private readonly IPasswordHistoryStore _passwordHistoryStore;
+        private readonly FeatureFlagsOptions _featureFlags;
+
         // Security configuration
         private readonly int _maxLoginAttempts = 5;
         private readonly TimeSpan _lockoutDuration = TimeSpan.FromMinutes(15);
         private readonly TimeSpan _sessionTimeout = TimeSpan.FromMinutes(30);
         private readonly TimeSpan _tokenExpiration = TimeSpan.FromHours(8);
-        
+
         public ProductionAuthenticationService(
             IConfiguration configuration,
             ILogger<ProductionAuthenticationService> logger,
@@ -45,7 +56,11 @@ namespace TerraFusion.Security
             IPasswordHasher<ApplicationUser> passwordHasher,
             IMfaService mfaService,
             ISessionManager sessionManager,
-            ILdapService ldapService)
+            ILdapService ldapService,
+            ILockoutStore lockoutStore = null,
+            ITokenRevocationStore tokenRevocationStore = null,
+            IPasswordHistoryStore passwordHistoryStore = null,
+            IOptions<FeatureFlagsOptions> featureFlagsOptions = null)
         {
             _configuration = configuration;
             _logger = logger;
@@ -55,6 +70,10 @@ namespace TerraFusion.Security
             _mfaService = mfaService;
             _sessionManager = sessionManager;
             _ldapService = ldapService;
+            _lockoutStore = lockoutStore;
+            _tokenRevocationStore = tokenRevocationStore;
+            _passwordHistoryStore = passwordHistoryStore;
+            _featureFlags = featureFlagsOptions?.Value;
         }
 
         /// <summary>
@@ -259,9 +278,9 @@ namespace TerraFusion.Security
                     throw new SecurityTokenValidationException("Invalid token algorithm");
                 }
                 
-                // Check if token is revoked
+                // Check if token is revoked (pass principal for per-user revocation check)
                 var jti = principal.Claims.FirstOrDefault(c => c.Type == "jti")?.Value;
-                if (await IsTokenRevokedAsync(jti))
+                if (await IsTokenRevokedAsync(jti, principal))
                 {
                     throw new SecurityTokenValidationException("Token has been revoked");
                 }
@@ -479,25 +498,56 @@ namespace TerraFusion.Security
         /// <summary>
         /// Check if account is locked out (NIST 800-53 AC-7)
         /// </summary>
-        private Task<bool> IsAccountLockedOutAsync(string username)
+        private async Task<bool> IsAccountLockedOutAsync(string username)
         {
+            // Phase 4 Sprint 2: Delegate to persistent store when feature flag is on
+            if (_featureFlags?.UseAccountLockout == true && _lockoutStore != null)
+            {
+                var userGuid = DeterministicGuid(username);
+                var isLocked = await _lockoutStore.IsLockedOutAsync(userGuid);
+                if (isLocked)
+                {
+                    var expiry = await _lockoutStore.GetLockoutExpiryAsync(userGuid);
+                    _logger.LogWarning("Account {Username} is locked until {LockedUntil} (persistent store)", username, expiry);
+                }
+                return isLocked;
+            }
+
+            // Fallback: in-memory store
             if (_lockouts.TryGetValue(username, out var lockedUntil))
             {
                 if (DateTime.UtcNow < lockedUntil)
                 {
                     _logger.LogWarning("Account {Username} is locked until {LockedUntil}", username, lockedUntil);
-                    return Task.FromResult(true);
+                    return true;
                 }
                 _lockouts.TryRemove(username, out _);
             }
-            return Task.FromResult(false);
+            return false;
         }
 
         /// <summary>
         /// Record failed login attempt and trigger lockout after threshold (NIST 800-53 AC-7)
         /// </summary>
-        private Task RecordFailedLoginAttemptAsync(string username)
+        private async Task RecordFailedLoginAttemptAsync(string username)
         {
+            // Phase 4 Sprint 2: Delegate to persistent store when feature flag is on
+            if (_featureFlags?.UseAccountLockout == true && _lockoutStore != null)
+            {
+                var userGuid = DeterministicGuid(username);
+                var newCount = await _lockoutStore.IncrementFailedAttemptsAsync(userGuid);
+
+                if (newCount >= _maxLoginAttempts)
+                {
+                    await _lockoutStore.SetLockoutAsync(userGuid, DateTime.UtcNow.Add(_lockoutDuration));
+                    _logger.LogWarning(
+                        "Account {Username} locked after {Attempts} failed attempts (persistent store)",
+                        username, newCount);
+                }
+                return;
+            }
+
+            // Fallback: in-memory store
             var attempts = _failedAttempts.GetOrAdd(username, _ => new List<DateTime>());
             lock (attempts)
             {
@@ -514,17 +564,24 @@ namespace TerraFusion.Security
                         username, attempts.Count);
                 }
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Clear failed login attempts on successful authentication
         /// </summary>
-        private Task ClearFailedLoginAttemptsAsync(string username)
+        private async Task ClearFailedLoginAttemptsAsync(string username)
         {
+            // Phase 4 Sprint 2: Delegate to persistent store when feature flag is on
+            if (_featureFlags?.UseAccountLockout == true && _lockoutStore != null)
+            {
+                var userGuid = DeterministicGuid(username);
+                await _lockoutStore.ResetFailedAttemptsAsync(userGuid);
+                return;
+            }
+
+            // Fallback: in-memory store
             _failedAttempts.TryRemove(username, out _);
             _lockouts.TryRemove(username, out _);
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -546,53 +603,112 @@ namespace TerraFusion.Security
         /// <summary>
         /// Check whether a JWT has been revoked (token revocation list)
         /// </summary>
-        private Task<bool> IsTokenRevokedAsync(string jti)
+        private async Task<bool> IsTokenRevokedAsync(string jti, ClaimsPrincipal principal = null)
         {
             if (string.IsNullOrEmpty(jti))
-                return Task.FromResult(false);
+                return false;
 
-            return Task.FromResult(_revokedTokens.ContainsKey(jti));
+            // Phase 4 Sprint 2: Delegate to persistent store when available
+            if (_tokenRevocationStore != null)
+            {
+                // Check per-token revocation
+                if (await _tokenRevocationStore.IsTokenRevokedAsync(jti))
+                    return true;
+
+                // Check per-user revocation (all tokens issued before timestamp are revoked)
+                if (principal != null)
+                {
+                    var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                    if (!string.IsNullOrEmpty(userId))
+                    {
+                        var revokedAt = await _tokenRevocationStore.GetUserRevocationTimestampAsync(userId);
+                        if (revokedAt.HasValue)
+                        {
+                            var iatClaim = principal.Claims.FirstOrDefault(c => c.Type == "iat")?.Value;
+                            if (iatClaim != null && long.TryParse(iatClaim, out var iatUnix))
+                            {
+                                var issuedAt = DateTimeOffset.FromUnixTimeSeconds(iatUnix).UtcDateTime;
+                                if (issuedAt < revokedAt.Value)
+                                    return true;
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            // Fallback: in-memory store
+            return _revokedTokens.ContainsKey(jti);
         }
 
         /// <summary>
         /// Revoke all tokens issued to a user (used on logout / password change)
         /// </summary>
-        private Task RevokeUserTokensAsync(string userId)
+        private async Task RevokeUserTokensAsync(string userId)
         {
-            // In production this would query a token store keyed by userId.
-            // With in-memory tracking we mark the userId as a revoked namespace.
+            // Phase 4 Sprint 2: Delegate to persistent store when available
+            if (_tokenRevocationStore != null)
+            {
+                await _tokenRevocationStore.RevokeAllUserTokensAsync(userId);
+                _logger.LogInformation("All tokens revoked for user {UserId} (persistent store)", userId);
+                return;
+            }
+
+            // Fallback: in-memory store
             _revokedTokens.TryAdd($"user:{userId}", 0);
             _logger.LogInformation("All tokens revoked for user {UserId}", userId);
-            return Task.CompletedTask;
         }
 
         /// <summary>
         /// NIST 800-63B §5.1.1.2 — check if password was used in the last N changes
         /// </summary>
-        private Task<bool> IsPasswordInHistoryAsync(string userId, string password)
+        private async Task<bool> IsPasswordInHistoryAsync(string userId, string password)
         {
+            // Phase 4 Sprint 2: Delegate to persistent store when feature flag is on
+            if (_featureFlags?.UsePasswordHistory == true && _passwordHistoryStore != null)
+            {
+                var userGuid = DeterministicGuid(userId);
+                var recentHashes = await _passwordHistoryStore.GetRecentPasswordHashesAsync(userGuid, PasswordHistoryLimit);
+                foreach (var previousHash in recentHashes)
+                {
+                    var result = _passwordHasher.VerifyHashedPassword(null!, previousHash, password);
+                    if (result != PasswordVerificationResult.Failed)
+                        return true;
+                }
+                return false;
+            }
+
+            // Fallback: in-memory store
             if (_passwordHistory.TryGetValue(userId, out var history))
             {
-                // Compare the new password hash against stored hashes
-                var candidate = _passwordHasher.HashPassword(null!, password);
                 lock (history)
                 {
                     foreach (var previousHash in history)
                     {
                         var result = _passwordHasher.VerifyHashedPassword(null!, previousHash, password);
                         if (result != PasswordVerificationResult.Failed)
-                            return Task.FromResult(true);
+                            return true;
                     }
                 }
             }
-            return Task.FromResult(false);
+            return false;
         }
 
         /// <summary>
         /// Store password hash in history ring buffer (NIST 800-63B §5.1.1.2)
         /// </summary>
-        private Task SavePasswordHistoryAsync(string userId, string passwordHash)
+        private async Task SavePasswordHistoryAsync(string userId, string passwordHash)
         {
+            // Phase 4 Sprint 2: Delegate to persistent store when feature flag is on
+            if (_featureFlags?.UsePasswordHistory == true && _passwordHistoryStore != null)
+            {
+                var userGuid = DeterministicGuid(userId);
+                await _passwordHistoryStore.AddPasswordHashAsync(userGuid, passwordHash);
+                return;
+            }
+
+            // Fallback: in-memory store
             var history = _passwordHistory.GetOrAdd(userId, _ => new List<string>());
             lock (history)
             {
@@ -600,7 +716,18 @@ namespace TerraFusion.Security
                 while (history.Count > PasswordHistoryLimit)
                     history.RemoveAt(0);
             }
-            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Convert a string identifier to a deterministic Guid.
+        /// Used to bridge ILockoutStore/IPasswordHistoryStore (Guid userId) with
+        /// the string-based usernames/userIds used by this service.
+        /// </summary>
+        private static Guid DeterministicGuid(string input)
+        {
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
+            return new Guid(hash.AsSpan(0, 16));
         }
 
         /// <summary>
