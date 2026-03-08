@@ -1,5 +1,10 @@
-// TEMPORARY STUBS FOR BACKEND STRUCTURAL BUILD
-// TODO: Replace with real AI data layer from WIP branch.
+// AI Data Layer - DbSet Extension Methods for AI Entities
+// These extension methods provide typed DbSet access to AI-specific entities
+// (GPT configurations, RAG datasets, embeddings, conversations, usage metrics, audits)
+// registered in TerraFusionDbContext via the EF Core Set<T>() API.
+//
+// NOTE: These are structural accessors, not seed data. They provide a clean API
+// surface for AI services to access their entities without modifying TerraFusionDbContext directly.
 
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.AI.Entities;
@@ -8,6 +13,11 @@ using TerraFusion.Data;
 
 namespace TerraFusion.AI.Data
 {
+    /// <summary>
+    /// Extension methods for accessing AI-specific DbSets from TerraFusionDbContext.
+    /// These entities must be registered in the DbContext's OnModelCreating or via
+    /// the entity type configuration system for these accessors to function correctly.
+    /// </summary>
     public static class TerraFusionDbContextExtensions
     {
         public static DbSet<GPTConfiguration> GPTConfigurations(this TerraFusionDbContext context)

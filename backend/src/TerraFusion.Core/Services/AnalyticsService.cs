@@ -85,7 +85,7 @@ public sealed class AnalyticsService : IAnalyticsService
             .CountAsync();
 
         var tasksCompleted = await _db.Tasks.AsNoTracking()
-            .Where(t => t.UpdatedAt >= startDate && t.UpdatedAt <= endDate && t.Status == DTOs.TaskStatus.Done)
+            .Where(t => t.UpdatedAt >= startDate && t.UpdatedAt <= endDate && t.Status == TerraFusion.Core.DTOs.TaskStatus.Done)
             .CountAsync();
 
         reports.Add(new Dictionary<string, object>
@@ -127,7 +127,7 @@ public sealed class AnalyticsService : IAnalyticsService
             .CountAsync();
 
         var completedTasks = await _db.Tasks.AsNoTracking()
-            .Where(t => projectIds.Contains(t.ProjectId) && t.Status == DTOs.TaskStatus.Done
+            .Where(t => projectIds.Contains(t.ProjectId) && t.Status == TerraFusion.Core.DTOs.TaskStatus.Done
                 && t.UpdatedAt >= startDate && t.UpdatedAt <= endDate)
             .CountAsync();
 

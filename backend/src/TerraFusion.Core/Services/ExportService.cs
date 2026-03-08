@@ -280,7 +280,7 @@ public sealed class ExportService : IExportService
         if (project == null) return Array.Empty<byte>();
 
         var taskCount = await _db.Tasks.AsNoTracking().CountAsync(t => t.ProjectId == projectId);
-        var completedTasks = await _db.Tasks.AsNoTracking().CountAsync(t => t.ProjectId == projectId && t.Status == DTOs.TaskStatus.Done);
+        var completedTasks = await _db.Tasks.AsNoTracking().CountAsync(t => t.ProjectId == projectId && t.Status == TerraFusion.Core.DTOs.TaskStatus.Done);
         var docCount = await _db.ProjectDocuments.AsNoTracking().CountAsync(d => d.ProjectId == projectId);
 
         var sb = new StringBuilder();
