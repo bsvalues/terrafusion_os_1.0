@@ -2615,6 +2615,171 @@ public class CostForgeController : ControllerBase
     ];
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // Wave 32 — Data Quality Assessment
+  // ═══════════════════════════════════════════════════════════════
+
+  /// <summary>Run a data quality assessment on county property data.</summary>
+  [HttpPost("analytics/data-quality/assess")]
+  public async Task<IActionResult> AssessDataQuality([FromBody] DataQualityRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var records = req.Records ?? new List<DataQualityRecord>();
+    var total = records.Count;
+    if (total == 0) return BadRequest(new { error = "At least one record is required" });
+
+    var requiredFields = req.RequiredFields ?? new List<string> { "parcelId", "assessedValue", "landArea" };
+    var timelinessWindow = req.TimelinessWindowDays > 0 ? req.TimelinessWindowDays : 365;
+    var cutoff = DateTime.UtcNow.AddDays(-timelinessWindow);
+
+    var completeCount = 0;
+    var consistentCount = 0;
+    var timelyCount = 0;
+    var accurateCount = 0;
+    var issues = new List<string>();
+
+    foreach (var rec in records)
+    {
+      // Completeness: all required fields non-null/non-empty
+      var fields = rec.Fields ?? new Dictionary<string, string?>();
+      var allPresent = requiredFields.All(f => fields.ContainsKey(f) && !string.IsNullOrWhiteSpace(fields[f]));
+      if (allPresent) completeCount++;
+      else issues.Add($"Record '{rec.ParcelId ?? "?"}': missing required fields");
+
+      // Consistency: assessed value should be >= 0, land area should be > 0 if provided
+      var consistent = true;
+      if (fields.TryGetValue("assessedValue", out var av) && decimal.TryParse(av, out var avVal) && avVal < 0)
+      { consistent = false; issues.Add($"Record '{rec.ParcelId ?? "?"}': negative assessed value"); }
+      if (fields.TryGetValue("landArea", out var la) && decimal.TryParse(la, out var laVal) && laVal <= 0)
+      { consistent = false; issues.Add($"Record '{rec.ParcelId ?? "?"}': non-positive land area"); }
+      if (consistent) consistentCount++;
+
+      // Timeliness: last updated within window
+      if (rec.LastUpdated.HasValue && rec.LastUpdated.Value >= cutoff) timelyCount++;
+      else if (!rec.LastUpdated.HasValue) issues.Add($"Record '{rec.ParcelId ?? "?"}': no update timestamp");
+
+      // Accuracy: value within plausible range
+      if (fields.TryGetValue("assessedValue", out var avAcc) && decimal.TryParse(avAcc, out var accVal))
+      {
+        if (accVal >= 0 && accVal <= 100_000_000m) accurateCount++;
+        else issues.Add($"Record '{rec.ParcelId ?? "?"}': assessed value out of plausible range");
+      }
+      else accurateCount++; // no value field → skip accuracy check
+    }
+
+    var completeness = total > 0 ? Math.Round((double)completeCount / total * 100, 2) : 0;
+    var consistency = total > 0 ? Math.Round((double)consistentCount / total * 100, 2) : 0;
+    var timeliness = total > 0 ? Math.Round((double)timelyCount / total * 100, 2) : 0;
+    var accuracy = total > 0 ? Math.Round((double)accurateCount / total * 100, 2) : 0;
+
+    // Weighted overall: 30% completeness, 25% consistency, 20% timeliness, 25% accuracy
+    var overall = Math.Round(completeness * 0.30 + consistency * 0.25 + timeliness * 0.20 + accuracy * 0.25, 2);
+
+    var grade = overall switch
+    {
+      >= 90 => "A",
+      >= 80 => "B",
+      >= 70 => "C",
+      >= 60 => "D",
+      _ => "F",
+    };
+
+    var entity = new TerraFusion.Core.Entities.DataQualityAssessment
+    {
+      CountyId = ctx.CountyId,
+      Scope = req.Scope ?? "county",
+      ParcelId = req.ParcelId,
+      TotalRecords = total,
+      CompleteRecords = completeCount,
+      CompletenessScore = completeness,
+      ConsistentRecords = consistentCount,
+      ConsistencyScore = consistency,
+      TimelyRecords = timelyCount,
+      TimelinessScore = timeliness,
+      AccurateRecords = accurateCount,
+      AccuracyScore = accuracy,
+      OverallScore = overall,
+      Grade = grade,
+      IssueCount = issues.Count,
+      Issues = System.Text.Json.JsonSerializer.Serialize(issues),
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+    };
+    _db.Set<TerraFusion.Core.Entities.DataQualityAssessment>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      scope = entity.Scope,
+      totalRecords = entity.TotalRecords,
+      completenessScore = entity.CompletenessScore,
+      consistencyScore = entity.ConsistencyScore,
+      timelinessScore = entity.TimelinessScore,
+      accuracyScore = entity.AccuracyScore,
+      overallScore = entity.OverallScore,
+      grade = entity.Grade,
+      issueCount = entity.IssueCount,
+      issues,
+    });
+  }
+
+  /// <summary>Get a data quality assessment by ID.</summary>
+  [HttpGet("analytics/data-quality/{id}")]
+  public async Task<IActionResult> GetDataQualityAssessment(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.DataQualityAssessment>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+    if (entity is null) return NotFound(new { error = "Assessment not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      scope = entity.Scope,
+      totalRecords = entity.TotalRecords,
+      completenessScore = entity.CompletenessScore,
+      consistencyScore = entity.ConsistencyScore,
+      timelinessScore = entity.TimelinessScore,
+      accuracyScore = entity.AccuracyScore,
+      overallScore = entity.OverallScore,
+      grade = entity.Grade,
+      issueCount = entity.IssueCount,
+      createdAt = entity.CreatedAt,
+    });
+  }
+
+  /// <summary>Get data quality assessment history for the current county.</summary>
+  [HttpGet("analytics/data-quality/history")]
+  public async Task<IActionResult> GetDataQualityHistory([FromQuery] string? scope)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.DataQualityAssessment>()
+      .Where(e => e.CountyId == ctx.CountyId);
+    if (!string.IsNullOrEmpty(scope)) query = query.Where(e => e.Scope == scope);
+
+    var items = await query.OrderByDescending(e => e.CreatedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        scope = e.Scope,
+        overallScore = e.OverallScore,
+        grade = e.Grade,
+        issueCount = e.IssueCount,
+        createdAt = e.CreatedAt,
+      }),
+    });
+  }
+
   internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
   internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
 
@@ -2776,4 +2941,24 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Wave 32 — Data Quality DTOs
+// ═══════════════════════════════════════════════════════════════
+
+public class DataQualityRequest
+{
+  public string? Scope { get; set; }
+  public string? ParcelId { get; set; }
+  public List<string>? RequiredFields { get; set; }
+  public int TimelinessWindowDays { get; set; }
+  public List<DataQualityRecord>? Records { get; set; }
+}
+
+public class DataQualityRecord
+{
+  public string? ParcelId { get; set; }
+  public DateTime? LastUpdated { get; set; }
+  public Dictionary<string, string?>? Fields { get; set; }
 }
