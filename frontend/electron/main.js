@@ -5,7 +5,7 @@ const { spawn } = require('child_process');
 
 const isDev = require('electron-is-dev');
 
-const { app, BrowserWindow, ipcMain, Menu, Tray, nativeImage, protocol } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, Tray, nativeImage, protocol, screen } = require('electron');
 
 const DesktopLaunchers = require('./desktop-launchers');
 const { initializeIpcHandlers } = require('./ipc-handlers');
@@ -16,6 +16,58 @@ let tray;
 let osBridge;
 let backendProcess;
 const backendPort = parseInt(process.env.TF_API_PORT || '5000', 10);
+
+// ── Window State Persistence ─────────────────────────────────────────────────
+const windowStateFile = path.join(app.getPath('userData'), 'window-state.json');
+
+function loadWindowState() {
+  try {
+    if (fs.existsSync(windowStateFile)) {
+      const data = JSON.parse(fs.readFileSync(windowStateFile, 'utf8'));
+      // Validate that the saved position is still on a visible display
+      if (data && typeof data.x === 'number' && typeof data.y === 'number') {
+        const displays = screen.getAllDisplays();
+        const onScreen = displays.some((display) => {
+          const bounds = display.bounds;
+          return (
+            data.x >= bounds.x - 50 &&
+            data.y >= bounds.y - 50 &&
+            data.x < bounds.x + bounds.width - 50 &&
+            data.y < bounds.y + bounds.height - 50
+          );
+        });
+        if (onScreen) {
+          return data;
+        }
+      }
+      // Position off-screen; return size only (let OS decide position)
+      if (data && data.width && data.height) {
+        return { width: data.width, height: data.height, isMaximized: data.isMaximized };
+      }
+    }
+  } catch (_) {
+    // Corrupted file – ignore
+  }
+  return null;
+}
+
+function saveWindowState(win) {
+  try {
+    const isMaximized = win.isMaximized();
+    // Save the *normal* (restored) bounds so we can restore properly
+    const bounds = isMaximized ? (win._lastNormalBounds || win.getBounds()) : win.getBounds();
+    const state = {
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
+      isMaximized,
+    };
+    fs.writeFileSync(windowStateFile, JSON.stringify(state, null, 2), 'utf8');
+  } catch (_) {
+    // Non-critical – swallow errors
+  }
+}
 
 // Expose OS connection state to renderer
 // Expose backend API URL to renderer
@@ -113,10 +165,11 @@ async function startBackendServer() {
 }
 
 function createWindow() {
-  // Create the browser window
-  mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 900,
+  // Restore saved window state (position, size, maximized)
+  const savedState = loadWindowState();
+  const windowOpts = {
+    width: (savedState && savedState.width) || 1400,
+    height: (savedState && savedState.height) || 900,
     minWidth: 1200,
     minHeight: 800,
     webPreferences: {
@@ -133,42 +186,82 @@ function createWindow() {
     },
     show: false,
     frame: true // Show frame for desktop OS experience
+  };
+
+  // Only set position if we have valid saved coordinates
+  if (savedState && typeof savedState.x === 'number' && typeof savedState.y === 'number') {
+    windowOpts.x = savedState.x;
+    windowOpts.y = savedState.y;
+  }
+
+  // Create the browser window
+  mainWindow = new BrowserWindow(windowOpts);
+
+  // Restore maximized state after window creation
+  if (savedState && savedState.isMaximized) {
+    mainWindow.maximize();
+  }
+
+  // Track normal bounds so we can save them even when maximized
+  mainWindow.on('resize', () => {
+    if (!mainWindow.isMaximized()) {
+      mainWindow._lastNormalBounds = mainWindow.getBounds();
+    }
+  });
+  mainWindow.on('move', () => {
+    if (!mainWindow.isMaximized()) {
+      mainWindow._lastNormalBounds = mainWindow.getBounds();
+    }
   });
 
-  // Load the Vite-built OS Shell (preferred), then legacy fallbacks
-  const pwaDist = path.join(__dirname, '../dist/index.html');
-  const commandCenter = path.join(__dirname, '../terrafusion-command-center.html');
-  const desktopApp = path.join(__dirname, '../desktop-app.html');
-  const fallbackApp = path.join(__dirname, '../index.html');
-  
-  if (fs.existsSync(pwaDist)) {
-    console.log('🌐 Loading TerraFusion OS Shell from:', pwaDist);
-    mainWindow.loadFile(pwaDist);
-  } else if (fs.existsSync(commandCenter)) {
-    console.log('🚀 Loading TerraFusion Command Center from:', commandCenter);
-    mainWindow.loadFile(commandCenter);
-  } else if (fs.existsSync(desktopApp)) {
-    console.log('📱 Loading TerraFusion Desktop App from:', desktopApp);
-    mainWindow.loadFile(desktopApp);
-  } else if (fs.existsSync(fallbackApp)) {
-    console.log('⚠️ Loading fallback app from:', fallbackApp);
-    mainWindow.loadFile(fallbackApp);
+  // In development mode, load from Vite dev server
+  if (isDev) {
+    const devPort = process.env.VITE_PORT || '5173';
+    const devUrl = `http://localhost:${devPort}`;
+    console.log('Loading TerraFusion OS from dev server:', devUrl);
+    mainWindow.loadURL(devUrl);
   } else {
-    console.log('❌ No app found, creating minimal interface...');
-    mainWindow.loadURL('data:text/html,<h1>TerraFusion OS Desktop</h1><p>Application files not found</p>');
+    // Production: load the Vite-built OS Shell, then legacy fallbacks
+    // Primary: native-shell/ui/dist (where vite.config.ts outputs the build)
+    const nativeShellDist = path.join(__dirname, '../../native-shell/ui/dist/index.html');
+    // Fallback: ../dist (legacy location)
+    const legacyDist = path.join(__dirname, '../dist/index.html');
+    const commandCenter = path.join(__dirname, '../terrafusion-command-center.html');
+    const desktopApp = path.join(__dirname, '../desktop-app.html');
+    const fallbackApp = path.join(__dirname, '../index.html');
+
+    if (fs.existsSync(nativeShellDist)) {
+      console.log('Loading TerraFusion OS Shell from:', nativeShellDist);
+      mainWindow.loadFile(nativeShellDist);
+    } else if (fs.existsSync(legacyDist)) {
+      console.log('Loading TerraFusion OS Shell from legacy dist:', legacyDist);
+      mainWindow.loadFile(legacyDist);
+    } else if (fs.existsSync(commandCenter)) {
+      console.log('Loading TerraFusion Command Center from:', commandCenter);
+      mainWindow.loadFile(commandCenter);
+    } else if (fs.existsSync(desktopApp)) {
+      console.log('Loading TerraFusion Desktop App from:', desktopApp);
+      mainWindow.loadFile(desktopApp);
+    } else if (fs.existsSync(fallbackApp)) {
+      console.log('Loading fallback app from:', fallbackApp);
+      mainWindow.loadFile(fallbackApp);
+    } else {
+      console.log('No app found, creating minimal interface...');
+      mainWindow.loadURL('data:text/html,<h1>TerraFusion OS Desktop</h1><p>Application files not found</p>');
+    }
   }
 
   // Show window when ready
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    
+
     // Initialize IPC handlers
     initializeIpcHandlers(mainWindow);
-    
+
     // Initialize desktop launchers
     const launchers = new DesktopLaunchers();
     launchers.registerIPCHandlers();
-    
+
     // Initialize Terrafusion OS bridge
     osBridge = new TerraFusionOSBridge();
     osBridge.onStateChanged((state) => {
@@ -187,13 +280,17 @@ function createWindow() {
         // Ignore webContents send errors
       }
     });
-    
+
     if (isDev) {
       mainWindow.webContents.openDevTools();
     }
   });
 
-  // Handle window closed
+  // Handle window closed – save state before nulling reference
+  mainWindow.on('close', () => {
+    saveWindowState(mainWindow);
+  });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
@@ -204,10 +301,10 @@ function createWindow() {
       // On macOS, minimize normally
       return;
     }
-    
+
     event.preventDefault();
     mainWindow.hide();
-    
+
     if (!tray) {
       createTray();
     }

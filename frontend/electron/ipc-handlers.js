@@ -3,8 +3,12 @@ const path = require('path');
 
 const { ipcMain, dialog, shell, Notification } = require('electron');
 
-// API Base URL - should match backend
-const API_BASE_URL = 'https://localhost:5001/api';
+// API Base URL - matches the kernel port (TerraFusion.API on port 5000)
+// Configurable via TF_API_PORT or VITE_API_URL environment variables
+const backendPort = process.env.TF_API_PORT || '5000';
+const API_BASE_URL = process.env.VITE_API_URL
+  ? `${process.env.VITE_API_URL}/api`
+  : `http://localhost:${backendPort}/api`;
 
 // Window management handlers
 function setupWindowHandlers(mainWindow) {
