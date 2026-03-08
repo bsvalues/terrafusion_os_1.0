@@ -4854,4 +4854,463 @@ public sealed class R1Week5CxR1ClosureTests
     json.Should().Contain("conversionFactors");
     json.Should().Contain("GeometryServer");
   }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  WAVE 20 — TerraExempt: WA State Exemption Calculators
+  //  6 endpoints, 28 tests
+  //  Senior/Disabled (RCW 84.36.381), Current Use (RCW 84.34),
+  //  Historic Property (RCW 84.26), Eligibility Checker, Parcel Status
+  // ═══════════════════════════════════════════════════════════════════
+
+  // ── GET api/dais/exempt/programs ──────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_ExemptPrograms_ReturnsAllPrograms()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetExemptionPrograms();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Washington");
+    json.Should().Contain("84.36.381");
+    json.Should().Contain("84.34");
+    json.Should().Contain("84.26");
+    json.Should().Contain("Senior/Disabled Exemption");
+    json.Should().Contain("Current Use");
+    json.Should().Contain("Historic Property");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_ExemptPrograms_ContainsFivePrograms()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetExemptionPrograms();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    // 5 programs: senior-disabled, agricultural, timber, open-space, historic
+    json.Should().Contain("\"count\":5");
+  }
+
+  // ── POST api/dais/exempt/senior-disabled/calculate ────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_SeniorExempt_Tier1_FullExempt()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.SeniorExemptionRequest(30_000m, 65, false, 250_000m, 3_000m);
+    var result = controller.CalculateSeniorDisabledExemption(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("84.36.381");
+    json.Should().Contain("Tier 1");
+    json.Should().Contain("Full Exempt");
+    json.Should().Contain("60,000");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_SeniorExempt_Tier2_PartialExempt()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.SeniorExemptionRequest(40_000m, 70, false, 200_000m, 2_500m);
+    var result = controller.CalculateSeniorDisabledExemption(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("Tier 2");
+    json.Should().Contain("Partial Exempt");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_SeniorExempt_Tier3_ExcessLevyOnly()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.SeniorExemptionRequest(50_000m, 62, false, 180_000m, 2_000m);
+    var result = controller.CalculateSeniorDisabledExemption(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("Tier 3");
+    json.Should().Contain("Excess Levy");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_SeniorExempt_OverIncomeLimit()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.SeniorExemptionRequest(65_000m, 72, false, 300_000m, 4_000m);
+    var result = controller.CalculateSeniorDisabledExemption(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true"); // Still eligible (age 72), just no tier benefit
+    json.Should().Contain("Not Eligible");
+    json.Should().Contain("Over $58,423");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_SeniorExempt_TooYoung_NotDisabled()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.SeniorExemptionRequest(25_000m, 55, false, 200_000m, 2_500m);
+    var result = controller.CalculateSeniorDisabledExemption(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":false");
+    json.Should().Contain("age 61");
+    json.Should().Contain("disabled veteran");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_SeniorExempt_DisabledVeteran_AnyAge()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.SeniorExemptionRequest(30_000m, 45, true, 200_000m, 2_500m);
+    var result = controller.CalculateSeniorDisabledExemption(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("Tier 1");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_SeniorExempt_NegativeIncome_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.SeniorExemptionRequest(-1_000m, 65, false, 200_000m, 2_500m);
+    var result = controller.CalculateSeniorDisabledExemption(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── POST api/dais/exempt/current-use/calculate ────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_CurrentUse_Agricultural_IncomeCapitalization()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.CurrentUseRequest("agricultural", 40m, 15_000m, 400m, 0.08m);
+    var result = controller.CalculateCurrentUseAssessment(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("84.34");
+    json.Should().Contain("Agricultural");
+    json.Should().Contain("Income capitalization");
+    // 40 acres * $400/acre income = $16,000 / 0.08 cap rate = $200,000 current use value
+    json.Should().Contain("200000");
+    json.Should().Contain("rollback");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_CurrentUse_Agricultural_StatutoryRate()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    // No income data → uses statutory per-acre rate ($500/acre)
+    var request = new DaisController.CurrentUseRequest("agricultural", 25m, 12_000m, null, null);
+    var result = controller.CalculateCurrentUseAssessment(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("Statutory per-acre rate");
+    // 25 acres × $500/acre = $12,500 current use value
+    json.Should().Contain("12500");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_CurrentUse_Timber()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.CurrentUseRequest("timber", 10m, 8_000m, null, null);
+    var result = controller.CalculateCurrentUseAssessment(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("Timber");
+    // 10 acres × $200/acre = $2,000 current use value vs $80,000 market
+    json.Should().Contain("2000");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_CurrentUse_OpenSpace()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.CurrentUseRequest("open-space", 5m, 20_000m, null, null);
+    var result = controller.CalculateCurrentUseAssessment(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("Open Space");
+    json.Should().Contain("10"); // 10-year commitment for open space
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_CurrentUse_BelowMinAcreage()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    // Agricultural requires 20 acres minimum
+    var request = new DaisController.CurrentUseRequest("agricultural", 10m, 15_000m, null, null);
+    var result = controller.CalculateCurrentUseAssessment(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":false");
+    json.Should().Contain("Minimum");
+    json.Should().Contain("20");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_CurrentUse_InvalidClassification()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.CurrentUseRequest("industrial", 30m, 10_000m, null, null);
+    var result = controller.CalculateCurrentUseAssessment(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_CurrentUse_ZeroAcreage_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.CurrentUseRequest("agricultural", 0m, 15_000m, null, null);
+    var result = controller.CalculateCurrentUseAssessment(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── POST api/dais/exempt/historic-property/calculate ──────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_HistoricProperty_NationalRegister_50PctReduction()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.HistoricPropertyRequest(400_000m, 120_000, true, false, 2015);
+    var result = controller.CalculateHistoricPropertyValuation(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("84.26");
+    json.Should().Contain("200000"); // 50% of $400,000
+    json.Should().Contain("10 years");
+    json.Should().Contain("Secretary of Interior");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_HistoricProperty_LocalRegister()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.HistoricPropertyRequest(300_000m, 100_000, false, true, 2020);
+    var result = controller.CalculateHistoricPropertyValuation(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":true");
+    json.Should().Contain("150000"); // 50% of $300,000
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_HistoricProperty_NotOnRegister()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.HistoricPropertyRequest(250_000m, 75_000, false, false, null);
+    var result = controller.CalculateHistoricPropertyValuation(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"eligible\":false");
+    json.Should().Contain("National Register");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_HistoricProperty_RehabThreshold()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    // Rehab cost $40K is < 25% of $200K assessed ($50K minimum)
+    var request = new DaisController.HistoricPropertyRequest(200_000m, 40_000, true, false, 2018);
+    var result = controller.CalculateHistoricPropertyValuation(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"meetsThreshold\":false");
+    json.Should().Contain("50000"); // 25% of $200K = $50K minimum
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_HistoricProperty_ZeroAssessedValue_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.HistoricPropertyRequest(0m, 50_000, true, false, 2020);
+    var result = controller.CalculateHistoricPropertyValuation(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── POST api/dais/exempt/eligibility-check ────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_EligibilityCheck_SeniorMatches()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.EligibilityCheckRequest(
+        250_000m, "Residential", null, 65, false, 30_000m, false, null);
+    var result = controller.CheckExemptionEligibility(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Senior/Disabled Exemption");
+    json.Should().Contain("84.36.381");
+    json.Should().Contain("Tier 1");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_EligibilityCheck_CurrentUseMatches()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.EligibilityCheckRequest(
+        500_000m, "Agricultural", 30m, null, null, null, false, "agricultural");
+    var result = controller.CheckExemptionEligibility(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Current Use");
+    json.Should().Contain("84.34");
+    json.Should().Contain("Agricultural");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_EligibilityCheck_HistoricMatches()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.EligibilityCheckRequest(
+        350_000m, "Commercial", null, null, null, null, true, null);
+    var result = controller.CheckExemptionEligibility(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Historic Property");
+    json.Should().Contain("84.26");
+    json.Should().Contain("50%");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_EligibilityCheck_NoMatch()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.EligibilityCheckRequest(
+        200_000m, "Commercial", null, null, null, null, false, null);
+    var result = controller.CheckExemptionEligibility(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("No matching exemption");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_EligibilityCheck_MultipleMatches()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    // Senior + historic
+    var request = new DaisController.EligibilityCheckRequest(
+        250_000m, "Residential", null, 68, false, 35_000m, true, null);
+    var result = controller.CheckExemptionEligibility(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Senior/Disabled");
+    json.Should().Contain("Historic Property");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Exemptions")]
+  public void Dais_EligibilityCheck_ZeroAssessedValue_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.EligibilityCheckRequest(
+        0m, null, null, null, null, null, false, null);
+    var result = controller.CheckExemptionEligibility(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── Internal: Tier determination unit tests ───────────────────────
+
+  [Theory]
+  [Trait("Category", "Dais-Exemptions")]
+  [InlineData(0, 1)]
+  [InlineData(20_000, 1)]
+  [InlineData(35_000, 1)]
+  [InlineData(35_001, 2)]
+  [InlineData(40_000, 2)]
+  [InlineData(45_000, 2)]
+  [InlineData(45_001, 3)]
+  [InlineData(50_000, 3)]
+  [InlineData(58_423, 3)]
+  [InlineData(58_424, 0)]
+  [InlineData(100_000, 0)]
+  public void Dais_SeniorTierDetermination(decimal income, int expectedTier)
+  {
+    var tier = DaisController.DetermineSeniorExemptionTier(income);
+    tier.TierNumber.Should().Be(expectedTier);
+  }
 }
