@@ -1,6 +1,6 @@
-# TerraFusion OS — Progress Truth Ledger v7
+# TerraFusion OS — Progress Truth Ledger v8
 
-Date: March 8, 2026 (R5 Full Completion Complete)
+Date: March 8, 2026 (Phase 4 Sprint 2 Complete)
 Branch: `claude/review-progress-ledger-a8iw5`
 
 ## Context
@@ -734,6 +734,96 @@ Manifest: v1.7.0 (38 tools, 38 handlers, 0 stubs)
 
 ---
 
+## Phase 4 Sprint 2: Auth Security Persistence + FIPS Validation (March 8, 2026)
+
+### Ticket 1 (P0): Auth Security State Storage Migration — COMPLETE
+
+Migrated all in-memory auth security state to persistent stores, closing the production blocker.
+
+| Component | Before | After | Store |
+|-----------|--------|-------|-------|
+| Account lockout tracking | `ConcurrentDictionary<string, List<DateTime>>` | `ILockoutStore` → `RedisLockoutStore` | Redis (IDistributedCache) |
+| Token revocation | `ConcurrentDictionary<string, byte>` | `ITokenRevocationStore` → `RedisTokenRevocationStore` | Redis (IDistributedCache) |
+| Password history | `ConcurrentDictionary<string, List<string>>` | `IPasswordHistoryStore` → `SqlPasswordHistoryStore` | SQL (EF Core) |
+
+**Key implementation details:**
+- `ProductionAuthenticationService` refactored to inject `ILockoutStore`, `ITokenRevocationStore`, `IPasswordHistoryStore` + `IOptions<FeatureFlagsOptions>`
+- All store parameters nullable (`= null`) for backward DI compatibility
+- `DeterministicGuid()` helper bridges string username/userId to Guid for store APIs
+- Per-user token revocation via `iat` timestamp comparison (revokes all tokens issued before logout)
+- In-memory `ConcurrentDictionary` logic preserved as fallback when flags OFF or stores null
+- Feature flags in `appsettings.Production.json` flipped to `true`:
+  - `UseAccountLockout: true`
+  - `UsePasswordHistory: true`
+  - `UseCommonPasswordCheck: true`
+  - `EnforceFipsCompliance: true`
+
+**New files:**
+- `backend/src/TerraFusion.Core/Security/TokenRevocation/ITokenRevocationStore.cs`
+- `backend/src/TerraFusion.Core/Security/TokenRevocation/RedisTokenRevocationStore.cs`
+
+**Modified files:**
+- `backend/TerraFusion.Security/ProductionAuthenticationService.cs` (+179/-33 lines)
+- `backend/src/TerraFusion.API/Program.cs` (DI registration for token revocation + FIPS service)
+- `backend/src/TerraFusion.API/appsettings.Production.json` (flags ON, RequireHttps=true, RequireFipsMode=true)
+
+**Commits:** `136d9e53a`
+
+---
+
+### Ticket 2 (P1): FIPS 140-2 Cryptographic Validation Evidence — COMPLETE
+
+Implemented startup FIPS mode validation and compliance documentation for SC-13.
+
+| Component | Detail |
+|-----------|--------|
+| `FipsValidationService` | IHostedService — validates host OS FIPS mode at startup |
+| Windows detection | Reads `DOTNET_SYSTEM_SECURITY_CRYPTOGRAPHY_USEFIPSALGORITHMS` env var |
+| Linux detection | Reads `/proc/sys/crypto/fips_enabled` kernel parameter |
+| Production behavior | Throws `InvalidOperationException` (blocks startup) if FIPS not detected |
+| Development behavior | Logs warning, continues |
+| SC-13 evidence doc | CMVP certificates (#3197 Windows CNG, #4282 OpenSSL, #4218 Azure KV) |
+
+**New files:**
+- `backend/src/TerraFusion.API/Security/FipsValidationService.cs`
+- `docs/compliance/SC-13-cryptographic-protection.md`
+
+**Commits:** `136d9e53a`
+
+---
+
+### Integration Tests — 19 test methods
+
+| Test Suite | Tests | Coverage |
+|-----------|-------|----------|
+| AuthSecurityStoreTests | 16 | Lockout (5), Token Revocation (5), Password History (5), edge cases |
+| FipsValidationTests | 3 | Disabled mode, dev environment, StopAsync |
+
+**New files:**
+- `backend/src/TerraFusion.API.Tests/Security/AuthSecurityStoreTests.cs`
+- `backend/src/TerraFusion.API.Tests/Security/FipsValidationTests.cs`
+
+**Commits:** `fdb3402fa`
+
+---
+
+### Phase 4 Sprint 2 Summary
+
+| Metric | Before Sprint 2 | After Sprint 2 |
+|--------|-----------------|----------------|
+| In-memory security stores | 3 (lockout, revocation, password) | **0** (all persistent) |
+| Feature flags enabled (prod) | 0/4 | **4/4** |
+| FIPS startup validation | None | **FipsValidationService** (blocks prod) |
+| SC-13 compliance evidence | None | **Full CMVP documentation** |
+| Auth security tests | 0 | **19** |
+| RequireHttps (prod) | false | **true** |
+| Token revocation persistence | Lost on restart | **Redis with TTL** |
+| Password history persistence | Lost on restart | **SQL with 90-day retention** |
+
+**Both Phase 4 follow-up tickets are CLOSED.** Production deployment blocker resolved.
+
+---
+
 *Classification: Internal working document*
-*Source: `handlers.real.ts` (38 handlers), `PilotController.ts`, `TraceStore.ts`, `MuseController.cs`, `AtlasController.cs`, `DossierController.cs`, `toolServiceRouter.ts`, `useAuthClaims.ts`, `ragAPI.ts`, `MetricsCollector.ts`, `KernelExecutionService.cs`, `EmailService.cs`, service files, controller source code, gate output (87/87), evidence verification gate*
-*Last verified: March 8, 2026 — ledger v7 (R5 complete)*
+*Source: `handlers.real.ts` (38 handlers), `PilotController.ts`, `TraceStore.ts`, `MuseController.cs`, `AtlasController.cs`, `DossierController.cs`, `toolServiceRouter.ts`, `useAuthClaims.ts`, `ragAPI.ts`, `MetricsCollector.ts`, `KernelExecutionService.cs`, `EmailService.cs`, `ProductionAuthenticationService.cs`, `FipsValidationService.cs`, `RedisTokenRevocationStore.cs`, service files, controller source code, gate output (87/87), evidence verification gate*
+*Last verified: March 8, 2026 — ledger v8 (Phase 4 Sprint 2 complete)*
