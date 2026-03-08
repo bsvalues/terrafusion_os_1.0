@@ -29,8 +29,22 @@ namespace TerraFusion.Core.Interfaces
         /// Stop active demonstration and cleanup resources
         /// </summary>
         /// <param name="demoId">Unique demonstration identifier</param>
-        /// <returns>Success status</returns>
+        /// <returns>Cancellation result with status details</returns>
         Task<bool> StopDemonstrationAsync(string demoId);
+
+        /// <summary>
+        /// Get list of available demonstration scenarios
+        /// </summary>
+        /// <returns>List of demo scenarios with descriptions</returns>
+        Task<IEnumerable<object>> GetAvailableScenariosAsync();
+
+        /// <summary>
+        /// Get historical demonstration results
+        /// </summary>
+        /// <param name="jurisdiction">Government jurisdiction filter (optional)</param>
+        /// <param name="limit">Maximum results to return</param>
+        /// <returns>List of past demonstration results</returns>
+        Task<IEnumerable<object>> GetDemoHistoryAsync(string? jurisdiction = null, int limit = 10);
     }
 
     /// <summary>

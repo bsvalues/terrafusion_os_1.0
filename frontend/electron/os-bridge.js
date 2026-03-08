@@ -216,6 +216,7 @@ class TerraFusionOSBridge {
     });
 
     conn.onclose(err => {
+      this._stopHeartbeat();
       this.state.status = 'disconnected';
       this.state.authenticated = false;
       this.state.lastError = err ? String(err) : null;
@@ -224,9 +225,12 @@ class TerraFusionOSBridge {
 
     // Example server-to-client handlers (to be implemented server-side)
     conn.on('AuthenticationSuccess', payload => {
+      console.log('[OSBridge] Authentication successful, sessionId:', payload?.sessionId);
       this.state.authenticated = true;
       this.state.sessionId = payload?.sessionId ?? null;
       this.state.status = 'authenticated';
+      this.state.reconnectAttempts = 0;
+      this.state.lastError = null;
       this.state.loadedModules = [];
       this.state.moduleStatuses = {};
       this._emitState();
@@ -300,8 +304,26 @@ class TerraFusionOSBridge {
     const countyId = 'benton';
     const legacySystem = 'PACS_9.0';
 
-    // Generate HMAC-signed auth envelope in main process
-    const secret = process.env.TF_OS_SHARED_SECRET || process.env.TF_VAULT_KEY || 'dev-shared-secret';
+    console.log('[OSBridge] Starting auth handshake for county:', countyId);
+
+    // Retrieve credentials from secure vault if available
+    let vaultCredentials = null;
+    try {
+      vaultCredentials = await this._vault.retrieveCountyCredentials(countyId);
+      if (vaultCredentials) {
+        console.log('[OSBridge] Retrieved credentials from secure vault');
+      } else {
+        console.log('[OSBridge] No vault credentials found, using environment secret');
+      }
+    } catch (err) {
+      console.log('[OSBridge] Vault retrieval failed, falling back to environment secret:', String(err));
+    }
+
+    // Generate HMAC-SHA256 signed auth envelope
+    const secret = (vaultCredentials && vaultCredentials.sharedSecret)
+      || process.env.TF_OS_SHARED_SECRET
+      || process.env.TF_VAULT_KEY
+      || 'dev-shared-secret';
     const payload = {
       CountyId: countyId,
       LegacySystem: legacySystem,
@@ -311,41 +333,104 @@ class TerraFusionOSBridge {
     const canonical = JSON.stringify(payload);
     const hmac = crypto.createHmac('sha256', Buffer.from(secret, 'utf8'));
     hmac.update(Buffer.from(canonical, 'utf8'));
-    const signature = hmac.digest('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+    const signature = hmac.digest('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const envelope = { Payload: payload, Signature: signature, Alg: 'HS256' };
 
+    // Wrap the invoke in a timeout to avoid hanging indefinitely
+    const AUTH_TIMEOUT_MS = 10000;
+
     try {
-      await this.state.connection.invoke('AuthenticateOS', {
-        CountyId: countyId,
-        LegacySystem: legacySystem,
-        Credentials: envelope
-      });
+      await Promise.race([
+        this.state.connection.invoke('AuthenticateOS', {
+          CountyId: countyId,
+          LegacySystem: legacySystem,
+          Credentials: envelope
+        }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth handshake timed out after 10s')), AUTH_TIMEOUT_MS)
+        )
+      ]);
+      console.log('[OSBridge] Auth handshake invoke completed, awaiting server response');
+      // Note: actual authenticated state is set by the 'AuthenticationSuccess' event handler
     } catch (err) {
-      this.state.lastError = String(err);
+      const errorMsg = String(err);
+      console.log('[OSBridge] Auth handshake failed:', errorMsg);
+      this.state.lastError = errorMsg;
       this.state.status = 'error';
       this._emitState();
-      throw err;
+
+      // Schedule retry with exponential backoff (max 30s)
+      const attempt = ++this.state.reconnectAttempts;
+      const retryDelay = Math.min(30000, 1000 * Math.pow(2, attempt));
+      console.log('[OSBridge] Scheduling auth retry in', retryDelay, 'ms (attempt', attempt, ')');
+      setTimeout(() => {
+        if (this.state.connection && this.state.status === 'error') {
+          this._performAuthHandshake().catch(() => {
+            // Retry errors are handled inside _performAuthHandshake
+          });
+        }
+      }, retryDelay);
     }
   }
 
   _startHeartbeat() {
-    if (this._heartbeatTimer) {
-      clearInterval(this._heartbeatTimer);
+    this._stopHeartbeat();
+
+    if (!this.state.connection || !this.state.authenticated) {
+      console.log('[OSBridge] Skipping heartbeat start: not connected or not authenticated');
+      return;
     }
-    if (!this.state.connection || !this.state.authenticated) return;
+
+    console.log('[OSBridge] Starting heartbeat (30s interval)');
+    this._heartbeatFailCount = 0;
+    this._lastHeartbeatResponse = Date.now();
+
+    const HEARTBEAT_INTERVAL_MS = 30000;
+    const MAX_CONSECUTIVE_FAILURES = 3;
 
     this._heartbeatTimer = setInterval(async () => {
       try {
         await this.state.connection.invoke('Heartbeat', {
-          sessionId: this.state.sessionId,
-          ts: Date.now()
+          SessionId: this.state.sessionId,
+          Ts: Date.now()
         });
+        this._heartbeatFailCount = 0;
+        this._lastHeartbeatResponse = Date.now();
       } catch (err) {
-        // Allow reconnect policy to handle
-        this.state.lastError = String(err);
+        this._heartbeatFailCount++;
+        const errorMsg = String(err);
+        console.log('[OSBridge] Heartbeat failed (' + this._heartbeatFailCount + '/' + MAX_CONSECUTIVE_FAILURES + '):', errorMsg);
+        this.state.lastError = errorMsg;
         this._emitState();
+
+        if (this._heartbeatFailCount >= MAX_CONSECUTIVE_FAILURES) {
+          console.log('[OSBridge] ' + MAX_CONSECUTIVE_FAILURES + ' consecutive heartbeat failures, triggering reconnection');
+          this._stopHeartbeat();
+          this.state.status = 'connecting';
+          this.state.authenticated = false;
+          this._emitState();
+
+          // Attempt to restart the connection
+          try {
+            await this.state.connection.stop();
+          } catch (_) {
+            // Connection may already be closed
+          }
+          // Re-initialize the full connection and auth flow
+          this.initialize().catch(initErr => {
+            console.log('[OSBridge] Reconnection after heartbeat failure failed:', String(initErr));
+          });
+        }
       }
-    }, 15000);
+    }, HEARTBEAT_INTERVAL_MS);
+  }
+
+  _stopHeartbeat() {
+    if (this._heartbeatTimer) {
+      clearInterval(this._heartbeatTimer);
+      this._heartbeatTimer = null;
+      console.log('[OSBridge] Heartbeat stopped');
+    }
   }
 
   async send(method, payload) {
@@ -368,21 +453,48 @@ class TerraFusionOSBridge {
   }
 
   async _flushQueue() {
-    if (!this.state.connection || this.state.status !== 'authenticated') return;
+    if (!this.state.connection || this.state.status !== 'authenticated') {
+      console.log('[OSBridge] Queue flush skipped: not authenticated');
+      return;
+    }
+
     const items = this._queue.drain();
+    if (items.length === 0) {
+      console.log('[OSBridge] Queue flush: no messages to flush');
+      return;
+    }
+
+    console.log('[OSBridge] Flushing message queue:', items.length, 'message(s)');
+    let sent = 0;
+
     for (const item of items) {
+      // Check connection is still valid mid-flush
+      if (!this.state.connection || this.state.status !== 'authenticated') {
+        console.log('[OSBridge] Connection lost during flush, re-enqueuing remaining', items.length - sent, 'message(s)');
+        // Re-enqueue this item and all remaining items
+        for (let i = sent; i < items.length; i++) {
+          this._queue.enqueue(items[i]);
+        }
+        break;
+      }
+
       try {
-        // Fire and forget to avoid blocking flush sequence
         // eslint-disable-next-line no-await-in-loop
         await this.state.connection.invoke(item.method, item.payload);
+        sent++;
       } catch (err) {
-        // Re-enqueue failed items to try later
-        this._queue.enqueue(item);
+        console.log('[OSBridge] Queue flush failed on message', sent + 1, '(' + item.method + '):', String(err));
+        // Re-enqueue the failed item and all remaining items to preserve order
+        for (let i = sent; i < items.length; i++) {
+          this._queue.enqueue(items[i]);
+        }
         this.state.lastError = String(err);
         this._emitState();
-        break; // stop flush on first failure to avoid tight loop
+        break;
       }
     }
+
+    console.log('[OSBridge] Queue flush complete: sent', sent, 'of', items.length, 'message(s)');
   }
 }
 

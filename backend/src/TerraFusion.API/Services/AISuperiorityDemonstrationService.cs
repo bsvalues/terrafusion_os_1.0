@@ -4,9 +4,19 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Text.Json;
 using TerraFusion.Core.Models;
-using TerraFusion.Core.Interfaces;
 using TerraFusion.API.Models;
 using AIDemo = TerraFusion.API.Models.AIDemo;
+// Use specific Core.Interfaces types to avoid ambiguity with local types
+// (IAISuperiorityDemonstrationService, TestScenario, AgentBattalion, AIConsciousnessLevel defined locally)
+using IHarrisPACSIntegrationService = TerraFusion.Core.Interfaces.IHarrisPACSIntegrationService;
+using IAdvancedAIAgentOrchestrator = TerraFusion.Core.Interfaces.IAdvancedAIAgentOrchestrator;
+using IElitePerformanceMonitoringService = TerraFusion.Core.Interfaces.IElitePerformanceMonitoringService;
+using IQuantumMetricsService = TerraFusion.Core.Interfaces.IQuantumMetricsService;
+using CoreAISwarmConfiguration = TerraFusion.Core.Interfaces.AISwarmConfiguration;
+using CorePerformanceTargets = TerraFusion.Core.Interfaces.PerformanceTargets;
+using CoreAIConsciousnessLevel = TerraFusion.Core.Interfaces.AIConsciousnessLevel;
+using CoreHarrisPACSConfiguration = TerraFusion.Core.Interfaces.HarrisPACSConfiguration;
+using CoreTestScenario = TerraFusion.Core.DTOs.TestScenario;
 
 namespace TerraFusion.API.Services
 {
@@ -131,18 +141,18 @@ namespace TerraFusion.API.Services
             await BroadcastDemoStatusAsync(demo);
 
             // Deploy 1,008 AI agents across specialized capabilities
-            var swarmConfig = new AISwarmConfiguration
+            var swarmConfig = new CoreAISwarmConfiguration
             {
                 TotalAgents = 1008,
                 CountyCode = request.CountyCode,
-                PerformanceTargets = new PerformanceTargets
+                PerformanceTargets = new CorePerformanceTargets
                 {
                     ResponseTime = TimeSpan.FromMilliseconds(10), // Championship 10ms target
                     Accuracy = 0.999m, // 99.9% accuracy requirement
                     Throughput = 10000 // 10K operations per second
                 },
                 QuantumOptimization = true,
-                ConsciousnessLevel = AIConsciousnessLevel.Elite
+                ConsciousnessLevel = CoreAIConsciousnessLevel.Elite
             };
 
             var swarmDeployment = await _aiOrchestrator.DeployChampionshipSwarmAsync(swarmConfig);
@@ -218,7 +228,14 @@ namespace TerraFusion.API.Services
             // Initialize each battalion
             foreach (var battalion in demo.AgentBattalions.Values)
             {
-                await _aiOrchestrator.InitializeBattalionAsync(battalion);
+                // Convert local AgentBattalion to Core DTO AgentBattalion for orchestrator
+                var coreBattalion = new TerraFusion.Core.DTOs.AgentBattalion
+                {
+                    BattalionName = battalion.Name,
+                    Specialization = battalion.Specialization,
+                    AgentCount = battalion.AgentCount
+                };
+                await _aiOrchestrator.InitializeBattalionAsync(coreBattalion, demo.TerraFusionSwarmId ?? string.Empty);
                 _logger.LogInformation($"🎖️ Battalion '{battalion.Name}' deployed with {battalion.AgentCount} agents");
             }
         }
@@ -234,7 +251,7 @@ namespace TerraFusion.API.Services
             await BroadcastDemoStatusAsync(demo);
 
             // Connect to Harris PACS and gather baseline metrics
-            var harrisPacsConfig = new HarrisPACSConfiguration
+            var harrisPacsConfig = new CoreHarrisPACSConfiguration
             {
                 CountyCode = request.CountyCode,
                 Version = "12.4.7",
@@ -242,17 +259,17 @@ namespace TerraFusion.API.Services
                 PerformanceMonitoring = true
             };
 
-            var baselineResults = await _harrisPacsService.GatherBaselineMetricsAsync(request.CountyCode);
+            var baselineResults = await _harrisPacsService.GatherBaselineMetricsAsync(harrisPacsConfig);
 
             demo.HarrisPACSResults = new PerformanceResults
             {
                 SystemVersion = "Harris PACS v12.4.7",
-                ResponseTime = TimeSpan.FromMilliseconds((double)(baselineResults.TryGetValue("AverageResponseTime", out var avgResp) ? avgResp : 0)),
-                Throughput = (int)(baselineResults.TryGetValue("RecordsPerSecond", out var throughput) ? throughput : 0),
-                Accuracy = (double)(baselineResults.TryGetValue("DataAccuracy", out var accuracy) ? accuracy : 0),
-                MemoryUsage = (long)(baselineResults.TryGetValue("MemoryConsumption", out var memory) ? memory : 0),
-                CPUUtilization = (double)(baselineResults.TryGetValue("CPUUtilization", out var cpu) ? cpu : 0),
-                ErrorRate = (double)(baselineResults.TryGetValue("ErrorRate", out var errorRate) ? errorRate : 0),
+                ResponseTime = TimeSpan.FromMilliseconds(baselineResults.AverageResponseTime),
+                Throughput = baselineResults.RecordsPerSecond,
+                Accuracy = (double)baselineResults.DataAccuracy,
+                MemoryUsage = baselineResults.MemoryConsumption,
+                CPUUtilization = baselineResults.CPUUtilization,
+                ErrorRate = (double)baselineResults.ErrorRate,
                 LastUpdated = DateTime.UtcNow
             };
 
@@ -365,11 +382,22 @@ namespace TerraFusion.API.Services
 
             try
             {
+                // Convert local TestScenario to Core interface TestScenario for orchestrator calls
+                var coreScenario = new CoreTestScenario
+                {
+                    ScenarioName = scenario.Name,
+                    ScenarioType = "PERFORMANCE_COMPARISON",
+                    PropertyCount = scenario.RecordCount,
+                    AccuracyTarget = scenario.AccuracyTarget
+                };
+
                 // Deploy specialized agents for scenario
-                var agentDeployment = await _aiOrchestrator.DeployScenarioAgentsAsync(scenario);
+                var agentDeployment = await _aiOrchestrator.DeployScenarioAgentsAsync(
+                    demo.TerraFusionSwarmId ?? string.Empty, coreScenario);
 
                 // Execute scenario with quantum-enhanced processing
-                var executionResult = await _aiOrchestrator.ExecuteQuantumScenarioAsync(scenario);
+                var executionResult = await _aiOrchestrator.ExecuteQuantumScenarioAsync(
+                    agentDeployment, coreScenario);
 
                 stopwatch.Stop();
 
@@ -418,8 +446,17 @@ namespace TerraFusion.API.Services
 
             try
             {
+                // Convert local TestScenario to Core interface TestScenario for Harris PACS call
+                var coreScenario = new CoreTestScenario
+                {
+                    ScenarioName = scenario.Name,
+                    ScenarioType = "BASELINE_COMPARISON",
+                    PropertyCount = scenario.RecordCount,
+                    AccuracyTarget = scenario.AccuracyTarget
+                };
+
                 // Execute scenario through Harris PACS API
-                var executionResult = await _harrisPacsService.ExecuteScenarioAsync(scenario);
+                var executionResult = await _harrisPacsService.ExecuteScenarioAsync(coreScenario);
                 stopwatch.Stop();
 
                 // Dynamic casting for property access on anonymous object

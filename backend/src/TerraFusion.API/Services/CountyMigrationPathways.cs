@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using System.Security;
 using TerraFusion.API.Models;
 using TerraFusion.API.Hubs;
 using TerraFusion.API.Services;

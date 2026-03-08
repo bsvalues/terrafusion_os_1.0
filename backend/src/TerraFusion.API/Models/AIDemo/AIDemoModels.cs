@@ -243,6 +243,21 @@ public class AIPerformanceComparison
     public bool ChampionshipStandardMet { get; set; }
 
     /// <summary>
+    /// Performance advantage factor over baseline (e.g., 15.3x faster)
+    /// </summary>
+    public decimal PerformanceAdvantage { get; set; }
+
+    /// <summary>
+    /// Accuracy advantage over baseline (percentage points)
+    /// </summary>
+    public decimal AccuracyAdvantage { get; set; }
+
+    /// <summary>
+    /// Efficiency advantage over baseline
+    /// </summary>
+    public decimal EfficiencyAdvantage { get; set; }
+
+    /// <summary>
     /// Detailed comparison breakdown by metric category
     /// </summary>
     public Dictionary<string, ComparisonMetric> DetailedComparison { get; set; } = new();
@@ -293,6 +308,16 @@ public class ChampionshipMetricsSnapshot
     /// All championship standards met
     /// </summary>
     public bool MeetsAllStandards { get; set; }
+
+    /// <summary>
+    /// Timestamp when metrics were captured
+    /// </summary>
+    public DateTime Timestamp { get; set; }
+
+    /// <summary>
+    /// Overall superiority score vs baseline
+    /// </summary>
+    public decimal OverallSuperiority { get; set; }
 
     /// <summary>
     /// Individual standard validation results

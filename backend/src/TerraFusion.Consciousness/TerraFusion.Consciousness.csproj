@@ -34,6 +34,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="Microsoft.ML" />
+    <PackageReference Include="Microsoft.ML.FastTree" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.Data.Sqlite" />
