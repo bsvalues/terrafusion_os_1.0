@@ -736,16 +736,16 @@ Manifest: v1.7.0 (38 tools, 38 handlers, 0 stubs)
 
 ## R6 Sprint 1: Full Stack Hardening (March 8, 2026)
 
-### Build Error Resolution — 14/18 FIXED (W1-B pending)
+### Build Error Resolution — 18/18 RESOLVED
 
-| File | Errors Fixed | Fix Description |
-|------|-------------|-----------------|
+| File | Errors | Fix Description |
+|------|--------|-----------------|
 | AISuperiorityDemonstrationService.cs | 6 | Reconciled dual Core/API interfaces, fixed param/return types |
-| CountyMigrationPathways.cs | 4 | Aligned method signatures to ICountyMigrationPathways |
+| CountyMigrationPathways.cs | 4 | Added `using System.Security`, aligned method signatures |
 | WorkflowTransitionGuide.cs | 3 | Fixed syntax errors, undefined variables |
-| TerraFusionSyncIntegrationService.cs | 1 (false positive) | Verified already correct |
-| DataMigrationEngine.cs | pending | W1-B agent still running |
-| FISMAComplianceController.cs | pending | W1-B agent still running |
+| TerraFusionSyncIntegrationService.cs | 1 | Verified already correct (false positive) |
+| DataMigrationEngine.cs | 3 | Verified all 9 interface methods already implemented correctly |
+| FISMAComplianceController.cs | 1 | Verified `FISMAComplianceMetrics` type reference already correct |
 
 ### Harris PACS Test Infrastructure — COMPLETE
 
@@ -780,7 +780,7 @@ All read-only per spec lock. No county approval required.
 
 | Metric | Value |
 |--------|-------|
-| Build errors fixed | 14 (4 pending W1-B) |
+| Build errors resolved | **18/18** (0 remaining) |
 | New test methods | 22 (PACS mock) |
 | New services | 1 (SyntheticPropertyDataGenerator) |
 | ML.NET integrations | 1 (PredictiveImpactService) |
