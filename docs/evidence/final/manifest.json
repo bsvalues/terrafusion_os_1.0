@@ -1,0 +1,83 @@
+{
+  "branchHeadSha": "0afe584756ffd60aa2c986bde8ea2e0edc7bede6",
+  "canonVersion": "r1-canon-2026-03-07",
+  "generatedAt": "2026-03-07T15:48:16.519Z",
+  "artifacts": [
+    {
+      "path": "docs/evidence/cc/atlas-cutover.md",
+      "sha256": "6d424ef020aacb4fe57faa0ad88526d43658ee34d83a9174f52eaf5742ec1ec8"
+    },
+    {
+      "path": "docs/evidence/cc/dossier-cutover.md",
+      "sha256": "8a3303efb4670ae4ac78ab422d4eb6861b3a070500821ec317aaa2b0af11be38"
+    },
+    {
+      "path": "docs/evidence/cc/fake-path-elimination.md",
+      "sha256": "e21816cca4c6ef9d13c8e6358324231fcd5bb8b3ecdb33e9e3a4945b4212321b"
+    },
+    {
+      "path": "docs/evidence/cc/forge-cutover.md",
+      "sha256": "51b7fcfd04d34ef205920ddbd20bdd749d60430d9d7b5a38ee08e46628aa1517"
+    },
+    {
+      "path": "docs/evidence/cc/signoff.md",
+      "sha256": "86e761b838eb5ad1f4a82015b3afdd45d1904e2f956e5653e6242c29bc3f732c"
+    },
+    {
+      "path": "docs/evidence/cc/surface-inventory.md",
+      "sha256": "768f3542e299e21e607d996574d5e8f16e39e466eb19dc201223a4f1b2eef8f4"
+    },
+    {
+      "path": "docs/evidence/cp/governance-contracts.md",
+      "sha256": "f1fc7658d9486d168910bd6019374337a972919d5f3006b710f2d467e3696e4f"
+    },
+    {
+      "path": "docs/evidence/cp/handler-registry.md",
+      "sha256": "a984dfcf4452dd705627c90ff823d9379a76f23c21aba1c049524ca9bcc77f8a"
+    },
+    {
+      "path": "docs/evidence/cp/r1-proof-tools.md",
+      "sha256": "8d91aa9882fe47f9eb141ba91cb6630f25960b3e743d04ea7cbee5694139c427"
+    },
+    {
+      "path": "docs/evidence/cp/signoff.md",
+      "sha256": "5c1a49f7466666a704e4571f93cb0cb695fc833f66175bd6d99f22d758eeb19e"
+    },
+    {
+      "path": "docs/evidence/cp/trace-persistence.md",
+      "sha256": "3239317dc52aba96cef53f502156d28611669766607dd054eb657d319446e7f2"
+    },
+    {
+      "path": "docs/evidence/cx/auth-audit.md",
+      "sha256": "a9fac1df2820c2ec72483719c03c8a8f2efb5af4f0eb5de44c95f89220ae1517"
+    },
+    {
+      "path": "docs/evidence/cx/backend-hardening.md",
+      "sha256": "316757379d4476da89b26f8f055958ebde14c6770efa17b1bd1f46d69ad3bf3b"
+    },
+    {
+      "path": "docs/evidence/cx/cx-r1-active-surface-closure.md",
+      "sha256": "0aabd04069183fa71f9bb5390946f47d4bc77812a3539608938ca87cdf99ccaa"
+    },
+    {
+      "path": "docs/evidence/cx/cx-r1-forge-contract.md",
+      "sha256": "ea37200dbcbc4120622df8fa47505ab9c2efa87a792d1ec14c03b987f3c45d57"
+    },
+    {
+      "path": "docs/evidence/cx/cx-r1-route-matrix.md",
+      "sha256": "51145b3615e9ca932f25e8d5a1aa155fa8c5e0f85701915b52d35d2a02b03b4a"
+    },
+    {
+      "path": "docs/evidence/cx/endpoint-matrix.md",
+      "sha256": "331770d5a863379a5b535649179c01c55872cf902f14703426b1640f21543703"
+    },
+    {
+      "path": "docs/evidence/cx/signoff.md",
+      "sha256": "d0606138fba2f90fe3cb2a1370939ef387e8074ea75cec81f95d37a13b76f0f5"
+    },
+    {
+      "path": "docs/evidence/final/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

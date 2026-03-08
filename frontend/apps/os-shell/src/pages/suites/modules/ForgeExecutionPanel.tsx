@@ -226,7 +226,7 @@ export default function ForgeExecutionPanel() {
         {!county && (
           <p
             className="text-xs mt-3 font-medium"
-            style={{ color: 'hsl(0 70% 60%)' }}
+            style={{ color: 'hsl(var(--tf-error-hs) 60%)' }}
           >
             No county context in session. Re-authenticate or select a county to enable invocation.
           </p>

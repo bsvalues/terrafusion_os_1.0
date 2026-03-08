@@ -69,10 +69,10 @@ const RECENT_JOBS: PrintJob[] = [
 ];
 
 const STATUS_STYLES: Record<string, { bg: string; fg: string; border: string }> = {
-  complete: { bg: 'hsl(142 71% 45% / 0.15)', fg: 'hsl(142 71% 45%)', border: 'hsl(142 71% 45% / 0.3)' },
-  rendering: { bg: 'hsl(38 92% 50% / 0.15)', fg: 'hsl(38 92% 50%)', border: 'hsl(38 92% 50% / 0.3)' },
+  complete: { bg: 'hsl(var(--tf-success-hs) 45% / 0.15)', fg: 'hsl(var(--tf-success-hs) 45%)', border: 'hsl(var(--tf-success-hs) 45% / 0.3)' },
+  rendering: { bg: 'hsl(var(--tf-warning-hs) 50% / 0.15)', fg: 'hsl(var(--tf-warning-hs) 50%)', border: 'hsl(var(--tf-warning-hs) 50% / 0.3)' },
   queued: { bg: 'hsl(var(--tf-muted) / 0.1)', fg: 'hsl(var(--tf-muted))', border: 'hsl(var(--tf-border))' },
-  failed: { bg: 'hsl(0 84% 60% / 0.15)', fg: 'hsl(0 84% 60%)', border: 'hsl(0 84% 60% / 0.3)' },
+  failed: { bg: 'hsl(0 84% 60% / 0.15)', fg: 'hsl(var(--tf-error-hs) 60%)', border: 'hsl(var(--tf-error-hs) 60% / 0.3)' },
 };
 
 /* -------------------------------------------------------------------------- */

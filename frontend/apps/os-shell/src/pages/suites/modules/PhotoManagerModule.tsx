@@ -26,10 +26,10 @@ interface PropertyPhoto {
 }
 
 const ELEVATION_LABELS: Record<string, { label: string; color: string }> = {
-  front: { label: 'Front', color: 'hsl(200 80% 55%)' },
-  rear: { label: 'Rear', color: 'hsl(140 70% 45%)' },
-  left: { label: 'Left', color: 'hsl(270 70% 60%)' },
-  right: { label: 'Right', color: 'hsl(45 90% 55%)' },
+  front: { label: 'Front', color: 'hsl(var(--tf-network-blue-hs) 55%)' },
+  rear: { label: 'Rear', color: 'hsl(var(--tf-success-hs) 45%)' },
+  left: { label: 'Left', color: 'hsl(var(--tf-info-hs) 60%)' },
+  right: { label: 'Right', color: 'hsl(var(--tf-warning-hs) 55%)' },
   aerial: { label: 'Aerial', color: 'hsl(330 70% 55%)' },
   interior: { label: 'Interior', color: 'hsl(15 80% 55%)' },
   detail: { label: 'Detail', color: 'hsl(var(--tf-muted))' },

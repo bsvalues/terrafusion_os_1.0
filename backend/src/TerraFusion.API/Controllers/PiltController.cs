@@ -10,7 +10,7 @@ namespace TerraFusion.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [AllowAnonymous]
+    [Authorize]
     public class PiltController : ControllerBase
     {
         private readonly ILogger<PiltController> _logger;
@@ -18,6 +18,28 @@ namespace TerraFusion.API.Controllers
         public PiltController(ILogger<PiltController> logger)
         {
             _logger = logger;
+        }
+
+        private ActionResult BuildPostR1DisabledResponse(string operation)
+        {
+            HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
+
+            _logger.LogWarning(
+                "PILT endpoint {Operation} was invoked, but the backend remains Post-R1 and is intentionally disabled",
+                operation);
+
+            var problem = new ProblemDetails
+            {
+                Title = "PILT backend is not enabled for R1",
+                Detail = "The current PILT API was serving hardcoded placeholder data. It is intentionally disabled until a real county-scoped implementation ships.",
+                Status = StatusCodes.Status501NotImplemented,
+                Type = "https://terrafusion.local/problems/pilt-post-r1"
+            };
+
+            problem.Extensions["scope"] = "Post-R1";
+            problem.Extensions["operation"] = operation;
+
+            return StatusCode(StatusCodes.Status501NotImplemented, problem);
         }
 
         public record PiltStatusResponse
@@ -39,41 +61,19 @@ namespace TerraFusion.API.Controllers
         [HttpGet("status")]
         public ActionResult<PiltStatusResponse> GetStatus()
         {
-            var year = DateTime.UtcNow.Year;
-            var response = new PiltStatusResponse(
-                Status: "pilt-ready",
-                FiscalYear: year,
-                TotalPayments: 2800000m,
-                Districts: 20,
-                FederalAcres: 586000,
-                AverageRate: 4.78m
-            );
-            return Ok(response);
+            return BuildPostR1DisabledResponse(nameof(GetStatus));
         }
 
         [HttpGet("districts")]
         public IActionResult GetDistricts()
         {
-            var districts = new List<District>
-            {
-                new("sd-001", "Kennewick School District", "School"),
-                new("sd-002", "Richland School District", "School"),
-                new("fd-001", "Fire District 1", "Fire"),
-                new("fd-002", "Fire District 2", "Fire")
-            };
-            return Ok(new { count = districts.Count, districts });
+            return BuildPostR1DisabledResponse(nameof(GetDistricts));
         }
 
         [HttpGet("receipts")]
         public IActionResult GetReceipts([FromQuery] int? fiscalYear)
         {
-            var year = fiscalYear ?? DateTime.UtcNow.Year;
-            var receipts = new List<Receipt>
-            {
-                new("rcpt-2025-0001", year, "USDOI-BLM", 1800000m, "received"),
-                new("rcpt-2025-0002", year, "USDA-FS", 1000000m, "received")
-            };
-            return Ok(new { count = receipts.Count, receipts });
+            return BuildPostR1DisabledResponse(nameof(GetReceipts));
         }
 
         public record CreateReceiptRequest(int FiscalYear, string Source, decimal Amount);
@@ -81,78 +81,25 @@ namespace TerraFusion.API.Controllers
         [HttpPost("receipts")]
         public IActionResult CreateReceipt([FromBody] CreateReceiptRequest request)
         {
-            if (request is null || request.FiscalYear <= 2000 || string.IsNullOrWhiteSpace(request.Source) || request.Amount <= 0)
-            {
-                return BadRequest(new { error = "Invalid receipt request" });
-            }
-            var id = $"rcpt-{request.FiscalYear}-{Guid.NewGuid().ToString("N")[..6]}";
-            var receipt = new Receipt(id, request.FiscalYear, request.Source, request.Amount, "received");
-            _logger.LogInformation("Created receipt {Id} for {Amount} from {Source}", id, request.Amount, request.Source);
-            return Created($"/api/pilt/receipts/{id}", receipt);
+            return BuildPostR1DisabledResponse(nameof(CreateReceipt));
         }
 
         [HttpPost("calculate/{receiptId}")]
         public IActionResult Calculate(string receiptId, [FromBody] CalculationRequest? request)
         {
-            if (string.IsNullOrWhiteSpace(receiptId))
-            {
-                return BadRequest(new { error = "receiptId is required" });
-            }
-
-            // Simulate lookup
-            var year = DateTime.UtcNow.Year;
-            var amount = 2800000m;
-
-            // Simple equal distribution across four sample districts or by provided weights
-            var districts = new[] { "sd-001", "sd-002", "fd-001", "fd-002" };
-            List<Distribution> distributions;
-            if (request?.Weights is { Count: > 0 })
-            {
-                var totalWeight = request.Weights.Values.Sum();
-                distributions = request.Weights
-                    .Select(kvp => new Distribution(kvp.Key, Math.Round(amount * (kvp.Value / (totalWeight == 0 ? 1 : totalWeight)), 2)))
-                    .ToList();
-            }
-            else
-            {
-                var per = Math.Round(amount / districts.Length, 2);
-                distributions = districts.Select(d => new Distribution(d, per)).ToList();
-            }
-
-            var result = new CalculationResult(
-                CalculationId: $"calc-{Guid.NewGuid().ToString("N")[..8]}",
-                ReceiptId: receiptId,
-                FiscalYear: year,
-                TotalAmount: amount,
-                Distributions: distributions,
-                Status: "calculated"
-            );
-
-            return Ok(result);
+            return BuildPostR1DisabledResponse(nameof(Calculate));
         }
 
         [HttpPost("approve/{calculationId}")]
         public IActionResult Approve(string calculationId)
         {
-            if (string.IsNullOrWhiteSpace(calculationId))
-            {
-                return BadRequest(new { error = "calculationId is required" });
-            }
-            return Ok(new { calculationId, status = "approved", approvedAt = DateTime.UtcNow });
+            return BuildPostR1DisabledResponse(nameof(Approve));
         }
 
         [HttpGet("reports/{year:int}")]
         public IActionResult GetReport(int year)
         {
-            var summary = new
-            {
-                year,
-                totalPayments = 2800000m,
-                districts = 20,
-                federalAcres = 586000,
-                averageRate = 4.78m
-            };
-            return Ok(new { summary, generatedAt = DateTime.UtcNow });
+            return BuildPostR1DisabledResponse(nameof(GetReport));
         }
     }
 }

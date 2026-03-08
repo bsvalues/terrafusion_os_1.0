@@ -4,6 +4,9 @@
  * Phase 5.3: Property Atlas Tab - GIS/Mapping MWUX Slice
  * Real MWUX with layer selection, map placeholder, and query_parcel_layers tool invocation.
  *
+ * Map visualization is schematic (deterministic SVG from parcelId hash).
+ * Real GIS/ArcGIS integration is planned for R2.
+ *
  * Architecture: UI → select layers → query_parcel_layers tool → correlationId UX
  */
 
@@ -113,7 +116,7 @@ function ParcelMapVisualization({
         {/* Grid lines for cartographic feel */}
         <defs>
           <pattern id='grid' width='20' height='20' patternUnits='userSpaceOnUse'>
-            <path d='M 20 0 L 0 0 0 20' fill='none' stroke='rgba(255,255,255,0.05)' strokeWidth='0.5' />
+            <path d='M 20 0 L 0 0 0 20' fill='none' stroke='hsl(var(--tf-text-primary-hs) 100% / 0.05)' strokeWidth='0.5' />
           </pattern>
         </defs>
         <rect width='400' height='300' fill='url(#grid)' />
@@ -121,10 +124,10 @@ function ParcelMapVisualization({
         {/* Aerial imagery simulation (green terrain) */}
         {hasAerial && (
           <g opacity='0.3'>
-            <rect x='40' y='20' width='320' height='260' rx='4' fill='#1a472a' />
-            <circle cx='120' cy='80' r='30' fill='#1f5a2f' />
-            <circle cx='300' cy='200' r='45' fill='#1f5a2f' />
-            <circle cx='220' cy='120' r='20' fill='#245634' />
+            <rect x='40' y='20' width='320' height='260' rx='4' fill='hsl(var(--tf-success-hs) 18%)' />
+            <circle cx='120' cy='80' r='30' fill='hsl(var(--tf-success-hs) 22%)' />
+            <circle cx='300' cy='200' r='45' fill='hsl(var(--tf-success-hs) 22%)' />
+            <circle cx='220' cy='120' r='20' fill='hsl(var(--tf-success-hs) 25%)' />
           </g>
         )}
 
@@ -132,8 +135,8 @@ function ParcelMapVisualization({
         {hasFlood && result.layers.flood && (
           <rect
             x='30' y='180' width='340' height='100' rx='6'
-            fill='rgba(59, 130, 246, 0.15)'
-            stroke='rgba(59, 130, 246, 0.4)'
+            fill='hsl(var(--tf-network-blue-hs) 55% / 0.15)'
+            stroke='hsl(var(--tf-network-blue-hs) 55% / 0.4)'
             strokeWidth='1'
             strokeDasharray='6 3'
           />
@@ -143,8 +146,8 @@ function ParcelMapVisualization({
         {hasZoning && (
           <rect
             x='60' y='40' width='280' height='220' rx='4'
-            fill='rgba(168, 85, 247, 0.1)'
-            stroke='rgba(168, 85, 247, 0.3)'
+            fill='hsl(var(--tf-info-hs) 60% / 0.1)'
+            stroke='hsl(var(--tf-info-hs) 60% / 0.3)'
             strokeWidth='1'
             strokeDasharray='4 2'
           />
@@ -154,19 +157,24 @@ function ParcelMapVisualization({
         {hasBoundary && (
           <polygon
             points={polygon}
-            fill='rgba(34, 211, 238, 0.15)'
-            stroke='rgba(34, 211, 238, 0.8)'
+            fill='hsl(var(--tf-transcend-cyan-hs) 55% / 0.15)'
+            stroke='hsl(var(--tf-transcend-cyan-hs) 55% / 0.8)'
             strokeWidth='2'
           />
         )}
 
         {/* Centroid marker */}
-        <circle cx='200' cy='150' r='4' fill='#f59e0b' />
-        <circle cx='200' cy='150' r='8' fill='none' stroke='#f59e0b' strokeWidth='1' opacity='0.6' />
+        <circle cx='200' cy='150' r='4' fill='hsl(var(--tf-warning-hs) 50%)' />
+        <circle cx='200' cy='150' r='8' fill='none' stroke='hsl(var(--tf-warning-hs) 50%)' strokeWidth='1' opacity='0.6' />
       </svg>
 
+      {/* Schematic disclaimer */}
+      <p className="tf-text-dim text-xs mt-1 text-center italic">
+        Schematic representation — GIS integration planned for R2
+      </p>
+
       {/* Map info bar */}
-      <div className='flex items-center justify-between px-4 py-2 text-xs' style={{ background: 'rgba(0,0,0,0.4)' }}>
+      <div className='flex items-center justify-between px-4 py-2 text-xs' style={{ background: 'hsl(var(--tf-text-primary-hs) 0% / 0.4)' }}>
         <span className='text-white/70'>
           {result.parcelId}
         </span>

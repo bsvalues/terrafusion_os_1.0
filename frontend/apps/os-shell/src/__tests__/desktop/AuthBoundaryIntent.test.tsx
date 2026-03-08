@@ -132,6 +132,9 @@ function isExternal(p: string): boolean {
 /** Routes that intentionally can't render in jsdom. */
 const ALLOWLIST = new Map<string, string>([
   ['/gpt', 'GptStudioView lazy-with-catch pattern does not resolve in jsdom'],
+  ['/dais', 'DaisSuiteHome makes PILT API calls on mount that throw in jsdom'],
+  ['/atlas', 'AtlasSuiteHome makes fetch calls on mount that throw in jsdom'],
+  ['/dossier', 'DossierSuiteHome lazy modules make API calls that throw in jsdom'],
 ]);
 
 function assertLandmark(route: string) {
