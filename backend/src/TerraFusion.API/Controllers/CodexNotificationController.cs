@@ -286,10 +286,10 @@ public class CodexNotificationController : ControllerBase
         await Task.CompletedTask;
         try
         {
-            // This would be implemented with actual database tracking
-            // For now, return a placeholder response
             _logger.LogInformation("Retrieving notification history for last {Days} days", days);
 
+            // Notification history persistence is not yet configured.
+            // Return an honest response indicating the request was received.
             return Ok(new NotificationHistoryDto
             {
                 CountyId = countyId,
@@ -303,7 +303,7 @@ public class CodexNotificationController : ControllerBase
                     { "DivineBalance", 0 },
                     { "Championship", 0 }
                 },
-                Message = "Notification history tracking is configured. History will be available after first notifications are sent."
+                Message = "Notification history request received. Delivery tracking requires notification persistence configuration. Counts will populate once notification storage is enabled."
             });
         }
         catch (Exception ex)

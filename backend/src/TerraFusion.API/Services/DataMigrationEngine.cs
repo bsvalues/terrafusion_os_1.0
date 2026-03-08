@@ -1,11 +1,16 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TerraFusion.API.Models;
 using TerraFusion.API.Interfaces;
+using TerraFusion.Data;
+using TerraFusion.Core.Entities;
 
 namespace TerraFusion.API.Services
 {
@@ -31,6 +36,7 @@ namespace TerraFusion.API.Services
         private readonly ITerraFusionDataService _terraFusionDataService;
         private readonly IDataIntegrityValidator _integrityValidator;
         private readonly IDataTransformationService _transformationService;
+        private readonly TerraFusionDbContext _dbContext;
 
         // Migration State Management
         private readonly ConcurrentDictionary<string, DataMigrationState> _migrationStates;
@@ -41,13 +47,15 @@ namespace TerraFusion.API.Services
             IHarrisPACSIntegrationService harrisService,
             ITerraFusionDataService terraFusionDataService,
             IDataIntegrityValidator integrityValidator,
-            IDataTransformationService transformationService)
+            IDataTransformationService transformationService,
+            TerraFusionDbContext dbContext)
         {
             _logger = logger;
             _harrisService = harrisService;
             _terraFusionDataService = terraFusionDataService;
             _integrityValidator = integrityValidator;
             _transformationService = transformationService;
+            _dbContext = dbContext;
 
             _migrationStates = new ConcurrentDictionary<string, DataMigrationState>();
             _migrationProgress = new ConcurrentDictionary<string, DataMigrationProgress>();
@@ -500,27 +508,139 @@ namespace TerraFusion.API.Services
 
             try
             {
-                // TODO: Implement full data migration logic with actual async operations
-                var result = new DataMigrationResult
+                // Step 1: Resolve the county entity by code (FipsCode)
+                var county = await _dbContext.Counties
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.FipsCode == countyCode || c.Name == countyCode);
+
+                if (county == null)
+                {
+                    return new DataMigrationResult
+                    {
+                        Success = false,
+                        CountyCode = countyCode,
+                        RecordsMigrated = 0,
+                        Message = $"County not found for code: {countyCode}"
+                    };
+                }
+
+                // Step 2: Fetch source property data from Harris PACS via integration service
+                var sourceData = await _harrisService.GetPropertyDataAsync(countyCode);
+                if (sourceData == null || !sourceData.Any())
+                {
+                    return new DataMigrationResult
+                    {
+                        Success = true,
+                        CountyCode = countyCode,
+                        RecordsMigrated = 0,
+                        Message = "No source records found for migration"
+                    };
+                }
+
+                // Step 3: Batch upsert property records with conflict detection
+                const int batchSize = 500;
+                int totalMigrated = 0;
+                var existingParcelIds = await _dbContext.Properties
+                    .Where(p => p.CountyId == county.Id)
+                    .Select(p => p.ParcelId)
+                    .ToListAsync();
+                var existingParcelIdSet = new HashSet<string>(existingParcelIds);
+
+                var batches = sourceData
+                    .Select((item, index) => new { item, index })
+                    .GroupBy(x => x.index / batchSize)
+                    .Select(g => g.Select(x => x.item).ToList())
+                    .ToList();
+
+                foreach (var batch in batches)
+                {
+                    foreach (var sourceRecord in batch)
+                    {
+                        try
+                        {
+                            if (existingParcelIdSet.Contains(sourceRecord.ParcelId))
+                            {
+                                // Update existing property
+                                var existing = await _dbContext.Properties
+                                    .FirstAsync(p => p.ParcelId == sourceRecord.ParcelId && p.CountyId == county.Id);
+                                existing.Address = sourceRecord.Address ?? existing.Address;
+                                existing.OwnerName = sourceRecord.OwnerName ?? existing.OwnerName;
+                                existing.AssessedValue = sourceRecord.AssessedValue;
+                                existing.LandValue = sourceRecord.LandValue;
+                                existing.ImprovementValue = sourceRecord.ImprovementValue;
+                                existing.MarketValue = sourceRecord.MarketValue;
+                                existing.PropertyType = sourceRecord.PropertyType ?? existing.PropertyType;
+                                existing.YearBuilt = sourceRecord.YearBuilt ?? existing.YearBuilt;
+                                existing.TaxYear = sourceRecord.TaxYear;
+                                existing.LastUpdated = DateTime.UtcNow;
+                                existing.UpdatedAt = DateTime.UtcNow;
+                            }
+                            else
+                            {
+                                // Insert new property
+                                var newProperty = new Property
+                                {
+                                    Id = Guid.NewGuid(),
+                                    PropertyId = sourceRecord.PropertyId ?? sourceRecord.ParcelId,
+                                    ParcelId = sourceRecord.ParcelId,
+                                    ParcelNumber = sourceRecord.ParcelNumber ?? sourceRecord.ParcelId,
+                                    Address = sourceRecord.Address ?? string.Empty,
+                                    OwnerName = sourceRecord.OwnerName,
+                                    PropertyType = sourceRecord.PropertyType,
+                                    YearBuilt = sourceRecord.YearBuilt,
+                                    AssessedValue = sourceRecord.AssessedValue,
+                                    LandValue = sourceRecord.LandValue,
+                                    ImprovementValue = sourceRecord.ImprovementValue,
+                                    MarketValue = sourceRecord.MarketValue,
+                                    AssessmentDate = sourceRecord.AssessmentDate != default
+                                        ? sourceRecord.AssessmentDate : DateTime.UtcNow,
+                                    TaxYear = sourceRecord.TaxYear,
+                                    CountyId = county.Id,
+                                    CreatedAt = DateTime.UtcNow,
+                                    UpdatedAt = DateTime.UtcNow,
+                                    LastUpdated = DateTime.UtcNow
+                                };
+                                _dbContext.Properties.Add(newProperty);
+                                existingParcelIdSet.Add(sourceRecord.ParcelId);
+                            }
+                            totalMigrated++;
+                        }
+                        catch (Exception recordEx)
+                        {
+                            _logger.LogWarning(recordEx,
+                                "Skipping record with ParcelId {ParcelId} during migration for county {CountyCode}",
+                                sourceRecord.ParcelId, countyCode);
+                        }
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                    _logger.LogInformation(
+                        "Migrated batch for county {CountyCode}: {Migrated}/{Total} records",
+                        countyCode, totalMigrated, sourceData.Count);
+                }
+
+                _logger.LogInformation(
+                    "Data migration completed for county {CountyCode}: {RecordsMigrated} records migrated",
+                    countyCode, totalMigrated);
+
+                return new DataMigrationResult
                 {
                     Success = true,
                     CountyCode = countyCode,
-                    RecordsMigrated = 0,
-                    Message = "Data migration not yet implemented"
+                    RecordsMigrated = totalMigrated,
+                    Message = $"Successfully migrated {totalMigrated} property records for county {countyCode}"
                 };
-                return await Task.FromResult(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Data migration failed for county: {CountyCode}", countyCode);
-                var errorResult = new DataMigrationResult
+                return new DataMigrationResult
                 {
                     Success = false,
                     CountyCode = countyCode,
                     RecordsMigrated = 0,
                     Message = $"Migration failed: {ex.Message}"
                 };
-                return await Task.FromResult(errorResult);
             }
         }
 

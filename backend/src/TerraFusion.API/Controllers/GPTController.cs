@@ -1112,16 +1112,58 @@ namespace TerraFusion.API.Controllers
                     }
                 }
 
-                // Usage statistics (placeholder - would query actual DB in production)
-                diagnostics.Statistics = new TerraFusion.AI.Models.UsageStatistics
+                // Usage statistics - aggregate from orchestration service across all GPT configs
+                try
                 {
-                    TotalConversations = 0,
-                    TotalMessages = 0,
-                    AuditRecordCount = 0,
-                    RagTraceCount = 0,
-                    MessagesLast24h = 0,
-                    ConversationsLast24h = 0
-                };
+                    var allConfigs = await _configService.GetAllConfigurationsAsync();
+                    var totalConversations = 0;
+                    var totalMessages = 0;
+                    var conversations24h = 0;
+                    var messages24h = 0;
+                    var now = DateTime.UtcNow;
+                    var last24h = now.AddHours(-24);
+
+                    foreach (var cfg in allConfigs)
+                    {
+                        try
+                        {
+                            var stats = await _orchestrationService.GetGPTUsageStatisticsAsync(cfg.Id);
+                            totalConversations += stats.TotalConversations;
+                            totalMessages += stats.TotalMessages;
+
+                            var stats24h = await _orchestrationService.GetGPTUsageStatisticsAsync(cfg.Id, last24h, now);
+                            conversations24h += stats24h.TotalConversations;
+                            messages24h += stats24h.TotalMessages;
+                        }
+                        catch (Exception statsEx)
+                        {
+                            _logger.LogDebug(statsEx, "Could not fetch usage stats for GPT config {ConfigId}, skipping", cfg.Id);
+                        }
+                    }
+
+                    diagnostics.Statistics = new TerraFusion.AI.Models.UsageStatistics
+                    {
+                        TotalConversations = totalConversations,
+                        TotalMessages = totalMessages,
+                        AuditRecordCount = totalMessages, // Each message generates an audit record
+                        RagTraceCount = 0, // RAG trace count not available via orchestration service
+                        MessagesLast24h = messages24h,
+                        ConversationsLast24h = conversations24h
+                    };
+                }
+                catch (Exception usageEx)
+                {
+                    _logger.LogWarning(usageEx, "Failed to query usage statistics from orchestration service");
+                    diagnostics.Statistics = new TerraFusion.AI.Models.UsageStatistics
+                    {
+                        TotalConversations = -1,
+                        TotalMessages = -1,
+                        AuditRecordCount = -1,
+                        RagTraceCount = -1,
+                        MessagesLast24h = -1,
+                        ConversationsLast24h = -1
+                    };
+                }
 
                 // Use Health Evaluator if registered, otherwise generate basic messages
                 if (_healthEvaluator != null)
@@ -1712,14 +1754,8 @@ namespace TerraFusion.API.Controllers
 
                 if (_ragFleetService == null)
                 {
-                    _logger.LogWarning("Phase 27: RagFleetService not registered, returning stub response");
-                    return Ok(new RagFleetReadinessDto
-                    {
-                        GeneratedAtUtc = DateTime.UtcNow,
-                        FleetDriftRisk = RagFleetDriftRisk.Low,
-                        Advisory = "RAG Fleet Readiness service not configured. Register ISystemGptRagFleetService to enable multi-county drift detection.",
-                        Counties = new List<RagCountyReadinessDto>()
-                    });
+                    _logger.LogWarning("Phase 27: RagFleetService not registered, returning 501");
+                    return StatusCode(501, new { error = "RagFleetService not available", message = "RAG fleet integration pending deployment" });
                 }
 
                 var result = await _ragFleetService.GetFleetReadinessAsync();
@@ -1792,12 +1828,8 @@ namespace TerraFusion.API.Controllers
 
                 if (_atlasService == null)
                 {
-                    _logger.LogWarning("Phase 28: AtlasService not registered, returning stub response");
-                    return Ok(new SystemGptAtlasResponseDto
-                    {
-                        GeneratedAtUtc = DateTime.UtcNow,
-                        Nodes = new List<SystemGptAtlasNodeDto>()
-                    });
+                    _logger.LogWarning("Phase 28: AtlasService not registered, returning 501");
+                    return StatusCode(501, new { error = "AtlasService not available", message = "Atlas GIS integration pending deployment" });
                 }
 
                 var result = await _atlasService.GetAtlasAsync();
@@ -1869,14 +1901,8 @@ namespace TerraFusion.API.Controllers
 
                 if (_atlasLiveService == null)
                 {
-                    _logger.LogWarning("Phase 29: Live service not registered, returning stub response");
-                    return Ok(new SystemGptAtlasLiveEventDto
-                    {
-                        Version = "1.0",
-                        EventType = "atlas_county_batch",
-                        Timestamp = DateTimeOffset.UtcNow,
-                        Counties = new List<SystemGptAtlasLiveCountyEventDto>()
-                    });
+                    _logger.LogWarning("Phase 29: Live service not registered, returning 501");
+                    return StatusCode(501, new { error = "LiveService not available", message = "Live monitoring integration pending deployment" });
                 }
 
                 var result = await _atlasLiveService.GetCurrentSnapshotAsync(cancellationToken);

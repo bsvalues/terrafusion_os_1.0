@@ -114,9 +114,8 @@ public class PerformanceController : ControllerBase
             }
             else
             {
-                // Note: Full cache clear would require Redis-specific implementation
-                _logger.LogWarning("Full cache clear requested but not implemented");
-                return BadRequest(new { message = "Full cache clear not implemented. Use pattern parameter." });
+                _logger.LogWarning("Full cache clear requested but IDistributedCache is not configured");
+                return StatusCode(501, new { message = "Full cache clear requires IDistributedCache configuration. Use the pattern parameter to clear specific cache entries." });
             }
 
             return Ok(new { message = "Cache cleared successfully" });

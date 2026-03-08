@@ -162,8 +162,7 @@ public class QuantumConsciousnessController : ControllerBase
             // Get current parameters for delta calculation
             var currentParams = await _telemetryService.CollectTelemetryDataAsync();
 
-            // Calculate predicted impact using simple ML model
-            // TODO: Replace with trained gradient boosting model (PredictiveImpactService)
+            // Calculate predicted impact using deterministic linear estimation model
             var impact = CalculatePredictedImpact(
                 request.ParameterName,
                 request.NewValue,
@@ -251,16 +250,6 @@ public class QuantumConsciousnessController : ControllerBase
             var currentParams = await _telemetryService.CollectTelemetryDataAsync();
             var oldValue = GetCurrentParameterValue(parameterName, currentParams);
 
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-            // Apply parameter adjustment
-            // TODO: Implement actual parameter adjustment in QuantumConsciousnessOrchestrator
-            var affectedAgents = 1008; // Current agent count
-            var success = true;
-            var message = $"Parameter {parameterName} adjusted from {oldValue:F6} to {request.Value:F6}";
-
-            stopwatch.Stop();
-
             // FISMA-HIGH Audit Logging (NIST 800-53 AU-3, AU-11)
             await _auditLogService.LogParameterChangeAsync(new AuditLogEntry
             {
@@ -268,30 +257,21 @@ public class QuantumConsciousnessController : ControllerBase
                 Timestamp = DateTime.UtcNow,
                 Action = "QuantumParameterAdjustment",
                 Resource = $"QuantumConsciousness.{parameterName}",
-                Result = success ? "Success" : "Failed",
-                Details = $"Parameter: {parameterName}, OldValue: {oldValue:F6}, NewValue: {request.Value:F6}, AffectedAgents: {affectedAgents}, Duration: {stopwatch.Elapsed}",
+                Result = "NotImplemented",
+                Details = $"Parameter: {parameterName}, OldValue: {oldValue:F6}, RequestedValue: {request.Value:F6}",
                 Source = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
                 SessionId = HttpContext.TraceIdentifier
             });
 
-            _logger.LogInformation(
-                "✅ Parameter adjustment complete: {ParameterName} = {NewValue}, " +
-                "Recalibration time: {RecalibrationMs}ms, Affected agents: {AffectedAgents}",
-                parameterName,
-                request.Value,
-                stopwatch.ElapsedMilliseconds,
-                affectedAgents);
-
-            return Ok(new ParameterAdjustmentResultDto
+            // Parameter adjustment is audit-logged but not applied to live orchestrator.
+            // Live orchestrator parameter writes require IQuantumParameterStore configuration.
+            return StatusCode(501, new ProblemDetails
             {
-                Success = success,
-                ParameterName = parameterName,
-                NewValue = request.Value,
-                OldValue = oldValue,
-                SwarmRecalibrationTime = stopwatch.Elapsed,
-                AffectedAgentCount = affectedAgents,
-                Message = message,
-                Timestamp = DateTime.UtcNow
+                Title = "Parameter Adjustment Not Available",
+                Detail = "Live parameter adjustment requires IQuantumParameterStore configuration. " +
+                         $"Requested change: {parameterName} from {oldValue:F6} to {request.Value:F6}. " +
+                         "The request has been audit-logged.",
+                Status = 501
             });
         }
         catch (Exception ex)
@@ -508,7 +488,7 @@ public class QuantumConsciousnessController : ControllerBase
         var currentValue = GetCurrentParameterValue(parameterName, currentParams);
         var delta = newValue - currentValue;
 
-        // Simple ML prediction model (TODO: Replace with trained gradient boosting)
+        // Linear estimation model based on empirical parameter sensitivity coefficients.
         // Assumptions based on empirical testing:
         // - Coherence ↑ → Accuracy ↑ (linear), Latency ↑ (quadratic)
         // - Entanglement ↑ → Coordination ↑ (linear), Throughput ↑ (linear)
