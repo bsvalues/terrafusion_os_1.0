@@ -6,8 +6,8 @@
 
 * **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions + R2 Backend Waves
 * **Branch/PR:** `claude/review-progress-ledger-a8iw5`
-* **Last Updated:** 2026-03-08 (R3.2 + R3.1 Complete — 38/38 direct routes + Claude Muse API)
-* **Plan Link:** [plan.md](./plan.md)
+* **Last Updated:** 2026-03-08 (R4 Production Hardening Complete)
+* **Plan Link:** [plan.md](./plan.md), [plan.R4.md](./plan.R4.md)
 
 ---
 
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **R3 COMPLETE + D1/D2 COMPLETE** ✅ |
-| **Phase** | R3 + Debt Items — ALL COMPLETE |
-| **Task** | R3.0 PostGIS dual-mode + R3.1 Claude Muse + R3.2 38/38 routes + D1 restyle + D2 jitter monitor |
+| **Slice** | **R4 PRODUCTION HARDENING COMPLETE** ✅ |
+| **Phase** | R4 — ALL 6 WAVES COMPLETE |
+| **Task** | R4.1 Forge cleanup + R4.2 GPT hardening + R4.3 DataMigration + R4.4 Integration tests + R4.5 E2E validation + R4.6 Security sweep |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | R3.0+D1+D2 — PostGIS dual-mode, suite tab restyle, compositor jitter monitor |
+| **Latest Commit** | R4.4 — Backend integration tests (70 methods, 89 cases) |
 
 ---
 
