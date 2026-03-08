@@ -2262,4 +2262,451 @@ public sealed class R1Week5CxR1ClosureTests
     var result = await controller.GetPacketManifest("!!invalid!!", "annual-assessment");
     result.Should().BeOfType<BadRequestObjectResult>();
   }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 14: Real Income Approach Tests (CostForge)
+  // ═══════════════════════════════════════════════════════════
+
+  private CostForgeController CreateCostForgeController(string testName)
+  {
+    var db = CreateDbContext(testName);
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var costForgeAiService = new Mock<CostForgeAIService>(MockBehavior.Strict);
+    var auditLogger = new Mock<AuditLogger>(MockBehavior.Strict);
+    var controller = new CostForgeController(
+        costForgeService.Object,
+        costForgeAiService.Object,
+        db,
+        auditLogger.Object,
+        NullLogger<CostForgeController>.Instance);
+    AttachPrincipal(controller, CreatePrincipal(Guid.NewGuid(), "BENTON"));
+    return controller;
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_CapRates_Returns5PropertyTypes()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_CapRates_Returns5PropertyTypes));
+    var result = controller.GetIncomeCapRates();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"marketCapRate\":5.5");
+    json.Should().Contain("\"PropertyType\":\"residential\"");
+    json.Should().Contain("\"PropertyType\":\"multi-family\"");
+    json.Should().Contain("\"PropertyType\":\"commercial\"");
+    json.Should().Contain("\"PropertyType\":\"industrial\"");
+    json.Should().Contain("\"PropertyType\":\"land\"");
+    controller.HttpContext.Response.Headers["X-CostForge-Source"].ToString()
+      .Should().Be("benton-real-income-approach-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_MarketData_ReturnsRealBentonIndicators()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_MarketData_ReturnsRealBentonIndicators));
+    var result = controller.GetIncomeMarketData();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"MedianHouseholdIncome\":87500");
+    json.Should().Contain("\"UnemploymentRate\":3.1");
+    json.Should().Contain("\"PopulationGrowthRate\":1.8");
+    json.Should().Contain("\"MedianHomePrice\":485000");
+    json.Should().Contain("\"MedianPricePerSqft\":218");
+    json.Should().Contain("\"MedianDaysOnMarket\":18");
+    json.Should().Contain("\"MonthsOfInventory\":2.8");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_MarketData_HasEmploymentSectors()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_MarketData_HasEmploymentSectors));
+    var result = controller.GetIncomeMarketData();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Government");
+    json.Should().Contain("Energy");
+    json.Should().Contain("Healthcare");
+    json.Should().Contain("Manufacturing");
+    json.Should().Contain("Education");
+    json.Should().Contain("Retail");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_ExpenseRatios_Returns4PropertyTypes()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_ExpenseRatios_Returns4PropertyTypes));
+    var result = controller.GetIncomeExpenseRatios();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"residential\"");
+    json.Should().Contain("\"PropertyType\":\"multi-family\"");
+    json.Should().Contain("\"PropertyType\":\"commercial\"");
+    json.Should().Contain("\"PropertyType\":\"industrial\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_ExpenseRatios_Has7Categories()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_ExpenseRatios_Has7Categories));
+    var result = controller.GetIncomeExpenseRatios();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("propertyTaxes");
+    json.Should().Contain("insurance");
+    json.Should().Contain("maintenance");
+    json.Should().Contain("managementFees");
+    json.Should().Contain("replacementReserves");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_LocationPremiums_Returns6TriCitiesLocations()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_LocationPremiums_Returns6TriCitiesLocations));
+    var result = controller.GetIncomeLocationPremiums();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Richland");
+    json.Should().Contain("West Richland");
+    json.Should().Contain("Kennewick");
+    json.Should().Contain("Pasco");
+    json.Should().Contain("Benton City");
+    json.Should().Contain("Prosser");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_LocationPremiums_WestRichlandHighest()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_LocationPremiums_WestRichlandHighest));
+    var result = controller.GetIncomeLocationPremiums();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // West Richland has highest premium (1.20)
+    json.Should().Contain("\"Multiplier\":1.20");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_CalculateNoi_BasicScenario()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_BasicScenario));
+    var request = new CostForgeController.NoiCalculationRequest
+    {
+      AnnualRentalIncome = 120_000m,
+      VacancyRate = 5m,
+      OtherIncome = 2_000m,
+      PropertyTaxes = 8_000m,
+      Insurance = 3_500m,
+      Utilities = 4_000m,
+      Maintenance = 6_000m,
+      ManagementFees = 5_000m,
+      ReplacementReserves = 2_000m,
+      OtherExpenses = 1_500m,
+    };
+    var result = controller.CalculateNoi(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // EGI = 120000 × 0.95 + 2000 = 116000
+    json.Should().Contain("\"EffectiveGrossIncome\":116000");
+    // Total expenses = 8000+3500+4000+6000+5000+2000+1500 = 30000
+    json.Should().Contain("\"TotalExpenses\":30000");
+    // NOI = 116000 - 30000 = 86000
+    json.Should().Contain("\"NetOperatingIncome\":86000");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_CalculateNoi_ZeroVacancy()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_ZeroVacancy));
+    var request = new CostForgeController.NoiCalculationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      VacancyRate = 0m,
+      OtherIncome = 0m,
+    };
+    var result = controller.CalculateNoi(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // EGI = 100000 × 1.00 + 0 = 100000
+    json.Should().Contain("\"EffectiveGrossIncome\":100000");
+    // No expenses
+    json.Should().Contain("\"TotalExpenses\":0");
+    json.Should().Contain("\"NetOperatingIncome\":100000");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_CalculateNoi_RejectsNegativeIncome()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_RejectsNegativeIncome));
+    var request = new CostForgeController.NoiCalculationRequest
+    {
+      AnnualRentalIncome = -1000m,
+    };
+    var result = controller.CalculateNoi(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_CalculateNoi_RejectsVacancyOver100()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_RejectsVacancyOver100));
+    var request = new CostForgeController.NoiCalculationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      VacancyRate = 101m,
+    };
+    var result = controller.CalculateNoi(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_CalculateNoi_ExpenseRatioCalculatedCorrectly()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_ExpenseRatioCalculatedCorrectly));
+    var request = new CostForgeController.NoiCalculationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      VacancyRate = 0m,
+      PropertyTaxes = 10_000m,
+      Insurance = 5_000m,
+      Maintenance = 5_000m,
+    };
+    var result = controller.CalculateNoi(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Expenses 20000 / EGI 100000 × 100 = 20 (JSON serializes trailing zeros as 20.0)
+    json.Should().Contain("\"ExpenseRatio\":20");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_BasicResidentialRichland()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_BasicResidentialRichland));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 120_000m,
+      VacancyRate = 5m,
+      OtherIncome = 0m,
+      PropertyTaxes = 8_000m,
+      Insurance = 3_000m,
+      Utilities = 4_000m,
+      Maintenance = 5_000m,
+      ManagementFees = 5_000m,
+      ReplacementReserves = 2_000m,
+      OtherExpenses = 1_000m,
+      CapRate = 5.5m,
+      Location = "Richland",
+      PropertyType = "residential",
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // EGI: 120000 × 0.95 = 114000, Expenses: 28000, NOI: 86000
+    json.Should().Contain("\"NetOperatingIncome\":86000");
+    // Raw: 86000 / 0.055 = 1563636.36...
+    json.Should().Contain("\"RawValuation\":1563636.36");
+    // Richland multiplier 1.15: 1563636.36 × 1.15 = 1798181.81...
+    json.Should().Contain("\"LocationMultiplier\":1.15");
+    json.Should().Contain("\"Location\":\"Richland\"");
+    json.Should().Contain("\"RiskClassification\":\"medium\"");
+    controller.HttpContext.Response.Headers["X-CostForge-Source"].ToString()
+      .Should().Be("benton-real-income-approach-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_HighCapRate_LowRisk()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_HighCapRate_LowRisk));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 200_000m,
+      VacancyRate = 0m,
+      CapRate = 8.5m,
+      PropertyType = "commercial",
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // cap 8.5 > 7, cashOnCash = NOI/rawVal × 100 = 8.5% > 8 → low risk
+    json.Should().Contain("\"RiskClassification\":\"low\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_LowCapRate_HighRisk()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_LowCapRate_HighRisk));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 200_000m,
+      VacancyRate = 0m,
+      CapRate = 3.5m,
+      PropertyType = "residential",
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // cap 3.5 < 4 → high risk
+    json.Should().Contain("\"RiskClassification\":\"high\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_UnknownLocation_DefaultMultiplier()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_UnknownLocation_DefaultMultiplier));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      VacancyRate = 0m,
+      CapRate = 5.5m,
+      Location = "Yakima",
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Unknown location gets 1.00 multiplier → raw = adjusted
+    json.Should().Contain("\"LocationMultiplier\":1.00");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_RejectsZeroCapRate()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_RejectsZeroCapRate));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      CapRate = 0m,
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_RejectsCapRateOver25()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_RejectsCapRateOver25));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      CapRate = 26m,
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_GIMCalculatedCorrectly()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_GIMCalculatedCorrectly));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      VacancyRate = 0m,
+      CapRate = 10.0m,
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // NOI = 100000, Raw = 100000/0.10 = 1000000, GIM = 1000000/100000 = 10.00
+    json.Should().Contain("\"GrossIncomeMultiplier\":10.00");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_ClassifyRisk_LowRisk()
+  {
+    CostForgeController.ClassifyRisk(8.0, 9.0).Should().Be("low");
+    CostForgeController.ClassifyRisk(7.5, 8.5).Should().Be("low");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_ClassifyRisk_HighRisk()
+  {
+    CostForgeController.ClassifyRisk(3.0, 5.0).Should().Be("high");
+    CostForgeController.ClassifyRisk(5.0, 2.0).Should().Be("high");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_ClassifyRisk_MediumRisk()
+  {
+    CostForgeController.ClassifyRisk(5.5, 5.5).Should().Be("medium");
+    CostForgeController.ClassifyRisk(7.0, 8.0).Should().Be("medium");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_ProsserLowestPremium()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_ProsserLowestPremium));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      VacancyRate = 0m,
+      CapRate = 5.5m,
+      Location = "Prosser",
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Prosser multiplier 0.85
+    json.Should().Contain("\"LocationMultiplier\":0.85");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_CalculateNoi_BankersRoundingApplied()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_CalculateNoi_BankersRoundingApplied));
+    // Create a scenario that triggers banker's rounding
+    // 123456 × (1 - 7.5/100) = 123456 × 0.925 = 114196.80
+    var request = new CostForgeController.NoiCalculationRequest
+    {
+      AnnualRentalIncome = 123_456m,
+      VacancyRate = 7.5m,
+      OtherIncome = 123m,
+      PropertyTaxes = 100m,
+    };
+    var result = controller.CalculateNoi(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // EGI = 123456 × 0.925 + 123 = 114196.80 + 123 = 114319.80
+    json.Should().Contain("\"EffectiveGrossIncome\":114319.80");
+    // NOI = 114319.80 - 100 = 114219.80
+    json.Should().Contain("\"NetOperatingIncome\":114219.80");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Income")]
+  public void IncomeApproach_Valuation_NullLocation_DefaultsToUnspecified()
+  {
+    var controller = CreateCostForgeController(nameof(IncomeApproach_Valuation_NullLocation_DefaultsToUnspecified));
+    var request = new CostForgeController.IncomeValuationRequest
+    {
+      AnnualRentalIncome = 100_000m,
+      VacancyRate = 0m,
+      CapRate = 5.5m,
+    };
+    var result = controller.CalculateIncomeValuation(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"Location\":\"unspecified\"");
+  }
 }
