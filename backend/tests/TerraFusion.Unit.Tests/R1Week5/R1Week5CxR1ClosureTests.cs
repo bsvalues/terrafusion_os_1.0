@@ -4854,4 +4854,873 @@ public sealed class R1Week5CxR1ClosureTests
     json.Should().Contain("conversionFactors");
     json.Should().Contain("GeometryServer");
   }
+
+  // ══════════════════════════════════════════════════════════════
+  // WAVE 24 — Dossier Document Management + Evidence Chain Tests
+  // ══════════════════════════════════════════════════════════════
+
+  private static DossierController MakeDossierController(DataDbContext db, string env = "Production")
+  {
+    var costForge = new Mock<CostForgeService>(MockBehavior.Strict);
+    var host = new Mock<IHostEnvironment>();
+    host.SetupGet(h => h.EnvironmentName).Returns(env);
+    return new DossierController(db, costForge.Object, NullLogger<DossierController>.Instance, host.Object);
+  }
+
+  private static DossierController MakeAuthedDossierController(DataDbContext db, Guid countyId, string env = "Production")
+  {
+    var ctrl = MakeDossierController(db, env);
+    AttachPrincipal(ctrl, CreatePrincipal(countyId, "BENTON"));
+    return ctrl;
+  }
+
+  private static async Task<Guid> SeedDocMgmtDataAsync(DataDbContext db)
+  {
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    db.Properties.Add(CreateProperty(countyId, "DOC-PARCEL-1"));
+    db.Properties.Add(CreateProperty(countyId, "DOC-PARCEL-2"));
+    await db.SaveChangesAsync();
+    return countyId;
+  }
+
+  // ── Document Registration ────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterDocument_ValidRequest_Returns201()
+  {
+    using var db = CreateDbContext(nameof(RegisterDocument_ValidRequest_Returns201));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+
+    var result = await ctrl.RegisterDocument(new DossierController.RegisterDocumentRequest(
+        ParcelId: "DOC-PARCEL-1",
+        Name: "Warranty Deed 2026",
+        DocumentType: "deed",
+        MimeType: "application/pdf",
+        SizeBytes: 52430,
+        ContentHash: "abc123def456",
+        Description: "Transfer deed for parcel",
+        RetentionClass: "permanent",
+        StoragePath: null));
+
+    var created = result.Should().BeOfType<CreatedAtActionResult>().Subject;
+    created.StatusCode.Should().Be(201);
+    var json = JsonSerializer.Serialize(created.Value);
+    json.Should().Contain("DOC-PARCEL-1");
+    json.Should().Contain("deed");
+    json.Should().Contain("Warranty Deed 2026");
+
+    db.DossierDocuments.Count().Should().Be(1);
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterDocument_MissingParcelId_Returns400()
+  {
+    using var db = CreateDbContext(nameof(RegisterDocument_MissingParcelId_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+
+    var result = await ctrl.RegisterDocument(new DossierController.RegisterDocumentRequest(
+        ParcelId: "",
+        Name: "Test Doc",
+        DocumentType: "deed",
+        MimeType: "application/pdf",
+        SizeBytes: 100,
+        ContentHash: "x",
+        Description: null,
+        RetentionClass: null,
+        StoragePath: null));
+
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterDocument_NullBody_Returns400()
+  {
+    using var db = CreateDbContext(nameof(RegisterDocument_NullBody_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+
+    var result = await ctrl.RegisterDocument(null);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterDocument_ParcelNotFound_Returns404()
+  {
+    using var db = CreateDbContext(nameof(RegisterDocument_ParcelNotFound_Returns404));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+
+    var result = await ctrl.RegisterDocument(new DossierController.RegisterDocumentRequest(
+        ParcelId: "NONEXISTENT",
+        Name: "Test",
+        DocumentType: "deed",
+        MimeType: "application/pdf",
+        SizeBytes: 100,
+        ContentHash: "x",
+        Description: null,
+        RetentionClass: null,
+        StoragePath: null));
+
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterDocument_CountyIsolation_Forbids()
+  {
+    using var db = CreateDbContext(nameof(RegisterDocument_CountyIsolation_Forbids));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var otherCounty = Guid.NewGuid();
+    db.Counties.Add(new County { Id = otherCounty, Name = "Yakima", State = "WA", FipsCode = "077" });
+    await db.SaveChangesAsync();
+    var ctrl = MakeAuthedDossierController(db, otherCounty, "Development");
+
+    var result = await ctrl.RegisterDocument(new DossierController.RegisterDocumentRequest(
+        ParcelId: "DOC-PARCEL-1",
+        Name: "Test",
+        DocumentType: "deed",
+        MimeType: "application/pdf",
+        SizeBytes: 100,
+        ContentHash: "x",
+        Description: null,
+        RetentionClass: null,
+        StoragePath: null));
+
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  // ── Get Persistent Document ──────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPersistentDocument_Found_ReturnsOk()
+  {
+    using var db = CreateDbContext(nameof(GetPersistentDocument_Found_ReturnsOk));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var doc = new DossierDocument
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Name = "Test Deed",
+      DocumentType = "deed",
+      MimeType = "application/pdf",
+      SizeBytes = 4096,
+      ContentHash = "aabbcc",
+      CountyId = countyId,
+      UploadedBy = "test-user",
+    };
+    db.DossierDocuments.Add(doc);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPersistentDocument(doc.Id.ToString());
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Test Deed");
+    json.Should().Contain("deed");
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPersistentDocument_InvalidId_Returns400()
+  {
+    using var db = CreateDbContext(nameof(GetPersistentDocument_InvalidId_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPersistentDocument("not-a-guid");
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPersistentDocument_NotFound_Returns404()
+  {
+    using var db = CreateDbContext(nameof(GetPersistentDocument_NotFound_Returns404));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPersistentDocument(Guid.NewGuid().ToString());
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  // ── Document Status Updates ──────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task UpdateDocumentStatus_ActiveToSealed_ReturnsOk()
+  {
+    using var db = CreateDbContext(nameof(UpdateDocumentStatus_ActiveToSealed_ReturnsOk));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var doc = new DossierDocument
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Name = "Seal Test",
+      DocumentType = "deed",
+      MimeType = "application/pdf",
+      Status = "active",
+      CountyId = countyId,
+      UploadedBy = "test",
+    };
+    db.DossierDocuments.Add(doc);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
+        new DossierController.UpdateDocumentStatusRequest("sealed", "Certified by assessor"));
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("sealed");
+
+    var updated = await db.DossierDocuments.FindAsync(doc.Id);
+    updated!.Status.Should().Be("sealed");
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task UpdateDocumentStatus_InvalidTransition_Returns400()
+  {
+    using var db = CreateDbContext(nameof(UpdateDocumentStatus_InvalidTransition_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var doc = new DossierDocument
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Name = "Archived Doc",
+      DocumentType = "deed",
+      MimeType = "application/pdf",
+      Status = "archived",
+      CountyId = countyId,
+      UploadedBy = "test",
+    };
+    db.DossierDocuments.Add(doc);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
+        new DossierController.UpdateDocumentStatusRequest("active", null));
+
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task UpdateDocumentStatus_InvalidStatus_Returns400()
+  {
+    using var db = CreateDbContext(nameof(UpdateDocumentStatus_InvalidStatus_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var doc = new DossierDocument
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Name = "Test",
+      DocumentType = "deed",
+      MimeType = "application/pdf",
+      CountyId = countyId,
+      UploadedBy = "test",
+    };
+    db.DossierDocuments.Add(doc);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
+        new DossierController.UpdateDocumentStatusRequest("destroyed", null));
+
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── List Parcel Documents ────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task ListParcelDocuments_ReturnsDocuments()
+  {
+    using var db = CreateDbContext(nameof(ListParcelDocuments_ReturnsDocuments));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    db.DossierDocuments.AddRange(
+        new DossierDocument { ParcelId = "DOC-PARCEL-1", Name = "Doc A", DocumentType = "deed", MimeType = "application/pdf", CountyId = countyId, UploadedBy = "a" },
+        new DossierDocument { ParcelId = "DOC-PARCEL-1", Name = "Doc B", DocumentType = "photo", MimeType = "image/jpeg", CountyId = countyId, UploadedBy = "b" },
+        new DossierDocument { ParcelId = "DOC-PARCEL-2", Name = "Doc C", DocumentType = "deed", MimeType = "application/pdf", CountyId = countyId, UploadedBy = "c" });
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.ListParcelDocuments("DOC-PARCEL-1", null, null);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Doc A");
+    json.Should().Contain("Doc B");
+    json.Should().NotContain("Doc C");
+    json.Should().Contain("\"total\":2");
+  }
+
+  // ── Evidence Registration ────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterEvidence_ValidRequest_Returns201()
+  {
+    using var db = CreateDbContext(nameof(RegisterEvidence_ValidRequest_Returns201));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+
+    var result = await ctrl.RegisterEvidence(new DossierController.RegisterEvidenceRequest(
+        ParcelId: "DOC-PARCEL-1",
+        Title: "Field inspection photograph",
+        EvidenceType: "field-inspection",
+        DocumentId: null));
+
+    var created = result.Should().BeOfType<CreatedAtActionResult>().Subject;
+    created.StatusCode.Should().Be(201);
+    var json = JsonSerializer.Serialize(created.Value);
+    json.Should().Contain("Field inspection photograph");
+    json.Should().Contain("pending");
+
+    db.DossierEvidenceItems.Count().Should().Be(1);
+    db.DossierCustodyEvents.Count().Should().Be(1);
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterEvidence_NullBody_Returns400()
+  {
+    using var db = CreateDbContext(nameof(RegisterEvidence_NullBody_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+
+    var result = await ctrl.RegisterEvidence(null);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterEvidence_WithDocumentLink_Returns201()
+  {
+    using var db = CreateDbContext(nameof(RegisterEvidence_WithDocumentLink_Returns201));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var doc = new DossierDocument
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Name = "Deed",
+      DocumentType = "deed",
+      MimeType = "application/pdf",
+      CountyId = countyId,
+      UploadedBy = "test",
+    };
+    db.DossierDocuments.Add(doc);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.RegisterEvidence(new DossierController.RegisterEvidenceRequest(
+        ParcelId: "DOC-PARCEL-1",
+        Title: "Deed evidence",
+        EvidenceType: "legal-document",
+        DocumentId: doc.Id));
+
+    result.Should().BeOfType<CreatedAtActionResult>();
+    var evidence = await db.DossierEvidenceItems.FirstAsync();
+    evidence.DocumentId.Should().Be(doc.Id);
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task RegisterEvidence_InvalidDocumentId_Returns400()
+  {
+    using var db = CreateDbContext(nameof(RegisterEvidence_InvalidDocumentId_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+
+    var result = await ctrl.RegisterEvidence(new DossierController.RegisterEvidenceRequest(
+        ParcelId: "DOC-PARCEL-1",
+        Title: "Test",
+        EvidenceType: "field-inspection",
+        DocumentId: Guid.NewGuid()));
+
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── Get Persistent Evidence ──────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPersistentEvidence_Found_ReturnsOk()
+  {
+    using var db = CreateDbContext(nameof(GetPersistentEvidence_Found_ReturnsOk));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var evidence = new DossierEvidence
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Title = "Test Evidence",
+      EvidenceType = "field-inspection",
+      CountyId = countyId,
+      CreatedBy = "test",
+    };
+    db.DossierEvidenceItems.Add(evidence);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPersistentEvidence(evidence.Id.ToString());
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Test Evidence");
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPersistentEvidence_NotFound_Returns404()
+  {
+    using var db = CreateDbContext(nameof(GetPersistentEvidence_NotFound_Returns404));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPersistentEvidence(Guid.NewGuid().ToString());
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  // ── List Parcel Evidence ─────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task ListParcelEvidence_ReturnsEvidence()
+  {
+    using var db = CreateDbContext(nameof(ListParcelEvidence_ReturnsEvidence));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    db.DossierEvidenceItems.AddRange(
+        new DossierEvidence { ParcelId = "DOC-PARCEL-1", Title = "Evid A", EvidenceType = "field-inspection", CountyId = countyId, CreatedBy = "a" },
+        new DossierEvidence { ParcelId = "DOC-PARCEL-1", Title = "Evid B", EvidenceType = "legal-document", CountyId = countyId, CreatedBy = "b" });
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.ListParcelEvidence("DOC-PARCEL-1", null, null);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Evid A");
+    json.Should().Contain("Evid B");
+    json.Should().Contain("\"total\":2");
+  }
+
+  // ── Custody Chain Operations ─────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task AddCustodyEvent_Verified_UpdatesIntegrity()
+  {
+    using var db = CreateDbContext(nameof(AddCustodyEvent_Verified_UpdatesIntegrity));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var evidence = new DossierEvidence
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Title = "Custody Test",
+      EvidenceType = "field-inspection",
+      Integrity = "pending",
+      CountyId = countyId,
+      CreatedBy = "test",
+    };
+    db.DossierEvidenceItems.Add(evidence);
+    db.DossierCustodyEvents.Add(new DossierCustodyEvent
+    {
+      EvidenceId = evidence.Id,
+      Action = "created",
+      Actor = "test",
+      Hash = "genesis",
+      CountyId = countyId,
+    });
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.AddCustodyEvent(evidence.Id.ToString(),
+        new DossierController.AddCustodyEventRequest("verified", "Field verification complete"));
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("verified");
+    json.Should().Contain("\"chainLength\":2");
+
+    var updatedEvidence = await db.DossierEvidenceItems.FindAsync(evidence.Id);
+    updatedEvidence!.Integrity.Should().Be("verified");
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task AddCustodyEvent_Disputed_UpdatesIntegrity()
+  {
+    using var db = CreateDbContext(nameof(AddCustodyEvent_Disputed_UpdatesIntegrity));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var evidence = new DossierEvidence
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Title = "Dispute Test",
+      EvidenceType = "legal-document",
+      Integrity = "verified",
+      CountyId = countyId,
+      CreatedBy = "test",
+    };
+    db.DossierEvidenceItems.Add(evidence);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.AddCustodyEvent(evidence.Id.ToString(),
+        new DossierController.AddCustodyEventRequest("disputed", "Hash mismatch detected"));
+
+    result.Should().BeOfType<OkObjectResult>();
+    var updatedEvidence = await db.DossierEvidenceItems.FindAsync(evidence.Id);
+    updatedEvidence!.Integrity.Should().Be("disputed");
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task AddCustodyEvent_InvalidAction_Returns400()
+  {
+    using var db = CreateDbContext(nameof(AddCustodyEvent_InvalidAction_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var evidence = new DossierEvidence
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Title = "Test",
+      EvidenceType = "field-inspection",
+      CountyId = countyId,
+      CreatedBy = "test",
+    };
+    db.DossierEvidenceItems.Add(evidence);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.AddCustodyEvent(evidence.Id.ToString(),
+        new DossierController.AddCustodyEventRequest("destroyed", null));
+
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task AddCustodyEvent_NullBody_Returns400()
+  {
+    using var db = CreateDbContext(nameof(AddCustodyEvent_NullBody_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.AddCustodyEvent(Guid.NewGuid().ToString(), null);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── Get Persistent Custody Chain ─────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPersistentCustodyChain_ReturnsChain()
+  {
+    using var db = CreateDbContext(nameof(GetPersistentCustodyChain_ReturnsChain));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var evidence = new DossierEvidence
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Title = "Chain Test",
+      EvidenceType = "field-inspection",
+      CountyId = countyId,
+      CreatedBy = "test",
+    };
+    db.DossierEvidenceItems.Add(evidence);
+    db.DossierCustodyEvents.AddRange(
+        new DossierCustodyEvent { EvidenceId = evidence.Id, Action = "created", Actor = "test", Hash = "h1", CountyId = countyId, Timestamp = DateTime.UtcNow.AddMinutes(-10) },
+        new DossierCustodyEvent { EvidenceId = evidence.Id, Action = "verified", Actor = "supervisor", Hash = "h2", CountyId = countyId, Timestamp = DateTime.UtcNow });
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPersistentCustodyChain(evidence.Id.ToString());
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("created");
+    json.Should().Contain("verified");
+    json.Should().Contain("\"chainLength\":2");
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPersistentCustodyChain_NotFound_Returns404()
+  {
+    using var db = CreateDbContext(nameof(GetPersistentCustodyChain_NotFound_Returns404));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPersistentCustodyChain(Guid.NewGuid().ToString());
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  // ── Packet Operations ────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task CreatePacket_ValidRequest_Returns201()
+  {
+    using var db = CreateDbContext(nameof(CreatePacket_ValidRequest_Returns201));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    // Add a deed document so at least one item is satisfied
+    db.DossierDocuments.Add(new DossierDocument
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Name = "Deed",
+      DocumentType = "deed",
+      MimeType = "application/pdf",
+      CountyId = countyId,
+      UploadedBy = "test",
+    });
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.CreatePacket(new DossierController.CreatePacketRequest(
+        ParcelId: "DOC-PARCEL-1",
+        PacketType: "annual-assessment"));
+
+    var created = result.Should().BeOfType<CreatedAtActionResult>().Subject;
+    var json = JsonSerializer.Serialize(created.Value);
+    json.Should().Contain("annual-assessment");
+    json.Should().Contain("DOC-PARCEL-1");
+
+    db.DossierPackets.Count().Should().Be(1);
+    db.DossierPacketItems.Count().Should().BeGreaterThan(0);
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task CreatePacket_NullBody_Returns400()
+  {
+    using var db = CreateDbContext(nameof(CreatePacket_NullBody_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.CreatePacket(null);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task CreatePacket_UnknownType_Returns400()
+  {
+    using var db = CreateDbContext(nameof(CreatePacket_UnknownType_Returns400));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.CreatePacket(new DossierController.CreatePacketRequest(
+        ParcelId: "DOC-PARCEL-1",
+        PacketType: "nonexistent_type"));
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task CreatePacket_ParcelNotFound_Returns404()
+  {
+    using var db = CreateDbContext(nameof(CreatePacket_ParcelNotFound_Returns404));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.CreatePacket(new DossierController.CreatePacketRequest(
+        ParcelId: "NONEXISTENT",
+        PacketType: "annual-assessment"));
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  // ── Get Packet ───────────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPacket_Found_ReturnsOk()
+  {
+    using var db = CreateDbContext(nameof(GetPacket_Found_ReturnsOk));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var packet = new DossierPacket
+    {
+      ParcelId = "DOC-PARCEL-1",
+      PacketType = "annual-assessment",
+      Name = "Annual Assessment Packet - DOC-PARCEL-1",
+      CountyId = countyId,
+      CreatedBy = "test",
+      TotalRequired = 3,
+      SatisfiedCount = 1,
+      CompletenessPercent = 33.3,
+    };
+    packet.Items.Add(new DossierPacketItem { PacketId = packet.Id, DocumentType = "deed", Required = true, Satisfied = true });
+    packet.Items.Add(new DossierPacketItem { PacketId = packet.Id, DocumentType = "appraisal", Required = true, Satisfied = false });
+    packet.Items.Add(new DossierPacketItem { PacketId = packet.Id, DocumentType = "photo", Required = true, Satisfied = false });
+    db.DossierPackets.Add(packet);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPacket(packet.Id.ToString());
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("annual-assessment");
+    json.Should().Contain("appraisal");
+    json.Should().Contain("appraisal");
+  }
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task GetPacket_NotFound_Returns404()
+  {
+    using var db = CreateDbContext(nameof(GetPacket_NotFound_Returns404));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.GetPacket(Guid.NewGuid().ToString());
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  // ── List Parcel Packets ──────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task ListParcelPackets_ReturnsPackets()
+  {
+    using var db = CreateDbContext(nameof(ListParcelPackets_ReturnsPackets));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    db.DossierPackets.AddRange(
+        new DossierPacket { ParcelId = "DOC-PARCEL-1", PacketType = "annual-assessment", Name = "Annual", CountyId = countyId, CreatedBy = "a" },
+        new DossierPacket { ParcelId = "DOC-PARCEL-1", PacketType = "boe-appeal-defense", Name = "Appeal", CountyId = countyId, CreatedBy = "b" });
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.ListParcelPackets("DOC-PARCEL-1");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("annual-assessment");
+    json.Should().Contain("boe-appeal-defense");
+    json.Should().Contain("\"total\":2");
+  }
+
+  // ── Integration: Document Index includes persistent docs ─────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task SearchDocuments_IncludesPersistentDocuments()
+  {
+    using var db = CreateDbContext(nameof(SearchDocuments_IncludesPersistentDocuments));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    db.DossierDocuments.Add(new DossierDocument
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Name = "Persistent Survey",
+      DocumentType = "survey",
+      MimeType = "application/pdf",
+      SizeBytes = 8192,
+      ContentHash = "persistent-hash",
+      CountyId = countyId,
+      UploadedBy = "surveyor",
+    });
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.SearchDocuments(new DossierController.DocumentSearchRequest(
+        Query: "Persistent Survey",
+        Type: null,
+        Status: null,
+        ParcelId: null,
+        Limit: 50,
+        Offset: 0));
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Persistent Survey");
+    json.Should().Contain("pdoc-");
+  }
+
+  // ── Integration: Evidence Index includes persistent evidence ─
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task SearchEvidence_IncludesPersistentEvidence()
+  {
+    using var db = CreateDbContext(nameof(SearchEvidence_IncludesPersistentEvidence));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    db.DossierEvidenceItems.Add(new DossierEvidence
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Title = "Persistent Field Photo",
+      EvidenceType = "field-inspection",
+      Integrity = "verified",
+      CountyId = countyId,
+      CreatedBy = "field-agent",
+    });
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+    var result = await ctrl.SearchEvidence(new DossierController.EvidenceSearchRequest(
+        ParcelId: "DOC-PARCEL-1",
+        EvidenceType: null,
+        Integrity: null,
+        Limit: 50,
+        Offset: 0));
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Persistent Field Photo");
+    json.Should().Contain("pevid-");
+  }
+
+  // ── Status transition chain: active → sealed → archived ──────
+
+  [Fact]
+  [Trait("Category", "Wave24")]
+  [Trait("Category", "DossierDocMgmt")]
+  public async Task DocumentStatusTransition_FullChain_Succeeds()
+  {
+    using var db = CreateDbContext(nameof(DocumentStatusTransition_FullChain_Succeeds));
+    var countyId = await SeedDocMgmtDataAsync(db);
+    var doc = new DossierDocument
+    {
+      ParcelId = "DOC-PARCEL-1",
+      Name = "Lifecycle Test",
+      DocumentType = "deed",
+      MimeType = "application/pdf",
+      Status = "active",
+      CountyId = countyId,
+      UploadedBy = "test",
+    };
+    db.DossierDocuments.Add(doc);
+    await db.SaveChangesAsync();
+
+    var ctrl = MakeAuthedDossierController(db, countyId);
+
+    // active → sealed
+    var r1 = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
+        new DossierController.UpdateDocumentStatusRequest("sealed", "Certified"));
+    r1.Should().BeOfType<OkObjectResult>();
+
+    // sealed → archived
+    var r2 = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
+        new DossierController.UpdateDocumentStatusRequest("archived", "Retention expired"));
+    r2.Should().BeOfType<OkObjectResult>();
+
+    var final = await db.DossierDocuments.FindAsync(doc.Id);
+    final!.Status.Should().Be("archived");
+  }
 }
