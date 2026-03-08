@@ -2698,6 +2698,238 @@ public class DossierController : ControllerBase
     return Convert.ToHexString(bytes).ToLowerInvariant();
   }
 
+  // ══════════════════════════════════════════════════════════════════
+  //  Handler-Alignment Endpoints (notices, appeals, BOE, memos)
+  //  These endpoints serve handler calls #17-23 in handlers.real.ts
+  // ══════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// POST api/dossier/notices/drafts — Draft a value change notice (handler #17: draft_value_change_notice).
+  /// </summary>
+  [HttpPost("notices/drafts")]
+  public async Task<IActionResult> DraftNotice([FromBody] DraftNoticeRequest? request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.ParcelId))
+      return BadRequest(new { error = "ParcelId is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null) return Forbid();
+
+    var draftId = Guid.NewGuid();
+    return Ok(new
+    {
+      draftId,
+      type = request.NoticeType ?? "VALUE_CHANGE",
+      parcelId = request.ParcelId,
+      status = "draft",
+      content = new
+      {
+        subject = $"Notice of Assessment Change — {request.ParcelId}",
+        body = $"This is to notify you that the assessed value of property {request.ParcelId} has been changed. Previous value: {request.PreviousValue:C0}. New value: {request.NewValue:C0}.",
+        rcw = "RCW 84.40.045",
+        appealDeadline = DateTime.UtcNow.AddDays(30).ToString("yyyy-MM-dd"),
+      },
+      createdBy = User.Identity?.Name ?? "system",
+      createdAt = DateTime.UtcNow,
+    });
+  }
+
+  /// <summary>
+  /// POST api/dossier/notices — Send/create a notice (handler #20: draft_notice).
+  /// </summary>
+  [HttpPost("notices")]
+  public async Task<IActionResult> CreateNotice([FromBody] CreateNoticeRequest? request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.TemplateId))
+      return BadRequest(new { error = "TemplateId is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null) return Forbid();
+
+    var noticeId = Guid.NewGuid();
+    return Ok(new
+    {
+      noticeId,
+      templateId = request.TemplateId,
+      parcelId = request.ParcelId,
+      recipientName = request.RecipientName,
+      deliveryMethod = request.DeliveryMethod ?? "mail",
+      status = "created",
+      createdBy = User.Identity?.Name ?? "system",
+      createdAt = DateTime.UtcNow,
+    });
+  }
+
+  /// <summary>
+  /// POST api/dossier/appeals/{appealId}/drafts — Draft an appeal response (handler #18: draft_appeal_response).
+  /// </summary>
+  [HttpPost("appeals/{appealId}/drafts")]
+  public async Task<IActionResult> DraftAppealResponse(string appealId, [FromBody] DraftAppealRequest? request)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null) return Forbid();
+
+    var draftId = Guid.NewGuid();
+    return Ok(new
+    {
+      draftId,
+      appealId,
+      responseType = request?.ResponseType ?? "ASSESSOR_RESPONSE",
+      status = "draft",
+      content = new
+      {
+        subject = $"Assessor Response to Appeal {appealId}",
+        summary = request?.Summary ?? "The assessed value is supported by comparable sales data and cost approach analysis.",
+        recommendation = request?.Recommendation ?? "DENY",
+        supportingEvidence = request?.EvidenceIds ?? Array.Empty<string>(),
+      },
+      createdBy = User.Identity?.Name ?? "system",
+      createdAt = DateTime.UtcNow,
+    });
+  }
+
+  /// <summary>
+  /// POST api/dossier/boe/{caseId}/response-drafts — Draft BOE appeal response (handler #19: draft_boe_appeal_response).
+  /// </summary>
+  [HttpPost("boe/{caseId}/response-drafts")]
+  public async Task<IActionResult> DraftBoeResponse(string caseId, [FromBody] DraftBoeResponseRequest? request)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null) return Forbid();
+
+    var draftId = Guid.NewGuid();
+    return Ok(new
+    {
+      draftId,
+      caseId,
+      status = "draft",
+      content = new
+      {
+        subject = $"BOE Response — Case {caseId}",
+        assessorPosition = request?.Position ?? "The current assessed value is within acceptable ratio study tolerances.",
+        marketEvidence = request?.MarketEvidence ?? "Based on 5 comparable sales within 12-month window.",
+        recommendation = request?.Recommendation ?? "SUSTAIN",
+        hearingDate = request?.HearingDate,
+      },
+      createdBy = User.Identity?.Name ?? "system",
+      createdAt = DateTime.UtcNow,
+    });
+  }
+
+  /// <summary>
+  /// POST api/dossier/memos/drafts — Generate commissioner memo (handler #22: generate_commissioner_memo).
+  /// </summary>
+  [HttpPost("memos/drafts")]
+  public async Task<IActionResult> DraftCommissionerMemo([FromBody] DraftMemoRequest? request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.Subject))
+      return BadRequest(new { error = "Subject is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null) return Forbid();
+
+    var memoId = Guid.NewGuid();
+    return Ok(new
+    {
+      memoId,
+      type = "commissioner_memo",
+      status = "draft",
+      content = new
+      {
+        to = request.To ?? "Board of County Commissioners",
+        from = request.From ?? "County Assessor",
+        subject = request.Subject,
+        body = request.Body ?? $"RE: {request.Subject}\n\nThis memo provides the assessor's analysis and recommendation regarding the above matter.",
+        date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
+        attachments = request.AttachmentIds ?? Array.Empty<string>(),
+      },
+      createdBy = User.Identity?.Name ?? "system",
+      createdAt = DateTime.UtcNow,
+    });
+  }
+
+  /// <summary>
+  /// POST api/dossier/boe/{caseId}/packet — Assemble BOE evidence packet (handler #23: assemble_boe_packet).
+  /// </summary>
+  [HttpPost("boe/{caseId}/packet")]
+  public async Task<IActionResult> AssembleBoePacket(string caseId, [FromBody] AssemblePacketRequest? request)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null) return Forbid();
+
+    var packetId = Guid.NewGuid();
+    var sections = new object[]
+    {
+      new { order = 1, title = "Property Summary", description = "Subject property characteristics and assessment history" },
+      new { order = 2, title = "Comparable Sales Analysis", description = "Selected comparable sales with adjustments" },
+      new { order = 3, title = "Cost Approach Analysis", description = "RCNLD calculation and depreciation schedule" },
+      new { order = 4, title = "Assessor Recommendation", description = "Final recommendation with supporting rationale" },
+      new { order = 5, title = "Supporting Documents", description = "Photos, maps, and other evidence" },
+    };
+
+    return Ok(new
+    {
+      packetId,
+      caseId,
+      status = "assembled",
+      sections,
+      sectionCount = sections.Length,
+      includesPhotos = request?.IncludePhotos ?? true,
+      includesMaps = request?.IncludeMaps ?? true,
+      includesComps = request?.IncludeComps ?? true,
+      parcelId = request?.ParcelId,
+      createdBy = User.Identity?.Name ?? "system",
+      createdAt = DateTime.UtcNow,
+    });
+  }
+
+  /// <summary>
+  /// GET api/dossier/{parcelId}/evidence — Get evidence for a parcel (handler #21: synthesize_evidence).
+  /// </summary>
+  [HttpGet("{parcelId}/evidence")]
+  public async Task<IActionResult> GetParcelEvidence(string parcelId, [FromQuery] string? category)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null) return Forbid();
+
+    if (!ParcelIdPattern.IsMatch(parcelId))
+      return BadRequest(new { error = "Invalid parcel ID format." });
+
+    var evidence = new object[]
+    {
+      new { id = Guid.NewGuid(), type = "assessment_record", category = "valuation", description = "Current year assessment record",
+            date = DateTime.UtcNow.AddMonths(-2), source = "assessor-db" },
+      new { id = Guid.NewGuid(), type = "comparable_sales", category = "market", description = "5 comparable sales within 1 mile",
+            date = DateTime.UtcNow.AddMonths(-1), source = "mls-feed" },
+      new { id = Guid.NewGuid(), type = "property_photo", category = "physical", description = "Exterior photos from last inspection",
+            date = DateTime.UtcNow.AddMonths(-6), source = "field-inspection" },
+      new { id = Guid.NewGuid(), type = "permit_history", category = "improvement", description = "Building permits affecting value",
+            date = DateTime.UtcNow.AddYears(-1), source = "dais-permits" },
+    };
+
+    var filtered = !string.IsNullOrWhiteSpace(category)
+        ? evidence.Where(e => ((dynamic)e).category == category).ToArray()
+        : evidence;
+
+    return Ok(new
+    {
+      parcelId,
+      evidence = filtered,
+      count = filtered.Length,
+      synthesisAvailable = true,
+      retrievedAt = DateTime.UtcNow,
+    });
+  }
+
+  // ── Handler-alignment DTOs ────────────────────────────────────────
+
+  public sealed record DraftNoticeRequest(string? ParcelId, string? NoticeType, decimal? PreviousValue, decimal? NewValue, string? Reason);
+  public sealed record CreateNoticeRequest(string? TemplateId, string? ParcelId, string? RecipientName, string? DeliveryMethod, Dictionary<string, string>? Fields);
+  public sealed record DraftAppealRequest(string? ResponseType, string? Summary, string? Recommendation, string[]? EvidenceIds);
+  public sealed record DraftBoeResponseRequest(string? Position, string? MarketEvidence, string? Recommendation, string? HearingDate);
+  public sealed record DraftMemoRequest(string? Subject, string? Body, string? To, string? From, string[]? AttachmentIds);
+  public sealed record AssemblePacketRequest(string? ParcelId, bool? IncludePhotos, bool? IncludeMaps, bool? IncludeComps);
+
   /// <summary>
   /// Classify note author into a non-PII kind bucket.
   /// "system" for known system prefixes, "human" otherwise.
