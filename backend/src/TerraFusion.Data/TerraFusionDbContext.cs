@@ -91,6 +91,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // Dossier Entities (R1 Week 3 — CX-11)
   public DbSet<DossierNote> DossierNotes { get; set; }
 
+  // Forge Valuation (R2 Wave 25)
+  public DbSet<ValuationRecord> ValuationRecords { get; set; }
+  public DbSet<ComparableSale> ComparableSales { get; set; }
+  public DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }
+  public DbSet<CostMatrix> CostMatrices { get; set; }
+
   // Dossier Document Management (R2 Wave 24)
   public DbSet<DossierDocument> DossierDocuments { get; set; }
   public DbSet<DossierEvidence> DossierEvidenceItems { get; set; }
@@ -267,6 +273,48 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.HasKey(e => e.Id);
       entity.Property(e => e.DocumentType).IsRequired().HasMaxLength(50);
       entity.HasOne(e => e.Document).WithMany().HasForeignKey(e => e.DocumentId).IsRequired(false);
+    });
+
+    // Configure ValuationRecord entity (R2 Wave 25)
+    modelBuilder.Entity<ValuationRecord>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.PropertyType).IsRequired().HasMaxLength(30);
+      entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
+      entity.Property(e => e.CreatedBy).HasMaxLength(100);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId, e.TaxYear });
+      entity.HasIndex(e => new { e.CountyId, e.Status });
+    });
+
+    // Configure ComparableSale entity (R2 Wave 25)
+    modelBuilder.Entity<ComparableSale>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.PropertyType).IsRequired().HasMaxLength(30);
+      entity.Property(e => e.SaleQualification).HasMaxLength(30);
+      entity.HasIndex(e => new { e.CountyId, e.PropertyType, e.SaleDate });
+      entity.HasIndex(e => new { e.CountyId, e.Neighborhood });
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+    });
+
+    // Configure CamaCharacteristic entity (R2 Wave 25)
+    modelBuilder.Entity<CamaCharacteristic>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.BuildingType).IsRequired().HasMaxLength(10);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId, e.TaxYear }).IsUnique();
+    });
+
+    // Configure CostMatrix entity (R2 Wave 25)
+    modelBuilder.Entity<CostMatrix>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.Region).IsRequired().HasMaxLength(100);
+      entity.Property(e => e.BuildingType).IsRequired().HasMaxLength(10);
+      entity.HasIndex(e => new { e.CountyId, e.BuildingType, e.Region, e.MatrixYear });
     });
 
     // Configure GovernmentUser entity

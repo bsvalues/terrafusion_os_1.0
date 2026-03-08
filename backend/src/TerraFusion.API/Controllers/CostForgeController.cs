@@ -1863,6 +1863,402 @@ public class CostForgeController : ControllerBase
     });
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // Wave 25: Valuation Persistence + Comparable Sales + CAMA
+  // ═══════════════════════════════════════════════════════════════════
+
+  /// <summary>Save a valuation record (persists calculator outputs).</summary>
+  [HttpPost("valuations")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> SaveValuationRecord([FromBody] SaveValuationRequest request)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    var record = new ValuationRecord
+    {
+      Id = Guid.NewGuid(),
+      ParcelId = request.ParcelId,
+      TaxYear = request.TaxYear,
+      PropertyType = request.PropertyType,
+      CostApproachValue = request.CostApproachValue,
+      CostConfidence = request.CostConfidence,
+      BuildingType = request.BuildingType,
+      Region = request.Region,
+      SquareFeet = request.SquareFeet,
+      Rcn = request.Rcn,
+      DepreciationPercent = request.DepreciationPercent,
+      Rcnld = request.Rcnld,
+      LandValue = request.LandValue,
+      SiteImprovementValue = request.SiteImprovementValue,
+      IncomeApproachValue = request.IncomeApproachValue,
+      IncomeConfidence = request.IncomeConfidence,
+      GrossIncome = request.GrossIncome,
+      VacancyRate = request.VacancyRate,
+      OperatingExpenses = request.OperatingExpenses,
+      NetOperatingIncome = request.NetOperatingIncome,
+      CapRate = request.CapRate,
+      SalesComparisonValue = request.SalesComparisonValue,
+      SalesConfidence = request.SalesConfidence,
+      ComparableCount = request.ComparableCount,
+      MedianAdjustedPrice = request.MedianAdjustedPrice,
+      FinalReconciledValue = request.FinalReconciledValue,
+      Spread = request.Spread,
+      OverallConfidence = request.OverallConfidence,
+      Status = "draft",
+      Notes = request.Notes,
+      CountyId = ctx.CountyId,
+      CreatedBy = User.Identity?.Name ?? "system",
+      CreatedAt = DateTime.UtcNow,
+    };
+
+    _db.ValuationRecords.Add(record);
+    await _db.SaveChangesAsync();
+
+    return CreatedAtAction(nameof(GetValuationRecord), new { id = record.Id }, new { record.Id, record.Status });
+  }
+
+  /// <summary>Get a saved valuation record by ID.</summary>
+  [HttpGet("valuations/{id:guid}")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> GetValuationRecord(Guid id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    var record = await _db.ValuationRecords
+      .AsNoTracking()
+      .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == ctx.CountyId);
+
+    if (record is null) return NotFound(new { error = "Valuation record not found." });
+    return Ok(record);
+  }
+
+  /// <summary>List valuation records for a parcel.</summary>
+  [HttpGet("parcels/{parcelId}/valuations")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> GetParcelValuations(string parcelId, [FromQuery] int? taxYear = null)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    var query = _db.ValuationRecords
+      .AsNoTracking()
+      .Where(r => r.ParcelId == parcelId && r.CountyId == ctx.CountyId);
+
+    if (taxYear.HasValue)
+      query = query.Where(r => r.TaxYear == taxYear.Value);
+
+    var records = await query.OrderByDescending(r => r.CreatedAt).ToListAsync();
+    return Ok(records);
+  }
+
+  /// <summary>Update valuation status (draft → reviewed → sealed).</summary>
+  [HttpPatch("valuations/{id:guid}/status")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> UpdateValuationStatus(Guid id, [FromBody] UpdateStatusRequest request)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    var record = await _db.ValuationRecords
+      .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == ctx.CountyId);
+
+    if (record is null) return NotFound(new { error = "Valuation record not found." });
+
+    var validTransitions = new Dictionary<string, string[]>
+    {
+      ["draft"] = new[] { "reviewed" },
+      ["reviewed"] = new[] { "sealed", "draft" },
+    };
+
+    if (!validTransitions.TryGetValue(record.Status, out var allowed) || !allowed.Contains(request.Status))
+      return BadRequest(new { error = $"Cannot transition from '{record.Status}' to '{request.Status}'." });
+
+    record.Status = request.Status;
+    if (request.Status == "reviewed")
+    {
+      record.ReviewedAt = DateTime.UtcNow;
+      record.ReviewedBy = User.Identity?.Name;
+    }
+
+    await _db.SaveChangesAsync();
+    return Ok(new { record.Id, record.Status, record.ReviewedAt });
+  }
+
+  /// <summary>Ingest a comparable sale record.</summary>
+  [HttpPost("comparables")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> IngestComparableSale([FromBody] IngestComparableRequest request)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    var sale = new ComparableSale
+    {
+      Id = Guid.NewGuid(),
+      ParcelId = request.ParcelId,
+      SaleDate = request.SaleDate,
+      SalePrice = request.SalePrice,
+      PropertyType = request.PropertyType,
+      Address = request.Address,
+      Neighborhood = request.Neighborhood,
+      GrossLivingArea = request.GrossLivingArea,
+      LotSizeSqft = request.LotSizeSqft,
+      YearBuilt = request.YearBuilt,
+      Bedrooms = request.Bedrooms,
+      Bathrooms = request.Bathrooms,
+      Condition = request.Condition,
+      QualityGrade = request.QualityGrade,
+      SaleQualification = request.SaleQualification ?? "qualified",
+      IsVerified = false,
+      CountyId = ctx.CountyId,
+      IngestedBy = User.Identity?.Name ?? "system",
+      IngestedAt = DateTime.UtcNow,
+    };
+
+    _db.ComparableSales.Add(sale);
+    await _db.SaveChangesAsync();
+
+    return CreatedAtAction(nameof(SearchComparableSales), new { parcelId = sale.ParcelId }, new { sale.Id });
+  }
+
+  /// <summary>Search comparable sales for a subject parcel by criteria.</summary>
+  [HttpGet("parcels/{parcelId}/comparables")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> SearchComparableSales(
+    string parcelId,
+    [FromQuery] string? propertyType = null,
+    [FromQuery] int? minGla = null,
+    [FromQuery] int? maxGla = null,
+    [FromQuery] int? monthsBack = 24,
+    [FromQuery] string? neighborhood = null,
+    [FromQuery] int limit = 20)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+    if (limit > 100) limit = 100;
+
+    var cutoff = DateTime.UtcNow.AddMonths(-(monthsBack ?? 24));
+
+    var query = _db.ComparableSales
+      .AsNoTracking()
+      .Where(s => s.CountyId == ctx.CountyId && s.ParcelId != parcelId && s.SaleDate >= cutoff);
+
+    if (!string.IsNullOrWhiteSpace(propertyType))
+      query = query.Where(s => s.PropertyType == propertyType);
+    if (minGla.HasValue)
+      query = query.Where(s => s.GrossLivingArea >= minGla.Value);
+    if (maxGla.HasValue)
+      query = query.Where(s => s.GrossLivingArea <= maxGla.Value);
+    if (!string.IsNullOrWhiteSpace(neighborhood))
+      query = query.Where(s => s.Neighborhood == neighborhood);
+
+    var results = await query
+      .OrderByDescending(s => s.SaleDate)
+      .Take(limit)
+      .ToListAsync();
+
+    return Ok(new { subjectParcelId = parcelId, count = results.Count, comparables = results });
+  }
+
+  /// <summary>Store or update CAMA characteristics for a parcel/tax year.</summary>
+  [HttpPost("cama")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> UpsertCamaCharacteristic([FromBody] UpsertCamaRequest request)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    var existing = await _db.CamaCharacteristics
+      .FirstOrDefaultAsync(c => c.CountyId == ctx.CountyId && c.ParcelId == request.ParcelId && c.TaxYear == request.TaxYear);
+
+    if (existing is not null)
+    {
+      existing.BuildingType = request.BuildingType;
+      existing.BuildingTypeDescription = request.BuildingTypeDescription;
+      existing.Region = request.Region;
+      existing.SquareFeet = request.SquareFeet;
+      existing.Stories = request.Stories;
+      existing.BasementSqft = request.BasementSqft;
+      existing.GarageSqft = request.GarageSqft;
+      existing.QualityGrade = request.QualityGrade;
+      existing.ConditionGrade = request.ConditionGrade;
+      existing.ComplexityGrade = request.ComplexityGrade;
+      existing.ExteriorWall = request.ExteriorWall;
+      existing.RoofType = request.RoofType;
+      existing.Foundation = request.Foundation;
+      existing.HvacType = request.HvacType;
+      existing.InteriorFinish = request.InteriorFinish;
+      existing.YearBuilt = request.YearBuilt;
+      existing.EffectiveAge = request.EffectiveAge;
+      existing.EconomicLife = request.EconomicLife;
+      existing.LandAreaSqft = request.LandAreaSqft;
+      existing.LandZone = request.LandZone;
+      existing.LandAdjustmentFactor = request.LandAdjustmentFactor;
+      existing.Bedrooms = request.Bedrooms;
+      existing.Bathrooms = request.Bathrooms;
+      existing.Fireplaces = request.Fireplaces;
+      existing.HasPool = request.HasPool;
+      existing.FunctionalObsolescence = request.FunctionalObsolescence;
+      existing.ExternalObsolescence = request.ExternalObsolescence;
+      existing.UpdatedBy = User.Identity?.Name ?? "system";
+      existing.UpdatedAt = DateTime.UtcNow;
+    }
+    else
+    {
+      var cama = new CamaCharacteristic
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = request.ParcelId,
+        TaxYear = request.TaxYear,
+        BuildingType = request.BuildingType,
+        BuildingTypeDescription = request.BuildingTypeDescription,
+        Region = request.Region,
+        SquareFeet = request.SquareFeet,
+        Stories = request.Stories,
+        BasementSqft = request.BasementSqft,
+        GarageSqft = request.GarageSqft,
+        QualityGrade = request.QualityGrade,
+        ConditionGrade = request.ConditionGrade,
+        ComplexityGrade = request.ComplexityGrade,
+        ExteriorWall = request.ExteriorWall,
+        RoofType = request.RoofType,
+        Foundation = request.Foundation,
+        HvacType = request.HvacType,
+        InteriorFinish = request.InteriorFinish,
+        YearBuilt = request.YearBuilt,
+        EffectiveAge = request.EffectiveAge,
+        EconomicLife = request.EconomicLife,
+        LandAreaSqft = request.LandAreaSqft,
+        LandZone = request.LandZone,
+        LandAdjustmentFactor = request.LandAdjustmentFactor,
+        Bedrooms = request.Bedrooms,
+        Bathrooms = request.Bathrooms,
+        Fireplaces = request.Fireplaces,
+        HasPool = request.HasPool,
+        FunctionalObsolescence = request.FunctionalObsolescence,
+        ExternalObsolescence = request.ExternalObsolescence,
+        CountyId = ctx.CountyId,
+        UpdatedBy = User.Identity?.Name ?? "system",
+        UpdatedAt = DateTime.UtcNow,
+      };
+      _db.CamaCharacteristics.Add(cama);
+    }
+
+    await _db.SaveChangesAsync();
+    return Ok(new { parcelId = request.ParcelId, taxYear = request.TaxYear, status = "saved" });
+  }
+
+  /// <summary>Get CAMA characteristics for a parcel.</summary>
+  [HttpGet("parcels/{parcelId}/cama")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> GetCamaCharacteristics(string parcelId, [FromQuery] int? taxYear = null)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    var query = _db.CamaCharacteristics
+      .AsNoTracking()
+      .Where(c => c.CountyId == ctx.CountyId && c.ParcelId == parcelId);
+
+    if (taxYear.HasValue)
+      query = query.Where(c => c.TaxYear == taxYear.Value);
+
+    var results = await query.OrderByDescending(c => c.TaxYear).ToListAsync();
+    return Ok(results);
+  }
+
+  // ──── Wave 25 Request DTOs ────
+
+  public sealed record SaveValuationRequest
+  {
+    [Required] public string ParcelId { get; init; } = "";
+    [Required] public int TaxYear { get; init; }
+    [Required] public string PropertyType { get; init; } = "";
+    public decimal? CostApproachValue { get; init; }
+    public string? CostConfidence { get; init; }
+    public string? BuildingType { get; init; }
+    public string? Region { get; init; }
+    public decimal? SquareFeet { get; init; }
+    public decimal? Rcn { get; init; }
+    public decimal? DepreciationPercent { get; init; }
+    public decimal? Rcnld { get; init; }
+    public decimal? LandValue { get; init; }
+    public decimal? SiteImprovementValue { get; init; }
+    public decimal? IncomeApproachValue { get; init; }
+    public string? IncomeConfidence { get; init; }
+    public decimal? GrossIncome { get; init; }
+    public decimal? VacancyRate { get; init; }
+    public decimal? OperatingExpenses { get; init; }
+    public decimal? NetOperatingIncome { get; init; }
+    public decimal? CapRate { get; init; }
+    public decimal? SalesComparisonValue { get; init; }
+    public string? SalesConfidence { get; init; }
+    public int? ComparableCount { get; init; }
+    public decimal? MedianAdjustedPrice { get; init; }
+    public decimal? FinalReconciledValue { get; init; }
+    public decimal? Spread { get; init; }
+    public string? OverallConfidence { get; init; }
+    public string? Notes { get; init; }
+  }
+
+  public sealed record UpdateStatusRequest
+  {
+    [Required] public string Status { get; init; } = "";
+  }
+
+  public sealed record IngestComparableRequest
+  {
+    [Required] public string ParcelId { get; init; } = "";
+    [Required] public DateTime SaleDate { get; init; }
+    [Required] public decimal SalePrice { get; init; }
+    [Required] public string PropertyType { get; init; } = "";
+    public string? Address { get; init; }
+    public string? Neighborhood { get; init; }
+    public decimal GrossLivingArea { get; init; }
+    public decimal LotSizeSqft { get; init; }
+    public int? YearBuilt { get; init; }
+    public int? Bedrooms { get; init; }
+    public int? Bathrooms { get; init; }
+    public string? Condition { get; init; }
+    public string? QualityGrade { get; init; }
+    public string? SaleQualification { get; init; }
+  }
+
+  public sealed record UpsertCamaRequest
+  {
+    [Required] public string ParcelId { get; init; } = "";
+    [Required] public int TaxYear { get; init; }
+    [Required] public string BuildingType { get; init; } = "";
+    public string? BuildingTypeDescription { get; init; }
+    public string? Region { get; init; }
+    public decimal SquareFeet { get; init; }
+    public decimal? Stories { get; init; }
+    public decimal? BasementSqft { get; init; }
+    public decimal? GarageSqft { get; init; }
+    public string? QualityGrade { get; init; }
+    public string? ConditionGrade { get; init; }
+    public string? ComplexityGrade { get; init; }
+    public string? ExteriorWall { get; init; }
+    public string? RoofType { get; init; }
+    public string? Foundation { get; init; }
+    public string? HvacType { get; init; }
+    public string? InteriorFinish { get; init; }
+    public int? YearBuilt { get; init; }
+    public int? EffectiveAge { get; init; }
+    public int? EconomicLife { get; init; }
+    public decimal? LandAreaSqft { get; init; }
+    public string? LandZone { get; init; }
+    public decimal? LandAdjustmentFactor { get; init; }
+    public int? Bedrooms { get; init; }
+    public int? Bathrooms { get; init; }
+    public int? Fireplaces { get; init; }
+    public bool HasPool { get; init; }
+    public decimal? FunctionalObsolescence { get; init; }
+    public decimal? ExternalObsolescence { get; init; }
+  }
+
   // ──── Valuation Lineage Data Records ────
 
   public sealed record FullLineageRequest
