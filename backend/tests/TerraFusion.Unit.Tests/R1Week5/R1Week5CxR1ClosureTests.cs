@@ -6238,4 +6238,674 @@ public sealed class R1Week5CxR1ClosureTests
     json.Should().Contain("\"created\":true");
     json.Should().Contain(expectedName);
   }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  WAVE 23 — Property Workbench: Unified Parcel API Tests
+  //  Tests for the Tier-0 hub that aggregates all suites.
+  // ════════════════════════════════════════════════════════════════════
+
+  private static WorkbenchController MakeWorkbenchController(string dbName, DataDbContext? db = null)
+  {
+    db ??= CreateDbContext(dbName);
+    var controller = new WorkbenchController(db, NullLogger<WorkbenchController>.Instance);
+    controller.ControllerContext = new ControllerContext
+    {
+      HttpContext = new DefaultHttpContext()
+    };
+    return controller;
+  }
+
+  private static WorkbenchController MakeAuthenticatedWorkbenchController(
+      string dbName, DataDbContext? db, Guid countyId)
+  {
+    db ??= CreateDbContext(dbName);
+    var controller = new WorkbenchController(db, NullLogger<WorkbenchController>.Instance);
+    var principal = CreatePrincipal(countyId);
+    AttachPrincipal(controller, principal);
+    return controller;
+  }
+
+  private static async Task<(DataDbContext, Guid, string)> SeedWorkbenchDataAsync(string dbName)
+  {
+    var db = CreateDbContext(dbName);
+    var countyId = Guid.NewGuid();
+    var parcelId = "WB-P001";
+
+    db.Counties.Add(new County
+    {
+      Id = countyId,
+      Name = "Benton",
+      State = "WA",
+      FipsCode = "003",
+    });
+
+    var property = new Property
+    {
+      PropertyId = $"PROP-{parcelId}",
+      ParcelId = parcelId,
+      ParcelNumber = parcelId,
+      Address = "789 Workbench Ave",
+      OwnerName = "Test Owner",
+      PropertyType = "SFR",
+      AssessedValue = 250000m,
+      LandValue = 100000m,
+      ImprovementValue = 150000m,
+      MarketValue = 280000m,
+      AssessmentDate = DateTime.UtcNow,
+      LastUpdated = DateTime.UtcNow,
+      TaxYear = 2026,
+      YearBuilt = 1985,
+      CountyId = countyId,
+      CreatedAt = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+    };
+    db.Properties.Add(property);
+    await db.SaveChangesAsync();
+
+    // Add a valuation
+    db.Valuations.Add(new Valuation
+    {
+      PropertyId = property.Id,
+      AIModelId = Guid.NewGuid(),
+      EstimatedValue = 260000m,
+      Confidence = 0.92m,
+      Method = "Sales Comparison",
+      CreatedAt = DateTime.UtcNow,
+    });
+
+    // Add assessments
+    db.PropertyAssessments.Add(new PropertyAssessment
+    {
+      PropertyId = property.Id,
+      AssessmentYear = 2025,
+      AssessedValue = 240000m,
+      MarketValue = 270000m,
+      LandValue = 95000m,
+      ImprovementValue = 145000m,
+      AssessmentDate = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+      AssessorId = Guid.NewGuid(),
+    });
+    db.PropertyAssessments.Add(new PropertyAssessment
+    {
+      PropertyId = property.Id,
+      AssessmentYear = 2026,
+      AssessedValue = 250000m,
+      MarketValue = 280000m,
+      LandValue = 100000m,
+      ImprovementValue = 150000m,
+      AssessmentDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+      AssessorId = Guid.NewGuid(),
+    });
+
+    // Add dossier notes
+    db.DossierNotes.Add(new DossierNote
+    {
+      ParcelId = parcelId,
+      CountyId = countyId,
+      NoteType = "inspection",
+      Content = "Field inspection complete",
+      CreatedBy = "appraiser",
+      CreatedAt = new DateTime(2026, 2, 10, 0, 0, 0, DateTimeKind.Utc),
+    });
+    db.DossierNotes.Add(new DossierNote
+    {
+      ParcelId = parcelId,
+      CountyId = countyId,
+      NoteType = "case_note",
+      Content = "Appeal filed by owner",
+      CreatedBy = "clerk",
+      CreatedAt = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+    });
+
+    await db.SaveChangesAsync();
+    return (db, countyId, parcelId);
+  }
+
+  // ── Suite Registry (AllowAnonymous) ───────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_SuiteRegistry_Returns5Suites()
+  {
+    var controller = MakeWorkbenchController("wb-registry");
+    var result = controller.GetSuiteRegistry();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("TerraForge");
+    json.Should().Contain("TerraAtlas");
+    json.Should().Contain("TerraDais");
+    json.Should().Contain("TerraDossier");
+    json.Should().Contain("TerraGPT");
+    json.Should().Contain("\"totalSuites\":5");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_SuiteRegistry_HasCorrectMissions()
+  {
+    var controller = MakeWorkbenchController("wb-missions");
+    var result = controller.GetSuiteRegistry();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Build value");
+    json.Should().Contain("See the county");
+    json.Should().Contain("Operate value");
+    json.Should().Contain("Prove the decision");
+    json.Should().Contain("Augment every role");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_SuiteRegistry_HasRoutes()
+  {
+    var controller = MakeWorkbenchController("wb-routes");
+    var result = controller.GetSuiteRegistry();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("/forge");
+    json.Should().Contain("/atlas");
+    json.Should().Contain("/dais");
+    json.Should().Contain("/dossier");
+    json.Should().Contain("/gpt");
+  }
+
+  // ── Work Modes (AllowAnonymous) ───────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_WorkModes_Returns5Modes()
+  {
+    var controller = MakeWorkbenchController("wb-modes");
+    var result = controller.GetWorkModes();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"totalModes\":5");
+    json.Should().Contain("overview");
+    json.Should().Contain("valuation");
+    json.Should().Contain("mapping");
+    json.Should().Contain("admin");
+    json.Should().Contain("case");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_WorkModes_HasDescriptions()
+  {
+    var controller = MakeWorkbenchController("wb-mode-desc");
+    var result = controller.GetWorkModes();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Balanced view");
+    json.Should().Contain("TerraForge");
+    json.Should().Contain("TerraAtlas");
+    json.Should().Contain("TerraDais");
+    json.Should().Contain("TerraDossier");
+  }
+
+  // ── Parcel Summary ────────────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelSummary_ReturnsUnifiedData()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-summary");
+    var controller = MakeAuthenticatedWorkbenchController("wb-summary", db, countyId);
+    var result = await controller.GetParcelSummary(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("WB-P001");
+    json.Should().Contain("789 Workbench Ave");
+    json.Should().Contain("Test Owner");
+    json.Should().Contain("SFR");
+    json.Should().Contain("250000");
+    json.Should().Contain("100000");
+    json.Should().Contain("150000");
+    json.Should().Contain("280000");
+    json.Should().Contain("Unified Parcel Summary");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelSummary_IncludesForgeData()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-summary-forge");
+    var controller = MakeAuthenticatedWorkbenchController("wb-summary-forge", db, countyId);
+    var result = await controller.GetParcelSummary(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("260000");
+    json.Should().Contain("Sales Comparison");
+    json.Should().Contain("0.92");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelSummary_IncludesDossierCount()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-summary-dossier");
+    var controller = MakeAuthenticatedWorkbenchController("wb-summary-dossier", db, countyId);
+    var result = await controller.GetParcelSummary(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"noteCount\":2");
+    json.Should().Contain("\"hasDocuments\":true");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelSummary_IncludesSuiteRoutes()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-summary-routes");
+    var controller = MakeAuthenticatedWorkbenchController("wb-summary-routes", db, countyId);
+    var result = await controller.GetParcelSummary(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("/property/WB-P001/forge");
+    json.Should().Contain("/property/WB-P001/atlas");
+    json.Should().Contain("/property/WB-P001/dais");
+    json.Should().Contain("/property/WB-P001/dossier");
+    json.Should().Contain("/property/WB-P001/pilot");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelSummary_NotFound()
+  {
+    var db = CreateDbContext("wb-summary-404");
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+    var controller = MakeAuthenticatedWorkbenchController("wb-summary-404", db, countyId);
+    var result = await controller.GetParcelSummary("DOES-NOT-EXIST");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelSummary_ForbidsWithoutCounty()
+  {
+    var controller = MakeWorkbenchController("wb-summary-forbid");
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+    var result = await controller.GetParcelSummary("WB-P001");
+    result.Should().BeOfType<ForbidResult>();
+  }
+
+  // ── Parcel Badges ─────────────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelBadges_Returns4Badges()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-badges");
+    var controller = MakeAuthenticatedWorkbenchController("wb-badges", db, countyId);
+    var result = await controller.GetParcelBadges(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("forge");
+    json.Should().Contain("atlas");
+    json.Should().Contain("dais");
+    json.Should().Contain("dossier");
+    json.Should().Contain("Badge Provider API");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelBadges_ForgeShowsValued()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-badges-forge");
+    var controller = MakeAuthenticatedWorkbenchController("wb-badges-forge", db, countyId);
+    var result = await controller.GetParcelBadges(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Valued");
+    json.Should().Contain("success");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelBadges_DossierShowsDocCount()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-badges-docs");
+    var controller = MakeAuthenticatedWorkbenchController("wb-badges-docs", db, countyId);
+    var result = await controller.GetParcelBadges(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("2 Docs");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelBadges_NotFound()
+  {
+    var db = CreateDbContext("wb-badges-404");
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+    var controller = MakeAuthenticatedWorkbenchController("wb-badges-404", db, countyId);
+    var result = await controller.GetParcelBadges("MISSING");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  // ── Parcel Timeline ───────────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelTimeline_ReturnsCrossSuiteEvents()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-timeline");
+    var controller = MakeAuthenticatedWorkbenchController("wb-timeline", db, countyId);
+    var result = await controller.GetParcelTimeline(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("parcel-created");
+    json.Should().Contain("valuation");
+    json.Should().Contain("assessment");
+    json.Should().Contain("\"suite\":\"dossier\"");
+    json.Should().Contain("Cross-Suite Activity Timeline");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelTimeline_IncludesForgeValuations()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-timeline-forge");
+    var controller = MakeAuthenticatedWorkbenchController("wb-timeline-forge", db, countyId);
+    var result = await controller.GetParcelTimeline(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("260,000");
+    json.Should().Contain("Sales Comparison");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelTimeline_IncludesAssessments()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-timeline-assess");
+    var controller = MakeAuthenticatedWorkbenchController("wb-timeline-assess", db, countyId);
+    var result = await controller.GetParcelTimeline(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("AY2025");
+    json.Should().Contain("AY2026");
+    json.Should().Contain("240,000");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelTimeline_IncludesDossierNotes()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-timeline-dossier");
+    var controller = MakeAuthenticatedWorkbenchController("wb-timeline-dossier", db, countyId);
+    var result = await controller.GetParcelTimeline(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("inspection");
+    json.Should().Contain("case_note");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ParcelTimeline_ForbidsWithoutCounty()
+  {
+    var controller = MakeWorkbenchController("wb-timeline-forbid");
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+    var result = await controller.GetParcelTimeline("WB-P001");
+    result.Should().BeOfType<ForbidResult>();
+  }
+
+  // ── Suite Compass ─────────────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_SuiteCompass_Returns6Tabs()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-compass");
+    var controller = MakeAuthenticatedWorkbenchController("wb-compass", db, countyId);
+    var result = await controller.GetSuiteCompass(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("summary");
+    json.Should().Contain("TerraForge");
+    json.Should().Contain("TerraAtlas");
+    json.Should().Contain("TerraDais");
+    json.Should().Contain("TerraDossier");
+    json.Should().Contain("TerraPilot");
+    json.Should().Contain("Suite Compass Navigation");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_SuiteCompass_ShowsDataAvailability()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-compass-data");
+    var controller = MakeAuthenticatedWorkbenchController("wb-compass-data", db, countyId);
+    var result = await controller.GetSuiteCompass(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("data-available");
+    json.Should().Contain("\"dataAvailable\":true");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_SuiteCompass_IncludesWorkModes()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-compass-modes");
+    var controller = MakeAuthenticatedWorkbenchController("wb-compass-modes", db, countyId);
+    var result = await controller.GetSuiteCompass(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("workModes");
+    json.Should().Contain("overview");
+    json.Should().Contain("valuation");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_SuiteCompass_NotFound()
+  {
+    var db = CreateDbContext("wb-compass-404");
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+    var controller = MakeAuthenticatedWorkbenchController("wb-compass-404", db, countyId);
+    var result = await controller.GetSuiteCompass("MISSING");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  // ── Parcel Search ─────────────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_Search_FindsByParcelId()
+  {
+    var (db, countyId, _) = await SeedWorkbenchDataAsync("wb-search-pid");
+    var controller = MakeAuthenticatedWorkbenchController("wb-search-pid", db, countyId);
+    var result = await controller.SearchParcels("WB-P001");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("WB-P001");
+    json.Should().Contain("789 Workbench Ave");
+    json.Should().Contain("\"count\":1");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_Search_FindsByAddress()
+  {
+    var (db, countyId, _) = await SeedWorkbenchDataAsync("wb-search-addr");
+    var controller = MakeAuthenticatedWorkbenchController("wb-search-addr", db, countyId);
+    var result = await controller.SearchParcels("Workbench");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("WB-P001");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_Search_FindsByOwner()
+  {
+    var (db, countyId, _) = await SeedWorkbenchDataAsync("wb-search-owner");
+    var controller = MakeAuthenticatedWorkbenchController("wb-search-owner", db, countyId);
+    var result = await controller.SearchParcels("Test Owner");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("WB-P001");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_Search_RejectsShortQuery()
+  {
+    var controller = MakeWorkbenchController("wb-search-short");
+    AttachPrincipal(controller, CreatePrincipal(Guid.NewGuid()));
+    var result = await controller.SearchParcels("X");
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_Search_ForbidsWithoutCounty()
+  {
+    var controller = MakeWorkbenchController("wb-search-forbid");
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+    var result = await controller.SearchParcels("test");
+    result.Should().BeOfType<ForbidResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_Search_RespectsCountyIsolation()
+  {
+    var (db, countyId, _) = await SeedWorkbenchDataAsync("wb-search-iso");
+    var otherCountyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = otherCountyId, Name = "Yakima", State = "WA", FipsCode = "077" });
+    await db.SaveChangesAsync();
+    var controller = MakeAuthenticatedWorkbenchController("wb-search-iso", db, otherCountyId);
+    var result = await controller.SearchParcels("WB-P001");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"count\":0");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_Search_IncludesRoutes()
+  {
+    var (db, countyId, _) = await SeedWorkbenchDataAsync("wb-search-routes");
+    var controller = MakeAuthenticatedWorkbenchController("wb-search-routes", db, countyId);
+    var result = await controller.SearchParcels("WB-P001");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("/property/WB-P001");
+  }
+
+  // ── Valuation History ─────────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ValuationHistory_ReturnsAssessments()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-hist-assess");
+    var controller = MakeAuthenticatedWorkbenchController("wb-hist-assess", db, countyId);
+    var result = await controller.GetValuationHistory(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"source\":\"assessment\"");
+    json.Should().Contain("240000");
+    json.Should().Contain("250000");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ValuationHistory_ReturnsValuations()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-hist-val");
+    var controller = MakeAuthenticatedWorkbenchController("wb-hist-val", db, countyId);
+    var result = await controller.GetValuationHistory(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"source\":\"valuation\"");
+    json.Should().Contain("260000");
+    json.Should().Contain("Sales Comparison");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ValuationHistory_HasTotalRecords()
+  {
+    var (db, countyId, parcelId) = await SeedWorkbenchDataAsync("wb-hist-total");
+    var controller = MakeAuthenticatedWorkbenchController("wb-hist-total", db, countyId);
+    var result = await controller.GetValuationHistory(parcelId);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"totalRecords\":3");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ValuationHistory_NotFound()
+  {
+    var db = CreateDbContext("wb-hist-404");
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+    var controller = MakeAuthenticatedWorkbenchController("wb-hist-404", db, countyId);
+    var result = await controller.GetValuationHistory("MISSING");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public async Task Workbench_ValuationHistory_ForbidsWithoutCounty()
+  {
+    var controller = MakeWorkbenchController("wb-hist-forbid");
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+    var result = await controller.GetValuationHistory("WB-P001");
+    result.Should().BeOfType<ForbidResult>();
+  }
+
+  // ── Controller Attributes ─────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_HasApiControllerAttribute()
+  {
+    typeof(WorkbenchController).Should()
+        .BeDecoratedWith<ApiControllerAttribute>();
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_HasCorrectRoute()
+  {
+    typeof(WorkbenchController).Should()
+        .BeDecoratedWith<RouteAttribute>(a => a.Template == "api/workbench");
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_HasAuthorizeAttribute()
+  {
+    typeof(WorkbenchController).Should()
+        .BeDecoratedWith<AuthorizeAttribute>();
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_SuiteRegistryIsAnonymous()
+  {
+    var method = typeof(WorkbenchController).GetMethod("GetSuiteRegistry");
+    method.Should().NotBeNull();
+    method!.Should().BeDecoratedWith<AllowAnonymousAttribute>();
+  }
+
+  [Fact]
+  [Trait("Category", "Workbench")]
+  public void Workbench_WorkModesIsAnonymous()
+  {
+    var method = typeof(WorkbenchController).GetMethod("GetWorkModes");
+    method.Should().NotBeNull();
+    method!.Should().BeDecoratedWith<AllowAnonymousAttribute>();
+  }
 }
