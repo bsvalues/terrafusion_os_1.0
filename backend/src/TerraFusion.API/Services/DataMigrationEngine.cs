@@ -646,20 +646,160 @@ namespace TerraFusion.API.Services
 
         public async Task<DataValidationResult> ValidateDataIntegrityAsync(string countyCode)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation("Validating data integrity for county: {CountyCode}", countyCode);
 
             try
             {
-                // TODO: Implement data integrity validation
+                int validationsPassed = 0;
+                int validationsFailed = 0;
+                var validationErrors = new List<string>();
+
+                // Validation 1: Resolve county and confirm it exists
+                var county = await _dbContext.Counties
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.FipsCode == countyCode || c.Name == countyCode);
+
+                if (county == null)
+                {
+                    return new DataValidationResult
+                    {
+                        IsValid = false,
+                        CountyCode = countyCode,
+                        ValidationsPassed = 0,
+                        ValidationsFailed = 1,
+                        Message = $"County not found for code: {countyCode}"
+                    };
+                }
+                validationsPassed++;
+
+                // Validation 2: Properties with null or empty required fields (ParcelId, Address)
+                var nullParcelCount = await _dbContext.Properties
+                    .Where(p => p.CountyId == county.Id)
+                    .Where(p => p.ParcelId == null || p.ParcelId == "")
+                    .CountAsync();
+
+                if (nullParcelCount > 0)
+                {
+                    validationsFailed++;
+                    validationErrors.Add($"{nullParcelCount} properties have null/empty ParcelId");
+                }
+                else
+                {
+                    validationsPassed++;
+                }
+
+                var nullAddressCount = await _dbContext.Properties
+                    .Where(p => p.CountyId == county.Id)
+                    .Where(p => p.Address == null || p.Address == "")
+                    .CountAsync();
+
+                if (nullAddressCount > 0)
+                {
+                    validationsFailed++;
+                    validationErrors.Add($"{nullAddressCount} properties have null/empty Address");
+                }
+                else
+                {
+                    validationsPassed++;
+                }
+
+                // Validation 3: Properties with CountyId that does not exist in Counties table
+                var orphanedPropertyCount = await _dbContext.Properties
+                    .Where(p => !_dbContext.Counties.Any(c => c.Id == p.CountyId))
+                    .CountAsync();
+
+                if (orphanedPropertyCount > 0)
+                {
+                    validationsFailed++;
+                    validationErrors.Add($"{orphanedPropertyCount} properties reference non-existent CountyId");
+                }
+                else
+                {
+                    validationsPassed++;
+                }
+
+                // Validation 4: Assessment year range check (valid years: 1900 to current year + 1)
+                int currentYear = DateTime.UtcNow.Year;
+                var invalidAssessmentYearCount = await _dbContext.PropertyAssessments
+                    .Where(a => _dbContext.Properties.Any(p => p.Id == a.PropertyId && p.CountyId == county.Id))
+                    .Where(a => a.AssessmentYear < 1900 || a.AssessmentYear > currentYear + 1)
+                    .CountAsync();
+
+                if (invalidAssessmentYearCount > 0)
+                {
+                    validationsFailed++;
+                    validationErrors.Add($"{invalidAssessmentYearCount} assessments have invalid year (outside 1900-{currentYear + 1})");
+                }
+                else
+                {
+                    validationsPassed++;
+                }
+
+                // Validation 5: TaxYear range check on Properties
+                var invalidTaxYearCount = await _dbContext.Properties
+                    .Where(p => p.CountyId == county.Id)
+                    .Where(p => p.TaxYear < 1900 || p.TaxYear > currentYear + 1)
+                    .CountAsync();
+
+                if (invalidTaxYearCount > 0)
+                {
+                    validationsFailed++;
+                    validationErrors.Add($"{invalidTaxYearCount} properties have invalid TaxYear (outside 1900-{currentYear + 1})");
+                }
+                else
+                {
+                    validationsPassed++;
+                }
+
+                // Validation 6: Negative assessed values
+                var negativeValueCount = await _dbContext.Properties
+                    .Where(p => p.CountyId == county.Id)
+                    .Where(p => p.AssessedValue < 0 || p.LandValue < 0 || p.ImprovementValue < 0 || p.MarketValue < 0)
+                    .CountAsync();
+
+                if (negativeValueCount > 0)
+                {
+                    validationsFailed++;
+                    validationErrors.Add($"{negativeValueCount} properties have negative monetary values");
+                }
+                else
+                {
+                    validationsPassed++;
+                }
+
+                // Validation 7: Duplicate ParcelId within the same county
+                var duplicateParcelCount = await _dbContext.Properties
+                    .Where(p => p.CountyId == county.Id)
+                    .GroupBy(p => p.ParcelId)
+                    .Where(g => g.Count() > 1)
+                    .CountAsync();
+
+                if (duplicateParcelCount > 0)
+                {
+                    validationsFailed++;
+                    validationErrors.Add($"{duplicateParcelCount} duplicate ParcelId values found within county");
+                }
+                else
+                {
+                    validationsPassed++;
+                }
+
+                bool isValid = validationsFailed == 0;
+                string message = isValid
+                    ? $"All {validationsPassed} data integrity validations passed for county {countyCode}"
+                    : $"{validationsFailed} validation(s) failed: {string.Join("; ", validationErrors)}";
+
+                _logger.LogInformation(
+                    "Data integrity validation completed for county {CountyCode}: {Passed} passed, {Failed} failed",
+                    countyCode, validationsPassed, validationsFailed);
+
                 return new DataValidationResult
                 {
-                    IsValid = true,
+                    IsValid = isValid,
                     CountyCode = countyCode,
-                    ValidationsPassed = 0,
-                    ValidationsFailed = 0,
-                    Message = "Data validation not yet implemented"
+                    ValidationsPassed = validationsPassed,
+                    ValidationsFailed = validationsFailed,
+                    Message = message
                 };
             }
             catch (Exception ex)
@@ -678,19 +818,145 @@ namespace TerraFusion.API.Services
 
         public async Task<DataTransformationResult> TransformLegacyDataAsync(string countyCode)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation("Transforming legacy data for county: {CountyCode}", countyCode);
 
             try
             {
-                // TODO: Implement legacy data transformation
+                // Step 1: Resolve county
+                var county = await _dbContext.Counties
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.FipsCode == countyCode || c.Name == countyCode);
+
+                if (county == null)
+                {
+                    return new DataTransformationResult
+                    {
+                        Success = false,
+                        CountyCode = countyCode,
+                        RecordsTransformed = 0,
+                        Message = $"County not found for code: {countyCode}"
+                    };
+                }
+
+                // Step 2: Load properties for this county in batches and apply transformations
+                const int batchSize = 500;
+                int totalTransformed = 0;
+                int totalProperties = await _dbContext.Properties
+                    .Where(p => p.CountyId == county.Id)
+                    .CountAsync();
+
+                if (totalProperties == 0)
+                {
+                    return new DataTransformationResult
+                    {
+                        Success = true,
+                        CountyCode = countyCode,
+                        RecordsTransformed = 0,
+                        Message = "No property records found for transformation"
+                    };
+                }
+
+                int processed = 0;
+                while (processed < totalProperties)
+                {
+                    var properties = await _dbContext.Properties
+                        .Where(p => p.CountyId == county.Id)
+                        .OrderBy(p => p.Id)
+                        .Skip(processed)
+                        .Take(batchSize)
+                        .ToListAsync();
+
+                    if (properties.Count == 0)
+                        break;
+
+                    foreach (var property in properties)
+                    {
+                        bool modified = false;
+
+                        // Transform 1: Normalize address — title-case, trim whitespace, collapse multiple spaces
+                        if (!string.IsNullOrEmpty(property.Address))
+                        {
+                            var normalized = Regex.Replace(property.Address.Trim(), @"\s+", " ");
+                            var titleCased = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(normalized.ToLowerInvariant());
+                            if (titleCased != property.Address)
+                            {
+                                property.Address = titleCased;
+                                modified = true;
+                            }
+                        }
+
+                        // Transform 2: Normalize owner name — title-case
+                        if (!string.IsNullOrEmpty(property.OwnerName))
+                        {
+                            var normalizedOwner = Regex.Replace(property.OwnerName.Trim(), @"\s+", " ");
+                            var titleCasedOwner = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(normalizedOwner.ToLowerInvariant());
+                            if (titleCasedOwner != property.OwnerName)
+                            {
+                                property.OwnerName = titleCasedOwner;
+                                modified = true;
+                            }
+                        }
+
+                        // Transform 3: Standardize PropertyType to canonical enum values
+                        if (!string.IsNullOrEmpty(property.PropertyType))
+                        {
+                            var standardized = StandardizePropertyType(property.PropertyType);
+                            if (standardized != property.PropertyType)
+                            {
+                                property.PropertyType = standardized;
+                                modified = true;
+                            }
+                        }
+
+                        // Transform 4: Calculate AssessedValue from LandValue + ImprovementValue
+                        // when AssessedValue is zero but components have values
+                        if (property.AssessedValue == 0 && (property.LandValue > 0 || property.ImprovementValue > 0))
+                        {
+                            property.AssessedValue = property.LandValue + property.ImprovementValue;
+                            modified = true;
+                        }
+
+                        // Transform 5: Derive MarketValue from AssessedValue when missing
+                        // (default assumption: market value equals assessed value if unset)
+                        if (property.MarketValue == 0 && property.AssessedValue > 0)
+                        {
+                            property.MarketValue = property.AssessedValue;
+                            modified = true;
+                        }
+
+                        // Transform 6: Set default TaxYear to current year when zero
+                        if (property.TaxYear == 0)
+                        {
+                            property.TaxYear = DateTime.UtcNow.Year;
+                            modified = true;
+                        }
+
+                        if (modified)
+                        {
+                            property.UpdatedAt = DateTime.UtcNow;
+                            property.LastUpdated = DateTime.UtcNow;
+                            totalTransformed++;
+                        }
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                    processed += properties.Count;
+
+                    _logger.LogInformation(
+                        "Transformed batch for county {CountyCode}: {Processed}/{Total} records processed, {Transformed} modified",
+                        countyCode, processed, totalProperties, totalTransformed);
+                }
+
+                _logger.LogInformation(
+                    "Legacy data transformation completed for county {CountyCode}: {RecordsTransformed}/{TotalRecords} records transformed",
+                    countyCode, totalTransformed, totalProperties);
+
                 return new DataTransformationResult
                 {
                     Success = true,
                     CountyCode = countyCode,
-                    RecordsTransformed = 0,
-                    Message = "Data transformation not yet implemented"
+                    RecordsTransformed = totalTransformed,
+                    Message = $"Successfully transformed {totalTransformed} of {totalProperties} property records for county {countyCode}"
                 };
             }
             catch (Exception ex)
@@ -704,6 +970,32 @@ namespace TerraFusion.API.Services
                     Message = $"Transformation failed: {ex.Message}"
                 };
             }
+        }
+
+        /// <summary>
+        /// Standardizes legacy property type strings to canonical values used across TerraFusion OS.
+        /// Maps common variations (abbreviations, alternate spellings) to a consistent set of types.
+        /// </summary>
+        private static string StandardizePropertyType(string propertyType)
+        {
+            var normalized = propertyType.Trim().ToUpperInvariant();
+
+            return normalized switch
+            {
+                "RES" or "RESIDENTIAL" or "R" or "RESI" or "SINGLE FAMILY" or "SF" or "SFR" => "Residential",
+                "COM" or "COMMERCIAL" or "C" or "COMM" or "BUS" or "BUSINESS" => "Commercial",
+                "IND" or "INDUSTRIAL" or "I" or "MFG" or "MANUFACTURING" => "Industrial",
+                "AGR" or "AGRICULTURAL" or "AG" or "FARM" or "FARMLAND" => "Agricultural",
+                "VAC" or "VACANT" or "V" or "VACANT LAND" or "VL" or "LAND" => "Vacant",
+                "MF" or "MULTI-FAMILY" or "MULTIFAMILY" or "MULTI FAMILY" or "MFR" or "APT" or "APARTMENT" => "Multi-Family",
+                "MH" or "MOBILE HOME" or "MANUFACTURED" or "MANUFACTURED HOME" => "Manufactured",
+                "EX" or "EXEMPT" or "TAX EXEMPT" or "GOV" or "GOVERNMENT" => "Exempt",
+                "MIX" or "MIXED USE" or "MIXED-USE" or "MIXED" => "Mixed-Use",
+                "CONDO" or "CONDOMINIUM" or "TOWNHOUSE" or "TH" or "TOWNHOME" => "Condominium",
+                "TIMBER" or "TIMBERLAND" or "FOREST" or "FORESTLAND" => "Timber",
+                "MIN" or "MINERAL" or "MINING" => "Mineral",
+                _ => propertyType // Preserve original if no mapping found
+            };
         }
 
         // Additional interface methods implementation

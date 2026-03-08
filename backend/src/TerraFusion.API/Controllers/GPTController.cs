@@ -992,6 +992,23 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
+                // Phase 22 hardened: Validate county exists in registry before proceeding
+                if (!string.IsNullOrWhiteSpace(countyId))
+                {
+                    var knownCodes = TerraFusion.AI.Models.CountyHelper.AllCounties.Select(c => c.Code).ToList();
+                    if (!knownCodes.Contains(countyId.Trim().ToLowerInvariant()))
+                    {
+                        _logger.LogWarning("SystemGPT: Unknown county requested: {CountyId}. Known counties: {Known}",
+                            countyId, string.Join(", ", knownCodes));
+                        return NotFound(new
+                        {
+                            error = "County not found",
+                            message = $"County '{countyId}' is not registered in TerraFusion OS. Known counties: {string.Join(", ", knownCodes)}",
+                            knownCounties = knownCodes
+                        });
+                    }
+                }
+
                 var county = TerraFusion.AI.Models.CountyHelper.ParseCountyIdOrDefault(countyId);
                 var countyInfo = TerraFusion.AI.Models.CountyHelper.GetCountyInfo(county);
 
@@ -1015,7 +1032,7 @@ namespace TerraFusion.API.Controllers
                     ModeChangedAt = _modeService?.ChangedAt
                 };
 
-                // Phase 22: Non-Benton counties return placeholder diagnostics
+                // Phase 22: Non-configured counties return limited diagnostics (no AI services available)
                 if (!countyInfo.IsConfigured)
                 {
                     diagnostics.HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
@@ -1145,8 +1162,8 @@ namespace TerraFusion.API.Controllers
                     {
                         TotalConversations = totalConversations,
                         TotalMessages = totalMessages,
-                        AuditRecordCount = totalMessages, // Each message generates an audit record
-                        RagTraceCount = 0, // RAG trace count not available via orchestration service
+                        AuditRecordCount = -1, // Audit record count unavailable without direct DB access
+                        RagTraceCount = -1, // RAG trace count unavailable via orchestration service
                         MessagesLast24h = messages24h,
                         ConversationsLast24h = conversations24h
                     };

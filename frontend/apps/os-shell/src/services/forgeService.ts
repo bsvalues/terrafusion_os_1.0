@@ -541,13 +541,6 @@ export function calculateIncome(input: IncomeInput): IncomeResult {
   };
 }
 
-/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
-export function extractCapRate(comps: Array<{ salePrice: number; noi: number }>): number {
-  if (comps.length === 0) return 0;
-  const rates = comps.map((c) => c.noi / c.salePrice);
-  return rates.reduce((a, b) => a + b, 0) / rates.length;
-}
-
 // Benton County market cap rates by property type (2025 survey)
 export const MARKET_CAP_RATES: Record<string, { low: number; mid: number; high: number }> = {
   '200': { low: 0.055, mid: 0.065, high: 0.075 },
@@ -681,104 +674,7 @@ export const DEFAULT_RECONCILIATION_WEIGHTS: Record<PropertyCategory, Record<App
   special_purpose: { sales: 0.2, income: 0.2, cost: 0.6 },
 };
 
-const CONFIDENCE_MULTIPLIERS: Record<string, number> = { high: 1.0, medium: 0.75, low: 0.5 };
-
-/** @deprecated Use runGovernedValuation() for production flows. Client-side calculation retained for offline/preview only. */
-export function runReconciliation(input: ReconciliationInput): ReconciliationOutput {
-  const { subjectId, effectiveDate, approaches, propertyType, reconciliationMethod, forcedWeights } = input;
-  const approachKeys = (Object.keys(approaches) as ApproachKey[]).filter(k => approaches[k]);
-  if (approachKeys.length === 0) throw new Error('At least one approach value required');
-
-  // Calculate weights
-  const defaults = DEFAULT_RECONCILIATION_WEIGHTS[propertyType] ?? DEFAULT_RECONCILIATION_WEIGHTS.residential;
-  const weights: Record<ApproachKey, number> = { sales: 0, income: 0, cost: 0 };
-
-  if (forcedWeights) {
-    for (const key of approachKeys) {
-      const approach = approaches[key];
-      if (approach?.weight !== undefined) weights[key] = approach.weight;
-    }
-  } else {
-    for (const key of approachKeys) {
-      const approach = approaches[key];
-      if (approach) {
-        const mult = CONFIDENCE_MULTIPLIERS[approach.confidenceLevel] ?? 1;
-        weights[key] = (defaults[key] ?? 0) * mult;
-      }
-    }
-  }
-
-  // Normalize to 1.0
-  const totalWeight = weights.sales + weights.income + weights.cost;
-  if (totalWeight > 0) {
-    for (const k of ['sales', 'income', 'cost'] as ApproachKey[]) {
-      weights[k] = Math.round((weights[k] / totalWeight) * 10000) / 10000;
-    }
-    const sum = weights.sales + weights.income + weights.cost;
-    if (sum !== 1) {
-      const largest = approachKeys.reduce((a, b) => (weights[a] > weights[b] ? a : b));
-      weights[largest] = Math.round((weights[largest] + (1 - sum)) * 10000) / 10000;
-    }
-  }
-
-  // Build summary
-  const approachSummary: ReconciliationOutput['approachSummary'] = {};
-  let totalWeightedValue = 0;
-  const values: number[] = [];
-  for (const key of approachKeys) {
-    const approach = approaches[key];
-    if (approach) {
-      const w = weights[key] ?? 0;
-      const contributed = Math.round(approach.indicatedValue * w);
-      approachSummary[key] = { indicatedValue: approach.indicatedValue, weight: w, contributedValue: contributed };
-      totalWeightedValue += contributed;
-      values.push(approach.indicatedValue);
-    }
-  }
-
-  // Final value
-  let finalOpinionOfValue: number;
-  switch (reconciliationMethod) {
-    case 'bracketed':
-      finalOpinionOfValue = Math.round((Math.min(...values) + Math.max(...values)) / 2);
-      break;
-    case 'primary_approach': {
-      let maxW = 0; let pVal = 0;
-      for (const k of approachKeys) { if ((weights[k] ?? 0) > maxW && approaches[k]) { maxW = weights[k]; pVal = approaches[k]!.indicatedValue; } }
-      finalOpinionOfValue = pVal;
-      break;
-    }
-    default:
-      finalOpinionOfValue = totalWeightedValue;
-  }
-
-  // Range stats
-  const minV = Math.min(...values);
-  const maxV = Math.max(...values);
-  const avg = values.reduce((a, b) => a + b, 0) / values.length;
-  const spreadPercentage = avg > 0 ? Math.round(((maxV - minV) / avg) * 10000) / 100 : 0;
-  let primaryApproach: ApproachKey | undefined;
-  let maxWeight = 0;
-  for (const k of approachKeys) { if ((weights[k] ?? 0) > maxWeight) { maxWeight = weights[k]; primaryApproach = k; } }
-
-  // Quality
-  const warnings: string[] = [];
-  let agreement: 'strong' | 'moderate' | 'weak' = 'strong';
-  if (spreadPercentage > 20) { warnings.push(`Large value spread (${spreadPercentage.toFixed(1)}%)`); agreement = 'weak'; }
-  else if (spreadPercentage > 10) { agreement = 'moderate'; }
-  if (approachKeys.length === 1) { warnings.push('Only one approach — limited reconciliation'); agreement = 'weak'; }
-  const lowCount = approachKeys.filter(k => approaches[k]?.confidenceLevel === 'low').length;
-  let confidenceLevel: 'high' | 'medium' | 'low' = 'high';
-  if (lowCount > 0 || agreement === 'weak') confidenceLevel = 'low';
-  else if (agreement === 'moderate') confidenceLevel = 'medium';
-
-  return {
-    subjectId, effectiveDate, finalOpinionOfValue, approachSummary,
-    reconciliationAnalysis: { method: reconciliationMethod, valueRange: { min: minV, max: maxV }, spreadPercentage, primaryApproach, weightsNormalized: true },
-    qualityIndicators: { confidenceLevel, warnings, approachAgreement: agreement },
-    generatedAt: new Date().toISOString(),
-  };
-}
+/** @see costForgeApiService.ts runReconciliation() for the governed backend implementation */
 
 // ============================================================================
 // Value Audit Trail (localStorage removed in R1)
@@ -820,29 +716,6 @@ export function loadAuditEntriesForParcel(parcelId: string): ValuationAuditEntry
 
 export function clearAuditEntries(): void {
   console.warn('[forgeService] clearAuditEntries: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
-}
-
-// ============================================================================
-// Summary Stats
-// ============================================================================
-
-export interface ForgeStats {
-  totalParcels: number;
-  averageValue: number;
-  medianValue: number;
-  matrixYear: number;
-  lastUpdated: string;
-}
-
-/** @deprecated Hardcoded stats placeholder. Real stats should come from backend API. */
-export async function getForgeStats(): Promise<ForgeStats> {
-  return {
-    totalParcels: 89247,
-    averageValue: 342800,
-    medianValue: 298500,
-    matrixYear: 2025,
-    lastUpdated: new Date().toISOString(),
-  };
 }
 
 // ============================================================================
