@@ -1,6 +1,6 @@
-# TerraFusion OS — Progress Truth Ledger v4
+# TerraFusion OS — Progress Truth Ledger v5
 
-Date: March 7, 2026 (R2 Waves 1-4 Complete)
+Date: March 8, 2026 (ALL R2 Waves Complete — R2.1 through R2.12)
 Branch: `claude/review-progress-ledger-a8iw5`
 
 ## Context
@@ -17,20 +17,20 @@ from `R1_DAY0_CONTRACTS`, `FRONTEND_CAPABILITY_CONTRACT_v1`, `R1_MVP_PRD`,
 
 ---
 
-### Freshly Verified (March 7, 2026 — R2 Waves 1-4 Complete)
+### Freshly Verified (March 8, 2026 — ALL R2 Waves Complete)
 
 | Check | Result |
 |-------|--------|
 | Branch | `claude/review-progress-ledger-a8iw5` |
-| `node --test phase83-tools.test.mjs` | **32/32 pass** (manifest v1.4.0, 29 tools) |
+| `node --test phase83-tools.test.mjs` | **32/32 pass** (manifest v1.7.0, 38 tools) |
 | `node --test phase85-tools.test.mjs` | **20/20 pass** |
 | `node --test phase86-toolrunner.test.mjs` | **7/7 pass** |
 | `node --test r1-acceptance-criteria.test.mjs` | **22/22 pass** (AC-1 through AC-11, >= 15 handlers) |
 | `node --test r1-boot-wiring.test.mjs` | **6/6 pass** (R2 handlers registered + backend calls) |
 | Total gate suite | **87/87 pass, 0 fail** |
 | Total gate tests (all suites) | **242 pass** |
-| Manifest version | **1.4.0** (29 tools, up from 1.3.0 / 24 tools) |
-| Endpoint matrix | **47 endpoints** (45 live, 2 stubs) |
+| Manifest version | **1.7.0** (38 tools, up from 1.4.0 / 29 tools at R2 Wave 1) |
+| Endpoint matrix | **61+ endpoints** (59 live, 2 stubs) |
 
 ---
 
@@ -217,7 +217,7 @@ Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `t
 
 ---
 
-## R2 Wave Summary (March 7, 2026)
+## R2 Wave Summary (March 8, 2026 — ALL WAVES COMPLETE)
 
 | Wave | Scope | Endpoints Added | Commits | Status |
 |------|-------|----------------|---------|--------|
@@ -225,16 +225,25 @@ Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `t
 | **Wave 2** | Atlas Nearby/Layers | 2 | `f846d196c` | ✅ COMPLETE |
 | **Wave 3** | DaisController DB Queries | 3 upgraded | `d79f3e5f6` | ✅ COMPLETE |
 | **Wave 4** | Model Inputs + Assessment History | 2 | `f846d196c` | ✅ COMPLETE |
-| **R2.5** | Dossier Document Management | 7 | pending | ✅ COMPLETE |
-| **Total** | | **16 new + 3 upgraded = 19** | 5 commits | ✅ ALL WAVES COMPLETE |
+| **R2.5** | Dossier Document Management | 7 | `b76d93c2c` | ✅ COMPLETE |
+| **R2.6** | Document Tools in TerraPilot | 3 tools (manifest v1.5.0) | `3069f17d4` | ✅ COMPLETE |
+| **R2.7** | Type Deduplication | 0 (build fix) | `e2f9e9c04` | ✅ COMPLETE |
+| **R2.8** | Cross-Project Build Fixes + Frontend Wiring | 0 (build fix + frontend) | `57e5089f1` | ✅ COMPLETE |
+| **R2.9** | Solution Completeness + Security DI | 0 (build fix) | `0b1dfc86a`, `665ab1516` | ✅ COMPLETE |
+| **R2.10** | GIS Geometry Storage | 4 + 3 tools (manifest v1.6.0→1.7.0) | `61f1e1da6` | ✅ COMPLETE |
+| **R2.11** | Muse NLP Engine | 7 + 3 tools | `b843e9c7d` | ✅ COMPLETE |
+| **R2.12** | Frontend Tool Invocation Wiring | 0 (frontend UI) | `111038687` | ✅ COMPLETE |
+| **Total** | | **61+ endpoints (59 live, 2 stubs), 38 tools** | 14 commits | ✅ ALL R2 WAVES COMPLETE |
 
-**Endpoint matrix:** 54 total (52 live, 2 stubs). Up from 35 at R1 close.
+**Endpoint matrix:** 61+ total (59 live, 2 stubs). Up from 35 at R1 close.
 
 **Gate status:** 87/87 core gates + 242 total gate tests passing.
 
+**Manifest:** v1.7.0 — 38 tools, 38 real handlers, 0 stubs.
+
 ---
 
-## Tool Manifest Status (32 tools → 32 real handlers, 0 stubs)
+## Tool Manifest Status (38 tools → 38 real handlers, 0 stubs)
 
 | toolId | Risk | Suite | Real Handler? | Backend Endpoint |
 |--------|------|-------|--------------|-----------------|
@@ -270,6 +279,126 @@ Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `t
 | `search_dossier_documents` | read_only | dossier | **YES** (R2.5) | POST `/api/dossier/documents/search` |
 | `upload_dossier_document` | write_low | dossier | **YES** (R2.5) | POST `/api/dossier/{parcelId}/documents` |
 | `get_document_chain_of_custody` | read_only | dossier | **YES** (R2.5) | GET `/api/dossier/{parcelId}/documents/{documentId}/chain` |
+| `get_parcel_centroid` | read_only | atlas | **YES** (R2.10) | GET `/api/atlas/parcels/{parcelId}/centroid` |
+| `upsert_parcel_geometry` | write_low | atlas | **YES** (R2.10) | PUT `/api/atlas/parcels/{parcelId}/geometry` |
+| `get_geometry_stats` | read_only | atlas | **YES** (R2.10) | GET `/api/atlas/geometry/stats` |
+| `muse_explain` | read_only | muse | **YES** (R2.11) | POST `/api/muse/explain/value-change` |
+| `muse_draft` | write_low | muse | **YES** (R2.11) | POST `/api/muse/draft/notice` |
+| `muse_synthesize` | read_only | muse | **YES** (R2.11) | POST `/api/muse/synthesize` |
+
+---
+
+## R2.6 Status (March 8, 2026)
+
+### Delivered: Document Tools in TerraPilot Manifest
+
+Manifest v1.5.0 — 32 tools (was 29). 3 new dossier document tools wired with real handlers in `handlers.real.ts`:
+- `search_dossier_documents` (read_only) → POST `/api/dossier/documents/search`
+- `upload_dossier_document` (write_low) → POST `/api/dossier/{parcelId}/documents`
+- `get_document_chain_of_custody` (read_only) → GET `/api/dossier/{parcelId}/documents/{id}/chain`
+
+**Commit:** `3069f17d4`
+
+---
+
+## R2.7 Status (March 8, 2026)
+
+### Delivered: Type Deduplication — Build Error Resolution
+
+- Removed duplicate `SyncResult`, `OptimizationRecommendation`, `ComplianceViolation` from `SharedDtos.cs` (canonical definitions in `CommonResponses.cs`)
+- Added using aliases in `AdvancedAIAgentOrchestrator.cs` and `CognitiveFrameworkOptimizationService.cs` to resolve CS0104 ambiguous references
+
+**Commit:** `e2f9e9c04`
+
+---
+
+## R2.8 Status (March 8, 2026)
+
+### Delivered: Cross-Project Build Fixes + Frontend Service Wiring
+
+**Backend:** 15+ missing DI registrations in `Program.cs`, type ambiguity fixes across 6 backend projects (Consciousness, CostForge, Operations, Research, API, Security).
+
+**Frontend wiring:**
+- `useCostForgeAPI`: 6 USPAP three-approach endpoints (sales, income, cost, reconcile, cost-matrix, model-inputs)
+- `atlasService.ts`: 3 Atlas R2 endpoints (nearby parcels, layer detail, parcel layers)
+- `daisService.ts` (NEW): 10 DAIS API methods (certification, exemptions, tasks, BOE packets, notices, appeals, memos, redaction)
+
+**Commit:** `57e5089f1`, `2daf08714`
+
+---
+
+## R2.9 Status (March 8, 2026)
+
+### Delivered: Solution Completeness + Security DI Wiring
+
+- Added `TerraFusion.Security` and `TerraFusion.Research` to `TerraFusion.sln` (both existed but were missing from solution)
+- Registered `ICommonPasswordService` + `IPasswordHistoryRepository` in DI
+- Removed dead duplicate `WorkflowExecutionResult.cs`
+- Deep sweep verified: no remaining type ambiguity across 8 namespace pairs
+
+**Commits:** `0b1dfc86a`, `665ab1516`
+
+---
+
+## R2.10 Status (March 8, 2026)
+
+### Delivered: GIS Geometry Storage — ParcelGeometry Entity + Haversine Spatial Queries
+
+| Component | Detail |
+|-----------|--------|
+| `ParcelGeometry` entity | GeoJSON TEXT column, centroid lat/lng doubles, area, zoning code, SRID, FISMA audit fields |
+| `GET /api/atlas/parcels/{id}` | Returns real geometry from `ParcelGeometries` table when stored |
+| `GET /api/atlas/parcels/{id}/centroid` | Lightweight centroid lookup for map pins |
+| `PUT /api/atlas/parcels/{id}/geometry` | Upsert for county GIS data import |
+| `GET /api/atlas/geometry/stats` | County geometry coverage metrics |
+| Nearby parcels upgrade | Haversine distance with bounding-box pre-filter when centroids available |
+| Frontend `atlasService.ts` | 3 new methods + 7 new types |
+| Manifest v1.6.0→1.7.0 | 35→38 tools (3 atlas geometry + 3 muse in next wave) |
+
+**Architecture:** GIS without PostGIS. GeoJSON stored as TEXT; separate centroid doubles enable Haversine proximity in SQLite. PostGIS migration planned for R3.
+
+**Commit:** `61f1e1da6`
+
+---
+
+## R2.11 Status (March 8, 2026)
+
+### Delivered: Muse NLP Engine — Template-Based Explanation Generation
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/muse/capabilities` | GET | Engine metadata (muse-template-v1) |
+| `/api/muse/explain/value-change` | POST | Value change explanation |
+| `/api/muse/explain/assessment` | POST | Assessment explanation |
+| `/api/muse/draft/notice` | POST | Value change notice draft |
+| `/api/muse/draft/appeal-response` | POST | Appeal response draft |
+| `/api/muse/draft/memo` | POST | Commissioner memo draft |
+| `/api/muse/synthesize` | POST | Evidence synthesis |
+
+**Audience-aware prose:** taxpayer, appraiser, commissioner, internal — each gets appropriate tone and detail level.
+
+**Architecture:** `MuseService` uses deterministic template engine (`muse-template-v1`). Same interface as future Claude API integration — swap engine tag in R3 with zero interface changes.
+
+**Manifest v1.7.0:** 38 tools (3 new muse tools with real handlers).
+
+**Commit:** `b843e9c7d`
+
+---
+
+## R2.12 Status (March 8, 2026)
+
+### Delivered: Frontend Tool Invocation Wiring — Suite-Grouped Pilot UI
+
+| Component | Detail |
+|-----------|--------|
+| `toolServiceRouter.ts` (NEW) | Direct frontend→backend routes for 11 tools (Atlas, Muse, DAIS, navigation) |
+| `routeToolInvocation()` | Fallback when Pilot Node.js server unavailable |
+| `PropertyPilot.tsx` rewrite | Tools grouped by suite (forge, atlas, dais, dossier, os, pilot, gpt) |
+| Suite filter chips | Quick filtering by suite category |
+| "direct" badge | Identifies tools with frontend→backend route (bypasses Pilot server) |
+| Risk-level badges | Visual risk indicators per tool card |
+
+**Commit:** `111038687`
 
 ---
 
@@ -290,18 +419,29 @@ Extracted from quarantine (`applications/terraforge-suite/`, `costforge-ai/`, `t
 
 TerraFusion R1 has a complete governed execution backbone: invoke contracts,
 trace capture/export, write-lane enforcement, county isolation, correlation propagation,
-24/24 real handlers calling backend endpoints, and full shell UX — all passing 87/87 core gates (242 total).
+38/38 real handlers calling backend endpoints, and full shell UX — all passing 87/87 core gates (242 total).
 
 **All 8 original R1 blockers are CLOSED.**
 
-**R2 Waves 1-4 are COMPLETE:**
+**ALL R2 Waves (R2.1 through R2.12) are COMPLETE:**
 - Wave 1: USPAP three-approach valuation (5 endpoints, 4 services, 21 cost matrix entries)
 - Wave 2: Atlas nearby/layers (2 endpoints, GIS catalog infrastructure)
 - Wave 3: DaisController real DB queries (3 endpoints upgraded from hardcoded to real DB)
 - Wave 4: Model inputs explanation + assessment history (2 endpoints)
-- Total: 47 endpoints (45 live, 2 intentional stubs — batch-calculate and Harris PACS sync)
+- R2.5: Dossier document management (7 endpoints, DossierDocument entity, SHA-256 chain-of-custody)
+- R2.6: Document tools wired into TerraPilot manifest (3 tools, manifest v1.5.0 → 32 tools)
+- R2.7-R2.9: Build error sweep — type deduplication, cross-project DI fixes, solution completeness (13 projects in .sln)
+- R2.10: GIS geometry storage (ParcelGeometry entity, Haversine spatial queries, 4 new endpoints, 3 new tools)
+- R2.11: Muse NLP engine (7 endpoints, audience-aware template prose, Claude API swap-ready, 3 new tools)
+- R2.12: Frontend tool invocation wiring (toolServiceRouter with 11 direct routes, suite-grouped Pilot UI)
+- Total: 61+ endpoints (59 live, 2 intentional stubs), 38 tools (manifest v1.7.0)
 
-**R1 is end-to-end real. R2 Waves 1-4 are delivered.** Harris PACS sync is the only intentional stub (per CLAUDE.md county approval requirement).
+**R1 is end-to-end real. ALL R2 waves are delivered.** Harris PACS sync is the only intentional stub (per CLAUDE.md county approval requirement).
+
+**R3 Next Steps:**
+1. R3.0: PostGIS migration (upgrade GeoJSON TEXT → native geometry)
+2. R3.1: Claude API integration for Muse (swap template engine)
+3. R3.2: Full toolServiceRouter coverage (38/38 direct routes)
 
 ---
 
@@ -367,4 +507,5 @@ Wired into root `package.json`:
 ---
 
 *Classification: Internal working document*
-*Source: `handlers.real.ts`, `PilotController.ts`, `TraceStore.ts`, service files, controller source code, gate output, evidence verification gate*
+*Source: `handlers.real.ts` (38 handlers), `PilotController.ts`, `TraceStore.ts`, `MuseController.cs`, `AtlasController.cs`, `DossierController.cs`, `toolServiceRouter.ts`, service files, controller source code, gate output (87/87), evidence verification gate*
+*Last verified: March 8, 2026 — ledger v5*
