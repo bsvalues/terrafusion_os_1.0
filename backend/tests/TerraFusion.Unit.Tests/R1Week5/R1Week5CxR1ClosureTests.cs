@@ -1861,4 +1861,405 @@ public sealed class R1Week5CxR1ClosureTests
     var result = controller.CheckAggregateLimits(null!);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
+
+  // ══════════════════════════════════════════════════════════════════
+  // WAVE 13 — Dossier Document Management (Real Benton County Data)
+  // ══════════════════════════════════════════════════════════════════
+
+  private DossierController CreateDossierController(string dbName, Guid? countyId = null, bool isDev = true)
+  {
+    var db = CreateDbContext(dbName);
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var hostEnvironment = new Mock<IHostEnvironment>();
+    hostEnvironment.SetupGet(h => h.EnvironmentName).Returns(isDev ? "Development" : "Production");
+
+    var controller = new DossierController(
+        db, costForgeService.Object,
+        NullLogger<DossierController>.Instance,
+        hostEnvironment.Object);
+
+    if (countyId.HasValue)
+      AttachPrincipal(controller, CreatePrincipal(countyId.Value, "BENTON"));
+    else
+      controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    return controller;
+  }
+
+  // ── Document Types ──────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_DocumentTypesEndpoint_Returns18Types()
+  {
+    var controller = CreateDossierController(nameof(Dossier_DocumentTypesEndpoint_Returns18Types));
+    var result = controller.GetDocumentTypes();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    ok.Value.Should().NotBeNull();
+
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"county\":\"benton\"");
+    json.Should().Contain("\"total\":18");
+    json.Should().Contain("\"deed\"");
+
+    controller.Response.Headers["X-Dossier-Source"].ToString()
+        .Should().Be("benton-real-document-types-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_DocumentTypes_AllHaveRetentionClass()
+  {
+    var controller = CreateDossierController(nameof(Dossier_DocumentTypes_AllHaveRetentionClass));
+    var result = controller.GetDocumentTypes();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Every document type must reference a retention class
+    json.Should().Contain("RetentionClass");
+    // Known classes must appear
+    json.Should().Contain("permanent");
+    json.Should().Contain("working-6yr");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_DocumentTypes_IncludesQuarantineSourceTypes()
+  {
+    // Verify the 10 types from terra-flow-production quarantine are all present
+    var controller = CreateDossierController(nameof(Dossier_DocumentTypes_IncludesQuarantineSourceTypes));
+    var result = controller.GetDocumentTypes();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    foreach (var type in new[] { "deed", "mortgage", "lien", "easement", "plat", "survey",
+                                  "tax_record", "appeal", "photo", "other" })
+    {
+      json.Should().Contain($"\"Type\":\"{type}\"",
+          because: $"'{type}' is a core document type from terra-flow quarantine");
+    }
+  }
+
+  // ── Retention Schedule ──────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_RetentionScheduleEndpoint_Returns8Entries()
+  {
+    var controller = CreateDossierController(nameof(Dossier_RetentionScheduleEndpoint_Returns8Entries));
+    var result = controller.GetRetentionSchedule();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    ok.Value.Should().NotBeNull();
+
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"total\":8");
+    json.Should().Contain("WA Secretary of State");
+    json.Should().Contain("WA RCW");
+
+    controller.Response.Headers["X-Dossier-Source"].ToString()
+        .Should().Be("wa-sos-core-retention-schedule");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_RetentionSchedule_AllHaveAuthority()
+  {
+    var controller = CreateDossierController(nameof(Dossier_RetentionSchedule_AllHaveAuthority));
+    var result = controller.GetRetentionSchedule();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    // Every retention entry must cite WA RCW authority
+    json.Should().Contain("\"Authority\":\"WA RCW");
+    // Known retention periods present
+    json.Should().Contain("Permanent");
+    json.Should().Contain("6 years");
+    json.Should().Contain("10 years");
+  }
+
+  // ── Evidence Categories ─────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_EvidenceCategoriesEndpoint_Returns10Categories()
+  {
+    var controller = CreateDossierController(nameof(Dossier_EvidenceCategoriesEndpoint_Returns10Categories));
+    var result = controller.GetEvidenceCategories();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    ok.Value.Should().NotBeNull();
+
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"total\":10");
+    json.Should().Contain("field-inspection");
+    json.Should().Contain("comparable-sale");
+
+    controller.Response.Headers["X-Dossier-Source"].ToString()
+        .Should().Be("benton-real-evidence-categories-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_EvidenceCategories_AllHaveIntegrityRequirement()
+  {
+    var controller = CreateDossierController(nameof(Dossier_EvidenceCategories_AllHaveIntegrityRequirement));
+    var result = controller.GetEvidenceCategories();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    json.Should().Contain("IntegrityRequirement");
+    json.Should().Contain("MinCustodyDepth");
+    json.Should().Contain("TypicalSources");
+  }
+
+  // ── Packet Templates ────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_PacketTemplatesEndpoint_Returns6Templates()
+  {
+    var controller = CreateDossierController(nameof(Dossier_PacketTemplatesEndpoint_Returns6Templates));
+    var result = controller.GetPacketTemplates();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    ok.Value.Should().NotBeNull();
+
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"total\":6");
+    json.Should().Contain("annual-assessment");
+    json.Should().Contain("boe-appeal-defense");
+    json.Should().Contain("certification-roll");
+
+    controller.Response.Headers["X-Dossier-Source"].ToString()
+        .Should().Be("benton-real-packet-templates-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_PacketTemplates_AllCiteWaRcwAuthority()
+  {
+    var controller = CreateDossierController(nameof(Dossier_PacketTemplates_AllCiteWaRcwAuthority));
+    var result = controller.GetPacketTemplates();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    json.Should().Contain("WA RCW");
+    json.Should().Contain("RequiredDocumentTypes");
+  }
+
+  // ── Document Classifier ─────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_ClassifyDocument_DeedKeyword_ReturnsCorrectType()
+  {
+    var controller = CreateDossierController(nameof(Dossier_ClassifyDocument_DeedKeyword_ReturnsCorrectType));
+    var result = controller.ClassifyDocument(
+        new DossierController.DocumentClassifyRequest("warranty_deed_2024.pdf", "Property deed transfer"));
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    json.Should().Contain("\"documentType\":\"deed\"");
+    json.Should().Contain("\"evidenceCategory\":\"deed-transfer\"");
+    json.Should().Contain("\"retentionClass\":\"permanent\"");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_ClassifyDocument_AppealKeyword_ReturnsAppeal()
+  {
+    var controller = CreateDossierController(nameof(Dossier_ClassifyDocument_AppealKeyword_ReturnsAppeal));
+    var result = controller.ClassifyDocument(
+        new DossierController.DocumentClassifyRequest(null, "BOE appeal petition for parcel 123"));
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    json.Should().Contain("\"documentType\":\"appeal\"");
+    json.Should().Contain("\"evidenceCategory\":\"appeal-evidence\"");
+    json.Should().Contain("\"retentionClass\":\"appeal-10yr\"");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_ClassifyDocument_PhotoKeyword_ReturnsPhoto()
+  {
+    var controller = CreateDossierController(nameof(Dossier_ClassifyDocument_PhotoKeyword_ReturnsPhoto));
+    var result = controller.ClassifyDocument(
+        new DossierController.DocumentClassifyRequest("property_photo.jpg", null));
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    json.Should().Contain("\"documentType\":\"photo\"");
+    json.Should().Contain("\"evidenceCategory\":\"photo-evidence\"");
+    json.Should().Contain("\"retentionClass\":\"life-of-property\"");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_ClassifyDocument_UnknownInput_ReturnsFallback()
+  {
+    var controller = CreateDossierController(nameof(Dossier_ClassifyDocument_UnknownInput_ReturnsFallback));
+    var result = controller.ClassifyDocument(
+        new DossierController.DocumentClassifyRequest("random_file.dat", "Some unknown content"));
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    json.Should().Contain("\"documentType\":\"other\"");
+    json.Should().Contain("\"matchedRule\":\"default-fallback\"");
+    json.Should().Contain("\"confidence\":0.3");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_ClassifyDocument_NullRequest_ReturnsBadRequest()
+  {
+    var controller = CreateDossierController(nameof(Dossier_ClassifyDocument_NullRequest_ReturnsBadRequest));
+    var result = controller.ClassifyDocument(null!);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_ClassifyDocument_EmptyInput_ReturnsBadRequest()
+  {
+    var controller = CreateDossierController(nameof(Dossier_ClassifyDocument_EmptyInput_ReturnsBadRequest));
+    var result = controller.ClassifyDocument(
+        new DossierController.DocumentClassifyRequest(null, null));
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_ClassifyDocument_InspectionKeyword_ReturnsInspection()
+  {
+    var controller = CreateDossierController(nameof(Dossier_ClassifyDocument_InspectionKeyword_ReturnsInspection));
+    var result = controller.ClassifyDocument(
+        new DossierController.DocumentClassifyRequest("field_inspection_report.pdf", null));
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    json.Should().Contain("\"documentType\":\"inspection_report\"");
+    json.Should().Contain("\"evidenceCategory\":\"field-inspection\"");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public void Dossier_ClassifyDocument_ComparableKeyword_ReturnsComparable()
+  {
+    var controller = CreateDossierController(nameof(Dossier_ClassifyDocument_ComparableKeyword_ReturnsComparable));
+    var result = controller.ClassifyDocument(
+        new DossierController.DocumentClassifyRequest(null, "Sales comparison comparable analysis"));
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    json.Should().Contain("\"documentType\":\"comparable_analysis\"");
+    json.Should().Contain("\"evidenceCategory\":\"comparable-sale\"");
+  }
+
+  // ── Internal Classifier Unit Tests ──────────────────────────
+
+  [Theory]
+  [Trait("Category", "Dossier")]
+  [InlineData("deed", "deed")]
+  [InlineData("mortgage", "mortgage")]
+  [InlineData("lien", "lien")]
+  [InlineData("plat map", "plat")]
+  [InlineData("survey boundary", "survey")]
+  [InlineData("income rental analysis", "income_analysis")]
+  [InlineData("easement right of way", "easement")]
+  [InlineData("exemption application", "exemption")]
+  [InlineData("building permit", "permit")]
+  [InlineData("notice correspondence", "correspondence")]
+  [InlineData("floor plan sketch", "sketch")]
+  public void Dossier_Classifier_KeywordMapping_CorrectType(string input, string expectedType)
+  {
+    var result = DossierController.ClassifyDocumentInput(input);
+    var json = JsonSerializer.Serialize(result);
+    json.Should().Contain($"\"documentType\":\"{expectedType}\"");
+  }
+
+  // ── Packet Manifest ─────────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public async Task Dossier_PacketManifest_ValidParcel_ReturnsChecklist()
+  {
+    var countyId = Guid.NewGuid();
+    var db = CreateDbContext(nameof(Dossier_PacketManifest_ValidParcel_ReturnsChecklist));
+    db.Properties.Add(CreateProperty(countyId, "PKT-001"));
+    db.SaveChanges();
+
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var hostEnvironment = new Mock<IHostEnvironment>();
+    hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Development");
+
+    var controller = new DossierController(
+        db, costForgeService.Object,
+        NullLogger<DossierController>.Instance,
+        hostEnvironment.Object);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetPacketManifest("PKT-001", "annual-assessment");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    ok.Value.Should().NotBeNull();
+
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"packetType\":\"annual-assessment\"");
+    json.Should().Contain("\"checklist\":");
+    json.Should().Contain("completeness");
+
+    controller.Response.Headers["X-Dossier-Source"].ToString()
+        .Should().Be("benton-real-packet-manifest-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public async Task Dossier_PacketManifest_UnknownPacketType_ReturnsNotFound()
+  {
+    var countyId = Guid.NewGuid();
+    var db = CreateDbContext(nameof(Dossier_PacketManifest_UnknownPacketType_ReturnsNotFound));
+    db.Properties.Add(CreateProperty(countyId, "PKT-002"));
+    db.SaveChanges();
+
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var hostEnvironment = new Mock<IHostEnvironment>();
+    hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Development");
+
+    var controller = new DossierController(
+        db, costForgeService.Object,
+        NullLogger<DossierController>.Instance,
+        hostEnvironment.Object);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetPacketManifest("PKT-002", "nonexistent-type");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public async Task Dossier_PacketManifest_MissingParcel_ReturnsNotFound()
+  {
+    var countyId = Guid.NewGuid();
+    var db = CreateDbContext(nameof(Dossier_PacketManifest_MissingParcel_ReturnsNotFound));
+
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var hostEnvironment = new Mock<IHostEnvironment>();
+    hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Development");
+
+    var controller = new DossierController(
+        db, costForgeService.Object,
+        NullLogger<DossierController>.Instance,
+        hostEnvironment.Object);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetPacketManifest("MISSING-PARCEL", "annual-assessment");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dossier")]
+  public async Task Dossier_PacketManifest_InvalidParcelId_ReturnsBadRequest()
+  {
+    var controller = CreateDossierController(nameof(Dossier_PacketManifest_InvalidParcelId_ReturnsBadRequest), Guid.NewGuid());
+    var result = await controller.GetPacketManifest("!!invalid!!", "annual-assessment");
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
 }
