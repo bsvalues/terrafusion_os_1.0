@@ -5313,4 +5313,427 @@ public sealed class R1Week5CxR1ClosureTests
     var tier = DaisController.DetermineSeniorExemptionTier(income);
     tier.TierNumber.Should().Be(expectedTier);
   }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  WAVE 21 — TerraAppeal + TerraCert
+  //  BOE appeal management (RCW 84.48 / WAC 458-14)
+  //  + Assessment roll certification workflow (RCW 84.48.050)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // ── GET api/dais/appeal/grounds ───────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealGrounds_ReturnsFiveGrounds()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetAppealGrounds();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Board of Equalization");
+    json.Should().Contain("84.48");
+    json.Should().Contain("458-14");
+    json.Should().Contain("value");
+    json.Should().Contain("equity");
+    json.Should().Contain("exemption");
+    json.Should().Contain("classification");
+    json.Should().Contain("clerical");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealGrounds_ContainsHearingTypes()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetAppealGrounds();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("informal");
+    json.Should().Contain("formal");
+    json.Should().Contain("reconvened");
+  }
+
+  // ── POST api/dais/appeal/intake ───────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealIntake_ValidAppeal()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealIntakeRequest(
+        "R100001", "John Smith", "value", 350_000m, 300_000m, "Recent comparable sales", null, null);
+    var result = controller.SubmitAppealIntake(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"accepted\":true");
+    json.Should().Contain("BOE-");
+    json.Should().Contain("Filed");
+    json.Should().Contain("R100001");
+    json.Should().Contain("John Smith");
+    json.Should().Contain("Assessed Value");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealIntake_LargeReduction_FormalHearing()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    // 30% reduction → formal hearing
+    var request = new DaisController.AppealIntakeRequest(
+        "R200001", "Jane Doe", "equity", 500_000m, 350_000m, null, null, null);
+    var result = controller.SubmitAppealIntake(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("formal");
+    json.Should().Contain("60 days");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealIntake_SmallReduction_InformalHearing()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    // 10% reduction → informal hearing
+    var request = new DaisController.AppealIntakeRequest(
+        "R300001", "Bob Brown", "value", 200_000m, 180_000m, null, null, null);
+    var result = controller.SubmitAppealIntake(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("informal");
+    json.Should().Contain("30 days");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealIntake_MissingParcel_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealIntakeRequest(
+        "", "John", "value", 200_000m, 180_000m, null, null, null);
+    var result = controller.SubmitAppealIntake(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealIntake_InvalidGround_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealIntakeRequest(
+        "R100001", "John", "invalid-ground", 200_000m, 180_000m, null, null, null);
+    var result = controller.SubmitAppealIntake(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealIntake_RequestedValueHigher_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealIntakeRequest(
+        "R100001", "John", "value", 200_000m, 250_000m, null, null, null);
+    var result = controller.SubmitAppealIntake(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── GET api/dais/appeal/timeline ──────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealTimeline_Returns8Milestones()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetAppealTimeline(2025);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("2025");
+    json.Should().Contain("Assessment Date");
+    json.Should().Contain("Appeal Filing Deadline");
+    json.Should().Contain("BOE Session Opens");
+    json.Should().Contain("BOE Session Closes");
+    json.Should().Contain("WSBTA Appeal Deadline");
+    json.Should().Contain("84.48.010");
+  }
+
+  // ── POST api/dais/appeal/evidence-checklist ───────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealEvidence_ValueGround()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealEvidenceRequest("value");
+    var result = controller.GetAppealEvidenceChecklist(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Comparable property sales");
+    json.Should().Contain("Independent appraisal");
+    json.Should().Contain("Required");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealEvidence_EquityGround()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealEvidenceRequest("equity");
+    var result = controller.GetAppealEvidenceChecklist(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("assessment inconsistency");
+    json.Should().Contain("comparison chart");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealEvidence_ClericalGround()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealEvidenceRequest("clerical");
+    var result = controller.GetAppealEvidenceChecklist(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Evidence of the error");
+    json.Should().Contain("Correct data");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealEvidence_InvalidGround_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealEvidenceRequest("bogus");
+    var result = controller.GetAppealEvidenceChecklist(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Appeal")]
+  public void Dais_AppealEvidence_EmptyGround_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.AppealEvidenceRequest("");
+    var result = controller.GetAppealEvidenceChecklist(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── Internal: Evidence checklist by ground ────────────────────────
+
+  [Theory]
+  [Trait("Category", "Dais-Appeal")]
+  [InlineData("value", 5)]
+  [InlineData("equity", 4)]
+  [InlineData("exemption", 4)]
+  [InlineData("classification", 4)]
+  [InlineData("clerical", 3)]
+  public void Dais_EvidenceChecklist_CorrectItemCount(string ground, int expectedCount)
+  {
+    var checklist = DaisController.GetEvidenceChecklist(ground);
+    checklist.Length.Should().Be(expectedCount);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  TerraCert Tests — Assessment Roll Certification
+  // ═══════════════════════════════════════════════════════════════════
+
+  // ── GET api/dais/cert/checklist ───────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertChecklist_Returns10Steps()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetCertificationChecklist();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("\"totalSteps\":10");
+    json.Should().Contain("Preliminary Assessment Roll");
+    json.Should().Contain("Change of Value Notices");
+    json.Should().Contain("BOE Appeal Period");
+    json.Should().Contain("DOR Review");
+    json.Should().Contain("Certified Assessment Roll");
+    json.Should().Contain("Tax Roll Delivered");
+    json.Should().Contain("84.48.050");
+  }
+
+  // ── POST api/dais/cert/status ─────────────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertStatus_CalculatesProgress()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.CertStatusRequest(2025);
+    var result = controller.GetCertificationStatus(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("2025");
+    json.Should().Contain("complete");
+    json.Should().Contain("pending");
+    json.Should().Contain("percentComplete");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertStatus_DefaultsToCurrentYear()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.CertStatusRequest(0);
+    var result = controller.GetCertificationStatus(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain($"{DateTime.UtcNow.Year}");
+  }
+
+  // ── GET api/dais/cert/signoff-requirements ────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertSignoff_Returns5Stages()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetSignoffRequirements();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Preliminary Roll");
+    json.Should().Contain("BOE Equalization");
+    json.Should().Contain("Final Assessment Roll");
+    json.Should().Contain("DOR Review");
+    json.Should().Contain("Tax Roll Delivery");
+    json.Should().Contain("County Assessor");
+    json.Should().Contain("Department of Revenue");
+  }
+
+  // ── POST api/dais/cert/validate-roll ──────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertValidateRoll_AllPass()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.RollValidationRequest(
+        2025, 89_247, 15_000_000_000m, 5_250_000_000m, 9_750_000_000m, 150, 200);
+    var result = controller.ValidateAssessmentRoll(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("PASS");
+    json.Should().Contain("\"passed\":5");
+    json.Should().Contain("\"failed\":0");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertValidateRoll_ValueMismatch_Fails()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    // Land + Improvement = 10B but total = 15B → discrepancy
+    var request = new DaisController.RollValidationRequest(
+        2025, 89_247, 15_000_000_000m, 3_000_000_000m, 7_000_000_000m, 100, 100);
+    var result = controller.ValidateAssessmentRoll(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("ISSUES FOUND");
+    json.Should().Contain("Value Component Integrity");
+    json.Should().Contain("\"passed\":false");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertValidateRoll_HighZeroRate_Fails()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    // 5% zero-value parcels (above 2% threshold)
+    var request = new DaisController.RollValidationRequest(
+        2025, 10_000, 1_500_000_000m, 525_000_000m, 975_000_000m, 500, 50);
+    var result = controller.ValidateAssessmentRoll(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("ISSUES FOUND");
+    json.Should().Contain("Zero-Value Parcel Rate");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertValidateRoll_ZeroParcels_BadRequest()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var request = new DaisController.RollValidationRequest(2025, 0, 1_000_000m, 500_000m, 500_000m, 0, 0);
+    var result = controller.ValidateAssessmentRoll(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  // ── GET api/dais/cert/dor-ratio-study ─────────────────────────────
+
+  [Fact]
+  [Trait("Category", "Dais-Cert")]
+  public void Dais_CertDorRatio_ReturnsBenchmarks()
+  {
+    var controller = new DaisController(null!, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetDorRatioStudy();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("84.48.075");
+    json.Should().Contain("0.90 to 1.10");
+    json.Should().Contain("residential");
+    json.Should().Contain("commercial");
+    json.Should().Contain("agricultural");
+    json.Should().Contain("coefficientOfDispersion");
+    json.Should().Contain("revaluation");
+  }
+
+  // ── Internal: ResolveStepDeadline ─────────────────────────────────
+
+  [Theory]
+  [Trait("Category", "Dais-Cert")]
+  [InlineData("January", 1, 31)]
+  [InlineData("June", 6, 30)]
+  [InlineData("July", 7, 31)]
+  [InlineData("December", 12, 31)]
+  public void Dais_CertResolveDeadline(string month, int expectedMonth, int expectedDay)
+  {
+    var deadline = DaisController.ResolveStepDeadline(month, 2025);
+    deadline.Month.Should().Be(expectedMonth);
+    deadline.Day.Should().Be(expectedDay);
+    deadline.Year.Should().Be(2025);
+  }
 }
