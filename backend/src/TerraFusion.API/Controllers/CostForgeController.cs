@@ -2615,6 +2615,303 @@ public class CostForgeController : ControllerBase
     ];
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // R2 Wave 30 — RCW Calculators (WA State exemption statutes)
+  // ═══════════════════════════════════════════════════════════════════
+
+  /// <summary>RCW 84.34 — Open Space / Current Use valuation.</summary>
+  [HttpPost("analytics/rcw/84-34")]
+  public async Task<IActionResult> CalculateRcw8434([FromBody] Rcw8434Request request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      // Classification rates per acre (simplified WA schedule)
+      var ratePerAcre = (request.Classification?.ToLowerInvariant()) switch
+      {
+          "farm_and_agricultural" => 500m,
+          "timber" => 300m,
+          "open_space" => 200m,
+          _ => 400m,
+      };
+
+      var currentUseValue = ratePerAcre * request.Acreage;
+      var exemption = request.MarketValue - currentUseValue;
+      if (exemption < 0) exemption = 0;
+      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+
+      var entity = new RcwCalculation
+      {
+          CountyId = ctx.CountyId,
+          Statute = "rcw_84_34",
+          ParcelId = request.ParcelId ?? "",
+          CurrentUseClassification = request.Classification ?? "open_space",
+          MarketValue = request.MarketValue,
+          ReducedValue = currentUseValue,
+          ExemptionAmount = exemption,
+          TaxSavings = Math.Round(taxSavings, 2),
+          LevyRate = request.LevyRate,
+          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+          Qualifies = request.Acreage >= 5 && request.MarketValue > 0,
+          DisqualificationReason = request.Acreage < 5
+              ? "Minimum 5 acres required for current-use classification"
+              : "",
+          Details = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              acreage = request.Acreage,
+              ratePerAcre,
+              classification = request.Classification ?? "open_space",
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<RcwCalculation>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          statute = entity.Statute,
+          parcelId = entity.ParcelId,
+          classification = entity.CurrentUseClassification,
+          marketValue = entity.MarketValue,
+          reducedValue = entity.ReducedValue,
+          exemptionAmount = entity.ExemptionAmount,
+          taxSavings = entity.TaxSavings,
+          qualifies = entity.Qualifies,
+          disqualificationReason = entity.DisqualificationReason,
+      });
+  }
+
+  /// <summary>RCW 84.26 — Historic Property special valuation.</summary>
+  [HttpPost("analytics/rcw/84-26")]
+  public async Task<IActionResult> CalculateRcw8426([FromBody] Rcw8426Request request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      // Historic property: valuation frozen at pre-rehabilitation value
+      // for 10-year special valuation period
+      var qualifies = request.YearDesignated > 0
+                      && request.RehabilitationCost > 0
+                      && request.RehabilitationCost >= request.PreRehabValue * 0.25m; // 25% minimum
+
+      var reducedValue = qualifies ? request.PreRehabValue : request.MarketValue;
+      var exemption = request.MarketValue - reducedValue;
+      if (exemption < 0) exemption = 0;
+      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+
+      var yearsRemaining = qualifies
+          ? Math.Max(0, 10 - (request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year) + request.YearDesignated)
+          : 0;
+
+      var entity = new RcwCalculation
+      {
+          CountyId = ctx.CountyId,
+          Statute = "rcw_84_26",
+          ParcelId = request.ParcelId ?? "",
+          MarketValue = request.MarketValue,
+          ReducedValue = reducedValue,
+          ExemptionAmount = exemption,
+          TaxSavings = Math.Round(taxSavings, 2),
+          LevyRate = request.LevyRate,
+          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+          Qualifies = qualifies,
+          DisqualificationReason = !qualifies
+              ? "Rehabilitation cost must be >= 25% of pre-rehabilitation value"
+              : "",
+          Details = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              preRehabValue = request.PreRehabValue,
+              rehabilitationCost = request.RehabilitationCost,
+              yearDesignated = request.YearDesignated,
+              yearsRemaining,
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<RcwCalculation>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          statute = entity.Statute,
+          parcelId = entity.ParcelId,
+          marketValue = entity.MarketValue,
+          reducedValue = entity.ReducedValue,
+          exemptionAmount = entity.ExemptionAmount,
+          taxSavings = entity.TaxSavings,
+          qualifies = entity.Qualifies,
+          disqualificationReason = entity.DisqualificationReason,
+          yearsRemaining,
+      });
+  }
+
+  /// <summary>RCW 84.36.381 — Senior/Disabled Persons exemption.</summary>
+  [HttpPost("analytics/rcw/84-36-381")]
+  public async Task<IActionResult> CalculateRcw8436381([FromBody] Rcw8436381Request request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      // 2025-2026 WA income thresholds (simplified)
+      const decimal tier1Limit = 40_000m;   // Full exemption on excess levy
+      const decimal tier2Limit = 50_000m;   // Partial: frozen value
+      const decimal tier3Limit = 65_000m;   // Partial: reduced rate
+
+      var income = request.Income;
+      string tier;
+      decimal reducedValue;
+      bool qualifies = request.Age >= 61 || request.IsDisabled;
+
+      if (!qualifies)
+      {
+          tier = "none";
+          reducedValue = request.MarketValue;
+      }
+      else if (income <= tier1Limit)
+      {
+          tier = "tier_1";
+          // Exempt from all excess levies, value frozen
+          reducedValue = Math.Min(request.MarketValue, 150_000m);
+      }
+      else if (income <= tier2Limit)
+      {
+          tier = "tier_2";
+          reducedValue = Math.Min(request.MarketValue, 200_000m);
+      }
+      else if (income <= tier3Limit)
+      {
+          tier = "tier_3";
+          reducedValue = Math.Min(request.MarketValue, request.MarketValue * 0.90m);
+      }
+      else
+      {
+          tier = "over_income";
+          reducedValue = request.MarketValue;
+          qualifies = false;
+      }
+
+      var exemption = request.MarketValue - reducedValue;
+      if (exemption < 0) exemption = 0;
+      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+
+      var entity = new RcwCalculation
+      {
+          CountyId = ctx.CountyId,
+          Statute = "rcw_84_36_381",
+          ParcelId = request.ParcelId ?? "",
+          MarketValue = request.MarketValue,
+          ReducedValue = reducedValue,
+          ExemptionAmount = exemption,
+          TaxSavings = Math.Round(taxSavings, 2),
+          LevyRate = request.LevyRate,
+          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+          Income = income,
+          Qualifies = qualifies,
+          DisqualificationReason = !qualifies
+              ? (request.Age < 61 && !request.IsDisabled
+                  ? "Must be age 61+ or disabled"
+                  : "Income exceeds maximum threshold")
+              : "",
+          Details = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              age = request.Age,
+              isDisabled = request.IsDisabled,
+              income,
+              tier,
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<RcwCalculation>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          statute = entity.Statute,
+          parcelId = entity.ParcelId,
+          marketValue = entity.MarketValue,
+          reducedValue = entity.ReducedValue,
+          exemptionAmount = entity.ExemptionAmount,
+          taxSavings = entity.TaxSavings,
+          qualifies = entity.Qualifies,
+          disqualificationReason = entity.DisqualificationReason,
+          tier,
+      });
+  }
+
+  /// <summary>Retrieve an RCW calculation result by ID.</summary>
+  [HttpGet("analytics/rcw/{id:int}")]
+  public async Task<IActionResult> GetRcwCalculation(int id)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      var result = await _db.Set<RcwCalculation>()
+          .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == ctx.CountyId);
+
+      if (result == null)
+          return NotFound(new { error = "RCW calculation not found" });
+
+      return Ok(new
+      {
+          id = result.Id,
+          statute = result.Statute,
+          parcelId = result.ParcelId,
+          classification = result.CurrentUseClassification,
+          marketValue = result.MarketValue,
+          reducedValue = result.ReducedValue,
+          exemptionAmount = result.ExemptionAmount,
+          taxSavings = result.TaxSavings,
+          qualifies = result.Qualifies,
+          disqualificationReason = result.DisqualificationReason,
+          income = result.Income,
+          taxYear = result.TaxYear,
+          details = result.Details,
+          createdBy = result.CreatedBy,
+          createdAt = result.CreatedAt,
+      });
+  }
+
+  /// <summary>Get RCW calculation history for the county.</summary>
+  [HttpGet("analytics/rcw/history")]
+  public async Task<IActionResult> GetRcwHistory(
+      [FromQuery] string? statute = null,
+      [FromQuery] int limit = 20)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      var query = _db.Set<RcwCalculation>()
+          .Where(r => r.CountyId == ctx.CountyId);
+
+      if (!string.IsNullOrEmpty(statute))
+          query = query.Where(r => r.Statute == statute);
+
+      var results = await query
+          .OrderByDescending(r => r.CreatedAt)
+          .Take(Math.Clamp(limit, 1, 100))
+          .Select(r => new
+          {
+              id = r.Id,
+              statute = r.Statute,
+              parcelId = r.ParcelId,
+              qualifies = r.Qualifies,
+              exemptionAmount = r.ExemptionAmount,
+              taxSavings = r.TaxSavings,
+              createdAt = r.CreatedAt,
+          })
+          .ToListAsync();
+
+      return Ok(new { count = results.Count, results });
+  }
+
   internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
   internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
 
@@ -2776,4 +3073,38 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ═══ R2 Wave 30 — RCW Calculator DTOs ═══
+
+public class Rcw8434Request
+{
+  public string? ParcelId { get; set; }
+  public string? Classification { get; set; }
+  public decimal MarketValue { get; set; }
+  public decimal Acreage { get; set; }
+  public double LevyRate { get; set; }
+  public int TaxYear { get; set; }
+}
+
+public class Rcw8426Request
+{
+  public string? ParcelId { get; set; }
+  public decimal MarketValue { get; set; }
+  public decimal PreRehabValue { get; set; }
+  public decimal RehabilitationCost { get; set; }
+  public int YearDesignated { get; set; }
+  public double LevyRate { get; set; }
+  public int TaxYear { get; set; }
+}
+
+public class Rcw8436381Request
+{
+  public string? ParcelId { get; set; }
+  public decimal MarketValue { get; set; }
+  public int Age { get; set; }
+  public bool IsDisabled { get; set; }
+  public decimal Income { get; set; }
+  public double LevyRate { get; set; }
+  public int TaxYear { get; set; }
 }
