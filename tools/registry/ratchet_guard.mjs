@@ -169,6 +169,12 @@ async function main() {
 
   console.log(`Ratchet Guard: base=${baseVal} head=${headVal} improvement=${delta} required=${cfg.minDelta}`);
 
+  // Already at zero violations — nothing left to improve; pass unconditionally.
+  if (baseVal === 0 && headVal === 0) {
+    console.log("Ratchet Guard: baseline already at 0 violations — no regressions detected.");
+    process.exit(0);
+  }
+
   if (delta < cfg.minDelta) {
     console.error(
       `FAIL: Scoped UI paths changed, but ratchet improvement (${delta}) < required (${cfg.minDelta}).\n` +

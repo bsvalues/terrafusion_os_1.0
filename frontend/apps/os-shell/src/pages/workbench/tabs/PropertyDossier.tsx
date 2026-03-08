@@ -6,12 +6,12 @@
  * Two sections:
  * 1. Parcel Details — real backend data from GET /api/dossier/parcels/{parcelId}/details
  *    (property, valuation, levies, note headers — all nullable for selective includes)
- * 2. Document Management — disabled pending R2 backend. Summarize tool invocation retained.
+ * 2. Document Management — live read-only registry for documents and evidence.
  *
  * Architecture: UI → useDossierDetails hook → real API → correlationId UX
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
@@ -26,6 +26,13 @@ import { useEvidenceSnapshot } from '../../../hooks/useEvidenceSnapshot';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 import { useDossierDetails } from '../../../hooks/useDossierDetails';
+import {
+  dossierService,
+  type ChainEvent,
+  type DossierDocument,
+  type DossierStats,
+  type EvidenceItem,
+} from '../../../services/dossierService';
 import type {
   DossierLevyEntry,
   DossierNoteHeaderItem,
@@ -40,6 +47,21 @@ interface SummarizeState {
   result?: { summary: string; keyFacts?: string[] };
   correlationId?: string;
   error?: ErrorInfo;
+}
+
+interface DocumentManagementState {
+  loading: boolean;
+  error: ErrorInfo | null;
+  documents: DossierDocument[];
+  evidenceItems: EvidenceItem[];
+  stats: DossierStats | null;
+}
+
+interface EvidenceChainState {
+  loading: boolean;
+  error: ErrorInfo | null;
+  selectedEvidenceId: string | null;
+  events: ChainEvent[];
 }
 
 // ============================================================================
@@ -229,9 +251,100 @@ export const PropertyDossier: React.FC = () => {
 
   const [summarizeState, setSummarizeState] = useState<SummarizeState>({ status: 'idle' });
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
+  const [documentManagement, setDocumentManagement] = useState<DocumentManagementState>({
+    loading: false,
+    error: null,
+    documents: [],
+    evidenceItems: [],
+    stats: null,
+  });
+  const [evidenceChain, setEvidenceChain] = useState<EvidenceChainState>({
+    loading: false,
+    error: null,
+    selectedEvidenceId: null,
+    events: [],
+  });
 
   // CX-26: Evidence snapshot (manual fetch — point-in-time)
   const evidence = useEvidenceSnapshot(parcelId);
+
+  const loadDocumentManagement = useCallback(async () => {
+    if (!parcelId) {
+      setDocumentManagement({
+        loading: false,
+        error: null,
+        documents: [],
+        evidenceItems: [],
+        stats: null,
+      });
+      return;
+    }
+
+    setDocumentManagement((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+    }));
+
+    try {
+      const [documents, evidenceItems, stats] = await Promise.all([
+        dossierService.searchDocuments({ parcelId, limit: 5 }),
+        dossierService.searchEvidence({ parcelId, limit: 5 }),
+        dossierService.getStats(),
+      ]);
+
+      setDocumentManagement({
+        loading: false,
+        error: null,
+        documents: documents.results,
+        evidenceItems: evidenceItems.results,
+        stats,
+      });
+    } catch (err) {
+      setDocumentManagement((prev) => ({
+        ...prev,
+        loading: false,
+        error: {
+          message: err instanceof Error ? err.message : 'Failed to load document registry',
+          code: 'FETCH_ERROR',
+          severity: 'error',
+        },
+      }));
+    }
+  }, [parcelId]);
+
+  useEffect(() => {
+    void loadDocumentManagement();
+  }, [loadDocumentManagement]);
+
+  const loadEvidenceChain = useCallback(async (evidenceId: string) => {
+    setEvidenceChain((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+      selectedEvidenceId: evidenceId,
+    }));
+
+    try {
+      const events = await dossierService.getChainOfCustody(evidenceId);
+      setEvidenceChain({
+        loading: false,
+        error: null,
+        selectedEvidenceId: evidenceId,
+        events,
+      });
+    } catch (err) {
+      setEvidenceChain((prev) => ({
+        ...prev,
+        loading: false,
+        error: {
+          message: err instanceof Error ? err.message : 'Failed to load chain of custody',
+          code: 'FETCH_ERROR',
+          severity: 'error',
+        },
+      }));
+    }
+  }, []);
 
   /** Invoke summarize_dossier tool via pilotApi (retained for R2 document integration) */
   const handleSummarize = useCallback(async (dossierId: string) => {
@@ -440,15 +553,213 @@ export const PropertyDossier: React.FC = () => {
       </div>
 
       {/* ================================================================ */}
-      {/* Document Management — disabled pending R2 backend               */}
+      {/* Document Management — live read-only registry                  */}
       {/* ================================================================ */}
       <BentoCard title="Document Management" variant="form">
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="text-3xl mb-2 opacity-50">📁</div>
-          <p className="tf-text-tertiary font-medium">Document Management</p>
-          <p className="tf-text-dim text-sm mt-1">
-            Document storage and retrieval coming in R2
-          </p>
+        <div className='space-y-4' data-testid='document-management-live'>
+          <div className='flex items-start justify-between gap-4 flex-wrap'>
+            <div>
+              <p className='tf-text-tertiary font-medium'>Read-only live registry</p>
+              <p className='tf-text-dim text-sm mt-1'>
+                Parcel-scoped documents and evidence records are now live. Upload and
+                write workflows remain deferred.
+              </p>
+            </div>
+            <button
+              onClick={() => { void loadDocumentManagement(); }}
+              className='px-3 py-1.5 text-xs tf-hover-surface rounded-lg'
+              data-testid='document-management-refresh'
+              disabled={documentManagement.loading}
+            >
+              {documentManagement.loading ? 'Refreshing...' : 'Refresh registry'}
+            </button>
+          </div>
+
+          {documentManagement.loading && (
+            <div className='tf-status-info rounded-xl p-4' role='status'>
+              <div className='flex items-center gap-3'>
+                <div
+                  className='w-5 h-5 border-2 rounded-full animate-spin'
+                  style={{
+                    borderColor: 'hsl(var(--tf-text) / 0.3)',
+                    borderTopColor: 'hsl(var(--tf-text))',
+                  }}
+                />
+                <span className='tf-text'>Loading document registry...</span>
+              </div>
+            </div>
+          )}
+
+          {documentManagement.error && (
+            <div className='tf-status-error rounded-xl p-5'>
+              <ErrorDisplay error={documentManagement.error} />
+              <button
+                onClick={() => { void loadDocumentManagement(); }}
+                className='mt-3 px-3 py-1.5 text-sm tf-hover-surface rounded-lg'
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!documentManagement.loading && !documentManagement.error && (
+            <div className='space-y-4'>
+              <div className='grid gap-3 md:grid-cols-4'>
+                <div className='tf-panel p-3 rounded-xl'>
+                  <p className='tf-text-dim text-xs uppercase tracking-wide'>Parcel docs</p>
+                  <p className='tf-text text-lg font-semibold'>
+                    {documentManagement.documents.length}
+                  </p>
+                </div>
+                <div className='tf-panel p-3 rounded-xl'>
+                  <p className='tf-text-dim text-xs uppercase tracking-wide'>Parcel evidence</p>
+                  <p className='tf-text text-lg font-semibold'>
+                    {documentManagement.evidenceItems.length}
+                  </p>
+                </div>
+                <div className='tf-panel p-3 rounded-xl'>
+                  <p className='tf-text-dim text-xs uppercase tracking-wide'>County docs</p>
+                  <p className='tf-text text-lg font-semibold'>
+                    {documentManagement.stats?.totalDocuments ?? 0}
+                  </p>
+                </div>
+                <div className='tf-panel p-3 rounded-xl'>
+                  <p className='tf-text-dim text-xs uppercase tracking-wide'>County evidence</p>
+                  <p className='tf-text text-lg font-semibold'>
+                    {documentManagement.stats?.totalEvidence ?? 0}
+                  </p>
+                </div>
+              </div>
+
+              <div className='grid gap-4 lg:grid-cols-2'>
+                <div className='tf-panel p-4 rounded-xl space-y-3'>
+                  <div className='flex items-center justify-between'>
+                    <p className='tf-text-tertiary font-medium'>Recent documents</p>
+                    <span className='tf-text-dim text-xs'>
+                      {documentManagement.documents.length} visible
+                    </span>
+                  </div>
+                  {documentManagement.documents.length > 0 ? (
+                    <div className='space-y-2'>
+                      {documentManagement.documents.map((document) => (
+                        <div
+                          key={document.id}
+                          className='tf-overlay rounded-lg px-3 py-2 text-sm'
+                        >
+                          <div className='flex items-center justify-between gap-3'>
+                            <span className='tf-text font-medium'>{document.name}</span>
+                            <span className='tf-text-dim text-xs uppercase'>
+                              {document.status}
+                            </span>
+                          </div>
+                          <div className='mt-1 flex items-center justify-between gap-3 text-xs tf-text-dim'>
+                            <span>{document.type}</span>
+                            <span>{document.size}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className='tf-text-dim text-sm italic'>
+                      No document records found for this parcel.
+                    </p>
+                  )}
+                </div>
+
+                <div className='tf-panel p-4 rounded-xl space-y-3'>
+                  <div className='flex items-center justify-between'>
+                    <p className='tf-text-tertiary font-medium'>Recent evidence</p>
+                    <span className='tf-text-dim text-xs'>
+                      {documentManagement.evidenceItems.length} visible
+                    </span>
+                  </div>
+                  {documentManagement.evidenceItems.length > 0 ? (
+                    <div className='space-y-2'>
+                      {documentManagement.evidenceItems.map((item) => (
+                        <div key={item.id} className='tf-overlay rounded-lg px-3 py-2 text-sm'>
+                          <div className='flex items-center justify-between gap-3'>
+                            <span className='tf-text font-medium'>{item.title}</span>
+                            <span className='tf-text-dim text-xs uppercase'>
+                              {item.integrity}
+                            </span>
+                          </div>
+                          <div className='mt-1 flex items-center justify-between gap-3 text-xs tf-text-dim'>
+                            <span>{item.evidenceType}</span>
+                            <div className='flex items-center gap-3'>
+                              <span>{item.lastAction}</span>
+                              <button
+                                onClick={() => { void loadEvidenceChain(item.id); }}
+                                className='px-2 py-1 tf-hover-surface rounded'
+                                data-testid={`evidence-chain-trigger-${item.id}`}
+                              >
+                                {evidenceChain.loading && evidenceChain.selectedEvidenceId === item.id
+                                  ? 'Loading chain...'
+                                  : 'View chain'}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className='tf-text-dim text-sm italic'>
+                      No evidence records found for this parcel.
+                    </p>
+                  )}
+
+                  {evidenceChain.selectedEvidenceId && (
+                    <div
+                      className='border-t tf-border pt-3 space-y-3'
+                      data-testid='evidence-chain-panel'
+                    >
+                      <div className='flex items-center justify-between gap-3'>
+                        <p className='tf-text-tertiary font-medium'>Chain of custody</p>
+                        <span className='tf-text-dim text-xs'>
+                          Evidence ID: {evidenceChain.selectedEvidenceId}
+                        </span>
+                      </div>
+
+                      {evidenceChain.loading && (
+                        <p className='tf-text-dim text-sm'>Loading chain-of-custody events...</p>
+                      )}
+
+                      {evidenceChain.error && (
+                        <div className='tf-status-error rounded-xl p-4'>
+                          <ErrorDisplay error={evidenceChain.error} />
+                        </div>
+                      )}
+
+                      {!evidenceChain.loading && !evidenceChain.error && evidenceChain.events.length > 0 && (
+                        <div className='space-y-2'>
+                          {evidenceChain.events.map((event, index) => (
+                            <div
+                              key={`${event.timestamp}-${event.hash}-${index}`}
+                              className='tf-panel rounded-lg px-3 py-2 text-sm'
+                            >
+                              <div className='flex items-center justify-between gap-3'>
+                                <span className='tf-text font-medium'>{event.action}</span>
+                                <span className='tf-text-dim text-xs'>{event.actor}</span>
+                              </div>
+                              <div className='mt-1 flex items-center justify-between gap-3 text-xs tf-text-dim'>
+                                <span>{new Date(event.timestamp).toLocaleString()}</span>
+                                <span>{event.hash}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {!evidenceChain.loading && !evidenceChain.error && evidenceChain.events.length === 0 && (
+                        <p className='tf-text-dim text-sm italic'>
+                          No chain-of-custody events recorded for this evidence item.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </BentoCard>
 

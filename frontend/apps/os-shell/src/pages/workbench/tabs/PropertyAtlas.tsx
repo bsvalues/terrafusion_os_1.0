@@ -2,10 +2,10 @@
  * PropertyAtlas.tsx
  *
  * Phase 5.3: Property Atlas Tab - GIS/Mapping MWUX Slice
- * Real MWUX with layer selection, map placeholder, and query_parcel_layers tool invocation.
+ * Real MWUX with layer selection, live layer availability, and query_parcel_layers tool invocation.
  *
- * Map visualization is schematic (deterministic SVG from parcelId hash).
- * Real GIS/ArcGIS integration is planned for R2.
+ * Map visualization is a deterministic preview driven by the live layer-availability payload.
+ * Full GIS geometry is not yet available on this route.
  *
  * Architecture: UI → select layers → query_parcel_layers tool → correlationId UX
  */
@@ -54,10 +54,17 @@ interface LayerData {
   };
 }
 
+interface AvailableLayer {
+  id: string;
+  name: string;
+  available: boolean;
+}
+
 interface QueryResult {
   parcelId: string;
-  layers: LayerData;
+  layers: LayerData | AvailableLayer[];
   centroid?: { lat: number; lng: number };
+  geometryAvailable?: boolean;
 }
 
 interface QueryState {
@@ -65,6 +72,30 @@ interface QueryState {
   result?: QueryResult;
   correlationId?: string;
   error?: ErrorInfo;
+}
+
+function isLayerAvailabilityList(layers: QueryResult['layers']): layers is AvailableLayer[] {
+  return Array.isArray(layers);
+}
+
+function hasLiveLayer(result: QueryResult, layerId: LayerId): boolean {
+  if (isLayerAvailabilityList(result.layers)) {
+    return result.layers.some((layer) => layer.id === layerId && layer.available);
+  }
+
+  return Boolean(result.layers[layerId]);
+}
+
+function getLayerCards(result: QueryResult): AvailableLayer[] {
+  if (isLayerAvailabilityList(result.layers)) {
+    return result.layers;
+  }
+
+  return MAP_LAYERS.map((layer) => ({
+    id: layer.id,
+    name: layer.label,
+    available: Boolean(result.layers[layer.id]),
+  })).filter((layer) => layer.available);
 }
 
 /* ------------------------------------------------------------------ */
@@ -104,10 +135,10 @@ function ParcelMapVisualization({
   selectedLayers: Set<LayerId>;
 }) {
   const polygon = getParcelPolygon(result.parcelId);
-  const hasZoning = selectedLayers.has('zoning') && result.layers.zoning;
-  const hasFlood = selectedLayers.has('flood') && result.layers.flood;
-  const hasBoundary = selectedLayers.has('boundary');
-  const hasAerial = selectedLayers.has('aerial');
+  const hasZoning = selectedLayers.has('zoning') && hasLiveLayer(result, 'zoning');
+  const hasFlood = selectedLayers.has('flood') && hasLiveLayer(result, 'flood');
+  const hasBoundary = selectedLayers.has('boundary') && hasLiveLayer(result, 'boundary');
+  const hasAerial = selectedLayers.has('aerial') && hasLiveLayer(result, 'aerial');
 
   return (
     <div className='absolute inset-0 flex flex-col'>
@@ -168,9 +199,9 @@ function ParcelMapVisualization({
         <circle cx='200' cy='150' r='8' fill='none' stroke='hsl(var(--tf-warning-hs) 50%)' strokeWidth='1' opacity='0.6' />
       </svg>
 
-      {/* Schematic disclaimer */}
+      {/* Preview disclaimer */}
       <p className="tf-text-dim text-xs mt-1 text-center italic">
-        Schematic representation — GIS integration planned for R2
+        Live layer availability preview — full GIS geometry is not yet available on this route
       </p>
 
       {/* Map info bar */}
@@ -325,6 +356,10 @@ export const PropertyAtlas: React.FC = () => {
   }, []);
 
   const isDev = getEnv('MODE') === 'development';
+  const liveLayerCards =
+    queryState.status === 'success' && queryState.result
+      ? getLayerCards(queryState.result)
+      : [];
 
   return (
     <div className='tf-suite-atlas space-y-6' data-testid='property-atlas-tab'>
@@ -425,70 +460,34 @@ export const PropertyAtlas: React.FC = () => {
           </div>
 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            {queryState.result.layers.boundary && (
-              <div className='tf-panel p-3'>
-                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>📐 Boundary</h5>
+            {liveLayerCards.map((layer) => (
+              <div key={layer.id} className='tf-panel p-3'>
+                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>{layer.name}</h5>
                 <div className='text-sm tf-text-tertiary space-y-1'>
                   <p>
-                    Area:{' '}
-                    <span className='tf-text'>{queryState.result.layers.boundary.area}</span>
+                    Status:{' '}
+                    <span className='tf-text'>{layer.available ? 'Available' : 'Unavailable'}</span>
                   </p>
                   <p>
-                    Perimeter:{' '}
-                    <span className='tf-text'>
-                      {queryState.result.layers.boundary.perimeter}
-                    </span>
+                    Layer ID:{' '}
+                    <span className='tf-text font-mono'>{layer.id}</span>
                   </p>
+                  {layer.id === 'boundary' && queryState.result?.geometryAvailable === false && (
+                    <p>
+                      Geometry:{' '}
+                      <span className='tf-text'>Not exposed on this route yet</span>
+                    </p>
+                  )}
                 </div>
               </div>
-            )}
-
-            {queryState.result.layers.zoning && (
-              <div className='tf-panel p-3'>
-                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>🏘️ Zoning</h5>
-                <div className='text-sm tf-text-tertiary space-y-1'>
-                  <p>
-                    Code: <span className='tf-text'>{queryState.result.layers.zoning.code}</span>
-                  </p>
-                  <p>
-                    Description:{' '}
-                    <span className='tf-text'>
-                      {queryState.result.layers.zoning.description}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {queryState.result.layers.flood && (
-              <div className='tf-panel p-3'>
-                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>🌊 Flood Zone</h5>
-                <div className='text-sm tf-text-tertiary space-y-1'>
-                  <p>
-                    Zone: <span className='tf-text'>{queryState.result.layers.flood.zone}</span>
-                  </p>
-                  <p>
-                    Risk: <span className='tf-text'>{queryState.result.layers.flood.risk}</span>
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {queryState.result.layers.aerial && (
-              <div className='tf-panel p-3'>
-                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>🛰️ Aerial</h5>
-                <div className='text-sm tf-text-tertiary space-y-1'>
-                  <p>
-                    Date: <span className='tf-text'>{queryState.result.layers.aerial.date}</span>
-                  </p>
-                  <p>
-                    Resolution:{' '}
-                    <span className='tf-text'>{queryState.result.layers.aerial.resolution}</span>
-                  </p>
-                </div>
-              </div>
-            )}
+            ))}
           </div>
+
+          {queryState.result.geometryAvailable === false && (
+            <div className='mt-4 tf-panel p-3 text-sm tf-text-tertiary'>
+              Live Atlas layer truth is available, but parcel geometry, centroid, and zoning detail remain deferred until the fuller GIS surface ships.
+            </div>
+          )}
 
           {isDev && queryState.correlationId && (
             <div className='mt-3 text-xs tf-text-dim border-t tf-border pt-3'>
