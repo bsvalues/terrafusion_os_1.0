@@ -1,6 +1,6 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useTerraFusionTheme } from '@terrafusion/quantum-ui';
+import { useTerraFusionTheme } from '@/hooks/useTerraFusionTheme';
 import React, { useEffect, useRef, useState } from 'react';
 import { Vector3 } from 'three';
 import { useQuantumAnalytics } from '../../hooks/useQuantumAnalytics';

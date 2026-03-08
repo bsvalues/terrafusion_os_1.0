@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Card, 
-  CardHeader, 
-  CardBody, 
-  Button, 
-  Badge, 
+import {
+  Box,
+  Paper,
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  Badge,
   Alert,
   Select,
   Switch,
   Dialog,
   Tooltip,
   Grid,
-  Typography
-} from '@terrafusion/shared';
-import {
-  Box,
-  Paper,
+  Typography,
   IconButton,
   MenuItem,
   FormControl,

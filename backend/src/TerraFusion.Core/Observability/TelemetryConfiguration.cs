@@ -157,10 +157,8 @@ public static class TelemetryConfiguration
                 builder.SetResourceBuilder(resourceBuilder)
                     .AddMeter("TerraFusion.Government")
                     .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation();
-
-                        // Prometheus exporter temporarily disabled due to package compatibility issues
-        // TODO: Re-enable when stable package versions are available
+                    .AddHttpClientInstrumentation()
+                    .AddPrometheusExporter();
             });
 
         return services;

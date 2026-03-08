@@ -39,15 +39,41 @@ public class MetricsCollectionBackgroundService : BackgroundService
         }
     }
 
-    private async Task CollectSystemMetrics()
+    private Task CollectSystemMetrics()
     {
-        // TODO: Implement actual metrics collection
         _logger.LogDebug("Collecting system metrics");
-        
-        // Example metrics - replace with actual implementations
-        var memoryUsage = GC.GetTotalMemory(false);
-        _telemetryService.TrackBusinessMetric("system.memory.usage", memoryUsage);
-        
-        await Task.CompletedTask;
+
+        var process = System.Diagnostics.Process.GetCurrentProcess();
+
+        // Memory metrics
+        var gcMemory = GC.GetTotalMemory(forceFullCollection: false);
+        var workingSet = process.WorkingSet64;
+        _telemetryService.TrackBusinessMetric("system.memory.gc_bytes", gcMemory);
+        _telemetryService.TrackBusinessMetric("system.memory.working_set_bytes", workingSet);
+
+        // GC generation counts
+        _telemetryService.TrackBusinessMetric("system.gc.gen0_collections", GC.CollectionCount(0));
+        _telemetryService.TrackBusinessMetric("system.gc.gen1_collections", GC.CollectionCount(1));
+        _telemetryService.TrackBusinessMetric("system.gc.gen2_collections", GC.CollectionCount(2));
+
+        // Thread pool metrics
+        System.Threading.ThreadPool.GetAvailableThreads(out var workerThreads, out var ioThreads);
+        _telemetryService.TrackBusinessMetric("system.threadpool.worker_available", workerThreads);
+        _telemetryService.TrackBusinessMetric("system.threadpool.io_available", ioThreads);
+
+        // Process metrics
+        _telemetryService.TrackBusinessMetric("system.process.threads", process.Threads.Count);
+        _telemetryService.TrackBusinessMetric("system.process.handles", process.HandleCount);
+
+        // CPU time (total since process start)
+        _telemetryService.TrackBusinessMetric("system.cpu.total_ms", process.TotalProcessorTime.TotalMilliseconds);
+
+        _logger.LogDebug(
+            "Metrics collected: WorkingSet={WorkingSet}MB, GC={GC}MB, Threads={Threads}",
+            workingSet / (1024 * 1024),
+            gcMemory / (1024 * 1024),
+            process.Threads.Count);
+
+        return Task.CompletedTask;
     }
 }

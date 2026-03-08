@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: consul
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    component: consul
+spec:
+  serviceName: consul
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terrafusion
+      component: consul
+  template:
+    metadata:
+      labels:
+        app: terrafusion
+        component: consul
+    spec:
+      containers:
+        - name: consul
+          image: consul:1.15
+          ports:
+            - containerPort: 8500
+              protocol: TCP
+              name: http
+            - containerPort: 8600
+              protocol: TCP
+              name: dns-tcp
+            - containerPort: 8600
+              protocol: UDP
+              name: dns-udp
+          args:
+            - "agent"
+            - "-server"
+            - "-bootstrap-expect=1"
+            - "-ui"
+            - "-client=0.0.0.0"
+            - "-data-dir=/consul/data"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          volumeMounts:
+            - name: consul-data
+              mountPath: /consul/data
+          livenessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: 8500
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: 8500
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: consul-data
+        labels:
+          app: terrafusion
+          component: consul
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    component: consul
+spec:
+  type: ClusterIP
+  selector:
+    app: terrafusion
+    component: consul
+  ports:
+    - port: 8500
+      targetPort: 8500
+      protocol: TCP
+      name: http
+    - port: 8600
+      targetPort: 8600
+      protocol: TCP
+      name: dns-tcp
+    - port: 8600
+      targetPort: 8600
+      protocol: UDP
+      name: dns-udp

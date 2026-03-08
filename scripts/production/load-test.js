@@ -8,7 +8,7 @@ class TerraFusionLoadTest {
     constructor() {
         this.config = {
             apiUrl: 'http://localhost:5000',
-            wsUrl: 'ws://localhost:7000/terrafusion/core',
+            wsUrl: 'ws://localhost:5000/hubs/oscore',
             maxConnections: 50,
             messageCount: 1000,
             testDuration: 300000, // 5 minutes
@@ -85,7 +85,7 @@ class TerraFusionLoadTest {
         
         const endpoints = [
             '/health',
-            '/terrafusion/core/negotiate',
+            '/hubs/oscore/negotiate',
             '/api/system/status'
         ];
         

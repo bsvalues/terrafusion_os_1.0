@@ -6,7 +6,7 @@
     "modules": "PluginArchitecture"
   },
   "endpoints": {
-    "core": "ws://localhost:7000/terrafusion/core",
+    "core": "ws://localhost:5000/hubs/oscore",
     "modules": "ws://localhost:7001/terrafusion/modules",
     "marketplace": "ws://localhost:7002/terrafusion/marketplace"
   },

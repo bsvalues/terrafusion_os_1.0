@@ -20,7 +20,6 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, 'apps/os-shell/src/hooks'),
       '@utils': path.resolve(__dirname, 'apps/os-shell/src/utils'),
       '@types': path.resolve(__dirname, 'apps/os-shell/src/types'),
-      '@terrafusion/shared': path.resolve(__dirname, '../terrafusion-shared/dist/index.js'),
     },
   },
 });

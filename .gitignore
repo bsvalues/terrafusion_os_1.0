@@ -427,6 +427,11 @@ temp/
 data/postgres*/
 data/redis*/
 
+# ===== TerraFusion Secrets & Config Hardening - Sprint R8 =====
+# Backend local config overrides (never commit)
+appsettings.Local.json
+**/appsettings.Local.json
+
 # ===== TerraFusion Security - Added 2025-10-09 =====
 # CRITICAL: Never commit secrets, credentials, or private keys!
 

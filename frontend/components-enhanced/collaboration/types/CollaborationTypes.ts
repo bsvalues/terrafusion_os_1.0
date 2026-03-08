@@ -380,8 +380,8 @@ export interface DepartmentMetrics {
   crossTeamCollaboration: number;
 }
 
-// Import enums from @terrafusion/shared (replacing duplicate definitions)
-import { 
+// Import enums from local shared-types (formerly @terrafusion/shared)
+import {
   UserRole,
   SecurityClearance,
   ProjectType,
@@ -411,7 +411,7 @@ import {
   AuditEventType,
   NotificationType,
   NotificationPriority
-} from '@terrafusion/shared';
+} from '../../../shared-types/enums';
 
 // Re-export for compatibility with existing code
 export { 
@@ -446,7 +446,7 @@ export {
   NotificationPriority
 };
 
-// All shared enum definitions imported from @terrafusion/shared above
+// All shared enum definitions imported from local shared-types above
 
 // Collaboration-specific enums not in shared package (kept local)
 export enum WhiteboardTool {

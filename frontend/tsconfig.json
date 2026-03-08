@@ -45,9 +45,6 @@
       "@types/*": [
         "./apps/os-shell/src/types/*"
       ],
-      "@terrafusion/shared": [
-        "../terrafusion-shared/dist/index.js"
-      ],
       "@terrafusion/ui": [
         "../packages/ui/src/index"
       ]

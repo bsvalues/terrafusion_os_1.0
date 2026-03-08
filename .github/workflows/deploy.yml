@@ -1,0 +1,224 @@
+name: TerraFusion Deploy
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository }}
+  DOTNET_VERSION: "8.0.x"
+  NODE_VERSION: "20"
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-tag: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: meta
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.API
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/api:${{ steps.meta.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/api:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Gateway image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.Gateway
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/gateway:${{ steps.meta.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/gateway:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Consciousness image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.Consciousness
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/consciousness:${{ steps.meta.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/consciousness:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/frontend:${{ steps.meta.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "latest"
+
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Update image tags in manifests
+        run: |
+          IMAGE_TAG="${{ needs.build-and-push.outputs.image-tag }}"
+          sed -i "s|terrafusion/api:latest|${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/api:${IMAGE_TAG}|g" k8s/deployments/api.yaml
+          sed -i "s|terrafusion/gateway:latest|${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/gateway:${IMAGE_TAG}|g" k8s/deployments/gateway.yaml
+          sed -i "s|terrafusion/consciousness:latest|${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/consciousness:${IMAGE_TAG}|g" k8s/deployments/consciousness.yaml
+          sed -i "s|terrafusion/frontend:latest|${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/frontend:${IMAGE_TAG}|g" k8s/deployments/frontend.yaml
+
+      - name: Apply namespace
+        run: kubectl apply -f k8s/namespace.yaml
+
+      - name: Apply configmaps
+        run: kubectl apply -f k8s/configmaps/
+
+      - name: Apply infrastructure
+        run: kubectl apply -f k8s/infrastructure/
+
+      - name: Wait for infrastructure readiness
+        run: |
+          kubectl -n terrafusion wait --for=condition=ready pod -l component=postgres --timeout=120s
+          kubectl -n terrafusion wait --for=condition=ready pod -l component=redis --timeout=60s
+          kubectl -n terrafusion wait --for=condition=ready pod -l component=consul --timeout=60s
+
+      - name: Apply deployments
+        run: kubectl apply -f k8s/deployments/
+
+      - name: Apply networking
+        run: |
+          kubectl apply -f k8s/networking/
+          kubectl apply -f k8s/hpa/
+
+      - name: Wait for deployment rollout
+        run: |
+          kubectl -n terrafusion rollout status deployment/api --timeout=180s
+          kubectl -n terrafusion rollout status deployment/gateway --timeout=180s
+          kubectl -n terrafusion rollout status deployment/consciousness --timeout=180s
+          kubectl -n terrafusion rollout status deployment/frontend --timeout=180s
+
+  smoke-test:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "latest"
+
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests..."
+
+          # Check all pods are running
+          PODS_NOT_READY=$(kubectl -n terrafusion get pods --field-selector=status.phase!=Running --no-headers 2>/dev/null | wc -l)
+          if [ "$PODS_NOT_READY" -gt 0 ]; then
+            echo "::error::Some pods are not in Running state"
+            kubectl -n terrafusion get pods
+            exit 1
+          fi
+
+          # Health check endpoints via port-forward
+          kubectl -n terrafusion port-forward svc/api 5000:5000 &
+          PF_PID=$!
+          sleep 5
+
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/health || echo "000")
+          kill $PF_PID 2>/dev/null || true
+
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::API health check failed with status $HTTP_STATUS"
+            exit 1
+          fi
+
+          echo "All smoke tests passed"
+
+  rollback:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: [deploy, smoke-test]
+    if: failure()
+    steps:
+      - name: Configure kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "latest"
+
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Rollback deployments
+        run: |
+          echo "::warning::Deployment or smoke tests failed. Rolling back..."
+          kubectl -n terrafusion rollout undo deployment/api || true
+          kubectl -n terrafusion rollout undo deployment/gateway || true
+          kubectl -n terrafusion rollout undo deployment/consciousness || true
+          kubectl -n terrafusion rollout undo deployment/frontend || true
+
+          # Wait for rollback to complete
+          kubectl -n terrafusion rollout status deployment/api --timeout=120s || true
+          kubectl -n terrafusion rollout status deployment/gateway --timeout=120s || true
+          kubectl -n terrafusion rollout status deployment/consciousness --timeout=120s || true
+          kubectl -n terrafusion rollout status deployment/frontend --timeout=120s || true
+
+          echo "Rollback completed"

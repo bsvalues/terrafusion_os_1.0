@@ -1,6 +1,8 @@
 "use client"
 
-import { Card, CardHeader, CardBody, CardFooter, Badge, Button } from "@terrafusion/shared"
+import { Card, CardHeader, CardContent, CardFooter, CardTitle } from "../../apps/os-shell/src/components/ui/card"
+import { Badge } from "../../apps/os-shell/src/components/ui/badge"
+import { Button } from "../../apps/os-shell/src/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import type { TerraFusionModule } from "@/lib/modules"
 import { Calculator,
@@ -133,7 +135,7 @@ className="text-xs text-muted-foreground">v{module.version}</span>
         </div>
       </CardHeader>
 
-      <CardBody className="space-y-4">
+      <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground leading-relaxed">{module.description}</p>
 
         {module.dependencies.length > 0 && (
@@ -176,7 +178,7 @@ className="flex flex-wrap gap-1">
             </Button>
           </div>
         )}
-      </CardBody>
+      </CardContent>
     </Card>
   )
 }

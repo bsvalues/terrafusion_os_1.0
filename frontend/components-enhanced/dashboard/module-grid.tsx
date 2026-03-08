@@ -1,6 +1,8 @@
 "use client"
 
-import { Card, CardHeader, CardBody, Badge, Button } from "@terrafusion/shared"
+import { Card, CardHeader, CardContent, CardFooter } from "../../apps/os-shell/src/components/ui/card"
+import { Badge } from "../../apps/os-shell/src/components/ui/badge"
+import { Button } from "../../apps/os-shell/src/components/ui/button"
 import { useModuleRegistry } from "@/components/modules/module-registry"
 import { ModuleCard } from "@/components/modules/module-card"
 import { ArrowRight, Grid3X3  } from '@mui/icons-material'
@@ -40,7 +42,7 @@ export function ModuleGrid() {
           </Button>
         </div>
       </CardHeader>
-      <CardBody>
+      <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {displayModules.map((module) => (
             <ModuleCard
@@ -58,7 +60,7 @@ export function ModuleGrid() {
             <p className="text-sm text-muted-foreground">Showing 8 of {activeModules.length} active modules</p>
           </div>
         )}
-      </CardBody>
+      </CardContent>
     </Card>
   )
 }

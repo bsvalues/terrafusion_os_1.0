@@ -22,7 +22,7 @@ function Start-LoggedProcess {
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Resolve-Path (Join-Path $ScriptDir '..')
 
-# Launch backend (.NET hub on ws://localhost:7000/terrafusion/core)
+# Launch backend (.NET hub on ws://localhost:5000/hubs/oscore)
 Start-LoggedProcess -Title 'Boot: backend hub' -FilePath 'pwsh' -Arguments '-NoExit -Command "dotnet run"' -WorkingDirectory (Join-Path $RepoRoot 'backend/TerraFusion.API')
 Start-Sleep -Seconds $BackendWaitSeconds
 

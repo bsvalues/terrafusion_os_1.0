@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    component: gateway
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  CONSUL_HOST: "consul.terrafusion.svc.cluster.local"
+  CONSUL_PORT: "8500"
+  API_UPSTREAM: "http://api.terrafusion.svc.cluster.local:5000"
+  CONSCIOUSNESS_UPSTREAM: "http://consciousness.terrafusion.svc.cluster.local:3004"

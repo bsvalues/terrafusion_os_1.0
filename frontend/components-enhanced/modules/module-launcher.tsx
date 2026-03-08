@@ -3,7 +3,10 @@
 import { useState } from "react"
 import { useModuleRegistry } from "./module-registry"
 import { ModuleCard } from "./module-card"
-import { Button, Input, Select, Badge } from "@terrafusion/shared"
+import { Button } from "../../apps/os-shell/src/components/ui/button"
+import { Input } from "../../apps/os-shell/src/components/ui/input"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../apps/os-shell/src/components/ui/select"
+import { Badge } from "../../apps/os-shell/src/components/ui/badge"
 import { Search, Filter, Grid, List  } from '@mui/icons-material'
 import type { ModuleCategory } from "@/lib/modules"
 

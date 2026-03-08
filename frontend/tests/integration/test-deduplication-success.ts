@@ -1,5 +1,5 @@
 // Test Deduplication Success - Using Shared Package in Frontend
-import { ProjectStatus, UserRole, TaskStatus } from '@terrafusion/shared';
+import { ProjectStatus, UserRole, TaskStatus } from '../../shared-types/enums';
 
 console.log('🎯 DEDUPLICATION TEST - FRONTEND USAGE');
 console.log('='.repeat(50));

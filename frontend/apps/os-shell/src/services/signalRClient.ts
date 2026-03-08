@@ -259,7 +259,7 @@ export class SignalRClientFactory {
    */
   static createSystemClient(accessToken?: string): SignalRClient {
     return new SignalRClient({
-      hubUrl: `${getViteEnv().VITE_API_URL || ''}/hubs/system`,
+      hubUrl: `${getViteEnv().VITE_API_URL || ''}/hubs/oscore`,
       accessToken,
       automaticReconnect: true,
       onConnected: () => console.log('✅ Connected to System Notifications Hub'),

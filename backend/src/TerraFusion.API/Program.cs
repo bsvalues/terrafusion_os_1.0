@@ -175,11 +175,11 @@ builder.Services.AddScoped<IAdvancedSecurityFrameworkService, AdvancedSecurityFr
 // ✅ RE-ENABLED: Registration of workflow and assistant services needed for Controllers
 builder.Services.AddScoped<TerraFusion.AI.Services.IWorkflowAutomationService, TerraFusion.AI.Services.WorkflowAutomationService>();
 builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFusion.AI.Services.AIAssistantService>();
-// ✅ STUB: Consciousness Engine stub for DI resolution
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
+// Consciousness Engine - production implementation with real DB-backed swarm coordination
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngine>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
 builder.Services.AddScoped<TerraFusion.AI.Services.IPropertyValuationService, TerraFusion.AI.Services.PropertyValuationService>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceService, TerraFusion.Consciousness.Services.ComplianceServiceStub>();
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceService, TerraFusion.Consciousness.Services.ComplianceService>();
 
 // TIER 5+ Services - TerraGaia Ultimate AI Consciousness
 // RE-ENABLED: Changed from Singleton → Scoped to properly resolve TerraFusionContext (scoped DbContext) and IAuditLogger (scoped)

@@ -13,7 +13,7 @@ COUNTY="benton"
 DB_NAME="terrafusion_benton"
 DB_USER="terrafusion_db"
 API_URL="http://localhost:5000"
-WS_URL="ws://localhost:7000/terrafusion/core"
+WS_URL="ws://localhost:5000/hubs/oscore"
 INSTALL_DIR="/opt/terrafusion"
 LOG_DIR="/var/log/terrafusion"
 
@@ -192,7 +192,7 @@ check_api_endpoints() {
     done
     
     # Test SignalR negotiate endpoint
-    if curl -s -f "$API_URL/terrafusion/core/negotiate" &>/dev/null; then
+    if curl -s -f "$API_URL/hubs/oscore/negotiate" &>/dev/null; then
         log_success "SignalR negotiate endpoint responding"
     else
         log_error "SignalR negotiate endpoint not responding"

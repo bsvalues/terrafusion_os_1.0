@@ -2,10 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using Moq;
+using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Hubs;
 using TerraFusion.API.Services;
-using TerraFusion.Abstractions.Interfaces;
 using Xunit;
 
 namespace TerraFusion.API.Tests
@@ -14,7 +15,7 @@ namespace TerraFusion.API.Tests
     {
         private class TestableOSCoreHub : OSCoreHub
         {
-            public TestableOSCoreHub(IAuditLogger audit, IAuthValidator auth, Microsoft.Extensions.Logging.ILogger<OSCoreHub> logger) : base(audit, auth, logger) { }
+            public TestableOSCoreHub(IAuditLogger audit, IAuthValidator auth, ILogger<OSCoreHub> logger) : base(audit, auth, logger) {}
             public void SetClients(IHubCallerClients clients) => Clients = clients;
             public void SetContext(HubCallerContext context) => Context = context;
         }
@@ -37,9 +38,9 @@ namespace TerraFusion.API.Tests
             ), Times.Once);
         }
 
-        private static (TestableOSCoreHub hub, Mock<ISingleClientProxy> callerProxy, Mock<IAuditLogger> audit, Mock<IAuthValidator> auth) BuildHub()
+        private static (TestableOSCoreHub hub, Mock<IClientProxy> callerProxy, Mock<IAuditLogger> audit, Mock<IAuthValidator> auth) BuildHub()
         {
-            var caller = new Mock<ISingleClientProxy>();
+            var caller = new Mock<IClientProxy>();
             caller
                 .Setup(p => p.SendCoreAsync(It.IsAny<string>(), It.IsAny<object?[]>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
@@ -52,7 +53,7 @@ namespace TerraFusion.API.Tests
 
             var audit = new Mock<IAuditLogger>();
             audit
-                .Setup(a => a.LogAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(a => a.LogAsync(It.IsAny<string>(), It.IsAny<object>()))
                 .Returns(Task.CompletedTask);
 
             var auth = new Mock<IAuthValidator>();
@@ -61,7 +62,7 @@ namespace TerraFusion.API.Tests
                 .Setup(a => a.Validate(It.IsAny<AuthEnvelope>(), out It.Ref<string?>.IsAny))
                 .Returns(true);
 
-            var logger = new Mock<Microsoft.Extensions.Logging.ILogger<OSCoreHub>>();
+            var logger = new Mock<ILogger<OSCoreHub>>();
             var hub = new TestableOSCoreHub(audit.Object, auth.Object, logger.Object);
             hub.SetClients(clients.Object);
             hub.SetContext(ctx.Object);
@@ -253,8 +254,13 @@ namespace TerraFusion.API.Tests
 
             audit.Verify(a => a.LogAsync(
                 It.Is<string>(t => t == "os.auth"),
-                It.IsAny<string>(),
-                It.IsAny<bool>()
+                It.Is<object>(o =>
+                    o != null &&
+                    o.GetType().GetProperty("county")?.GetValue(o)?.ToString() == "benton" &&
+                    o.GetType().GetProperty("legacy")?.GetValue(o)?.ToString() == "PACS_9.0" &&
+                    !string.IsNullOrEmpty(o.GetType().GetProperty("sessionId")?.GetValue(o)?.ToString()) &&
+                    o.GetType().GetProperty("connectionId")?.GetValue(o)?.ToString() == "test-conn-1"
+                )
             ), Times.Once);
         }
 
@@ -268,8 +274,12 @@ namespace TerraFusion.API.Tests
 
             audit.Verify(a => a.LogAsync(
                 It.Is<string>(t => t == "os.heartbeat"),
-                It.IsAny<string>(),
-                It.IsAny<bool>()
+                It.Is<object>(o =>
+                    o != null &&
+                    o.GetType().GetProperty("connectionId")?.GetValue(o)?.ToString() == "test-conn-1" &&
+                    o.GetType().GetProperty("payload")?.GetValue(o) is OSCoreHub.HeartbeatPayload p &&
+                    p.SessionId == "session-1"
+                )
             ), Times.Once);
         }
 

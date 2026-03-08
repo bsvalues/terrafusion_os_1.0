@@ -172,9 +172,9 @@ namespace TerraFusion.Consciousness
             app.MapHealthChecks("/health");
             // app.MapMetrics(); // Prometheus metrics endpoint
 
-            // Map SignalR hubs - TODO: Implement when hubs are ready
-            // app.MapHub<ConsciousnessHub>("/hubs/consciousness");
-            // app.MapHub<QuantumHub>("/hubs/quantum");
+            // Map SignalR hubs
+            app.MapHub<ConsciousnessHub>("/hubs/consciousness");
+            app.MapHub<QuantumHub>("/hubs/quantum");
 
             // Add consciousness status endpoint
             app.MapGet("/", () => new

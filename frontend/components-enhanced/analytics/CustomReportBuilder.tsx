@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Card, CardHeader, CardBody, Button, Alert, Badge, Dialog } from '@terrafusion/shared';
 import {
   Box,
   Paper,
@@ -25,6 +24,14 @@ import {
   Tab,
   Tabs,
   Alert,
+  Card,
+  CardContent,
+  Button,
+  Badge,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   CircularProgress
 } from '@mui/material';
 import {

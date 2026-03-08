@@ -138,7 +138,7 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
 
 // OS Core Hub specific hook
 export const useOSCoreHub = () => {
-  const signalR = useSignalR('/terrafusion/core');
+  const signalR = useSignalR('/hubs/oscore');
 
   const authenticateOS = async (countryId: string, legacySystem: string, credentials?: any) => {
     return await signalR.invoke('AuthenticateOS', {

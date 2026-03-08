@@ -130,15 +130,23 @@ const startTime = Date.now();
 async function startBackendServer() {
   return new Promise((resolve, reject) => {
     const backendPath = path.join(__dirname, '../../backend/TerraFusion.API');
-    const dllPath = path.join(backendPath, 'bin/Release/net8.0/TerraFusion.API.dll');
-    
+    // Try multiple build configurations in priority order
+    const dllCandidates = [
+      path.join(backendPath, 'bin/Release/net8.0/TerraFusion.API.dll'),
+      path.join(backendPath, 'bin/Debug/net8.0/TerraFusion.API.dll'),
+      path.join(backendPath, 'bin/Release/net8.0/publish/TerraFusion.API.dll'),
+    ];
+    const dllPath = dllCandidates.find(p => fs.existsSync(p));
+
     // Check if built backend exists
-    if (!fs.existsSync(dllPath)) {
+    if (!dllPath) {
       console.log('Backend not built, starting in development mode...');
       // In development, assume backend is running separately
       resolve();
       return;
     }
+
+    console.log('Found backend DLL at:', dllPath);
     
     console.log('Starting embedded backend server...');
     backendProcess = spawn('dotnet', [dllPath, '--urls', `http://localhost:${backendPort}`], {
@@ -178,7 +186,15 @@ function createWindow() {
       enableRemoteModule: false,
       preload: path.join(__dirname, 'preload.js'),
     },
-    icon: path.join(__dirname, 'assets', 'icon.png'),
+    icon: (() => {
+      const iconPath = path.join(__dirname, 'assets', 'icon.png');
+      try {
+        const stats = fs.statSync(iconPath);
+        return stats.size > 0 ? iconPath : undefined;
+      } catch (_) {
+        return undefined;
+      }
+    })(),
     titleBarStyle: 'hidden',
     titleBarOverlay: {
       color: '#0b1020',
@@ -312,10 +328,21 @@ function createWindow() {
 }
 
 function createTray() {
-  const trayIcon = nativeImage.createFromPath(
-    path.join(__dirname, 'assets', 'tray-icon.png')
-  );
-  
+  const trayIconPath = path.join(__dirname, 'assets', 'tray-icon.png');
+  let trayIcon;
+  try {
+    const stats = fs.statSync(trayIconPath);
+    trayIcon = stats.size > 0
+      ? nativeImage.createFromPath(trayIconPath)
+      : nativeImage.createEmpty();
+  } catch (_) {
+    trayIcon = nativeImage.createEmpty();
+  }
+  // Resize to 16x16 if the icon loaded successfully (tray icons should be small)
+  if (!trayIcon.isEmpty()) {
+    trayIcon = trayIcon.resize({ width: 16, height: 16 });
+  }
+
   tray = new Tray(trayIcon);
   
   const contextMenu = Menu.buildFromTemplate([
@@ -328,8 +355,24 @@ function createTray() {
     },
     {
       label: 'System Health',
-      click: () => {
-        // Open system health dialog
+      click: async () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.focus();
+          try {
+            const health = await mainWindow.webContents.executeJavaScript(
+              'fetch("/api/health").then(r => r.json()).catch(() => ({status: "unknown"}))'
+            );
+            const { dialog } = require('electron');
+            dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              title: 'System Health',
+              message: `TerraFusion OS Health: ${JSON.stringify(health.status || 'Checking...')}`,
+            });
+          } catch (_) {
+            mainWindow.webContents.send('navigate', '/health');
+          }
+        }
       }
     },
     { type: 'separator' },
@@ -421,7 +464,9 @@ const template = [
         label: 'Preferences',
         accelerator: 'CmdOrCtrl+,',
         click: () => {
-          // Open preferences
+          if (mainWindow) {
+            mainWindow.webContents.send('navigate', '/settings');
+          }
         }
       },
       { type: 'separator' },
@@ -441,7 +486,9 @@ const template = [
         label: 'Module Manager',
         accelerator: 'CmdOrCtrl+M',
         click: () => {
-          // Open module manager
+          if (mainWindow) {
+            mainWindow.webContents.send('navigate', '/modules');
+          }
         }
       },
       {
@@ -458,14 +505,30 @@ const template = [
     submenu: [
       {
         label: 'System Health',
-        click: () => {
-          // Open system health
+        click: async () => {
+          if (mainWindow) {
+            try {
+              const health = await mainWindow.webContents.executeJavaScript(
+                'fetch("/api/health").then(r => r.json()).catch(() => ({status: "unknown"}))'
+              );
+              const { dialog } = require('electron');
+              dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: 'System Health',
+                message: `TerraFusion OS Health: ${JSON.stringify(health.status || 'Checking...')}`,
+              });
+            } catch (_) {
+              mainWindow.webContents.send('navigate', '/health');
+            }
+          }
         }
       },
       {
         label: 'AI Command Center',
         click: () => {
-          // Open AI command center
+          if (mainWindow) {
+            mainWindow.webContents.send('navigate', '/ai-command');
+          }
         }
       },
       { type: 'separator' },
