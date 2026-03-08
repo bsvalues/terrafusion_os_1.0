@@ -28,6 +28,8 @@ import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
+import { useAuthClaims } from '../../auth/useAuthClaims';
+import { emitTrace } from '../../services/osActions';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 
 // ============================================================================
@@ -207,6 +209,7 @@ interface PropertyData {
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
   const parcelId = (metadata?.parcelId as string) ?? null;
   const initialTab = (metadata?.tabId as WorkbenchTabSlug) ?? 'summary';
+  const claims = useAuthClaims();
 
   // Resolve initial tab from metadata slug
   const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
@@ -255,9 +258,9 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton', // TODO: from session
-      userId: 'current-user', // TODO: from auth
-      roles: [],
+      countyId: claims.countyId,
+      userId: claims.userId,
+      roles: claims.roles,
       parcelId,
       workMode,
     };
@@ -284,9 +287,9 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton',
-      userId: 'current-user',
-      roles: [],
+      countyId: claims.countyId,
+      userId: claims.userId,
+      roles: claims.roles,
       parcelId,
       workMode,
     };
@@ -315,8 +318,17 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   // Tab change handler
   const handleTabChange = useCallback((slug: WorkbenchTabSlug) => {
     setActiveTab(slug);
-    // TODO: Emit TerraTrace tab_switched event
-  }, []);
+    emitTrace({
+      type: 'tab_switched',
+      timestamp: Date.now(),
+      payload: {
+        surface: 'workbench-window',
+        fromTab: activeTab,
+        toTab: slug,
+        parcelId: parcelId ?? undefined,
+      },
+    });
+  }, [activeTab, parcelId]);
 
   // Activity Feed state — collapsible bottom panel
   const [activityOpen, setActivityOpen] = useState(false);

@@ -65,49 +65,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { gptHub } from '@/services/gptHub';
-
-// RAG API interfaces (extending gptAPI)
-interface RAGDataset {
-  id: number;
-  name: string;
-  description?: string;
-  countyId?: number;
-  category?: string;
-  embeddingProvider: string;
-  embeddingModel: string;
-  documentCount: number;
-  totalChunks: number;
-  totalEmbeddings: number;
-  storageSize: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface RAGDocument {
-  id: number;
-  datasetId: number;
-  title: string;
-  content: string;
-  sourceUrl?: string;
-  documentType?: string;
-  author?: string;
-  chunkCount: number;
-  embeddingCount: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface RAGDocumentChunk {
-  id: number;
-  documentId: number;
-  chunkIndex: number;
-  content: string;
-  tokenCount: number;
-  hasEmbedding: boolean;
-  createdAt: string;
-}
+import { ragAPI, RAGServiceUnavailableError } from '@/services/ragAPI';
+import type { RAGDataset, RAGDocument, RAGDocumentChunk } from '@/services/ragAPI';
 
 interface RAGDatasetManagerProps {
   onSelectDataset?: (dataset: RAGDataset) => void;
@@ -203,18 +162,17 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     setIsLoading(true);
 
     try {
-      // TODO: Implement RAG API endpoints
-      // const response = await fetch('/api/rag/datasets');
-      // const data = await response.json();
-      // setDatasets(data);
-
-      // RAG dataset loading — disabled pending R2 knowledge base backend
-      const mockDatasets: RAGDataset[] = [];
-
-      setDatasets(mockDatasets);
+      const data = await ragAPI.getDatasets();
+      setDatasets(data);
     } catch (err) {
-      setErrorMessage('Failed to load datasets');
-      console.error(err);
+      if (err instanceof RAGServiceUnavailableError) {
+        // Backend RAG endpoints not deployed yet — show empty state, not an error
+        setDatasets([]);
+        console.info('RAG service not configured — showing empty dataset list');
+      } else {
+        setErrorMessage('Failed to load datasets');
+        console.error(err);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -227,18 +185,16 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     setIsLoading(true);
 
     try {
-      // TODO: Implement API call
-      // const response = await fetch(`/api/rag/datasets/${datasetId}/documents`);
-      // const data = await response.json();
-      // setDocuments(data);
-
-      // RAG dataset loading — disabled pending R2 knowledge base backend
-      const mockDocuments: RAGDocument[] = [];
-
-      setDocuments(mockDocuments);
+      const data = await ragAPI.getDocuments(datasetId);
+      setDocuments(data);
     } catch (err) {
-      setErrorMessage('Failed to load documents');
-      console.error(err);
+      if (err instanceof RAGServiceUnavailableError) {
+        setDocuments([]);
+        console.info('RAG service not configured — showing empty document list');
+      } else {
+        setErrorMessage('Failed to load documents');
+        console.error(err);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -251,18 +207,16 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     setIsLoading(true);
 
     try {
-      // TODO: Implement API call
-      // const response = await fetch(`/api/rag/documents/${documentId}/chunks`);
-      // const data = await response.json();
-      // setChunks(data);
-
-      // RAG dataset loading — disabled pending R2 knowledge base backend
-      const mockChunks: RAGDocumentChunk[] = [];
-
-      setChunks(mockChunks);
+      const data = await ragAPI.getChunks(documentId);
+      setChunks(data);
     } catch (err) {
-      setErrorMessage('Failed to load chunks');
-      console.error(err);
+      if (err instanceof RAGServiceUnavailableError) {
+        setChunks([]);
+        console.info('RAG service not configured — showing empty chunk list');
+      } else {
+        setErrorMessage('Failed to load chunks');
+        console.error(err);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -273,12 +227,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
    */
   const handleCreateDataset = async () => {
     try {
-      // TODO: Implement API call
-      // const response = await fetch('/api/rag/datasets', {
-      //   method: 'POST',
-      //   body: JSON.stringify(newDatasetForm),
-      // });
-      // const dataset = await response.json();
+      await ragAPI.createDataset(newDatasetForm);
 
       setSuccessMessage('Dataset created successfully');
       setCreateDatasetDialogOpen(false);
@@ -291,7 +240,11 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
       });
       await loadDatasets();
     } catch (err) {
-      setErrorMessage('Failed to create dataset');
+      if (err instanceof RAGServiceUnavailableError) {
+        setErrorMessage('RAG service not configured — cannot create dataset');
+      } else {
+        setErrorMessage('Failed to create dataset');
+      }
       console.error(err);
     }
   };
@@ -312,11 +265,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
         setUploadProgress(i);
       }
 
-      // TODO: Implement API call
-      // const response = await fetch(`/api/rag/datasets/${selectedDataset.id}/documents`, {
-      //   method: 'POST',
-      //   body: JSON.stringify(uploadForm),
-      // });
+      await ragAPI.uploadDocument(selectedDataset.id, uploadForm);
 
       setSuccessMessage('Document uploaded and processing started');
       setUploadDialogOpen(false);
@@ -329,7 +278,11 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
       });
       await loadDocuments(selectedDataset.id);
     } catch (err) {
-      setErrorMessage('Failed to upload document');
+      if (err instanceof RAGServiceUnavailableError) {
+        setErrorMessage('RAG service not configured — cannot upload document');
+      } else {
+        setErrorMessage('Failed to upload document');
+      }
       console.error(err);
     } finally {
       setIsUploading(false);
@@ -346,13 +299,16 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     }
 
     try {
-      // TODO: Implement API call
-      // await fetch(`/api/rag/datasets/${dataset.id}`, { method: 'DELETE' });
+      await ragAPI.deleteDataset(dataset.id);
 
       setSuccessMessage('Dataset deleted successfully');
       await loadDatasets();
     } catch (err) {
-      setErrorMessage('Failed to delete dataset');
+      if (err instanceof RAGServiceUnavailableError) {
+        setErrorMessage('RAG service not configured — cannot delete dataset');
+      } else {
+        setErrorMessage('Failed to delete dataset');
+      }
       console.error(err);
     }
   };
@@ -366,15 +322,18 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     }
 
     try {
-      // TODO: Implement API call
-      // await fetch(`/api/rag/documents/${document.id}`, { method: 'DELETE' });
+      await ragAPI.deleteDocument(document.id);
 
       setSuccessMessage('Document deleted successfully');
       if (selectedDataset) {
         await loadDocuments(selectedDataset.id);
       }
     } catch (err) {
-      setErrorMessage('Failed to delete document');
+      if (err instanceof RAGServiceUnavailableError) {
+        setErrorMessage('RAG service not configured — cannot delete document');
+      } else {
+        setErrorMessage('Failed to delete document');
+      }
       console.error(err);
     }
   };
@@ -384,12 +343,15 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
    */
   const handleReindex = async (dataset: RAGDataset) => {
     try {
-      // TODO: Implement API call
-      // await fetch(`/api/rag/datasets/${dataset.id}/reindex`, { method: 'POST' });
+      await ragAPI.reindexDataset(dataset.id);
 
       setSuccessMessage('Reindexing started');
     } catch (err) {
-      setErrorMessage('Failed to start reindexing');
+      if (err instanceof RAGServiceUnavailableError) {
+        setErrorMessage('RAG service not configured — cannot reindex dataset');
+      } else {
+        setErrorMessage('Failed to start reindexing');
+      }
       console.error(err);
     }
   };

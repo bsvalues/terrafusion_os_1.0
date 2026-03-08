@@ -36,6 +36,7 @@ import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { usePropertyLookup } from '../../hooks/usePropertyLookup';
+import { useAuthClaims } from '../../auth/useAuthClaims';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 
 // ============================================================================
@@ -229,6 +230,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const { parcelId } = useParams<{ parcelId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const claims = useAuthClaims();
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -268,9 +270,9 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton', // TODO: from session
-      userId: 'current-user', // TODO: from auth
-      roles: [],
+      countyId: claims.countyId,
+      userId: claims.userId,
+      roles: claims.roles,
       parcelId,
       workMode,
     };
@@ -297,9 +299,9 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton',
-      userId: 'current-user',
-      roles: [],
+      countyId: claims.countyId,
+      userId: claims.userId,
+      roles: claims.roles,
       parcelId,
       workMode,
     };
