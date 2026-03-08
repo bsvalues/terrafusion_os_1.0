@@ -793,6 +793,332 @@ public class CostForgeController : ControllerBase
     });
   }
 
+  // ──── Income Approach endpoints (source: bs-income-valuation-production quarantine) ────
+
+  /// <summary>
+  /// Capitalization rate ranges by property type — Benton County FY 2025.
+  /// Source: Benton County Assessor market study + CoStar, IAAO standards.
+  /// </summary>
+  [HttpGet("income-approach/cap-rates")]
+  [RequiresPermission("read:cost-factors")]
+  public ActionResult GetIncomeCapRates()
+  {
+    Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
+    return Ok(new
+    {
+      capRates = BentonIncomeData.CapRates,
+      marketCapRate = BentonIncomeData.MarketCapRate,
+      effectiveDate = "2025-01-01",
+      source = "Benton County Assessor – Income Approach Market Study FY 2025",
+    });
+  }
+
+  /// <summary>
+  /// Benton County / Tri-Cities economic indicators for income approach context.
+  /// Source: Benton County Assessor economic data, US Census ACS, WA ESD.
+  /// </summary>
+  [HttpGet("income-approach/market-data/benton")]
+  [RequiresPermission("read:cost-factors")]
+  public ActionResult GetIncomeMarketData()
+  {
+    Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
+    return Ok(new
+    {
+      county = "Benton",
+      state = "WA",
+      BentonIncomeData.MarketData.MedianHouseholdIncome,
+      BentonIncomeData.MarketData.UnemploymentRate,
+      BentonIncomeData.MarketData.PopulationGrowthRate,
+      BentonIncomeData.MarketData.MedianHomePrice,
+      BentonIncomeData.MarketData.MedianPricePerSqft,
+      BentonIncomeData.MarketData.MedianDaysOnMarket,
+      BentonIncomeData.MarketData.MonthsOfInventory,
+      employmentSectors = BentonIncomeData.EmploymentSectors,
+      effectiveDate = "2025-01-01",
+      source = "US Census ACS 2024, WA ESD, Benton-Franklin Trends",
+    });
+  }
+
+  /// <summary>
+  /// Standard operating expense ratios by property type — IAAO / Benton County norms.
+  /// </summary>
+  [HttpGet("income-approach/expense-ratios")]
+  [RequiresPermission("read:cost-factors")]
+  public ActionResult GetIncomeExpenseRatios()
+  {
+    Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
+    return Ok(new
+    {
+      expenseRatios = BentonIncomeData.ExpenseRatios,
+      expenseCategories = BentonIncomeData.ExpenseCategories,
+      effectiveDate = "2025-01-01",
+      source = "Benton County Assessor – IAAO Operating Expense Standards",
+    });
+  }
+
+  /// <summary>
+  /// Tri-Cities location premium multipliers for sub-market adjustment.
+  /// </summary>
+  [HttpGet("income-approach/location-premiums/benton")]
+  [RequiresPermission("read:cost-factors")]
+  public ActionResult GetIncomeLocationPremiums()
+  {
+    Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
+    return Ok(new
+    {
+      locationPremiums = BentonIncomeData.LocationPremiums,
+      effectiveDate = "2025-01-01",
+      source = "Benton County Assessor – Tri-Cities Sub-Market Analysis FY 2025",
+    });
+  }
+
+  /// <summary>
+  /// Calculate Net Operating Income (NOI) from rental income, vacancy, and expenses.
+  /// NOI = (Annual Rental Income × (1 − Vacancy Rate)) + Other Income − Total Expenses
+  /// </summary>
+  [HttpPost("income-approach/calculate-noi")]
+  [RequiresPermission("access:costforge")]
+  public ActionResult CalculateNoi([FromBody] NoiCalculationRequest request)
+  {
+    if (request.AnnualRentalIncome <= 0)
+      return BadRequest(new { error = "AnnualRentalIncome must be positive." });
+    if (request.VacancyRate < 0 || request.VacancyRate > 100)
+      return BadRequest(new { error = "VacancyRate must be between 0 and 100." });
+
+    var effectiveGrossIncome = BankersRound(
+      request.AnnualRentalIncome * (1m - request.VacancyRate / 100m) + request.OtherIncome);
+
+    var totalExpenses = BankersRound(
+      request.PropertyTaxes + request.Insurance + request.Utilities
+      + request.Maintenance + request.ManagementFees
+      + request.ReplacementReserves + request.OtherExpenses);
+
+    var noi = BankersRound(effectiveGrossIncome - totalExpenses);
+
+    var expenseRatio = effectiveGrossIncome > 0
+      ? BankersRound(totalExpenses / effectiveGrossIncome * 100m)
+      : 0m;
+
+    Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
+    return Ok(new NoiResult
+    {
+      AnnualRentalIncome = request.AnnualRentalIncome,
+      VacancyRate = request.VacancyRate,
+      OtherIncome = request.OtherIncome,
+      EffectiveGrossIncome = effectiveGrossIncome,
+      TotalExpenses = totalExpenses,
+      ExpenseRatio = expenseRatio,
+      NetOperatingIncome = noi,
+      Source = "Benton County Assessor – Income Approach Calculator FY 2025",
+    });
+  }
+
+  /// <summary>
+  /// Full income-approach valuation: NOI ÷ cap rate, with location premium and risk classification.
+  /// </summary>
+  [HttpPost("income-approach/calculate-valuation")]
+  [RequiresPermission("access:costforge")]
+  public ActionResult CalculateIncomeValuation([FromBody] IncomeValuationRequest request)
+  {
+    if (request.AnnualRentalIncome <= 0)
+      return BadRequest(new { error = "AnnualRentalIncome must be positive." });
+    if (request.VacancyRate < 0 || request.VacancyRate > 100)
+      return BadRequest(new { error = "VacancyRate must be between 0 and 100." });
+    if (request.CapRate <= 0 || request.CapRate > 25)
+      return BadRequest(new { error = "CapRate must be between 0 and 25." });
+
+    // NOI calculation
+    var effectiveGrossIncome = BankersRound(
+      request.AnnualRentalIncome * (1m - request.VacancyRate / 100m) + request.OtherIncome);
+
+    var totalExpenses = BankersRound(
+      request.PropertyTaxes + request.Insurance + request.Utilities
+      + request.Maintenance + request.ManagementFees
+      + request.ReplacementReserves + request.OtherExpenses);
+
+    var noi = BankersRound(effectiveGrossIncome - totalExpenses);
+
+    // Location premium
+    var locationMultiplier = BentonIncomeData.LocationPremiums
+      .FirstOrDefault(lp => lp.Location.Equals(request.Location ?? "", StringComparison.OrdinalIgnoreCase))
+      ?.Multiplier ?? 1.00m;
+
+    // Income approach valuation = NOI / cap rate
+    var capRateDecimal = request.CapRate / 100m;
+    var rawValuation = noi > 0 ? BankersRound(noi / capRateDecimal) : 0m;
+    var adjustedValuation = BankersRound(rawValuation * locationMultiplier);
+
+    // Gross Income Multiplier
+    var gim = effectiveGrossIncome > 0
+      ? BankersRound(adjustedValuation / effectiveGrossIncome)
+      : 0m;
+
+    // Risk classification (from quarantine: cap>7 && coc>8=low, cap<4||coc<3=high, else medium)
+    var cashOnCashReturn = rawValuation > 0 ? (double)(noi / rawValuation * 100m) : 0.0;
+    var riskLevel = ClassifyRisk((double)request.CapRate, cashOnCashReturn);
+
+    Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
+    return Ok(new IncomeValuationResult
+    {
+      NetOperatingIncome = noi,
+      CapRate = request.CapRate,
+      Location = request.Location ?? "unspecified",
+      LocationMultiplier = locationMultiplier,
+      PropertyType = request.PropertyType ?? "residential",
+      RawValuation = rawValuation,
+      AdjustedValuation = adjustedValuation,
+      GrossIncomeMultiplier = gim,
+      CashOnCashReturn = BankersRound((decimal)cashOnCashReturn),
+      RiskClassification = riskLevel,
+      EffectiveDate = "2025-01-01",
+      Source = "Benton County Assessor – Income Approach Valuation FY 2025",
+    });
+  }
+
+  internal static string ClassifyRisk(double capRate, double cashOnCash)
+  {
+    if (capRate > 7.0 && cashOnCash > 8.0) return "low";
+    if (capRate < 4.0 || cashOnCash < 3.0) return "high";
+    return "medium";
+  }
+
+  // ──── Income Approach data records ────
+
+  public sealed record NoiCalculationRequest
+  {
+    public decimal AnnualRentalIncome { get; init; }
+    public decimal VacancyRate { get; init; } = 5m;
+    public decimal OtherIncome { get; init; }
+    public decimal PropertyTaxes { get; init; }
+    public decimal Insurance { get; init; }
+    public decimal Utilities { get; init; }
+    public decimal Maintenance { get; init; }
+    public decimal ManagementFees { get; init; }
+    public decimal ReplacementReserves { get; init; }
+    public decimal OtherExpenses { get; init; }
+  }
+
+  public sealed record IncomeValuationRequest
+  {
+    public decimal AnnualRentalIncome { get; init; }
+    public decimal VacancyRate { get; init; } = 5m;
+    public decimal OtherIncome { get; init; }
+    public decimal PropertyTaxes { get; init; }
+    public decimal Insurance { get; init; }
+    public decimal Utilities { get; init; }
+    public decimal Maintenance { get; init; }
+    public decimal ManagementFees { get; init; }
+    public decimal ReplacementReserves { get; init; }
+    public decimal OtherExpenses { get; init; }
+    public decimal CapRate { get; init; } = 5.5m;
+    public string? Location { get; init; }
+    public string? PropertyType { get; init; }
+  }
+
+  internal sealed record NoiResult
+  {
+    public decimal AnnualRentalIncome { get; init; }
+    public decimal VacancyRate { get; init; }
+    public decimal OtherIncome { get; init; }
+    public decimal EffectiveGrossIncome { get; init; }
+    public decimal TotalExpenses { get; init; }
+    public decimal ExpenseRatio { get; init; }
+    public decimal NetOperatingIncome { get; init; }
+    public string Source { get; init; } = "";
+  }
+
+  internal sealed record IncomeValuationResult
+  {
+    public decimal NetOperatingIncome { get; init; }
+    public decimal CapRate { get; init; }
+    public string Location { get; init; } = "";
+    public decimal LocationMultiplier { get; init; }
+    public string PropertyType { get; init; } = "";
+    public decimal RawValuation { get; init; }
+    public decimal AdjustedValuation { get; init; }
+    public decimal GrossIncomeMultiplier { get; init; }
+    public decimal CashOnCashReturn { get; init; }
+    public string RiskClassification { get; init; } = "";
+    public string EffectiveDate { get; init; } = "";
+    public string Source { get; init; } = "";
+  }
+
+  // ──── Benton County Income Approach Reference Data (FY 2025) ────
+
+  internal static class BentonIncomeData
+  {
+    // Market-wide cap rate (Benton County Assessor, CoStar, local market study)
+    public const decimal MarketCapRate = 5.5m;
+
+    // Cap rate ranges by property type (source: bs-income-valuation-production + IAAO standards)
+    public static readonly CapRateRange[] CapRates =
+    [
+      new("residential",  "Single Family Residential", 4.0m, 7.0m, 5.5m),
+      new("multi-family", "Multi-Family Residential",  4.5m, 7.5m, 5.8m),
+      new("commercial",   "Commercial Retail/Office",  5.0m, 10.0m, 7.0m),
+      new("industrial",   "Industrial/Warehouse",      6.0m, 9.0m, 7.5m),
+      new("land",         "Vacant Land",               3.0m, 6.0m, 4.5m),
+    ];
+
+    // Benton County / Tri-Cities economic indicators (US Census ACS 2024, WA ESD)
+    public static readonly MarketIndicators MarketData = new(
+      MedianHouseholdIncome: 87_500m,
+      UnemploymentRate: 3.1m,
+      PopulationGrowthRate: 1.8m,
+      MedianHomePrice: 485_000m,
+      MedianPricePerSqft: 218m,
+      MedianDaysOnMarket: 18,
+      MonthsOfInventory: 2.8m
+    );
+
+    // Employment sector breakdown (WA ESD Benton-Franklin, 2024)
+    public static readonly EmploymentSector[] EmploymentSectors =
+    [
+      new("Government & Energy", 28.5m),
+      new("Healthcare",          16.2m),
+      new("Manufacturing",       15.1m),
+      new("Education",           12.8m),
+      new("Retail & Services",   27.4m),
+    ];
+
+    // Standard expense ratios by property type (IAAO, local market)
+    public static readonly ExpenseRatioEntry[] ExpenseRatios =
+    [
+      new("residential",  "Single Family",  30m, 40m, 35m),
+      new("multi-family", "Multi-Family",   35m, 50m, 42m),
+      new("commercial",   "Commercial",     25m, 45m, 35m),
+      new("industrial",   "Industrial",     20m, 35m, 28m),
+    ];
+
+    // Operating expense categories (percentage of EGI typical ranges)
+    public static readonly string[] ExpenseCategories =
+    [
+      "propertyTaxes", "insurance", "utilities", "maintenance",
+      "managementFees", "replacementReserves", "otherExpenses",
+    ];
+
+    // Tri-Cities location premium multipliers (sub-market adjustment)
+    public static readonly LocationPremium[] LocationPremiums =
+    [
+      new("Richland",      1.15m, "Highest demand – Hanford/PNNL proximity"),
+      new("West Richland", 1.20m, "Fastest growing – premium new construction"),
+      new("Kennewick",     1.10m, "Regional retail center"),
+      new("Pasco",         1.05m, "Emerging growth area"),
+      new("Benton City",   0.90m, "Rural / smaller community"),
+      new("Prosser",       0.85m, "Wine country – seasonal"),
+    ];
+  }
+
+  internal sealed record CapRateRange(
+    string PropertyType, string Label, decimal Min, decimal Max, decimal Typical);
+  internal sealed record MarketIndicators(
+    decimal MedianHouseholdIncome, decimal UnemploymentRate, decimal PopulationGrowthRate,
+    decimal MedianHomePrice, decimal MedianPricePerSqft, int MedianDaysOnMarket, decimal MonthsOfInventory);
+  internal sealed record EmploymentSector(string Sector, decimal PercentOfTotal);
+  internal sealed record ExpenseRatioEntry(
+    string PropertyType, string Label, decimal LowPct, decimal HighPct, decimal TypicalPct);
+  internal sealed record LocationPremium(string Location, decimal Multiplier, string Note);
+
   // ──── Calculator engine (internal for testability) ────
 
   internal static CostEstimateResult? ComputeCostEstimate(
