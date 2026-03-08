@@ -1192,4 +1192,346 @@ public sealed class R1Week5CxR1ClosureTests
     controller.Response.Headers["X-Atlas-Source"].ToString()
       .Should().Be("benton-arcgis-fy2025");
   }
+
+  // ═══════════════════════════════════════════════════════════════
+  // WAVE 11 — DAIS PERMIT CLASSIFICATION TESTS
+  // Real Benton County permit classifier from quarantined terra-permit
+  // ═══════════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_PermitTypes_ContainsRealBentonCountyTypes()
+  {
+    var types = DaisController.BentonPermitData.PermitTypes;
+    types.Should().NotBeEmpty();
+    types.Length.Should().Be(21);
+
+    // Verify key permit types exist
+    types.Should().Contain(t => t.Code == "RES-NEW" && t.Category == "Residential");
+    types.Should().Contain(t => t.Code == "COM-NEW" && t.Category == "Commercial");
+    types.Should().Contain(t => t.Code == "DEMO" && t.Category == "General");
+    types.Should().Contain(t => t.Code == "RES-ADU");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_PermitTypes_ValueImpactConsistency()
+  {
+    var types = DaisController.BentonPermitData.PermitTypes;
+
+    // Maintenance types should NOT affect value
+    types.First(t => t.Code == "RES-ROOF").AlwaysAffectsValue.Should().BeFalse();
+    types.First(t => t.Code == "RES-HVAC").AlwaysAffectsValue.Should().BeFalse();
+    types.First(t => t.Code == "RES-FENCE").AlwaysAffectsValue.Should().BeFalse();
+    types.First(t => t.Code == "MECH").AlwaysAffectsValue.Should().BeFalse();
+
+    // Construction types MUST affect value
+    types.First(t => t.Code == "RES-NEW").AlwaysAffectsValue.Should().BeTrue();
+    types.First(t => t.Code == "COM-NEW").AlwaysAffectsValue.Should().BeTrue();
+    types.First(t => t.Code == "RES-POOL").AlwaysAffectsValue.Should().BeTrue();
+    types.First(t => t.Code == "DEMO").AlwaysAffectsValue.Should().BeTrue();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_WorkflowStages_AreOrderedAndComplete()
+  {
+    var stages = DaisController.BentonPermitData.WorkflowStages;
+    stages.Length.Should().Be(6);
+
+    // Verify order
+    stages[0].Stage.Should().Be("INTAKE");
+    stages[1].Stage.Should().Be("CLASSIFICATION");
+    stages[2].Stage.Should().Be("INSPECTION_REVIEW");
+    stages[3].Stage.Should().Be("VALUATION_UPDATE");
+    stages[4].Stage.Should().Be("QA_REVIEW");
+    stages[5].Stage.Should().Be("COMPLETED");
+
+    // Each stage has a responsible party
+    foreach (var stage in stages)
+    {
+      stage.ResponsibleParty.Should().NotBeNullOrWhiteSpace();
+    }
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_FeeSchedule_HasRealisticFees()
+  {
+    var fees = DaisController.BentonPermitData.FeeSchedule;
+    fees.Should().NotBeEmpty();
+    fees.Length.Should().Be(15);
+
+    // All fees should be positive
+    foreach (var fee in fees)
+    {
+      fee.BaseFee.Should().BeGreaterThan(0);
+    }
+
+    // Residential new construction should be more expensive than a fence
+    var resNew = fees.First(f => f.PermitType == "Residential New Construction");
+    var fence = fees.First(f => f.PermitType == "Residential Fence");
+    resNew.BaseFee.Should().BeGreaterThan(fence.BaseFee);
+
+    // Commercial should be more expensive than residential
+    var comNew = fees.First(f => f.PermitType == "Commercial New Construction");
+    comNew.BaseFee.Should().BeGreaterThan(resNew.BaseFee);
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_Classify_CommercialNeighborhoodCode_ReturnsEnter()
+  {
+    var result = DaisController.ClassifyPermitDescription(
+        "Install new HVAC system", "6100");
+
+    result.Decision.Should().Be("ENTER");
+    result.Rule.Should().Be("COMMERCIAL");
+    result.Priority.Should().Be(1);
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_Classify_MaintenanceKeyword_ReturnsSkip()
+  {
+    var result = DaisController.ClassifyPermitDescription(
+        "Re-roof existing residential structure", null);
+
+    result.Decision.Should().Be("SKIP");
+    result.Rule.Should().Be("MAINTENANCE_SKIP");
+    result.Priority.Should().Be(2);
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_Classify_HvacReplacement_ReturnsSkip()
+  {
+    var result = DaisController.ClassifyPermitDescription(
+        "Replace existing HVAC unit with new heat pump", null);
+
+    result.Decision.Should().Be("SKIP");
+    result.Rule.Should().Be("MAINTENANCE_SKIP");
+    result.Priority.Should().Be(2);
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_Classify_NewConstruction_ReturnsEnter()
+  {
+    var result = DaisController.ClassifyPermitDescription(
+        "New construction single family dwelling", null);
+
+    result.Decision.Should().Be("ENTER");
+    result.Rule.Should().Be("VALUE_ADD");
+    result.Priority.Should().Be(3);
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_Classify_InGroundPool_ReturnsEnter()
+  {
+    var result = DaisController.ClassifyPermitDescription(
+        "Install in-ground pool with decking", null);
+
+    result.Decision.Should().Be("ENTER");
+    result.Rule.Should().Be("VALUE_ADD");
+    result.Priority.Should().Be(3);
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_Classify_UnknownPermit_DefaultsToEnter()
+  {
+    var result = DaisController.ClassifyPermitDescription(
+        "Construct attached pergola with electrical", null);
+
+    result.Decision.Should().Be("ENTER");
+    result.Rule.Should().Be("DEFAULT");
+    result.Priority.Should().Be(4);
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_Classify_CommercialOverridesMaintenance()
+  {
+    // Even if description says "re-roof", commercial neighborhood code takes priority
+    var result = DaisController.ClassifyPermitDescription(
+        "Re-roof commercial building", "6200");
+
+    result.Decision.Should().Be("ENTER");
+    result.Rule.Should().Be("COMMERCIAL");
+    result.Priority.Should().Be(1);
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_PermitTypesEndpoint_ReturnsOk()
+  {
+    var controller = new DaisController(
+        CreateDbContext(nameof(Dais_PermitTypesEndpoint_ReturnsOk)),
+        NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetPermitTypes();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_WorkflowStagesEndpoint_ReturnsOk()
+  {
+    var controller = new DaisController(
+        CreateDbContext(nameof(Dais_WorkflowStagesEndpoint_ReturnsOk)),
+        NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetWorkflowStages();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_FeeScheduleEndpoint_ReturnsOk()
+  {
+    var controller = new DaisController(
+        CreateDbContext(nameof(Dais_FeeScheduleEndpoint_ReturnsOk)),
+        NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetFeeSchedule();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_ClassificationRulesEndpoint_ReturnsOk()
+  {
+    var controller = new DaisController(
+        CreateDbContext(nameof(Dais_ClassificationRulesEndpoint_ReturnsOk)),
+        NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetClassificationRules();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_ClassifyEndpoint_WithValidInput_ReturnsOk()
+  {
+    var controller = new DaisController(
+        CreateDbContext(nameof(Dais_ClassifyEndpoint_WithValidInput_ReturnsOk)),
+        NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var request = new DaisController.PermitClassifyRequest("New construction dwelling", null);
+    var result = controller.ClassifyPermit(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+
+    // Verify provenance header
+    controller.Response.Headers["X-Dais-Source"].ToString()
+      .Should().Be("benton-real-permits-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_ClassifyEndpoint_NullRequest_ReturnsBadRequest()
+  {
+    var controller = new DaisController(
+        CreateDbContext(nameof(Dais_ClassifyEndpoint_NullRequest_ReturnsBadRequest)),
+        NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.ClassifyPermit(null!);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public async Task Dais_AssessmentImpact_WithoutClaims_ReturnsForbid()
+  {
+    await using var db = CreateDbContext(nameof(Dais_AssessmentImpact_WithoutClaims_ReturnsForbid));
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+
+    var result = await controller.GetPermitAssessmentImpact("12345");
+    result.Should().BeOfType<ForbidResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public async Task Dais_AssessmentImpact_ParcelNotFound_ReturnsNotFound()
+  {
+    await using var db = CreateDbContext(nameof(Dais_AssessmentImpact_ParcelNotFound_ReturnsNotFound));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetPermitAssessmentImpact("NONEXISTENT");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public async Task Dais_AssessmentImpact_ValidParcel_ReturnsOk()
+  {
+    await using var db = CreateDbContext(nameof(Dais_AssessmentImpact_ValidParcel_ReturnsOk));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    var prop = CreateProperty(countyId, "DAIS-PARCEL-001");
+    db.Properties.Add(prop);
+    await db.SaveChangesAsync();
+
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext
+    {
+      User = CreatePrincipal(countyId, "BENTON"),
+    };
+
+    var result = await controller.GetPermitAssessmentImpact("DAIS-PARCEL-001");
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+
+    // Verify provenance header
+    controller.Response.Headers["X-Dais-Source"].ToString()
+      .Should().Be("benton-real-permits-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_MaintenanceKeywords_AreComplete()
+  {
+    var keywords = DaisController.BentonPermitData.MaintenanceKeywords;
+    keywords.Should().Contain("hvac");
+    keywords.Should().Contain("re-roof");
+    keywords.Should().Contain("heat pump");
+    keywords.Should().Contain("fence");
+    keywords.Should().Contain("water heater");
+    keywords.Should().Contain("mini split");
+    keywords.Should().Contain("like-for-like");
+    keywords.Should().Contain("maintenance");
+    keywords.Should().Contain("repair");
+    keywords.Should().Contain("replacement");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais")]
+  public void Dais_ValueAddKeywords_AreComplete()
+  {
+    var keywords = DaisController.BentonPermitData.ValueAddKeywords;
+    keywords.Should().Contain("in-ground pool");
+    keywords.Should().Contain("new construction");
+    keywords.Should().Contain("addition");
+    keywords.Should().Contain("adu");
+    keywords.Should().Contain("accessory dwelling");
+    keywords.Should().Contain("finished basement");
+  }
 }
