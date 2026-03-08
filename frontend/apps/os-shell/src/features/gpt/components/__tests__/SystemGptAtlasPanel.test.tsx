@@ -18,6 +18,13 @@ jest.mock('../../../../api/systemDiagnosticsApi', () => ({
   fetchSystemGptAtlas: (...args: any[]) => mockFetchSystemGptAtlas(...args),
 }));
 
+// Mock the useSystemGptAtlasLive hook for live data tests
+const mockUseSystemGptAtlasLive = jest.fn();
+jest.mock('../../../../hooks/useSystemGptAtlasLive', () => ({
+  ...jest.requireActual('../../../../hooks/useSystemGptAtlasLive'),
+  useSystemGptAtlasLive: (...args: any[]) => mockUseSystemGptAtlasLive(...args),
+}));
+
 describe('SystemGptAtlasPanel', () => {
   const mockOnCountySelect = jest.fn();
 
@@ -25,6 +32,14 @@ describe('SystemGptAtlasPanel', () => {
     jest.useFakeTimers();
     mockOnCountySelect.mockClear();
     mockFetchSystemGptAtlas.mockClear();
+    mockUseSystemGptAtlasLive.mockClear();
+    // Default: connected state with no live events
+    mockUseSystemGptAtlasLive.mockReturnValue({
+      connectionState: 'connected',
+      liveEvent: null,
+      error: null,
+      getCountyById: () => undefined,
+    });
   });
 
   afterEach(() => {
@@ -288,92 +303,351 @@ describe('SystemGptAtlasPanel', () => {
   // "Write the exam before the course"
   // ═══════════════════════════════════════════════════════════════
 
+  // NOTE: These tests require a jsdom environment (Jest or Vitest with jsdom).
+  // They cannot run under `node --test` which lacks DOM APIs.
+  // Run with: npx jest SystemGptAtlasPanel.test.tsx  (or equivalent vitest command)
+
   describe('Phase 29: Live Streaming Integration', () => {
-    // These tests will be enabled once the useSystemGptAtlasLive hook is implemented
-    // For now, they are skipped to allow the test suite to pass
+    // Shared mock data for live integration tests
+    const mockLiveEvent = {
+      version: '1.0',
+      eventType: 'atlas_live',
+      timestamp: new Date().toISOString(),
+      counties: [
+        {
+          countyId: 'benton',
+          healthScore: 97,
+          healthState: 'healthy' as const,
+          ragActive: true,
+          guardrailTriggered: false,
+          activeRequests: 42,
+          p95LatencyMs: 120,
+          errorRatePercent: 0.2,
+          activeAlerts: [],
+        },
+        {
+          countyId: 'yakima',
+          healthScore: 68,
+          healthState: 'warning' as const,
+          ragActive: true,
+          guardrailTriggered: true,
+          activeRequests: 18,
+          p95LatencyMs: 450,
+          errorRatePercent: 3.1,
+          activeAlerts: ['High latency detected on RAG pipeline'],
+        },
+        {
+          countyId: 'franklin',
+          healthScore: 15,
+          healthState: 'critical' as const,
+          ragActive: false,
+          guardrailTriggered: false,
+          activeRequests: 2,
+          p95LatencyMs: 2100,
+          errorRatePercent: 12.5,
+          activeAlerts: ['Service degraded', 'RAG pipeline offline'],
+        },
+        {
+          countyId: 'grant',
+          healthScore: 0,
+          healthState: 'offline' as const,
+          ragActive: false,
+          guardrailTriggered: false,
+          activeRequests: 0,
+          p95LatencyMs: 0,
+          errorRatePercent: 0,
+          activeAlerts: [],
+        },
+      ],
+    };
 
-    describe.skip('C2.1 - Connection state display', () => {
-      it('should show connecting indicator when connectionState is connecting', () => {
-        // TODO: Implement when useSystemGptAtlasLive is wired to SystemGptAtlasPanel
-        expect(true).toBe(true);
+    describe('C2.1 - Connection state display', () => {
+      beforeEach(() => {
+        mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
       });
 
-      it('should show connected/live indicator when connectionState is connected', () => {
-        // TODO: Implement when useSystemGptAtlasLive is wired to SystemGptAtlasPanel
-        expect(true).toBe(true);
+      it('should show connecting indicator when connectionState is connecting', async () => {
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'connecting',
+          liveEvent: null,
+          error: null,
+          getCountyById: () => undefined,
+        });
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const indicator = screen.getByTestId('atlas-connection-state');
+          expect(indicator).toHaveAttribute('data-state', 'connecting');
+          expect(indicator).toHaveTextContent(/Connecting/i);
+        });
       });
 
-      it('should show reconnecting indicator with retry info', () => {
-        // TODO: Implement when useSystemGptAtlasLive is wired to SystemGptAtlasPanel
-        expect(true).toBe(true);
+      it('should show connected/live indicator when connectionState is connected', async () => {
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'connected',
+          liveEvent: null,
+          error: null,
+          getCountyById: () => undefined,
+        });
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const indicator = screen.getByTestId('atlas-connection-state');
+          expect(indicator).toHaveAttribute('data-state', 'connected');
+          expect(indicator).toHaveTextContent(/Live/i);
+        });
       });
 
-      it('should show offline indicator with fallback message', () => {
-        // TODO: Implement when useSystemGptAtlasLive is wired to SystemGptAtlasPanel
-        expect(true).toBe(true);
+      it('should show reconnecting indicator with retry info', async () => {
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'reconnecting',
+          liveEvent: null,
+          error: null,
+          getCountyById: () => undefined,
+        });
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const indicator = screen.getByTestId('atlas-connection-state');
+          expect(indicator).toHaveAttribute('data-state', 'reconnecting');
+          expect(indicator).toHaveTextContent(/Reconnecting/i);
+        });
+      });
+
+      it('should show offline indicator with fallback message', async () => {
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'offline',
+          liveEvent: null,
+          error: new Error('SSE connection failed'),
+          getCountyById: () => undefined,
+        });
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const indicator = screen.getByTestId('atlas-connection-state');
+          expect(indicator).toHaveAttribute('data-state', 'offline');
+          expect(indicator).toHaveTextContent(/Offline/i);
+        });
       });
     });
 
-    describe.skip('C2.2 - County node health visualization', () => {
-      it('should render healthy county with green indicator', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+    describe('C2.2 - County node health visualization', () => {
+      beforeEach(() => {
+        mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'connected',
+          liveEvent: mockLiveEvent,
+          error: null,
+          getCountyById: (id: string) => mockLiveEvent.counties.find((c) => c.countyId === id),
+        });
       });
 
-      it('should render warning county with yellow/amber indicator', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+      it('should render healthy county with green indicator', async () => {
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          // Benton County has health: 'Healthy' in static data, renders with emerald/green styling
+          const bentonNode = screen.getByTitle(/Benton County/i);
+          expect(bentonNode).toBeInTheDocument();
+          expect(bentonNode.className).toMatch(/emerald/);
+        });
       });
 
-      it('should render critical county with red indicator', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+      it('should render warning county with yellow/amber indicator', async () => {
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          // Yakima County has health: 'Degraded' in static data, renders with amber styling
+          const yakimaNode = screen.getByTitle(/Yakima County/i);
+          expect(yakimaNode).toBeInTheDocument();
+          expect(yakimaNode.className).toMatch(/amber/);
+        });
       });
 
-      it('should render offline county with gray indicator', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+      it('should render critical county with red indicator', async () => {
+        // Use atlas data with an Unhealthy county to test red indicator
+        const unhealthyAtlas = {
+          ...healthyAtlasData,
+          nodes: [
+            ...healthyAtlasData.nodes,
+            {
+              countyId: 'grant',
+              countyName: 'Grant County',
+              health: 'Unhealthy' as const,
+              capacityRisk: 'High' as const,
+              ragStatus: 'Unknown' as const,
+              configured: true,
+              fleetRagDriftRisk: 'High' as const,
+              fleetRagNote: 'Critical failures',
+              recentGuardrailDeny: false,
+              recentSafeModeRecommended: true,
+              mapX: 0.3,
+              mapY: 0.4,
+            },
+          ],
+        };
+        mockFetchSystemGptAtlas.mockResolvedValue(unhealthyAtlas);
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const grantNode = screen.getByTitle(/Grant County/i);
+          expect(grantNode).toBeInTheDocument();
+          expect(grantNode.className).toMatch(/red/);
+        });
+      });
+
+      it('should render offline county with gray indicator', async () => {
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          // Franklin County has health: 'Unknown' in static data, renders with slate/gray styling
+          const franklinNode = screen.getByTitle(/Franklin County/i);
+          expect(franklinNode).toBeInTheDocument();
+          expect(franklinNode.className).toMatch(/slate/);
+        });
       });
     });
 
-    describe.skip('C2.3 - Live metrics display', () => {
-      it('should display health score percentage', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+    describe('C2.3 - Live metrics display', () => {
+      beforeEach(() => {
+        mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'connected',
+          liveEvent: mockLiveEvent,
+          error: null,
+          getCountyById: (id: string) => mockLiveEvent.counties.find((c) => c.countyId === id),
+        });
       });
 
-      it('should display active requests count', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+      it('should display health score percentage', async () => {
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const healthScore = screen.getByTestId('health-score');
+          // Average of 97, 68, 15, 0 = 45
+          expect(healthScore).toHaveTextContent('45%');
+        });
       });
 
-      it('should display P95 latency', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+      it('should display active requests count', async () => {
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const activeRequests = screen.getByTestId('active-requests');
+          // Sum of 42 + 18 + 2 + 0 = 62
+          expect(activeRequests).toHaveTextContent('62');
+        });
+      });
+
+      it('should display P95 latency', async () => {
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const p95Latency = screen.getByTestId('p95-latency');
+          // Max of 120, 450, 2100, 0 = 2100
+          expect(p95Latency).toHaveTextContent('2100ms');
+        });
       });
     });
 
-    describe.skip('C2.4 - Alert display', () => {
-      it('should display active alerts for county', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+    describe('C2.4 - Alert display', () => {
+      beforeEach(() => {
+        mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
       });
 
-      it('should not show alert section when no alerts', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+      it('should display active alerts for county', async () => {
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'connected',
+          liveEvent: mockLiveEvent,
+          error: null,
+          getCountyById: (id: string) => mockLiveEvent.counties.find((c) => c.countyId === id),
+        });
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          const alertSection = screen.getByTestId('atlas-alerts');
+          expect(alertSection).toBeInTheDocument();
+          // 3 total alerts across yakima (1) and franklin (2)
+          expect(alertSection).toHaveTextContent(/Active Alerts \(3\)/);
+          expect(alertSection).toHaveTextContent(/High latency detected/);
+          expect(alertSection).toHaveTextContent(/Service degraded/);
+          expect(alertSection).toHaveTextContent(/RAG pipeline offline/);
+        });
+      });
+
+      it('should not show alert section when no alerts', async () => {
+        const noAlertEvent = {
+          ...mockLiveEvent,
+          counties: mockLiveEvent.counties.map((c) => ({
+            ...c,
+            activeAlerts: [],
+          })),
+        };
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'connected',
+          liveEvent: noAlertEvent,
+          error: null,
+          getCountyById: (id: string) => noAlertEvent.counties.find((c) => c.countyId === id),
+        });
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          expect(screen.getByText(/SystemGPT Atlas/i)).toBeInTheDocument();
+        });
+
+        expect(screen.queryByTestId('atlas-alerts')).not.toBeInTheDocument();
       });
     });
 
-    describe.skip('C2.5 - Static + Live merge', () => {
-      it('should show static data when live data not yet received', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+    describe('C2.5 - Static + Live merge', () => {
+      it('should show static data when live data not yet received', async () => {
+        mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'connecting',
+          liveEvent: null,
+          error: null,
+          getCountyById: () => undefined,
+        });
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          // Static nodes should still render
+          expect(screen.getByText(/Benton/)).toBeInTheDocument();
+          expect(screen.getByText(/Yakima/)).toBeInTheDocument();
+          expect(screen.getByText(/Franklin/)).toBeInTheDocument();
+        });
+
+        // Live metrics section should NOT be rendered (no live data)
+        expect(screen.queryByTestId('atlas-live-metrics')).not.toBeInTheDocument();
       });
 
-      it('should overlay live data on static nodes when available', () => {
-        // TODO: Implement when live data integration is complete
-        expect(true).toBe(true);
+      it('should overlay live data on static nodes when available', async () => {
+        mockFetchSystemGptAtlas.mockResolvedValue(healthyAtlasData);
+        mockUseSystemGptAtlasLive.mockReturnValue({
+          connectionState: 'connected',
+          liveEvent: mockLiveEvent,
+          error: null,
+          getCountyById: (id: string) => mockLiveEvent.counties.find((c) => c.countyId === id),
+        });
+
+        render(<SystemGptAtlasPanel onCountySelect={mockOnCountySelect} />);
+
+        await waitFor(() => {
+          // Static nodes still present
+          expect(screen.getByText(/Benton/)).toBeInTheDocument();
+          // Live metrics overlay appears
+          expect(screen.getByTestId('atlas-live-metrics')).toBeInTheDocument();
+          // Alert display appears (from live data)
+          expect(screen.getByTestId('atlas-alerts')).toBeInTheDocument();
+        });
       });
     });
   });
