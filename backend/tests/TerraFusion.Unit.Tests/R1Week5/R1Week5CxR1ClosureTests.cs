@@ -790,4 +790,247 @@ public sealed class R1Week5CxR1ClosureTests
     // If the guard passes, we reach the property lookup which returns NotFound (no PACS data)
     result.Result.Should().BeOfType<NotFoundObjectResult>();
   }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 9: Real CostForge Calculator Tests
+  // ═══════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_R1Central_StandardQuality_ReturnsExpectedCost()
+  {
+    // From quarantine: R1 Central $127.50/sqft, 2000sqft, built 2015 (age ~10 → bracket 6-15 → 0.87)
+    var result = CostForgeController.ComputeCostEstimate(
+      "R1", "Central", 2000m, 2015, "STANDARD", "GOOD", "STANDARD");
+
+    result.Should().NotBeNull();
+    result!.BuildingType.Should().Be("R1");
+    result.BaseCostPerSqft.Should().Be(127.50m);
+    result.RegionFactor.Should().Be(1.00m);
+    result.QualityFactor.Should().Be(1.00m);
+    result.ConditionFactor.Should().Be(1.00m);
+    result.ComplexityFactor.Should().Be(1.00m);
+    result.DepreciationFactor.Should().Be(0.87m);
+    result.AdjustedCostPerSqft.Should().Be(110.92m); // 127.50 × 0.87 = 110.925 → 110.92 (bankers: .5 rounds to even)
+    result.TotalCost.Should().Be(221_840.00m); // 110.92 × 2000
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_VerifiesAllBuildingTypes()
+  {
+    // All 11 building types should resolve for Central region
+    string[] types = ["R1", "R2", "C1", "C2", "C3", "C4", "A1", "A2", "I1", "S1", "S2"];
+    foreach (var bt in types)
+    {
+      var result = CostForgeController.ComputeCostEstimate(
+        bt, "Central", 1000m, 2024, "STANDARD", "GOOD", "STANDARD");
+      result.Should().NotBeNull($"Building type {bt} should have a cost matrix entry");
+      result!.TotalCost.Should().BeGreaterThan(0m);
+    }
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_VerifiesAllRegions()
+  {
+    string[] regions = ["Central", "East", "West", "North", "South"];
+    foreach (var region in regions)
+    {
+      var result = CostForgeController.ComputeCostEstimate(
+        "R1", region, 1000m, 2024, "STANDARD", "GOOD", "STANDARD");
+      result.Should().NotBeNull($"Region '{region}' should have cost matrix entries");
+      result!.TotalCost.Should().BeGreaterThan(0m);
+    }
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_UnknownBuildingType_ReturnsNull()
+  {
+    var result = CostForgeController.ComputeCostEstimate(
+      "ZZZZ", "Central", 1000m, 2024, "STANDARD", "GOOD", "STANDARD");
+    result.Should().BeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_QualityGradesAffectCost()
+  {
+    var economy = CostForgeController.ComputeCostEstimate(
+      "R1", "Central", 1000m, 2024, "ECONOMY", "GOOD", "STANDARD")!;
+    var luxury = CostForgeController.ComputeCostEstimate(
+      "R1", "Central", 1000m, 2024, "LUXURY", "GOOD", "STANDARD")!;
+
+    luxury.TotalCost.Should().BeGreaterThan(economy.TotalCost,
+      "LUXURY quality should produce higher cost than ECONOMY");
+    luxury.QualityFactor.Should().Be(1.55m);
+    economy.QualityFactor.Should().Be(0.75m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_DepreciationBrackets_Residential()
+  {
+    // New construction (age 0)
+    CostForgeController.GetDepreciationFactor(0, isResidential: true).Should().Be(0.95m);
+    // 10 years old
+    CostForgeController.GetDepreciationFactor(10, isResidential: true).Should().Be(0.87m);
+    // 20 years old
+    CostForgeController.GetDepreciationFactor(20, isResidential: true).Should().Be(0.70m);
+    // 30 years old
+    CostForgeController.GetDepreciationFactor(30, isResidential: true).Should().Be(0.50m);
+    // 50 years old
+    CostForgeController.GetDepreciationFactor(50, isResidential: true).Should().Be(0.35m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_DepreciationBrackets_Commercial()
+  {
+    CostForgeController.GetDepreciationFactor(0, isResidential: false).Should().Be(0.97m);
+    CostForgeController.GetDepreciationFactor(10, isResidential: false).Should().Be(0.85m);
+    CostForgeController.GetDepreciationFactor(20, isResidential: false).Should().Be(0.65m);
+    CostForgeController.GetDepreciationFactor(30, isResidential: false).Should().Be(0.40m);
+    CostForgeController.GetDepreciationFactor(50, isResidential: false).Should().Be(0.25m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_CaseInsensitiveInputs()
+  {
+    var upper = CostForgeController.ComputeCostEstimate(
+      "R1", "CENTRAL", 1000m, 2020, "standard", "good", "standard");
+    var lower = CostForgeController.ComputeCostEstimate(
+      "r1", "central", 1000m, 2020, "STANDARD", "GOOD", "STANDARD");
+
+    upper.Should().NotBeNull();
+    lower.Should().NotBeNull();
+    upper!.TotalCost.Should().Be(lower!.TotalCost);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_BankersRounding()
+  {
+    CostForgeController.BankersRound(10.125m).Should().Be(10.12m); // .5 → even
+    CostForgeController.BankersRound(10.135m).Should().Be(10.14m); // .5 → even
+    CostForgeController.BankersRound(10.1251m).Should().Be(10.13m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public void CostForge_RealCalculator_MatrixHas55Entries()
+  {
+    // 11 building types × 5 regions = 55 entries
+    CostForgeController.BentonCostData.CostMatrix.Should().HaveCount(55);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public async Task CostForge_CostEstimate_WithoutCountyClaims_ReturnsForbid()
+  {
+    await using var db = CreateDbContext(nameof(CostForge_CostEstimate_WithoutCountyClaims_ReturnsForbid));
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var costForgeAiService = new Mock<CostForgeAIService>(MockBehavior.Strict);
+    var auditLogger = new Mock<AuditLogger>(MockBehavior.Strict);
+
+    var controller = new CostForgeController(
+      costForgeService.Object,
+      costForgeAiService.Object,
+      db,
+      auditLogger.Object,
+      NullLogger<CostForgeController>.Instance);
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+
+    var result = await controller.CalculateCostEstimate(new CostEstimateRequest
+    {
+      BuildingType = "R1",
+      SquareFeet = 2000m,
+    });
+
+    result.Should().BeOfType<ForbidResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public async Task CostForge_CostEstimate_WithValidClaims_ReturnsOk()
+  {
+    await using var db = CreateDbContext(nameof(CostForge_CostEstimate_WithValidClaims_ReturnsOk));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var costForgeAiService = new Mock<CostForgeAIService>(MockBehavior.Strict);
+    var auditLogger = new Mock<AuditLogger>(MockBehavior.Strict);
+    auditLogger
+      .Setup(a => a.LogUserActionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+      .Returns(Task.CompletedTask);
+
+    var controller = new CostForgeController(
+      costForgeService.Object,
+      costForgeAiService.Object,
+      db,
+      auditLogger.Object,
+      NullLogger<CostForgeController>.Instance);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+    // Need HttpContext.Response for X-CostForge-Source header
+    controller.ControllerContext.HttpContext = new DefaultHttpContext
+    {
+      User = CreatePrincipal(countyId, "BENTON"),
+    };
+
+    var result = await controller.CalculateCostEstimate(new CostEstimateRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 2000m,
+      YearBuilt = 2020,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      ComplexityGrade = "STANDARD",
+    });
+
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+
+    // Verify source header
+    controller.Response.Headers["X-CostForge-Source"].ToString()
+      .Should().Be("benton-real-calculator-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge")]
+  public async Task CostForge_CostEstimate_MissingBuildingType_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(CostForge_CostEstimate_MissingBuildingType_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+    var costForgeAiService = new Mock<CostForgeAIService>(MockBehavior.Strict);
+    var auditLogger = new Mock<AuditLogger>(MockBehavior.Strict);
+
+    var controller = new CostForgeController(
+      costForgeService.Object,
+      costForgeAiService.Object,
+      db,
+      auditLogger.Object,
+      NullLogger<CostForgeController>.Instance);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext
+    {
+      User = CreatePrincipal(countyId, "BENTON"),
+    };
+
+    var result = await controller.CalculateCostEstimate(new CostEstimateRequest
+    {
+      BuildingType = "",
+      SquareFeet = 2000m,
+    });
+
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
 }
