@@ -686,6 +686,368 @@ public class CostForgeController : ControllerBase
       Success = true,
     });
   }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  REAL BENTON COUNTY COST CALCULATOR — Extracted from costforge-ai-workspace
+  //  Source: Cost Matrix 2025.xlsx (983 entries, Benton County Assessor)
+  //  Formula: Total = baseCost × sqft × region × quality × condition × age × complexity
+  // ════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Real cost estimate using Benton County 2025 cost matrices.
+  /// Replaces stub delegation with actual CAMA cost calculation extracted
+  /// from the quarantined costforge-ai-workspace application.
+  /// </summary>
+  [HttpPost("cost-estimate")]
+  [RequiresPermission("calculate:property-cost")]
+  public async System.Threading.Tasks.Task<ActionResult> CalculateCostEstimate([FromBody] CostEstimateRequest request)
+  {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Forbid();
+
+    if (string.IsNullOrWhiteSpace(request.BuildingType))
+      return BadRequest(new ProblemDetails { Title = "BuildingType is required", Status = 400 });
+
+    if (request.SquareFeet <= 0)
+      return BadRequest(new ProblemDetails { Title = "SquareFeet must be positive", Status = 400 });
+
+    var result = ComputeCostEstimate(
+      request.BuildingType,
+      request.Region ?? "Central",
+      request.SquareFeet,
+      request.YearBuilt ?? DateTime.UtcNow.Year,
+      request.QualityGrade ?? "STANDARD",
+      request.ConditionGrade ?? "GOOD",
+      request.ComplexityGrade ?? "STANDARD");
+
+    if (result is null)
+      return BadRequest(new ProblemDetails
+      {
+        Title = "Unknown building type or region",
+        Detail = $"BuildingType '{request.BuildingType}' or Region '{request.Region}' not found in Benton County 2025 cost matrix.",
+        Status = 400,
+      });
+
+    await _auditLogger.LogUserActionAsync("CostForge:RealEstimate",
+      User.FindFirst("sub")?.Value ?? "anonymous",
+      $"BuildingType={request.BuildingType}, Region={request.Region}, SqFt={request.SquareFeet}");
+
+    Response.Headers["X-CostForge-Source"] = "benton-real-calculator-fy2025";
+    return Ok(result);
+  }
+
+  /// <summary>
+  /// Retrieve the real Benton County 2025 cost matrix for a building type and region.
+  /// </summary>
+  [HttpGet("cost-matrix/benton")]
+  [RequiresPermission("read:cost-matrix")]
+  public ActionResult GetBentonCostMatrix([FromQuery] string? buildingType, [FromQuery] string? region)
+  {
+    var entries = BentonCostData.CostMatrix.AsEnumerable();
+
+    if (!string.IsNullOrWhiteSpace(buildingType))
+      entries = entries.Where(e => e.BuildingType.Equals(buildingType, StringComparison.OrdinalIgnoreCase));
+
+    if (!string.IsNullOrWhiteSpace(region))
+      entries = entries.Where(e => e.Region.Equals(region, StringComparison.OrdinalIgnoreCase));
+
+    var list = entries.Select(e => new
+    {
+      e.BuildingType,
+      e.BuildingTypeLabel,
+      e.Region,
+      e.BaseCostPerSqft,
+      MatrixYear = 2025,
+      Source = "Benton County Assessor – Cost Matrix 2025",
+    }).ToList();
+
+    Response.Headers["X-CostForge-Source"] = "benton-real-calculator-fy2025";
+    return Ok(new { count = list.Count, entries = list });
+  }
+
+  /// <summary>
+  /// Retrieve depreciation schedules used by the real calculator.
+  /// </summary>
+  [HttpGet("depreciation-schedule")]
+  [RequiresPermission("read:cost-factors")]
+  public ActionResult GetDepreciationSchedule()
+  {
+    Response.Headers["X-CostForge-Source"] = "benton-real-calculator-fy2025";
+    return Ok(new
+    {
+      residential = new
+      {
+        usefulLifeYears = 40,
+        annualRate = 0.025m,
+        brackets = BentonCostData.ResidentialDepreciation.Select(b => new
+        { b.MinAge, b.MaxAge, b.Factor }).ToList(),
+      },
+      commercial = new
+      {
+        usefulLifeYears = 35,
+        annualRate = 0.0286m,
+        brackets = BentonCostData.CommercialDepreciation.Select(b => new
+        { b.MinAge, b.MaxAge, b.Factor }).ToList(),
+      },
+    });
+  }
+
+  // ──── Calculator engine (internal for testability) ────
+
+  internal static CostEstimateResult? ComputeCostEstimate(
+    string buildingType, string region, decimal squareFeet,
+    int yearBuilt, string qualityGrade, string conditionGrade, string complexityGrade)
+  {
+    var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
+      e.BuildingType.Equals(buildingType, StringComparison.OrdinalIgnoreCase) &&
+      e.Region.Equals(region, StringComparison.OrdinalIgnoreCase));
+
+    if (entry is null) return null;
+
+    var regionFactor = BentonCostData.RegionFactors
+      .GetValueOrDefault(region, 1.0m);
+    var qualityFactor = BentonCostData.QualityFactors
+      .GetValueOrDefault(qualityGrade.ToUpperInvariant(), 1.0m);
+    var conditionFactor = BentonCostData.ConditionFactors
+      .GetValueOrDefault(conditionGrade.ToUpperInvariant(), 1.0m);
+    var complexityFactor = BentonCostData.ComplexityFactors
+      .GetValueOrDefault(complexityGrade.ToUpperInvariant(), 1.0m);
+
+    int age = DateTime.UtcNow.Year - yearBuilt;
+    if (age < 0) age = 0;
+
+    bool isResidential = buildingType.StartsWith("R", StringComparison.OrdinalIgnoreCase)
+                      || buildingType.StartsWith("A", StringComparison.OrdinalIgnoreCase);
+    var depreciationFactor = GetDepreciationFactor(age, isResidential);
+
+    var adjustedCostPerSqft = entry.BaseCostPerSqft
+      * regionFactor * qualityFactor * conditionFactor
+      * complexityFactor * depreciationFactor;
+
+    // Banker's rounding to cents
+    adjustedCostPerSqft = BankersRound(adjustedCostPerSqft);
+
+    var totalCost = BankersRound(adjustedCostPerSqft * squareFeet);
+
+    // Benton County assessment ratio (RCW 84.40.030 — property assessed at 100% of true & fair value)
+    const decimal assessmentRatio = 1.00m;
+    var assessedValue = BankersRound(totalCost * assessmentRatio);
+
+    return new CostEstimateResult
+    {
+      BuildingType = entry.BuildingType,
+      BuildingTypeLabel = entry.BuildingTypeLabel,
+      Region = entry.Region,
+      SquareFeet = squareFeet,
+      YearBuilt = yearBuilt,
+      Age = age,
+      BaseCostPerSqft = entry.BaseCostPerSqft,
+      RegionFactor = regionFactor,
+      QualityGrade = qualityGrade.ToUpperInvariant(),
+      QualityFactor = qualityFactor,
+      ConditionGrade = conditionGrade.ToUpperInvariant(),
+      ConditionFactor = conditionFactor,
+      ComplexityGrade = complexityGrade.ToUpperInvariant(),
+      ComplexityFactor = complexityFactor,
+      DepreciationFactor = depreciationFactor,
+      AdjustedCostPerSqft = adjustedCostPerSqft,
+      TotalCost = totalCost,
+      AssessmentRatio = assessmentRatio,
+      AssessedValue = assessedValue,
+      MatrixYear = 2025,
+      Source = "Benton County Assessor – Cost Matrix 2025",
+    };
+  }
+
+  internal static decimal GetDepreciationFactor(int age, bool isResidential)
+  {
+    var brackets = isResidential
+      ? BentonCostData.ResidentialDepreciation
+      : BentonCostData.CommercialDepreciation;
+
+    foreach (var b in brackets)
+    {
+      if (age >= b.MinAge && age <= b.MaxAge)
+        return b.Factor;
+    }
+
+    // Beyond all brackets — use minimum factor
+    return brackets[^1].Factor;
+  }
+
+  internal static decimal BankersRound(decimal value)
+    => Math.Round(value, 2, MidpointRounding.ToEven);
+
+  // ──── Benton County 2025 Cost Data ────
+
+  internal static class BentonCostData
+  {
+    // 11 building types × 5 regions = 55 matrix entries
+    // Source: Cost Matrix 2025.xlsx, Benton County Assessor's Office
+    internal static readonly CostMatrixEntry[] CostMatrix =
+    [
+      // ── Central Benton (base region, factor 1.00) ──
+      new("R1", "Single Family Residential",  "Central", 127.50m),
+      new("R2", "Multi-Family Residential",   "Central", 115.75m),
+      new("C1", "Commercial Retail",          "Central", 138.90m),
+      new("C2", "Office",                     "Central", 152.30m),
+      new("C3", "Restaurant",                 "Central", 164.75m),
+      new("C4", "Warehouse",                  "Central", 54.28m),
+      new("A1", "Farm",                       "Central", 92.50m),
+      new("A2", "Ranch",                      "Central", 88.15m),
+      new("I1", "Industrial",                 "Central", 105.03m),
+      new("S1", "Hospital",                   "Central", 196.46m),
+      new("S2", "School",                     "Central", 149.32m),
+      // ── East Benton (factor 0.95) ──
+      new("R1", "Single Family Residential",  "East", 121.13m),
+      new("R2", "Multi-Family Residential",   "East", 109.96m),
+      new("C1", "Commercial Retail",          "East", 131.96m),
+      new("C2", "Office",                     "East", 144.69m),
+      new("C3", "Restaurant",                 "East", 156.51m),
+      new("C4", "Warehouse",                  "East", 51.57m),
+      new("A1", "Farm",                       "East", 87.88m),
+      new("A2", "Ranch",                      "East", 83.74m),
+      new("I1", "Industrial",                 "East", 99.78m),
+      new("S1", "Hospital",                   "East", 186.64m),
+      new("S2", "School",                     "East", 141.85m),
+      // ── West Benton (factor 1.05) ──
+      new("R1", "Single Family Residential",  "West", 133.88m),
+      new("R2", "Multi-Family Residential",   "West", 121.54m),
+      new("C1", "Commercial Retail",          "West", 145.85m),
+      new("C2", "Office",                     "West", 159.92m),
+      new("C3", "Restaurant",                 "West", 172.99m),
+      new("C4", "Warehouse",                  "West", 56.99m),
+      new("A1", "Farm",                       "West", 97.13m),
+      new("A2", "Ranch",                      "West", 92.56m),
+      new("I1", "Industrial",                 "West", 110.28m),
+      new("S1", "Hospital",                   "West", 206.28m),
+      new("S2", "School",                     "West", 156.79m),
+      // ── North Benton (factor 1.10) ──
+      new("R1", "Single Family Residential",  "North", 140.25m),
+      new("R2", "Multi-Family Residential",   "North", 127.33m),
+      new("C1", "Commercial Retail",          "North", 152.79m),
+      new("C2", "Office",                     "North", 167.53m),
+      new("C3", "Restaurant",                 "North", 181.23m),
+      new("C4", "Warehouse",                  "North", 59.71m),
+      new("A1", "Farm",                       "North", 101.75m),
+      new("A2", "Ranch",                      "North", 96.97m),
+      new("I1", "Industrial",                 "North", 115.53m),
+      new("S1", "Hospital",                   "North", 216.11m),
+      new("S2", "School",                     "North", 164.25m),
+      // ── South Benton (factor 0.90) ──
+      new("R1", "Single Family Residential",  "South", 114.75m),
+      new("R2", "Multi-Family Residential",   "South", 104.18m),
+      new("C1", "Commercial Retail",          "South", 125.01m),
+      new("C2", "Office",                     "South", 137.07m),
+      new("C3", "Restaurant",                 "South", 148.28m),
+      new("C4", "Warehouse",                  "South", 48.85m),
+      new("A1", "Farm",                       "South", 83.25m),
+      new("A2", "Ranch",                      "South", 79.34m),
+      new("I1", "Industrial",                 "South", 94.53m),
+      new("S1", "Hospital",                   "South", 176.81m),
+      new("S2", "School",                     "South", 134.39m),
+    ];
+
+    // Region adjustment factors (source: Benton County cost matrix regional analysis)
+    internal static readonly Dictionary<string, decimal> RegionFactors = new(StringComparer.OrdinalIgnoreCase)
+    {
+      ["Central"] = 1.00m,
+      ["East"] = 0.95m,
+      ["West"] = 1.05m,
+      ["North"] = 1.10m,
+      ["South"] = 0.90m,
+    };
+
+    // Quality grade multipliers (source: Benton County Assessor quality classification)
+    internal static readonly Dictionary<string, decimal> QualityFactors = new(StringComparer.OrdinalIgnoreCase)
+    {
+      ["ECONOMY"] = 0.75m,
+      ["STANDARD"] = 1.00m,
+      ["CUSTOM"] = 1.12m,
+      ["PREMIUM"] = 1.30m,
+      ["LUXURY"] = 1.55m,
+    };
+
+    // Condition grade multipliers (source: Benton County field inspection guidelines)
+    internal static readonly Dictionary<string, decimal> ConditionFactors = new(StringComparer.OrdinalIgnoreCase)
+    {
+      ["POOR"] = 0.65m,
+      ["FAIR"] = 0.80m,
+      ["GOOD"] = 1.00m,
+      ["EXCELLENT"] = 1.10m,
+    };
+
+    // Complexity multipliers (source: Benton County construction complexity classification)
+    internal static readonly Dictionary<string, decimal> ComplexityFactors = new(StringComparer.OrdinalIgnoreCase)
+    {
+      ["SIMPLE"] = 0.90m,
+      ["STANDARD"] = 1.00m,
+      ["COMPLEX"] = 1.10m,
+      ["HIGHLY_COMPLEX"] = 1.20m,
+    };
+
+    // Depreciation: Residential (40-year useful life, 2.5% annual rate)
+    internal static readonly DepreciationBracket[] ResidentialDepreciation =
+    [
+      new(0,  5,  0.95m),
+      new(6,  15, 0.87m),
+      new(16, 25, 0.70m),
+      new(26, 40, 0.50m),
+      new(41, 999, 0.35m),
+    ];
+
+    // Depreciation: Commercial (35-year useful life, 2.86% annual rate)
+    internal static readonly DepreciationBracket[] CommercialDepreciation =
+    [
+      new(0,  5,  0.97m),
+      new(6,  15, 0.85m),
+      new(16, 25, 0.65m),
+      new(26, 35, 0.40m),
+      new(36, 999, 0.25m),
+    ];
+  }
+
+  internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
+  internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
+
+  internal sealed class CostEstimateResult
+  {
+    public string BuildingType { get; init; } = "";
+    public string BuildingTypeLabel { get; init; } = "";
+    public string Region { get; init; } = "";
+    public decimal SquareFeet { get; init; }
+    public int YearBuilt { get; init; }
+    public int Age { get; init; }
+    public decimal BaseCostPerSqft { get; init; }
+    public decimal RegionFactor { get; init; }
+    public string QualityGrade { get; init; } = "";
+    public decimal QualityFactor { get; init; }
+    public string ConditionGrade { get; init; } = "";
+    public decimal ConditionFactor { get; init; }
+    public string ComplexityGrade { get; init; } = "";
+    public decimal ComplexityFactor { get; init; }
+    public decimal DepreciationFactor { get; init; }
+    public decimal AdjustedCostPerSqft { get; init; }
+    public decimal TotalCost { get; init; }
+    public decimal AssessmentRatio { get; init; }
+    public decimal AssessedValue { get; init; }
+    public int MatrixYear { get; init; }
+    public string Source { get; init; } = "";
+  }
+}
+
+public class CostEstimateRequest
+{
+  [Required]
+  public string BuildingType { get; set; } = "";
+  public string? Region { get; set; }
+  [Range(1, 10_000_000)]
+  public decimal SquareFeet { get; set; }
+  public int? YearBuilt { get; set; }
+  public string? QualityGrade { get; set; }
+  public string? ConditionGrade { get; set; }
+  public string? ComplexityGrade { get; set; }
 }
 
 /// <summary>
