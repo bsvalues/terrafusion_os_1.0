@@ -2615,6 +2615,341 @@ public class CostForgeController : ControllerBase
     ];
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // R2 Wave 29 — Market Analysis (comparable sales, time-trend, ratio study)
+  // ═══════════════════════════════════════════════════════════════════
+
+  /// <summary>Run a comparable-sales market analysis for a set of parcels.</summary>
+  [HttpPost("analytics/market/comparable-sales")]
+  public async Task<IActionResult> RunComparableSalesAnalysis(
+      [FromBody] MarketAnalysisRequest request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      if (request.Sales == null || request.Sales.Count < 3)
+          return BadRequest(new { error = "At least 3 sales required" });
+
+      // ── Basic statistics ──
+      var prices = request.Sales.Select(s => s.SalePrice).OrderBy(p => p).ToList();
+      var n = prices.Count;
+      var median = n % 2 == 1
+          ? prices[n / 2]
+          : (prices[n / 2 - 1] + prices[n / 2]) / 2m;
+      var mean = prices.Average();
+
+      var sqftPrices = request.Sales
+          .Where(s => s.SquareFeet > 0)
+          .Select(s => s.SalePrice / s.SquareFeet)
+          .OrderBy(p => p).ToList();
+      var medianPsf = sqftPrices.Count > 0
+          ? (sqftPrices.Count % 2 == 1
+              ? sqftPrices[sqftPrices.Count / 2]
+              : (sqftPrices[sqftPrices.Count / 2 - 1] + sqftPrices[sqftPrices.Count / 2]) / 2m)
+          : 0m;
+
+      // ── Ratio study (COD + PRD) ──
+      var ratios = request.Sales
+          .Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+          .Select(s => (double)(s.AssessedValue / s.SalePrice))
+          .ToList();
+
+      double medianRatio = 0, cod = 0, prd = 0;
+      if (ratios.Count > 0)
+      {
+          var sortedRatios = ratios.OrderBy(r => r).ToList();
+          var rn = sortedRatios.Count;
+          medianRatio = rn % 2 == 1
+              ? sortedRatios[rn / 2]
+              : (sortedRatios[rn / 2 - 1] + sortedRatios[rn / 2]) / 2.0;
+
+          if (medianRatio > 0)
+              cod = sortedRatios.Average(r => Math.Abs(r - medianRatio)) / medianRatio * 100.0;
+
+          var meanRatio = ratios.Average();
+          var totalAssessed = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+              .Sum(s => (double)s.AssessedValue);
+          var totalSale = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+              .Sum(s => (double)s.SalePrice);
+          var weightedMeanRatio = totalSale > 0 ? totalAssessed / totalSale : meanRatio;
+          prd = weightedMeanRatio > 0 ? meanRatio / weightedMeanRatio : 1.0;
+      }
+
+      var entity = new TerraFusion.Core.Entities.MarketAnalysis
+      {
+          CountyId = ctx.CountyId,
+          AnalysisType = "comparable_sales",
+          MarketAreaName = request.MarketAreaName ?? "Unnamed",
+          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+              request.Sales.Select(s => s.ParcelId).ToList()),
+          SampleSize = n,
+          MedianSalePrice = median,
+          MeanSalePrice = Math.Round(mean, 2),
+          MedianPricePerSqft = Math.Round(medianPsf, 2),
+          CoefficientOfDispersion = Math.Round(cod, 4),
+          PriceRelatedDifferential = Math.Round(prd, 4),
+          MedianRatio = Math.Round(medianRatio, 4),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          analysisType = entity.AnalysisType,
+          marketAreaName = entity.MarketAreaName,
+          sampleSize = entity.SampleSize,
+          medianSalePrice = entity.MedianSalePrice,
+          meanSalePrice = entity.MeanSalePrice,
+          medianPricePerSqft = entity.MedianPricePerSqft,
+          coefficientOfDispersion = entity.CoefficientOfDispersion,
+          priceRelatedDifferential = entity.PriceRelatedDifferential,
+          medianRatio = entity.MedianRatio,
+      });
+  }
+
+  /// <summary>Run a time-trend analysis for a set of sales.</summary>
+  [HttpPost("analytics/market/time-trend")]
+  public async Task<IActionResult> RunTimeTrendAnalysis(
+      [FromBody] TimeTrendRequest request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      if (request.Sales == null || request.Sales.Count < 3)
+          return BadRequest(new { error = "At least 3 sales required" });
+
+      var sorted = request.Sales.OrderBy(s => s.SaleDate).ToList();
+      var baseDate = sorted.First().SaleDate;
+
+      var xs = sorted.Select(s => (s.SaleDate - baseDate).TotalDays / 30.4375).ToArray();
+      var ys = sorted.Select(s => (double)s.SalePrice).ToArray();
+      var n = xs.Length;
+
+      var xMean = xs.Average();
+      var yMean = ys.Average();
+      var ssxy = 0.0;
+      var ssxx = 0.0;
+      for (int i = 0; i < n; i++)
+      {
+          ssxy += (xs[i] - xMean) * (ys[i] - yMean);
+          ssxx += (xs[i] - xMean) * (xs[i] - xMean);
+      }
+
+      var slope = ssxx > 0 ? ssxy / ssxx : 0;
+      var intercept = yMean - slope * xMean;
+
+      var ssTotal = ys.Sum(y => (y - yMean) * (y - yMean));
+      var ssResidual = 0.0;
+      for (int i = 0; i < n; i++)
+      {
+          var predicted = intercept + slope * xs[i];
+          ssResidual += (ys[i] - predicted) * (ys[i] - predicted);
+      }
+      var rSquared = ssTotal > 0 ? 1.0 - ssResidual / ssTotal : 0;
+
+      var monthlyPctChange = intercept > 0 ? slope / intercept * 100.0 : 0;
+
+      var entity = new TerraFusion.Core.Entities.MarketAnalysis
+      {
+          CountyId = ctx.CountyId,
+          AnalysisType = "time_trend",
+          MarketAreaName = request.MarketAreaName ?? "Unnamed",
+          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+              sorted.Select(s => s.ParcelId).Where(p => p != null).ToList()),
+          SampleSize = n,
+          TimeTrendCoefficient = Math.Round(monthlyPctChange, 4),
+          TimeTrendRSquared = Math.Round(rSquared, 4),
+          PeriodStart = sorted.First().SaleDate,
+          PeriodEnd = sorted.Last().SaleDate,
+          MedianSalePrice = (decimal)yMean,
+          MeanSalePrice = (decimal)Math.Round(yMean, 2),
+          AdditionalMetrics = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              slopePerMonth = Math.Round(slope, 2),
+              interceptValue = Math.Round(intercept, 2),
+              monthsSpanned = Math.Round(xs.Last(), 1),
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          analysisType = entity.AnalysisType,
+          marketAreaName = entity.MarketAreaName,
+          sampleSize = entity.SampleSize,
+          timeTrendCoefficient = entity.TimeTrendCoefficient,
+          timeTrendRSquared = entity.TimeTrendRSquared,
+          periodStart = entity.PeriodStart,
+          periodEnd = entity.PeriodEnd,
+          additionalMetrics = entity.AdditionalMetrics,
+      });
+  }
+
+  /// <summary>Run a ratio study for a set of sales with assessed values.</summary>
+  [HttpPost("analytics/market/ratio-study")]
+  public async Task<IActionResult> RunRatioStudy(
+      [FromBody] MarketAnalysisRequest request)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      if (request.Sales == null || request.Sales.Count < 3)
+          return BadRequest(new { error = "At least 3 sales required" });
+
+      var valid = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0).ToList();
+      if (valid.Count < 3)
+          return BadRequest(new { error = "At least 3 sales with assessed values required" });
+
+      var ratios = valid.Select(s => (double)(s.AssessedValue / s.SalePrice)).OrderBy(r => r).ToList();
+      var n = ratios.Count;
+      var medianRatio = n % 2 == 1
+          ? ratios[n / 2]
+          : (ratios[n / 2 - 1] + ratios[n / 2]) / 2.0;
+      var meanRatio = ratios.Average();
+
+      var cod = medianRatio > 0
+          ? ratios.Average(r => Math.Abs(r - medianRatio)) / medianRatio * 100.0
+          : 0;
+
+      var totalAssessed = valid.Sum(s => (double)s.AssessedValue);
+      var totalSale = valid.Sum(s => (double)s.SalePrice);
+      var weightedMean = totalSale > 0 ? totalAssessed / totalSale : meanRatio;
+      var prd = weightedMean > 0 ? meanRatio / weightedMean : 1.0;
+
+      double W29Percentile(List<double> sorted, double p)
+      {
+          var idx = (sorted.Count - 1) * p;
+          var lo = (int)Math.Floor(idx);
+          var hi = (int)Math.Ceiling(idx);
+          if (lo == hi) return sorted[lo];
+          return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+      }
+
+      var p10 = W29Percentile(ratios, 0.10);
+      var p25 = W29Percentile(ratios, 0.25);
+      var p75 = W29Percentile(ratios, 0.75);
+      var p90 = W29Percentile(ratios, 0.90);
+
+      var iaaoCompliant = cod >= 5.0 && cod <= 15.0 && prd >= 0.98 && prd <= 1.03;
+
+      var entity = new TerraFusion.Core.Entities.MarketAnalysis
+      {
+          CountyId = ctx.CountyId,
+          AnalysisType = "ratio_study",
+          MarketAreaName = request.MarketAreaName ?? "Unnamed",
+          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+              valid.Select(s => s.ParcelId).ToList()),
+          SampleSize = n,
+          MedianRatio = Math.Round(medianRatio, 4),
+          CoefficientOfDispersion = Math.Round(cod, 4),
+          PriceRelatedDifferential = Math.Round(prd, 4),
+          AdditionalMetrics = System.Text.Json.JsonSerializer.Serialize(new
+          {
+              meanRatio = Math.Round(meanRatio, 4),
+              p10 = Math.Round(p10, 4),
+              p25 = Math.Round(p25, 4),
+              p75 = Math.Round(p75, 4),
+              p90 = Math.Round(p90, 4),
+              iaaoCompliant,
+          }),
+          CreatedBy = User.Identity?.Name ?? "system",
+          CreatedAt = DateTime.UtcNow,
+      };
+
+      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+      await _db.SaveChangesAsync();
+
+      return Ok(new
+      {
+          id = entity.Id,
+          analysisType = entity.AnalysisType,
+          marketAreaName = entity.MarketAreaName,
+          sampleSize = entity.SampleSize,
+          medianRatio = entity.MedianRatio,
+          coefficientOfDispersion = entity.CoefficientOfDispersion,
+          priceRelatedDifferential = entity.PriceRelatedDifferential,
+          additionalMetrics = entity.AdditionalMetrics,
+          iaaoCompliant,
+      });
+  }
+
+  /// <summary>Retrieve a market analysis result by ID.</summary>
+  [HttpGet("analytics/market/{id:int}")]
+  public async Task<IActionResult> GetMarketAnalysis(int id)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      var result = await _db.Set<TerraFusion.Core.Entities.MarketAnalysis>()
+          .FirstOrDefaultAsync(m => m.Id == id && m.CountyId == ctx.CountyId);
+
+      if (result == null)
+          return NotFound(new { error = "Market analysis not found" });
+
+      return Ok(new
+      {
+          id = result.Id,
+          analysisType = result.AnalysisType,
+          marketAreaName = result.MarketAreaName,
+          sampleSize = result.SampleSize,
+          medianSalePrice = result.MedianSalePrice,
+          meanSalePrice = result.MeanSalePrice,
+          medianPricePerSqft = result.MedianPricePerSqft,
+          coefficientOfDispersion = result.CoefficientOfDispersion,
+          priceRelatedDifferential = result.PriceRelatedDifferential,
+          medianRatio = result.MedianRatio,
+          timeTrendCoefficient = result.TimeTrendCoefficient,
+          timeTrendRSquared = result.TimeTrendRSquared,
+          periodStart = result.PeriodStart,
+          periodEnd = result.PeriodEnd,
+          additionalMetrics = result.AdditionalMetrics,
+          createdBy = result.CreatedBy,
+          createdAt = result.CreatedAt,
+      });
+  }
+
+  /// <summary>Get market analysis history for the county.</summary>
+  [HttpGet("analytics/market/history")]
+  public async Task<IActionResult> GetMarketAnalysisHistory(
+      [FromQuery] string? analysisType = null,
+      [FromQuery] int limit = 20)
+  {
+      var ctx = await ResolveCountyContextAsync();
+      if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+      var query = _db.Set<TerraFusion.Core.Entities.MarketAnalysis>()
+          .Where(m => m.CountyId == ctx.CountyId);
+
+      if (!string.IsNullOrEmpty(analysisType))
+          query = query.Where(m => m.AnalysisType == analysisType);
+
+      var results = await query
+          .OrderByDescending(m => m.CreatedAt)
+          .Take(Math.Clamp(limit, 1, 100))
+          .Select(m => new
+          {
+              id = m.Id,
+              analysisType = m.AnalysisType,
+              marketAreaName = m.MarketAreaName,
+              sampleSize = m.SampleSize,
+              medianRatio = m.MedianRatio,
+              coefficientOfDispersion = m.CoefficientOfDispersion,
+              createdAt = m.CreatedAt,
+          })
+          .ToListAsync();
+
+      return Ok(new { count = results.Count, results });
+  }
+
   internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
   internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
 
@@ -2776,4 +3111,27 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ═══ R2 Wave 29 — Market Analysis DTOs ═══
+
+public class MarketAnalysisRequest
+{
+  public string? MarketAreaName { get; set; }
+  public List<SaleRecord> Sales { get; set; } = new();
+}
+
+public class SaleRecord
+{
+  public string ParcelId { get; set; } = string.Empty;
+  public decimal SalePrice { get; set; }
+  public decimal AssessedValue { get; set; }
+  public decimal SquareFeet { get; set; }
+  public DateTime SaleDate { get; set; }
+}
+
+public class TimeTrendRequest
+{
+  public string? MarketAreaName { get; set; }
+  public List<SaleRecord> Sales { get; set; } = new();
 }

@@ -97,6 +97,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }
   public DbSet<CostMatrix> CostMatrices { get; set; }
 
+  // R2 Wave 29 — Market Analysis
+  public DbSet<MarketAnalysis> MarketAnalyses { get; set; }
+
   // Dossier Document Management (R2 Wave 24)
   public DbSet<DossierDocument> DossierDocuments { get; set; }
   public DbSet<DossierEvidence> DossierEvidenceItems { get; set; }
