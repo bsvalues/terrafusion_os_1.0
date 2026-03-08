@@ -26,12 +26,78 @@ import { TactileButton } from '@/ui/materials';
 import {
   type ApproachValue,
   type ReconciliationMethod,
+  type ReconciliationInput,
   type PropertyCategory,
   type ReconciliationOutput,
   DEFAULT_RECONCILIATION_WEIGHTS,
-  runReconciliation,
   appendAuditEntry,
 } from '../../../services/forgeService';
+
+// ---------------------------------------------------------------------------
+// Local reconciliation (preview-only, not governed).
+// Deprecated function removed from forgeService.ts in R4.1.
+// Production reconciliation goes through costForgeApiService.runReconciliation().
+// ---------------------------------------------------------------------------
+
+type ApproachKey = 'sales' | 'income' | 'cost';
+const CONFIDENCE_MULTIPLIERS: Record<string, number> = { high: 1.0, medium: 0.75, low: 0.5 };
+
+function runReconciliation(input: ReconciliationInput): ReconciliationOutput {
+  const { subjectId, effectiveDate, approaches, propertyType, reconciliationMethod, forcedWeights } = input;
+  const approachKeys = (Object.keys(approaches) as ApproachKey[]).filter(k => approaches[k]);
+  if (approachKeys.length === 0) throw new Error('At least one approach value required');
+
+  const defaults = DEFAULT_RECONCILIATION_WEIGHTS[propertyType] ?? DEFAULT_RECONCILIATION_WEIGHTS.residential;
+  const weights: Record<ApproachKey, number> = { sales: 0, income: 0, cost: 0 };
+
+  if (forcedWeights) {
+    for (const key of approachKeys) { const a = approaches[key]; if (a?.weight !== undefined) weights[key] = a.weight; }
+  } else {
+    for (const key of approachKeys) { const a = approaches[key]; if (a) weights[key] = (defaults[key] ?? 0) * (CONFIDENCE_MULTIPLIERS[a.confidenceLevel] ?? 1); }
+  }
+
+  const totalWeight = weights.sales + weights.income + weights.cost;
+  if (totalWeight > 0) {
+    for (const k of ['sales', 'income', 'cost'] as ApproachKey[]) weights[k] = Math.round((weights[k] / totalWeight) * 10000) / 10000;
+    const sum = weights.sales + weights.income + weights.cost;
+    if (sum !== 1) { const largest = approachKeys.reduce((a, b) => (weights[a] > weights[b] ? a : b)); weights[largest] = Math.round((weights[largest] + (1 - sum)) * 10000) / 10000; }
+  }
+
+  const approachSummary: ReconciliationOutput['approachSummary'] = {};
+  let totalWeightedValue = 0;
+  const values: number[] = [];
+  for (const key of approachKeys) { const a = approaches[key]; if (a) { const w = weights[key] ?? 0; const c = Math.round(a.indicatedValue * w); approachSummary[key] = { indicatedValue: a.indicatedValue, weight: w, contributedValue: c }; totalWeightedValue += c; values.push(a.indicatedValue); } }
+
+  let finalOpinionOfValue: number;
+  switch (reconciliationMethod) {
+    case 'bracketed': finalOpinionOfValue = Math.round((Math.min(...values) + Math.max(...values)) / 2); break;
+    case 'primary_approach': { let maxW = 0; let pVal = 0; for (const k of approachKeys) { if ((weights[k] ?? 0) > maxW && approaches[k]) { maxW = weights[k]; pVal = approaches[k]!.indicatedValue; } } finalOpinionOfValue = pVal; break; }
+    default: finalOpinionOfValue = totalWeightedValue;
+  }
+
+  const minV = Math.min(...values); const maxV = Math.max(...values);
+  const avg = values.reduce((a, b) => a + b, 0) / values.length;
+  const spreadPercentage = avg > 0 ? Math.round(((maxV - minV) / avg) * 10000) / 100 : 0;
+  let primaryApproach: ApproachKey | undefined; let maxWeight = 0;
+  for (const k of approachKeys) { if ((weights[k] ?? 0) > maxWeight) { maxWeight = weights[k]; primaryApproach = k; } }
+
+  const warnings: string[] = [];
+  let agreement: 'strong' | 'moderate' | 'weak' = 'strong';
+  if (spreadPercentage > 20) { warnings.push(`Large value spread (${spreadPercentage.toFixed(1)}%)`); agreement = 'weak'; }
+  else if (spreadPercentage > 10) agreement = 'moderate';
+  if (approachKeys.length === 1) { warnings.push('Only one approach \u2014 limited reconciliation'); agreement = 'weak'; }
+  const lowCount = approachKeys.filter(k => approaches[k]?.confidenceLevel === 'low').length;
+  let confidenceLevel: 'high' | 'medium' | 'low' = 'high';
+  if (lowCount > 0 || agreement === 'weak') confidenceLevel = 'low';
+  else if (agreement === 'moderate') confidenceLevel = 'medium';
+
+  return {
+    subjectId, effectiveDate, finalOpinionOfValue, approachSummary,
+    reconciliationAnalysis: { method: reconciliationMethod, valueRange: { min: minV, max: maxV }, spreadPercentage, primaryApproach, weightsNormalized: true },
+    qualityIndicators: { confidenceLevel, warnings, approachAgreement: agreement },
+    generatedAt: new Date().toISOString(),
+  };
+}
 
 const PROPERTY_CATEGORIES: { id: PropertyCategory; label: string }[] = [
   { id: 'residential', label: 'Residential' },

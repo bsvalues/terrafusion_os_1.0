@@ -51,16 +51,123 @@ import {
   QUALITY_LEVELS,
   CONDITION_OPTIONS,
   REGIONS,
-  calculateCost,
-  getRegionalComparison,
   getMatrixRegion,
   saveScenario,
   loadScenarios,
   deleteScenario,
   type CostCalculationInput,
   type CostCalculationResult,
+  type CostBreakdownItem,
   type CostScenario,
 } from '@/services/forgeService';
+
+// ---------------------------------------------------------------------------
+// Local cost calculation (preview-only, not governed).
+// Deprecated functions removed from forgeService.ts in R4.1.
+// Production valuations MUST go through runGovernedValuation().
+// ---------------------------------------------------------------------------
+
+const DEPRECIATION_CONFIG: Record<string, { annualRate: number; minRetained: number; maxAge: number }> = {
+  '100': { annualRate: 0.01333, minRetained: 0.30, maxAge: 60 },
+  '125': { annualRate: 0.02000, minRetained: 0.20, maxAge: 40 },
+  '200': { annualRate: 0.01333, minRetained: 0.30, maxAge: 60 },
+  '300': { annualRate: 0.01000, minRetained: 0.25, maxAge: 75 },
+  '310': { annualRate: 0.01000, minRetained: 0.25, maxAge: 75 },
+  '400': { annualRate: 0.01200, minRetained: 0.25, maxAge: 60 },
+  '450': { annualRate: 0.01200, minRetained: 0.25, maxAge: 60 },
+  '500': { annualRate: 0.00889, minRetained: 0.20, maxAge: 90 },
+  '510': { annualRate: 0.00889, minRetained: 0.20, maxAge: 90 },
+  '550': { annualRate: 0.00889, minRetained: 0.20, maxAge: 90 },
+  '600': { annualRate: 0.01000, minRetained: 0.25, maxAge: 75 },
+  '650': { annualRate: 0.01000, minRetained: 0.25, maxAge: 75 },
+  '700': { annualRate: 0.01250, minRetained: 0.15, maxAge: 68 },
+  '800': { annualRate: 0.01000, minRetained: 0.25, maxAge: 75 },
+  '850': { annualRate: 0.01000, minRetained: 0.25, maxAge: 75 },
+};
+
+function calculateAgeFactor(age: number, buildingType: string): number {
+  if (age <= 0) return 1.0;
+  const cfg = DEPRECIATION_CONFIG[buildingType] ?? { annualRate: 0.01333, minRetained: 0.30, maxAge: 60 };
+  const cappedAge = Math.min(age, cfg.maxAge);
+  return Math.max(1.0 - cappedAge * cfg.annualRate, cfg.minRetained);
+}
+
+function calculateAreaMultiplier(squareFeet: number): number {
+  if (squareFeet <= 1000) return 1.1;
+  if (squareFeet <= 2000) return 1.0;
+  if (squareFeet <= 3000) return 0.95;
+  if (squareFeet <= 4000) return 0.9;
+  if (squareFeet <= 5000) return 0.85;
+  return 0.8;
+}
+
+function determineConfidence(inputs: CostCalculationInput): 'LOW' | 'MEDIUM' | 'HIGH' {
+  let score = 0;
+  if (inputs.squareFeet > 0) score++;
+  if (inputs.yearBuilt > 1900) score++;
+  if (inputs.buildingType) score++;
+  if (inputs.quality) score++;
+  if (inputs.condition) score++;
+  if (inputs.region) score++;
+  if (inputs.stories > 0) score++;
+  if (score >= 7) return 'HIGH';
+  if (score >= 5) return 'MEDIUM';
+  return 'LOW';
+}
+
+function calculateCost(inputs: CostCalculationInput): CostCalculationResult {
+  const buildingTypeInfo = BUILDING_TYPES.find((t) => t.id === inputs.buildingType);
+  const qualityInfo = QUALITY_LEVELS.find((q) => q.id === inputs.quality);
+  const conditionInfo = CONDITION_OPTIONS.find((c) => c.id === inputs.condition);
+  const regionInfo = REGIONS.find((r) => r.id === inputs.region);
+
+  const baseRate = buildingTypeInfo?.baseRate ?? 125;
+  const qualityFactor = qualityInfo?.factor ?? 1.0;
+  const conditionFactor = conditionInfo?.factor ?? 1.0;
+  const regionFactor = regionInfo?.factor ?? 1.0;
+
+  const age = new Date().getFullYear() - inputs.yearBuilt;
+  const ageFactor = calculateAgeFactor(age, inputs.buildingType);
+  const areaMultiplier = calculateAreaMultiplier(inputs.squareFeet);
+  const complexityFactor = 0.8 + (inputs.complexity / 100) * 0.4;
+  const storyFactor = 1 - (inputs.stories - 1) * 0.05;
+
+  let totalSqFt = inputs.squareFeet;
+  if (inputs.basement) {
+    const perFloor = inputs.squareFeet / Math.max(inputs.stories, 1);
+    totalSqFt += perFloor * (inputs.basementFinished ? 0.9 : 0.5);
+  }
+  if (inputs.garageSize > 0) totalSqFt += inputs.garageSize * 0.6;
+
+  const adjustedRate = baseRate * qualityFactor * conditionFactor * regionFactor * complexityFactor * storyFactor;
+  const costPerSqFt = adjustedRate * areaMultiplier;
+  const rcnNew = totalSqFt * costPerSqFt;
+  const depreciationAmount = rcnNew * (1 - ageFactor);
+  const rcnld = rcnNew - depreciationAmount;
+
+  const baseCost = inputs.squareFeet * baseRate;
+  const breakdown: CostBreakdownItem[] = [
+    { category: 'Base Cost', amount: baseCost },
+    { category: 'Quality Adjustment', amount: baseCost * (qualityFactor - 1) },
+    { category: 'Condition Adjustment', amount: baseCost * qualityFactor * (conditionFactor - 1) },
+    { category: 'Region Adjustment', amount: baseCost * qualityFactor * conditionFactor * (regionFactor - 1) },
+    { category: 'Age Depreciation', amount: -depreciationAmount },
+    { category: 'Complexity', amount: baseCost * (complexityFactor - 1) },
+  ];
+  if (inputs.basement) {
+    const perFloor = inputs.squareFeet / Math.max(inputs.stories, 1);
+    breakdown.push({ category: `Basement (${inputs.basementFinished ? 'Finished' : 'Unfinished'})`, amount: perFloor * (inputs.basementFinished ? 0.9 : 0.5) * costPerSqFt });
+  }
+  if (inputs.garageSize > 0) breakdown.push({ category: 'Garage', amount: inputs.garageSize * 0.6 * costPerSqFt });
+
+  return {
+    totalCost: rcnld, costPerSqFt, baseRate, adjustedRate, rcnNew,
+    depreciation: depreciationAmount, rcnld, breakdown,
+    confidence: determineConfidence(inputs),
+    matrixSource: null,
+    factors: { quality: qualityFactor, condition: conditionFactor, region: regionFactor, age: ageFactor, area: areaMultiplier, complexity: complexityFactor, story: storyFactor },
+  };
+}
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -68,10 +175,6 @@ function formatCurrency(value: number): string {
     currency: 'USD',
     maximumFractionDigits: 0,
   }).format(value);
-}
-
-function formatPercent(value: number): string {
-  return `${(value * 100).toFixed(1)}%`;
 }
 
 const CONFIDENCE_COLORS = {
@@ -110,11 +213,6 @@ export default function CostForgeModule() {
   const [compareId, setCompareId] = useState<string | null>(null);
 
   const result: CostCalculationResult = useMemo(() => calculateCost(inputs), [inputs]);
-
-  const regional = useMemo(
-    () => getRegionalComparison(inputs.buildingType),
-    [inputs.buildingType],
-  );
 
   const currentMatrixRegion = useMemo(
     () => getMatrixRegion(inputs.region),
@@ -471,69 +569,7 @@ export default function CostForgeModule() {
             </CardContent>
           </Card>
 
-          {/* Regional Comparison Card */}
-          {regional.eastern && regional.central && regional.western && (
-            <Card
-              style={{
-                background: 'hsl(var(--tf-card-bg))',
-                borderColor: 'hsl(var(--tf-border))',
-              }}
-            >
-              <CardHeader className='pb-2'>
-                <CardTitle
-                  className='text-sm flex items-center gap-2'
-                  style={{ color: 'hsl(var(--tf-fg))' }}
-                >
-                  <MapPin size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
-                  Regional Cost Comparison — {BUILDING_TYPES.find((t) => t.id === inputs.buildingType)?.label}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-3'>
-                {(['Eastern', 'Central', 'Western'] as const).map((region) => {
-                  const entry = regional[region.toLowerCase() as 'eastern' | 'central' | 'western'];
-                  if (!entry) return null;
-                  const isActive = currentMatrixRegion === region;
-                  const max = Math.max(
-                    regional.eastern?.baseCost ?? 0,
-                    regional.central?.baseCost ?? 0,
-                    regional.western?.baseCost ?? 0,
-                  );
-                  const pct = max > 0 ? (entry.baseCost / max) * 100 : 0;
-                  return (
-                    <div key={region} className='space-y-1'>
-                      <div className='flex justify-between text-sm'>
-                        <span
-                          style={{
-                            color: isActive ? 'hsl(var(--tf-suite-forge))' : 'hsl(var(--tf-muted))',
-                            fontWeight: isActive ? 600 : 400,
-                          }}
-                        >
-                          {region} {isActive && '(selected)'}
-                        </span>
-                        <span style={{ color: 'hsl(var(--tf-fg))' }}>
-                          {formatCurrency(entry.baseCost)}
-                        </span>
-                      </div>
-                      <div
-                        className='h-2 rounded-full overflow-hidden'
-                        style={{ background: 'hsl(var(--tf-border))' }}
-                      >
-                        <div
-                          className='h-full rounded-full transition-all duration-500'
-                          style={{
-                            width: `${pct}%`,
-                            background: isActive
-                              ? 'hsl(var(--tf-suite-forge))'
-                              : 'hsl(var(--tf-muted) / 0.4)',
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          )}
+          {/* Regional Comparison Card removed in R4.1 — COST_MATRIX now in backend DB */}
 
           {/* Save Scenario */}
           <Card

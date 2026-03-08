@@ -38,12 +38,53 @@ import {
   BUILDING_TYPES,
   REGIONS,
   MARKET_CAP_RATES,
-  calculateIncome,
-  extractCapRate,
   type IncomeInput,
   type IncomeResult,
   type IncomeExpenses,
 } from '../../../services/forgeService';
+
+// ---------------------------------------------------------------------------
+// Local income calculation (preview-only, not governed).
+// Deprecated functions removed from forgeService.ts in R4.1.
+// Production valuations MUST go through runGovernedValuation().
+// ---------------------------------------------------------------------------
+
+function extractCapRate(comps: Array<{ salePrice: number; noi: number }>): number {
+  if (comps.length === 0) return 0;
+  const rates = comps.map((c) => c.noi / c.salePrice);
+  return rates.reduce((a, b) => a + b, 0) / rates.length;
+}
+
+function calculateIncome(input: IncomeInput): IncomeResult {
+  const pgi = input.potentialGrossIncome;
+  const vacancyLoss = Math.round(pgi * input.vacancyRate);
+  const egi = pgi - vacancyLoss + input.otherIncome;
+  const totalExpenses = Object.values(input.expenses).reduce((s, v) => s + v, 0);
+  const noi = egi - totalExpenses;
+  const expenseRatio = egi > 0 ? totalExpenses / egi : 0;
+  const indicatedValue = input.capRate > 0 ? Math.round(noi / input.capRate) : 0;
+
+  const warnings: string[] = [];
+  let confidence: 'LOW' | 'MEDIUM' | 'HIGH' = 'HIGH';
+
+  if (expenseRatio < 0.3) { warnings.push(`Expense ratio ${(expenseRatio * 100).toFixed(1)}% below typical 30-50% range`); confidence = 'MEDIUM'; }
+  else if (expenseRatio > 0.5) { warnings.push(`Expense ratio ${(expenseRatio * 100).toFixed(1)}% above typical 30-50% range`); confidence = 'MEDIUM'; }
+  if (noi <= 0) { warnings.push('Net operating income is zero or negative'); confidence = 'LOW'; }
+  if (totalExpenses === 0 && pgi > 0) { warnings.push('No operating expenses provided'); confidence = 'LOW'; }
+
+  let capRateSupport: 'strong' | 'moderate' | 'weak' = 'weak';
+  if (input.comparables.length >= 3) capRateSupport = 'strong';
+  else if (input.comparables.length >= 1) capRateSupport = 'moderate';
+  else if (input.capRateSource === 'provided') warnings.push('Cap rate provided without market extraction support');
+
+  return {
+    potentialGrossIncome: pgi, vacancyLoss, otherIncome: input.otherIncome,
+    effectiveGrossIncome: egi, totalExpenses, expenseBreakdown: input.expenses,
+    netOperatingIncome: noi, capRate: input.capRate, indicatedValue,
+    expenseRatio: Math.round(expenseRatio * 10000) / 10000,
+    confidence, capRateSupport, warnings,
+  };
+}
 
 // Income-eligible building types (commercial/industrial/multi-family)
 const INCOME_TYPES = BUILDING_TYPES.filter((t) =>

@@ -15,18 +15,6 @@
 // Types
 // ============================================================================
 
-export interface CostMatrixEntry {
-  region: 'Eastern' | 'Central' | 'Western';
-  buildingType: string;
-  buildingTypeDescription: string;
-  baseCost: number;
-  matrixYear: number;
-  sourceMatrixId: number;
-  dataPoints: number;
-  minCost: number;
-  maxCost: number;
-}
-
 export interface BuildingTypeInfo {
   id: string;
   code: string;
@@ -110,73 +98,8 @@ export interface CostScenario {
   createdAt: string;
 }
 
-// ============================================================================
-// Benton County Cost Matrix — 42 entries (14 types × 3 regions)
-// Source: Harris PACS 9.0 production tables, Matrix Year 2025
-// ============================================================================
-
-export const COST_MATRIX: readonly CostMatrixEntry[] = [
-  // 100 — Single Family Residence
-  { region: 'Eastern', buildingType: '100', buildingTypeDescription: 'Single Family Residence', baseCost: 29925.0, matrixYear: 2025, sourceMatrixId: 1350, dataPoints: 9, minCost: 0, maxCost: 54000 },
-  { region: 'Central', buildingType: '100', buildingTypeDescription: 'Single Family Residence', baseCost: 31500.0, matrixYear: 2025, sourceMatrixId: 1350, dataPoints: 9, minCost: 0, maxCost: 54000 },
-  { region: 'Western', buildingType: '100', buildingTypeDescription: 'Single Family Residence', baseCost: 33075.0, matrixYear: 2025, sourceMatrixId: 1350, dataPoints: 9, minCost: 0, maxCost: 54000 },
-  // 125 — Manufactured Home
-  { region: 'Eastern', buildingType: '125', buildingTypeDescription: 'Manufactured Home', baseCost: 4275.0, matrixYear: 2025, sourceMatrixId: 1079, dataPoints: 9, minCost: 0, maxCost: 11500 },
-  { region: 'Central', buildingType: '125', buildingTypeDescription: 'Manufactured Home', baseCost: 4500.0, matrixYear: 2025, sourceMatrixId: 1079, dataPoints: 9, minCost: 0, maxCost: 11500 },
-  { region: 'Western', buildingType: '125', buildingTypeDescription: 'Manufactured Home', baseCost: 4725.0, matrixYear: 2025, sourceMatrixId: 1079, dataPoints: 9, minCost: 0, maxCost: 11500 },
-  // 200 — Multi-Family Residence
-  { region: 'Eastern', buildingType: '200', buildingTypeDescription: 'Multi-Family Residence', baseCost: 29925.0, matrixYear: 2025, sourceMatrixId: 1418, dataPoints: 9, minCost: 0, maxCost: 54000 },
-  { region: 'Central', buildingType: '200', buildingTypeDescription: 'Multi-Family Residence', baseCost: 31500.0, matrixYear: 2025, sourceMatrixId: 1418, dataPoints: 9, minCost: 0, maxCost: 54000 },
-  { region: 'Western', buildingType: '200', buildingTypeDescription: 'Multi-Family Residence', baseCost: 33075.0, matrixYear: 2025, sourceMatrixId: 1418, dataPoints: 9, minCost: 0, maxCost: 54000 },
-  // 300 — Commercial Office
-  { region: 'Eastern', buildingType: '300', buildingTypeDescription: 'Commercial Office', baseCost: 38823.33, matrixYear: 2025, sourceMatrixId: 1323, dataPoints: 9, minCost: 20000, maxCost: 80000 },
-  { region: 'Central', buildingType: '300', buildingTypeDescription: 'Commercial Office', baseCost: 40866.67, matrixYear: 2025, sourceMatrixId: 1323, dataPoints: 9, minCost: 20000, maxCost: 80000 },
-  { region: 'Western', buildingType: '300', buildingTypeDescription: 'Commercial Office', baseCost: 42910.0, matrixYear: 2025, sourceMatrixId: 1323, dataPoints: 9, minCost: 20000, maxCost: 80000 },
-  // 310 — Medical Office (per-sqft rates)
-  { region: 'Eastern', buildingType: '310', buildingTypeDescription: 'Medical Office', baseCost: 6.30, matrixYear: 2025, sourceMatrixId: 3484, dataPoints: 19, minCost: 0, maxCost: 17.65 },
-  { region: 'Central', buildingType: '310', buildingTypeDescription: 'Medical Office', baseCost: 6.63, matrixYear: 2025, sourceMatrixId: 3484, dataPoints: 19, minCost: 0, maxCost: 17.65 },
-  { region: 'Western', buildingType: '310', buildingTypeDescription: 'Medical Office', baseCost: 6.96, matrixYear: 2025, sourceMatrixId: 3484, dataPoints: 19, minCost: 0, maxCost: 17.65 },
-  // 400 — Retail Store
-  { region: 'Eastern', buildingType: '400', buildingTypeDescription: 'Retail Store', baseCost: 25966.67, matrixYear: 2025, sourceMatrixId: 683, dataPoints: 9, minCost: 15000, maxCost: 42000 },
-  { region: 'Central', buildingType: '400', buildingTypeDescription: 'Retail Store', baseCost: 27333.33, matrixYear: 2025, sourceMatrixId: 683, dataPoints: 9, minCost: 15000, maxCost: 42000 },
-  { region: 'Western', buildingType: '400', buildingTypeDescription: 'Retail Store', baseCost: 28700.0, matrixYear: 2025, sourceMatrixId: 683, dataPoints: 9, minCost: 15000, maxCost: 42000 },
-  // 450 — Shopping Center
-  { region: 'Eastern', buildingType: '450', buildingTypeDescription: 'Shopping Center', baseCost: 4275.0, matrixYear: 2025, sourceMatrixId: 1266, dataPoints: 9, minCost: 0, maxCost: 11500 },
-  { region: 'Central', buildingType: '450', buildingTypeDescription: 'Shopping Center', baseCost: 4500.0, matrixYear: 2025, sourceMatrixId: 1266, dataPoints: 9, minCost: 0, maxCost: 11500 },
-  { region: 'Western', buildingType: '450', buildingTypeDescription: 'Shopping Center', baseCost: 4725.0, matrixYear: 2025, sourceMatrixId: 1266, dataPoints: 9, minCost: 0, maxCost: 11500 },
-  // 500 — Warehouse (per-sqft rates)
-  { region: 'Eastern', buildingType: '500', buildingTypeDescription: 'Warehouse', baseCost: 134.65, matrixYear: 2025, sourceMatrixId: 3566, dataPoints: 28, minCost: 86.1, maxCost: 215.35 },
-  { region: 'Central', buildingType: '500', buildingTypeDescription: 'Warehouse', baseCost: 141.74, matrixYear: 2025, sourceMatrixId: 3566, dataPoints: 28, minCost: 86.1, maxCost: 215.35 },
-  { region: 'Western', buildingType: '500', buildingTypeDescription: 'Warehouse', baseCost: 148.83, matrixYear: 2025, sourceMatrixId: 3566, dataPoints: 28, minCost: 86.1, maxCost: 215.35 },
-  // 510 — Manufacturing
-  { region: 'Eastern', buildingType: '510', buildingTypeDescription: 'Manufacturing', baseCost: 13352.78, matrixYear: 2025, sourceMatrixId: 710, dataPoints: 9, minCost: 0, maxCost: 32500 },
-  { region: 'Central', buildingType: '510', buildingTypeDescription: 'Manufacturing', baseCost: 14055.56, matrixYear: 2025, sourceMatrixId: 710, dataPoints: 9, minCost: 0, maxCost: 32500 },
-  { region: 'Western', buildingType: '510', buildingTypeDescription: 'Manufacturing', baseCost: 14758.33, matrixYear: 2025, sourceMatrixId: 710, dataPoints: 9, minCost: 0, maxCost: 32500 },
-  // 550 — Industrial Processing (per-sqft rates, 4400 data points!)
-  { region: 'Eastern', buildingType: '550', buildingTypeDescription: 'Industrial Processing', baseCost: 34.44, matrixYear: 2025, sourceMatrixId: 3524, dataPoints: 4400, minCost: 0, maxCost: 130.9 },
-  { region: 'Central', buildingType: '550', buildingTypeDescription: 'Industrial Processing', baseCost: 36.25, matrixYear: 2025, sourceMatrixId: 3524, dataPoints: 4400, minCost: 0, maxCost: 130.9 },
-  { region: 'Western', buildingType: '550', buildingTypeDescription: 'Industrial Processing', baseCost: 38.07, matrixYear: 2025, sourceMatrixId: 3524, dataPoints: 4400, minCost: 0, maxCost: 130.9 },
-  // 600 — Municipal Building
-  { region: 'Eastern', buildingType: '600', buildingTypeDescription: 'Municipal Building', baseCost: 3694.44, matrixYear: 2025, sourceMatrixId: 478, dataPoints: 9, minCost: 0, maxCost: 35000 },
-  { region: 'Central', buildingType: '600', buildingTypeDescription: 'Municipal Building', baseCost: 3888.89, matrixYear: 2025, sourceMatrixId: 478, dataPoints: 9, minCost: 0, maxCost: 35000 },
-  { region: 'Western', buildingType: '600', buildingTypeDescription: 'Municipal Building', baseCost: 4083.33, matrixYear: 2025, sourceMatrixId: 478, dataPoints: 9, minCost: 0, maxCost: 35000 },
-  // 650 — Educational Facility
-  { region: 'Eastern', buildingType: '650', buildingTypeDescription: 'Educational Facility', baseCost: 34833.33, matrixYear: 2025, sourceMatrixId: 717, dataPoints: 9, minCost: 18000, maxCost: 60000 },
-  { region: 'Central', buildingType: '650', buildingTypeDescription: 'Educational Facility', baseCost: 36666.67, matrixYear: 2025, sourceMatrixId: 717, dataPoints: 9, minCost: 18000, maxCost: 60000 },
-  { region: 'Western', buildingType: '650', buildingTypeDescription: 'Educational Facility', baseCost: 38500.0, matrixYear: 2025, sourceMatrixId: 717, dataPoints: 9, minCost: 18000, maxCost: 60000 },
-  // 700 — Agricultural Building
-  { region: 'Eastern', buildingType: '700', buildingTypeDescription: 'Agricultural Building', baseCost: 3377.78, matrixYear: 2025, sourceMatrixId: 470, dataPoints: 9, minCost: 0, maxCost: 32000 },
-  { region: 'Central', buildingType: '700', buildingTypeDescription: 'Agricultural Building', baseCost: 3555.56, matrixYear: 2025, sourceMatrixId: 470, dataPoints: 9, minCost: 0, maxCost: 32000 },
-  { region: 'Western', buildingType: '700', buildingTypeDescription: 'Agricultural Building', baseCost: 3733.33, matrixYear: 2025, sourceMatrixId: 470, dataPoints: 9, minCost: 0, maxCost: 32000 },
-  // 800 — Religious Building
-  { region: 'Eastern', buildingType: '800', buildingTypeDescription: 'Religious Building', baseCost: 37841.67, matrixYear: 2025, sourceMatrixId: 1515, dataPoints: 9, minCost: 27500, maxCost: 55000 },
-  { region: 'Central', buildingType: '800', buildingTypeDescription: 'Religious Building', baseCost: 39833.33, matrixYear: 2025, sourceMatrixId: 1515, dataPoints: 9, minCost: 27500, maxCost: 55000 },
-  { region: 'Western', buildingType: '800', buildingTypeDescription: 'Religious Building', baseCost: 41825.0, matrixYear: 2025, sourceMatrixId: 1515, dataPoints: 9, minCost: 27500, maxCost: 55000 },
-  // 850 — Recreational Facility
-  { region: 'Eastern', buildingType: '850', buildingTypeDescription: 'Recreational Facility', baseCost: 3166.67, matrixYear: 2025, sourceMatrixId: 446, dataPoints: 9, minCost: 0, maxCost: 30000 },
-  { region: 'Central', buildingType: '850', buildingTypeDescription: 'Recreational Facility', baseCost: 3333.33, matrixYear: 2025, sourceMatrixId: 446, dataPoints: 9, minCost: 0, maxCost: 30000 },
-  { region: 'Western', buildingType: '850', buildingTypeDescription: 'Recreational Facility', baseCost: 3500.0, matrixYear: 2025, sourceMatrixId: 446, dataPoints: 9, minCost: 0, maxCost: 30000 },
-] as const;
+// COST_MATRIX removed in R4.1 — matrix data now lives in backend CostMatrices DB table
+// (seeded by BentonCostMatrixSeeder). Use the governed API path for all cost lookups.
 
 // ============================================================================
 // Building Types — 14 Harris PACS codes with categories
