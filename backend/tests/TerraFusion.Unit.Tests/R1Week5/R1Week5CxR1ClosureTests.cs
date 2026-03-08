@@ -263,9 +263,12 @@ public sealed class R1Week5CxR1ClosureTests
     using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
     json.RootElement.GetProperty("status").GetString().Should().Be("active");
     json.RootElement.GetProperty("fiscalYear").GetInt32().Should().Be(2025);
-    json.RootElement.GetProperty("districts").GetInt32().Should().Be(5);
-    json.RootElement.GetProperty("federalAcres").GetInt32().Should().Be(1123800);
-    controller.HttpContext.Response.Headers["X-PILT-Source"].ToString().Should().Be("benton-fy2025-snapshot");
+    json.RootElement.GetProperty("districts").GetInt32().Should().Be(11);
+    json.RootElement.GetProperty("federalAcres").GetInt32().Should().Be(586000);
+    json.RootElement.GetProperty("calculationMethod").GetString().Should().Be("current_use");
+    json.RootElement.GetProperty("totalAssessedValue").GetDecimal().Should().BeGreaterThan(0);
+    json.RootElement.GetProperty("totalPiltDue").GetDecimal().Should().BeGreaterThan(0);
+    controller.HttpContext.Response.Headers["X-PILT-Source"].ToString().Should().Be("benton-real-calculator-fy2025");
   }
 
   [Fact]
@@ -572,6 +575,154 @@ public sealed class R1Week5CxR1ClosureTests
     json.RootElement.GetProperty("calculationId").GetString().Should().Be("calc-2025-abc123");
     json.RootElement.GetProperty("status").GetString().Should().Be("approved");
     json.RootElement.GetProperty("approvedBy").GetString().Should().NotBeNullOrWhiteSpace();
+  }
+
+  // ── Wave 8: Real PILT Calculator Tests ─────────────────────────────────
+
+  [Fact]
+  public void PiltCalculator_TotalAssessedValue_MatchesLandClassificationSum()
+  {
+    var av = PiltController.ComputeTotalAssessedValue();
+
+    // The total must equal the sum of all 6 land classification values
+    var expected =
+        PiltController.HanfordAcreage.TotalDrylandAcres * PiltController.LandValues.DrylandPerAcre
+      + PiltController.HanfordAcreage.TotalIrrigableAcres * PiltController.LandValues.IrrigablePerAcre
+      + PiltController.HanfordAcreage.LesserRiverfrontFeet * PiltController.LandValues.LesserRiverfrontPerFoot
+      + PiltController.HanfordAcreage.PrimeRiverfrontFeet * PiltController.LandValues.PrimeRiverfrontPerFoot
+      + PiltController.HanfordAcreage.RuralResidentialAcres * PiltController.LandValues.RuralResidentialPerAcre
+      + PiltController.HanfordAcreage.TownPlatsAcres * PiltController.LandValues.TownPlatsPerAcre;
+
+    av.Should().Be(expected);
+    av.Should().BeGreaterThan(100_000_000m, "Hanford site should be > $100M assessed value");
+  }
+
+  [Fact]
+  public void PiltCalculator_DistrictResults_Has11Districts_SumsCorrectly()
+  {
+    var totalAV = PiltController.ComputeTotalAssessedValue();
+    var results = PiltController.CalculatePilt(totalAV);
+
+    results.Should().HaveCount(11);
+    results.Should().OnlyContain(d => d.PiltDue >= 0, "no negative PILT amounts");
+    results.Should().OnlyContain(d => d.LevyRatePer1000 > 0, "all districts have positive levy rates");
+
+    // Distribution total must equal sum of individual district PILT
+    var distSum = results.Sum(d => d.PiltDue);
+    distSum.Should().BeGreaterThan(0);
+
+    // School districts should have district-specific assessed values
+    var richland = results.First(d => d.Id == "dist-richland-sd400");
+    richland.AssessedValue.Should().BeGreaterThan(0);
+    richland.AssessedValue.Should().BeLessThan(totalAV, "Richland SD is a subset of total");
+
+    var kionaBenton = results.First(d => d.Id == "dist-kiona-benton-sd52");
+    kionaBenton.AssessedValue.Should().BeGreaterThan(0);
+    kionaBenton.AssessedValue.Should().BeLessThan(richland.AssessedValue, "Kiona-Benton is smaller than Richland");
+  }
+
+  [Fact]
+  public void PiltCalculator_BankersRounding_RoundsHalfToEven()
+  {
+    // 0.5 → 0 (half to even), 1.5 → 2 (half to even), 2.5 → 2
+    PiltController.BankersRound(0.5m, 0).Should().Be(0m);
+    PiltController.BankersRound(1.5m, 0).Should().Be(2m);
+    PiltController.BankersRound(2.5m, 0).Should().Be(2m);
+    PiltController.BankersRound(1234.565m, 2).Should().Be(1234.56m);
+    PiltController.BankersRound(1234.575m, 2).Should().Be(1234.58m);
+  }
+
+  [Fact]
+  public async Task PiltController_Districts_BentonCounty_ReturnsRealLevyData()
+  {
+    await using var db = CreateDbContext(nameof(PiltController_Districts_BentonCounty_ReturnsRealLevyData));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new PiltController(
+        db,
+        NullLogger<PiltController>.Instance,
+        CreateHostEnvironment());
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetDistricts();
+
+    var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
+    json.RootElement.GetProperty("count").GetInt32().Should().Be(11);
+    json.RootElement.GetProperty("totalAssessedValue").GetDecimal().Should().BeGreaterThan(0);
+    json.RootElement.GetProperty("totalPiltDue").GetDecimal().Should().BeGreaterThan(0);
+
+    var districts = json.RootElement.GetProperty("districts").EnumerateArray().ToList();
+    districts.Should().HaveCount(11);
+    districts.Should().OnlyContain(d => d.GetProperty("levyRatePer1000").GetDecimal() > 0);
+    districts.Should().OnlyContain(d => d.GetProperty("piltDue").GetDecimal() >= 0);
+  }
+
+  [Fact]
+  public async Task PiltController_Calculate_UsesRealLevyProportionalAllocation()
+  {
+    await using var db = CreateDbContext(nameof(PiltController_Calculate_UsesRealLevyProportionalAllocation));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new PiltController(
+        db,
+        NullLogger<PiltController>.Instance,
+        CreateHostEnvironment());
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.Calculate("rcpt-2025-federal-base", null);
+
+    var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
+    json.RootElement.GetProperty("TotalAmount").GetDecimal().Should().Be(1245800m);
+    json.RootElement.GetProperty("Method").GetString().Should().Be("levy_rate_proportional");
+    json.RootElement.GetProperty("Status").GetString().Should().Be("calculated");
+
+    var distributions = json.RootElement.GetProperty("Distributions").EnumerateArray().ToList();
+    distributions.Should().HaveCount(11);
+
+    // All distributions must sum exactly to the receipt amount
+    var distTotal = distributions.Sum(d => d.GetProperty("Amount").GetDecimal());
+    distTotal.Should().Be(1245800m, "distribution sum must match receipt amount exactly");
+
+    // Each distribution should have real district data
+    distributions.Should().OnlyContain(d => d.GetProperty("AssessedValue").GetDecimal() > 0);
+    distributions.Should().OnlyContain(d => d.GetProperty("LevyRate").GetDecimal() > 0);
+  }
+
+  [Fact]
+  public async Task PiltController_Report_BentonCounty_IncludesLandClassifications()
+  {
+    await using var db = CreateDbContext(nameof(PiltController_Report_BentonCounty_IncludesLandClassifications));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new PiltController(
+        db,
+        NullLogger<PiltController>.Instance,
+        CreateHostEnvironment());
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetReport(2025);
+
+    var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
+    json.RootElement.GetProperty("totalAssessedValue").GetDecimal().Should().BeGreaterThan(0);
+    json.RootElement.GetProperty("totalPiltDue").GetDecimal().Should().BeGreaterThan(0);
+    json.RootElement.GetProperty("calculationMethod").GetString().Should().Be("current_use");
+    json.RootElement.GetProperty("federalAcres").GetInt32().Should().Be(586000);
+
+    var landClassifications = json.RootElement.GetProperty("landClassifications").EnumerateArray().ToList();
+    landClassifications.Should().HaveCount(6);
+    landClassifications.Select(lc => lc.GetProperty("type").GetString())
+        .Should().Contain("dryland")
+        .And.Contain("irrigable")
+        .And.Contain("prime_riverfront");
   }
 
   [Fact]

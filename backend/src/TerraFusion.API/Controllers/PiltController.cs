@@ -21,38 +21,136 @@ namespace TerraFusion.API.Controllers
     private readonly ILogger<PiltController> _logger;
     private readonly bool _isDevelopment;
 
-    private static readonly PiltSnapshot BentonSnapshot = new(
-        Status: new SnapshotStatus(
-            Status: "active",
-            FiscalYear: 2025,
-            TotalPayments: 1842500m,
-            FederalAcres: 1123800,
-            AverageRate: 1.64m),
-        Districts:
-        [
-            new SnapshotDistrict("dist-benton-county", "Benton County", "county"),
-                new SnapshotDistrict("dist-port-benton", "Port of Benton", "port"),
-                new SnapshotDistrict("dist-richland-sd", "Richland School District", "school-district"),
-                new SnapshotDistrict("dist-kennewick-sd", "Kennewick School District", "school-district"),
-                new SnapshotDistrict("dist-fire-4", "Fire District 4", "fire-district"),
-        ],
-        Receipts:
-        [
-            new SnapshotReceipt("rcpt-2025-federal-base", 2025, "Federal PILT Base Disbursement", 1245800m, "received"),
-                new SnapshotReceipt("rcpt-2025-srs", 2025, "Secure Rural Schools Transfer", 318400m, "received"),
-                new SnapshotReceipt("rcpt-2025-hanford", 2025, "Hanford Federal Settlement", 278300m, "distributed"),
-        ]);
+    // ── Real Hanford PILT Calculator ─────────────────────────────────────
+    // Extracted from quarantined terra-pilt-production (Excel workbook replica).
+    // Formula: PILT_Due = (assessed_value × levy_rate) / 1,000
+    // School districts have assessed values derived from real land-classification
+    // acreages; other districts use the total assessed value.
 
-    public PiltController(
-        DataDbContext db,
-        ILogger<PiltController> logger,
-        IHostEnvironment hostEnvironment)
+    /// <summary>Real Benton County land classification rates (Assessor 2024).</summary>
+    internal static class LandValues
     {
-      _db = db;
-      _logger = logger;
-      _isDevelopment = hostEnvironment.IsDevelopment();
+      public const decimal DrylandPerAcre = 224m;
+      public const decimal IrrigablePerAcre = 2636m;
+      public const decimal LesserRiverfrontPerFoot = 50m;
+      public const decimal PrimeRiverfrontPerFoot = 1965m;
+      public const decimal RuralResidentialPerAcre = 35870m;
+      public const decimal TownPlatsPerAcre = 122470m;
     }
 
+    /// <summary>Real Hanford site land areas (Assessor 2024).</summary>
+    internal static class HanfordAcreage
+    {
+      public const decimal TotalDrylandAcres = 34322.64m;
+      public const decimal TotalIrrigableAcres = 92497.71m;
+      public const decimal LesserRiverfrontFeet = 128978m;
+      public const decimal PrimeRiverfrontFeet = 30672m;
+      public const decimal RuralResidentialAcres = 590.5m;
+      public const decimal TownPlatsAcres = 644m;
+
+      // District-specific holdings for school districts
+      public const decimal KionaBentonDryAcres = 8547m;
+      public const decimal KionaBentonIrrigableAcres = 642m;
+      public const decimal ProsserSdDryAcres = 15352m;
+      public const decimal ProsserSdIrrigableAcres = 5132m;
+      public const decimal ProsserHospitalDryAcres = 15455m;
+      public const decimal ProsserHospitalIrrigableAcres = 2951m;
+    }
+
+    internal sealed record LevyDistrict(string Id, string Name, string Type, decimal LevyRatePer1000, Func<decimal, decimal> AssessedValueResolver);
+
+    /// <summary>Compute school-district assessed value from acreage × land rates.</summary>
+    private static decimal KionaBentonAV(decimal _) =>
+        HanfordAcreage.KionaBentonDryAcres * LandValues.DrylandPerAcre +
+        HanfordAcreage.KionaBentonIrrigableAcres * LandValues.IrrigablePerAcre;
+
+    private static decimal ProsserSdAV(decimal _) =>
+        HanfordAcreage.ProsserSdDryAcres * LandValues.DrylandPerAcre +
+        HanfordAcreage.ProsserSdIrrigableAcres * LandValues.IrrigablePerAcre;
+
+    private static decimal ProsserHospitalAV(decimal _) =>
+        HanfordAcreage.ProsserHospitalDryAcres * LandValues.DrylandPerAcre +
+        HanfordAcreage.ProsserHospitalIrrigableAcres * LandValues.IrrigablePerAcre;
+
+    private static decimal RichlandSdAV(decimal totalAV) =>
+        totalAV - KionaBentonAV(0) - ProsserSdAV(0) - ProsserHospitalAV(0);
+
+    private static decimal UseTotal(decimal totalAV) => totalAV;
+
+    /// <summary>All Benton County taxing districts that receive PILT distributions (real levy rates per $1,000).</summary>
+    internal static readonly IReadOnlyList<LevyDistrict> BentonLevyDistricts =
+    [
+        new("dist-current-expense",   "Current Expense",       "county",          0.900m,   UseTotal),
+        new("dist-health",            "Health District",       "special",         0.025m,   UseTotal),
+        new("dist-indigent-soldier",  "Indigent Soldier",      "special",         0.01125m, UseTotal),
+        new("dist-road",              "Road District",         "county",          1.200m,   UseTotal),
+        new("dist-port-benton",       "Port of Benton",        "port",            0.340m,   UseTotal),
+        new("dist-rural-library",     "Rural Library",         "special",         0.280m,   UseTotal),
+        new("dist-kiona-benton-sd52", "Kiona-Benton SD #52",   "school-district", 2.100m,   KionaBentonAV),
+        new("dist-prosser-sd116",     "Prosser SD #116",       "school-district", 4.200m,   ProsserSdAV),
+        new("dist-richland-sd400",    "Richland SD #400",      "school-district", 4.100m,   RichlandSdAV),
+        new("dist-prosser-hospital",  "Prosser Hospital",      "hospital",        0.320m,   ProsserHospitalAV),
+        new("dist-schools-general",   "Schools (General Levy)","school-district", 2.200m,   UseTotal),
+    ];
+
+    /// <summary>
+    /// Compute total assessed value for the Hanford site from land classifications.
+    /// This replaces the old hardcoded 1,123,800 acres figure with real valuation math.
+    /// </summary>
+    internal static decimal ComputeTotalAssessedValue()
+    {
+      return HanfordAcreage.TotalDrylandAcres * LandValues.DrylandPerAcre
+           + HanfordAcreage.TotalIrrigableAcres * LandValues.IrrigablePerAcre
+           + HanfordAcreage.LesserRiverfrontFeet * LandValues.LesserRiverfrontPerFoot
+           + HanfordAcreage.PrimeRiverfrontFeet * LandValues.PrimeRiverfrontPerFoot
+           + HanfordAcreage.RuralResidentialAcres * LandValues.RuralResidentialPerAcre
+           + HanfordAcreage.TownPlatsAcres * LandValues.TownPlatsPerAcre;
+    }
+
+    /// <summary>
+    /// Run the real PILT calculation for all Benton County districts.
+    /// Returns per-district PILT amounts computed as (AV × levy_rate) / 1000
+    /// with banker's rounding and a rounding correction on the largest distribution.
+    /// </summary>
+    internal static List<PiltDistrictResult> CalculatePilt(decimal totalAssessedValue)
+    {
+      var results = BentonLevyDistricts.Select(d =>
+      {
+        var districtAV = d.AssessedValueResolver(totalAssessedValue);
+        var rawPilt = districtAV * d.LevyRatePer1000 / 1000m;
+        return new PiltDistrictResult(
+            d.Id, d.Name, d.Type, d.LevyRatePer1000,
+            districtAV, BankersRound(rawPilt, 2));
+      }).ToList();
+
+      // Rounding correction: ensure sum matches a clean total by adjusting the largest district
+      var computedTotal = results.Sum(r => r.PiltDue);
+      var expectedTotal = BankersRound(
+          BentonLevyDistricts.Sum(d =>
+          {
+            var av = d.AssessedValueResolver(totalAssessedValue);
+            return av * d.LevyRatePer1000 / 1000m;
+          }), 2);
+
+      var error = expectedTotal - computedTotal;
+      if (error != 0m)
+      {
+        var largestIdx = results.IndexOf(results.OrderByDescending(r => r.PiltDue).First());
+        results[largestIdx] = results[largestIdx] with { PiltDue = results[largestIdx].PiltDue + error };
+      }
+
+      return results;
+    }
+
+    /// <summary>Banker's rounding (round half to even) – matches the quarantined Excel-replication engine.</summary>
+    internal static decimal BankersRound(decimal value, int decimals) =>
+        Math.Round(value, decimals, MidpointRounding.ToEven);
+
+    internal sealed record PiltDistrictResult(
+        string Id, string Name, string Type,
+        decimal LevyRatePer1000, decimal AssessedValue, decimal PiltDue);
+
+    // ── Legacy snapshot records (used by status/receipt endpoints) ────────
     private sealed record SnapshotStatus(
         string Status,
         int FiscalYear,
@@ -65,9 +163,40 @@ namespace TerraFusion.API.Controllers
     private sealed record PiltSnapshot(SnapshotStatus Status, IReadOnlyList<SnapshotDistrict> Districts, IReadOnlyList<SnapshotReceipt> Receipts);
 
     public record CalculationRequest(string ReceiptId, Dictionary<string, decimal>? Weights);
-    public record Distribution(string DistrictId, decimal Amount);
-    public record CalculationResult(string CalculationId, string ReceiptId, int FiscalYear, decimal TotalAmount, List<Distribution> Distributions, string Status);
+    public record Distribution(string DistrictId, string DistrictName, decimal AssessedValue, decimal LevyRate, decimal Amount);
+    public record CalculationResult(string CalculationId, string ReceiptId, int FiscalYear, decimal TotalAmount, List<Distribution> Distributions, string Method, string Status);
     public record CreateReceiptRequest(int FiscalYear, string Source, decimal Amount);
+
+    // Pre-computed snapshot that uses the real calculator for district list & totals
+    private static readonly decimal _totalAssessedValue = ComputeTotalAssessedValue();
+    private static readonly List<PiltDistrictResult> _bentonDistrictResults = CalculatePilt(_totalAssessedValue);
+    private static readonly decimal _totalPiltDue = _bentonDistrictResults.Sum(d => d.PiltDue);
+
+    private static readonly PiltSnapshot BentonSnapshot = new(
+        Status: new SnapshotStatus(
+            Status: "active",
+            FiscalYear: 2025,
+            TotalPayments: _totalPiltDue,
+            FederalAcres: 586000,
+            AverageRate: BankersRound(_totalPiltDue / _totalAssessedValue * 1000m, 4)),
+        Districts: _bentonDistrictResults.Select(d =>
+            new SnapshotDistrict(d.Id, d.Name, d.Type)).ToArray(),
+        Receipts:
+        [
+            new SnapshotReceipt("rcpt-2025-federal-base", 2025, "Federal PILT Base Disbursement", 1245800m, "received"),
+            new SnapshotReceipt("rcpt-2025-srs", 2025, "Secure Rural Schools Transfer", 318400m, "received"),
+            new SnapshotReceipt("rcpt-2025-hanford", 2025, "Hanford Federal Settlement", 278300m, "distributed"),
+        ]);
+
+    public PiltController(
+        DataDbContext db,
+        ILogger<PiltController> logger,
+        IHostEnvironment hostEnvironment)
+    {
+      _db = db;
+      _logger = logger;
+      _isDevelopment = hostEnvironment.IsDevelopment();
+    }
 
     private async Task<County?> ResolveCountyAsync()
     {
@@ -231,7 +360,7 @@ namespace TerraFusion.API.Controllers
             $"The current PILT backend only has live Benton County read-only coverage. {county.Name}, {county.State} remains Post-R1."));
       }
 
-      HttpContext.Response.Headers["X-PILT-Source"] = "benton-fy2025-snapshot";
+      HttpContext.Response.Headers["X-PILT-Source"] = "benton-real-calculator-fy2025";
       return (BentonSnapshot, null);
     }
 
@@ -254,10 +383,14 @@ namespace TerraFusion.API.Controllers
       {
         status = status.Status,
         fiscalYear = status.FiscalYear,
+        totalAssessedValue = _totalAssessedValue,
+        totalPiltDue = _totalPiltDue,
         totalPayments = status.TotalPayments,
         districts = resolution.Snapshot.Districts.Count,
         federalAcres = status.FederalAcres,
         averageRate = status.AverageRate,
+        calculationMethod = "current_use",
+        hanfordSiteAcres = 586000,
       });
     }
 
@@ -270,12 +403,17 @@ namespace TerraFusion.API.Controllers
 
       return Ok(new
       {
-        count = resolution.Snapshot!.Districts.Count,
-        districts = resolution.Snapshot.Districts.Select(d => new
+        count = _bentonDistrictResults.Count,
+        totalAssessedValue = _totalAssessedValue,
+        totalPiltDue = _totalPiltDue,
+        districts = _bentonDistrictResults.Select(d => new
         {
           id = d.Id,
           name = d.Name,
           type = d.Type,
+          assessedValue = d.AssessedValue,
+          levyRatePer1000 = d.LevyRatePer1000,
+          piltDue = d.PiltDue,
         }),
       });
     }
@@ -373,31 +511,25 @@ namespace TerraFusion.API.Controllers
           Status = StatusCodes.Status404NotFound,
         });
 
-      var districts = snapshot.Districts;
-      var distributions = new List<Distribution>();
-
-      if (request?.Weights is { Count: > 0 })
+      // Use the real PILT formula: (AV × levy_rate) / 1000
+      // The receipt amount is the total disbursement; each district's share is
+      // proportional to its calculated PILT_Due relative to totalPiltDue.
+      var distributions = _bentonDistrictResults.Select(d =>
       {
-        var totalWeight = request.Weights.Values.Sum();
-        if (totalWeight <= 0)
-          return BadRequest(new ProblemDetails
-          {
-            Title = "Invalid weights",
-            Detail = "Weight values must sum to a positive number.",
-            Status = StatusCodes.Status400BadRequest,
-          });
+        var share = _totalPiltDue > 0
+            ? BankersRound(receipt.Amount * d.PiltDue / _totalPiltDue, 2)
+            : 0m;
+        return new Distribution(d.Id, d.Name, d.AssessedValue, d.LevyRatePer1000, share);
+      }).ToList();
 
-        foreach (var district in districts)
-        {
-          var weight = request.Weights.TryGetValue(district.Id, out var w) ? w : 0m;
-          distributions.Add(new Distribution(district.Id, Math.Round(receipt.Amount * weight / totalWeight, 2)));
-        }
-      }
-      else
+      // Rounding correction on distributions so they sum exactly to receipt amount
+      var distSum = distributions.Sum(d => d.Amount);
+      var diff = receipt.Amount - distSum;
+      if (diff != 0m && distributions.Count > 0)
       {
-        var share = Math.Round(receipt.Amount / districts.Count, 2);
-        foreach (var district in districts)
-          distributions.Add(new Distribution(district.Id, share));
+        var largest = distributions.OrderByDescending(d => d.Amount).First();
+        var idx = distributions.IndexOf(largest);
+        distributions[idx] = largest with { Amount = largest.Amount + diff };
       }
 
       var calculationId = $"calc-{receipt.FiscalYear}-{Guid.NewGuid():N}"[..32];
@@ -407,6 +539,7 @@ namespace TerraFusion.API.Controllers
           FiscalYear: receipt.FiscalYear,
           TotalAmount: receipt.Amount,
           Distributions: distributions,
+          Method: "levy_rate_proportional",
           Status: "calculated"));
     }
 
@@ -463,6 +596,8 @@ namespace TerraFusion.API.Controllers
       return Ok(new
       {
         fiscalYear = year,
+        totalAssessedValue = _totalAssessedValue,
+        totalPiltDue = _totalPiltDue,
         totalPayments = receipts.Sum(r => r.Amount),
         receiptCount = receipts.Length,
         receipts = receipts.Select(r => new
@@ -472,13 +607,26 @@ namespace TerraFusion.API.Controllers
           amount = r.Amount,
           status = r.Status,
         }),
-        districts = snapshot.Districts.Select(d => new
+        districts = _bentonDistrictResults.Select(d => new
         {
           id = d.Id,
           name = d.Name,
           type = d.Type,
+          assessedValue = d.AssessedValue,
+          levyRatePer1000 = d.LevyRatePer1000,
+          piltDue = d.PiltDue,
         }),
-        federalAcres = snapshot.Status.FederalAcres,
+        landClassifications = new object[]
+        {
+            new { type = "dryland",            unit = "acre",        quantity = HanfordAcreage.TotalDrylandAcres,      ratePerUnit = LandValues.DrylandPerAcre,          totalValue = HanfordAcreage.TotalDrylandAcres * LandValues.DrylandPerAcre },
+            new { type = "irrigable",          unit = "acre",        quantity = HanfordAcreage.TotalIrrigableAcres,    ratePerUnit = LandValues.IrrigablePerAcre,        totalValue = HanfordAcreage.TotalIrrigableAcres * LandValues.IrrigablePerAcre },
+            new { type = "lesser_riverfront",  unit = "linear_foot", quantity = HanfordAcreage.LesserRiverfrontFeet,   ratePerUnit = LandValues.LesserRiverfrontPerFoot, totalValue = HanfordAcreage.LesserRiverfrontFeet * LandValues.LesserRiverfrontPerFoot },
+            new { type = "prime_riverfront",   unit = "linear_foot", quantity = HanfordAcreage.PrimeRiverfrontFeet,    ratePerUnit = LandValues.PrimeRiverfrontPerFoot,  totalValue = HanfordAcreage.PrimeRiverfrontFeet * LandValues.PrimeRiverfrontPerFoot },
+            new { type = "rural_residential",  unit = "acre",        quantity = HanfordAcreage.RuralResidentialAcres,  ratePerUnit = LandValues.RuralResidentialPerAcre,  totalValue = HanfordAcreage.RuralResidentialAcres * LandValues.RuralResidentialPerAcre },
+            new { type = "town_plats",         unit = "acre",        quantity = HanfordAcreage.TownPlatsAcres,         ratePerUnit = LandValues.TownPlatsPerAcre,         totalValue = HanfordAcreage.TownPlatsAcres * LandValues.TownPlatsPerAcre },
+        },
+        calculationMethod = "current_use",
+        federalAcres = 586000,
         averageRate = snapshot.Status.AverageRate,
         generatedAt = DateTime.UtcNow,
       });
