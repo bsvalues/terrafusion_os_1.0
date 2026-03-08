@@ -138,7 +138,8 @@ const TabLoader: React.FC = () => (
 );
 
 /**
- * Tab Navigation — uses NavLink for route-based switching with trace emission
+ * Tab Navigation — D1 restyled with ARIA tablist, focus-visible ring,
+ * smooth transitions, and bottom-border overlap for clean active indicator.
  */
 const TabNavigation: React.FC<{
   parcelId: string;
@@ -148,11 +149,13 @@ const TabNavigation: React.FC<{
   onTabClick: (tab: WorkbenchTab, isActive: boolean) => void;
 }> = ({ parcelId, tabs, currentTabId, emphasizedTabId, onTabClick }) => (
   <nav
-    className="border-b px-4 flex gap-1 overflow-x-auto"
+    className="border-b px-4 flex gap-0.5 overflow-x-auto"
     style={{
       borderColor: 'hsl(var(--tf-border) / 0.15)',
       background: 'hsl(var(--tf-bg-surface) / 0.5)',
     }}
+    role="tablist"
+    aria-label="Property workbench suites"
   >
     {tabs.map((tab) => {
       const isCurrentTab = tab.id === currentTabId;
@@ -161,10 +164,15 @@ const TabNavigation: React.FC<{
           key={tab.id}
           to={tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`}
           end={tab.path === ''}
-          className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+          role="tab"
+          aria-selected={isCurrentTab}
+          aria-disabled={!tab.enabled}
+          tabIndex={tab.enabled ? 0 : -1}
+          className="flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap rounded-t-md"
           style={({ isActive }) => {
             const isEmphasized = emphasizedTabId === tab.id && !isActive;
             return {
+              transition: 'color 150ms ease, background 150ms ease, border-color 150ms ease',
               color: isActive
                 ? 'hsl(var(--tf-accent))'
                 : isEmphasized
@@ -176,12 +184,13 @@ const TabNavigation: React.FC<{
                   ? '2px solid hsl(var(--tf-accent) / 0.4)'
                   : '2px solid transparent',
               background: isActive
-                ? 'hsl(var(--tf-accent) / 0.05)'
+                ? 'hsl(var(--tf-accent) / 0.08)'
                 : isEmphasized
-                  ? 'hsl(var(--tf-accent) / 0.02)'
+                  ? 'hsl(var(--tf-accent) / 0.03)'
                   : 'transparent',
-              opacity: tab.enabled ? 1 : 0.5,
+              opacity: tab.enabled ? 1 : 0.4,
               cursor: tab.enabled ? 'pointer' : 'not-allowed',
+              marginBottom: '-1px',
             };
           }}
           onClick={(e) => {
@@ -192,7 +201,7 @@ const TabNavigation: React.FC<{
             onTabClick(tab, isCurrentTab);
           }}
         >
-          <span>{tab.icon}</span>
+          <span className="text-base leading-none">{tab.icon}</span>
           <span>{tab.label}</span>
         </NavLink>
       );

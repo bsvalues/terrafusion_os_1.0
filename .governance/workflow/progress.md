@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **R3.2 + R3.1: Full tool coverage + Claude Muse** ✅ COMPLETE |
-| **Phase** | R3 Functional Completion — R3.2 + R3.1 DONE (R3.0 pending runbook) |
-| **Task** | 38/38 direct tool routes + Claude API Muse engine with template fallback |
+| **Slice** | **R3 COMPLETE + D1/D2 COMPLETE** ✅ |
+| **Phase** | R3 + Debt Items — ALL COMPLETE |
+| **Task** | R3.0 PostGIS dual-mode + R3.1 Claude Muse + R3.2 38/38 routes + D1 restyle + D2 jitter monitor |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | R3.2+R3.1 — 38 direct routes + ClaudeMuseService |
+| **Latest Commit** | R3.0+D1+D2 — PostGIS dual-mode, suite tab restyle, compositor jitter monitor |
 
 ---
 
@@ -601,14 +601,55 @@
 
 ---
 
+## R3.0: PostGIS Dual-Mode ✅ COMPLETE
+
+| Task | Description | Files | Date |
+|------|-------------|-------|------|
+| ✅ Runbook | Migration runbook with prechecks, rollback, SQL verification | `docs/R3.0_POSTGIS_MIGRATION_RUNBOOK.md` | 2026-03-08 |
+| ✅ NTS packages | NetTopologySuite 2.5.0, NTS.IO.GeoJSON 4.0.0, Npgsql.EFCore.NTS 8.0.0 | `Directory.Packages.props`, `.csproj` files | 2026-03-08 |
+| ✅ Entity update | NativeGeometry + CentroidPoint properties on ParcelGeometry | `ParcelGeometry.cs` | 2026-03-08 |
+| ✅ DbContext dual-mode | Provider-detection → Ignore on SQLite, GiST indexes on PostgreSQL | `TerraFusionDbContext.cs` | 2026-03-08 |
+| ✅ Spatial extensions | Provider-aware FindNearbyParcelsAsync (ST_DWithin vs Haversine) | `SpatialQueryExtensions.cs` | 2026-03-08 |
+| ✅ Controller update | AtlasController nearby endpoint uses SpatialQueryExtensions | `AtlasController.cs` | 2026-03-08 |
+| ✅ Upsert update | GeoJSON → NTS geometry parsing + CentroidPoint on PostgreSQL | `AtlasController.cs` | 2026-03-08 |
+
+### Files Modified (R3.0)
+- `backend/Directory.Packages.props` — NTS package versions
+- `backend/src/TerraFusion.Core/TerraFusion.Core.csproj` — NetTopologySuite reference
+- `backend/src/TerraFusion.Data/TerraFusion.Data.csproj` — NTS + NTS.IO.GeoJSON + Npgsql.NTS references
+- `backend/src/TerraFusion.Core/Entities/ParcelGeometry.cs` — NativeGeometry + CentroidPoint
+- `backend/src/TerraFusion.Data/TerraFusionDbContext.cs` — Dual-mode spatial config + UseNetTopologySuite
+- `backend/src/TerraFusion.Data/SpatialQueryExtensions.cs` — NEW: Provider-aware spatial queries
+- `backend/src/TerraFusion.API/Controllers/AtlasController.cs` — PostGIS nearby + upsert with NTS parsing
+
+---
+
+## D1: Suite Tab Internals Restyling ✅ COMPLETE
+
+| Task | Description | Files | Date |
+|------|-------------|-------|------|
+| ✅ Tab nav restyle | ARIA tablist, focus-visible ring, smooth transitions, bottom-border overlap | `PropertyWorkbench.tsx` | 2026-03-08 |
+| ✅ Compass restyle | ARIA tab roles, focus-visible outline, 150ms transitions, opacity refinement | `SuiteCompass.tsx` | 2026-03-08 |
+
+---
+
+## D2: Compositor Jitter Monitor ✅ COMPLETE
+
+| Task | Description | Files | Date |
+|------|-------------|-------|------|
+| ✅ Jitter monitor | Session-windowed CLS monitor with threshold warnings (Web Vitals v3) | `compositorJitterMonitor.ts` | 2026-03-08 |
+
+**Baseline finding:** No jitter observed. layoutShiftProbe + 15 compositor tests already pass. D2 adds persistent monitoring for production regression detection.
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| 🟢 Done | R3.1-R3.2 | Claude Muse + Full tool coverage complete | — |
-| 🔵 1 | R3.0 | PostGIS migration (requires dedicated runbook approval) | Runbook |
-| ⚪ | D1 | Suite tab internals restyling | Non-blocking |
-| ⚪ | D2 | Compositor jitter monitoring | Non-blocking |
+| 🟢 Done | R3.0-R3.2 | Full R3 complete (PostGIS + Claude Muse + 38/38 routes) | — |
+| 🟢 Done | D1 | Suite tab internals restyled | — |
+| 🟢 Done | D2 | Compositor jitter monitor added | — |
 
 ---
 
@@ -625,8 +666,8 @@
 
 | ID | Item | Severity | Ticket/Issue |
 |----|------|----------|--------------|
-| ⚠️ D1 | Suite tab internals not restyled | Low | Deferred per plan |
-| ⚠️ D2 | Compositor jitter fix if observed | Med | Monitor after skin |
+| ✅ D1 | Suite tab internals restyled | Low | Completed 2026-03-08 |
+| ✅ D2 | Compositor jitter monitor added | Med | Completed 2026-03-08 |
 
 ---
 

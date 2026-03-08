@@ -7,6 +7,9 @@ using TerraFusion.Data.Configurations;
 // NOTE: TerraFusion.AI.Entities cannot be referenced here due to circular dependency
 // AI-specific DbSets are added via partial class or extension in TerraFusion.AI project
 
+// R3.0: PostGIS native geometry support (dual-mode: PostgreSQL + SQLite)
+using NetTopologySuite.Geometries;
+
 namespace TerraFusion.Data;
 
 public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
@@ -115,7 +118,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
 
             if (connectionString?.Contains("Host=") == true)
             {
-                // PostgreSQL for production
+                // PostgreSQL for production — R3.0: UseNetTopologySuite for native geometry
                 optionsBuilder.UseNpgsql(connectionString, options =>
                 {
                     options.EnableRetryOnFailure(
@@ -123,6 +126,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
                         maxRetryDelay: TimeSpan.FromSeconds(5),
                         errorCodesToAdd: null);
                     options.CommandTimeout(30);
+                    options.UseNetTopologySuite();
                 });
             }
             else
@@ -254,7 +258,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
             entity.HasIndex(e => new { e.CountyCode, e.BuildingType, e.Region, e.MatrixYear });
         });
 
-        // Configure ParcelGeometry entity (R2.10 — GIS boundary storage)
+        // Configure ParcelGeometry entity (R2.10 — GIS boundary storage, R3.0 — PostGIS dual-mode)
+        var isPostgres = Database.ProviderName?.Contains("Npgsql", StringComparison.OrdinalIgnoreCase) == true;
+
         modelBuilder.Entity<ParcelGeometry>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -269,6 +275,30 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
             entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
             entity.HasIndex(e => new { e.CountyId, e.ParcelId }).IsUnique();
             entity.HasIndex(e => new { e.CentroidLat, e.CentroidLng });
+
+            // R3.0: Dual-mode spatial columns
+            if (isPostgres)
+            {
+                // PostGIS native geometry columns with GiST indexes
+                entity.Property(e => e.NativeGeometry)
+                    .HasColumnName("native_geometry")
+                    .HasColumnType("geometry(Geometry, 4326)");
+                entity.Property(e => e.CentroidPoint)
+                    .HasColumnName("centroid_point")
+                    .HasColumnType("geometry(Point, 4326)");
+                entity.HasIndex(e => e.NativeGeometry)
+                    .HasDatabaseName("ix_parcel_geometries_native_geometry")
+                    .HasMethod("gist");
+                entity.HasIndex(e => e.CentroidPoint)
+                    .HasDatabaseName("ix_parcel_geometries_centroid_point")
+                    .HasMethod("gist");
+            }
+            else
+            {
+                // SQLite: Ignore NTS geometry properties (not supported)
+                entity.Ignore(e => e.NativeGeometry);
+                entity.Ignore(e => e.CentroidPoint);
+            }
         });
 
         // Configure GovernmentUser entity

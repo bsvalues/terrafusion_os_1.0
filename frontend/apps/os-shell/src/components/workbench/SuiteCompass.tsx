@@ -146,12 +146,15 @@ export const SuiteCompass: React.FC<SuiteCompassProps> = ({
               onMouseEnter={() => setHoveredSlug(item.slug)}
               onMouseLeave={() => setHoveredSlug(null)}
               disabled={item.disabled}
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-left transition-all text-sm"
+              role="tab"
+              aria-selected={isActive}
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm focus-visible:outline-2 focus-visible:outline-offset-1"
               style={{
+                transition: 'background 150ms ease, color 150ms ease, border-color 150ms ease',
                 background: isActive
                   ? `hsl(${item.color} / 0.15)`
                   : isHovered
-                    ? 'hsl(var(--tf-text) / 0.05)'
+                    ? 'hsl(var(--tf-text) / 0.06)'
                     : 'transparent',
                 color: item.disabled
                   ? 'hsl(var(--tf-text) / 0.3)'
@@ -162,7 +165,8 @@ export const SuiteCompass: React.FC<SuiteCompassProps> = ({
                   ? `3px solid hsl(${item.color})`
                   : '3px solid transparent',
                 cursor: item.disabled ? 'not-allowed' : 'pointer',
-                opacity: item.disabled ? 0.5 : 1,
+                opacity: item.disabled ? 0.4 : 1,
+                outlineColor: `hsl(${item.color})`,
               }}
               title={item.disabled ? item.disabledReason : item.affordance}
             >

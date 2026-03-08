@@ -1,11 +1,14 @@
 using System.ComponentModel.DataAnnotations;
+using NetTopologySuite.Geometries;
 
 namespace TerraFusion.Core.Entities;
 
 /// <summary>
 /// Stores GIS geometry data for a parcel.
-/// GeoJSON stored as TEXT for SQLite compatibility; migrates to PostGIS geometry column in R3.
-/// Centroid lat/lng stored separately for Haversine distance queries without PostGIS.
+/// Dual-mode storage:
+///   - PostgreSQL/PostGIS: Native geometry + centroid_point columns (GiST indexed)
+///   - SQLite: GeoJSON TEXT + centroid_lat/lng doubles (Haversine fallback)
+/// Both paths always populated for seamless provider switching.
 /// </summary>
 public class ParcelGeometry
 {
@@ -18,14 +21,25 @@ public class ParcelGeometry
     public Guid CountyId { get; set; }
     public County County { get; set; } = null!;
 
-    /// <summary>GeoJSON geometry string (Polygon/MultiPolygon). TEXT column; PostGIS in R3.</summary>
+    /// <summary>GeoJSON geometry string (Polygon/MultiPolygon). TEXT column. Always populated.</summary>
     public string? GeoJson { get; set; }
 
-    /// <summary>Centroid latitude (WGS84). Enables Haversine queries in SQLite.</summary>
+    /// <summary>Centroid latitude (WGS84). Used for Haversine queries on SQLite.</summary>
     public double? CentroidLat { get; set; }
 
-    /// <summary>Centroid longitude (WGS84). Enables Haversine queries in SQLite.</summary>
+    /// <summary>Centroid longitude (WGS84). Used for Haversine queries on SQLite.</summary>
     public double? CentroidLng { get; set; }
+
+    // ── PostGIS Native Geometry (R3.0) ──────────────────────────────
+    // These are populated on PostgreSQL only. Ignored by EF on SQLite.
+
+    /// <summary>Native PostGIS geometry (Polygon/MultiPolygon, SRID 4326). Null on SQLite.</summary>
+    public Geometry? NativeGeometry { get; set; }
+
+    /// <summary>Native PostGIS centroid point (SRID 4326). Enables ST_DWithin queries. Null on SQLite.</summary>
+    public Point? CentroidPoint { get; set; }
+
+    // ── Standard Fields ─────────────────────────────────────────────
 
     /// <summary>Parcel area in square feet.</summary>
     public double? AreaSqft { get; set; }

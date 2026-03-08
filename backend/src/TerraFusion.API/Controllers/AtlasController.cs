@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
 using TerraFusion.API.Security;
@@ -362,7 +364,7 @@ public class AtlasController : ControllerBase
         if (subject is null)
             return NotFound(new { error = "Parcel not found" });
 
-        // R2.10: Try spatial proximity via centroid if available
+        // R3.0: Try spatial proximity — PostGIS ST_DWithin or Haversine fallback
         var subjectGeometry = await _db.ParcelGeometries
             .AsNoTracking()
             .Where(g => g.ParcelId == parcelId && g.CountyId == countyId.Value
@@ -372,37 +374,20 @@ public class AtlasController : ControllerBase
 
         var effectiveType = propertyType ?? subject.PropertyType;
         var usingSpatial = subjectGeometry != null;
+        var spatialEngine = _db.IsPostgres() ? "postgis" : "haversine";
 
         if (usingSpatial)
         {
-            // Spatial path: Haversine distance from subject centroid
             var subLat = subjectGeometry!.CentroidLat!.Value;
             var subLng = subjectGeometry.CentroidLng!.Value;
 
-            // Pre-filter with bounding box (1 degree lat ≈ 69 miles)
-            var latDelta = radiusMiles / 69.0;
-            var lngDelta = radiusMiles / (69.0 * Math.Cos(ToRadians(subLat)));
-
-            var candidateGeometries = await _db.ParcelGeometries
-                .AsNoTracking()
-                .Where(g => g.CountyId == countyId.Value
-                            && g.ParcelId != parcelId
-                            && g.CentroidLat != null && g.CentroidLng != null
-                            && g.CentroidLat >= subLat - latDelta && g.CentroidLat <= subLat + latDelta
-                            && g.CentroidLng >= subLng - lngDelta && g.CentroidLng <= subLng + lngDelta)
-                .Select(g => new { g.ParcelId, Lat = g.CentroidLat!.Value, Lng = g.CentroidLng!.Value })
-                .ToListAsync();
-
-            // Compute exact Haversine, filter by radius, sort by distance
-            var nearbyParcelIds = candidateGeometries
-                .Select(g => new { g.ParcelId, Distance = HaversineDistanceMiles(subLat, subLng, g.Lat, g.Lng) })
-                .Where(g => g.Distance <= radiusMiles)
-                .OrderBy(g => g.Distance)
-                .ToList();
+            // R3.0: Provider-aware spatial query (PostGIS ST_DWithin or Haversine)
+            var nearbyParcelIds = await _db.FindNearbyParcelsAsync(
+                countyId.Value, parcelId, subLat, subLng, radiusMiles);
 
             // Join with property data
             var nearbyIds = nearbyParcelIds.Select(n => n.ParcelId).ToHashSet();
-            var distanceLookup = nearbyParcelIds.ToDictionary(n => n.ParcelId, n => n.Distance);
+            var distanceLookup = nearbyParcelIds.ToDictionary(n => n.ParcelId, n => n.DistanceMiles);
 
             var propertiesQuery = _db.Properties
                 .AsNoTracking()
@@ -442,6 +427,7 @@ public class AtlasController : ControllerBase
                 propertyTypeFilter = effectiveType,
                 total = spatialResults.Count,
                 gisProximity = true,
+                spatialEngine,
                 radiusMiles,
                 parcels = spatialResults,
             });
@@ -517,6 +503,32 @@ public class AtlasController : ControllerBase
 
         var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("email")?.Value ?? "system";
 
+        // R3.0: Parse GeoJSON into NTS geometry + centroid for PostGIS
+        Geometry? nativeGeom = null;
+        Point? centroidPt = null;
+        if (_db.IsPostgres() && !string.IsNullOrWhiteSpace(request.GeoJson))
+        {
+            try
+            {
+                var reader = new GeoJsonReader();
+                nativeGeom = reader.Read<Geometry>(request.GeoJson);
+                nativeGeom.SRID = request.Srid ?? 4326;
+                var centroid = nativeGeom.Centroid;
+                centroid.SRID = nativeGeom.SRID;
+                centroidPt = centroid;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to parse GeoJSON for parcel {ParcelId}; native geometry will be null", parcelId);
+            }
+        }
+        else if (_db.IsPostgres() && request.CentroidLat.HasValue && request.CentroidLng.HasValue)
+        {
+            // No GeoJSON but we have centroid coords — create a point
+            var factory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: request.Srid ?? 4326);
+            centroidPt = factory.CreatePoint(new Coordinate(request.CentroidLng.Value, request.CentroidLat.Value));
+        }
+
         if (existing != null)
         {
             existing.GeoJson = request.GeoJson;
@@ -531,6 +543,11 @@ public class AtlasController : ControllerBase
             existing.SourceDate = request.SourceDate;
             existing.UpdatedAt = DateTime.UtcNow;
             existing.UpdatedBy = userId;
+            if (_db.IsPostgres())
+            {
+                existing.NativeGeometry = nativeGeom;
+                existing.CentroidPoint = centroidPt;
+            }
         }
         else
         {
@@ -551,6 +568,11 @@ public class AtlasController : ControllerBase
                 CreatedBy = userId,
                 UpdatedBy = userId,
             };
+            if (_db.IsPostgres())
+            {
+                newGeometry.NativeGeometry = nativeGeom;
+                newGeometry.CentroidPoint = centroidPt;
+            }
             _db.ParcelGeometries.Add(newGeometry);
         }
 
