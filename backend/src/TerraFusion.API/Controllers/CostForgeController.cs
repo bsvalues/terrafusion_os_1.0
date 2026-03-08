@@ -2615,6 +2615,344 @@ public class CostForgeController : ControllerBase
     ];
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  //  Wave 28 — Spatial Autocorrelation (Moran's I, Geary's C, LISA)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  /// <summary>Compute Global Moran's I spatial autocorrelation.</summary>
+  [HttpPost("analytics/spatial/moran")]
+  public async Task<IActionResult> RunGlobalMoranI([FromBody] SpatialAutocorrelationRequest request)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    if (request.Observations is null || request.Observations.Count < 3)
+      return BadRequest(new { error = "At least 3 observations required" });
+
+    int n = request.Observations.Count;
+    var values = request.Observations.Select(o => o.Value).ToArray();
+    double mean = values.Average();
+
+    // Build spatial weight matrix based on coordinates
+    var W = BuildWeightMatrix(request.Observations, request.WeightType ?? "distance", request.DistanceThreshold ?? 0);
+
+    // Global Moran's I = (n/S0) * Σ_i Σ_j w_ij(x_i - x̄)(x_j - x̄) / Σ_i(x_i - x̄)²
+    double s0 = 0;
+    double numerator = 0;
+    double denominator = 0;
+
+    for (int i = 0; i < n; i++)
+      denominator += (values[i] - mean) * (values[i] - mean);
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+      {
+        s0 += W[i, j];
+        numerator += W[i, j] * (values[i] - mean) * (values[j] - mean);
+      }
+
+    double moranI = denominator > 0 && s0 > 0
+      ? (n / s0) * (numerator / denominator)
+      : 0;
+
+    double expectedI = -1.0 / (n - 1);
+    double variance = ComputeMoranVariance(W, values, n, s0);
+    double zScore = variance > 0 ? (moranI - expectedI) / Math.Sqrt(variance) : 0;
+    double pValue = 2 * (1 - NormalCdf(Math.Abs(zScore)));
+
+    // Local Moran's I (LISA)
+    var localI = new double[n];
+    var clusters = new string[n];
+    for (int i = 0; i < n; i++)
+    {
+      double localNumerator = 0;
+      double wRowSum = 0;
+      for (int j = 0; j < n; j++)
+      {
+        localNumerator += W[i, j] * (values[j] - mean);
+        wRowSum += W[i, j];
+      }
+      double zi = values[i] - mean;
+      localI[i] = denominator > 0 ? n * zi * localNumerator / denominator : 0;
+
+      // Classify: HH, HL, LH, LL, NS
+      double lag = wRowSum > 0 ? localNumerator / wRowSum : 0;
+      double localZ = variance > 0 ? localI[i] / Math.Sqrt(variance) : 0;
+      bool significant = Math.Abs(localZ) > 1.96;
+      clusters[i] = !significant ? "NS"
+        : (zi > 0 && lag > 0) ? "HH"
+        : (zi > 0 && lag <= 0) ? "HL"
+        : (zi <= 0 && lag > 0) ? "LH"
+        : "LL";
+    }
+
+    var entity = new SpatialAnalysis
+    {
+      CountyId = county.CountyId,
+      AnalysisType = "global_moran",
+      VariableName = request.VariableName ?? "assessed_value",
+      WeightMatrixType = request.WeightType ?? "distance",
+      StatisticValue = Math.Round(moranI, 6),
+      ExpectedValue = Math.Round(expectedI, 6),
+      Variance = Math.Round(variance, 6),
+      ZScore = Math.Round(zScore, 4),
+      PValue = Math.Round(pValue, 6),
+      SampleSize = n,
+      LocalIndicators = System.Text.Json.JsonSerializer.Serialize(localI.Select(v => Math.Round(v, 6)).ToArray()),
+      ClusterMap = System.Text.Json.JsonSerializer.Serialize(clusters),
+      CreatedBy = User.Identity?.Name ?? "system"
+    };
+
+    _db.SpatialAnalyses.Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      analysisType = "global_moran",
+      moranI = entity.StatisticValue,
+      expectedI = entity.ExpectedValue,
+      variance = entity.Variance,
+      zScore = entity.ZScore,
+      pValue = entity.PValue,
+      sampleSize = n,
+      interpretation = moranI > expectedI ? "positive spatial autocorrelation (clustering)" : "negative spatial autocorrelation (dispersion)",
+      clusterSummary = new
+      {
+        highHigh = clusters.Count(c => c == "HH"),
+        highLow = clusters.Count(c => c == "HL"),
+        lowHigh = clusters.Count(c => c == "LH"),
+        lowLow = clusters.Count(c => c == "LL"),
+        notSignificant = clusters.Count(c => c == "NS")
+      },
+      localIndicators = localI.Select(v => Math.Round(v, 6)).ToArray(),
+      clusters
+    });
+  }
+
+  /// <summary>Compute Geary's C spatial autocorrelation.</summary>
+  [HttpPost("analytics/spatial/geary")]
+  public async Task<IActionResult> RunGearyC([FromBody] SpatialAutocorrelationRequest request)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    if (request.Observations is null || request.Observations.Count < 3)
+      return BadRequest(new { error = "At least 3 observations required" });
+
+    int n = request.Observations.Count;
+    var values = request.Observations.Select(o => o.Value).ToArray();
+    double mean = values.Average();
+
+    var W = BuildWeightMatrix(request.Observations, request.WeightType ?? "distance", request.DistanceThreshold ?? 0);
+
+    double s0 = 0, numerator = 0, denominator = 0;
+    for (int i = 0; i < n; i++)
+      denominator += (values[i] - mean) * (values[i] - mean);
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+      {
+        s0 += W[i, j];
+        numerator += W[i, j] * (values[i] - values[j]) * (values[i] - values[j]);
+      }
+
+    // Geary's C = ((n-1) / (2*S0)) * (Σ w_ij(x_i - x_j)²) / (Σ(x_i - x̄)²)
+    double gearyC = (denominator > 0 && s0 > 0)
+      ? ((n - 1.0) / (2.0 * s0)) * (numerator / denominator)
+      : 1.0; // expected value under randomness
+
+    double expectedC = 1.0;
+    double zScore = gearyC < 1 ? -(1 - gearyC) * Math.Sqrt(n) : (gearyC - 1) * Math.Sqrt(n); // simplified
+    double pValue = 2 * (1 - NormalCdf(Math.Abs(zScore)));
+
+    var entity = new SpatialAnalysis
+    {
+      CountyId = county.CountyId,
+      AnalysisType = "geary_c",
+      VariableName = request.VariableName ?? "assessed_value",
+      WeightMatrixType = request.WeightType ?? "distance",
+      StatisticValue = Math.Round(gearyC, 6),
+      ExpectedValue = expectedC,
+      Variance = 0,
+      ZScore = Math.Round(zScore, 4),
+      PValue = Math.Round(pValue, 6),
+      SampleSize = n,
+      CreatedBy = User.Identity?.Name ?? "system"
+    };
+
+    _db.SpatialAnalyses.Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      analysisType = "geary_c",
+      gearyC = entity.StatisticValue,
+      expectedC,
+      zScore = entity.ZScore,
+      pValue = entity.PValue,
+      sampleSize = n,
+      interpretation = gearyC < 1 ? "positive autocorrelation" : gearyC > 1 ? "negative autocorrelation" : "spatial randomness"
+    });
+  }
+
+  /// <summary>Retrieve stored spatial analysis by ID.</summary>
+  [HttpGet("analytics/spatial/{id:guid}")]
+  public async Task<IActionResult> GetSpatialResult(Guid id)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    var result = await _db.SpatialAnalyses
+      .FirstOrDefaultAsync(s => s.Id == id && s.CountyId == county.CountyId);
+
+    if (result is null) return NotFound(new { error = "Spatial analysis not found" });
+
+    return Ok(new
+    {
+      id = result.Id,
+      analysisType = result.AnalysisType,
+      variableName = result.VariableName,
+      statisticValue = result.StatisticValue,
+      expectedValue = result.ExpectedValue,
+      zScore = result.ZScore,
+      pValue = result.PValue,
+      sampleSize = result.SampleSize,
+      localIndicators = System.Text.Json.JsonSerializer.Deserialize<double[]>(result.LocalIndicators),
+      clusterMap = System.Text.Json.JsonSerializer.Deserialize<string[]>(result.ClusterMap),
+      createdAt = result.CreatedAt
+    });
+  }
+
+  /// <summary>List recent spatial analyses for the county.</summary>
+  [HttpGet("analytics/spatial/history")]
+  public async Task<IActionResult> GetSpatialHistory([FromQuery] int limit = 20)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    limit = Math.Clamp(limit, 1, 100);
+    var results = await _db.SpatialAnalyses
+      .Where(s => s.CountyId == county.CountyId)
+      .OrderByDescending(s => s.CreatedAt)
+      .Take(limit)
+      .Select(s => new
+      {
+        id = s.Id,
+        analysisType = s.AnalysisType,
+        variableName = s.VariableName,
+        statisticValue = s.StatisticValue,
+        pValue = s.PValue,
+        sampleSize = s.SampleSize,
+        createdAt = s.CreatedAt
+      })
+      .ToListAsync();
+
+    return Ok(new { count = results.Count, results });
+  }
+
+  // ── Spatial helpers ───────────────────────────────────────────────────────
+
+  private static double[,] BuildWeightMatrix(List<SpatialObservation> obs, string weightType, double threshold)
+  {
+    int n = obs.Count;
+    var W = new double[n, n];
+
+    // Compute pairwise distances
+    var dists = new double[n, n];
+    for (int i = 0; i < n; i++)
+      for (int j = i + 1; j < n; j++)
+      {
+        double dx = obs[i].X - obs[j].X;
+        double dy = obs[i].Y - obs[j].Y;
+        dists[i, j] = dists[j, i] = Math.Sqrt(dx * dx + dy * dy);
+      }
+
+    // Auto-threshold if not provided
+    if (threshold <= 0)
+    {
+      double maxDist = 0;
+      for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++)
+          if (dists[i, j] > maxDist) maxDist = dists[i, j];
+      threshold = maxDist / 3.0;
+    }
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+      {
+        if (i == j) continue;
+        W[i, j] = weightType switch
+        {
+          "knn" => 0, // handled below
+          "inverse_distance" => dists[i, j] > 0 ? 1.0 / dists[i, j] : 0,
+          _ => dists[i, j] <= threshold ? 1.0 : 0 // binary distance
+        };
+      }
+
+    // KNN: k nearest neighbours
+    if (weightType == "knn")
+    {
+      int k = Math.Min(4, n - 1);
+      for (int i = 0; i < n; i++)
+      {
+        var indices = Enumerable.Range(0, n)
+          .Where(j => j != i)
+          .OrderBy(j => dists[i, j])
+          .Take(k);
+        foreach (var j in indices) W[i, j] = 1.0;
+      }
+    }
+
+    // Row-standardize
+    for (int i = 0; i < n; i++)
+    {
+      double rowSum = 0;
+      for (int j = 0; j < n; j++) rowSum += W[i, j];
+      if (rowSum > 0)
+        for (int j = 0; j < n; j++) W[i, j] /= rowSum;
+    }
+
+    return W;
+  }
+
+  private static double ComputeMoranVariance(double[,] W, double[] values, int n, double s0)
+  {
+    // Simplified variance under normality assumption:
+    // Var(I) ≈ [n²S1 - nS2 + 3S0²] / [S0²(n²-1)] - E(I)²
+    double s1 = 0, s2 = 0;
+    for (int i = 0; i < n; i++)
+    {
+      double rowSum = 0, colSum = 0;
+      for (int j = 0; j < n; j++)
+      {
+        s1 += (W[i, j] + W[j, i]) * (W[i, j] + W[j, i]);
+        rowSum += W[i, j];
+        colSum += W[j, i];
+      }
+      s2 += (rowSum + colSum) * (rowSum + colSum);
+    }
+    s1 /= 2.0;
+
+    double expectedI = -1.0 / (n - 1);
+    double denom = s0 * s0 * ((double)n * n - 1);
+    if (denom == 0) return 0;
+    return ((double)n * n * s1 - (double)n * s2 + 3 * s0 * s0) / denom - expectedI * expectedI;
+  }
+
+  private static double NormalCdf(double x)
+  {
+    // Abramowitz and Stegun approximation (7.1.26)
+    const double a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;
+    const double p = 0.3275911;
+    double sign = x < 0 ? -1 : 1;
+    x = Math.Abs(x) / Math.Sqrt(2);
+    double t = 1.0 / (1.0 + p * x);
+    double y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.Exp(-x * x);
+    return 0.5 * (1.0 + sign * y);
+  }
+
   internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
   internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
 
@@ -2776,4 +3114,22 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ── Wave 28 Request DTOs ────────────────────────────────────────────────────
+
+public class SpatialAutocorrelationRequest
+{
+  public List<SpatialObservation> Observations { get; set; } = new();
+  public string? VariableName { get; set; }
+  public string? WeightType { get; set; }
+  public double? DistanceThreshold { get; set; }
+}
+
+public class SpatialObservation
+{
+  public double X { get; set; }
+  public double Y { get; set; }
+  public double Value { get; set; }
+  public string? ParcelId { get; set; }
 }
