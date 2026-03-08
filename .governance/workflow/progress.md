@@ -6,7 +6,7 @@
 
 * **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions + R2 Backend Waves
 * **Branch/PR:** `claude/review-progress-ledger-a8iw5`
-* **Last Updated:** 2026-03-08 (R2.12 Frontend Tool Wiring Complete — ALL R2 WAVES DONE)
+* **Last Updated:** 2026-03-08 (R3.2 + R3.1 Complete — 38/38 direct routes + Claude Muse API)
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **R2.12: Frontend tool invocation wiring** ✅ COMPLETE |
-| **Phase** | R2 Backend Delivery — ALL WAVES COMPLETE (R2.1–R2.12) |
-| **Task** | All R2 waves delivered: USPAP, Atlas, DAIS, Dossier, Muse, GIS, Frontend wiring |
+| **Slice** | **R3.2 + R3.1: Full tool coverage + Claude Muse** ✅ COMPLETE |
+| **Phase** | R3 Functional Completion — R3.2 + R3.1 DONE (R3.0 pending runbook) |
+| **Task** | 38/38 direct tool routes + Claude API Muse engine with template fallback |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `111038687` R2.12 — suite-grouped Pilot UI + toolServiceRouter |
+| **Latest Commit** | R3.2+R3.1 — 38 direct routes + ClaudeMuseService |
 
 ---
 
@@ -536,14 +536,79 @@
 
 ---
 
+## R3.2: Full Tool Coverage (11→38 direct routes) ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 3.2.1 | Create costForgeApiService.ts (non-hook wrapper) | R3.2 commit | Type-check | 2026-03-08 |
+| ✅ 3.2.2 | Add getLevyRateComponents to daisService.ts | R3.2 commit | Type-check | 2026-03-08 |
+| ✅ 3.2.3 | Add addNote + getCasefile to dossierService.ts | R3.2 commit | Type-check | 2026-03-08 |
+| ✅ 3.2.4 | Add getLevyHistory to levyService.ts | R3.2 commit | Type-check | 2026-03-08 |
+| ✅ 3.2.5 | Wire all 38 tools in toolServiceRouter.ts | R3.2 commit | 38/38 routes | 2026-03-08 |
+| ✅ 3.2.6 | Alias policy: draft_value_change_notice, draft_boe_appeal_response | R3.2 commit | Documented | 2026-03-08 |
+| ✅ 3.2.7 | 501/stub handling: errors propagate honestly | R3.2 commit | By design | 2026-03-08 |
+| ✅ 3.2.8 | toolServiceRouter.coverage.test.ts (6 tests) | R3.2 commit | 6/6 pass | 2026-03-08 |
+
+**Key Achievement:** All 38 manifest tools now have direct frontend→backend routes. No tool requires the Pilot Node.js server. costForgeApiService.ts provides non-hook wrappers for USPAP approach endpoints. Alias policy documented with explicit param defaults. 501/stub responses propagate honestly (no fake success). Coverage test gates manifest↔router parity.
+
+**Alias Table:**
+- `draft_value_change_notice` → `draft_notice` with `noticeType: 'value_change'`
+- `draft_boe_appeal_response` → `draft_appeal_response` (BOE context)
+
+**Files Created:**
+- `frontend/apps/os-shell/src/services/costForgeApiService.ts` — Non-hook CostForge API wrapper (8 methods)
+- `frontend/apps/os-shell/src/__tests__/tools/toolServiceRouter.coverage.test.ts` — 6 coverage gate tests
+
+**Files Modified:**
+- `frontend/apps/os-shell/src/services/toolServiceRouter.ts` — 11→38 routes, alias policy header
+- `frontend/apps/os-shell/src/services/daisService.ts` — Added getLevyRateComponents()
+- `frontend/apps/os-shell/src/services/dossierService.ts` — Added addNote(), getCasefile()
+- `frontend/apps/os-shell/src/services/levyService.ts` — Added getLevyHistory()
+
+---
+
+## R3.1: Claude API Integration for Muse NLP ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 3.1.1 | MuseOptions.cs configuration class | R3.1 commit | Compiles | 2026-03-08 |
+| ✅ 3.1.2 | ClaudeMuseService.cs (IMuseService impl with Anthropic API) | R3.1 commit | Compiles | 2026-03-08 |
+| ✅ 3.1.3 | Engine-driven DI registration in Program.cs | R3.1 commit | Wired | 2026-03-08 |
+| ✅ 3.1.4 | appsettings.json Muse section (no API key) | R3.1 commit | Config | 2026-03-08 |
+| ✅ 3.1.5 | appsettings.Development.json template default | R3.1 commit | Config | 2026-03-08 |
+| ✅ 3.1.6 | Fallback field added to ExplanationResult, DraftResult, SynthesisResult | R3.1 commit | Contract | 2026-03-08 |
+| ✅ 3.1.7 | System prompts per document type (6 types, 4 audiences) | R3.1 commit | Embedded | 2026-03-08 |
+
+**Key Achievement:** Claude API as production NLP engine with deterministic template fallback. Config-driven engine selection: `Muse:Engine` + `Muse:ApiKey` (or `MUSE_ANTHROPIC_API_KEY` env var). IMuseService interface unchanged. Each method: try Claude → catch → log → template fallback with `Fallback: true`. System prompts encode USPAP, IAAO, and RCW requirements per document type and audience.
+
+**Guardrails Verified:**
+1. No API key in repo config (env var or production-only)
+2. Template engine default in development (appsettings.Development.json)
+3. Claude failure degrades deterministically (Serilog warning + template fallback)
+4. Response format contract-compatible (only Engine + Fallback fields change)
+5. IMuseService interface untouched
+6. GetCapabilities() reflects real engine state (falls back to template capabilities when unhealthy)
+
+**Files Created:**
+- `backend/src/TerraFusion.API/Configuration/MuseOptions.cs` — Strongly-typed config
+- `backend/src/TerraFusion.API/Services/ClaudeMuseService.cs` — Claude-powered IMuseService
+
+**Files Modified:**
+- `backend/src/TerraFusion.API/Program.cs` — Engine-driven DI with env var support
+- `backend/src/TerraFusion.API/appsettings.json` — Muse config section
+- `backend/src/TerraFusion.API/appsettings.Development.json` — Template default
+- `backend/src/TerraFusion.API/Services/MuseService.cs` — Fallback field on response models
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| 🟢 Done | R2.10-R2.12 | All R2 waves complete | — |
-| 🔵 1 | R3.0 | PostGIS migration (upgrade GeoJSON TEXT → native geometry) | Infrastructure |
-| 🔵 2 | R3.1 | Claude API integration for Muse (swap template engine) | API Key |
-| 🔵 3 | R3.2 | Full tool coverage in toolServiceRouter (38/38 direct routes) | R2.12 |
+| 🟢 Done | R3.1-R3.2 | Claude Muse + Full tool coverage complete | — |
+| 🔵 1 | R3.0 | PostGIS migration (requires dedicated runbook approval) | Runbook |
+| ⚪ | D1 | Suite tab internals restyling | Non-blocking |
+| ⚪ | D2 | Compositor jitter monitoring | Non-blocking |
 
 ---
 
@@ -583,6 +648,8 @@
 | standalone a11y | 12 | 0 | 0 |
 | Endpoint matrix | 61+ (59 live, 2 stubs) | - | - |
 | Manifest tools | 38 (v1.7.0) | 0 handlers missing | - |
+| R3.2 route coverage | 6 | 0 | - |
+| Tool direct routes | 38/38 | 0 missing | - |
 
 ---
 
@@ -598,6 +665,8 @@
 - [x] GIS geometry storage (R2.10) — Haversine spatial queries without PostGIS
 - [x] Muse NLP engine (R2.11) — template-based, Claude API swap-ready
 - [x] Frontend tool wiring (R2.12) — 11 direct routes, suite-grouped UI
+- [x] Full tool coverage (R3.2) — 38/38 direct routes, coverage test, alias policy
+- [x] Claude Muse API (R3.1) — Config-driven engine swap, template fallback, no interface changes
 
 ---
 

@@ -394,6 +394,19 @@ export const dossierService = {
     const headerCorrelationId = response.headers.get('X-Correlation-ID');
     return { snapshot, headerCorrelationId };
   },
+
+  /** Add a note to a parcel dossier — POST /api/dossier/{parcelId}/notes */
+  addNote: async (
+    parcelId: string,
+    note: { content: string; category?: string; visibility?: string }
+  ): Promise<unknown> => {
+    return dossierPost(`/${encodeURIComponent(parcelId)}/notes`, note);
+  },
+
+  /** Get casefile summary for a parcel — GET /api/dossier/parcels/{parcelId}/casefile */
+  getCasefile: async (parcelId: string): Promise<unknown> => {
+    return dossierGet(`/parcels/${encodeURIComponent(parcelId)}/casefile`);
+  },
 };
 
 export default dossierService;

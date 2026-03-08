@@ -393,6 +393,8 @@ public class ExplanationResult
     public string[] Drivers { get; set; } = Array.Empty<string>();
     public double Confidence { get; set; }
     public string Engine { get; set; } = "muse-template-v1";
+    /// <summary>True when Claude API failed and response came from template fallback.</summary>
+    public bool? Fallback { get; set; }
 }
 
 public class DraftResult
@@ -401,6 +403,8 @@ public class DraftResult
     public string Draft { get; set; } = string.Empty;
     public string NoticeType { get; set; } = string.Empty;
     public string Engine { get; set; } = "muse-template-v1";
+    /// <summary>True when Claude API failed and response came from template fallback.</summary>
+    public bool? Fallback { get; set; }
 }
 
 public class SynthesisResult
@@ -410,6 +414,8 @@ public class SynthesisResult
     public string[] Sources { get; set; } = Array.Empty<string>();
     public double Confidence { get; set; }
     public string Engine { get; set; } = "muse-template-v1";
+    /// <summary>True when Claude API failed and response came from template fallback.</summary>
+    public bool? Fallback { get; set; }
 }
 
 public class MuseCapabilities

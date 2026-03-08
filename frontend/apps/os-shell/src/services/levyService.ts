@@ -44,3 +44,29 @@ export async function calculateLevyRate(
   );
   return res.data;
 }
+
+export interface LevyHistoryRecord {
+  taxLevyId: string;
+  countyId: string;
+  taxingDistrict: string;
+  taxRate: number;
+  levyAmount: number;
+  taxYear: number;
+  purpose: string;
+  effectiveDate: string;
+}
+
+/** Get levy calculation history — GET /api/levy-calculation/history */
+export async function getLevyHistory(options?: {
+  taxYear?: number;
+  districtId?: string;
+}): Promise<LevyHistoryRecord[]> {
+  const params = new URLSearchParams();
+  if (options?.taxYear) params.set('taxYear', String(options.taxYear));
+  if (options?.districtId) params.set('districtId', options.districtId);
+  const qs = params.toString();
+  const res = await api.get<LevyHistoryRecord[]>(
+    `/levy-calculation/history${qs ? `?${qs}` : ''}`,
+  );
+  return res.data;
+}

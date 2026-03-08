@@ -199,6 +199,25 @@ export const daisService = {
   }): Promise<unknown> => {
     return daisPost<unknown>('/redaction', request);
   },
+
+  /** Get levy rate components (history) for a county */
+  getLevyRateComponents: async (options?: {
+    taxYear?: number;
+    districtId?: string;
+  }): Promise<unknown> => {
+    const params = new URLSearchParams();
+    if (options?.taxYear) params.set('taxYear', String(options.taxYear));
+    if (options?.districtId) params.set('districtId', options.districtId);
+    const qs = params.toString();
+    // Levy endpoint is on a separate controller route
+    const API_BASE_URL = getViteEnv().VITE_API_URL || '';
+    const response = await fetch(
+      `${API_BASE_URL}/api/levy-calculation/history${qs ? `?${qs}` : ''}`,
+      { headers: authHeaders() }
+    );
+    if (!response.ok) throw new Error(`Levy API error: ${response.statusText}`);
+    return response.json();
+  },
 };
 
 export default daisService;

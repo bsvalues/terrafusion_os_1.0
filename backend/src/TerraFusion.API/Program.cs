@@ -186,8 +186,31 @@ builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceServi
 // TerraGaiaService doesn't run background tasks, so Scoped lifetime is appropriate for on-demand AI consciousness queries
 builder.Services.AddScoped<ITerraGaiaService, TerraGaiaService>();
 
-// R2.11: Muse NLP Explanation Engine
-builder.Services.AddScoped<TerraFusion.API.Services.IMuseService, TerraFusion.API.Services.MuseService>();
+// R2.11 + R3.1: Muse NLP Explanation Engine
+// Template engine always registered as concrete for fallback.
+// Claude engine activates when Muse:Engine starts with "claude" AND Muse:ApiKey is present.
+builder.Services.Configure<TerraFusion.API.Configuration.MuseOptions>(
+    builder.Configuration.GetSection(TerraFusion.API.Configuration.MuseOptions.SectionName));
+builder.Services.AddScoped<TerraFusion.API.Services.MuseService>();
+builder.Services.AddHttpClient("ClaudeMuse");
+
+var museEngine = builder.Configuration["Muse:Engine"] ?? "muse-template-v1";
+var museApiKey = builder.Configuration["Muse:ApiKey"]
+    ?? Environment.GetEnvironmentVariable("MUSE_ANTHROPIC_API_KEY");
+if (museEngine.StartsWith("claude", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(museApiKey))
+{
+    // Inject API key into options if it came from environment
+    if (string.IsNullOrEmpty(builder.Configuration["Muse:ApiKey"]))
+    {
+        builder.Services.PostConfigure<TerraFusion.API.Configuration.MuseOptions>(
+            opts => opts.ApiKey = museApiKey);
+    }
+    builder.Services.AddScoped<TerraFusion.API.Services.IMuseService, TerraFusion.API.Services.ClaudeMuseService>();
+}
+else
+{
+    builder.Services.AddScoped<TerraFusion.API.Services.IMuseService, TerraFusion.API.Services.MuseService>();
+}
 
 // TIER 5+ Cognitive Framework - 3-6-9-12 Development Excellence
 builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService>();
