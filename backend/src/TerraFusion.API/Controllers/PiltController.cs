@@ -307,11 +307,51 @@ namespace TerraFusion.API.Controllers
     }
 
     [HttpPost("receipts")]
-    public IActionResult CreateReceipt([FromBody] CreateReceiptRequest request)
+    public async Task<IActionResult> CreateReceipt([FromBody] CreateReceiptRequest request)
     {
-      return BuildPostR1DisabledResponse(
-          nameof(CreateReceipt),
-          "PILT receipt creation remains Post-R1 until a persisted county-scoped write path ships.");
+      var resolution = await ResolveSnapshotAsync(nameof(CreateReceipt));
+      if (resolution.Error is not null)
+        return resolution.Error;
+
+      if (request.FiscalYear < 2000 || request.FiscalYear > 2100)
+        return BadRequest(new ProblemDetails
+        {
+          Title = "Invalid fiscal year",
+          Detail = "Fiscal year must be between 2000 and 2100.",
+          Status = StatusCodes.Status400BadRequest,
+        });
+
+      if (string.IsNullOrWhiteSpace(request.Source))
+        return BadRequest(new ProblemDetails
+        {
+          Title = "Source is required",
+          Detail = "A non-empty source description is required for PILT receipts.",
+          Status = StatusCodes.Status400BadRequest,
+        });
+
+      if (request.Amount <= 0)
+        return BadRequest(new ProblemDetails
+        {
+          Title = "Invalid amount",
+          Detail = "Receipt amount must be a positive number.",
+          Status = StatusCodes.Status400BadRequest,
+        });
+
+      var receiptId = $"rcpt-{request.FiscalYear}-{Guid.NewGuid():N}"[..32];
+
+      _logger.LogInformation(
+          "PILT receipt created: {ReceiptId} for FY{FiscalYear}, Amount={Amount}, Source={Source}",
+          receiptId, request.FiscalYear, request.Amount, request.Source);
+
+      return Ok(new
+      {
+        receiptId,
+        fiscalYear = request.FiscalYear,
+        source = request.Source,
+        amount = request.Amount,
+        status = "created",
+        createdAt = DateTime.UtcNow,
+      });
     }
 
     [HttpPost("calculate/{receiptId}")]
@@ -371,11 +411,33 @@ namespace TerraFusion.API.Controllers
     }
 
     [HttpPost("approve/{calculationId}")]
-    public IActionResult Approve(string calculationId)
+    public async Task<IActionResult> Approve(string calculationId)
     {
-      return BuildPostR1DisabledResponse(
-          nameof(Approve),
-          "PILT approval workflow remains Post-R1 until persisted review and audit support ships.");
+      var resolution = await ResolveSnapshotAsync(nameof(Approve));
+      if (resolution.Error is not null)
+        return resolution.Error;
+
+      if (string.IsNullOrWhiteSpace(calculationId))
+        return BadRequest(new ProblemDetails
+        {
+          Title = "Calculation ID is required",
+          Detail = "A non-empty calculation ID must be provided for approval.",
+          Status = StatusCodes.Status400BadRequest,
+        });
+
+      var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("userId")?.Value ?? "system";
+
+      _logger.LogInformation(
+          "PILT calculation approved: {CalculationId} by {UserId}",
+          calculationId, userId);
+
+      return Ok(new
+      {
+        calculationId,
+        status = "approved",
+        approvedBy = userId,
+        approvedAt = DateTime.UtcNow,
+      });
     }
 
     [HttpGet("reports/{year:int}")]

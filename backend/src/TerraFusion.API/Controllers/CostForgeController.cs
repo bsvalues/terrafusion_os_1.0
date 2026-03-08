@@ -43,29 +43,7 @@ public class CostForgeController : ControllerBase
     _logger = logger;
   }
 
-  private ActionResult BuildPostR1DisabledResponse(string operation, string featureName, string detail, string problemType)
-  {
-    HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
 
-    _logger.LogWarning(
-        "CostForge endpoint {Operation} was invoked, but {FeatureName} remains Post-R1 and is intentionally disabled",
-        operation,
-        featureName);
-
-    var problem = new ProblemDetails
-    {
-      Title = $"{featureName} is not enabled for R1",
-      Detail = detail,
-      Status = StatusCodes.Status501NotImplemented,
-      Type = $"https://terrafusion.local/problems/{problemType}"
-    };
-
-    problem.Extensions["scope"] = "Post-R1";
-    problem.Extensions["operation"] = operation;
-    problem.Extensions["feature"] = featureName;
-
-    return StatusCode(StatusCodes.Status501NotImplemented, problem);
-  }
 
   private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
 
