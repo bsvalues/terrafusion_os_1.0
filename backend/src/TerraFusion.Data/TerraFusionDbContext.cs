@@ -97,6 +97,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }
   public DbSet<CostMatrix> CostMatrices { get; set; }
 
+  // Forge Analytics (R2 Wave 27)
+  public DbSet<BayesianAnalysis> BayesianAnalyses { get; set; }
+  public DbSet<MonteCarloSimulation> MonteCarloSimulations { get; set; }
+
   // Dossier Document Management (R2 Wave 24)
   public DbSet<DossierDocument> DossierDocuments { get; set; }
   public DbSet<DossierEvidence> DossierEvidenceItems { get; set; }

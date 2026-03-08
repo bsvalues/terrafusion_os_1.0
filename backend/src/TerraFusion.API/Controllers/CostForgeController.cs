@@ -2764,6 +2764,267 @@ public class CostForgeController : ControllerBase
     ];
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  //  Wave 27 — Bayesian estimation + Monte Carlo simulation
+  // ══════════════════════════════════════════════════════════════════════════
+
+  /// <summary>Run conjugate-normal Bayesian posterior estimation.</summary>
+  [HttpPost("analytics/bayesian")]
+  public async Task<IActionResult> RunBayesianEstimation([FromBody] BayesianEstimationRequest request)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    if (request.Observations is null || request.Observations.Count < 2)
+      return BadRequest(new { error = "At least 2 observations required" });
+
+    double priorMean = request.PriorMean ?? 0.0;
+    double priorVariance = request.PriorVariance ?? 1e6; // vague prior
+
+    // Conjugate normal-normal update: known variance model
+    double sampleMean = request.Observations.Average();
+    int n = request.Observations.Count;
+    double sampleVariance = request.Observations.Sum(x => (x - sampleMean) * (x - sampleMean)) / (n - 1);
+    double knownVariance = request.KnownVariance ?? sampleVariance;
+
+    // Posterior parameters
+    double posteriorPrecision = 1.0 / priorVariance + n / knownVariance;
+    double posteriorVariance = 1.0 / posteriorPrecision;
+    double posteriorMean = posteriorVariance * (priorMean / priorVariance + n * sampleMean / knownVariance);
+    double posteriorStd = Math.Sqrt(posteriorVariance);
+
+    // 95% credible interval (z = 1.96)
+    double lower95 = posteriorMean - 1.96 * posteriorStd;
+    double upper95 = posteriorMean + 1.96 * posteriorStd;
+
+    var entity = new BayesianAnalysis
+    {
+      CountyId = county.CountyId,
+      ParameterName = request.ParameterName ?? "value",
+      PriorDistribution = "normal",
+      PriorParameters = System.Text.Json.JsonSerializer.Serialize(new { mean = priorMean, variance = priorVariance }),
+      ObservedData = System.Text.Json.JsonSerializer.Serialize(request.Observations),
+      PosteriorMean = Math.Round(posteriorMean, 6),
+      PosteriorStd = Math.Round(posteriorStd, 6),
+      CredibleInterval95 = System.Text.Json.JsonSerializer.Serialize(new[] { Math.Round(lower95, 2), Math.Round(upper95, 2) }),
+      SampleSize = n,
+      CreatedBy = User.Identity?.Name ?? "system"
+    };
+
+    _db.BayesianAnalyses.Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      parameterName = entity.ParameterName,
+      priorMean,
+      priorVariance,
+      posteriorMean = entity.PosteriorMean,
+      posteriorStd = entity.PosteriorStd,
+      credibleInterval95 = new[] { Math.Round(lower95, 2), Math.Round(upper95, 2) },
+      sampleSize = n,
+      sampleMean = Math.Round(sampleMean, 6),
+      sampleVariance = Math.Round(sampleVariance, 6),
+      priorWeight = Math.Round(knownVariance / (knownVariance + n * priorVariance) * 100, 2),
+      dataWeight = Math.Round(n * priorVariance / (knownVariance + n * priorVariance) * 100, 2)
+    });
+  }
+
+  /// <summary>Retrieve stored Bayesian analysis by ID.</summary>
+  [HttpGet("analytics/bayesian/{id:guid}")]
+  public async Task<IActionResult> GetBayesianResult(Guid id)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    var result = await _db.BayesianAnalyses
+      .FirstOrDefaultAsync(b => b.Id == id && b.CountyId == county.CountyId);
+
+    if (result is null) return NotFound(new { error = "Bayesian analysis not found" });
+
+    return Ok(new
+    {
+      id = result.Id,
+      parameterName = result.ParameterName,
+      posteriorMean = result.PosteriorMean,
+      posteriorStd = result.PosteriorStd,
+      credibleInterval95 = System.Text.Json.JsonSerializer.Deserialize<double[]>(result.CredibleInterval95),
+      sampleSize = result.SampleSize,
+      createdBy = result.CreatedBy,
+      createdAt = result.CreatedAt
+    });
+  }
+
+  /// <summary>Run a Monte Carlo simulation for property valuation.</summary>
+  [HttpPost("analytics/montecarlo")]
+  public async Task<IActionResult> RunMonteCarloSimulation([FromBody] MonteCarloRequest request)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    int iterations = Math.Clamp(request.Iterations ?? 10_000, 100, 1_000_000);
+
+    if (request.Variables is null || request.Variables.Count == 0)
+      return BadRequest(new { error = "At least one variable distribution required" });
+
+    // Seeded PRNG for reproducibility when seed provided
+    var rng = request.Seed.HasValue ? new Random(request.Seed.Value) : new Random();
+    var results = new double[iterations];
+
+    for (int i = 0; i < iterations; i++)
+    {
+      double value = 0;
+      foreach (var v in request.Variables)
+      {
+        double sample = v.Distribution?.ToLowerInvariant() switch
+        {
+          "normal" or "gaussian" => SampleNormal(rng, v.Mean, v.Std),
+          "uniform" => v.Min + rng.NextDouble() * (v.Max - v.Min),
+          "triangular" => SampleTriangular(rng, v.Min, v.Mode ?? (v.Min + v.Max) / 2.0, v.Max),
+          _ => SampleNormal(rng, v.Mean, v.Std)
+        };
+        value += sample * (v.Weight ?? 1.0);
+      }
+      results[i] = value;
+    }
+
+    Array.Sort(results);
+
+    double mean = results.Average();
+    double median = results.Length % 2 == 0
+      ? (results[results.Length / 2 - 1] + results[results.Length / 2]) / 2.0
+      : results[results.Length / 2];
+    double std = Math.Sqrt(results.Select(r => (r - mean) * (r - mean)).Sum() / (results.Length - 1));
+    double p5 = results[(int)(0.05 * results.Length)];
+    double p25 = results[(int)(0.25 * results.Length)];
+    double p75 = results[(int)(0.75 * results.Length)];
+    double p95 = results[(int)(0.95 * results.Length)];
+
+    // Histogram (20 bins)
+    int binCount = 20;
+    double minVal = results[0], maxVal = results[^1];
+    double binWidth = (maxVal - minVal) / binCount;
+    var bins = new object[binCount];
+    for (int b = 0; b < binCount; b++)
+    {
+      double bLower = minVal + b * binWidth;
+      double bUpper = bLower + binWidth;
+      int count = results.Count(r => r >= bLower && (b == binCount - 1 ? r <= bUpper : r < bUpper));
+      bins[b] = new { lower = Math.Round(bLower, 2), upper = Math.Round(bUpper, 2), count };
+    }
+
+    var entity = new MonteCarloSimulation
+    {
+      CountyId = county.CountyId,
+      SimulationName = request.SimulationName ?? "monte_carlo",
+      Iterations = iterations,
+      InputDistributions = System.Text.Json.JsonSerializer.Serialize(request.Variables),
+      ResultMean = Math.Round(mean, 2),
+      ResultMedian = Math.Round(median, 2),
+      ResultStd = Math.Round(std, 2),
+      Percentile5 = Math.Round(p5, 2),
+      Percentile25 = Math.Round(p25, 2),
+      Percentile75 = Math.Round(p75, 2),
+      Percentile95 = Math.Round(p95, 2),
+      HistogramBins = System.Text.Json.JsonSerializer.Serialize(bins),
+      CreatedBy = User.Identity?.Name ?? "system"
+    };
+
+    _db.MonteCarloSimulations.Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      simulationName = entity.SimulationName,
+      iterations,
+      mean = entity.ResultMean,
+      median = entity.ResultMedian,
+      std = entity.ResultStd,
+      percentile5 = entity.Percentile5,
+      percentile25 = entity.Percentile25,
+      percentile75 = entity.Percentile75,
+      percentile95 = entity.Percentile95,
+      histogram = bins
+    });
+  }
+
+  /// <summary>Retrieve stored Monte Carlo result by ID.</summary>
+  [HttpGet("analytics/montecarlo/{id:guid}")]
+  public async Task<IActionResult> GetMonteCarloResult(Guid id)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    var result = await _db.MonteCarloSimulations
+      .FirstOrDefaultAsync(m => m.Id == id && m.CountyId == county.CountyId);
+
+    if (result is null) return NotFound(new { error = "Monte Carlo simulation not found" });
+
+    return Ok(new
+    {
+      id = result.Id,
+      simulationName = result.SimulationName,
+      iterations = result.Iterations,
+      mean = result.ResultMean,
+      median = result.ResultMedian,
+      std = result.ResultStd,
+      percentile5 = result.Percentile5,
+      percentile25 = result.Percentile25,
+      percentile75 = result.Percentile75,
+      percentile95 = result.Percentile95,
+      histogram = System.Text.Json.JsonSerializer.Deserialize<object>(result.HistogramBins),
+      createdAt = result.CreatedAt
+    });
+  }
+
+  /// <summary>List recent simulations for the county.</summary>
+  [HttpGet("analytics/montecarlo/history")]
+  public async Task<IActionResult> GetMonteCarloHistory([FromQuery] int limit = 20)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    limit = Math.Clamp(limit, 1, 100);
+    var results = await _db.MonteCarloSimulations
+      .Where(m => m.CountyId == county.CountyId)
+      .OrderByDescending(m => m.CreatedAt)
+      .Take(limit)
+      .Select(m => new
+      {
+        id = m.Id,
+        simulationName = m.SimulationName,
+        iterations = m.Iterations,
+        mean = m.ResultMean,
+        std = m.ResultStd,
+        createdAt = m.CreatedAt
+      })
+      .ToListAsync();
+
+    return Ok(new { count = results.Count, results });
+  }
+
+  // ── MC sampling helpers ───────────────────────────────────────────────────
+
+  private static double SampleNormal(Random rng, double mean, double std)
+  {
+    // Box-Muller transform
+    double u1 = 1.0 - rng.NextDouble();
+    double u2 = rng.NextDouble();
+    double z = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2.0 * Math.PI * u2);
+    return mean + std * z;
+  }
+
+  private static double SampleTriangular(Random rng, double min, double mode, double max)
+  {
+    double u = rng.NextDouble();
+    double fc = (mode - min) / (max - min);
+    return u < fc
+      ? min + Math.Sqrt(u * (max - min) * (mode - min))
+      : max - Math.Sqrt((1 - u) * (max - min) * (max - mode));
+  }
+
   internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
   internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
 
@@ -2925,4 +3186,35 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ── Wave 27 Request DTOs ────────────────────────────────────────────────────
+
+public class BayesianEstimationRequest
+{
+  public List<double> Observations { get; set; } = new();
+  public string? ParameterName { get; set; }
+  public double? PriorMean { get; set; }
+  public double? PriorVariance { get; set; }
+  public double? KnownVariance { get; set; }
+}
+
+public class MonteCarloRequest
+{
+  public int? Iterations { get; set; }
+  public string? SimulationName { get; set; }
+  public int? Seed { get; set; }
+  public List<McVariable> Variables { get; set; } = new();
+}
+
+public class McVariable
+{
+  public string Name { get; set; } = "";
+  public string? Distribution { get; set; } = "normal";
+  public double Mean { get; set; }
+  public double Std { get; set; } = 1.0;
+  public double Min { get; set; }
+  public double Max { get; set; } = 1.0;
+  public double? Mode { get; set; }
+  public double? Weight { get; set; }
 }
