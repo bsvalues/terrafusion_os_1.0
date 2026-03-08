@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **R2.6 + Build Fixes: Document tools, type deduplication** ✅ COMPLETE |
-| **Phase** | R2 Backend Delivery + Build Error Resolution |
+| **Slice** | **R2.8: Cross-project build fixes + frontend service wiring** ✅ COMPLETE |
+| **Phase** | R2 Backend Delivery + Build Error Resolution + Frontend Wiring |
 | **Task** | 54 endpoints (52 live, 2 stubs), 32 manifest tools, 87/87 core gates, 242 total tests |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | Build fix commit (type dedup + ambiguity resolution) |
+| **Latest Commit** | `57e5089f1` — R2.8 cross-project build fixes + frontend wiring |
 
 ---
 
@@ -445,13 +445,34 @@
 
 ---
 
+## R2.8: Cross-Project Build Fixes + Frontend Service Wiring ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 8.1 | Add 15+ missing DI registrations in Program.cs | `57e5089f1` | Build fix | 2026-03-08 |
+| ✅ 8.2 | Fix type ambiguity in HybridConsciousnessManager (CoreDTOs alias) | `57e5089f1` | Build fix | 2026-03-08 |
+| ✅ 8.3 | Fix TaskPriority duplicate enum in SwarmIntelligenceCoordinator | `57e5089f1` | Build fix | 2026-03-08 |
+| ✅ 8.4 | Rename PerformanceMetrics → MonitoringPerformanceMetrics in CostForge | `57e5089f1` | Build fix | 2026-03-08 |
+| ✅ 8.5 | Fix ConsciousnessParameterTuningService using alias | `57e5089f1` | Build fix | 2026-03-08 |
+| ✅ 8.6 | Remove duplicate ConsciousnessParameters/EmergencySeverity types | `57e5089f1` | Build fix | 2026-03-08 |
+| ✅ 8.7 | Fix Research project references to use src/ paths | `57e5089f1` | Build fix | 2026-03-08 |
+| ✅ 8.8 | Add USPAP endpoints to useCostForgeAPI (6 functions + 8 interfaces) | `57e5089f1` | Frontend | 2026-03-08 |
+| ✅ 8.9 | Add 3 Atlas R2 endpoints (nearby, layer detail, parcel layers) | `57e5089f1` | Frontend | 2026-03-08 |
+| ✅ 8.10 | Create daisService.ts with 10 DAIS API methods | `57e5089f1` | Frontend | 2026-03-08 |
+| ✅ 8.11 | Add Security project (ICommonPasswordService, IPasswordHistoryRepository) | `57e5089f1` | Build fix | 2026-03-08 |
+
+**Key Achievement:** Parallel agent execution resolved build errors across 6 backend projects (Consciousness, CostForge, Operations, Research, API, Security) while simultaneously wiring frontend services to all R2 Wave 1-3 backend endpoints. 15 files changed, 521 insertions.
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| 🔵 1 | R2.8 | GIS geometry storage (PostGIS parcel boundaries) | Infrastructure |
-| 🔵 2 | R2.9 | Muse tool backends (AI-powered NLP explanation) | Claude API |
-| 🔵 3 | R2.10 | Frontend tool invocation wiring (TerraPilot → endpoints) | R2.8-R2.9 |
+| 🔵 1 | R2.9 | Remaining build error sweep + verification | None |
+| 🔵 2 | R2.10 | GIS geometry storage (PostGIS parcel boundaries) | Infrastructure |
+| 🔵 3 | R2.11 | Muse tool backends (AI-powered NLP explanation) | Claude API |
+| 🔵 4 | R2.12 | Frontend tool invocation wiring (TerraPilot → endpoints) | R2.10-R2.11 |
 
 ---
 

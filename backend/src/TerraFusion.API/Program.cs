@@ -602,8 +602,8 @@ builder.Services.AddUltimateCostForgeAPI(builder.Configuration, builder.Environm
 // MISSING DI REGISTRATIONS - Required by controllers and services
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// AI Command Service - Required by AdvancedAIAgentOrchestrator, ProductionPACSDataEngine, SystemHub, AISwarmController
-builder.Services.AddScoped<TerraFusion.AI.Services.IAICommandService, TerraFusion.AI.Services.AICommandService>();
+// AI Command Service - Required by AdvancedAIAgentOrchestrator (Singleton), ProductionPACSDataEngine, SystemHub, AISwarmController
+builder.Services.AddSingleton<TerraFusion.AI.Services.IAICommandService, TerraFusion.AI.Services.AICommandService>();
 
 // Advanced AI Agent Orchestrator - Required by ElitePerformanceMonitoringController, ElitePerformanceMonitoringService
 builder.Services.AddSingleton<IAdvancedAIAgentOrchestrator, AdvancedAIAgentOrchestrator>();

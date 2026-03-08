@@ -1517,20 +1517,5 @@ public class RenderingHints
     public int TargetFrameRate { get; set; }
 }
 
-public class ConsciousnessTelemetryDto
-{
-    public QuantumTelemetryData QuantumTelemetry { get; set; } = new();
-}
-
-public class QuantumTelemetryData
-{
-    public double CoherenceLevel { get; set; }
-}
-
-public class AgentCoordinationTelemetryDto
-{
-    public double ActiveAgents { get; set; }
-    public double CoordinationEfficiency { get; set; }
-    public double SwarmHarmony { get; set; }
-    public double InterAgentLatencyMs { get; set; }
-}
+// ConsciousnessTelemetryDto, QuantumTelemetryData, and AgentCoordinationTelemetryDto
+// are provided by TerraFusion.Consciousness.Interfaces
