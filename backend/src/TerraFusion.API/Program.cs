@@ -391,6 +391,9 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeAIService, TerraFusion.AI.Services.CostForgeAIService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICostForgeService, TerraFusion.API.Services.CostForgeService>();
 
+// R2-W4: Register IDossierDocumentService for real document-management and evidence chain
+builder.Services.AddScoped<TerraFusion.Core.Services.IDossierDocumentService, TerraFusion.Core.Services.DossierDocumentService>();
+
 // Register ITerraFusionDbContext interface
 builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
     provider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());

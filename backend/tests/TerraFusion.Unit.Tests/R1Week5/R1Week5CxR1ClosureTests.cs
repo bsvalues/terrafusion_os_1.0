@@ -16,6 +16,7 @@ using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
 using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
 using CostForgeService = TerraFusion.Core.Services.ICostForgeService;
+using IDossierDocumentService = TerraFusion.Core.Services.IDossierDocumentService;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
 
@@ -282,61 +283,49 @@ public sealed class R1Week5CxR1ClosureTests
     }
 
     [Fact]
-    public void DossierController_SearchDocuments_ReturnsExplicitPostR1ProblemDetails()
+    public async Task DossierController_SearchDocuments_EmptyPrincipal_ReturnsForbid()
     {
-        using var db = CreateDbContext(nameof(DossierController_SearchDocuments_ReturnsExplicitPostR1ProblemDetails));
+        using var db = CreateDbContext(nameof(DossierController_SearchDocuments_EmptyPrincipal_ReturnsForbid));
         var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+        var dossierDocService = new Mock<IDossierDocumentService>();
         var hostEnvironment = new Mock<IHostEnvironment>();
         hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Production");
 
         var controller = new DossierController(
             db,
             costForgeService.Object,
+            dossierDocService.Object,
             NullLogger<DossierController>.Instance,
             hostEnvironment.Object);
 
         AttachPrincipal(controller, CreateEmptyPrincipal());
 
-        var result = controller.SearchDocuments(new { limit = 50 });
+        var result = await controller.SearchDocuments(null);
 
-        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
-        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
-
-        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        problem.Title.Should().Be("Dossier document search is not enabled for R1");
-        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
-        problem.Extensions["scope"].Should().Be("Post-R1");
-        problem.Extensions["feature"].Should().Be("Dossier document search");
-        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+        result.Should().BeOfType<ForbidResult>();
     }
 
     [Fact]
-    public void DossierController_Stats_ReturnsExplicitPostR1ProblemDetails()
+    public async Task DossierController_Stats_EmptyPrincipal_ReturnsForbid()
     {
-        using var db = CreateDbContext(nameof(DossierController_Stats_ReturnsExplicitPostR1ProblemDetails));
+        using var db = CreateDbContext(nameof(DossierController_Stats_EmptyPrincipal_ReturnsForbid));
         var costForgeService = new Mock<CostForgeService>(MockBehavior.Strict);
+        var dossierDocService = new Mock<IDossierDocumentService>();
         var hostEnvironment = new Mock<IHostEnvironment>();
         hostEnvironment.SetupGet(h => h.EnvironmentName).Returns("Production");
 
         var controller = new DossierController(
             db,
             costForgeService.Object,
+            dossierDocService.Object,
             NullLogger<DossierController>.Instance,
             hostEnvironment.Object);
 
         AttachPrincipal(controller, CreateEmptyPrincipal());
 
-        var result = controller.GetStats();
+        var result = await controller.GetStats();
 
-        var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
-        objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
-
-        var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        problem.Title.Should().Be("Dossier document-management stats is not enabled for R1");
-        problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
-        problem.Extensions["scope"].Should().Be("Post-R1");
-        problem.Extensions["feature"].Should().Be("Dossier document-management stats");
-        controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+        result.Should().BeOfType<ForbidResult>();
     }
 
     [Fact]
