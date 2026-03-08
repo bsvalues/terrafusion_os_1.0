@@ -1033,4 +1033,163 @@ public sealed class R1Week5CxR1ClosureTests
 
     result.Should().BeOfType<BadRequestObjectResult>();
   }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 10: Real Atlas ArcGIS Tests
+  // ═══════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public void Atlas_ArcGisData_Has14Layers()
+  {
+    AtlasController.BentonArcGisData.Layers.Should().HaveCount(14);
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public void Atlas_ArcGisData_AllLayersHaveServiceUrls()
+  {
+    foreach (var layer in AtlasController.BentonArcGisData.Layers)
+    {
+      layer.ServiceUrl.Should().StartWith("https://services7.arcgis.com/",
+        $"Layer '{layer.Name}' should have a valid ArcGIS service URL");
+    }
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public void Atlas_ArcGisData_AllLayersHaveCategories()
+  {
+    var validCategories = new[] { "parcels", "zoning", "hazards", "admin", "infrastructure", "assessment" };
+    foreach (var layer in AtlasController.BentonArcGisData.Layers)
+    {
+      validCategories.Should().Contain(layer.Category,
+        $"Layer '{layer.Name}' has unknown category '{layer.Category}'");
+    }
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public void Atlas_ArcGisData_AllLayersHaveGeometryType()
+  {
+    var validTypes = new[] { "polygon", "point", "line" };
+    foreach (var layer in AtlasController.BentonArcGisData.Layers)
+    {
+      validTypes.Should().Contain(layer.GeometryType,
+        $"Layer '{layer.Name}' has unknown geometry type '{layer.GeometryType}'");
+    }
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public void Atlas_BuildArcGisParcelQueryUrl_FormatsCorrectly()
+  {
+    var url = AtlasController.BuildArcGisParcelQueryUrl("12345-001");
+    url.Should().Contain("PARCEL_ID");
+    url.Should().Contain("12345-001");
+    url.Should().Contain("f=geojson");
+    url.Should().Contain("outSR=4326");
+    url.Should().StartWith("https://services7.arcgis.com/");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public void Atlas_BuildArcGisParcelQueryUrl_EscapesSpecialChars()
+  {
+    var url = AtlasController.BuildArcGisParcelQueryUrl("ABC 123");
+    url.Should().Contain("ABC%20123");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public void Atlas_ServiceEndpoints_AreConsistent()
+  {
+    // All service URLs should use the same ArcGIS base domain
+    AtlasController.BentonArcGisData.ParcelServiceUrl.Should().Contain("NURlY7V8UHl6XumF");
+    AtlasController.BentonArcGisData.TaxLotServiceUrl.Should().Contain("NURlY7V8UHl6XumF");
+    AtlasController.BentonArcGisData.ZoningServiceUrl.Should().Contain("NURlY7V8UHl6XumF");
+    AtlasController.BentonArcGisData.CityLimitsServiceUrl.Should().Contain("NURlY7V8UHl6XumF");
+    AtlasController.BentonArcGisData.FloodZoneServiceUrl.Should().Contain("NURlY7V8UHl6XumF");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public async Task Atlas_ArcGisLayers_WithoutCountyClaims_ReturnsOk()
+  {
+    // ArcGIS layers endpoint is a static catalog — no county isolation needed
+    await using var db = CreateDbContext(nameof(Atlas_ArcGisLayers_WithoutCountyClaims_ReturnsOk));
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetArcGisLayers(null);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public async Task Atlas_ArcGisLayers_FilterByCategory()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ArcGisLayers_FilterByCategory));
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetArcGisLayers("parcels");
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public async Task Atlas_ParcelArcGisLink_WithoutClaims_ReturnsForbid()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelArcGisLink_WithoutClaims_ReturnsForbid));
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+
+    var result = await controller.GetParcelArcGisLink("12345");
+    result.Should().BeOfType<ForbidResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public async Task Atlas_ParcelArcGisLink_WithValidClaims_ParcelNotFound()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelArcGisLink_WithValidClaims_ParcelNotFound));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetParcelArcGisLink("NONEXISTENT");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas")]
+  public async Task Atlas_ParcelArcGisLink_WithValidParcel_ReturnsArcGisUrl()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelArcGisLink_WithValidParcel_ReturnsArcGisUrl));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    var prop = CreateProperty(countyId, "TEST-PARCEL-001");
+    db.Properties.Add(prop);
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext
+    {
+      User = CreatePrincipal(countyId, "BENTON"),
+    };
+
+    var result = await controller.GetParcelArcGisLink("TEST-PARCEL-001");
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+
+    // Verify source header
+    controller.Response.Headers["X-Atlas-Source"].ToString()
+      .Should().Be("benton-arcgis-fy2025");
+  }
 }
