@@ -2615,6 +2615,158 @@ public class CostForgeController : ControllerBase
     ];
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // Wave 33 — ETL/Sync
+  // ═══════════════════════════════════════════════════════════════
+
+  /// <summary>Start a simulated ETL sync job.</summary>
+  [HttpPost("analytics/etl/sync")]
+  public async Task<IActionResult> StartEtlSync([FromBody] EtlSyncRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    if (req.Records is null || req.Records.Count == 0)
+      return BadRequest(new { error = "At least one record is required" });
+
+    var sw = System.Diagnostics.Stopwatch.StartNew();
+    var processed = 0;
+    var failed = 0;
+    var skipped = 0;
+    var errors = new List<string>();
+
+    foreach (var rec in req.Records)
+    {
+      // Validate: must have a key field
+      if (string.IsNullOrWhiteSpace(rec.Key))
+      {
+        failed++;
+        errors.Add($"Record at index {processed + failed + skipped - 1}: missing key");
+        continue;
+      }
+
+      // Duplicate check via key
+      if (req.Records.Count(r => r.Key == rec.Key) > 1 && processed > 0)
+      {
+        // Simple dedup: skip subsequent duplicates
+        var alreadyCounted = req.Records.Take(processed + failed + skipped).Any(r => r.Key == rec.Key);
+        if (alreadyCounted) { skipped++; continue; }
+      }
+
+      // Validate: data must not be empty
+      if (rec.Data is null || rec.Data.Count == 0)
+      {
+        failed++;
+        errors.Add($"Record '{rec.Key}': empty data payload");
+        continue;
+      }
+
+      processed++;
+    }
+
+    sw.Stop();
+    var totalRecords = req.Records.Count;
+    var durationMs = sw.ElapsedMilliseconds > 0 ? sw.ElapsedMilliseconds : 1;
+    var rps = (double)processed / durationMs * 1000;
+
+    var entity = new TerraFusion.Core.Entities.EtlSyncJob
+    {
+      CountyId = ctx.CountyId,
+      SourceSystem = req.SourceSystem ?? "csv_import",
+      EntityType = req.EntityType ?? "parcels",
+      Direction = req.Direction ?? "inbound",
+      Status = failed == totalRecords ? "failed" : "completed",
+      TotalRecords = totalRecords,
+      ProcessedRecords = processed,
+      FailedRecords = failed,
+      SkippedRecords = skipped,
+      DurationMs = durationMs,
+      RecordsPerSecond = Math.Round(rps, 2),
+      Errors = errors.Count > 0 ? System.Text.Json.JsonSerializer.Serialize(errors) : null,
+      Watermark = DateTime.UtcNow,
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+      StartedAt = DateTime.UtcNow.AddMilliseconds(-durationMs),
+      CompletedAt = DateTime.UtcNow,
+    };
+    _db.Set<TerraFusion.Core.Entities.EtlSyncJob>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      sourceSystem = entity.SourceSystem,
+      entityType = entity.EntityType,
+      direction = entity.Direction,
+      status = entity.Status,
+      totalRecords = entity.TotalRecords,
+      processedRecords = entity.ProcessedRecords,
+      failedRecords = entity.FailedRecords,
+      skippedRecords = entity.SkippedRecords,
+      durationMs = entity.DurationMs,
+      recordsPerSecond = entity.RecordsPerSecond,
+      errors,
+    });
+  }
+
+  /// <summary>Get an ETL sync job by ID.</summary>
+  [HttpGet("analytics/etl/{id}")]
+  public async Task<IActionResult> GetEtlSyncJob(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.EtlSyncJob>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+    if (entity is null) return NotFound(new { error = "ETL job not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      sourceSystem = entity.SourceSystem,
+      entityType = entity.EntityType,
+      direction = entity.Direction,
+      status = entity.Status,
+      totalRecords = entity.TotalRecords,
+      processedRecords = entity.ProcessedRecords,
+      failedRecords = entity.FailedRecords,
+      skippedRecords = entity.SkippedRecords,
+      durationMs = entity.DurationMs,
+      recordsPerSecond = entity.RecordsPerSecond,
+      startedAt = entity.StartedAt,
+      completedAt = entity.CompletedAt,
+    });
+  }
+
+  /// <summary>Get ETL sync job history for the current county.</summary>
+  [HttpGet("analytics/etl/history")]
+  public async Task<IActionResult> GetEtlHistory([FromQuery] string? sourceSystem, [FromQuery] string? entityType)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.EtlSyncJob>()
+      .Where(e => e.CountyId == ctx.CountyId);
+    if (!string.IsNullOrEmpty(sourceSystem)) query = query.Where(e => e.SourceSystem == sourceSystem);
+    if (!string.IsNullOrEmpty(entityType)) query = query.Where(e => e.EntityType == entityType);
+
+    var items = await query.OrderByDescending(e => e.StartedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        sourceSystem = e.SourceSystem,
+        entityType = e.EntityType,
+        status = e.Status,
+        processedRecords = e.ProcessedRecords,
+        failedRecords = e.FailedRecords,
+        startedAt = e.StartedAt,
+      }),
+    });
+  }
+
   internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
   internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
 
@@ -2776,4 +2928,22 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Wave 33 — ETL/Sync DTOs
+// ═══════════════════════════════════════════════════════════════
+
+public class EtlSyncRequest
+{
+  public string? SourceSystem { get; set; }
+  public string? EntityType { get; set; }
+  public string? Direction { get; set; }
+  public List<EtlSyncRecord>? Records { get; set; }
+}
+
+public class EtlSyncRecord
+{
+  public string? Key { get; set; }
+  public Dictionary<string, string?>? Data { get; set; }
 }
