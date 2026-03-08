@@ -123,6 +123,8 @@ const BENTON_SUPERVISOR = {
   userId: 'supervisor-001',
   roles: ['supervisor', 'appraiser'],
   mode: 'muse',
+  confirmation: true,
+  reasonCode: 'appeal_response',
 };
 
 const YAKIMA_APPRAISER = {
@@ -248,10 +250,11 @@ describe('Phase 8.3 Tools - Gate Validation', () => {
       assert.strictEqual(tool.writeLane, 'dais');
     });
 
-    it('Gate 5: write_low does not require confirmation', () => {
+    it('Gate 5: write_low requires confirmation + reason code', () => {
       const tool = registry.getTool('draft_appeal_response');
-      assert.strictEqual(tool.requiresConfirmation, false);
-      assert.strictEqual(tool.reasonCodeRequired, false);
+      assert.strictEqual(tool.requiresConfirmation, true);
+      assert.strictEqual(tool.reasonCodeRequired, true);
+      assert.ok(tool.reasonCodes.length > 0);
     });
 
     it('Gate 6: has payload_ref PII handling', () => {

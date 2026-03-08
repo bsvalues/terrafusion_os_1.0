@@ -428,6 +428,131 @@ export class TraceService {
 export const traceService = new TraceService();
 
 // ============================================================================
+// Audit Record Mapping
+// ============================================================================
+
+/**
+ * Audit-facing record derived from a trace event.
+ * Maps internal trace events to the fields required by FISMA audit exports:
+ * who, what, decision, errorCode, reasonCode, correlationId, timestamp.
+ */
+export interface AuditRecord {
+  correlationId: string;
+  toolId: string;
+  decision: 'blocked' | 'allowed' | 'failed' | 'redaction';
+  errorCode: string | null;
+  userId: string;
+  countyId: string;
+  roles: string[];
+  reasonCode: string | null;
+  timestamp: string;
+  component: string | null;
+  summary: string;
+}
+
+/** Event types that represent redaction workflow events. */
+const REDACTION_EVENT_TYPES: ReadonlySet<string> = new Set([
+  'redaction_requested',
+  'redaction_ticket_created',
+]);
+
+/** PII patterns for audit summary sanitization. */
+const AUDIT_SSN_PATTERN = /\b\d{3}-\d{2}-\d{4}\b/g;
+const AUDIT_PHONE_PATTERN = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g;
+const AUDIT_EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}\b/gi;
+
+/**
+ * Sanitize an audit summary string by replacing PII tokens.
+ * This ensures SSNs, phone numbers, and emails never appear in NDJSON exports.
+ */
+function sanitizeAuditSummary(summary: string): string {
+  return summary
+    .replace(AUDIT_SSN_PATTERN, '[SSN_REDACTED]')
+    .replace(AUDIT_PHONE_PATTERN, '[PHONE_REDACTED]')
+    .replace(AUDIT_EMAIL_PATTERN, '[EMAIL_REDACTED]');
+}
+
+/** Governance error codes that indicate a policy-blocked write attempt. */
+const GOVERNANCE_ERROR_CODES: ReadonlySet<string> = new Set([
+  'CONFIRMATION_REQUIRED',
+  'REASON_CODE_REQUIRED',
+  'REASON_CODE_INVALID',
+  'PERMISSION_DENIED',
+  'SUPERVISOR_APPROVAL_REQUIRED',
+  'SUPERVISOR_ROLE_INVALID',
+  'WRITE_LANE_MISMATCH',
+  'WRITE_LANE_REQUIRED',
+  'POLICY_DENIED',
+]);
+
+/**
+ * Map a TraceEvent to an AuditRecord with an explicit `decision` field.
+ *
+ * Decision logic:
+ *   - tool_failed + governance errorCode → "blocked"
+ *   - tool_failed + other errorCode → "failed"
+ *   - tool_completed → "allowed"
+ *   - tool_invoked → "allowed" (in-progress)
+ */
+export function toAuditRecord(event: TraceEvent): AuditRecord {
+  let decision: AuditRecord['decision'];
+  if (REDACTION_EVENT_TYPES.has(event.type)) {
+    decision = 'redaction';
+  } else if (event.type === 'tool_failed') {
+    decision = event.errorCode && GOVERNANCE_ERROR_CODES.has(event.errorCode)
+      ? 'blocked'
+      : 'failed';
+  } else {
+    decision = 'allowed';
+  }
+
+  return {
+    correlationId: event.correlationId,
+    toolId: event.toolId,
+    decision,
+    errorCode: event.errorCode ?? null,
+    userId: event.context.userId,
+    countyId: event.context.countyId,
+    roles: [...event.context.roles],
+    reasonCode: event.context.reasonCode ?? null,
+    timestamp: event.timestamp,
+    component: event.component ?? null,
+    summary: sanitizeAuditSummary(event.summary),
+  };
+}
+
+/**
+ * Export trace events as NDJSON (newline-delimited JSON) audit records.
+ * Each line is a self-contained JSON object suitable for log ingestion,
+ * SIEM forwarding, or FISMA audit evidence packages.
+ */
+/** Options for NDJSON export with optional retention window and audit format. */
+export interface ExportNDJSONOptions {
+  auditFormat?: boolean;
+  /** ISO 8601 lower bound (inclusive). Events before this are excluded. */
+  from?: string;
+  /** ISO 8601 upper bound (inclusive). Events after this are excluded. */
+  to?: string;
+}
+
+export function exportNDJSON(
+  events: TraceEvent[],
+  options: ExportNDJSONOptions = {}
+): string {
+  let filtered = events;
+  const fromBound = options.from;
+  const toBound = options.to;
+  if (fromBound) {
+    filtered = filtered.filter(e => e.timestamp >= fromBound);
+  }
+  if (toBound) {
+    filtered = filtered.filter(e => e.timestamp <= toBound);
+  }
+  const mapper = options.auditFormat ? toAuditRecord : (e) => e;
+  return filtered.map(e => JSON.stringify(mapper(e))).join('\n');
+}
+
+// ============================================================================
 // Export Types
 // ============================================================================
 

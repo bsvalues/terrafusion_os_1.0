@@ -53,6 +53,15 @@ export function unwrapBackend<T>(result: BackendResult<T>, label: string): T {
 }
 
 // ============================================================================
+// Call Options
+// ============================================================================
+
+export interface BackendCallOptions {
+  /** Bearer token. When provided, sets Authorization header. */
+  token?: string;
+}
+
+// ============================================================================
 // Client
 // ============================================================================
 
@@ -61,13 +70,18 @@ export function unwrapBackend<T>(result: BackendResult<T>, label: string): T {
  */
 export async function backendPost<T = unknown>(
   path: string,
-  body: unknown
+  body: unknown,
+  options?: BackendCallOptions
 ): Promise<BackendResult<T>> {
   const url = `${resolveBaseUrl()}${path}`;
   try {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (options?.token) {
+      headers['Authorization'] = `Bearer ${options.token}`;
+    }
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(15_000),
     });
@@ -87,13 +101,18 @@ export async function backendPost<T = unknown>(
  * GET from a backend endpoint. Returns typed result.
  */
 export async function backendGet<T = unknown>(
-  path: string
+  path: string,
+  options?: BackendCallOptions
 ): Promise<BackendResult<T>> {
   const url = `${resolveBaseUrl()}${path}`;
   try {
+    const headers: Record<string, string> = { 'Accept': 'application/json' };
+    if (options?.token) {
+      headers['Authorization'] = `Bearer ${options.token}`;
+    }
     const res = await fetch(url, {
       method: 'GET',
-      headers: { 'Accept': 'application/json' },
+      headers,
       signal: AbortSignal.timeout(15_000),
     });
     const text = await res.text();

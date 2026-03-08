@@ -243,14 +243,14 @@ export default function LayerWorksModule() {
                       variant='outline'
                       style={{
                         background: analysis.status === 'complete'
-                          ? 'hsl(142 71% 45% / 0.15)'
+                          ? 'hsl(var(--tf-success-hs) 45% / 0.15)'
                           : analysis.status === 'running'
-                          ? 'hsl(38 92% 50% / 0.15)'
+                          ? 'hsl(var(--tf-warning-hs) 50% / 0.15)'
                           : 'hsl(var(--tf-muted) / 0.1)',
                         color: analysis.status === 'complete'
-                          ? 'hsl(142 71% 45%)'
+                          ? 'hsl(var(--tf-success-hs) 45%)'
                           : analysis.status === 'running'
-                          ? 'hsl(38 92% 50%)'
+                          ? 'hsl(var(--tf-warning-hs) 50%)'
                           : 'hsl(var(--tf-muted))',
                         borderColor: analysis.status === 'complete'
                           ? 'hsl(142 71% 45% / 0.3)'
@@ -283,9 +283,9 @@ export default function LayerWorksModule() {
                   {analysis.status === 'running' && (
                     <div className='flex items-center gap-2'>
                       <div className='h-1 flex-1 rounded-full overflow-hidden' style={{ background: 'hsl(var(--tf-border))' }}>
-                        <div className='h-full rounded-full animate-pulse' style={{ width: '60%', background: 'hsl(38 92% 50%)' }} />
+                        <div className='h-full rounded-full animate-pulse' style={{ width: '60%', background: 'hsl(var(--tf-warning-hs) 50%)' }} />
                       </div>
-                      <span className='text-xs' style={{ color: 'hsl(38 92% 50%)' }}>Processing...</span>
+                      <span className='text-xs' style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }}>Processing...</span>
                     </div>
                   )}
                 </div>

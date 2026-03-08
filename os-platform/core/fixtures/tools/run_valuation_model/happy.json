@@ -1,0 +1,17 @@
+{
+  "params": {
+    "county": "benton",
+    "parcelId": "P-500",
+    "taxYear": 2026,
+    "modelType": "cost",
+    "reasonCode": "annual_certification"
+  },
+  "context": {
+    "confirmation": true,
+    "reasonCode": "annual_certification"
+  },
+  "assert": {
+    "resultKeys": ["estimatedValue", "confidence", "components", "parcelId"],
+    "noPii": true
+  }
+}

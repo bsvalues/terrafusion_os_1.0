@@ -302,6 +302,8 @@ secrets/
 
 # Database files
 *.db
+*.db-wal
+*.db-shm
 *.sqlite
 *.sqlite3
 data/postgres*/
@@ -560,3 +562,15 @@ tools/registry/autonomy-viewer/bin/*.mjs
 # Generated pact artifacts
 pact/
 _archive/
+
+# Dependency scope analysis artifacts (generated)
+DEPENDENCY_SCOPE_*.json
+DEPENDENCY_SCOPE_REPORT.md
+
+# Quarantine dry-run scratch directories
+tf_quarantine_*/
+
+# Ad-hoc tool reports (generated, not source)
+tools/reports/
+# Exception: TDC violation inventory (classification artifact, tracked)
+!tools/reports/tdc_violation_inventory.json

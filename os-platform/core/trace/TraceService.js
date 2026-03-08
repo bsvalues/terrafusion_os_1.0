@@ -11,6 +11,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SCHEMA_VERSION = exports.DEFAULT_RING_BUFFER_SIZE = exports.traceService = exports.TraceService = void 0;
 exports.isAuditEventType = isAuditEventType;
+exports.toAuditRecord = toAuditRecord;
+exports.exportNDJSON = exportNDJSON;
 const crypto_1 = require("crypto");
 const sanitizeForTrace_js_1 = require("../security/sanitizeForTrace.js");
 // ============================================================================
@@ -350,3 +352,83 @@ exports.TraceService = TraceService;
 // Singleton Instance
 // ============================================================================
 exports.traceService = new TraceService();
+/** Event types that represent redaction workflow events. */
+const REDACTION_EVENT_TYPES = new Set([
+    'redaction_requested',
+    'redaction_ticket_created',
+]);
+/** PII patterns for audit summary sanitization. */
+const AUDIT_SSN_PATTERN = /\b\d{3}-\d{2}-\d{4}\b/g;
+const AUDIT_PHONE_PATTERN = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g;
+const AUDIT_EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}\b/gi;
+/**
+ * Sanitize an audit summary string by replacing PII tokens.
+ * This ensures SSNs, phone numbers, and emails never appear in NDJSON exports.
+ */
+function sanitizeAuditSummary(summary) {
+    return summary
+        .replace(AUDIT_SSN_PATTERN, '[SSN_REDACTED]')
+        .replace(AUDIT_PHONE_PATTERN, '[PHONE_REDACTED]')
+        .replace(AUDIT_EMAIL_PATTERN, '[EMAIL_REDACTED]');
+}
+/** Governance error codes that indicate a policy-blocked write attempt. */
+const GOVERNANCE_ERROR_CODES = new Set([
+    'CONFIRMATION_REQUIRED',
+    'REASON_CODE_REQUIRED',
+    'REASON_CODE_INVALID',
+    'PERMISSION_DENIED',
+    'SUPERVISOR_APPROVAL_REQUIRED',
+    'SUPERVISOR_ROLE_INVALID',
+    'WRITE_LANE_MISMATCH',
+    'WRITE_LANE_REQUIRED',
+    'POLICY_DENIED',
+]);
+/**
+ * Map a TraceEvent to an AuditRecord with an explicit `decision` field.
+ *
+ * Decision logic:
+ *   - tool_failed + governance errorCode → "blocked"
+ *   - tool_failed + other errorCode → "failed"
+ *   - tool_completed → "allowed"
+ *   - tool_invoked → "allowed" (in-progress)
+ */
+function toAuditRecord(event) {
+    let decision;
+    if (REDACTION_EVENT_TYPES.has(event.type)) {
+        decision = 'redaction';
+    }
+    else if (event.type === 'tool_failed') {
+        decision = event.errorCode && GOVERNANCE_ERROR_CODES.has(event.errorCode)
+            ? 'blocked'
+            : 'failed';
+    }
+    else {
+        decision = 'allowed';
+    }
+    return {
+        correlationId: event.correlationId,
+        toolId: event.toolId,
+        decision,
+        errorCode: event.errorCode ?? null,
+        userId: event.context.userId,
+        countyId: event.context.countyId,
+        roles: [...event.context.roles],
+        reasonCode: event.context.reasonCode ?? null,
+        timestamp: event.timestamp,
+        component: event.component ?? null,
+        summary: sanitizeAuditSummary(event.summary),
+    };
+}
+function exportNDJSON(events, options = {}) {
+    let filtered = events;
+    const fromBound = options.from;
+    const toBound = options.to;
+    if (fromBound) {
+        filtered = filtered.filter(e => e.timestamp >= fromBound);
+    }
+    if (toBound) {
+        filtered = filtered.filter(e => e.timestamp <= toBound);
+    }
+    const mapper = options.auditFormat ? toAuditRecord : (e) => e;
+    return filtered.map(e => JSON.stringify(mapper(e))).join('\n');
+}

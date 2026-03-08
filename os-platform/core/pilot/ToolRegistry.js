@@ -69,9 +69,15 @@ function validateTool(tool, index) {
         }
     }
     // Risk policy validation (Gate 5)
-    if (tool.risk === 'write_high') {
+    if (tool.risk !== 'read_only') {
+        if (tool.requiresConfirmation !== true) {
+            violations.push(`${prefix}: non-read_only tools must set requiresConfirmation: true`);
+        }
+        if (tool.reasonCodeRequired !== true) {
+            violations.push(`${prefix}: non-read_only tools must set reasonCodeRequired: true`);
+        }
         if (!tool.reasonCodes || tool.reasonCodes.length === 0) {
-            violations.push(`${prefix}: write_high tools must specify reasonCodes[]`);
+            violations.push(`${prefix}: non-read_only tools must specify reasonCodes[]`);
         }
     }
     if (tool.risk === 'irreversible') {

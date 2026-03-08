@@ -91,6 +91,69 @@ public sealed class R1Week5Cx16RealLoginE2ETests
             .Should().Be(Cx16RealLoginFactory.BentonParcelId);
     }
 
+    [Fact]
+    public async Task RealLogin_Assessor_GetProperties_Returns200_Not500()
+    {
+        using var client = _factory.CreateClient();
+
+        var loginResponse = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            Email = "assessor@terrafusionmarket.com",
+            Password = "Government2026!",
+        });
+
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var loginBody = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var token = loginBody.GetProperty("token").GetString();
+        token.Should().NotBeNullOrWhiteSpace();
+
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var propertiesResponse = await client.GetAsync("/api/properties?page=1&pageSize=1");
+
+        propertiesResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var payload = await propertiesResponse.Content.ReadFromJsonAsync<JsonElement>();
+        payload.TryGetProperty("items", out var items).Should().BeTrue();
+        items.ValueKind.Should().Be(JsonValueKind.Array);
+        items.GetArrayLength().Should().BeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task RealLogin_Assessor_GetPropertiesStats_Returns200_Not500()
+    {
+        using var client = _factory.CreateClient();
+
+        var loginResponse = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            Email = "assessor@terrafusionmarket.com",
+            Password = "Government2026!",
+        });
+
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var loginBody = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var token = loginBody.GetProperty("token").GetString();
+        token.Should().NotBeNullOrWhiteSpace();
+
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var statsResponse = await client.GetAsync("/api/properties/stats");
+
+        statsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var payload = await statsResponse.Content.ReadFromJsonAsync<JsonElement>();
+        payload.TryGetProperty("totalProperties", out var totalProperties).Should().BeTrue();
+        totalProperties.ValueKind.Should().Be(JsonValueKind.Number);
+        payload.TryGetProperty("totalAssessedValue", out var totalAssessedValue).Should().BeTrue();
+        totalAssessedValue.ValueKind.Should().Be(JsonValueKind.Number);
+        payload.TryGetProperty("averageAssessedValue", out var averageAssessedValue).Should().BeTrue();
+        averageAssessedValue.ValueKind.Should().Be(JsonValueKind.Number);
+    }
+
     // ── 2. Token carries perm claims (structural assertion) ──────────
 
     [Fact]

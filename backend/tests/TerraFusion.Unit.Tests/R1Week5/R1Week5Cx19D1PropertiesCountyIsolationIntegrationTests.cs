@@ -107,6 +107,7 @@ public sealed class R1Week5Cx19D1PropertiesCountyIsolationIntegrationTests
 public sealed class Cx19D1PropertiesIsolationFactory : WebApplicationFactory<ApiProgram>
 {
     private static readonly Guid BentonCountyId = Guid.Parse("d1a10000-0000-0000-0000-000000000001");
+    private static readonly Guid YakimaCountyId = Guid.Parse("d1a10000-0000-0000-0000-000000000002");
     private static readonly Guid BentonPropertyId = Guid.Parse("d1a10000-0000-0000-0000-0000000000a1");
     private static readonly Guid YakimaPropertyId = Guid.Parse("d1a10000-0000-0000-0000-0000000000b1");
     public static readonly Guid PluginAllPermsId = Guid.Parse("d1a10000-0000-0000-0000-0000000000f1");
@@ -145,10 +146,10 @@ public sealed class Cx19D1PropertiesIsolationFactory : WebApplicationFactory<Api
                 mock.Setup(m => m.GetPropertyByIdAsync(BentonPropertyId))
                     .ReturnsAsync(new PropertyDto
                     {
-                        Id = 1,
+                        Id = BentonPropertyId,
                         ParcelNumber = "CX19D1-BENTON-P1",
                         Address = "100 Benton Ave",
-                        CountyId = 1,
+                        CountyId = BentonCountyId,
                         CountyName = "Benton",
                         AssessedValue = 250000,
                         LandValue = 100000,
@@ -158,10 +159,10 @@ public sealed class Cx19D1PropertiesIsolationFactory : WebApplicationFactory<Api
                 mock.Setup(m => m.GetPropertyByIdAsync(YakimaPropertyId))
                     .ReturnsAsync(new PropertyDto
                     {
-                        Id = 2,
+                        Id = YakimaPropertyId,
                         ParcelNumber = "CX19D1-YAKIMA-P1",
                         Address = "200 Yakima Ave",
-                        CountyId = 2,
+                        CountyId = YakimaCountyId,
                         CountyName = "Yakima",
                         AssessedValue = 300000,
                         LandValue = 120000,
@@ -171,10 +172,10 @@ public sealed class Cx19D1PropertiesIsolationFactory : WebApplicationFactory<Api
                 mock.Setup(m => m.GetPropertyByIdAsync(BentonPropertyId, BentonCountyId))
                     .ReturnsAsync(new PropertyDto
                     {
-                        Id = 1,
+                        Id = BentonPropertyId,
                         ParcelNumber = "CX19D1-BENTON-P1",
                         Address = "100 Benton Ave",
-                        CountyId = 1,
+                        CountyId = BentonCountyId,
                         CountyName = "Benton",
                         AssessedValue = 250000,
                         LandValue = 100000,

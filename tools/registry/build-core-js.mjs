@@ -30,6 +30,10 @@ const targets = [
     out: 'os-platform/core/pilot/backendClient.js',
   },
   {
+    source: 'os-platform/core/pilot/pilotAuth.ts',
+    out: 'os-platform/core/pilot/pilotAuth.js',
+  },
+  {
     source: 'os-platform/core/pilot/ToolRunner.ts',
     out: 'os-platform/core/pilot/ToolRunner.js',
   },

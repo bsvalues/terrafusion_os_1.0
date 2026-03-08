@@ -141,6 +141,87 @@ public class AtlasController : ControllerBase
         return !string.IsNullOrWhiteSpace(parcelId) && ParcelIdPattern.IsMatch(parcelId);
     }
 
+    private ActionResult BuildPostR1DisabledResponse(string operation, string featureName, string detail, string problemType)
+    {
+        HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
+
+        _logger.LogWarning(
+            "Atlas endpoint {Operation} was invoked, but {FeatureName} remains Post-R1 and is intentionally disabled",
+            operation,
+            featureName);
+
+        var problem = new ProblemDetails
+        {
+            Title = $"{featureName} is not enabled for R1",
+            Detail = detail,
+            Status = StatusCodes.Status501NotImplemented,
+            Type = $"https://terrafusion.local/problems/{problemType}"
+        };
+
+        problem.Extensions["scope"] = "Post-R1";
+        problem.Extensions["operation"] = operation;
+        problem.Extensions["feature"] = featureName;
+
+        return StatusCode(StatusCodes.Status501NotImplemented, problem);
+    }
+
+    // ── Post-R1 Atlas Suite Carve-Outs ──────────────────────────────
+
+    [HttpGet("layers")]
+    [RequiresPermission("read:parcel")]
+    public IActionResult GetLayers()
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(GetLayers),
+            "Atlas layer catalog",
+            "The current Atlas backend only supports per-parcel layer truth for R1. The broader layer catalog API is intentionally disabled until a real GIS implementation ships.",
+            "atlas-layer-catalog-post-r1");
+    }
+
+    [HttpPost("parcels/search")]
+    [RequiresPermission("read:parcel")]
+    public IActionResult SearchParcels([FromBody] object? request)
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(SearchParcels),
+            "Atlas parcel search",
+            "The current Atlas backend only supports parcel-specific truth for R1. The broader parcel search API is intentionally disabled until a real GIS/search implementation ships.",
+            "atlas-parcel-search-post-r1");
+    }
+
+    [HttpGet("zoning")]
+    [RequiresPermission("read:parcel")]
+    public IActionResult GetZoningDistricts()
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(GetZoningDistricts),
+            "Atlas zoning overlays",
+            "The current Atlas backend does not ship zoning overlay datasets in strict R1. This route is intentionally disabled until a real GIS overlay implementation ships.",
+            "atlas-zoning-post-r1");
+    }
+
+    [HttpGet("flood-zones")]
+    [RequiresPermission("read:parcel")]
+    public IActionResult GetFloodZones()
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(GetFloodZones),
+            "Atlas flood zones",
+            "The current Atlas backend does not ship flood-zone overlays in strict R1. This route is intentionally disabled until a real GIS overlay implementation ships.",
+            "atlas-flood-zones-post-r1");
+    }
+
+    [HttpGet("stats")]
+    [RequiresPermission("read:parcel")]
+    public IActionResult GetStats()
+    {
+        return BuildPostR1DisabledResponse(
+            nameof(GetStats),
+            "Atlas spatial stats",
+            "The current Atlas backend does not ship a county-wide GIS stats API in strict R1. This route is intentionally disabled until a real GIS implementation ships.",
+            "atlas-stats-post-r1");
+    }
+
     // ── GET /api/atlas/parcels/{parcelId} ────────────────────────────
 
     /// <summary>

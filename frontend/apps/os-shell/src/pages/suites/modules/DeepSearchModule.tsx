@@ -22,10 +22,10 @@ interface SearchResult {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; icon: typeof FileText }> = {
-  document: { label: 'Document', color: 'hsl(200 80% 55%)', icon: FileText },
-  evidence: { label: 'Evidence', color: 'hsl(140 70% 45%)', icon: Shield },
-  photo: { label: 'Photo', color: 'hsl(270 70% 60%)', icon: Camera },
-  defense_packet: { label: 'Defense Packet', color: 'hsl(45 90% 55%)', icon: Package },
+  document: { label: 'Document', color: 'hsl(var(--tf-network-blue-hs) 55%)', icon: FileText },
+  evidence: { label: 'Evidence', color: 'hsl(var(--tf-success-hs) 45%)', icon: Shield },
+  photo: { label: 'Photo', color: 'hsl(var(--tf-info-hs) 60%)', icon: Camera },
+  defense_packet: { label: 'Defense Packet', color: 'hsl(var(--tf-warning-hs) 55%)', icon: Package },
 };
 
 /** Simulated search index for Benton County documents */

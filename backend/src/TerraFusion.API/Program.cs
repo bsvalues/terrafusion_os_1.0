@@ -40,6 +40,44 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+static bool TryReadBoolean(string? value, out bool parsed)
+{
+    if (bool.TryParse(value, out parsed))
+    {
+        return true;
+    }
+
+    if (string.Equals(value, "1", StringComparison.OrdinalIgnoreCase))
+    {
+        parsed = true;
+        return true;
+    }
+
+    if (string.Equals(value, "0", StringComparison.OrdinalIgnoreCase))
+    {
+        parsed = false;
+        return true;
+    }
+
+    parsed = false;
+    return false;
+}
+
+static bool IsFeatureEnabled(IConfiguration configuration, string configKey, string envVar, bool defaultValue = false)
+{
+    if (TryReadBoolean(configuration[configKey], out var configValue))
+    {
+        return configValue;
+    }
+
+    if (TryReadBoolean(Environment.GetEnvironmentVariable(envVar), out var envValue))
+    {
+        return envValue;
+    }
+
+    return defaultValue;
+}
+
 // 🔍 TELEMETRY: Phase 9.1 Nervous System
 var serviceName = "terrafusion-iron";
 var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://otel-collector:4317";
@@ -229,6 +267,8 @@ builder.Services.AddScoped<TerraFusion.Core.Services.LegacyDatabaseService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
 // Register Dynamic Property Service (REQUIRED by HarrisPacsLegacyService)
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
+// Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
+builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
 
 
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
@@ -605,7 +645,19 @@ builder.Services.AddSignalR(options =>
 });
 
 // Register Quantum Metrics Background Service for real-time broadcasting
-builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
+var enableQuantumMetricsBackgroundService = IsFeatureEnabled(
+    builder.Configuration,
+    "Features:EnableQuantumMetricsBackgroundService",
+    "TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE");
+
+if (enableQuantumMetricsBackgroundService)
+{
+    builder.Services.AddHostedService<QuantumMetricsBackgroundService>();
+}
+else
+{
+    Console.WriteLine("ℹ️ QuantumMetricsBackgroundService disabled by default. Set TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE=true to enable.");
+}
 
 // Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
@@ -673,6 +725,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+
+// DX-05: Correlation ID — ensure every response (including 400/403/404/500) carries
+// X-Correlation-ID for traceability. Registered early so it wraps all downstream middleware.
+app.UseCorrelationId();
 
 // Prometheus metrics middleware
 app.UseHttpMetrics();

@@ -49,7 +49,7 @@ public class PropertyService : IPropertyService
             .Take(pageSize)
             .ToListAsync();
 
-        var propertyDtos = _mapper.Map<List<PropertyDto>>(properties);
+        var propertyDtos = properties.Select(MapPropertyDto).ToList();
 
         return new PagedResult<PropertyDto>
         {
@@ -70,7 +70,7 @@ public class PropertyService : IPropertyService
             .Take(100) // Limit results
             .ToListAsync();
 
-        return _mapper.Map<IEnumerable<PropertyDto>>(properties);
+        return properties.Select(MapPropertyDto).ToList();
     }
 
     public async Task<PropertyDto?> GetPropertyByIdAsync(Guid id, Guid countyId)
@@ -80,7 +80,7 @@ public class PropertyService : IPropertyService
             .Include(p => p.Valuations)
             .FirstOrDefaultAsync(p => p.Id == id && p.CountyId == countyId);
 
-        return property != null ? _mapper.Map<PropertyDto>(property) : null;
+        return property != null ? MapPropertyDto(property) : null;
     }
 
     public async Task<PropertyDto?> GetPropertyByIdAsync(Guid id)
@@ -90,7 +90,7 @@ public class PropertyService : IPropertyService
             .Include(p => p.Valuations)
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        return property != null ? _mapper.Map<PropertyDto>(property) : null;
+        return property != null ? MapPropertyDto(property) : null;
     }
 
     public async Task<PropertyDto?> GetPropertyByParcelAsync(string parcelNumber)
@@ -100,7 +100,7 @@ public class PropertyService : IPropertyService
             .Include(p => p.Valuations)
             .FirstOrDefaultAsync(p => p.ParcelNumber == parcelNumber);
 
-        return property != null ? _mapper.Map<PropertyDto>(property) : null;
+        return property != null ? MapPropertyDto(property) : null;
     }
 
     public async Task<IEnumerable<ValuationDto>> GetPropertyValuationsAsync(Guid propertyId)
@@ -111,7 +111,7 @@ public class PropertyService : IPropertyService
             .OrderByDescending(v => v.CreatedAt)
             .ToListAsync();
 
-        return _mapper.Map<IEnumerable<ValuationDto>>(valuations);
+        return valuations.Select(MapValuationDto).ToList();
     }
 
     public async Task<ValuationDto> CreateValuationAsync(CreateValuationDto createDto)
@@ -133,7 +133,7 @@ public class PropertyService : IPropertyService
             .Reference(v => v.AIModel)
             .LoadAsync();
 
-        return _mapper.Map<ValuationDto>(valuation);
+        return MapValuationDto(valuation);
     }
 
     public async Task<PropertyDto> CreatePropertyAsync(PropertyCreateRequest createDto)
@@ -152,28 +152,38 @@ public class PropertyService : IPropertyService
             .Reference(p => p.County)
             .LoadAsync();
 
-        return _mapper.Map<PropertyDto>(property);
+        return MapPropertyDto(property);
     }
 
     public async Task<PropertyStatsDto> GetPropertyStatsAsync()
     {
         var totalProperties = await _context.Properties.CountAsync();
-        var totalAssessedValue = await _context.Properties.SumAsync(p => p.AssessedValue);
+        // SQLite provider cannot translate decimal SUM; aggregate on client side.
+        var totalAssessedValue = (await _context.Properties
+            .AsNoTracking()
+            .Select(p => p.AssessedValue)
+            .ToListAsync())
+            .Sum();
         var avgAssessedValue = totalProperties > 0 ? totalAssessedValue / totalProperties : 0;
 
-        var countiesCounts = await _context.Properties
+        var countyNames = await _context.Properties
             .Include(p => p.County)
-            .GroupBy(p => p.County.Name)
-            .Select(g => new { County = g.Key, Count = g.Count() })
+            .AsNoTracking()
+            .Select(p => p.County != null ? p.County.Name : "Unknown")
             .ToListAsync();
+
+        var propertiesByCounty = countyNames
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .GroupBy(name => name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
 
         return new PropertyStatsDto
         {
             TotalProperties = totalProperties,
             TotalAssessedValue = totalAssessedValue,
             AverageAssessedValue = avgAssessedValue,
-            CountiesCount = countiesCounts.Count,
-            PropertiesByCounty = countiesCounts.ToDictionary(x => x.County, x => x.Count)
+            CountiesCount = propertiesByCounty.Count,
+            PropertiesByCounty = propertiesByCounty
         };
     }
 
@@ -215,6 +225,42 @@ public class PropertyService : IPropertyService
 
         _logger.LogInformation("Imported {ImportedCount} new properties", importedCount);
 
-        return _mapper.Map<IEnumerable<PropertyDto>>(propertyEntities);
+        return propertyEntities.Select(MapPropertyDto).ToList();
+    }
+
+    private static PropertyDto MapPropertyDto(Property property)
+    {
+        return new PropertyDto
+        {
+            Id = property.Id,
+            ParcelNumber = property.ParcelNumber,
+            Address = property.Address,
+            OwnerName = property.OwnerName,
+            AssessedValue = property.AssessedValue,
+            LandValue = property.LandValue,
+            ImprovementValue = property.ImprovementValue,
+            CountyId = property.CountyId,
+            CountyName = property.County?.Name ?? string.Empty,
+            CreatedAt = property.CreatedAt,
+            UpdatedAt = property.UpdatedAt
+        };
+    }
+
+    private static ValuationDto MapValuationDto(Valuation valuation)
+    {
+        return new ValuationDto
+        {
+            Id = valuation.Id,
+            PropertyId = valuation.PropertyId,
+            AIModelId = valuation.AIModelId,
+            AIModelName = valuation.AIModel?.Name ?? string.Empty,
+            EstimatedValue = valuation.EstimatedValue,
+            Confidence = valuation.Confidence,
+            Method = valuation.Method,
+            Notes = valuation.Notes,
+            CreatedAt = valuation.CreatedAt,
+            ReviewedAt = valuation.ReviewedAt,
+            ReviewedBy = valuation.ReviewedBy
+        };
     }
 }

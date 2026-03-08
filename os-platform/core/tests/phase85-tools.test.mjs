@@ -44,6 +44,8 @@ const BENTON_MUSE_SUPERVISOR = {
   userId: 'supervisor-001',
   roles: ['supervisor'],
   mode: 'muse',
+  confirmation: true,
+  reasonCode: 'operator_correction',
 };
 
 const BENTON_PILOT = {
@@ -51,6 +53,8 @@ const BENTON_PILOT = {
   userId: 'supervisor-001',
   roles: ['supervisor'],
   mode: 'pilot',
+  confirmation: true,
+  reasonCode: 'workflow_update',
 };
 
 const YAKIMA_MUSE = {

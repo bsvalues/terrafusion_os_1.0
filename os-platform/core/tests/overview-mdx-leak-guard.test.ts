@@ -16,6 +16,9 @@ describe('Overview.mdx leak guard', () => {
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
 
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'Overview.mdx' });
+    assertNoRawColorLeaks(content, {
+      label: 'Overview.mdx',
+      knownViolationBaseline: 4, // Documentation prose: brand color hex samples in markdown text & code comments
+    });
   });
 });

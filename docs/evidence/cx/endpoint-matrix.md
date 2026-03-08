@@ -1,0 +1,91 @@
+# CX Lane: R1 Endpoint Contract Matrix
+
+**Lane:** cx
+**Date:** 2026-03-07
+**Verified by:** Claude Code (CX lane agent)
+**Command canon version:** r1-canon-2026-03-07
+
+---
+
+## R1 Live Endpoints
+
+All endpoints verified against controller source at branch HEAD `6ff009ae4005635e4afb87e61f3fe2ce88b70545`.
+
+### CostForge Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| POST | `/api/costforge/calculate` | CostForgeController | YES (`[Authorize]` + `[RequiresPermission("calculate:property-cost")]`) | YES | Single-property live calculation. Validates PropertyId or ParcelNumber exists in caller's county. Audit-logged. |
+| GET | `/api/costforge/{propertyId}/breakdown` | CostForgeController | YES (`[RequiresPermission("read:cost-breakdown")]`) | YES | Cost breakdown for property. County-scoped via `PropertyExistsInCountyAsync`. |
+| GET | `/api/costforge/compare/{propertyId1}/{propertyId2}` | CostForgeController | YES (`[RequiresPermission("read:cost-comparison")]`) | YES | Both properties must exist in caller's county. |
+| GET | `/api/costforge/{propertyId}/forecast` | CostForgeController | YES (`[RequiresPermission("read:cost-forecast")]`) | YES | Years param clamped 1-20. |
+| GET | `/api/costforge/factors/{region}` | CostForgeController | YES (`[RequiresPermission("read:cost-factors")]`) | NO (region-based) | Regional cost factors lookup. |
+| GET | `/api/costforge/matrix` | CostForgeController | YES (`[RequiresPermission("read:cost-matrix")]`) | NO (query params) | Cost matrix by building type and region. |
+| GET | `/api/costforge/status` | CostForgeController | YES (`[RequiresPermission("read:system-status")]`) | NO | System status. |
+| GET | `/api/costforge/agents/status` | CostForgeController | YES (`[RequiresPermission("read:ai-agents")]`) | NO | AI agent swarm status. |
+| GET | `/api/costforge/metrics` | CostForgeController | YES (`[RequiresPermission("read:performance-metrics")]`) | NO | Performance metrics. |
+| POST | `/api/costforge/batch-calculate` | CostForgeController | YES (`[RequiresPermission("calculate:batch-valuation")]`) | YES | STUB -- returns "not yet implemented". |
+| POST | `/api/costforge/agents/scale` | CostForgeController | YES (`[RequiresPermission("manage:ai-agents")]`) | NO | Scale AI agents (1-100,000). |
+| POST | `/api/costforge/sync/harris-pacs` | CostForgeController | YES (`[RequiresPermission("sync:external-systems")]`) | YES | STUB -- returns "not yet implemented". |
+
+### Property Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| GET | `/api/properties/{id}` | PropertyController | YES | YES | Property lookup by ID. |
+| GET | `/api/properties/{parcelId}` | PropertyController | YES | YES | Property lookup by parcel ID. |
+
+### Levy Calculation Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| POST | `/api/levy-calculation/calculate-rate` | LevyCalculationController | YES (Roles: LevyClerk, Assessor, Admin, Administrator) | YES | Calculates optimal levy rate. Persists to `TaxLevies` (CX-21). |
+| GET | `/api/levy-calculation/history` | LevyCalculationController | YES (Roles) | YES | Levy history query with optional year/district filters. |
+| POST | `/api/levy-calculation/calculate-batch` | LevyCalculationController | YES (Roles) | YES | Batch levy calculation (up to 100 measures). Persists results. |
+
+### Dossier Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| GET | `/api/dossier/parcels/{parcelId}/casefile` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | Casefile summary with note counts and highlights. |
+| GET | `/api/dossier/{parcelId}` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | Composed parcel dossier (property + CostForge + levies + notes). |
+| GET | `/api/dossier/parcels/{parcelId}/details` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | Detailed dossier with selective includes, PII redaction, parameterized limits. |
+| GET | `/api/dossier/parcels/{parcelId}/evidence` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | Evidence snapshot with SHA-256 content hash. |
+| GET | `/api/dossier/{parcelId}/notes` | DossierController | YES (`[RequiresPermission("read:dossier")]`) | YES | List notes for parcel. |
+| POST | `/api/dossier/{parcelId}/notes` | DossierController | YES (`[RequiresPermission("write:dossier")]`) | YES | Create append-only note. 2000-char limit. write-low. |
+
+### Atlas Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| GET | `/api/atlas/parcels/{parcelId}` | AtlasController | YES (`[RequiresPermission("read:parcel")]`) | YES | Parcel geometry (R1: geometry fields null, `geometryAvailable=false`). |
+| GET | `/api/atlas/parcels/{parcelId}/layers` | AtlasController | YES (`[RequiresPermission("read:parcel")]`) | YES | Available layer list for parcel. |
+
+### Pilot Endpoints
+
+| Method | Route | Controller | Auth | County Isolation | Notes |
+|---|---|---|---|---|---|
+| POST | `/pilot/invoke` | PilotController (CoPilot) | Governed path | N/A | AI CoPilot invocation. Governed by tool-risk policy. |
+| GET | `/pilot/traces` | PilotController (CoPilot) | Governed path | N/A | Trace query for CoPilot operations. |
+| GET | `/pilot/trace/:correlationId` | PilotController (CoPilot) | Governed path | N/A | Trace detail by correlation ID. |
+
+---
+
+## Endpoint Summary
+
+| Category | Live | Stub | Total |
+|---|---|---|---|
+| CostForge | 10 | 2 | 12 |
+| Property | 2 | 0 | 2 |
+| Levy Calculation | 3 | 0 | 3 |
+| Dossier | 6 | 0 | 6 |
+| Atlas | 2 | 0 | 2 |
+| Pilot (CoPilot) | 3 | 0 | 3 |
+| **Total** | **26** | **2** | **28** |
+
+## Known Gaps (CX-HARD-04)
+
+This matrix documents all known R1 endpoints. The following controllers exist but are excluded from the R1 contract:
+
+- **PropertyValuationController** -- Endpoints exist but lack `[Authorize]` (CX-HARD-01). Not included in R1 contract until auth is added.
+- **PiltController** -- Endpoints exist but return 100% hardcoded data with `[AllowAnonymous]` (CX-FAKE-01). Not included in R1 contract.

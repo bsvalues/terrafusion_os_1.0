@@ -43,6 +43,30 @@ public class CostForgeController : ControllerBase
         _logger = logger;
     }
 
+    private ActionResult BuildPostR1DisabledResponse(string operation, string featureName, string detail, string problemType)
+    {
+        HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
+
+        _logger.LogWarning(
+            "CostForge endpoint {Operation} was invoked, but {FeatureName} remains Post-R1 and is intentionally disabled",
+            operation,
+            featureName);
+
+        var problem = new ProblemDetails
+        {
+            Title = $"{featureName} is not enabled for R1",
+            Detail = detail,
+            Status = StatusCodes.Status501NotImplemented,
+            Type = $"https://terrafusion.local/problems/{problemType}"
+        };
+
+        problem.Extensions["scope"] = "Post-R1";
+        problem.Extensions["operation"] = operation;
+        problem.Extensions["feature"] = featureName;
+
+        return StatusCode(StatusCodes.Status501NotImplemented, problem);
+    }
+
     private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
 
     private async Task<CountyContext?> ResolveCountyContextAsync()
@@ -297,49 +321,13 @@ public class CostForgeController : ControllerBase
     /// </summary>
     [HttpPost("batch-calculate")]
     [RequiresPermission("calculate:batch-valuation")]
-    public async Task<ActionResult<BatchValuationResultDto>> BatchCalculateValuations([FromBody] BatchValuationRequestDto request)
+    public ActionResult<BatchValuationResultDto> BatchCalculateValuations([FromBody] BatchValuationRequestDto request)
     {
-        var startTime = DateTime.UtcNow;
-
-        try
-        {
-            await _auditLogger.LogUserActionAsync("CostForge:BatchCalculate", User.FindFirst("sub")?.Value ?? "anonymous",
-                $"PropertyCount: {request.PropertyIds?.Count ?? 0}, County: {request.CountyId}");
-
-            if (request.PropertyIds == null || !request.PropertyIds.Any())
-            {
-                return BadRequest("PropertyIds collection cannot be empty");
-            }
-
-            // Validate batch size for performance
-            if (request.PropertyIds.Count > 1000)
-            {
-                return BadRequest("Batch size cannot exceed 1000 properties");
-            }
-
-            // TODO: Implement batch calculation when ICostForgeAIService supports it
-            var result = new BatchValuationResultDto
-            {
-                TotalProperties = request.PropertyIds.Count,
-                SuccessfulCalculations = 0,
-                FailedCalculations = 0,
-                AverageProcessingTime = 0,
-                Errors = new List<string> { "Batch processing not yet implemented" }
-            };
-            var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
-
-            await _auditLogger.LogApiCallAsync("POST", "/api/costforge/batch-calculate", 200, duration,
-                User.FindFirst("sub")?.Value);
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            await _auditLogger.LogErrorAsync("CostForge:BatchCalculate", ex, User.FindFirst("sub")?.Value);
-
-            _logger.LogError(ex, "Error in batch valuation calculation");
-            return StatusCode(500, "Internal server error in batch calculation");
-        }
+        return BuildPostR1DisabledResponse(
+            nameof(BatchCalculateValuations),
+            "CostForge batch valuation",
+            "The batch valuation API was returning placeholder success semantics. It is intentionally disabled until a real county-scoped implementation ships.",
+            "costforge-batch-post-r1");
     }
 
     /// <summary>
@@ -631,35 +619,13 @@ public class CostForgeController : ControllerBase
     /// </summary>
     [HttpPost("sync/harris-pacs")]
     [RequiresPermission("sync:external-systems")]
-    public async Task<ActionResult<HarrisSyncResultDto>> SyncWithHarrisPACS([FromBody] HarrisSyncRequestDto request)
+    public ActionResult<HarrisSyncResultDto> SyncWithHarrisPACS([FromBody] HarrisSyncRequestDto request)
     {
-        try
-        {
-            await _auditLogger.LogUserActionAsync("CostForge:HarrisSync", User.FindFirst("sub")?.Value ?? "system",
-                $"County: {request.CountyId}, SyncType: {request.SyncType}");
-
-            // TODO: Implement Harris PACS sync when ICostForgeAIService supports it
-            var result = new HarrisSyncResultDto
-            {
-                Success = true,
-                CountyId = request.CountyId,
-                PropertiesSynced = 0,
-                SyncDate = DateTime.UtcNow,
-                SyncErrors = new List<string> { "Harris PACS sync not yet implemented" }
-            };
-
-            await _auditLogger.LogSystemEventAsync("CostForge:HarrisSyncCompleted",
-                $"Harris PACS sync completed for county {request.CountyId}");
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            await _auditLogger.LogErrorAsync("CostForge:HarrisSync", ex, User.FindFirst("sub")?.Value);
-
-            _logger.LogError(ex, "Error syncing with Harris PACS for county {CountyId}", request.CountyId);
-            return StatusCode(500, "Internal server error");
-        }
+        return BuildPostR1DisabledResponse(
+            nameof(SyncWithHarrisPACS),
+            "Harris PACS sync",
+            "The Harris PACS sync endpoint was returning placeholder success semantics. It is intentionally disabled until a real governed integration is implemented.",
+            "costforge-harris-sync-post-r1");
     }
 }
 

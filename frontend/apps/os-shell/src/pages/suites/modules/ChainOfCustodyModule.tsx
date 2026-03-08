@@ -32,18 +32,18 @@ interface CustodyEvent {
 }
 
 const ACTION_LABELS: Record<string, { label: string; color: string }> = {
-  created: { label: 'Created', color: 'hsl(200 80% 55%)' },
-  transferred: { label: 'Transferred', color: 'hsl(45 90% 55%)' },
-  reviewed: { label: 'Reviewed', color: 'hsl(270 70% 60%)' },
-  signed: { label: 'Signed', color: 'hsl(140 70% 45%)' },
-  sealed: { label: 'Sealed', color: 'hsl(0 70% 55%)' },
+  created: { label: 'Created', color: 'hsl(var(--tf-network-blue-hs) 55%)' },
+  transferred: { label: 'Transferred', color: 'hsl(var(--tf-warning-hs) 55%)' },
+  reviewed: { label: 'Reviewed', color: 'hsl(var(--tf-info-hs) 60%)' },
+  signed: { label: 'Signed', color: 'hsl(var(--tf-success-hs) 45%)' },
+  sealed: { label: 'Sealed', color: 'hsl(var(--tf-error-hs) 55%)' },
   accessed: { label: 'Accessed', color: 'hsl(var(--tf-muted))' },
 };
 
 const INTEGRITY_CONFIG: Record<string, { label: string; color: string; icon: typeof CheckCircle2 }> = {
-  verified: { label: 'Verified', color: 'hsl(140 70% 45%)', icon: ShieldCheck },
-  warning: { label: 'Warning', color: 'hsl(45 90% 55%)', icon: AlertTriangle },
-  broken: { label: 'Broken', color: 'hsl(0 70% 55%)', icon: AlertTriangle },
+  verified: { label: 'Verified', color: 'hsl(var(--tf-success-hs) 45%)', icon: ShieldCheck },
+  warning: { label: 'Warning', color: 'hsl(var(--tf-warning-hs) 55%)', icon: AlertTriangle },
+  broken: { label: 'Broken', color: 'hsl(var(--tf-error-hs) 55%)', icon: AlertTriangle },
 };
 
 /** Demo custody records — Benton County */
@@ -125,7 +125,7 @@ export default function ChainOfCustodyModule() {
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Integrity Verified</p>
-            <p className='text-3xl font-bold' style={{ color: 'hsl(140 70% 45%)' }}>{verifiedCount}</p>
+            <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>{verifiedCount}</p>
           </CardContent>
         </Card>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>

@@ -36,6 +36,10 @@ export {
     draftValueChangeNoticeHandler,
     explainModelInputsHandler, explainModelResultsHandler, explainSeniorExemptionHandler, phase83Handlers, phase84Handlers,
     registerAllHandlers, registerPhase83Handlers, registerPhase84Handlers,
+    registerWriteGateHandlers,
+    assembleBoePacketHandler,
+    requestTraceRedactionHandler,
+    writeGateHandlers,
     searchTraceByCorrelationHandler, summarizeDossierHandler, summarizeLevyRateHandler,
     summarizeParcelCasefileHandler,
     summarizeSalesCompsHandler,
@@ -58,7 +62,11 @@ export {
     type SummarizeParcelCasefileParams,
     type SummarizeParcelCasefileResult,
     type SummarizeSalesCompsParams,
-    type SummarizeSalesCompsResult
+    type SummarizeSalesCompsResult,
+    type AssembleBoePacketParams,
+    type AssembleBoePacketResult,
+    type RequestTraceRedactionParams,
+    type RequestTraceRedactionResult
 } from './handlers.js';
 
 // R1 Real Handlers (override canned stubs when backend is available)
@@ -97,8 +105,16 @@ export {
     backendPost,
     backendGet,
     unwrapBackend,
+    type BackendCallOptions,
     type BackendResponse,
     type BackendError,
     type BackendResult,
 } from './backendClient.js';
+
+// Pilot Auth
+export {
+    acquirePilotToken,
+    clearPilotToken,
+    type PilotToken,
+} from './pilotAuth.js';
 

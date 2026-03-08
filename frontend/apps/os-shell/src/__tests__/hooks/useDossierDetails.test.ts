@@ -4,12 +4,9 @@
  * CX-25: Unit tests for the dossier details hook.
  * Verifies: loading, data fetch, error handling, nullable sections,
  * correlationId exposure, and refetch.
- *
- * Uses vitest (vi.fn / vi.mock) — NOT jest.
  */
 
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { useDossierDetails } from '../../hooks/useDossierDetails';
 import type { DossierDetailsResponse } from '../../contracts/dossierDetails';
 
@@ -17,12 +14,12 @@ import type { DossierDetailsResponse } from '../../contracts/dossierDetails';
 // Mock dossierService.getDetails
 // ============================================================================
 
-const mockGetDetails = vi.fn<
-  [string, any?],
-  Promise<{ data: DossierDetailsResponse; correlationId: string }>
+const mockGetDetails = jest.fn<
+  Promise<{ data: DossierDetailsResponse; correlationId: string }>,
+  [string, any?]
 >();
 
-vi.mock('../../services/dossierService', () => ({
+jest.mock('../../services/dossierService', () => ({
   dossierService: {
     getDetails: (...args: any[]) => mockGetDetails(...args),
   },

@@ -17,6 +17,6 @@ describe('Governance Contract: UI token baseline schema', () => {
     expect(baseline.scopeHash.length).toBeGreaterThan(0);
     expect(typeof baseline.violationCount).toBe('number');
     expect(Number.isFinite(baseline.violationCount)).toBe(true);
-    expect(baseline.violationCount).toBeGreaterThan(0);
+    expect(baseline.violationCount).toBeGreaterThanOrEqual(0);
   });
 });

@@ -143,13 +143,13 @@ export default function GPTAnalyticsModule() {
                   <Icon size={18} style={{ color: 'hsl(var(--tf-suite-gpt))' }} />
                   <div className='flex items-center gap-1'>
                     {isPositive ? (
-                      <ArrowUpRight size={14} style={{ color: 'hsl(142 71% 45%)' }} />
+                      <ArrowUpRight size={14} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
                     ) : (
-                      <ArrowDownRight size={14} style={{ color: 'hsl(0 84% 60%)' }} />
+                      <ArrowDownRight size={14} style={{ color: 'hsl(var(--tf-error-hs) 60%)' }} />
                     )}
                     <span
                       className='text-xs font-medium'
-                      style={{ color: isPositive ? 'hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}
+                      style={{ color: isPositive ? 'hsl(var(--tf-success-hs) 45%)' : 'hsl(var(--tf-error-hs) 60%)' }}
                     >
                       {Math.abs(metric.change)}%
                     </span>
@@ -195,8 +195,8 @@ export default function GPTAnalyticsModule() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {row.trend === 'up' && <ArrowUpRight size={16} style={{ color: 'hsl(142 71% 45%)' }} />}
-                        {row.trend === 'down' && <ArrowDownRight size={16} style={{ color: 'hsl(0 84% 60%)' }} />}
+                        {row.trend === 'up' && <ArrowUpRight size={16} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />}
+                        {row.trend === 'down' && <ArrowDownRight size={16} style={{ color: 'hsl(var(--tf-error-hs) 60%)' }} />}
                         {row.trend === 'flat' && <span style={{ color: 'hsl(var(--tf-muted))' }}>—</span>}
                       </TableCell>
                     </TableRow>

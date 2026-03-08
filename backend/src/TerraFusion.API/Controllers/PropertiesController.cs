@@ -102,7 +102,7 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpPost("{id}/valuations")]
-    public async Task<ActionResult<ValuationDto>> CreateValuation(int id, CreateValuationDto createDto)
+    public async Task<ActionResult<ValuationDto>> CreateValuation(Guid id, CreateValuationDto createDto)
     {
         try
         {
