@@ -1,7 +1,7 @@
 # TerraFusion OS — Progress Truth Ledger v3
 
 Date: March 7, 2026
-Branch: `r1/integration`
+Branch: `main` (merged from `r1/integration` via PR #566 at `37d405b14`)
 
 ## Context
 
@@ -21,9 +21,10 @@ Frozen scope authority remains:
 
 | Check | Result |
 |---|---|
-| Branch | `r1/integration` |
-| `pnpm run type-check` | **pass** |
-| `node --test os-platform/core/tests/phase83-tools.test.mjs` | **32/32 pass** |
+| Branch | `main` at `37d405b14` (merged from `r1/integration` via PR #566) |
+| PR #566 CI | **24 successful, 0 failing, 3 skipped** (pre-merge) |
+| `pnpm run type-check` | **pass** (verified on `main` post-merge) |
+| `node --test os-platform/core/tests/phase83-tools.test.mjs` | **32/32 pass** (verified on `main` post-merge) |
 | `node --test os-platform/core/tests/phase85-tools.test.mjs` | **20/20 pass** |
 | `node --test os-platform/core/tests/phase86-toolrunner.test.mjs` | **7/7 pass** |
 | `node --test os-platform/core/tests/r1-acceptance-criteria.test.mjs` | **17/17 pass** |
@@ -173,7 +174,7 @@ Frozen scope authority remains:
 5. ~~`CostForgeController` batch-calculate and PACS sync are stubs~~ **CLOSED March 7 (CX)** — explicit Post-R1 / 501
 6. 14 of 24 manifest tools have no real handler — **NOT A BLOCKER** per R1 plan (5-proof set is sufficient; 14 stubs are Post-R1)
 7. ~~Fake-path elimination not yet finished~~ **CLOSED March 7 (CC+CP)** — Forge localStorage eliminated, Dossier mock docs removed, Atlas labeled honestly, PILT frontend deferred badge, CP anti-regression tests
-8. Branch-head evidence convergence: **current evidence packet passes** for target SHA `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`; if a newer release candidate is chosen, the manifest and verifier must be rerun on that target
+8. ~~Branch-head evidence convergence~~ **CLOSED March 7** — evidence packet converged on `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`, merged to `main` at `37d405b14` (PR #566)
 
 ## Truth Statement
 
@@ -284,10 +285,31 @@ Combined gate run (all 4 test files): **72/72 pass, 0 fail.**
 
 ### Remaining Blockers
 
-The backend blockers previously listed here are closed on the current branch. The
-current evidence packet passes verification on target
-`0afe584756ffd60aa2c986bde8ea2e0edc7bede6`. Only a newer release-candidate choice would
-require one more manifest refresh and verifier rerun.
+**None.** R1 is merged to `main` at `37d405b14` (PR #566). All governance gates pass
+on `main`. The evidence packet is verified. No code-level blockers remain.
+
+## Post-Merge Verification (March 7, 2026)
+
+PR #566 merged `r1/integration` → `main` after CI went green (24 successful, 0 failing).
+
+Post-merge gates on `main`:
+
+| Gate | Result |
+|------|--------|
+| `pnpm run type-check` | **PASS** |
+| `phase83-tools.test.mjs` | **32/32 pass** |
+| `r1-acceptance-criteria.test.mjs` | **17/17 pass** |
+| `r1:verify-evidence` | **PASS** (SHA `0afe584756ffd60aa2c986bde8ea2e0edc7bede6`) |
+| CI: core-governance-gates | **PASS** |
+| CI: governance-proof | **PASS** |
+| CI: Tier-1 UI Harness Suite | **PASS** |
+| CI: Seal Gate | **PASS** |
+
+Non-required CI failures (informational only):
+- `benton-county` (environment-specific runner)
+- `SBOM Generation` (vulnerability scanning)
+- `Performance Budget & Lighthouse` (perf audit)
+- `Perf Skill Audit` (informational)
 
 ---
 
