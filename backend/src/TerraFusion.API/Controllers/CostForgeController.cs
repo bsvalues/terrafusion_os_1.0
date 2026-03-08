@@ -2615,6 +2615,233 @@ public class CostForgeController : ControllerBase
     ];
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // Wave 31 — Levy Certification (RCW 84.52 / RCW 84.55)
+  // ═══════════════════════════════════════════════════════════════
+
+  /// <summary>Calculate levy rate for a taxing district and check statutory limits.</summary>
+  [HttpPost("analytics/levy/calculate")]
+  public async Task<IActionResult> CalculateLevy([FromBody] LevyCalculateRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    // RCW 84.55 — 1% annual increase limit
+    var onePercentLimit = req.PriorYearLevy * 1.01m;
+    // Add new construction and annexation values at existing rate
+    var priorRate = req.AssessedValue > 0 ? (double)(req.PriorYearLevy / req.AssessedValue * 1000m) : 0;
+    var ncAddition = req.NewConstructionValue * (decimal)priorRate / 1000m;
+    var annexAddition = req.AnnexationValue * (decimal)priorRate / 1000m;
+    var statutoryLimit = onePercentLimit + ncAddition + annexAddition;
+
+    var certifiedLevy = req.RequestedLevy;
+    var wasReduced = false;
+    var reductionAmount = 0m;
+
+    // Check statutory limit
+    if (certifiedLevy > statutoryLimit)
+    {
+      reductionAmount = certifiedLevy - statutoryLimit;
+      certifiedLevy = statutoryLimit;
+      wasReduced = true;
+    }
+
+    // Compute rate per $1,000 AV
+    var levyRate = req.AssessedValue > 0 ? (double)(certifiedLevy / req.AssessedValue * 1000m) : 0;
+
+    // Constitutional limit: $10 per $1,000 AV (1%)
+    var withinConstitutionalLimit = levyRate <= 10.0;
+    // $5.90 aggregate limit (RCW 84.52.043) — applies to regular levies only
+    var withinAggregateLimit = levyRate <= 5.90;
+
+    // Force constitutional compliance
+    if (!withinConstitutionalLimit && req.AssessedValue > 0)
+    {
+      certifiedLevy = req.AssessedValue * 10m / 1000m;
+      reductionAmount = req.RequestedLevy - certifiedLevy;
+      wasReduced = true;
+      levyRate = 10.0;
+      withinConstitutionalLimit = true;
+    }
+
+    var entity = new TerraFusion.Core.Entities.LevyCertification
+    {
+      CountyId = ctx.CountyId,
+      TaxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year,
+      DistrictCode = req.DistrictCode ?? "",
+      DistrictName = req.DistrictName ?? "",
+      PriorYearLevy = req.PriorYearLevy,
+      RequestedLevy = req.RequestedLevy,
+      CertifiedLevy = certifiedLevy,
+      AssessedValue = req.AssessedValue,
+      NewConstructionValue = req.NewConstructionValue,
+      AnnexationValue = req.AnnexationValue,
+      LevyRate = levyRate,
+      StatutoryLimit = statutoryLimit,
+      ConstitutionalLimit = 10.0,
+      AggregateLimit = 5.90,
+      WithinConstitutionalLimit = withinConstitutionalLimit,
+      WithinAggregateLimit = withinAggregateLimit,
+      WasReduced = wasReduced,
+      ReductionAmount = reductionAmount,
+      Status = "draft",
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+    };
+    _db.Set<TerraFusion.Core.Entities.LevyCertification>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      countyId = entity.CountyId,
+      taxYear = entity.TaxYear,
+      districtCode = entity.DistrictCode,
+      districtName = entity.DistrictName,
+      priorYearLevy = entity.PriorYearLevy,
+      requestedLevy = entity.RequestedLevy,
+      certifiedLevy = entity.CertifiedLevy,
+      assessedValue = entity.AssessedValue,
+      newConstructionValue = entity.NewConstructionValue,
+      annexationValue = entity.AnnexationValue,
+      levyRate = entity.LevyRate,
+      statutoryLimit = entity.StatutoryLimit,
+      constitutionalLimit = entity.ConstitutionalLimit,
+      aggregateLimit = entity.AggregateLimit,
+      withinConstitutionalLimit = entity.WithinConstitutionalLimit,
+      withinAggregateLimit = entity.WithinAggregateLimit,
+      wasReduced = entity.WasReduced,
+      reductionAmount = entity.ReductionAmount,
+      status = entity.Status,
+    });
+  }
+
+  /// <summary>Run a multi-district levy balance test (prorationing).</summary>
+  [HttpPost("analytics/levy/balance-test")]
+  public async Task<IActionResult> LevyBalanceTest([FromBody] LevyBalanceTestRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    if (req.Districts is null || req.Districts.Count == 0)
+      return BadRequest(new { error = "At least one district is required" });
+
+    var results = new List<object>();
+    var totalRate = 0.0;
+
+    foreach (var d in req.Districts)
+    {
+      var rate = d.AssessedValue > 0 ? (double)(d.RequestedLevy / d.AssessedValue * 1000m) : 0;
+      totalRate += rate;
+      results.Add(new
+      {
+        districtCode = d.DistrictCode ?? "",
+        districtName = d.DistrictName ?? "",
+        requestedLevy = d.RequestedLevy,
+        assessedValue = d.AssessedValue,
+        rate = Math.Round(rate, 6),
+      });
+    }
+
+    var aggregatePass = totalRate <= 5.90;
+    var constitutionalPass = totalRate <= 10.0;
+
+    return Ok(new
+    {
+      taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year,
+      districtCount = req.Districts.Count,
+      totalRate = Math.Round(totalRate, 6),
+      aggregateLimit = 5.90,
+      constitutionalLimit = 10.0,
+      aggregatePass,
+      constitutionalPass,
+      prorationRequired = !aggregatePass,
+      districts = results,
+    });
+  }
+
+  /// <summary>Certify a previously-calculated levy (status → certified).</summary>
+  [HttpPost("analytics/levy/{id}/certify")]
+  public async Task<IActionResult> CertifyLevy(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.LevyCertification>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+
+    if (entity is null) return NotFound(new { error = "Levy record not found" });
+    if (entity.Status == "certified")
+      return BadRequest(new { error = "Already certified" });
+    if (!entity.WithinConstitutionalLimit)
+      return BadRequest(new { error = "Cannot certify — exceeds constitutional limit" });
+
+    entity.Status = "certified";
+    await _db.SaveChangesAsync();
+
+    return Ok(new { id = entity.Id, status = entity.Status, certifiedLevy = entity.CertifiedLevy });
+  }
+
+  /// <summary>Get a single levy certification by ID.</summary>
+  [HttpGet("analytics/levy/{id}")]
+  public async Task<IActionResult> GetLevyCertification(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.LevyCertification>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+
+    if (entity is null) return NotFound(new { error = "Levy record not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      taxYear = entity.TaxYear,
+      districtCode = entity.DistrictCode,
+      districtName = entity.DistrictName,
+      requestedLevy = entity.RequestedLevy,
+      certifiedLevy = entity.CertifiedLevy,
+      levyRate = entity.LevyRate,
+      withinConstitutionalLimit = entity.WithinConstitutionalLimit,
+      withinAggregateLimit = entity.WithinAggregateLimit,
+      wasReduced = entity.WasReduced,
+      reductionAmount = entity.ReductionAmount,
+      status = entity.Status,
+    });
+  }
+
+  /// <summary>Get levy certification history for the current county.</summary>
+  [HttpGet("analytics/levy/history")]
+  public async Task<IActionResult> GetLevyHistory([FromQuery] int? taxYear, [FromQuery] string? districtCode)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.LevyCertification>()
+      .Where(e => e.CountyId == ctx.CountyId);
+
+    if (taxYear.HasValue) query = query.Where(e => e.TaxYear == taxYear.Value);
+    if (!string.IsNullOrEmpty(districtCode)) query = query.Where(e => e.DistrictCode == districtCode);
+
+    var items = await query.OrderByDescending(e => e.CreatedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        taxYear = e.TaxYear,
+        districtCode = e.DistrictCode,
+        districtName = e.DistrictName,
+        certifiedLevy = e.CertifiedLevy,
+        levyRate = e.LevyRate,
+        status = e.Status,
+        createdAt = e.CreatedAt,
+      }),
+    });
+  }
+
   internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
   internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
 
@@ -2776,4 +3003,34 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Wave 31 — Levy DTOs
+// ═══════════════════════════════════════════════════════════════
+
+public class LevyCalculateRequest
+{
+  public string? DistrictCode { get; set; }
+  public string? DistrictName { get; set; }
+  public decimal PriorYearLevy { get; set; }
+  public decimal RequestedLevy { get; set; }
+  public decimal AssessedValue { get; set; }
+  public decimal NewConstructionValue { get; set; }
+  public decimal AnnexationValue { get; set; }
+  public int TaxYear { get; set; }
+}
+
+public class LevyBalanceTestRequest
+{
+  public int TaxYear { get; set; }
+  public List<LevyDistrictInput> Districts { get; set; } = new();
+}
+
+public class LevyDistrictInput
+{
+  public string? DistrictCode { get; set; }
+  public string? DistrictName { get; set; }
+  public decimal RequestedLevy { get; set; }
+  public decimal AssessedValue { get; set; }
 }
