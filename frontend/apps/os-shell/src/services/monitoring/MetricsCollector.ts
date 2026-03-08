@@ -697,26 +697,58 @@ export class MetricsCollector {
   }
 
   /**
+   * Open or create the IndexedDB database for metrics storage.
+   */
+  private openMetricsDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('TerraFusionMetrics', 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains('metrics')) {
+          db.createObjectStore('metrics', { keyPath: 'id' });
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
    * Save metrics to storage
    */
-  private saveMetricsToStorage(): void {
+  private async saveMetricsToStorage(): Promise<void> {
+    const serialized = JSON.stringify({
+      metricsStorage: Array.from(this.metricsStorage.entries()),
+      aggregatedMetrics: {
+        hourly: Array.from(this.aggregatedMetrics.hourly.entries()),
+        daily: Array.from(this.aggregatedMetrics.daily.entries()),
+        weekly: Array.from(this.aggregatedMetrics.weekly.entries()),
+        monthly: Array.from(this.aggregatedMetrics.monthly.entries()),
+      },
+    });
+
     if (this.config.storageBackend === 'localStorage') {
       try {
-        const serialized = JSON.stringify({
-          metricsStorage: Array.from(this.metricsStorage.entries()),
-          aggregatedMetrics: {
-            hourly: Array.from(this.aggregatedMetrics.hourly.entries()),
-            daily: Array.from(this.aggregatedMetrics.daily.entries()),
-            weekly: Array.from(this.aggregatedMetrics.weekly.entries()),
-            monthly: Array.from(this.aggregatedMetrics.monthly.entries()),
-          },
-        });
         localStorage.setItem(this.STORAGE_KEY, serialized);
       } catch (error) {
         console.error('Failed to save metrics to localStorage:', error);
       }
+    } else if (this.config.storageBackend === 'indexedDB') {
+      try {
+        const db = await this.openMetricsDB();
+        const tx = db.transaction('metrics', 'readwrite');
+        const store = tx.objectStore('metrics');
+        await store.put({ id: 'current', data: serialized, timestamp: Date.now() });
+      } catch (error) {
+        console.error('Failed to save metrics to IndexedDB:', error);
+      }
+    } else if (this.config.storageBackend === 'api') {
+      try {
+        await fetch('/api/metrics', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: serialized });
+      } catch (error) {
+        console.error('Failed to save metrics to API:', error);
+      }
     }
-    // TODO: Implement indexedDB and API storage backends
   }
 
   /**
@@ -739,8 +771,45 @@ export class MetricsCollector {
       } catch (error) {
         console.error('Failed to load metrics from localStorage:', error);
       }
+    } else if (this.config.storageBackend === 'indexedDB') {
+      try {
+        this.openMetricsDB().then((db) => {
+          const tx = db.transaction('metrics', 'readonly');
+          const store = tx.objectStore('metrics');
+          const request = store.get('current');
+          request.onsuccess = () => {
+            if (request.result?.data) {
+              const data = JSON.parse(request.result.data);
+              this.metricsStorage = new Map(data.metricsStorage);
+              this.aggregatedMetrics = {
+                hourly: new Map(data.aggregatedMetrics.hourly),
+                daily: new Map(data.aggregatedMetrics.daily),
+                weekly: new Map(data.aggregatedMetrics.weekly),
+                monthly: new Map(data.aggregatedMetrics.monthly),
+              };
+            }
+          };
+        });
+      } catch (error) {
+        console.error('Failed to load metrics from IndexedDB:', error);
+      }
+    } else if (this.config.storageBackend === 'api') {
+      try {
+        fetch('/api/metrics')
+          .then((res) => res.json())
+          .then((data) => {
+            this.metricsStorage = new Map(data.metricsStorage);
+            this.aggregatedMetrics = {
+              hourly: new Map(data.aggregatedMetrics.hourly),
+              daily: new Map(data.aggregatedMetrics.daily),
+              weekly: new Map(data.aggregatedMetrics.weekly),
+              monthly: new Map(data.aggregatedMetrics.monthly),
+            };
+          });
+      } catch (error) {
+        console.error('Failed to load metrics from API:', error);
+      }
     }
-    // TODO: Implement indexedDB and API storage backends
   }
 
   /**

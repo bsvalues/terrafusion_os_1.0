@@ -22,6 +22,8 @@ import {
     type LucideIcon,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useRecentsStore } from '../../components/launcher/recentsStore';
+import { usePinsStore } from '../../components/launcher/pinsStore';
 import { getSuiteById, type SuiteId } from '../../config/suiteRegistry';
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -38,6 +40,8 @@ interface SuiteHomeProps {
 
 export function SuiteHome({ suiteId }: SuiteHomeProps) {
   const navigate = useNavigate();
+  const recentIds = useRecentsStore((s) => s.recentIds);
+  const pinnedIds = usePinsStore((s) => s.getPinnedIds());
   const suite = getSuiteById(suiteId);
 
   if (!suite) {
@@ -91,7 +95,7 @@ export function SuiteHome({ suiteId }: SuiteHomeProps) {
             title='Search'
             description={`Search within ${suite.shortName}`}
             onClick={() => {
-              /* TODO */
+              navigate(`/property/search?suite=${suite.id}`);
             }}
           />
           <QuickAction
@@ -99,7 +103,11 @@ export function SuiteHome({ suiteId }: SuiteHomeProps) {
             title='Recent'
             description='View recent items'
             onClick={() => {
-              /* TODO */
+              if (recentIds.length === 0) {
+                alert('No recent items');
+                return;
+              }
+              navigate(`/property/${recentIds[0]}/summary`);
             }}
           />
           <QuickAction
@@ -107,7 +115,11 @@ export function SuiteHome({ suiteId }: SuiteHomeProps) {
             title='Favorites'
             description='Your saved items'
             onClick={() => {
-              /* TODO */
+              if (pinnedIds.length === 0) {
+                alert('No favorites saved');
+                return;
+              }
+              navigate(`/property/${pinnedIds[0]}/summary`);
             }}
           />
         </div>

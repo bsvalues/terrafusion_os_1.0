@@ -370,8 +370,7 @@ describe('Launcher: Search Filtering', () => {
     expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
-  // TODO: Search filtering not yet implemented - launcher ignores searchQuery currently
-  it.skip('shows empty state when no results match', () => {
+  it('shows empty state when no results match', () => {
     mockStore.searchQuery = 'nonexistent';
     renderLauncher();
 

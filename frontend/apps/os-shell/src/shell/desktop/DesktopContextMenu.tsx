@@ -134,8 +134,7 @@ export const DesktopContextMenu: React.FC<DesktopContextMenuProps> = ({
   }, [onClose]);
 
   const handleAbout = useCallback(() => {
-    // Show about dialog (for now, just close)
-    // TODO: Implement About TerraFusion dialog
+    window.alert('TerraFusion OS 1.0\nBenton County, WA\n1,008 AI Agents\nFISMA-HIGH Compliant');
     onClose();
   }, [onClose]);
 
