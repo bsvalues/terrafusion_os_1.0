@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using TerraFusion.Research.DTOs;
 using TerraFusion.Consciousness.Services;
 using TerraFusion.Consciousness.Interfaces;
-using TerraFusion.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -518,7 +518,7 @@ namespace TerraFusion.CostForge.Services
                 > 50_000_000 => TaskPriority.Critical,
                 > 10_000_000 => TaskPriority.High,
                 > 1_000_000 => TaskPriority.Medium,
-                _ => TaskPriority.Standard
+                _ => TaskPriority.Low
             };
         }
 
@@ -600,13 +600,7 @@ namespace TerraFusion.CostForge.Services
 
     #region Data Models and Enums
 
-    public enum TaskPriority
-    {
-        Standard,
-        Medium,
-        High,
-        Critical
-    }
+    // TaskPriority enum is defined in TerraFusion.CostForge.Models.PropertyAssessmentModels
 
     // Internal service classes for algorithm operations
 

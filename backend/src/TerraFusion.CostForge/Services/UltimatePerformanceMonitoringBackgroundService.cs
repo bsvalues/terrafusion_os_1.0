@@ -78,12 +78,12 @@ namespace TerraFusion.CostForge.Services
             }
         }
 
-        private async Task<PerformanceMetrics> CollectPerformanceMetricsAsync()
+        private async Task<MonitoringPerformanceMetrics> CollectPerformanceMetricsAsync()
         {
             // Implementation placeholder - would collect actual system metrics
             await Task.CompletedTask;
 
-            return new PerformanceMetrics
+            return new MonitoringPerformanceMetrics
             {
                 CpuUsage = 15.2, // Placeholder values
                 MemoryUsage = 45.8,
@@ -91,7 +91,7 @@ namespace TerraFusion.CostForge.Services
             };
         }
 
-        private async Task ValidateChampionshipStandardsAsync(PerformanceMetrics metrics)
+        private async Task ValidateChampionshipStandardsAsync(MonitoringPerformanceMetrics metrics)
         {
             const double cpuThreshold = 80.0; // 80% CPU threshold
             const double memoryThreshold = 85.0; // 85% memory threshold
@@ -117,7 +117,7 @@ namespace TerraFusion.CostForge.Services
     /// <summary>
     /// Performance metrics data structure
     /// </summary>
-    public class PerformanceMetrics
+    public class MonitoringPerformanceMetrics
     {
         public double CpuUsage { get; set; }
         public double MemoryUsage { get; set; }

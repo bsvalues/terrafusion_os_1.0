@@ -598,6 +598,58 @@ builder.Services.AddScoped<IAdvancedQuantumCountyFederation, AdvancedQuantumCoun
 // RE-ENABLED: Championship-level property intelligence with quantum optimization
 builder.Services.AddUltimateCostForgeAPI(builder.Configuration, builder.Environment);
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// MISSING DI REGISTRATIONS - Required by controllers and services
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// AI Command Service - Required by AdvancedAIAgentOrchestrator, ProductionPACSDataEngine, SystemHub, AISwarmController
+builder.Services.AddScoped<TerraFusion.AI.Services.IAICommandService, TerraFusion.AI.Services.AICommandService>();
+
+// Advanced AI Agent Orchestrator - Required by ElitePerformanceMonitoringController, ElitePerformanceMonitoringService
+builder.Services.AddSingleton<IAdvancedAIAgentOrchestrator, AdvancedAIAgentOrchestrator>();
+
+// Harris PACS Production Service - Required by ProductionPACSDataEngine
+builder.Services.AddSingleton<IHarrisPACSProductionService, HarrisPACSProductionService>();
+
+// Production PACS Data Engine - Required by ElitePerformanceMonitoringController, ElitePerformanceMonitoringService
+builder.Services.AddSingleton<IProductionPACSDataEngine, ProductionPACSDataEngine>();
+
+// Elite Performance Monitoring Service (BackgroundService) - Required by ElitePerformanceMonitoringController
+builder.Services.AddSingleton<IElitePerformanceMonitoringService, ElitePerformanceMonitoringService>();
+builder.Services.AddHostedService<ElitePerformanceMonitoringService>(provider =>
+    (ElitePerformanceMonitoringService)provider.GetRequiredService<IElitePerformanceMonitoringService>());
+
+// Compliance Automation Service - Required by ComplianceController
+builder.Services.AddScoped<TerraFusion.Core.Services.IComplianceAutomationService, TerraFusion.Core.Services.ComplianceAutomationService>();
+
+// Real Database Service - Required by RealDataController
+builder.Services.AddScoped<TerraFusion.Core.Services.IRealDatabaseService, TerraFusion.Core.Services.RealDatabaseService>();
+
+// TerraSync Service - Required by GovernmentController
+builder.Services.AddHttpClient<ITerrasyncService, TerrasyncService>();
+
+// Performance Monitoring Service (Core) - Required by PerformanceController
+builder.Services.Configure<TerraFusion.Core.Services.Performance.PerformanceOptions>(
+    builder.Configuration.GetSection("Performance"));
+builder.Services.AddScoped<TerraFusion.Core.Services.Performance.IPerformanceMonitoringService, TerraFusion.Core.Services.Performance.PerformanceMonitoringService>();
+
+// Advanced Cache Service - Required by PerformanceController (conditional on Redis)
+if (redisAvailable)
+{
+    builder.Services.AddScoped<TerraFusion.Core.Services.Caching.IAdvancedCacheService, TerraFusion.Core.Services.Caching.AdvancedRedisCacheService>();
+}
+
+// Monitoring Services - Required by MonitoringController
+builder.Services.AddScoped<TerraFusion.Core.Services.Monitoring.ITelemetryService, TerraFusion.Core.Services.Monitoring.ApplicationInsightsTelemetryService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.Monitoring.IMetricsCollectionService, TerraFusion.Core.Services.Monitoring.MetricsCollectionService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.Monitoring.IObservabilityService, TerraFusion.Core.Services.Monitoring.ObservabilityService>();
+
+// PerformanceMonitor Adapter - Bridge TerraFusion.API.Interfaces.IPerformanceMonitor to TerraFusion.Abstractions.Interfaces.IPerformanceMonitor
+builder.Services.AddScoped<TerraFusion.Abstractions.Interfaces.IPerformanceMonitor>(provider =>
+    new PerformanceMonitorAdapter(provider.GetRequiredService<TerraFusion.API.Interfaces.IPerformanceMonitor>()));
+
+// ═══════════════════════════════════════════════════════════════════════════════
+
 // ⚡ QUANTUM METRICS REAL-TIME INTEGRATION - Championship-Level WebSocket Performance
 // Real-time government operations monitoring with 99.99% uptime targets
 // THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.

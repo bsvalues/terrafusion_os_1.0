@@ -572,11 +572,3 @@ public class EliteOperationalService : IEliteOperationalService
         };
     }
 }
-
-public enum EmergencySeverity
-{
-    Low,
-    Medium,
-    High,
-    Critical
-}

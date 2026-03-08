@@ -6,7 +6,6 @@
  */
 
 using TerraFusion.Abstractions.DTOs.Responses;
-using TerraFusion.Abstractions.DTOs.Shared;
 
 namespace TerraFusion.API.Models;
 
@@ -16,4 +15,4 @@ namespace TerraFusion.API.Models;
 // Canonical types (from TerraFusion.Abstractions.DTOs.Responses):
 // - SyncResult, OptimizationRecommendation, ComplianceViolation, ElitePerformanceMetrics
 // Shared types (from TerraFusion.Abstractions.DTOs.Shared):
-// - ElitePerformanceMetrics, PerformanceDataPoint
+// - PerformanceDataPoint (only used via explicit namespace reference)

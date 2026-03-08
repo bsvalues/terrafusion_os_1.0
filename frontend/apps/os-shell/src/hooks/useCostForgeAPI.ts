@@ -111,6 +111,98 @@ interface PerformanceMetrics {
   detailedMetrics: Record<string, number>;
 }
 
+// ============================================================
+// USPAP Three-Approach Valuation Types (R2 Wave 1)
+// ============================================================
+
+interface SalesApproachInput {
+  subjectParcelId: string;
+  comparables: Array<{
+    parcelId: string;
+    salePrice: number;
+    saleDate: string;
+    adjustments?: Record<string, number>;
+  }>;
+  adjustmentRates?: Record<string, number>;
+}
+
+interface SalesApproachResult {
+  subjectParcelId: string;
+  indicatedValue: number;
+  adjustedComparables: Array<{
+    parcelId: string;
+    originalSalePrice: number;
+    adjustedPrice: number;
+    totalAdjustment: number;
+    adjustmentDetails: Record<string, number>;
+  }>;
+  marketConditionsAdjustment: number;
+  confidenceScore: number;
+  effectiveDate: string;
+}
+
+interface IncomeApproachInput {
+  parcelId: string;
+  grossIncome: number;
+  vacancyRate: number;
+  operatingExpenses: number;
+  capitalizationRate: number;
+  incomeType?: string;
+}
+
+interface IncomeApproachResult {
+  parcelId: string;
+  indicatedValue: number;
+  effectiveGrossIncome: number;
+  netOperatingIncome: number;
+  capitalizationRate: number;
+  grossRentMultiplier: number;
+  effectiveDate: string;
+}
+
+interface CostApproachInput {
+  parcelId: string;
+  buildingType: string;
+  squareFeet: number;
+  yearBuilt: number;
+  quality: string;
+  condition: string;
+  region: string;
+  landValue?: number;
+}
+
+interface CostApproachResult {
+  parcelId: string;
+  indicatedValue: number;
+  replacementCostNew: number;
+  depreciation: number;
+  depreciatedValue: number;
+  landValue: number;
+  totalValue: number;
+  effectiveDate: string;
+}
+
+interface ReconciliationApiInput {
+  parcelId: string;
+  propertyType: string;
+  approaches: {
+    salesComparison?: { value: number; confidence: number };
+    incomeCapitalization?: { value: number; confidence: number };
+    costApproach?: { value: number; confidence: number };
+  };
+  reconciliationMethod?: string;
+}
+
+interface ReconciliationResult {
+  parcelId: string;
+  reconciledValue: number;
+  weights: Record<string, number>;
+  approaches: Record<string, { value: number; weight: number }>;
+  confidenceScore: number;
+  reconciliationMethod: string;
+  effectiveDate: string;
+}
+
 /**
  * TerraFusion CostForge API Integration Hook
  * Championship-level backend connectivity for government-grade precision
@@ -318,6 +410,70 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
     }
   }, [apiCall]);
 
+  // ============================================================
+  // USPAP Three-Approach Valuation (R2 Wave 1)
+  // ============================================================
+
+  /** Run sales comparison approach — POST /api/costforge/approach/sales */
+  const runSalesApproach = useCallback(
+    async (input: SalesApproachInput): Promise<APIResponse<SalesApproachResult>> => {
+      return apiCall<SalesApproachResult>('/api/costforge/approach/sales', {
+        method: 'POST',
+        body: JSON.stringify(input),
+      });
+    },
+    [apiCall]
+  );
+
+  /** Run income capitalization approach — POST /api/costforge/approach/income */
+  const runIncomeApproach = useCallback(
+    async (input: IncomeApproachInput): Promise<APIResponse<IncomeApproachResult>> => {
+      return apiCall<IncomeApproachResult>('/api/costforge/approach/income', {
+        method: 'POST',
+        body: JSON.stringify(input),
+      });
+    },
+    [apiCall]
+  );
+
+  /** Run cost approach — POST /api/costforge/approach/cost */
+  const runCostApproach = useCallback(
+    async (input: CostApproachInput): Promise<APIResponse<CostApproachResult>> => {
+      return apiCall<CostApproachResult>('/api/costforge/approach/cost', {
+        method: 'POST',
+        body: JSON.stringify(input),
+      });
+    },
+    [apiCall]
+  );
+
+  /** Reconcile multiple approaches — POST /api/costforge/approach/reconcile */
+  const runReconciliation = useCallback(
+    async (input: ReconciliationApiInput): Promise<APIResponse<ReconciliationResult>> => {
+      return apiCall<ReconciliationResult>('/api/costforge/approach/reconcile', {
+        method: 'POST',
+        body: JSON.stringify(input),
+      });
+    },
+    [apiCall]
+  );
+
+  /** Get cost matrix by type and region — GET /api/costforge/cost-matrix/{type}/{region} */
+  const getCostMatrixByTypeAndRegion = useCallback(
+    async (buildingType: string, region: string): Promise<APIResponse<any>> => {
+      return apiCall<any>(`/api/costforge/cost-matrix/${encodeURIComponent(buildingType)}/${encodeURIComponent(region)}`);
+    },
+    [apiCall]
+  );
+
+  /** Get model inputs for a property — GET /api/costforge/{propertyId}/model-inputs */
+  const getModelInputs = useCallback(
+    async (propertyId: string): Promise<APIResponse<any>> => {
+      return apiCall<any>(`/api/costforge/${encodeURIComponent(propertyId)}/model-inputs`);
+    },
+    [apiCall]
+  );
+
   return {
     // State
     loading,
@@ -340,6 +496,14 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
 
     // External Integration
     syncWithHarrisPACS,
+
+    // USPAP Three-Approach Valuation (R2 Wave 1)
+    runSalesApproach,
+    runIncomeApproach,
+    runCostApproach,
+    runReconciliation,
+    getCostMatrixByTypeAndRegion,
+    getModelInputs,
 
     // Utilities
     healthCheck,
@@ -411,4 +575,12 @@ export type {
   CostMatrix,
   PerformanceMetrics,
   SystemStatus,
+  SalesApproachInput,
+  SalesApproachResult,
+  IncomeApproachInput,
+  IncomeApproachResult,
+  CostApproachInput,
+  CostApproachResult,
+  ReconciliationApiInput,
+  ReconciliationResult,
 };

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using TerraFusion.Research.DTOs;
 using TerraFusion.Consciousness.Services;
 using TerraFusion.Consciousness.Interfaces;
+using ConsciousnessPerformanceMetricsDto = TerraFusion.Consciousness.Interfaces.PerformanceMetricsDto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -586,7 +587,7 @@ public class ConsciousnessParameterTuningService : IConsciousnessParameterTuning
 
     private async Task<SimulationResult> SimulateParameterChangeAsync(
         Dictionary<string, object> parameters,
-        PerformanceMetricsDto baseline,
+        ConsciousnessPerformanceMetricsDto baseline,
         int simulationIndex)
     {
         await Task.CompletedTask;
@@ -1011,10 +1012,4 @@ public class ExperimentComparison
     public bool StatisticallySignificant { get; set; }
 }
 
-public class ConsciousnessParameters
-{
-    public double QuantumCoherence { get; set; }
-    public double EntanglementStrength { get; set; }
-    public double ConsciousnessLevel { get; set; }
-    public int OptimizationFactor { get; set; }
-}
+// ConsciousnessParameters is defined in TerraFusion.Research.DTOs.ResearchDTOs

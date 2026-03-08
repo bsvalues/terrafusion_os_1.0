@@ -171,6 +171,39 @@ export const atlasService = {
   getStats: async (): Promise<SpatialStats> => {
     return atlasGet<SpatialStats>('/stats');
   },
+
+  // R2 Wave 2 endpoints
+
+  /**
+   * Get nearby parcels by parcel ID (prefix heuristic, county-isolated)
+   */
+  getNearbyParcels: async (
+    parcelId: string,
+    options?: { radius?: number; limit?: number; type?: string }
+  ): Promise<ParcelResult[]> => {
+    const params = new URLSearchParams();
+    if (options?.radius) params.set('radius', String(options.radius));
+    if (options?.limit) params.set('limit', String(options.limit));
+    if (options?.type) params.set('type', options.type);
+    const qs = params.toString();
+    return atlasGet<ParcelResult[]>(
+      `/parcels/${encodeURIComponent(parcelId)}/nearby${qs ? `?${qs}` : ''}`
+    );
+  },
+
+  /**
+   * Get layer metadata detail by layer ID
+   */
+  getLayerDetail: async (layerId: string): Promise<MapLayer> => {
+    return atlasGet<MapLayer>(`/layers/${encodeURIComponent(layerId)}`);
+  },
+
+  /**
+   * Get parcel layers (R1 Week 3 — query_parcel_layers tool)
+   */
+  getParcelLayers: async (parcelId: string): Promise<MapLayer[]> => {
+    return atlasGet<MapLayer[]>(`/parcels/${encodeURIComponent(parcelId)}/layers`);
+  },
 };
 
 export default atlasService;

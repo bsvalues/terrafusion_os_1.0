@@ -17,8 +17,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TerraFusion.Core\TerraFusion.Core.csproj" />
-        <ProjectReference Include="..\TerraFusion.Consciousness\TerraFusion.Consciousness.csproj" />
+        <ProjectReference Include="..\src\TerraFusion.Core\TerraFusion.Core.csproj" />
+        <ProjectReference Include="..\src\TerraFusion.Consciousness\TerraFusion.Consciousness.csproj" />
     </ItemGroup>
 
 </Project>

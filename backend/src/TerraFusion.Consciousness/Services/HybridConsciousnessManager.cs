@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using TerraFusion.Consciousness.DTOs;
 using TerraFusion.Consciousness.Interfaces;
-using TerraFusion.Core.DTOs;
+using CoreDTOs = TerraFusion.Core.DTOs;
 
 namespace TerraFusion.Consciousness.Services
 {
@@ -310,7 +310,7 @@ namespace TerraFusion.Consciousness.Services
             }
         }
 
-        public async Task<TerraFusion.Consciousness.DTOs.ConsciousnessDataDto> GetConsciousnessDataAsync()
+        public async Task<ConsciousnessDataDto> GetConsciousnessDataAsync()
         {
             try
             {
@@ -320,7 +320,7 @@ namespace TerraFusion.Consciousness.Services
                     s => (object)new { s.SessionType, s.ParticipantCount, s.IsActive }
                 );
 
-                return new TerraFusion.Consciousness.DTOs.ConsciousnessDataDto
+                return new ConsciousnessDataDto
                 {
                     ConsciousnessLevel = (decimal)consciousnessHealth.OverallHealth,
                     TotalAgents = _activeSessions.Values.Sum(s => s.ParticipantCount),
@@ -331,7 +331,7 @@ namespace TerraFusion.Consciousness.Services
                     BeautyScore = (decimal)(consciousnessHealth.OverallHealth * 0.85),
                     ActiveTasks = _activeSessions.Values.Sum(s => s.OperationCount),
                     CompletedTasks = _activeSessions.Values.Sum(s => s.CompletedOperationCount), // ✅ Properly tracked completed tasks
-                    DeploymentStatus = new DeploymentStatusDto
+                    DeploymentStatus = new CoreDTOs.DeploymentStatusDto
                     {
                         SwarmInitialized = true,
                         BulletproofDeployed = true,
