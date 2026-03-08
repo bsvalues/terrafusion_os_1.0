@@ -146,9 +146,9 @@ describe('Phase 8.3 Tools - Gate Validation', () => {
     await registry.initialize(MANIFEST_PATH);
   });
 
-  it('loads the canonical manifest (v1.6.0, 35 tools)', () => {
-    assert.strictEqual(registry.getVersion(), '1.6.0');
-    assert.strictEqual(registry.listTools().length, 35);
+  it('loads the canonical manifest (v1.7.0, 38 tools)', () => {
+    assert.strictEqual(registry.getVersion(), '1.7.0');
+    assert.strictEqual(registry.listTools().length, 38);
   });
 
   it('enforces registry invariants', () => {

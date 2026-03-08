@@ -1,5 +1,5 @@
 /**
- * TerraFusion OS — Real Handlers (35 Tools: 24 R1 + 5 R2 Wave 1 + 3 R2.5 + 3 R2.10)
+ * TerraFusion OS — Real Handlers (38 Tools: 24 R1 + 5 R2 Wave 1 + 3 R2.5 + 3 R2.10 + 3 R2.11)
  *
  * Production handler implementations for ALL governed tools.
  * These call real backend endpoints instead of returning canned data.
@@ -1385,6 +1385,92 @@ export const getGeometryStatsHandler: ToolHandler<
 };
 
 // ============================================================================
+// R2.11: Muse NLP Engine Handlers (3)
+// ============================================================================
+
+export interface MuseExplainAssessmentParams {
+  county: string;
+  parcelId: string;
+  audience?: string;
+}
+
+export interface MuseExplainAssessmentResult {
+  parcelId: string;
+  explanation: string;
+  drivers: string[];
+  confidence: number;
+  engine: string;
+}
+
+export const museExplainAssessmentHandler: ToolHandler<
+  MuseExplainAssessmentParams,
+  MuseExplainAssessmentResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<MuseExplainAssessmentResult>(
+    `/api/muse/explain/assessment`,
+    { parcelId: params.parcelId, audience: params.audience },
+    { token }
+  );
+  return unwrapBackend(raw, 'Muse assessment explanation failed');
+};
+
+export interface MuseSynthesizeEvidenceParams {
+  county: string;
+  parcelId: string;
+}
+
+export interface MuseSynthesizeEvidenceResult {
+  parcelId: string;
+  synthesis: string;
+  sources: string[];
+  confidence: number;
+  engine: string;
+}
+
+export const museSynthesizeEvidenceHandler: ToolHandler<
+  MuseSynthesizeEvidenceParams,
+  MuseSynthesizeEvidenceResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<MuseSynthesizeEvidenceResult>(
+    `/api/muse/synthesize`,
+    { parcelId: params.parcelId },
+    { token }
+  );
+  return unwrapBackend(raw, 'Muse evidence synthesis failed');
+};
+
+export interface GetMuseCapabilitiesParams {
+  county: string;
+}
+
+export interface GetMuseCapabilitiesResult {
+  engine: string;
+  aiPowered: boolean;
+  supportedTypes: string[];
+  audiences: string[];
+}
+
+export const getMuseCapabilitiesHandler: ToolHandler<
+  GetMuseCapabilitiesParams,
+  GetMuseCapabilitiesResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendGet<GetMuseCapabilitiesResult>(
+    `/api/muse/capabilities`,
+    { token }
+  );
+  return unwrapBackend(raw, 'Muse capabilities fetch failed');
+};
+
+// ============================================================================
 // Handler Registration
 // ============================================================================
 
@@ -1442,4 +1528,9 @@ export function registerR1Handlers(
   runner.registerHandler('get_parcel_geometry', getParcelGeometryHandler);
   runner.registerHandler('get_parcel_centroid', getParcelCentroidHandler);
   runner.registerHandler('get_geometry_stats', getGeometryStatsHandler);
+
+  // R2.11: Muse NLP engine handlers (3)
+  runner.registerHandler('muse_explain_assessment', museExplainAssessmentHandler);
+  runner.registerHandler('muse_synthesize_evidence', museSynthesizeEvidenceHandler);
+  runner.registerHandler('get_muse_capabilities', getMuseCapabilitiesHandler);
 }

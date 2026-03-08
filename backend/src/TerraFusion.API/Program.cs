@@ -186,6 +186,9 @@ builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceServi
 // TerraGaiaService doesn't run background tasks, so Scoped lifetime is appropriate for on-demand AI consciousness queries
 builder.Services.AddScoped<ITerraGaiaService, TerraGaiaService>();
 
+// R2.11: Muse NLP Explanation Engine
+builder.Services.AddScoped<TerraFusion.API.Services.IMuseService, TerraFusion.API.Services.MuseService>();
+
 // TIER 5+ Cognitive Framework - 3-6-9-12 Development Excellence
 builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService>();
 

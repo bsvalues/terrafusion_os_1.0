@@ -116,6 +116,15 @@ export {
     type GetParcelCentroidResult,
     type GetGeometryStatsParams,
     type GetGeometryStatsResult,
+    museExplainAssessmentHandler,
+    museSynthesizeEvidenceHandler,
+    getMuseCapabilitiesHandler,
+    type MuseExplainAssessmentParams,
+    type MuseExplainAssessmentResult,
+    type MuseSynthesizeEvidenceParams,
+    type MuseSynthesizeEvidenceResult,
+    type GetMuseCapabilitiesParams,
+    type GetMuseCapabilitiesResult,
 } from './handlers.real.js';
 
 // Backend HTTP Client

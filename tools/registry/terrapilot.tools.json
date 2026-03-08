@@ -1,6 +1,6 @@
 {
   "$schema": "./terrapilot.tools.schema.json",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "TerraPilot tool registry - authoritative manifest for Gates 4-7 enforcement",
   "lastUpdated": "2026-03-08",
   "tools": [
@@ -672,6 +672,58 @@
         },
         "required": ["parcelId", "documentId"]
       }
+    },
+    {
+      "toolId": "muse_explain_assessment",
+      "displayName": "Muse: Explain Assessment",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel"],
+      "description": "Generate a natural language explanation of the current assessment for a property using the Muse NLP engine. Covers land value, improvement value, market value, and methodology.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel ID to explain assessment for" },
+          "audience": { "type": "string", "enum": ["taxpayer", "appraiser", "commissioner", "internal"], "default": "internal" }
+        },
+        "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "muse_synthesize_evidence",
+      "displayName": "Muse: Synthesize Evidence",
+      "suite": "dossier",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "dossier"],
+      "description": "Synthesize evidence from multiple data sources (property records, assessment history) into a cohesive narrative for a parcel. Uses Muse NLP engine.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel ID to synthesize evidence for" }
+        },
+        "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "get_muse_capabilities",
+      "displayName": "Get Muse Capabilities",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Return Muse NLP engine capabilities: supported explanation types, audiences, and whether AI-powered generation is active.",
+      "piiHandling": "none",
+      "tracePolicy": "none"
     }
   ]
 }
