@@ -2615,6 +2615,161 @@ public class CostForgeController : ControllerBase
     ];
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // Wave 35 — Valuation Pipeline
+  // ═══════════════════════════════════════════════════════════════
+
+  private static readonly string[] PipelineStages =
+    ["ingestion", "quality", "cost", "sales", "income", "reconciliation", "review", "certified"];
+
+  /// <summary>Start a valuation pipeline run.</summary>
+  [HttpPost("pipeline/start")]
+  public async Task<IActionResult> StartPipeline([FromBody] PipelineStartRequest req)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    if (string.IsNullOrWhiteSpace(req.PipelineName))
+      return BadRequest(new { error = "Pipeline name is required" });
+    if (req.TotalParcels <= 0)
+      return BadRequest(new { error = "Total parcels must be positive" });
+
+    var sw = System.Diagnostics.Stopwatch.StartNew();
+
+    // Simulate pipeline stages
+    var stageDetails = new Dictionary<string, object>();
+    var processed = 0;
+    var failed = 0;
+    var rng = new Random(req.TotalParcels + req.TaxYear);
+    var valueChanges = new List<double>();
+
+    foreach (var stage in PipelineStages)
+    {
+      var stageCount = req.TotalParcels - failed;
+      var stageFailed = (int)(stageCount * rng.NextDouble() * 0.02); // up to 2% fail per stage
+      failed += stageFailed;
+      processed = req.TotalParcels - failed;
+
+      // simulate value change for parcels
+      for (int i = 0; i < Math.Min(stageCount, 50); i++)
+        valueChanges.Add((rng.NextDouble() - 0.3) * 20); // -6% to +14%
+
+      stageDetails[stage] = new { parcels = stageCount, failed = stageFailed, durationMs = rng.Next(100, 2000) };
+    }
+
+    sw.Stop();
+
+    var sortedChanges = valueChanges.OrderBy(x => x).ToList();
+    var avg = sortedChanges.Count > 0 ? sortedChanges.Average() : 0;
+    var median = sortedChanges.Count > 0 ? sortedChanges[sortedChanges.Count / 2] : 0;
+
+    // COD: average absolute deviation / median * 100
+    var absDeviation = sortedChanges.Count > 0 && median != 0
+      ? sortedChanges.Average(x => Math.Abs(x - median)) / Math.Abs(median) * 100
+      : 0;
+    // PRD: mean / weighted mean (simulated close to 1.0)
+    var prd = sortedChanges.Count > 0 ? 1.0 + (rng.NextDouble() - 0.5) * 0.06 : 1.0;
+
+    var entity = new TerraFusion.Core.Entities.ValuationPipeline
+    {
+      CountyId = ctx.CountyId,
+      PipelineName = req.PipelineName,
+      TaxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year,
+      TotalParcels = req.TotalParcels,
+      CompletedParcels = processed,
+      FailedParcels = failed,
+      InProgressParcels = 0,
+      CurrentStage = "certified",
+      Status = failed > req.TotalParcels / 2 ? "failed" : "completed",
+      DurationMs = sw.ElapsedMilliseconds,
+      AvgValueChangePercent = Math.Round(avg, 2),
+      MedianValueChangePercent = Math.Round(median, 2),
+      CoefficientOfDispersion = Math.Round(absDeviation, 2),
+      PriceRelatedDifferential = Math.Round(prd, 4),
+      StageDetails = System.Text.Json.JsonSerializer.Serialize(stageDetails),
+      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
+    };
+    _db.Set<TerraFusion.Core.Entities.ValuationPipeline>().Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      pipelineName = entity.PipelineName,
+      taxYear = entity.TaxYear,
+      status = entity.Status,
+      totalParcels = entity.TotalParcels,
+      completedParcels = entity.CompletedParcels,
+      failedParcels = entity.FailedParcels,
+      currentStage = entity.CurrentStage,
+      durationMs = entity.DurationMs,
+      avgValueChangePercent = entity.AvgValueChangePercent,
+      medianValueChangePercent = entity.MedianValueChangePercent,
+      coefficientOfDispersion = entity.CoefficientOfDispersion,
+      priceRelatedDifferential = entity.PriceRelatedDifferential,
+    });
+  }
+
+  /// <summary>Get pipeline run by ID.</summary>
+  [HttpGet("pipeline/{id}")]
+  public async Task<IActionResult> GetPipeline(int id)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var entity = await _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+      .FirstOrDefaultAsync(e => e.Id == id && e.CountyId == ctx.CountyId);
+    if (entity is null) return NotFound(new { error = "Pipeline not found" });
+
+    return Ok(new
+    {
+      id = entity.Id,
+      pipelineName = entity.PipelineName,
+      taxYear = entity.TaxYear,
+      status = entity.Status,
+      totalParcels = entity.TotalParcels,
+      completedParcels = entity.CompletedParcels,
+      failedParcels = entity.FailedParcels,
+      currentStage = entity.CurrentStage,
+      durationMs = entity.DurationMs,
+      avgValueChangePercent = entity.AvgValueChangePercent,
+      medianValueChangePercent = entity.MedianValueChangePercent,
+      coefficientOfDispersion = entity.CoefficientOfDispersion,
+      priceRelatedDifferential = entity.PriceRelatedDifferential,
+      stageDetails = entity.StageDetails,
+      createdAt = entity.CreatedAt,
+    });
+  }
+
+  /// <summary>Get pipeline history.</summary>
+  [HttpGet("pipeline/history")]
+  public async Task<IActionResult> GetPipelineHistory([FromQuery] int? taxYear)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required" });
+
+    var query = _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+      .Where(e => e.CountyId == ctx.CountyId);
+    if (taxYear.HasValue) query = query.Where(e => e.TaxYear == taxYear.Value);
+
+    var items = await query.OrderByDescending(e => e.CreatedAt).Take(100).ToListAsync();
+
+    return Ok(new
+    {
+      count = items.Count,
+      items = items.Select(e => new
+      {
+        id = e.Id,
+        pipelineName = e.PipelineName,
+        taxYear = e.TaxYear,
+        status = e.Status,
+        totalParcels = e.TotalParcels,
+        completedParcels = e.CompletedParcels,
+        createdAt = e.CreatedAt,
+      }),
+    });
+  }
+
   internal sealed record CostMatrixEntry(string BuildingType, string BuildingTypeLabel, string Region, decimal BaseCostPerSqft);
   internal sealed record DepreciationBracket(int MinAge, int MaxAge, decimal Factor);
 
@@ -2776,4 +2931,13 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ── Wave 35 DTOs ──
+
+public class PipelineStartRequest
+{
+  public string? PipelineName { get; set; }
+  public int TaxYear { get; set; }
+  public int TotalParcels { get; set; }
 }
