@@ -13,6 +13,7 @@ using TerraFusion.API.Controllers;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Models;
+using TerraFusion.Core.PACS;
 using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
 using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
@@ -571,5 +572,71 @@ public sealed class R1Week5CxR1ClosureTests
     json.RootElement.GetProperty("calculationId").GetString().Should().Be("calc-2025-abc123");
     json.RootElement.GetProperty("status").GetString().Should().Be("approved");
     json.RootElement.GetProperty("approvedBy").GetString().Should().NotBeNullOrWhiteSpace();
+  }
+
+  [Fact]
+  public async Task HarrisPACSController_GetProperties_WithoutCountyClaims_ReturnsForbid()
+  {
+    await using var db = CreateDbContext(nameof(HarrisPACSController_GetProperties_WithoutCountyClaims_ReturnsForbid));
+    var pacsAdapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
+
+    var controller = new HarrisPACSIntegrationController(
+        pacsAdapter.Object,
+        NullLogger<HarrisPACSIntegrationController>.Instance,
+        db,
+        CreateHostEnvironment("Production"));
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+
+    var result = await controller.GetProperties("Benton");
+
+    result.Result.Should().BeOfType<ForbidResult>();
+  }
+
+  [Fact]
+  public async Task HarrisPACSController_GetProperty_MismatchedJurisdiction_ReturnsForbid()
+  {
+    await using var db = CreateDbContext(nameof(HarrisPACSController_GetProperty_MismatchedJurisdiction_ReturnsForbid));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var pacsAdapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
+
+    var controller = new HarrisPACSIntegrationController(
+        pacsAdapter.Object,
+        NullLogger<HarrisPACSIntegrationController>.Instance,
+        db,
+        CreateHostEnvironment("Production"));
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetProperty("King", "PARCEL-101");
+
+    result.Result.Should().BeOfType<ForbidResult>();
+  }
+
+  [Fact]
+  public async Task HarrisPACSController_GetAssessments_MatchingJurisdiction_PassesGuard()
+  {
+    await using var db = CreateDbContext(nameof(HarrisPACSController_GetAssessments_MatchingJurisdiction_PassesGuard));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var pacsAdapter = new Mock<IPacsAdapter>();
+    pacsAdapter
+        .Setup(p => p.GetPropertyByGeoIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync((PacsPropertyCore?)null);
+
+    var controller = new HarrisPACSIntegrationController(
+        pacsAdapter.Object,
+        NullLogger<HarrisPACSIntegrationController>.Instance,
+        db,
+        CreateHostEnvironment("Production"));
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.GetAssessments("Benton", "PARCEL-101");
+
+    // If the guard passes, we reach the property lookup which returns NotFound (no PACS data)
+    result.Result.Should().BeOfType<NotFoundObjectResult>();
   }
 }
