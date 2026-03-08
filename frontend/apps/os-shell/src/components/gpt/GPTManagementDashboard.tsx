@@ -65,6 +65,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { gptAPI, GPTConfiguration, GPTUsageStatistics } from '@/services/gptAPI';
 import { gptHub } from '@/services/gptHub';
+import { useAuthClaims } from '../../auth/useAuthClaims';
 
 interface GPTManagementDashboardProps {
   onCreateGPT?: () => void;
@@ -83,6 +84,8 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
   onEditGPT,
   onChatWithGPT,
 }) => {
+  const claims = useAuthClaims();
+
   // State
   const [activeTab, setActiveTab] = useState<TabType>('my-gpts');
   const [allGPTs, setAllGPTs] = useState<GPTConfiguration[]>([]);
@@ -155,8 +158,7 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
       const gpts = await gptAPI.getAvailableGPTs();
       setAllGPTs(gpts);
 
-      // TODO: Get current user ID from auth context
-      const currentUserId = 'current-user-id'; // Replace with actual user ID
+      const currentUserId = claims.userId;
 
       // Separate my GPTs and installed GPTs
       const myCreatedGPTs = gpts.filter((g) => g.createdByUserId === currentUserId);
