@@ -1534,4 +1534,331 @@ public sealed class R1Week5CxR1ClosureTests
     keywords.Should().Contain("accessory dwelling");
     keywords.Should().Contain("finished basement");
   }
+
+  // ═══════════════════════════════════════════════════════════════
+  // WAVE 12 — LEVY ENGINE TESTS
+  // Real Benton County levy certification and RCW 84.55 calculator
+  // ═══════════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_BentonTaxingDistricts_ContainsRealDistricts()
+  {
+    var districts = LevyCalculationController.BentonLevyData.TaxingDistricts;
+    districts.Should().NotBeEmpty();
+    districts.Length.Should().Be(22);
+
+    // County levies
+    districts.Should().Contain(d => d.Code == "BC-REG" && d.Type == "county-regular");
+    districts.Should().Contain(d => d.Code == "BC-ROAD" && d.Type == "county-roads");
+
+    // Cities
+    districts.Should().Contain(d => d.Code == "KENN" && d.Name.Contains("Kennewick"));
+    districts.Should().Contain(d => d.Code == "RICH" && d.Name.Contains("Richland"));
+
+    // School districts
+    districts.Should().Contain(d => d.Code == "KSD-17" && d.Type == "school-district");
+    districts.Should().Contain(d => d.Code == "RSD-400" && d.Type == "school-district");
+    districts.Should().Contain(d => d.Code == "KBSD-52" && d.Type == "school-district");
+
+    // Fire districts
+    districts.Should().Contain(d => d.Code == "FD-1" && d.Type == "fire-district");
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_StatutoryLimits_Complete()
+  {
+    var limits = LevyCalculationController.BentonLevyData.StatutoryLimits;
+    limits.Should().NotBeEmpty();
+    limits.Length.Should().Be(14);
+
+    // Key limits
+    limits.Should().Contain(l => l.DistrictType == "county-regular" && l.LimitPerThousandAV == 1.80);
+    limits.Should().Contain(l => l.DistrictType == "city" && l.LimitPerThousandAV == 3.375);
+    limits.Should().Contain(l => l.DistrictType == "school-district" && l.LimitPerThousandAV == 5.90);
+    limits.Should().Contain(l => l.DistrictType == "fire-district" && l.LimitPerThousandAV == 1.50);
+    limits.Should().Contain(l => l.DistrictType == "aggregate-tier-1" && l.LimitPerThousandAV == 5.90);
+    limits.Should().Contain(l => l.DistrictType == "aggregate-tier-2" && l.LimitPerThousandAV == 10.00);
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_CertificationSteps_AreOrderedAndComplete()
+  {
+    var steps = LevyCalculationController.BentonLevyData.CertificationSteps;
+    steps.Length.Should().Be(8);
+
+    steps[0].Name.Should().Be("Budget Submission");
+    steps[2].Name.Should().Be("Highest Lawful Levy Calculation");
+    steps[4].Name.Should().Be("Aggregate Limit Check");
+    steps[5].Name.Should().Be("Proration (if required)");
+    steps[6].Name.Should().Be("Levy Certification");
+    steps[7].Name.Should().Be("Tax Roll Extension");
+
+    // Each step has an RCW reference
+    foreach (var step in steps)
+    {
+      step.RcwReference.Should().StartWith("RCW");
+    }
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_HighestLawfulLevy_BasicCalculation()
+  {
+    // Prior year: $10,000,000 levy on $5B assessed value
+    // 101% factor: $10,100,000
+    var request = new LevyCalculationController.HighestLawfulLevyRequest(
+        PriorYearLevy: 10_000_000,
+        PriorAssessedValue: 5_000_000_000,
+        CurrentAssessedValue: 5_200_000_000);
+
+    var result = LevyCalculationController.ComputeHighestLawfulLevy(request);
+
+    result.LimitFactor.Should().Be(1.01);
+    result.BaseHighestLawful.Should().Be(10_100_000.00);
+    result.NewConstructionComponent.Should().Be(0);
+    result.AnnexationComponent.Should().Be(0);
+    result.HighestLawfulLevy.Should().Be(10_100_000.00);
+    result.LidLiftApplied.Should().BeFalse();
+    result.EffectiveLevy.Should().Be(10_100_000.00);
+    result.StatutoryReference.Should().Be("RCW 84.55.010");
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_HighestLawfulLevy_WithNewConstruction()
+  {
+    // Prior year rate: $10M / $5B × 1000 = $2.00 per $1,000
+    // New construction: $50M × $2.00/1000 = $100,000
+    var request = new LevyCalculationController.HighestLawfulLevyRequest(
+        PriorYearLevy: 10_000_000,
+        PriorAssessedValue: 5_000_000_000,
+        CurrentAssessedValue: 5_050_000_000,
+        NewConstructionValue: 50_000_000);
+
+    var result = LevyCalculationController.ComputeHighestLawfulLevy(request);
+
+    result.BaseHighestLawful.Should().Be(10_100_000.00);
+    result.NewConstructionComponent.Should().Be(100_000.00);
+    result.HighestLawfulLevy.Should().Be(10_200_000.00);
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_HighestLawfulLevy_WithLidLift()
+  {
+    var request = new LevyCalculationController.HighestLawfulLevyRequest(
+        PriorYearLevy: 10_000_000,
+        PriorAssessedValue: 5_000_000_000,
+        CurrentAssessedValue: 5_000_000_000,
+        LidLiftAmount: 12_000_000);
+
+    var result = LevyCalculationController.ComputeHighestLawfulLevy(request);
+
+    result.HighestLawfulLevy.Should().Be(10_100_000.00);
+    result.LidLiftApplied.Should().BeTrue();
+    result.EffectiveLevy.Should().Be(12_000_000.00);
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_HighestLawfulLevy_LidLiftBelowHLL_NotApplied()
+  {
+    var request = new LevyCalculationController.HighestLawfulLevyRequest(
+        PriorYearLevy: 10_000_000,
+        PriorAssessedValue: 5_000_000_000,
+        CurrentAssessedValue: 5_000_000_000,
+        LidLiftAmount: 9_000_000); // Below HLL — not applied
+
+    var result = LevyCalculationController.ComputeHighestLawfulLevy(request);
+
+    result.LidLiftApplied.Should().BeFalse();
+    result.EffectiveLevy.Should().Be(10_100_000.00);
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_HighestLawfulLevy_EffectiveRateCalculation()
+  {
+    // $10.1M on $5B AV = $2.02 per $1,000
+    var request = new LevyCalculationController.HighestLawfulLevyRequest(
+        PriorYearLevy: 10_000_000,
+        PriorAssessedValue: 5_000_000_000,
+        CurrentAssessedValue: 5_000_000_000);
+
+    var result = LevyCalculationController.ComputeHighestLawfulLevy(request);
+
+    result.EffectiveRate.Should().Be(2.02);
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_AggregateCheck_WithinLimits()
+  {
+    var levies = new LevyCalculationController.DistrictLevyEntry[]
+    {
+        new("Benton County", "county-regular", 1.50),
+        new("Road Fund", "county-roads", 2.00),
+        new("Fire District #1", "fire-district", 1.00),
+    };
+
+    var result = LevyCalculationController.ComputeAggregateLimitCheck(levies);
+
+    result.Tier1Sum.Should().Be(4.50); // county + fire = 1.50 + 2.00 + 1.00
+    result.Tier1Compliant.Should().BeTrue();
+    result.Tier2Sum.Should().Be(4.50);
+    result.Tier2Compliant.Should().BeTrue();
+    result.OverallCompliant.Should().BeTrue();
+    result.ProrationRequired.Should().BeFalse();
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_AggregateCheck_Tier1Exceeded()
+  {
+    var levies = new LevyCalculationController.DistrictLevyEntry[]
+    {
+        new("Benton County", "county-regular", 1.80),
+        new("Road Fund", "county-roads", 2.25),
+        new("Fire District #1", "fire-district", 1.50),
+        new("Library", "library-district", 0.50),
+    };
+
+    var result = LevyCalculationController.ComputeAggregateLimitCheck(levies);
+
+    result.Tier1Sum.Should().Be(6.05); // Exceeds $5.90
+    result.Tier1Compliant.Should().BeFalse();
+    result.ProrationRequired.Should().BeTrue();
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_AggregateCheck_CityNotInTier1()
+  {
+    var levies = new LevyCalculationController.DistrictLevyEntry[]
+    {
+        new("Benton County", "county-regular", 1.50),
+        new("Kennewick", "city", 3.00),
+    };
+
+    var result = LevyCalculationController.ComputeAggregateLimitCheck(levies);
+
+    // City is NOT in tier 1 — only county is
+    result.Tier1Sum.Should().Be(1.50);
+    result.Tier2Sum.Should().Be(4.50); // Both: 1.50 + 3.00
+    result.OverallCompliant.Should().BeTrue();
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_TaxingDistrictsEndpoint_ReturnsOk()
+  {
+    var controller = new LevyCalculationController(
+        NullLogger<LevyCalculationController>.Instance,
+        CreateDbContext(nameof(Levy_TaxingDistrictsEndpoint_ReturnsOk)));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetBentonTaxingDistricts();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_StatutoryLimitsEndpoint_ReturnsOk()
+  {
+    var controller = new LevyCalculationController(
+        NullLogger<LevyCalculationController>.Instance,
+        CreateDbContext(nameof(Levy_StatutoryLimitsEndpoint_ReturnsOk)));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetStatutoryLimits();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_CertificationStepsEndpoint_ReturnsOk()
+  {
+    var controller = new LevyCalculationController(
+        NullLogger<LevyCalculationController>.Instance,
+        CreateDbContext(nameof(Levy_CertificationStepsEndpoint_ReturnsOk)));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.GetLevyCertificationSteps();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_HighestLawfulLevyEndpoint_ValidRequest_ReturnsOk()
+  {
+    var controller = new LevyCalculationController(
+        NullLogger<LevyCalculationController>.Instance,
+        CreateDbContext(nameof(Levy_HighestLawfulLevyEndpoint_ValidRequest_ReturnsOk)));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var request = new LevyCalculationController.HighestLawfulLevyRequest(
+        PriorYearLevy: 10_000_000,
+        PriorAssessedValue: 5_000_000_000,
+        CurrentAssessedValue: 5_000_000_000);
+
+    var result = controller.CalculateHighestLawfulLevy(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+
+    // Verify provenance header
+    controller.Response.Headers["X-Levy-Source"].ToString()
+      .Should().Be("benton-real-levy-engine-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_HighestLawfulLevyEndpoint_NullRequest_ReturnsBadRequest()
+  {
+    var controller = new LevyCalculationController(
+        NullLogger<LevyCalculationController>.Instance,
+        CreateDbContext(nameof(Levy_HighestLawfulLevyEndpoint_NullRequest_ReturnsBadRequest)));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.CalculateHighestLawfulLevy(null!);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_AggregateCheckEndpoint_ValidRequest_ReturnsOk()
+  {
+    var controller = new LevyCalculationController(
+        NullLogger<LevyCalculationController>.Instance,
+        CreateDbContext(nameof(Levy_AggregateCheckEndpoint_ValidRequest_ReturnsOk)));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var request = new LevyCalculationController.AggregateLimitRequest(
+    [
+        new LevyCalculationController.DistrictLevyEntry("County", "county-regular", 1.50),
+        new LevyCalculationController.DistrictLevyEntry("Fire", "fire-district", 1.00),
+    ]);
+
+    var result = controller.CheckAggregateLimits(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    okResult.Value.Should().NotBeNull();
+  }
+
+  [Fact]
+  [Trait("Category", "Levy")]
+  public void Levy_AggregateCheckEndpoint_NullRequest_ReturnsBadRequest()
+  {
+    var controller = new LevyCalculationController(
+        NullLogger<LevyCalculationController>.Instance,
+        CreateDbContext(nameof(Levy_AggregateCheckEndpoint_NullRequest_ReturnsBadRequest)));
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+    var result = controller.CheckAggregateLimits(null!);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
 }
