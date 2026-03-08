@@ -1,6 +1,6 @@
-# TerraFusion OS — Progress Truth Ledger v6
+# TerraFusion OS — Progress Truth Ledger v7
 
-Date: March 8, 2026 (R4 Production Hardening Complete)
+Date: March 8, 2026 (R5 Full Completion Complete)
 Branch: `claude/review-progress-ledger-a8iw5`
 
 ## Context
@@ -588,6 +588,152 @@ Wired into root `package.json`:
 
 ---
 
+---
+
+## R5 Full Completion (March 8, 2026 — ALL WAVES COMPLETE)
+
+### R5.1: Auth Context Wiring ✅
+
+Created `useAuthClaims()` hook that decodes JWT to extract `countyId`, `userId`, `roles`:
+- New file: `frontend/apps/os-shell/src/auth/useAuthClaims.ts`
+- Replaced hardcoded `countyId: 'benton'` in PropertyWorkbench.tsx (2 locations)
+- Replaced hardcoded `countyId: 'benton'` in PropertyWorkbenchWindow.tsx (2 locations)
+- Replaced `'current-user-id'` in GPTManagementDashboard.tsx
+- Replaced `'phd-researcher-001'` in ResearchPortal.tsx
+- Added TerraTrace `tab_switched` event emission in PropertyWorkbenchWindow.tsx
+
+**Commits:** `7922f57e3`, `cb547f0a7`
+
+### R5.2: RAG Dataset API Wiring ✅
+
+Created `ragAPI.ts` service with Axios-based RAG API client:
+- New file: `frontend/apps/os-shell/src/services/ragAPI.ts`
+- 8 API methods: getDatasets, getDocuments, getChunks, createDataset, uploadDocument, deleteDataset, deleteDocument, reindexDataset
+- `RAGServiceUnavailableError` class for 404/501 responses
+- All 8 TODO API calls in `RAGDatasetManager.tsx` replaced with real service calls
+- Honest "RAG service not configured" UI when backend returns 501
+
+**Commit:** `7922f57e3`
+
+### R5.3: Muse NLP Test Coverage ✅
+
+Created 3 test files for comprehensive Muse coverage:
+- `MuseControllerTests.cs`: Integration tests for all 7 Muse endpoints via WebApplicationFactory
+- `MuseServiceTests.cs`: Unit tests for template engine (6 methods × 4 audiences)
+- `ClaudeMuseServiceTests.cs`: Fallback chain tests (mock HttpClient failure → verify template fallback + `Fallback: true`)
+
+**Commits:** `ce531d9d7`, `8b6e95642`
+
+### R5.4: SuiteHome Quick Actions ✅
+
+Implemented 3 quick action handlers in `SuiteHome.tsx`:
+- Search → navigates to `/property/search?suite=${suite.id}`
+- Recent → navigates to most recent parcel from `recentsStore`
+- Favorites → navigates to first pinned item from `pinsStore`
+
+**Commit:** `875fff867`
+
+### R5.5: MetricsCollector Storage Backends ✅
+
+Implemented IndexedDB and API storage backends in `MetricsCollector.ts`:
+- IndexedDB backend: `idb-keyval`-style raw IndexedDB save/load
+- API backend: POST/GET to `/api/metrics` with bearer token auth
+- localStorage backend already existed (3/3 backends complete)
+
+**Commit:** `875fff867`
+
+### R5.6: Launcher Search Filtering ✅
+
+Wired search query filtering through ranking engine:
+- Items hide when search query has no matches
+- Launcher search test unskipped and verified
+
+**Commit:** `875fff867`
+
+### R5.7: Desktop UI Completions ✅
+
+Three implementations:
+- `TaskbarContextMenu.tsx`: Pin-to-Start wired via `usePinsStore.togglePin(window.id)`, disabled state removed
+- `CodexAdminPanel.tsx`: `setTimeout` stub replaced with real `fetch('/api/codex/configuration')` + 501 fallback
+- `DesktopContextMenu.tsx`: About dialog component (version, build date, county info)
+
+**Commits:** `875fff867`, `8b6e95642`
+
+### R5.8: Email Service Wiring ✅
+
+Created generic email infrastructure wrapping existing SMTP:
+- New file: `backend/src/TerraFusion.AI/Services/IEmailService.cs` — interface with `SendEmailAsync` and `IsConfigured`
+- New file: `backend/src/TerraFusion.AI/Services/EmailService.cs` — SmtpClient implementation with SMTP config check
+- `GPTBudgetAlertService.cs`: Injected `IEmailService`, replaced log-only with real email delivery (falls back to logging when SMTP not configured)
+
+**Commit:** `90758cf6c`
+
+### R5.9: Kernel Execution (Roslyn + SQL) ✅
+
+Wired real execution engines in `KernelExecutionService.cs`:
+- C# scripting via `Microsoft.CodeAnalysis.CSharp.Scripting` with 30-second timeout
+- SQL execution via `IDbConnection` with read-only guard (rejects INSERT/UPDATE/DELETE/DROP/ALTER/TRUNCATE)
+- `Directory.Packages.props`: Added `Microsoft.CodeAnalysis.CSharp.Scripting` package version
+
+**Commit:** `8b6e95642`
+
+### R5.10: GptAtlas Live Integration ✅
+
+Wired `useSystemGptAtlasLive` hook to SystemGptAtlasPanel component:
+- Live connection state display (connected/disconnected/reconnecting)
+- County node health rendering from live events
+- Live metrics display (latency, error rate, active requests)
+- Alert display for county-level alerts
+- 12 previously-skipped tests unskipped with full mock data for 4 county health states
+
+**Commits:** `8b6e95642`, `6600d61a4`
+
+### R5 Summary
+
+| Metric | Before R5 | After R5 |
+|--------|-----------|----------|
+| Hardcoded auth values | 6+ | **0** (all use `useAuthClaims()`) |
+| RAG API calls wired | 0 | **8/8** (with 501 fallback) |
+| Muse test coverage | 0 | **3 test suites** (controller + service + fallback) |
+| MetricsCollector backends | 1 (localStorage) | **3/3** (localStorage + IndexedDB + API) |
+| SuiteHome quick actions | 0 | **3/3** (search + recent + favorites) |
+| Desktop UI stubs | 3 | **0** (about dialog + pin + codex save) |
+| Email service | Log-only | **Real SMTP** (with fallback) |
+| Kernel execution | Stubs | **Roslyn C# + SQL** (with sandboxing) |
+| GptAtlas live tests | 12 skipped | **12 unskipped** |
+| Core gates | 87/87 | **87/87** (32/32 phase83) |
+
+---
+
+## R5 Gate Verification (March 8, 2026)
+
+```
+node --test phase83-tools.test.mjs → 32/32 pass
+Core gates: 87/87 pass, 0 fail
+Manifest: v1.7.0 (38 tools, 38 handlers, 0 stubs)
+```
+
+---
+
+## Cumulative Status (R1 → R5)
+
+| Round | Scope | Key Deliverables |
+|-------|-------|-----------------|
+| R1 | Governance backbone | 10→24 real handlers, invoke/trace contracts, county isolation, auth hardening |
+| R2 | Backend expansion | 61+ endpoints, USPAP valuation, GIS geometry, Muse NLP, manifest v1.7.0 |
+| R3 | Integration layer | PostGIS dual-mode, Claude Muse API, 38/38 direct routes |
+| R4 | Production hardening | Forge cleanup, GPT hardening, migration engine, 70 integration tests, security sweep |
+| R5 | Full completion | Auth wiring, RAG API, Muse tests, storage backends, email, kernel execution, live integration |
+
+**Total endpoints:** 61+ (59 live, 2 intentional stubs — Harris PACS only)
+**Total tools:** 38/38 with real handlers
+**Total gate tests:** 87/87 core, 242+ total
+**Hardcoded auth values:** 0
+**Frontend TODOs in production:** 0
+**Controller stubs:** 2 (Harris PACS — per CLAUDE.md governance)
+
+---
+
 *Classification: Internal working document*
-*Source: `handlers.real.ts` (38 handlers), `PilotController.ts`, `TraceStore.ts`, `MuseController.cs`, `AtlasController.cs`, `DossierController.cs`, `toolServiceRouter.ts`, service files, controller source code, gate output (87/87), evidence verification gate*
-*Last verified: March 8, 2026 — ledger v6 (R4 complete)*
+*Source: `handlers.real.ts` (38 handlers), `PilotController.ts`, `TraceStore.ts`, `MuseController.cs`, `AtlasController.cs`, `DossierController.cs`, `toolServiceRouter.ts`, `useAuthClaims.ts`, `ragAPI.ts`, `MetricsCollector.ts`, `KernelExecutionService.cs`, `EmailService.cs`, service files, controller source code, gate output (87/87), evidence verification gate*
+*Last verified: March 8, 2026 — ledger v7 (R5 complete)*
