@@ -628,6 +628,12 @@ builder.Services.AddUltimateCostForgeAPI(builder.Configuration, builder.Environm
 // MISSING DI REGISTRATIONS - Required by controllers and services
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// Email Service - Generic SMTP email delivery used by GPTBudgetAlertService
+builder.Services.AddSingleton<TerraFusion.AI.Services.IEmailService, TerraFusion.AI.Services.EmailService>();
+
+// GPT Budget Alert Service - Budget monitoring and alert notifications
+builder.Services.AddScoped<TerraFusion.AI.Services.IGPTBudgetAlertService, TerraFusion.AI.Services.GPTBudgetAlertService>();
+
 // AI Command Service - Required by AdvancedAIAgentOrchestrator (Singleton), ProductionPACSDataEngine, SystemHub, AISwarmController
 builder.Services.AddSingleton<TerraFusion.AI.Services.IAICommandService, TerraFusion.AI.Services.AICommandService>();
 

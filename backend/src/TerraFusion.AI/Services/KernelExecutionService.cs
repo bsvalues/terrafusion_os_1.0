@@ -9,11 +9,18 @@
  */
 
 using System.Collections.Concurrent;
+using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TerraFusion.AI.Hubs;
+using TerraFusion.Data;
 
 namespace TerraFusion.AI.Services;
 
@@ -24,6 +31,7 @@ public class KernelExecutionService : IKernelExecutionService
 {
     private readonly IHubContext<NotebookHub> _hubContext;
     private readonly ILogger<KernelExecutionService> _logger;
+    private readonly TerraFusionDbContext _dbContext;
 
     // Track active executions
     private static readonly ConcurrentDictionary<string, ExecutionContext> _activeExecutions = new();
@@ -34,12 +42,19 @@ public class KernelExecutionService : IKernelExecutionService
     // Max concurrent executions per notebook
     private const int MaxConcurrentExecutions = 3;
 
+    // SQL safety: DDL/DML keywords that must be rejected
+    private static readonly Regex MutationPattern = new(
+        @"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|EXEC|EXECUTE|GRANT|REVOKE|MERGE)\b",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
     public KernelExecutionService(
         IHubContext<NotebookHub> hubContext,
-        ILogger<KernelExecutionService> logger)
+        ILogger<KernelExecutionService> logger,
+        TerraFusionDbContext dbContext)
     {
         _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
     /// <summary>
@@ -218,77 +233,262 @@ public class KernelExecutionService : IKernelExecutionService
         }
     }
 
-    // ==================== C# EXECUTION ====================
+    // ==================== C# EXECUTION (Roslyn Scripting) ====================
 
     private async Task<ExecutionResult> ExecuteCSharpAsync(
         ExecutionContext context,
         CancellationToken cancellationToken)
     {
-        // Note: C# execution requires Roslyn scripting API
-        // This is a simplified implementation
         var startTime = DateTime.UtcNow;
+        var outputBuilder = new StringBuilder();
 
         try
         {
-            // TODO: Implement Roslyn scripting for C# execution
-            // For now, return a placeholder
+            var options = ScriptOptions.Default
+                .AddReferences(
+                    typeof(object).Assembly,
+                    typeof(Enumerable).Assembly,
+                    typeof(List<>).Assembly)
+                .AddImports(
+                    "System",
+                    "System.Linq",
+                    "System.Collections.Generic",
+                    "System.Math",
+                    "System.Text");
+
+            // Enforce 30-second timeout
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(TimeSpan.FromSeconds(30));
+
+            var result = await CSharpScript.EvaluateAsync<object>(
+                context.Code,
+                options,
+                cancellationToken: cts.Token);
+
+            var output = result?.ToString() ?? "(null)";
+            outputBuilder.AppendLine(output);
 
             await StreamOutput(
                 context.NotebookId,
                 context.CellIndex,
                 context.ExecutionId,
                 "stdout",
-                "C# execution not yet implemented. Install Microsoft.CodeAnalysis.CSharp.Scripting package.");
+                output);
 
             var executionTime = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
             return new ExecutionResult
             {
-                Success = false,
-                Output = "C# execution not implemented",
+                Success = true,
+                Output = outputBuilder.ToString(),
                 ExecutionTime = executionTime
+            };
+        }
+        catch (CompilationErrorException compilationEx)
+        {
+            var errors = string.Join(Environment.NewLine, compilationEx.Diagnostics);
+            _logger.LogWarning("C# compilation errors for execution {ExecutionId}: {Errors}",
+                context.ExecutionId, errors);
+
+            await StreamOutput(
+                context.NotebookId,
+                context.CellIndex,
+                context.ExecutionId,
+                "stderr",
+                $"Compilation Error:\n{errors}");
+
+            return new ExecutionResult
+            {
+                Success = false,
+                Output = outputBuilder.ToString(),
+                Error = errors,
+                ExecutionTime = (DateTime.UtcNow - startTime).TotalMilliseconds
+            };
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("C# execution timed out after 30 seconds for execution {ExecutionId}",
+                context.ExecutionId);
+
+            await StreamOutput(
+                context.NotebookId,
+                context.CellIndex,
+                context.ExecutionId,
+                "stderr",
+                "Execution timed out after 30 seconds.");
+
+            return new ExecutionResult
+            {
+                Success = false,
+                Error = "Execution timed out after 30 seconds",
+                ExecutionTime = (DateTime.UtcNow - startTime).TotalMilliseconds
             };
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "C# execution failed for execution {ExecutionId}", context.ExecutionId);
-            throw;
+
+            await StreamOutput(
+                context.NotebookId,
+                context.CellIndex,
+                context.ExecutionId,
+                "stderr",
+                $"Runtime Error: {ex.Message}");
+
+            return new ExecutionResult
+            {
+                Success = false,
+                Error = ex.Message,
+                ExecutionTime = (DateTime.UtcNow - startTime).TotalMilliseconds
+            };
         }
     }
 
-    // ==================== SQL EXECUTION ====================
+    // ==================== SQL EXECUTION (Read-Only) ====================
 
     private async Task<ExecutionResult> ExecuteSqlAsync(
         ExecutionContext context,
         CancellationToken cancellationToken)
     {
         var startTime = DateTime.UtcNow;
+        var outputBuilder = new StringBuilder();
 
         try
         {
-            // TODO: Implement SQL execution against configured database
-            // For now, return a placeholder
+            var sql = context.Code.Trim();
 
-            await StreamOutput(
-                context.NotebookId,
-                context.CellIndex,
-                context.ExecutionId,
-                "stdout",
-                "SQL execution requires database configuration.");
+            // Safety check: reject mutation queries
+            if (MutationPattern.IsMatch(sql))
+            {
+                var error = "SQL execution is restricted to read-only SELECT queries. " +
+                            "INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE, EXEC, GRANT, REVOKE, and MERGE are not permitted.";
 
-            var executionTime = (DateTime.UtcNow - startTime).TotalMilliseconds;
+                _logger.LogWarning("Rejected mutation SQL for execution {ExecutionId}", context.ExecutionId);
+
+                await StreamOutput(
+                    context.NotebookId,
+                    context.CellIndex,
+                    context.ExecutionId,
+                    "stderr",
+                    error);
+
+                return new ExecutionResult
+                {
+                    Success = false,
+                    Error = error,
+                    ExecutionTime = (DateTime.UtcNow - startTime).TotalMilliseconds
+                };
+            }
+
+            // Safety check: reject semicolon-separated multi-statement queries
+            var statementCount = sql.Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Count(s => !string.IsNullOrWhiteSpace(s));
+            if (statementCount > 1)
+            {
+                var error = "Multi-statement SQL queries are not permitted. Please execute one SELECT statement at a time.";
+
+                await StreamOutput(
+                    context.NotebookId,
+                    context.CellIndex,
+                    context.ExecutionId,
+                    "stderr",
+                    error);
+
+                return new ExecutionResult
+                {
+                    Success = false,
+                    Error = error,
+                    ExecutionTime = (DateTime.UtcNow - startTime).TotalMilliseconds
+                };
+            }
+
+            // Execute read-only query using the DbContext connection
+            var connection = _dbContext.Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
+            {
+                await connection.OpenAsync(cancellationToken);
+            }
+
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            command.CommandTimeout = 30;
+
+            using var reader = await command.ExecuteReaderAsync(CommandBehavior.SingleResult, cancellationToken);
+
+            // Build formatted table output
+            var columnCount = reader.FieldCount;
+            var columnNames = new string[columnCount];
+            var columnWidths = new int[columnCount];
+
+            for (int i = 0; i < columnCount; i++)
+            {
+                columnNames[i] = reader.GetName(i);
+                columnWidths[i] = columnNames[i].Length;
+            }
+
+            // Read all rows to calculate column widths
+            var rows = new List<string[]>();
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                var row = new string[columnCount];
+                for (int i = 0; i < columnCount; i++)
+                {
+                    row[i] = reader.IsDBNull(i) ? "NULL" : reader.GetValue(i)?.ToString() ?? "NULL";
+                    columnWidths[i] = Math.Max(columnWidths[i], row[i].Length);
+                }
+                rows.Add(row);
+            }
+
+            // Format as table
+            var headerLine = string.Join(" | ", columnNames.Select((name, i) => name.PadRight(columnWidths[i])));
+            var separatorLine = string.Join("-+-", columnWidths.Select(w => new string('-', w)));
+
+            outputBuilder.AppendLine(headerLine);
+            outputBuilder.AppendLine(separatorLine);
+
+            await StreamOutput(context.NotebookId, context.CellIndex, context.ExecutionId, "stdout", headerLine);
+            await StreamOutput(context.NotebookId, context.CellIndex, context.ExecutionId, "stdout", separatorLine);
+
+            foreach (var row in rows)
+            {
+                var rowLine = string.Join(" | ", row.Select((val, i) => val.PadRight(columnWidths[i])));
+                outputBuilder.AppendLine(rowLine);
+                await StreamOutput(context.NotebookId, context.CellIndex, context.ExecutionId, "stdout", rowLine);
+            }
+
+            var footerLine = $"\n({rows.Count} row{(rows.Count == 1 ? "" : "s")} returned)";
+            outputBuilder.AppendLine(footerLine);
+            await StreamOutput(context.NotebookId, context.CellIndex, context.ExecutionId, "stdout", footerLine);
 
             return new ExecutionResult
             {
-                Success = false,
-                Output = "SQL execution not configured",
-                ExecutionTime = executionTime
+                Success = true,
+                Output = outputBuilder.ToString(),
+                ExecutionTime = (DateTime.UtcNow - startTime).TotalMilliseconds,
+                Metadata = new Dictionary<string, object>
+                {
+                    { "rowCount", rows.Count },
+                    { "columnCount", columnCount }
+                }
             };
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "SQL execution failed for execution {ExecutionId}", context.ExecutionId);
-            throw;
+
+            await StreamOutput(
+                context.NotebookId,
+                context.CellIndex,
+                context.ExecutionId,
+                "stderr",
+                $"SQL Error: {ex.Message}");
+
+            return new ExecutionResult
+            {
+                Success = false,
+                Error = ex.Message,
+                ExecutionTime = (DateTime.UtcNow - startTime).TotalMilliseconds
+            };
         }
     }
 

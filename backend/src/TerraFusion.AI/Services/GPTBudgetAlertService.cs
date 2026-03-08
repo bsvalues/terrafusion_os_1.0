@@ -251,7 +251,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Send alert email
         /// </summary>
-        private System.Threading.Tasks.Task<bool> SendAlertEmailAsync(
+        private async System.Threading.Tasks.Task<bool> SendAlertEmailAsync(
             GPTBudget budget,
             GPTBudgetAlert alert)
         {
@@ -267,29 +267,34 @@ namespace TerraFusion.AI.Services
                 if (!recipients.Any())
                 {
                     _logger.LogWarning("No valid email recipients");
-                    return System.Threading.Tasks.Task.FromResult(false);
+                    return false;
                 }
 
                 // Generate email content
                 var subject = GenerateEmailSubject(budget, alert);
                 var body = GenerateEmailBody(budget, alert);
 
-                // TODO: Send email using email service
-                // await _emailService.SendEmailAsync(recipients, subject, body);
+                if (_emailService.IsConfigured)
+                {
+                    await _emailService.SendEmailAsync(
+                        string.Join(",", recipients), subject, body, isHtml: true);
 
-                _logger.LogInformation(
-                    $"Alert email would be sent to: {string.Join(", ", recipients)}");
-                _logger.LogInformation($"Subject: {subject}");
+                    _logger.LogInformation(
+                        "Alert email sent to: {Recipients}. Subject: {Subject}",
+                        string.Join(", ", recipients), subject);
 
-                // For now, just log the alert
-                _logger.LogWarning("Email service not configured - alert logged only");
-
-                return System.Threading.Tasks.Task.FromResult(true); // Return true when email service is implemented
+                    return true;
+                }
+                else
+                {
+                    _logger.LogWarning("Email service not configured - alert logged only");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending alert email");
-                return System.Threading.Tasks.Task.FromResult(false);
+                return false;
             }
         }
 

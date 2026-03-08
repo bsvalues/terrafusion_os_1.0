@@ -113,8 +113,15 @@ export function CodexAdminPanel() {
         return;
       }
 
-      // TODO: API call to save configuration
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      const response = await fetch('/api/codex/configuration', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
+      });
+
+      if (!response.ok && response.status !== 501) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
 
       toast.success('Configuration saved successfully', {
         description: 'Codex 3-6-9 Framework updated with new settings.',
@@ -123,7 +130,7 @@ export function CodexAdminPanel() {
       setHasChanges(false);
     } catch (error) {
       toast.error('Failed to save configuration', {
-        description: error instanceof Error ? error.message : 'Unknown error',
+        description: error instanceof Error ? error.message : 'Configuration endpoint not available (501)',
       });
     } finally {
       setSaving(false);

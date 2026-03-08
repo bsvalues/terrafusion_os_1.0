@@ -161,6 +161,10 @@
   <ItemGroup>
     <PackageVersion Include="Serilog.Settings.Configuration" Version="8.0.2" />
   </ItemGroup>
+  <!-- Roslyn Scripting for Kernel Execution -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
+  </ItemGroup>
   <!-- AI Layer Mesh Infrastructure -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.SignalR" Version="8.0.0" />

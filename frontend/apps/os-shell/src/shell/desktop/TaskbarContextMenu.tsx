@@ -13,6 +13,7 @@
 import React from 'react';
 import { Maximize2, Minimize2, Minus, Pin, X } from 'lucide-react';
 import { useDesktopStore, type DesktopWindow } from '../../stores/desktopStore';
+import { usePinsStore } from '../../components/launcher/pinsStore';
 import { ContextMenu, type ContextMenuItem } from './ContextMenu';
 
 // ============================================================================
@@ -58,6 +59,7 @@ export const TaskbarContextMenu: React.FC<TaskbarContextMenuProps> = ({
   onClose,
 }) => {
   const { closeWindow, minimizeWindow, maximizeWindow, restoreWindow } = useDesktopStore();
+  const togglePin = usePinsStore((state) => state.togglePin);
 
   const isMaximized = window.state === 'maximized';
   const isMinimized = window.state === 'minimized';
@@ -107,9 +109,8 @@ export const TaskbarContextMenu: React.FC<TaskbarContextMenuProps> = ({
       id: 'pin-to-start',
       label: 'Pin to Start',
       icon: <Pin className='h-3.5 w-3.5' />,
-      disabled: true, // Future feature - requires start menu integration
       onClick: () => {
-        // TODO: Add to start menu pinned items
+        togglePin(window.id);
       },
     },
   ];

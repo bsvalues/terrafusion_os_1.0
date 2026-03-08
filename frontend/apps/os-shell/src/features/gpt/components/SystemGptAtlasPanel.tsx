@@ -15,6 +15,11 @@ import type {
   RagFleetDriftRisk,
 } from '../../../api/systemDiagnosticsApi';
 import { fetchSystemGptAtlas } from '../../../api/systemDiagnosticsApi';
+import {
+  useSystemGptAtlasLive,
+  type AtlasConnectionState,
+  type SystemGptAtlasLiveCountyEvent,
+} from '../../../hooks/useSystemGptAtlasLive';
 
 // ═══════════════════════════════════════════════════════════════
 // HEALTH COLOR UTILITIES
@@ -257,6 +262,143 @@ function AtlasStats({ nodes, generatedAt }: AtlasStatsProps) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// CONNECTION STATE INDICATOR
+// ═══════════════════════════════════════════════════════════════
+
+interface ConnectionIndicatorProps {
+  connectionState: AtlasConnectionState;
+}
+
+function ConnectionIndicator({ connectionState }: ConnectionIndicatorProps) {
+  const config: Record<AtlasConnectionState, { label: string; color: string; pulse: boolean }> = {
+    connecting: { label: 'Connecting…', color: 'text-amber-400', pulse: true },
+    connected: { label: 'Live', color: 'text-emerald-400', pulse: false },
+    reconnecting: { label: 'Reconnecting…', color: 'text-amber-400', pulse: true },
+    offline: { label: 'Offline', color: 'text-red-400', pulse: false },
+  };
+
+  const c = config[connectionState];
+
+  return (
+    <div
+      className={`flex items-center gap-1.5 text-xs ${c.color}`}
+      data-testid='atlas-connection-state'
+      data-state={connectionState}
+    >
+      <span className={`inline-block h-2 w-2 rounded-full bg-current ${c.pulse ? 'animate-pulse' : ''}`} />
+      <span>{c.label}</span>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LIVE METRICS DISPLAY
+// ═══════════════════════════════════════════════════════════════
+
+interface LiveMetricsProps {
+  counties: SystemGptAtlasLiveCountyEvent[];
+}
+
+function LiveMetrics({ counties }: LiveMetricsProps) {
+  if (counties.length === 0) return null;
+
+  // Aggregate metrics across all counties
+  const avgHealthScore = Math.round(
+    counties.reduce((sum, c) => sum + c.healthScore, 0) / counties.length
+  );
+  const totalActiveRequests = counties.reduce((sum, c) => sum + c.activeRequests, 0);
+  const maxP95Latency = Math.round(
+    Math.max(...counties.map((c) => c.p95LatencyMs))
+  );
+
+  return (
+    <div
+      className='rounded-lg border border-slate-700/60 bg-slate-900/90 p-3 mt-3'
+      data-testid='atlas-live-metrics'
+    >
+      <div className='text-[0.6rem] uppercase tracking-wider text-slate-500 mb-2'>
+        Live Metrics
+      </div>
+      <div className='grid grid-cols-3 gap-4 text-center'>
+        <div>
+          <div className='text-lg font-bold text-cyan-400' data-testid='health-score'>
+            {avgHealthScore}%
+          </div>
+          <div className='text-[0.6rem] text-slate-500'>Health Score</div>
+        </div>
+        <div>
+          <div className='text-lg font-bold text-emerald-400' data-testid='active-requests'>
+            {totalActiveRequests}
+          </div>
+          <div className='text-[0.6rem] text-slate-500'>Active Requests</div>
+        </div>
+        <div>
+          <div className='text-lg font-bold text-amber-400' data-testid='p95-latency'>
+            {maxP95Latency}ms
+          </div>
+          <div className='text-[0.6rem] text-slate-500'>P95 Latency</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ALERT DISPLAY
+// ═══════════════════════════════════════════════════════════════
+
+interface AlertDisplayProps {
+  counties: SystemGptAtlasLiveCountyEvent[];
+}
+
+function AlertDisplay({ counties }: AlertDisplayProps) {
+  const allAlerts = counties.flatMap((c) =>
+    c.activeAlerts.map((alert) => ({ countyId: c.countyId, message: alert }))
+  );
+
+  if (allAlerts.length === 0) return null;
+
+  return (
+    <div
+      className='rounded-lg border border-red-500/40 bg-red-500/10 p-3 mt-3'
+      data-testid='atlas-alerts'
+    >
+      <div className='text-[0.6rem] uppercase tracking-wider text-red-400 mb-2'>
+        Active Alerts ({allAlerts.length})
+      </div>
+      <div className='flex flex-col gap-1'>
+        {allAlerts.map((alert, i) => (
+          <div key={i} className='flex items-center gap-2 text-xs text-red-300'>
+            <span className='text-red-500'>⚠</span>
+            <span className='font-medium'>[{alert.countyId}]</span>
+            <span>{alert.message}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LIVE COUNTY NODE OVERLAY
+// ═══════════════════════════════════════════════════════════════
+
+function getLiveHealthIndicatorColor(healthState: string): string {
+  switch (healthState) {
+    case 'healthy':
+      return 'bg-emerald-500';
+    case 'warning':
+      return 'bg-amber-500';
+    case 'critical':
+      return 'bg-red-500';
+    case 'offline':
+      return 'bg-slate-500';
+    default:
+      return 'bg-slate-500';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // MAIN ATLAS PANEL COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
@@ -274,6 +416,10 @@ export function SystemGptAtlasPanel({
   const [atlas, setAtlas] = useState<SystemGptAtlasResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Phase 29: Live streaming integration
+  const { connectionState, liveEvent } = useSystemGptAtlasLive();
+  const liveCounties = liveEvent?.counties ?? [];
 
   // Fetch atlas data
   const loadAtlas = async () => {
@@ -356,13 +502,16 @@ export function SystemGptAtlasPanel({
             Phase 28: Map-based AI health visualization across all counties
           </p>
         </div>
-        <button
+        <div className='flex items-center gap-3'>
+          <ConnectionIndicator connectionState={connectionState} />
+          <button
           onClick={loadAtlas}
           disabled={loading}
           className='rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs text-cyan-400 hover:bg-cyan-500/20 disabled:opacity-50'
         >
           {loading ? '⟳ Refreshing…' : '↻ Refresh'}
         </button>
+        </div>
       </div>
 
       {/* Map Container */}
@@ -402,6 +551,12 @@ export function SystemGptAtlasPanel({
           </div>
         )}
       </div>
+
+      {/* Phase 29: Live Metrics */}
+      {liveCounties.length > 0 && <LiveMetrics counties={liveCounties} />}
+
+      {/* Phase 29: Alert Display */}
+      {liveCounties.length > 0 && <AlertDisplay counties={liveCounties} />}
 
       {/* Instruction hint */}
       <div className='mt-3 text-center text-[0.65rem] text-slate-500'>
