@@ -5736,4 +5736,506 @@ public sealed class R1Week5CxR1ClosureTests
     deadline.Day.Should().Be(expectedDay);
     deadline.Year.Should().Be(2025);
   }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  WAVE 22 — DaisController Helpers
+  // ════════════════════════════════════════════════════════════════════
+
+  private static DaisController MakeDaisController(string dbName, DataDbContext? db = null)
+  {
+    db ??= CreateDbContext(dbName);
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    return controller;
+  }
+
+  private static DaisController MakeAuthenticatedDaisController(string dbName, DataDbContext? db, Guid countyId)
+  {
+    db ??= CreateDbContext(dbName);
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    var principal = CreatePrincipal(countyId);
+    AttachPrincipal(controller, principal);
+    return controller;
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  WAVE 22 — TerraNotice: Assessment Notice Generation Tests
+  // ════════════════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeTemplates_Returns6Templates()
+  {
+    var controller = MakeDaisController("notice-templates");
+    var result = controller.GetNoticeTemplates();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"totalTemplates\":6");
+    json.Should().Contain("value-change");
+    json.Should().Contain("new-construction");
+    json.Should().Contain("exemption-decision");
+    json.Should().Contain("appeal-decision");
+    json.Should().Contain("correction");
+    json.Should().Contain("current-use-change");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeTemplates_ContainsDeliveryMethods()
+  {
+    var controller = MakeDaisController("notice-delivery");
+    var result = controller.GetNoticeTemplates();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("first-class-mail");
+    json.Should().Contain("certified-mail");
+    json.Should().Contain("electronic");
+    json.Should().Contain("84.40.045");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeTemplates_ContainsRcwRefs()
+  {
+    var controller = MakeDaisController("notice-rcw");
+    var result = controller.GetNoticeTemplates();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("84.40.045");
+    json.Should().Contain("84.40.030");
+    json.Should().Contain("84.36.381");
+    json.Should().Contain("84.48.080");
+    json.Should().Contain("84.48.065");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeGenerate_ValueChange_OK()
+  {
+    var controller = MakeDaisController("notice-gen");
+    var request = new DaisController.NoticeGenerateRequest(
+        "P-001", "value-change", 2025, 250000m, 275000m, "Jane Smith", "123 Main St");
+    var result = controller.GenerateNotice(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"generated\":true");
+    json.Should().Contain("NTC-2025-");
+    json.Should().Contain("\"changeAmount\":25000");
+    json.Should().Contain("\"direction\":\"increased\"");
+    json.Should().Contain("84.48.010");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeGenerate_Decrease_ShowsDecreased()
+  {
+    var controller = MakeDaisController("notice-decrease");
+    var request = new DaisController.NoticeGenerateRequest(
+        "P-002", "value-change", 2025, 300000m, 280000m, null, null);
+    var result = controller.GenerateNotice(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"direction\":\"decreased\"");
+    json.Should().Contain("\"changeAmount\":-20000");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeGenerate_MissingParcel_BadRequest()
+  {
+    var controller = MakeDaisController("notice-nop");
+    var request = new DaisController.NoticeGenerateRequest(
+        "", "value-change", 2025, 100m, 200m, null, null);
+    var result = controller.GenerateNotice(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeGenerate_InvalidTemplate_BadRequest()
+  {
+    var controller = MakeDaisController("notice-bad-tmpl");
+    var request = new DaisController.NoticeGenerateRequest(
+        "P-001", "nonexistent-template", 2025, 100m, 200m, null, null);
+    var result = controller.GenerateNotice(request);
+    var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(bad.Value);
+    json.Should().Contain("nonexistent-template");
+    json.Should().Contain("validTemplates");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public async Task Dais_NoticeBatch_ValueChange_ReturnsEstimates()
+  {
+    var db = CreateDbContext("notice-batch");
+    db.Properties.Add(new Property
+    {
+      PropertyId = "B-001",
+      ParcelId = "B-001",
+      ParcelNumber = "B-001",
+      Address = "1 Elm",
+      OwnerName = "Owner",
+      AssessedValue = 200000,
+      CountyId = Guid.Empty,
+    });
+    await db.SaveChangesAsync();
+
+    var controller = MakeDaisController("notice-batch-est", db);
+    var request = new DaisController.NoticeBatchRequest("value-change", 2025, 0m, 50000);
+    var result = await controller.GenerateBatchNotices(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("BATCH-2025-VALUE-CHANGE-");
+    json.Should().Contain("\"noticesToGenerate\":1");
+    json.Should().Contain("estimatedCost");
+    json.Should().Contain("requiredApprovals");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public async Task Dais_NoticeBatch_InvalidTemplate_BadRequest()
+  {
+    var controller = MakeDaisController("notice-batch-bad");
+    var request = new DaisController.NoticeBatchRequest("nope", 2025, null, null);
+    var result = await controller.GenerateBatchNotices(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeRequirements_Returns5Types()
+  {
+    var controller = MakeDaisController("notice-req");
+    var result = controller.GetNoticeRequirements();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Value Change Notice");
+    json.Should().Contain("New Construction Notice");
+    json.Should().Contain("Exemption Decision Notice");
+    json.Should().Contain("BOE Appeal Decision Notice");
+    json.Should().Contain("Assessment Correction Notice");
+    json.Should().Contain("84.40.045");
+    json.Should().Contain("84.48.080");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public void Dais_NoticeRequirements_IncludesPenalties()
+  {
+    var controller = MakeDaisController("notice-penalty");
+    var result = controller.GetNoticeRequirements();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("penalty");
+    json.Should().Contain("extends appeal deadline");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public async Task Dais_NoticeParcelHistory_NotFound()
+  {
+    var db = CreateDbContext("notice-hist-nf");
+    var controller = MakeAuthenticatedDaisController("notice-hist-nf", db, Guid.NewGuid());
+    var result = await controller.GetParcelNoticeHistory("NONEXISTENT-999");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Notice")]
+  public async Task Dais_NoticeParcelHistory_Found_EmptyHistory()
+  {
+    var countyId = Guid.NewGuid();
+    var db = CreateDbContext("notice-hist-ok");
+    db.Properties.Add(new Property
+    {
+      PropertyId = "NH-1",
+      ParcelId = "NH-1",
+      ParcelNumber = "NH-1",
+      Address = "5 Oak",
+      OwnerName = "NOwner",
+      AssessedValue = 180000,
+      CountyId = countyId,
+    });
+    await db.SaveChangesAsync();
+
+    var controller = MakeAuthenticatedDaisController("notice-hist-ok", db, countyId);
+    var result = await controller.GetParcelNoticeHistory("NH-1");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"totalNotices\":0");
+    json.Should().Contain("NH-1");
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  WAVE 22 — TerraQueue: Assessor Task Queue Tests
+  // ════════════════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueTypes_Returns10Types()
+  {
+    var controller = MakeDaisController("queue-types");
+    var result = controller.GetQueueTypes();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"totalTypes\":10");
+    json.Should().Contain("reval-inspection");
+    json.Should().Contain("new-construction");
+    json.Should().Contain("appeal-prep");
+    json.Should().Contain("exemption-review");
+    json.Should().Contain("sales-verification");
+    json.Should().Contain("segregation");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueTypes_ContainsPriorities()
+  {
+    var controller = MakeDaisController("queue-pri");
+    var result = controller.GetQueueTypes();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("critical");
+    json.Should().Contain("high");
+    json.Should().Contain("normal");
+    json.Should().Contain("low");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueTypes_ContainsEscalationPolicy()
+  {
+    var controller = MakeDaisController("queue-esc-pol");
+    var result = controller.GetQueueTypes();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("escalationPolicy");
+    json.Should().Contain("notifyChain");
+    json.Should().Contain("County Assessor");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueAssign_OK()
+  {
+    var controller = MakeDaisController("queue-assign");
+    var request = new DaisController.QueueAssignRequest(
+        "P-100", "reval-inspection", "John Appraiser", "normal", "Routine 6-year");
+    var result = controller.AssignQueueTask(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"created\":true");
+    json.Should().Contain("TASK-");
+    json.Should().Contain("reval-inspection");
+    json.Should().Contain("John Appraiser");
+    json.Should().Contain("\"status\":\"open\"");
+    json.Should().Contain("warningDate");
+    json.Should().Contain("escalationDate");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueAssign_DefaultPriority()
+  {
+    var controller = MakeDaisController("queue-default-pri");
+    var request = new DaisController.QueueAssignRequest(
+        "P-200", "exemption-review", null, null, null);
+    var result = controller.AssignQueueTask(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"priority\":\"normal\"");
+    json.Should().Contain("Unassigned");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueAssign_MissingParcel_BadRequest()
+  {
+    var controller = MakeDaisController("queue-nop");
+    var request = new DaisController.QueueAssignRequest(
+        "", "reval-inspection", null, null, null);
+    var result = controller.AssignQueueTask(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueAssign_InvalidType_BadRequest()
+  {
+    var controller = MakeDaisController("queue-bad-type");
+    var request = new DaisController.QueueAssignRequest(
+        "P-300", "nonexistent-type", null, null, null);
+    var result = controller.AssignQueueTask(request);
+    var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(bad.Value);
+    json.Should().Contain("nonexistent-type");
+    json.Should().Contain("validTypes");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueAssign_InvalidPriority_BadRequest()
+  {
+    var controller = MakeDaisController("queue-bad-pri");
+    var request = new DaisController.QueueAssignRequest(
+        "P-300", "reval-inspection", null, "super-urgent", null);
+    var result = controller.AssignQueueTask(request);
+    var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(bad.Value);
+    json.Should().Contain("super-urgent");
+    json.Should().Contain("validPriorities");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public async Task Dais_QueueDashboard_ReturnsMetrics()
+  {
+    var db = CreateDbContext("queue-dash");
+    db.Properties.AddRange(
+        new Property { PropertyId = "QD-1", ParcelId = "QD-1", ParcelNumber = "QD-1", Address = "1 St", OwnerName = "A", AssessedValue = 100000, CountyId = Guid.Empty },
+        new Property { PropertyId = "QD-2", ParcelId = "QD-2", ParcelNumber = "QD-2", Address = "2 St", OwnerName = "B", AssessedValue = 200000, CountyId = Guid.Empty },
+        new Property { PropertyId = "QD-3", ParcelId = "QD-3", ParcelNumber = "QD-3", Address = "3 St", OwnerName = "C", AssessedValue = 0, CountyId = Guid.Empty }
+    );
+    await db.SaveChangesAsync();
+
+    var controller = MakeDaisController("queue-dash", db);
+    var result = await controller.GetQueueDashboard(2025);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"taxYear\":2025");
+    json.Should().Contain("queueSummary");
+    json.Should().Contain("slaHealth");
+    json.Should().Contain("staffWorkload");
+    json.Should().Contain("\"totalParcels\":3");
+    json.Should().Contain("\"assessedParcels\":2");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueEscalate_OK()
+  {
+    var controller = MakeDaisController("queue-esc");
+    var request = new DaisController.QueueEscalateRequest(
+        "TASK-20250101-00001", "critical", "Senior Appraiser", "Statutory deadline approaching");
+    var result = controller.EscalateTask(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"escalated\":true");
+    json.Should().Contain("TASK-20250101-00001");
+    json.Should().Contain("critical");
+    json.Should().Contain("Senior Appraiser");
+    json.Should().Contain("Statutory deadline approaching");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueEscalate_MissingTaskId_BadRequest()
+  {
+    var controller = MakeDaisController("queue-esc-noid");
+    var request = new DaisController.QueueEscalateRequest(
+        "", "high", null, "Test");
+    var result = controller.EscalateTask(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueEscalate_MissingReason_BadRequest()
+  {
+    var controller = MakeDaisController("queue-esc-noreason");
+    var request = new DaisController.QueueEscalateRequest(
+        "TASK-001", "high", null, "");
+    var result = controller.EscalateTask(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public void Dais_QueueEscalate_InvalidPriority_BadRequest()
+  {
+    var controller = MakeDaisController("queue-esc-badpri");
+    var request = new DaisController.QueueEscalateRequest(
+        "TASK-001", "ultra-mega", null, "Test reason");
+    var result = controller.EscalateTask(request);
+    var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(bad.Value);
+    json.Should().Contain("ultra-mega");
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public async Task Dais_QueueParcelTasks_NotFound()
+  {
+    var db = CreateDbContext("queue-tasks-nf");
+    var controller = MakeAuthenticatedDaisController("queue-tasks-nf", db, Guid.NewGuid());
+    var result = await controller.GetParcelTasks("NONEXISTENT-999");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Dais-Queue")]
+  public async Task Dais_QueueParcelTasks_Found_EmptyTasks()
+  {
+    var countyId = Guid.NewGuid();
+    var db = CreateDbContext("queue-tasks-ok");
+    db.Properties.Add(new Property
+    {
+      PropertyId = "QT-1",
+      ParcelId = "QT-1",
+      ParcelNumber = "QT-1",
+      Address = "9 Elm",
+      OwnerName = "QOwner",
+      AssessedValue = 150000,
+      CountyId = countyId,
+    });
+    await db.SaveChangesAsync();
+
+    var controller = MakeAuthenticatedDaisController("queue-tasks-ok", db, countyId);
+    var result = await controller.GetParcelTasks("QT-1");
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"totalActive\":0");
+    json.Should().Contain("\"totalCompleted\":0");
+    json.Should().Contain("QT-1");
+  }
+
+  [Theory]
+  [Trait("Category", "Dais-Notice")]
+  [InlineData("value-change", "Change of Assessed Value")]
+  [InlineData("new-construction", "New Construction Value")]
+  [InlineData("exemption-decision", "Exemption Application Decision")]
+  [InlineData("appeal-decision", "BOE Appeal Decision")]
+  [InlineData("correction", "Assessment Correction")]
+  [InlineData("current-use-change", "Current Use Reclassification")]
+  public void Dais_NoticeGenerate_AllTemplates_OK(string code, string expectedName)
+  {
+    var controller = MakeDaisController($"notice-tmpl-{code}");
+    var request = new DaisController.NoticeGenerateRequest(
+        "P-TMPL", code, 2025, 100000m, 110000m, null, null);
+    var result = controller.GenerateNotice(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"generated\":true");
+    json.Should().Contain(expectedName);
+  }
+
+  [Theory]
+  [Trait("Category", "Dais-Queue")]
+  [InlineData("reval-inspection", "Revaluation Inspection")]
+  [InlineData("appeal-prep", "BOE Appeal Preparation")]
+  [InlineData("exemption-review", "Exemption Application Review")]
+  [InlineData("data-correction", "Assessment Data Correction")]
+  [InlineData("segregation", "Parcel Segregation")]
+  public void Dais_QueueAssign_AllTypes_OK(string code, string expectedName)
+  {
+    var controller = MakeDaisController($"queue-type-{code}");
+    var request = new DaisController.QueueAssignRequest(
+        $"P-{code}", code, null, "normal", null);
+    var result = controller.AssignQueueTask(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"created\":true");
+    json.Should().Contain(expectedName);
+  }
 }
