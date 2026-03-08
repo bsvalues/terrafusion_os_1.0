@@ -26,1269 +26,1247 @@ namespace TerraFusion.API.Controllers;
 [Authorize]
 public class DossierController : ControllerBase
 {
-    private readonly DataDbContext _db;
-    private readonly ICostForgeService _costForge;
-    private readonly ILogger<DossierController> _logger;
-    private readonly bool _isDevelopment;
-    private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
+  private readonly DataDbContext _db;
+  private readonly ICostForgeService _costForge;
+  private readonly ILogger<DossierController> _logger;
+  private readonly bool _isDevelopment;
+  private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
 
-    public DossierController(
-        DataDbContext db,
-        ICostForgeService costForge,
-        ILogger<DossierController> logger,
-        IHostEnvironment hostEnvironment)
+  public DossierController(
+      DataDbContext db,
+      ICostForgeService costForge,
+      ILogger<DossierController> logger,
+      IHostEnvironment hostEnvironment)
+  {
+    _db = db;
+    _costForge = costForge;
+    _logger = logger;
+    _isDevelopment = hostEnvironment.IsDevelopment();
+  }
+
+  // ── County Isolation Helper ──────────────────────────────────────
+
+  private async Task<Guid?> ResolveCountyIdAsync()
+  {
+    var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+    if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+      return directCountyId;
+
+    var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+    var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
+    var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
+
+    IQueryable<County> countyQuery = _db.Counties.AsNoTracking();
+
+    if (nameCandidates.Length > 0 && fipsCandidates.Length > 0)
     {
-        _db = db;
-        _costForge = costForge;
-        _logger = logger;
-        _isDevelopment = hostEnvironment.IsDevelopment();
+      countyQuery = countyQuery.Where(c =>
+          nameCandidates.Contains(c.Name) ||
+          (c.FipsCode != null && fipsCandidates.Contains(c.FipsCode)));
     }
-
-    // ── County Isolation Helper ──────────────────────────────────────
-
-    private async Task<Guid?> ResolveCountyIdAsync()
+    else if (nameCandidates.Length > 0)
     {
-        var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
-        if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
-            return directCountyId;
-
-        var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
-        var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
-        var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
-
-        IQueryable<County> countyQuery = _db.Counties.AsNoTracking();
-
-        if (nameCandidates.Length > 0 && fipsCandidates.Length > 0)
-        {
-            countyQuery = countyQuery.Where(c =>
-                nameCandidates.Contains(c.Name) ||
-                (c.FipsCode != null && fipsCandidates.Contains(c.FipsCode)));
-        }
-        else if (nameCandidates.Length > 0)
-        {
-            countyQuery = countyQuery.Where(c => nameCandidates.Contains(c.Name));
-        }
-        else if (fipsCandidates.Length > 0)
-        {
-            countyQuery = countyQuery.Where(c => c.FipsCode != null && fipsCandidates.Contains(c.FipsCode));
-        }
-        else
-        {
-            // DX-01: In Development, fall back to Benton County when no claims present.
-            // Production requires valid claims — no fallback.
-            if (_isDevelopment)
-            {
-                _logger.LogDebug("[DX-01] No county claims found; falling back to Benton County (Development only)");
-                return await _db.Counties
-                    .AsNoTracking()
-                    .Where(c => c.Name == "Benton" && c.State == "WA")
-                    .Select(c => (Guid?)c.Id)
-                    .FirstOrDefaultAsync();
-            }
-            return null;
-        }
-
-        return await countyQuery
+      countyQuery = countyQuery.Where(c => nameCandidates.Contains(c.Name));
+    }
+    else if (fipsCandidates.Length > 0)
+    {
+      countyQuery = countyQuery.Where(c => c.FipsCode != null && fipsCandidates.Contains(c.FipsCode));
+    }
+    else
+    {
+      // DX-01: In Development, fall back to Benton County when no claims present.
+      // Production requires valid claims — no fallback.
+      if (_isDevelopment)
+      {
+        _logger.LogDebug("[DX-01] No county claims found; falling back to Benton County (Development only)");
+        return await _db.Counties
+            .AsNoTracking()
+            .Where(c => c.Name == "Benton" && c.State == "WA")
             .Select(c => (Guid?)c.Id)
             .FirstOrDefaultAsync();
+      }
+      return null;
     }
 
-    private static string[] BuildCountyNameCandidates(params string?[] claims)
+    return await countyQuery
+        .Select(c => (Guid?)c.Id)
+        .FirstOrDefaultAsync();
+  }
+
+  private static string[] BuildCountyNameCandidates(params string?[] claims)
+  {
+    var candidates = new HashSet<string>(StringComparer.Ordinal);
+    foreach (var claim in claims)
     {
-        var candidates = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var claim in claims)
+      if (string.IsNullOrWhiteSpace(claim))
+        continue;
+
+      var trimmed = claim.Trim();
+      AddCandidate(candidates, trimmed);
+
+      var withoutSuffix = StripCountySuffix(trimmed);
+      AddCandidate(candidates, withoutSuffix);
+
+      var titleCase = ToTitleCaseWords(withoutSuffix);
+      AddCandidate(candidates, titleCase);
+      AddCandidate(candidates, $"{titleCase} County");
+    }
+
+    return candidates.ToArray();
+  }
+
+  private static string[] BuildFipsCandidates(params string?[] claims)
+  {
+    var candidates = new HashSet<string>(StringComparer.Ordinal);
+    foreach (var claim in claims)
+    {
+      if (string.IsNullOrWhiteSpace(claim))
+        continue;
+
+      var trimmed = claim.Trim();
+      AddCandidate(candidates, trimmed);
+
+      var digitsOnly = new string(trimmed.Where(char.IsDigit).ToArray());
+      AddCandidate(candidates, digitsOnly);
+    }
+
+    return candidates.ToArray();
+  }
+
+  private static string StripCountySuffix(string value)
+  {
+    return value.EndsWith(" County", StringComparison.OrdinalIgnoreCase)
+        ? value[..^7].TrimEnd()
+        : value;
+  }
+
+  private static string ToTitleCaseWords(string value)
+  {
+    if (string.IsNullOrWhiteSpace(value))
+      return string.Empty;
+
+    var words = value
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Select(word => word.Length == 1
+            ? char.ToUpperInvariant(word[0]).ToString()
+            : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
+
+    return string.Join(' ', words);
+  }
+
+  private static void AddCandidate(HashSet<string> candidates, string? value)
+  {
+    if (!string.IsNullOrWhiteSpace(value))
+      candidates.Add(value.Trim());
+  }
+
+  private static bool IsValidParcelId(string parcelId)
+  {
+    return !string.IsNullOrWhiteSpace(parcelId) && ParcelIdPattern.IsMatch(parcelId);
+  }
+
+  // ── CX-24: Trace & Evidence Helpers ──────────────────────────
+
+  /// <summary>
+  /// Extract or generate a correlation ID for the current request.
+  /// Reads inbound X-Correlation-ID (sanitized), falls back to dossier-{Guid}.
+  /// Sets the response header so clients can always correlate.
+  /// </summary>
+  private static readonly Regex CorrelationIdSanitizer = new("^[A-Za-z0-9._-]{1,128}$", RegexOptions.Compiled);
+
+  private string GetOrCreateCorrelationId()
+  {
+    var inbound = HttpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault();
+    if (!string.IsNullOrWhiteSpace(inbound) && CorrelationIdSanitizer.IsMatch(inbound))
+    {
+      HttpContext.Response.Headers["X-Correlation-ID"] = inbound;
+      return inbound;
+    }
+
+    var generated = $"dossier-{Guid.NewGuid():N}";
+    HttpContext.Response.Headers["X-Correlation-ID"] = generated;
+    return generated;
+  }
+
+  /// <summary>
+  /// Build stable resource links for a parcel's dossier endpoints.
+  /// Relative paths only — no host/scheme, safe for any deployment.
+  /// </summary>
+  private static DossierResourceLinks BuildResourceLinks(string parcelId, string selfVariant)
+  {
+    var self = selfVariant switch
+    {
+      "details" => $"/api/dossier/parcels/{parcelId}/details",
+      "evidence" => $"/api/dossier/parcels/{parcelId}/evidence",
+      _ => $"/api/dossier/{parcelId}",
+    };
+
+    return new DossierResourceLinks(
+        Self: self,
+        Summary: $"/api/dossier/{parcelId}",
+        Details: $"/api/dossier/parcels/{parcelId}/details",
+        Notes: $"/api/dossier/{parcelId}/notes",
+        Casefile: $"/api/dossier/parcels/{parcelId}/casefile"
+    );
+  }
+
+
+
+  // ── Dossier Document & Evidence Registry (read-only) ─────────────
+
+  public sealed record DocumentSearchRequest(
+      string? Query,
+      string? Type,
+      string? Status,
+      string? ParcelId,
+      int? Limit,
+      int? Offset);
+
+  public sealed record EvidenceSearchRequest(
+      string? ParcelId,
+      string? EvidenceType,
+      string? Integrity,
+      int? Limit,
+      int? Offset);
+
+  [HttpPost("documents/search")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> SearchDocuments([FromBody] DocumentSearchRequest? request)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var normalizedParcelId = NormalizeOptionalParcelId(request?.ParcelId);
+    if (request?.ParcelId is { Length: > 0 } && normalizedParcelId is null)
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var query = request?.Query?.Trim();
+    var typeFilter = NormalizeFilter(request?.Type);
+    var statusFilter = NormalizeFilter(request?.Status);
+    var limit = NormalizeLimit(request?.Limit);
+    var offset = NormalizeOffset(request?.Offset);
+
+    var documents = await BuildDocumentIndexAsync(countyId.Value);
+    var filtered = documents
+        .Where(d => normalizedParcelId is null || d.ParcelId.Equals(normalizedParcelId, StringComparison.OrdinalIgnoreCase))
+        .Where(d => string.IsNullOrWhiteSpace(query)
+            || d.Name.Contains(query, StringComparison.OrdinalIgnoreCase)
+            || d.Id.Contains(query, StringComparison.OrdinalIgnoreCase))
+        .Where(d => typeFilter is null || d.Type.Equals(typeFilter, StringComparison.OrdinalIgnoreCase))
+        .Where(d => statusFilter is null || d.Status.Equals(statusFilter, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    var total = filtered.Count;
+    var page = filtered.Skip(offset).Take(limit).ToList();
+
+    return Ok(new
+    {
+      results = page.Select(d => new
+      {
+        id = d.Id,
+        name = d.Name,
+        type = d.Type,
+        parcelId = d.ParcelId,
+        uploadedBy = d.UploadedBy,
+        uploadedAt = d.UploadedAt,
+        size = d.Size,
+        status = d.Status,
+        custodyChain = d.CustodyChain,
+        mimeType = d.MimeType,
+        hash = d.Hash,
+      }),
+      total,
+      hasMore = offset + page.Count < total,
+    });
+  }
+
+  [HttpGet("documents/{id}")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetDocument(string id)
+  {
+    if (string.IsNullOrWhiteSpace(id))
+      return BadRequest(new { error = "Document id is required" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var document = await FindDocumentAsync(countyId.Value, id.Trim());
+    if (document is null)
+      return NotFound(new { error = "Document not found" });
+
+    return Ok(new
+    {
+      id = document.Id,
+      name = document.Name,
+      type = document.Type,
+      parcelId = document.ParcelId,
+      uploadedBy = document.UploadedBy,
+      uploadedAt = document.UploadedAt,
+      size = document.Size,
+      status = document.Status,
+      custodyChain = document.CustodyChain,
+      mimeType = document.MimeType,
+      hash = document.Hash,
+    });
+  }
+
+  [HttpPost("evidence/search")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> SearchEvidence([FromBody] EvidenceSearchRequest? request)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var normalizedParcelId = NormalizeOptionalParcelId(request?.ParcelId);
+    if (request?.ParcelId is { Length: > 0 } && normalizedParcelId is null)
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var evidenceTypeFilter = NormalizeFilter(request?.EvidenceType);
+    var integrityFilter = NormalizeFilter(request?.Integrity);
+    var limit = NormalizeLimit(request?.Limit);
+    var offset = NormalizeOffset(request?.Offset);
+
+    var evidenceItems = await BuildEvidenceIndexAsync(countyId.Value);
+    var filtered = evidenceItems
+        .Where(e => normalizedParcelId is null || e.ParcelId.Equals(normalizedParcelId, StringComparison.OrdinalIgnoreCase))
+        .Where(e => evidenceTypeFilter is null || e.EvidenceType.Equals(evidenceTypeFilter, StringComparison.OrdinalIgnoreCase))
+        .Where(e => integrityFilter is null || e.Integrity.Equals(integrityFilter, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    var total = filtered.Count;
+    var page = filtered.Skip(offset).Take(limit).ToList();
+
+    return Ok(new
+    {
+      results = page.Select(e => new
+      {
+        id = e.Id,
+        title = e.Title,
+        parcelId = e.ParcelId,
+        evidenceType = e.EvidenceType,
+        createdBy = e.CreatedBy,
+        createdAt = e.CreatedAt,
+        integrity = e.Integrity,
+        chainLength = e.ChainLength,
+        lastAction = e.LastAction,
+      }),
+      total,
+      hasMore = offset + page.Count < total,
+    });
+  }
+
+  [HttpGet("evidence/{evidenceId}/chain")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetChainOfCustody(string evidenceId)
+  {
+    if (string.IsNullOrWhiteSpace(evidenceId))
+      return BadRequest(new { error = "Evidence id is required" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var chain = await BuildChainOfCustody(countyId.Value, evidenceId.Trim());
+    if (chain is null)
+      return NotFound(new { error = "Evidence item not found" });
+
+    return Ok(chain.Select(eventItem => new
+    {
+      timestamp = eventItem.Timestamp,
+      actor = eventItem.Actor,
+      action = eventItem.Action,
+      hash = eventItem.Hash,
+    }));
+  }
+
+  [HttpGet("stats")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetStats()
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var documents = await BuildDocumentIndexAsync(countyId.Value);
+    var evidenceItems = await BuildEvidenceIndexAsync(countyId.Value);
+
+    return Ok(new
+    {
+      totalDocuments = documents.Count,
+      activeDocuments = documents.Count(d => d.Status.Equals("active", StringComparison.OrdinalIgnoreCase)),
+      sealedRecords = documents.Count(d => d.Status.Equals("sealed", StringComparison.OrdinalIgnoreCase)),
+      archivedDocuments = documents.Count(d => d.Status.Equals("archived", StringComparison.OrdinalIgnoreCase)),
+      documentTypes = documents.Select(d => d.Type).Distinct(StringComparer.OrdinalIgnoreCase).Count(),
+      totalEvidence = evidenceItems.Count,
+      verifiedEvidence = evidenceItems.Count(e => e.Integrity.Equals("verified", StringComparison.OrdinalIgnoreCase)),
+      pendingEvidence = evidenceItems.Count(e => e.Integrity.Equals("pending", StringComparison.OrdinalIgnoreCase)),
+      disputedEvidence = evidenceItems.Count(e => e.Integrity.Equals("disputed", StringComparison.OrdinalIgnoreCase)),
+    });
+  }
+
+  // ── GET /api/dossier/{parcelId}/notes ────────────────────────────
+
+  /// <summary>
+  /// List notes for a parcel (county-isolated).
+  /// </summary>
+  [HttpGet("{parcelId}/notes")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetNotes(string parcelId)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var notes = await _db.DossierNotes
+        .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value)
+        .OrderByDescending(n => n.CreatedAt)
+        .Select(n => new
         {
-            if (string.IsNullOrWhiteSpace(claim))
-                continue;
+          noteId = n.Id,
+          content = n.Content,
+          createdAt = n.CreatedAt,
+          createdBy = n.CreatedBy,
+          type = n.NoteType,
+        })
+        .ToListAsync();
 
-            var trimmed = claim.Trim();
-            AddCandidate(candidates, trimmed);
+    return Ok(new { parcelId, notes, total = notes.Count });
+  }
 
-            var withoutSuffix = StripCountySuffix(trimmed);
-            AddCandidate(candidates, withoutSuffix);
+  // ── POST /api/dossier/{parcelId}/notes ───────────────────────────
 
-            var titleCase = ToTitleCaseWords(withoutSuffix);
-            AddCandidate(candidates, titleCase);
-            AddCandidate(candidates, $"{titleCase} County");
-        }
+  public record CreateNoteRequest(string Content, string? Type);
 
-        return candidates.ToArray();
-    }
+  /// <summary>
+  /// Create an append-only note for a parcel (county-isolated).
+  /// </summary>
+  [HttpPost("{parcelId}/notes")]
+  [RequiresPermission("write:dossier")]
+  public async Task<IActionResult> CreateNote(string parcelId, [FromBody] CreateNoteRequest request)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
 
-    private static string[] BuildFipsCandidates(params string?[] claims)
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    if (string.IsNullOrWhiteSpace(request.Content))
+      return BadRequest(new { error = "Content is required" });
+
+    if (request.Content.Length > 2000)
+      return BadRequest(new { error = "Content exceeds 2000 character limit" });
+
+    if (!string.IsNullOrWhiteSpace(request.Type) && request.Type.Length > 50)
+      return BadRequest(new { error = "Type exceeds 50 character limit" });
+
+    var parcelExists = await _db.Properties
+        .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+    if (!parcelExists)
+      return NotFound(new { error = "Parcel not found" });
+
+    var userId = User.FindFirst("sub")?.Value
+              ?? User.FindFirst("userId")?.Value
+              ?? "unknown";
+
+    var note = new DossierNote
     {
-        var candidates = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var claim in claims)
+      ParcelId = parcelId,
+      Content = request.Content,
+      NoteType = request.Type ?? "case_note",
+      CountyId = countyId.Value,
+      CreatedBy = userId,
+    };
+
+    _db.DossierNotes.Add(note);
+    await _db.SaveChangesAsync();
+
+    _logger.LogInformation(
+        "DossierNote created: {NoteId} for parcel {ParcelId} in county {CountyId}",
+        note.Id, parcelId, countyId);
+
+    return Created($"/api/dossier/{parcelId}/notes", new
+    {
+      noteId = note.Id,
+      parcelId,
+      createdAt = note.CreatedAt,
+    });
+  }
+
+  // ── GET /api/dossier/parcels/{parcelId}/casefile ─────────────────
+
+  /// <summary>
+  /// Casefile summary for a parcel (county-isolated).
+  /// Returns aggregated document/note counts + highlights.
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/casefile")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetCasefile(string parcelId, [FromQuery] string? include)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var contextCountyId = await ResolveCountyIdAsync();
+    if (contextCountyId is null)
+      return Forbid();
+
+    var parcelExists = await _db.Properties
+        .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == contextCountyId.Value);
+    if (!parcelExists)
+      return NotFound(new { error = "Parcel not found" });
+
+    var notes = await _db.DossierNotes
+        .Where(n => n.ParcelId == parcelId && n.CountyId == contextCountyId.Value)
+        .OrderByDescending(n => n.CreatedAt)
+        .ToListAsync();
+
+    var highlights = notes
+        .Take(10)
+        .Select(n => $"{n.NoteType}: {(n.Content.Length > 60 ? n.Content[..60] + "..." : n.Content)}")
+        .ToList();
+
+    return Ok(new
+    {
+      summary = $"Casefile for parcel {parcelId}: {notes.Count} note(s) on record.",
+      highlights,
+      sections = new
+      {
+        notes = new { count = notes.Count, summary = $"{notes.Count} case note(s)" },
+      },
+    });
+  }
+
+  // ── GET /api/dossier/{parcelId} ───────────────────────────────────
+  // CX-22: Composed parcel dossier v0
+  //   Property core + CostForge summary + Levy history + Notes summary
+  //   County-isolated: cross-county → 404 (anti-enumeration)
+
+  /// <summary>
+  /// Composed parcel dossier (county-isolated).
+  /// Returns property core data, CostForge analysis summary,
+  /// county levy history, and case notes for a single parcel.
+  /// Cross-county requests receive 404 to prevent enumeration.
+  /// </summary>
+  [HttpGet("{parcelId}")]
+  [RequiresPermission("read:dossier")]
+  [ProducesResponseType(typeof(ParcelDossierDto), 200)]
+  [ProducesResponseType(400)]
+  [ProducesResponseType(403)]
+  [ProducesResponseType(404)]
+  public async Task<ActionResult<ParcelDossierDto>> GetParcelDossier(string parcelId)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    // ── Property core (county-isolated) ──────────────────────
+    var property = await _db.Properties
+        .AsNoTracking()
+        .Include(p => p.County)
+        .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+    if (property is null)
+      return NotFound(new { error = "Parcel not found" });
+
+    var dossier = new ParcelDossierDto
+    {
+      ParcelId = parcelId,
+      CountyId = countyId.Value,
+      CountyName = property.County?.Name ?? string.Empty,
+      Property = new ParcelDossierPropertyDto
+      {
+        PropertyId = property.Id,
+        ParcelNumber = property.ParcelNumber,
+        Address = property.Address,
+        PropertyType = property.PropertyType,
+        YearBuilt = property.YearBuilt,
+        AssessedValue = property.AssessedValue,
+        LandValue = property.LandValue,
+        ImprovementValue = property.ImprovementValue,
+        MarketValue = property.MarketValue,
+        TaxYear = property.TaxYear,
+        AssessmentDate = property.AssessmentDate,
+      },
+    };
+
+    // ── CostForge summary (best-effort, nullable) ────────────
+    try
+    {
+      var analysis = await _costForge.AnalyzeCostAsync(property.Id);
+      if (analysis is not null)
+      {
+        dossier.CostForge = new ParcelDossierCostForgeSummaryDto
         {
-            if (string.IsNullOrWhiteSpace(claim))
-                continue;
-
-            var trimmed = claim.Trim();
-            AddCandidate(candidates, trimmed);
-
-            var digitsOnly = new string(trimmed.Where(char.IsDigit).ToArray());
-            AddCandidate(candidates, digitsOnly);
-        }
-
-        return candidates.ToArray();
-    }
-
-    private static string StripCountySuffix(string value)
-    {
-        return value.EndsWith(" County", StringComparison.OrdinalIgnoreCase)
-            ? value[..^7].TrimEnd()
-            : value;
-    }
-
-    private static string ToTitleCaseWords(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return string.Empty;
-
-        var words = value
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Select(word => word.Length == 1
-                ? char.ToUpperInvariant(word[0]).ToString()
-                : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
-
-        return string.Join(' ', words);
-    }
-
-    private static void AddCandidate(HashSet<string> candidates, string? value)
-    {
-        if (!string.IsNullOrWhiteSpace(value))
-            candidates.Add(value.Trim());
-    }
-
-    private static bool IsValidParcelId(string parcelId)
-    {
-        return !string.IsNullOrWhiteSpace(parcelId) && ParcelIdPattern.IsMatch(parcelId);
-    }
-
-    // ── CX-24: Trace & Evidence Helpers ──────────────────────────
-
-    /// <summary>
-    /// Extract or generate a correlation ID for the current request.
-    /// Reads inbound X-Correlation-ID (sanitized), falls back to dossier-{Guid}.
-    /// Sets the response header so clients can always correlate.
-    /// </summary>
-    private static readonly Regex CorrelationIdSanitizer = new("^[A-Za-z0-9._-]{1,128}$", RegexOptions.Compiled);
-
-    private string GetOrCreateCorrelationId()
-    {
-        var inbound = HttpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault();
-        if (!string.IsNullOrWhiteSpace(inbound) && CorrelationIdSanitizer.IsMatch(inbound))
-        {
-            HttpContext.Response.Headers["X-Correlation-ID"] = inbound;
-            return inbound;
-        }
-
-        var generated = $"dossier-{Guid.NewGuid():N}";
-        HttpContext.Response.Headers["X-Correlation-ID"] = generated;
-        return generated;
-    }
-
-    /// <summary>
-    /// Build stable resource links for a parcel's dossier endpoints.
-    /// Relative paths only — no host/scheme, safe for any deployment.
-    /// </summary>
-    private static DossierResourceLinks BuildResourceLinks(string parcelId, string selfVariant)
-    {
-        var self = selfVariant switch
-        {
-            "details" => $"/api/dossier/parcels/{parcelId}/details",
-            "evidence" => $"/api/dossier/parcels/{parcelId}/evidence",
-            _ => $"/api/dossier/{parcelId}",
+          TotalCost = analysis.TotalCost,
+          LandValue = analysis.LandValue,
+          ImprovementValue = analysis.ImprovementValue,
+          ConfidenceScore = analysis.ConfidenceScore,
+          AnalysisDate = analysis.AnalysisDate,
+          AnalysisMethod = analysis.AnalysisMethod,
+          ComponentCount = analysis.Components?.Count ?? 0,
         };
-
-        return new DossierResourceLinks(
-            Self: self,
-            Summary: $"/api/dossier/{parcelId}",
-            Details: $"/api/dossier/parcels/{parcelId}/details",
-            Notes: $"/api/dossier/{parcelId}/notes",
-            Casefile: $"/api/dossier/parcels/{parcelId}/casefile"
-        );
+      }
+    }
+    catch (Exception ex)
+    {
+      _logger.LogWarning(ex, "CostForge analysis unavailable for property {PropertyId}", property.Id);
+      // CostForge section stays null — non-fatal
     }
 
-    private ActionResult BuildPostR1DisabledResponse(string operation, string featureName, string detail, string problemType)
-    {
-        HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
+    // ── Levy history (county-scoped, most recent 10) ─────────
+    var levyQuery = _db.TaxLevies
+        .AsNoTracking()
+        .Where(t => t.CountyId == countyId.Value && t.IsActive);
 
-        _logger.LogWarning(
-            "Dossier endpoint {Operation} was invoked, but {FeatureName} remains Post-R1 and is intentionally disabled",
-            operation,
-            featureName);
-
-        var problem = new ProblemDetails
+    var totalLevies = await levyQuery.CountAsync();
+    var recentLevies = await levyQuery
+        .OrderByDescending(t => t.EffectiveDate)
+        .Take(10)
+        .Select(t => new ParcelDossierLevyEntryDto
         {
-            Title = $"{featureName} is not enabled for R1",
-            Detail = detail,
-            Status = StatusCodes.Status501NotImplemented,
-            Type = $"https://terrafusion.local/problems/{problemType}"
-        };
+          TaxLevyId = t.Id,
+          TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+          TaxRate = t.TaxRate,
+          LevyAmount = t.LevyAmount,
+          TaxYear = t.TaxYear,
+          Purpose = t.Purpose ?? string.Empty,
+          EffectiveDate = t.EffectiveDate,
+        })
+        .ToListAsync();
 
-        problem.Extensions["scope"] = "Post-R1";
-        problem.Extensions["operation"] = operation;
-        problem.Extensions["feature"] = featureName;
+    dossier.Levies = new ParcelDossierLevySummaryDto
+    {
+      TotalRecords = totalLevies,
+      Recent = recentLevies,
+    };
 
-        return StatusCode(StatusCodes.Status501NotImplemented, problem);
+    // ── Notes summary (county-isolated, most recent 5) ───────
+    var notesQuery = _db.DossierNotes
+        .AsNoTracking()
+        .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
+
+    var totalNotes = await notesQuery.CountAsync();
+    var recentNotes = await notesQuery
+        .OrderByDescending(n => n.CreatedAt)
+        .Take(5)
+        .Select(n => new ParcelDossierNoteEntryDto
+        {
+          NoteId = n.Id,
+          NoteType = n.NoteType,
+          Preview = n.Content.Length > 120 ? n.Content.Substring(0, 120) + "..." : n.Content,
+          CreatedBy = n.CreatedBy,
+          CreatedAt = n.CreatedAt,
+        })
+        .ToListAsync();
+
+    dossier.Notes = new ParcelDossierNotesSummaryDto
+    {
+      TotalCount = totalNotes,
+      Recent = recentNotes,
+    };
+
+    // ── CX-24: Trace metadata ───────────────────────────────
+    dossier.CorrelationId = GetOrCreateCorrelationId();
+
+    return Ok(dossier);
+  }
+
+  // ── GET /api/dossier/parcels/{parcelId}/details ──────────────────
+  // CX-23: Parcel Dossier v1 "details"
+  // CX-24: Selective includes (?include=property,valuation,levies,notes)
+  //   Deeper view: parameterized limits, PII redaction, cost breakdown,
+  //   note headers only (no content), CAMA-ready placeholders.
+  //   County-isolated: cross-county → 404 (anti-enumeration)
+
+  /// <summary>
+  /// Detailed parcel dossier (county-isolated).
+  /// Returns property with CAMA placeholders, cost breakdown categories,
+  /// parameterized levy/note limits, and PII-redacted note headers.
+  /// Use ?include= to request only specific sections (comma-separated).
+  /// Valid sections: property, valuation, levies, notes.
+  /// Default (omit include): all sections populated.
+  /// Non-requested sections are serialized as null.
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/details")]
+  [RequiresPermission("read:dossier")]
+  [ProducesResponseType(typeof(ParcelDossierDetailsDto), 200)]
+  [ProducesResponseType(400)]
+  [ProducesResponseType(403)]
+  [ProducesResponseType(404)]
+  public async Task<ActionResult<ParcelDossierDetailsDto>> GetParcelDetails(
+      string parcelId,
+      [FromQuery] string? include = null,
+      [FromQuery] int levyLimit = 10,
+      [FromQuery] int noteLimit = 5)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    // Clamp limits to safe bounds
+    levyLimit = Math.Clamp(levyLimit, 1, 100);
+    noteLimit = Math.Clamp(noteLimit, 1, 20);
+
+    // CX-24: Parse selective includes (default = all sections)
+    var sections = ParseIncludes(include);
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    // ── Property (county-isolated) — always loaded for existence check ──
+    var property = await _db.Properties
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+    if (property is null)
+      return NotFound(new { error = "Parcel not found" });
+
+    // ── Property section (CX-24: only if requested) ──────────
+    PropertyDetails? propertyDetails = null;
+    if (sections.Contains("property"))
+    {
+      propertyDetails = new PropertyDetails(
+          PropertyId: property.Id,
+          ParcelNumber: property.ParcelNumber,
+          Address: property.Address,
+          PropertyType: property.PropertyType,
+          YearBuilt: property.YearBuilt,
+          AssessedValue: property.AssessedValue,
+          LandValue: property.LandValue,
+          ImprovementValue: property.ImprovementValue,
+          MarketValue: property.MarketValue,
+          TaxYear: property.TaxYear,
+          AssessmentDate: property.AssessmentDate,
+          ClassCode: null,
+          UseCode: null,
+          Neighborhood: null
+      );
     }
 
-    // ── Dossier Document & Evidence Registry (read-only) ─────────────
-
-    public sealed record DocumentSearchRequest(
-        string? Query,
-        string? Type,
-        string? Status,
-        string? ParcelId,
-        int? Limit,
-        int? Offset);
-
-    public sealed record EvidenceSearchRequest(
-        string? ParcelId,
-        string? EvidenceType,
-        string? Integrity,
-        int? Limit,
-        int? Offset);
-
-    [HttpPost("documents/search")]
-    [RequiresPermission("read:dossier")]
-    public async Task<IActionResult> SearchDocuments([FromBody] DocumentSearchRequest? request)
+    // ── Valuation breakdown (CX-24: only if requested, best-effort) ──
+    ValuationSignals? valuation = null;
+    if (sections.Contains("valuation"))
     {
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        var normalizedParcelId = NormalizeOptionalParcelId(request?.ParcelId);
-        if (request?.ParcelId is { Length: > 0 } && normalizedParcelId is null)
-            return BadRequest(new { error = "Invalid parcelId format" });
-
-        var query = request?.Query?.Trim();
-        var typeFilter = NormalizeFilter(request?.Type);
-        var statusFilter = NormalizeFilter(request?.Status);
-        var limit = NormalizeLimit(request?.Limit);
-        var offset = NormalizeOffset(request?.Offset);
-
-        var documents = await BuildDocumentIndexAsync(countyId.Value);
-        var filtered = documents
-            .Where(d => normalizedParcelId is null || d.ParcelId.Equals(normalizedParcelId, StringComparison.OrdinalIgnoreCase))
-            .Where(d => string.IsNullOrWhiteSpace(query)
-                || d.Name.Contains(query, StringComparison.OrdinalIgnoreCase)
-                || d.Id.Contains(query, StringComparison.OrdinalIgnoreCase))
-            .Where(d => typeFilter is null || d.Type.Equals(typeFilter, StringComparison.OrdinalIgnoreCase))
-            .Where(d => statusFilter is null || d.Status.Equals(statusFilter, StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
-        var total = filtered.Count;
-        var page = filtered.Skip(offset).Take(limit).ToList();
-
-        return Ok(new
+      try
+      {
+        var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
+        if (breakdown is not null)
         {
-            results = page.Select(d => new
-            {
-                id = d.Id,
-                name = d.Name,
-                type = d.Type,
-                parcelId = d.ParcelId,
-                uploadedBy = d.UploadedBy,
-                uploadedAt = d.UploadedAt,
-                size = d.Size,
-                status = d.Status,
-                custodyChain = d.CustodyChain,
-                mimeType = d.MimeType,
-                hash = d.Hash,
-            }),
-            total,
-            hasMore = offset + page.Count < total,
-        });
-    }
-
-    [HttpGet("documents/{id}")]
-    [RequiresPermission("read:dossier")]
-    public async Task<IActionResult> GetDocument(string id)
-    {
-        if (string.IsNullOrWhiteSpace(id))
-            return BadRequest(new { error = "Document id is required" });
-
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        var document = await FindDocumentAsync(countyId.Value, id.Trim());
-        if (document is null)
-            return NotFound(new { error = "Document not found" });
-
-        return Ok(new
-        {
-            id = document.Id,
-            name = document.Name,
-            type = document.Type,
-            parcelId = document.ParcelId,
-            uploadedBy = document.UploadedBy,
-            uploadedAt = document.UploadedAt,
-            size = document.Size,
-            status = document.Status,
-            custodyChain = document.CustodyChain,
-            mimeType = document.MimeType,
-            hash = document.Hash,
-        });
-    }
-
-    [HttpPost("evidence/search")]
-    [RequiresPermission("read:dossier")]
-    public async Task<IActionResult> SearchEvidence([FromBody] EvidenceSearchRequest? request)
-    {
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        var normalizedParcelId = NormalizeOptionalParcelId(request?.ParcelId);
-        if (request?.ParcelId is { Length: > 0 } && normalizedParcelId is null)
-            return BadRequest(new { error = "Invalid parcelId format" });
-
-        var evidenceTypeFilter = NormalizeFilter(request?.EvidenceType);
-        var integrityFilter = NormalizeFilter(request?.Integrity);
-        var limit = NormalizeLimit(request?.Limit);
-        var offset = NormalizeOffset(request?.Offset);
-
-        var evidenceItems = await BuildEvidenceIndexAsync(countyId.Value);
-        var filtered = evidenceItems
-            .Where(e => normalizedParcelId is null || e.ParcelId.Equals(normalizedParcelId, StringComparison.OrdinalIgnoreCase))
-            .Where(e => evidenceTypeFilter is null || e.EvidenceType.Equals(evidenceTypeFilter, StringComparison.OrdinalIgnoreCase))
-            .Where(e => integrityFilter is null || e.Integrity.Equals(integrityFilter, StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
-        var total = filtered.Count;
-        var page = filtered.Skip(offset).Take(limit).ToList();
-
-        return Ok(new
-        {
-            results = page.Select(e => new
-            {
-                id = e.Id,
-                title = e.Title,
-                parcelId = e.ParcelId,
-                evidenceType = e.EvidenceType,
-                createdBy = e.CreatedBy,
-                createdAt = e.CreatedAt,
-                integrity = e.Integrity,
-                chainLength = e.ChainLength,
-                lastAction = e.LastAction,
-            }),
-            total,
-            hasMore = offset + page.Count < total,
-        });
-    }
-
-    [HttpGet("evidence/{evidenceId}/chain")]
-    [RequiresPermission("read:dossier")]
-    public async Task<IActionResult> GetChainOfCustody(string evidenceId)
-    {
-        if (string.IsNullOrWhiteSpace(evidenceId))
-            return BadRequest(new { error = "Evidence id is required" });
-
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        var chain = await BuildChainOfCustody(countyId.Value, evidenceId.Trim());
-        if (chain is null)
-            return NotFound(new { error = "Evidence item not found" });
-
-        return Ok(chain.Select(eventItem => new
-        {
-            timestamp = eventItem.Timestamp,
-            actor = eventItem.Actor,
-            action = eventItem.Action,
-            hash = eventItem.Hash,
-        }));
-    }
-
-    [HttpGet("stats")]
-    [RequiresPermission("read:dossier")]
-    public async Task<IActionResult> GetStats()
-    {
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        var documents = await BuildDocumentIndexAsync(countyId.Value);
-        var evidenceItems = await BuildEvidenceIndexAsync(countyId.Value);
-
-        return Ok(new
-        {
-            totalDocuments = documents.Count,
-            activeDocuments = documents.Count(d => d.Status.Equals("active", StringComparison.OrdinalIgnoreCase)),
-            sealedRecords = documents.Count(d => d.Status.Equals("sealed", StringComparison.OrdinalIgnoreCase)),
-            archivedDocuments = documents.Count(d => d.Status.Equals("archived", StringComparison.OrdinalIgnoreCase)),
-            documentTypes = documents.Select(d => d.Type).Distinct(StringComparer.OrdinalIgnoreCase).Count(),
-            totalEvidence = evidenceItems.Count,
-            verifiedEvidence = evidenceItems.Count(e => e.Integrity.Equals("verified", StringComparison.OrdinalIgnoreCase)),
-            pendingEvidence = evidenceItems.Count(e => e.Integrity.Equals("pending", StringComparison.OrdinalIgnoreCase)),
-            disputedEvidence = evidenceItems.Count(e => e.Integrity.Equals("disputed", StringComparison.OrdinalIgnoreCase)),
-        });
-    }
-
-    // ── GET /api/dossier/{parcelId}/notes ────────────────────────────
-
-    /// <summary>
-    /// List notes for a parcel (county-isolated).
-    /// </summary>
-    [HttpGet("{parcelId}/notes")]
-    [RequiresPermission("read:dossier")]
-    public async Task<IActionResult> GetNotes(string parcelId)
-    {
-        parcelId = parcelId.Trim();
-        if (!IsValidParcelId(parcelId))
-            return BadRequest(new { error = "Invalid parcelId format" });
-
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        var notes = await _db.DossierNotes
-            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value)
-            .OrderByDescending(n => n.CreatedAt)
-            .Select(n => new
-            {
-                noteId = n.Id,
-                content = n.Content,
-                createdAt = n.CreatedAt,
-                createdBy = n.CreatedBy,
-                type = n.NoteType,
-            })
-            .ToListAsync();
-
-        return Ok(new { parcelId, notes, total = notes.Count });
-    }
-
-    // ── POST /api/dossier/{parcelId}/notes ───────────────────────────
-
-    public record CreateNoteRequest(string Content, string? Type);
-
-    /// <summary>
-    /// Create an append-only note for a parcel (county-isolated).
-    /// </summary>
-    [HttpPost("{parcelId}/notes")]
-    [RequiresPermission("write:dossier")]
-    public async Task<IActionResult> CreateNote(string parcelId, [FromBody] CreateNoteRequest request)
-    {
-        parcelId = parcelId.Trim();
-        if (!IsValidParcelId(parcelId))
-            return BadRequest(new { error = "Invalid parcelId format" });
-
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        if (string.IsNullOrWhiteSpace(request.Content))
-            return BadRequest(new { error = "Content is required" });
-
-        if (request.Content.Length > 2000)
-            return BadRequest(new { error = "Content exceeds 2000 character limit" });
-
-        if (!string.IsNullOrWhiteSpace(request.Type) && request.Type.Length > 50)
-            return BadRequest(new { error = "Type exceeds 50 character limit" });
-
-        var parcelExists = await _db.Properties
-            .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
-        if (!parcelExists)
-            return NotFound(new { error = "Parcel not found" });
-
-        var userId = User.FindFirst("sub")?.Value
-                  ?? User.FindFirst("userId")?.Value
-                  ?? "unknown";
-
-        var note = new DossierNote
-        {
-            ParcelId = parcelId,
-            Content = request.Content,
-            NoteType = request.Type ?? "case_note",
-            CountyId = countyId.Value,
-            CreatedBy = userId,
-        };
-
-        _db.DossierNotes.Add(note);
-        await _db.SaveChangesAsync();
-
-        _logger.LogInformation(
-            "DossierNote created: {NoteId} for parcel {ParcelId} in county {CountyId}",
-            note.Id, parcelId, countyId);
-
-        return Created($"/api/dossier/{parcelId}/notes", new
-        {
-            noteId = note.Id,
-            parcelId,
-            createdAt = note.CreatedAt,
-        });
-    }
-
-    // ── GET /api/dossier/parcels/{parcelId}/casefile ─────────────────
-
-    /// <summary>
-    /// Casefile summary for a parcel (county-isolated).
-    /// Returns aggregated document/note counts + highlights.
-    /// </summary>
-    [HttpGet("parcels/{parcelId}/casefile")]
-    [RequiresPermission("read:dossier")]
-    public async Task<IActionResult> GetCasefile(string parcelId, [FromQuery] string? include)
-    {
-        parcelId = parcelId.Trim();
-        if (!IsValidParcelId(parcelId))
-            return BadRequest(new { error = "Invalid parcelId format" });
-
-        var contextCountyId = await ResolveCountyIdAsync();
-        if (contextCountyId is null)
-            return Forbid();
-
-        var parcelExists = await _db.Properties
-            .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == contextCountyId.Value);
-        if (!parcelExists)
-            return NotFound(new { error = "Parcel not found" });
-
-        var notes = await _db.DossierNotes
-            .Where(n => n.ParcelId == parcelId && n.CountyId == contextCountyId.Value)
-            .OrderByDescending(n => n.CreatedAt)
-            .ToListAsync();
-
-        var highlights = notes
-            .Take(10)
-            .Select(n => $"{n.NoteType}: {(n.Content.Length > 60 ? n.Content[..60] + "..." : n.Content)}")
-            .ToList();
-
-        return Ok(new
-        {
-            summary = $"Casefile for parcel {parcelId}: {notes.Count} note(s) on record.",
-            highlights,
-            sections = new
-            {
-                notes = new { count = notes.Count, summary = $"{notes.Count} case note(s)" },
-            },
-        });
-    }
-
-    // ── GET /api/dossier/{parcelId} ───────────────────────────────────
-    // CX-22: Composed parcel dossier v0
-    //   Property core + CostForge summary + Levy history + Notes summary
-    //   County-isolated: cross-county → 404 (anti-enumeration)
-
-    /// <summary>
-    /// Composed parcel dossier (county-isolated).
-    /// Returns property core data, CostForge analysis summary,
-    /// county levy history, and case notes for a single parcel.
-    /// Cross-county requests receive 404 to prevent enumeration.
-    /// </summary>
-    [HttpGet("{parcelId}")]
-    [RequiresPermission("read:dossier")]
-    [ProducesResponseType(typeof(ParcelDossierDto), 200)]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(403)]
-    [ProducesResponseType(404)]
-    public async Task<ActionResult<ParcelDossierDto>> GetParcelDossier(string parcelId)
-    {
-        parcelId = parcelId.Trim();
-        if (!IsValidParcelId(parcelId))
-            return BadRequest(new { error = "Invalid parcelId format" });
-
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        // ── Property core (county-isolated) ──────────────────────
-        var property = await _db.Properties
-            .AsNoTracking()
-            .Include(p => p.County)
-            .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
-
-        if (property is null)
-            return NotFound(new { error = "Parcel not found" });
-
-        var dossier = new ParcelDossierDto
-        {
-            ParcelId = parcelId,
-            CountyId = countyId.Value,
-            CountyName = property.County?.Name ?? string.Empty,
-            Property = new ParcelDossierPropertyDto
-            {
-                PropertyId = property.Id,
-                ParcelNumber = property.ParcelNumber,
-                Address = property.Address,
-                PropertyType = property.PropertyType,
-                YearBuilt = property.YearBuilt,
-                AssessedValue = property.AssessedValue,
-                LandValue = property.LandValue,
-                ImprovementValue = property.ImprovementValue,
-                MarketValue = property.MarketValue,
-                TaxYear = property.TaxYear,
-                AssessmentDate = property.AssessmentDate,
-            },
-        };
-
-        // ── CostForge summary (best-effort, nullable) ────────────
-        try
-        {
-            var analysis = await _costForge.AnalyzeCostAsync(property.Id);
-            if (analysis is not null)
-            {
-                dossier.CostForge = new ParcelDossierCostForgeSummaryDto
-                {
-                    TotalCost = analysis.TotalCost,
-                    LandValue = analysis.LandValue,
-                    ImprovementValue = analysis.ImprovementValue,
-                    ConfidenceScore = analysis.ConfidenceScore,
-                    AnalysisDate = analysis.AnalysisDate,
-                    AnalysisMethod = analysis.AnalysisMethod,
-                    ComponentCount = analysis.Components?.Count ?? 0,
-                };
-            }
+          valuation = new ValuationSignals(
+              TotalValue: breakdown.TotalValue,
+              CategoryCount: breakdown.Categories.Count,
+              Categories: breakdown.Categories
+                  .Select(c => new ValuationCategory(c.Name, c.Amount, c.Percentage))
+                  .ToList()
+          );
         }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "CostForge analysis unavailable for property {PropertyId}", property.Id);
-            // CostForge section stays null — non-fatal
-        }
-
-        // ── Levy history (county-scoped, most recent 10) ─────────
-        var levyQuery = _db.TaxLevies
-            .AsNoTracking()
-            .Where(t => t.CountyId == countyId.Value && t.IsActive);
-
-        var totalLevies = await levyQuery.CountAsync();
-        var recentLevies = await levyQuery
-            .OrderByDescending(t => t.EffectiveDate)
-            .Take(10)
-            .Select(t => new ParcelDossierLevyEntryDto
-            {
-                TaxLevyId = t.Id,
-                TaxingDistrict = t.TaxingDistrict ?? string.Empty,
-                TaxRate = t.TaxRate,
-                LevyAmount = t.LevyAmount,
-                TaxYear = t.TaxYear,
-                Purpose = t.Purpose ?? string.Empty,
-                EffectiveDate = t.EffectiveDate,
-            })
-            .ToListAsync();
-
-        dossier.Levies = new ParcelDossierLevySummaryDto
-        {
-            TotalRecords = totalLevies,
-            Recent = recentLevies,
-        };
-
-        // ── Notes summary (county-isolated, most recent 5) ───────
-        var notesQuery = _db.DossierNotes
-            .AsNoTracking()
-            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
-
-        var totalNotes = await notesQuery.CountAsync();
-        var recentNotes = await notesQuery
-            .OrderByDescending(n => n.CreatedAt)
-            .Take(5)
-            .Select(n => new ParcelDossierNoteEntryDto
-            {
-                NoteId = n.Id,
-                NoteType = n.NoteType,
-                Preview = n.Content.Length > 120 ? n.Content.Substring(0, 120) + "..." : n.Content,
-                CreatedBy = n.CreatedBy,
-                CreatedAt = n.CreatedAt,
-            })
-            .ToListAsync();
-
-        dossier.Notes = new ParcelDossierNotesSummaryDto
-        {
-            TotalCount = totalNotes,
-            Recent = recentNotes,
-        };
-
-        // ── CX-24: Trace metadata ───────────────────────────────
-        dossier.CorrelationId = GetOrCreateCorrelationId();
-
-        return Ok(dossier);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogWarning(ex, "CostForge breakdown unavailable for property {PropertyId}", property.Id);
+      }
     }
 
-    // ── GET /api/dossier/parcels/{parcelId}/details ──────────────────
-    // CX-23: Parcel Dossier v1 "details"
-    // CX-24: Selective includes (?include=property,valuation,levies,notes)
-    //   Deeper view: parameterized limits, PII redaction, cost breakdown,
-    //   note headers only (no content), CAMA-ready placeholders.
-    //   County-isolated: cross-county → 404 (anti-enumeration)
-
-    /// <summary>
-    /// Detailed parcel dossier (county-isolated).
-    /// Returns property with CAMA placeholders, cost breakdown categories,
-    /// parameterized levy/note limits, and PII-redacted note headers.
-    /// Use ?include= to request only specific sections (comma-separated).
-    /// Valid sections: property, valuation, levies, notes.
-    /// Default (omit include): all sections populated.
-    /// Non-requested sections are serialized as null.
-    /// </summary>
-    [HttpGet("parcels/{parcelId}/details")]
-    [RequiresPermission("read:dossier")]
-    [ProducesResponseType(typeof(ParcelDossierDetailsDto), 200)]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(403)]
-    [ProducesResponseType(404)]
-    public async Task<ActionResult<ParcelDossierDetailsDto>> GetParcelDetails(
-        string parcelId,
-        [FromQuery] string? include = null,
-        [FromQuery] int levyLimit = 10,
-        [FromQuery] int noteLimit = 5)
+    // ── Levy history (CX-24: only if requested) ─────────────
+    LevyDetails? levyDetails = null;
+    if (sections.Contains("levies"))
     {
-        parcelId = parcelId.Trim();
-        if (!IsValidParcelId(parcelId))
-            return BadRequest(new { error = "Invalid parcelId format" });
+      var levyQuery = _db.TaxLevies
+          .AsNoTracking()
+          .Where(t => t.CountyId == countyId.Value && t.IsActive);
 
-        // Clamp limits to safe bounds
-        levyLimit = Math.Clamp(levyLimit, 1, 100);
-        noteLimit = Math.Clamp(noteLimit, 1, 20);
+      var totalLevies = await levyQuery.CountAsync();
+      var recentLevyData = await levyQuery
+          .OrderByDescending(t => t.EffectiveDate)
+          .Take(levyLimit)
+          .Select(t => new
+          {
+            t.Id,
+            TaxingDistrict = t.TaxingDistrict ?? string.Empty,
+            t.TaxRate,
+            t.LevyAmount,
+            t.TaxYear,
+            Purpose = t.Purpose ?? string.Empty,
+            t.EffectiveDate,
+          })
+          .ToListAsync();
 
-        // CX-24: Parse selective includes (default = all sections)
-        var sections = ParseIncludes(include);
+      var recentLevies = recentLevyData
+          .Select(t => new LevyEntry(t.Id, t.TaxingDistrict, t.TaxRate,
+              t.LevyAmount, t.TaxYear, t.Purpose, t.EffectiveDate))
+          .ToList();
 
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        // ── Property (county-isolated) — always loaded for existence check ──
-        var property = await _db.Properties
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
-
-        if (property is null)
-            return NotFound(new { error = "Parcel not found" });
-
-        // ── Property section (CX-24: only if requested) ──────────
-        PropertyDetails? propertyDetails = null;
-        if (sections.Contains("property"))
-        {
-            propertyDetails = new PropertyDetails(
-                PropertyId: property.Id,
-                ParcelNumber: property.ParcelNumber,
-                Address: property.Address,
-                PropertyType: property.PropertyType,
-                YearBuilt: property.YearBuilt,
-                AssessedValue: property.AssessedValue,
-                LandValue: property.LandValue,
-                ImprovementValue: property.ImprovementValue,
-                MarketValue: property.MarketValue,
-                TaxYear: property.TaxYear,
-                AssessmentDate: property.AssessmentDate,
-                ClassCode: null,
-                UseCode: null,
-                Neighborhood: null
-            );
-        }
-
-        // ── Valuation breakdown (CX-24: only if requested, best-effort) ──
-        ValuationSignals? valuation = null;
-        if (sections.Contains("valuation"))
-        {
-            try
-            {
-                var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
-                if (breakdown is not null)
-                {
-                    valuation = new ValuationSignals(
-                        TotalValue: breakdown.TotalValue,
-                        CategoryCount: breakdown.Categories.Count,
-                        Categories: breakdown.Categories
-                            .Select(c => new ValuationCategory(c.Name, c.Amount, c.Percentage))
-                            .ToList()
-                    );
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "CostForge breakdown unavailable for property {PropertyId}", property.Id);
-            }
-        }
-
-        // ── Levy history (CX-24: only if requested) ─────────────
-        LevyDetails? levyDetails = null;
-        if (sections.Contains("levies"))
-        {
-            var levyQuery = _db.TaxLevies
-                .AsNoTracking()
-                .Where(t => t.CountyId == countyId.Value && t.IsActive);
-
-            var totalLevies = await levyQuery.CountAsync();
-            var recentLevyData = await levyQuery
-                .OrderByDescending(t => t.EffectiveDate)
-                .Take(levyLimit)
-                .Select(t => new
-                {
-                    t.Id,
-                    TaxingDistrict = t.TaxingDistrict ?? string.Empty,
-                    t.TaxRate,
-                    t.LevyAmount,
-                    t.TaxYear,
-                    Purpose = t.Purpose ?? string.Empty,
-                    t.EffectiveDate,
-                })
-                .ToListAsync();
-
-            var recentLevies = recentLevyData
-                .Select(t => new LevyEntry(t.Id, t.TaxingDistrict, t.TaxRate,
-                    t.LevyAmount, t.TaxYear, t.Purpose, t.EffectiveDate))
-                .ToList();
-
-            levyDetails = new LevyDetails(totalLevies, recentLevies.Count, recentLevies);
-        }
-
-        // ── Note headers (CX-24: only if requested) ─────────────
-        NoteHeaders? noteHeadersResult = null;
-        if (sections.Contains("notes"))
-        {
-            var noteQuery = _db.DossierNotes
-                .AsNoTracking()
-                .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
-
-            var totalNotes = await noteQuery.CountAsync();
-            var noteData = await noteQuery
-                .OrderByDescending(n => n.CreatedAt)
-                .Take(noteLimit)
-                .Select(n => new
-                {
-                    n.Id,
-                    n.NoteType,
-                    n.CreatedAt,
-                    n.CreatedBy,
-                })
-                .ToListAsync();
-
-            var noteHeaders = noteData
-                .Select(n => new NoteHeaderItem(n.Id, n.NoteType, n.CreatedAt,
-                    ClassifyAuthorKind(n.CreatedBy)))
-                .ToList();
-
-            noteHeadersResult = new NoteHeaders(totalNotes, noteHeaders.Count, noteHeaders);
-        }
-
-        var dto = new ParcelDossierDetailsDto(
-            ParcelId: parcelId,
-            CountyId: countyId.Value,
-            GeneratedAt: DateTime.UtcNow,
-            PiiRedacted: true,
-            Property: propertyDetails,
-            Valuation: valuation,
-            Levies: levyDetails,
-            Notes: noteHeadersResult
-        )
-        {
-            // CX-24: Trace & evidence metadata
-            CorrelationId = GetOrCreateCorrelationId(),
-            Links = BuildResourceLinks(parcelId, "details"),
-        };
-
-        return Ok(dto);
+      levyDetails = new LevyDetails(totalLevies, recentLevies.Count, recentLevies);
     }
 
-    // ── CX-24: Selective Includes Parser ────────────────────────────────
+    // ── Note headers (CX-24: only if requested) ─────────────
+    NoteHeaders? noteHeadersResult = null;
+    if (sections.Contains("notes"))
+    {
+      var noteQuery = _db.DossierNotes
+          .AsNoTracking()
+          .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
 
-    private static readonly HashSet<string> AllSections = new(StringComparer.OrdinalIgnoreCase)
+      var totalNotes = await noteQuery.CountAsync();
+      var noteData = await noteQuery
+          .OrderByDescending(n => n.CreatedAt)
+          .Take(noteLimit)
+          .Select(n => new
+          {
+            n.Id,
+            n.NoteType,
+            n.CreatedAt,
+            n.CreatedBy,
+          })
+          .ToListAsync();
+
+      var noteHeaders = noteData
+          .Select(n => new NoteHeaderItem(n.Id, n.NoteType, n.CreatedAt,
+              ClassifyAuthorKind(n.CreatedBy)))
+          .ToList();
+
+      noteHeadersResult = new NoteHeaders(totalNotes, noteHeaders.Count, noteHeaders);
+    }
+
+    var dto = new ParcelDossierDetailsDto(
+        ParcelId: parcelId,
+        CountyId: countyId.Value,
+        GeneratedAt: DateTime.UtcNow,
+        PiiRedacted: true,
+        Property: propertyDetails,
+        Valuation: valuation,
+        Levies: levyDetails,
+        Notes: noteHeadersResult
+    )
+    {
+      // CX-24: Trace & evidence metadata
+      CorrelationId = GetOrCreateCorrelationId(),
+      Links = BuildResourceLinks(parcelId, "details"),
+    };
+
+    return Ok(dto);
+  }
+
+  // ── CX-24: Selective Includes Parser ────────────────────────────────
+
+  private static readonly HashSet<string> AllSections = new(StringComparer.OrdinalIgnoreCase)
     {
         "property", "valuation", "levies", "notes"
     };
 
-    /// <summary>
-    /// Parse ?include= query parameter into a set of requested sections.
-    /// Returns all sections if include is null/empty or contains no valid names.
-    /// </summary>
-    private static HashSet<string> ParseIncludes(string? include)
+  /// <summary>
+  /// Parse ?include= query parameter into a set of requested sections.
+  /// Returns all sections if include is null/empty or contains no valid names.
+  /// </summary>
+  private static HashSet<string> ParseIncludes(string? include)
+  {
+    if (string.IsNullOrWhiteSpace(include))
+      return new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
+
+    var requested = include
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Select(s => s.ToLowerInvariant())
+        .Where(s => AllSections.Contains(s))
+        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    return requested.Count > 0
+        ? requested
+        : new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
+  }
+
+  // ── GET /api/dossier/parcels/{parcelId}/evidence ─────────────────
+  // CX-25: Evidence snapshot for audit handoff.
+  //   Self-contained, hash-verifiable, county-isolated.
+  //   Composes property, valuation, levy, and note metadata
+  //   into a snapshot with SHA-256 content hash.
+
+  /// <summary>
+  /// Evidence snapshot for audit/regulatory handoff (county-isolated).
+  /// Returns a self-contained evidence document with SHA-256 content
+  /// hash for tamper detection. No note content — summary counts only.
+  /// </summary>
+  /// <remarks>
+  /// <para><b>Hash contract:</b> The contentHash is a SHA-256 of the serialized
+  /// data fields <em>including snapshotTimestamp</em>. This makes it a
+  /// point-in-time snapshot seal, NOT a content-only digest. Two requests
+  /// for the same parcel at different times will produce different hashes
+  /// even if the underlying data has not changed.</para>
+  /// </remarks>
+  [HttpGet("parcels/{parcelId}/evidence")]
+  [RequiresPermission("read:dossier")]
+  [ProducesResponseType(typeof(EvidenceSnapshotDto), 200)]
+  [ProducesResponseType(400)]
+  [ProducesResponseType(403)]
+  [ProducesResponseType(404)]
+  public async Task<ActionResult<EvidenceSnapshotDto>> GetEvidenceSnapshot(string parcelId)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    // ── Property (county-isolated) ────────────────────────────
+    var property = await _db.Properties
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+    if (property is null)
+      return NotFound(new { error = "Parcel not found" });
+
+    var propertySummary = new EvidencePropertySummary(
+        PropertyId: property.Id,
+        ParcelNumber: property.ParcelNumber,
+        Address: property.Address,
+        PropertyType: property.PropertyType,
+        AssessedValue: property.AssessedValue,
+        LandValue: property.LandValue,
+        ImprovementValue: property.ImprovementValue,
+        MarketValue: property.MarketValue,
+        TaxYear: property.TaxYear,
+        AssessmentDate: property.AssessmentDate
+    );
+
+    // ── Valuation summary (best-effort) ──────────────────────
+    EvidenceValuationSummary? valuationSummary = null;
+    try
     {
-        if (string.IsNullOrWhiteSpace(include))
-            return new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
-
-        var requested = include
-            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(s => s.ToLowerInvariant())
-            .Where(s => AllSections.Contains(s))
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        return requested.Count > 0
-            ? requested
-            : new HashSet<string>(AllSections, StringComparer.OrdinalIgnoreCase);
-    }
-
-    // ── GET /api/dossier/parcels/{parcelId}/evidence ─────────────────
-    // CX-25: Evidence snapshot for audit handoff.
-    //   Self-contained, hash-verifiable, county-isolated.
-    //   Composes property, valuation, levy, and note metadata
-    //   into a snapshot with SHA-256 content hash.
-
-    /// <summary>
-    /// Evidence snapshot for audit/regulatory handoff (county-isolated).
-    /// Returns a self-contained evidence document with SHA-256 content
-    /// hash for tamper detection. No note content — summary counts only.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>Hash contract:</b> The contentHash is a SHA-256 of the serialized
-    /// data fields <em>including snapshotTimestamp</em>. This makes it a
-    /// point-in-time snapshot seal, NOT a content-only digest. Two requests
-    /// for the same parcel at different times will produce different hashes
-    /// even if the underlying data has not changed.</para>
-    /// </remarks>
-    [HttpGet("parcels/{parcelId}/evidence")]
-    [RequiresPermission("read:dossier")]
-    [ProducesResponseType(typeof(EvidenceSnapshotDto), 200)]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(403)]
-    [ProducesResponseType(404)]
-    public async Task<ActionResult<EvidenceSnapshotDto>> GetEvidenceSnapshot(string parcelId)
-    {
-        parcelId = parcelId.Trim();
-        if (!IsValidParcelId(parcelId))
-            return BadRequest(new { error = "Invalid parcelId format" });
-
-        var countyId = await ResolveCountyIdAsync();
-        if (countyId is null)
-            return Forbid();
-
-        // ── Property (county-isolated) ────────────────────────────
-        var property = await _db.Properties
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
-
-        if (property is null)
-            return NotFound(new { error = "Parcel not found" });
-
-        var propertySummary = new EvidencePropertySummary(
-            PropertyId: property.Id,
-            ParcelNumber: property.ParcelNumber,
-            Address: property.Address,
-            PropertyType: property.PropertyType,
-            AssessedValue: property.AssessedValue,
-            LandValue: property.LandValue,
-            ImprovementValue: property.ImprovementValue,
-            MarketValue: property.MarketValue,
-            TaxYear: property.TaxYear,
-            AssessmentDate: property.AssessmentDate
+      var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
+      if (breakdown is not null)
+      {
+        valuationSummary = new EvidenceValuationSummary(
+            TotalValue: breakdown.TotalValue,
+            CategoryCount: breakdown.Categories.Count
         );
-
-        // ── Valuation summary (best-effort) ──────────────────────
-        EvidenceValuationSummary? valuationSummary = null;
-        try
-        {
-            var breakdown = await _costForge.GetCostBreakdownAsync(property.Id);
-            if (breakdown is not null)
-            {
-                valuationSummary = new EvidenceValuationSummary(
-                    TotalValue: breakdown.TotalValue,
-                    CategoryCount: breakdown.Categories.Count
-                );
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "CostForge unavailable for evidence snapshot {PropertyId}", property.Id);
-        }
-
-        // ── Levy summary (county-scoped) ─────────────────────────
-        var levyQuery = _db.TaxLevies
-            .AsNoTracking()
-            .Where(t => t.CountyId == countyId.Value && t.IsActive);
-
-        var totalLevies = await levyQuery.CountAsync();
-        var totalLevyAmount = totalLevies > 0
-            ? await levyQuery.SumAsync(t => t.LevyAmount)
-            : 0m;
-
-        // ── Note summary (county-isolated, no content) ───────────
-        var noteQuery = _db.DossierNotes
-            .AsNoTracking()
-            .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
-
-        var totalNotes = await noteQuery.CountAsync();
-        var noteTypes = await noteQuery
-            .Select(n => n.NoteType)
-            .Distinct()
-            .OrderBy(t => t)
-            .ToArrayAsync();
-
-        // ── Build snapshot (pre-hash) ────────────────────────────
-        var correlationId = GetOrCreateCorrelationId();
-        var snapshotTimestamp = DateTime.UtcNow;
-        var links = BuildResourceLinks(parcelId, "evidence");
-
-        // Compute content hash over the data fields (not the hash itself)
-        var hashInput = new
-        {
-            parcelId,
-            countyId = countyId.Value,
-            snapshotTimestamp,
-            property = propertySummary,
-            valuation = valuationSummary,
-            levies = new { totalLevies, totalLevyAmount },
-            notes = new { totalNotes, noteTypes },
-        };
-        var contentHash = ComputeSha256(JsonSerializer.Serialize(hashInput, JsonHashOptions));
-
-        var dto = new EvidenceSnapshotDto(
-            ParcelId: parcelId,
-            CountyId: countyId.Value,
-            SnapshotTimestamp: snapshotTimestamp,
-            CorrelationId: correlationId,
-            ContentHash: contentHash,
-            Property: propertySummary,
-            Valuation: valuationSummary,
-            Levies: new EvidenceLevySummary(totalLevies, totalLevies, totalLevyAmount),
-            Notes: new EvidenceNoteSummary(totalNotes, totalNotes, noteTypes),
-            Links: links
-        );
-
-        return Ok(dto);
+      }
+    }
+    catch (Exception ex)
+    {
+      _logger.LogWarning(ex, "CostForge unavailable for evidence snapshot {PropertyId}", property.Id);
     }
 
-    // ── Read-only Dossier Registry Helpers ───────────────────────
+    // ── Levy summary (county-scoped) ─────────────────────────
+    var levyQuery = _db.TaxLevies
+        .AsNoTracking()
+        .Where(t => t.CountyId == countyId.Value && t.IsActive);
 
-    private sealed record DossierDocumentIndexItem(
-        string Id,
-        string Name,
-        string Type,
-        string ParcelId,
-        string UploadedBy,
-        DateTime UploadedAt,
-        string Size,
-        string Status,
-        int CustodyChain,
-        string? MimeType,
-        string Hash);
+    var totalLevies = await levyQuery.CountAsync();
+    var totalLevyAmount = totalLevies > 0
+        ? await levyQuery.SumAsync(t => t.LevyAmount)
+        : 0m;
 
-    private sealed record DossierEvidenceIndexItem(
-        string Id,
-        string Title,
-        string ParcelId,
-        string EvidenceType,
-        string CreatedBy,
-        DateTime CreatedAt,
-        string Integrity,
-        int ChainLength,
-        string LastAction);
+    // ── Note summary (county-isolated, no content) ───────────
+    var noteQuery = _db.DossierNotes
+        .AsNoTracking()
+        .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value);
 
-    private sealed record ChainEventItem(DateTime Timestamp, string Actor, string Action, string Hash);
+    var totalNotes = await noteQuery.CountAsync();
+    var noteTypes = await noteQuery
+        .Select(n => n.NoteType)
+        .Distinct()
+        .OrderBy(t => t)
+        .ToArrayAsync();
 
-    private static string? NormalizeOptionalParcelId(string? parcelId)
+    // ── Build snapshot (pre-hash) ────────────────────────────
+    var correlationId = GetOrCreateCorrelationId();
+    var snapshotTimestamp = DateTime.UtcNow;
+    var links = BuildResourceLinks(parcelId, "evidence");
+
+    // Compute content hash over the data fields (not the hash itself)
+    var hashInput = new
     {
-        if (string.IsNullOrWhiteSpace(parcelId))
-            return null;
+      parcelId,
+      countyId = countyId.Value,
+      snapshotTimestamp,
+      property = propertySummary,
+      valuation = valuationSummary,
+      levies = new { totalLevies, totalLevyAmount },
+      notes = new { totalNotes, noteTypes },
+    };
+    var contentHash = ComputeSha256(JsonSerializer.Serialize(hashInput, JsonHashOptions));
 
-        var normalized = parcelId.Trim();
-        return IsValidParcelId(normalized) ? normalized : null;
-    }
+    var dto = new EvidenceSnapshotDto(
+        ParcelId: parcelId,
+        CountyId: countyId.Value,
+        SnapshotTimestamp: snapshotTimestamp,
+        CorrelationId: correlationId,
+        ContentHash: contentHash,
+        Property: propertySummary,
+        Valuation: valuationSummary,
+        Levies: new EvidenceLevySummary(totalLevies, totalLevies, totalLevyAmount),
+        Notes: new EvidenceNoteSummary(totalNotes, totalNotes, noteTypes),
+        Links: links
+    );
 
-    private static int NormalizeLimit(int? limit)
-    {
-        if (limit is null or <= 0)
-            return 50;
+    return Ok(dto);
+  }
 
-        return Math.Min(limit.Value, 100);
-    }
+  // ── Read-only Dossier Registry Helpers ───────────────────────
 
-    private static int NormalizeOffset(int? offset)
-    {
-        return offset is > 0 ? offset.Value : 0;
-    }
+  private sealed record DossierDocumentIndexItem(
+      string Id,
+      string Name,
+      string Type,
+      string ParcelId,
+      string UploadedBy,
+      DateTime UploadedAt,
+      string Size,
+      string Status,
+      int CustodyChain,
+      string? MimeType,
+      string Hash);
 
-    private static string? NormalizeFilter(string? filter)
-    {
-        if (string.IsNullOrWhiteSpace(filter) || filter.Equals("all", StringComparison.OrdinalIgnoreCase))
-            return null;
+  private sealed record DossierEvidenceIndexItem(
+      string Id,
+      string Title,
+      string ParcelId,
+      string EvidenceType,
+      string CreatedBy,
+      DateTime CreatedAt,
+      string Integrity,
+      int ChainLength,
+      string LastAction);
 
-        return filter.Trim();
-    }
+  private sealed record ChainEventItem(DateTime Timestamp, string Actor, string Action, string Hash);
 
-    private async Task<List<DossierDocumentIndexItem>> BuildDocumentIndexAsync(Guid countyId)
-    {
-        var properties = await _db.Properties
-            .AsNoTracking()
-            .Where(p => p.CountyId == countyId)
-            .Select(p => new
-            {
-                p.ParcelId,
-                p.ParcelNumber,
-                p.Address,
-                p.AssessmentDate,
-                p.LastUpdated,
-                p.PropertyType,
-                p.AssessedValue,
-            })
-            .ToListAsync();
+  private static string? NormalizeOptionalParcelId(string? parcelId)
+  {
+    if (string.IsNullOrWhiteSpace(parcelId))
+      return null;
 
-        var notes = await _db.DossierNotes
-            .AsNoTracking()
-            .Where(n => n.CountyId == countyId)
-            .Select(n => new
-            {
-                n.Id,
-                n.ParcelId,
-                n.NoteType,
-                n.CreatedAt,
-                n.CreatedBy,
-                n.Content,
-            })
-            .ToListAsync();
+    var normalized = parcelId.Trim();
+    return IsValidParcelId(normalized) ? normalized : null;
+  }
 
-        var documents = new List<DossierDocumentIndexItem>(properties.Count * 2 + notes.Count);
+  private static int NormalizeLimit(int? limit)
+  {
+    if (limit is null or <= 0)
+      return 50;
 
-        foreach (var property in properties)
+    return Math.Min(limit.Value, 100);
+  }
+
+  private static int NormalizeOffset(int? offset)
+  {
+    return offset is > 0 ? offset.Value : 0;
+  }
+
+  private static string? NormalizeFilter(string? filter)
+  {
+    if (string.IsNullOrWhiteSpace(filter) || filter.Equals("all", StringComparison.OrdinalIgnoreCase))
+      return null;
+
+    return filter.Trim();
+  }
+
+  private async Task<List<DossierDocumentIndexItem>> BuildDocumentIndexAsync(Guid countyId)
+  {
+    var properties = await _db.Properties
+        .AsNoTracking()
+        .Where(p => p.CountyId == countyId)
+        .Select(p => new
         {
-            var casefileTimestamp = property.LastUpdated > property.AssessmentDate
-                ? property.LastUpdated
-                : property.AssessmentDate;
+          p.ParcelId,
+          p.ParcelNumber,
+          p.Address,
+          p.AssessmentDate,
+          p.LastUpdated,
+          p.PropertyType,
+          p.AssessedValue,
+        })
+        .ToListAsync();
 
-            documents.Add(new DossierDocumentIndexItem(
-                Id: $"doc-casefile-{property.ParcelId.ToLowerInvariant()}",
-                Name: $"Casefile summary - {property.ParcelId}",
-                Type: "report",
-                ParcelId: property.ParcelId,
-                UploadedBy: "County Assessor",
-                UploadedAt: casefileTimestamp,
-                Size: "42 KB",
-                Status: "active",
-                CustodyChain: 3,
-                MimeType: "application/pdf",
-                Hash: ComputeSha256($"casefile:{property.ParcelId}:{casefileTimestamp:O}:{property.AssessedValue}")));
-
-            documents.Add(new DossierDocumentIndexItem(
-                Id: $"doc-valuation-{property.ParcelId.ToLowerInvariant()}",
-                Name: $"Valuation worksheet - {property.ParcelId}",
-                Type: "appraisal",
-                ParcelId: property.ParcelId,
-                UploadedBy: "CostForge",
-                UploadedAt: property.AssessmentDate,
-                Size: "28 KB",
-                Status: "active",
-                CustodyChain: 2,
-                MimeType: "application/pdf",
-                Hash: ComputeSha256($"valuation:{property.ParcelId}:{property.AssessmentDate:O}:{property.PropertyType}")));
-        }
-
-        foreach (var note in notes)
+    var notes = await _db.DossierNotes
+        .AsNoTracking()
+        .Where(n => n.CountyId == countyId)
+        .Select(n => new
         {
-            var noteTypeLabel = HumanizeToken(note.NoteType);
-            var noteDocumentType = MapDocumentType(note.NoteType);
-            var noteStatus = MapDocumentStatus(note.NoteType);
-            var sizeKb = Math.Max(8, (int)Math.Ceiling(Math.Max(note.Content.Length, 64) / 32.0));
+          n.Id,
+          n.ParcelId,
+          n.NoteType,
+          n.CreatedAt,
+          n.CreatedBy,
+          n.Content,
+        })
+        .ToListAsync();
 
-            documents.Add(new DossierDocumentIndexItem(
-                Id: $"doc-note-{note.Id:N}",
-                Name: $"{noteTypeLabel} - {note.ParcelId}",
-                Type: noteDocumentType,
-                ParcelId: note.ParcelId,
-                UploadedBy: string.IsNullOrWhiteSpace(note.CreatedBy) ? "County Staff" : note.CreatedBy,
-                UploadedAt: note.CreatedAt,
-                Size: $"{sizeKb} KB",
-                Status: noteStatus,
-                CustodyChain: noteStatus.Equals("sealed", StringComparison.OrdinalIgnoreCase) ? 4 : 2,
-                MimeType: "text/plain",
-                Hash: ComputeSha256($"note-document:{note.Id:N}:{note.CreatedAt:O}:{note.Content}")));
-        }
+    var documents = new List<DossierDocumentIndexItem>(properties.Count * 2 + notes.Count);
 
-        return documents
-            .OrderByDescending(d => d.UploadedAt)
-            .ThenBy(d => d.Name, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+    foreach (var property in properties)
+    {
+      var casefileTimestamp = property.LastUpdated > property.AssessmentDate
+          ? property.LastUpdated
+          : property.AssessmentDate;
+
+      documents.Add(new DossierDocumentIndexItem(
+          Id: $"doc-casefile-{property.ParcelId.ToLowerInvariant()}",
+          Name: $"Casefile summary - {property.ParcelId}",
+          Type: "report",
+          ParcelId: property.ParcelId,
+          UploadedBy: "County Assessor",
+          UploadedAt: casefileTimestamp,
+          Size: "42 KB",
+          Status: "active",
+          CustodyChain: 3,
+          MimeType: "application/pdf",
+          Hash: ComputeSha256($"casefile:{property.ParcelId}:{casefileTimestamp:O}:{property.AssessedValue}")));
+
+      documents.Add(new DossierDocumentIndexItem(
+          Id: $"doc-valuation-{property.ParcelId.ToLowerInvariant()}",
+          Name: $"Valuation worksheet - {property.ParcelId}",
+          Type: "appraisal",
+          ParcelId: property.ParcelId,
+          UploadedBy: "CostForge",
+          UploadedAt: property.AssessmentDate,
+          Size: "28 KB",
+          Status: "active",
+          CustodyChain: 2,
+          MimeType: "application/pdf",
+          Hash: ComputeSha256($"valuation:{property.ParcelId}:{property.AssessmentDate:O}:{property.PropertyType}")));
     }
 
-    private async Task<List<DossierEvidenceIndexItem>> BuildEvidenceIndexAsync(Guid countyId)
+    foreach (var note in notes)
     {
-        var properties = await _db.Properties
-            .AsNoTracking()
-            .Where(p => p.CountyId == countyId)
-            .Select(p => new
-            {
-                p.ParcelId,
-                p.AssessmentDate,
-                p.LastUpdated,
-            })
-            .ToListAsync();
+      var noteTypeLabel = HumanizeToken(note.NoteType);
+      var noteDocumentType = MapDocumentType(note.NoteType);
+      var noteStatus = MapDocumentStatus(note.NoteType);
+      var sizeKb = Math.Max(8, (int)Math.Ceiling(Math.Max(note.Content.Length, 64) / 32.0));
 
-        var notes = await _db.DossierNotes
-            .AsNoTracking()
-            .Where(n => n.CountyId == countyId)
-            .Select(n => new
-            {
-                n.Id,
-                n.ParcelId,
-                n.NoteType,
-                n.CreatedAt,
-                n.CreatedBy,
-                n.Content,
-            })
-            .ToListAsync();
-
-        var evidenceItems = new List<DossierEvidenceIndexItem>(properties.Count + notes.Count);
-
-        foreach (var property in properties)
-        {
-            var snapshotTimestamp = property.LastUpdated > property.AssessmentDate
-                ? property.LastUpdated
-                : property.AssessmentDate;
-
-            evidenceItems.Add(new DossierEvidenceIndexItem(
-                Id: $"evid-snapshot-{property.ParcelId.ToLowerInvariant()}",
-                Title: $"Parcel evidence snapshot - {property.ParcelId}",
-                ParcelId: property.ParcelId,
-                EvidenceType: "field-inspection",
-                CreatedBy: "County Assessor",
-                CreatedAt: snapshotTimestamp,
-                Integrity: "verified",
-                ChainLength: 3,
-                LastAction: "hash-verified"));
-        }
-
-        foreach (var note in notes)
-        {
-            evidenceItems.Add(new DossierEvidenceIndexItem(
-                Id: $"evid-note-{note.Id:N}",
-                Title: $"{HumanizeToken(note.NoteType)} evidence - {note.ParcelId}",
-                ParcelId: note.ParcelId,
-                EvidenceType: MapEvidenceType(note.NoteType),
-                CreatedBy: string.IsNullOrWhiteSpace(note.CreatedBy) ? "County Staff" : note.CreatedBy,
-                CreatedAt: note.CreatedAt,
-                Integrity: MapIntegrityStatus(note.NoteType, note.CreatedBy, note.Content),
-                ChainLength: 2,
-                LastAction: note.NoteType.Replace('_', '-').ToLowerInvariant()));
-        }
-
-        return evidenceItems
-            .OrderByDescending(e => e.CreatedAt)
-            .ThenBy(e => e.Title, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+      documents.Add(new DossierDocumentIndexItem(
+          Id: $"doc-note-{note.Id:N}",
+          Name: $"{noteTypeLabel} - {note.ParcelId}",
+          Type: noteDocumentType,
+          ParcelId: note.ParcelId,
+          UploadedBy: string.IsNullOrWhiteSpace(note.CreatedBy) ? "County Staff" : note.CreatedBy,
+          UploadedAt: note.CreatedAt,
+          Size: $"{sizeKb} KB",
+          Status: noteStatus,
+          CustodyChain: noteStatus.Equals("sealed", StringComparison.OrdinalIgnoreCase) ? 4 : 2,
+          MimeType: "text/plain",
+          Hash: ComputeSha256($"note-document:{note.Id:N}:{note.CreatedAt:O}:{note.Content}")));
     }
 
-    private async Task<DossierDocumentIndexItem?> FindDocumentAsync(Guid countyId, string id)
+    return documents
+        .OrderByDescending(d => d.UploadedAt)
+        .ThenBy(d => d.Name, StringComparer.OrdinalIgnoreCase)
+        .ToList();
+  }
+
+  private async Task<List<DossierEvidenceIndexItem>> BuildEvidenceIndexAsync(Guid countyId)
+  {
+    var properties = await _db.Properties
+        .AsNoTracking()
+        .Where(p => p.CountyId == countyId)
+        .Select(p => new
+        {
+          p.ParcelId,
+          p.AssessmentDate,
+          p.LastUpdated,
+        })
+        .ToListAsync();
+
+    var notes = await _db.DossierNotes
+        .AsNoTracking()
+        .Where(n => n.CountyId == countyId)
+        .Select(n => new
+        {
+          n.Id,
+          n.ParcelId,
+          n.NoteType,
+          n.CreatedAt,
+          n.CreatedBy,
+          n.Content,
+        })
+        .ToListAsync();
+
+    var evidenceItems = new List<DossierEvidenceIndexItem>(properties.Count + notes.Count);
+
+    foreach (var property in properties)
     {
-        var documents = await BuildDocumentIndexAsync(countyId);
-        return documents.FirstOrDefault(d => d.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
+      var snapshotTimestamp = property.LastUpdated > property.AssessmentDate
+          ? property.LastUpdated
+          : property.AssessmentDate;
+
+      evidenceItems.Add(new DossierEvidenceIndexItem(
+          Id: $"evid-snapshot-{property.ParcelId.ToLowerInvariant()}",
+          Title: $"Parcel evidence snapshot - {property.ParcelId}",
+          ParcelId: property.ParcelId,
+          EvidenceType: "field-inspection",
+          CreatedBy: "County Assessor",
+          CreatedAt: snapshotTimestamp,
+          Integrity: "verified",
+          ChainLength: 3,
+          LastAction: "hash-verified"));
     }
 
-    private async Task<List<ChainEventItem>?> BuildChainOfCustody(Guid countyId, string evidenceId)
+    foreach (var note in notes)
     {
-        if (evidenceId.StartsWith("evid-snapshot-", StringComparison.OrdinalIgnoreCase))
-        {
-            var parcelId = evidenceId["evid-snapshot-".Length..];
-            var property = await _db.Properties
-                .AsNoTracking()
-                .Where(p => p.CountyId == countyId && p.ParcelId.ToLower() == parcelId.ToLower())
-                .Select(p => new
-                {
-                    p.ParcelId,
-                    p.AssessmentDate,
-                    p.LastUpdated,
-                })
-                .FirstOrDefaultAsync();
+      evidenceItems.Add(new DossierEvidenceIndexItem(
+          Id: $"evid-note-{note.Id:N}",
+          Title: $"{HumanizeToken(note.NoteType)} evidence - {note.ParcelId}",
+          ParcelId: note.ParcelId,
+          EvidenceType: MapEvidenceType(note.NoteType),
+          CreatedBy: string.IsNullOrWhiteSpace(note.CreatedBy) ? "County Staff" : note.CreatedBy,
+          CreatedAt: note.CreatedAt,
+          Integrity: MapIntegrityStatus(note.NoteType, note.CreatedBy, note.Content),
+          ChainLength: 2,
+          LastAction: note.NoteType.Replace('_', '-').ToLowerInvariant()));
+    }
 
-            if (property is null)
-                return null;
+    return evidenceItems
+        .OrderByDescending(e => e.CreatedAt)
+        .ThenBy(e => e.Title, StringComparer.OrdinalIgnoreCase)
+        .ToList();
+  }
 
-            var createdAt = property.LastUpdated > property.AssessmentDate
-                ? property.LastUpdated
-                : property.AssessmentDate;
+  private async Task<DossierDocumentIndexItem?> FindDocumentAsync(Guid countyId, string id)
+  {
+    var documents = await BuildDocumentIndexAsync(countyId);
+    return documents.FirstOrDefault(d => d.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
+  }
 
-            return
-            [
-                new ChainEventItem(
+  private async Task<List<ChainEventItem>?> BuildChainOfCustody(Guid countyId, string evidenceId)
+  {
+    if (evidenceId.StartsWith("evid-snapshot-", StringComparison.OrdinalIgnoreCase))
+    {
+      var parcelId = evidenceId["evid-snapshot-".Length..];
+      var property = await _db.Properties
+          .AsNoTracking()
+          .Where(p => p.CountyId == countyId && p.ParcelId.ToLower() == parcelId.ToLower())
+          .Select(p => new
+          {
+            p.ParcelId,
+            p.AssessmentDate,
+            p.LastUpdated,
+          })
+          .FirstOrDefaultAsync();
+
+      if (property is null)
+        return null;
+
+      var createdAt = property.LastUpdated > property.AssessmentDate
+          ? property.LastUpdated
+          : property.AssessmentDate;
+
+      return
+      [
+          new ChainEventItem(
                     property.AssessmentDate,
                     "County Assessor",
                     "Captured parcel assessment snapshot",
@@ -1304,35 +1282,35 @@ public class DossierController : ControllerBase
                     "Verified evidence hash",
                     ComputeSha256($"chain:snapshot:verified:{property.ParcelId}:{createdAt.AddMinutes(5):O}")),
             ];
-        }
+    }
 
-        if (!evidenceId.StartsWith("evid-note-", StringComparison.OrdinalIgnoreCase))
-            return null;
+    if (!evidenceId.StartsWith("evid-note-", StringComparison.OrdinalIgnoreCase))
+      return null;
 
-        var suffix = evidenceId["evid-note-".Length..];
-        if (!Guid.TryParseExact(suffix, "N", out var noteId))
-            return null;
+    var suffix = evidenceId["evid-note-".Length..];
+    if (!Guid.TryParseExact(suffix, "N", out var noteId))
+      return null;
 
-        var note = await _db.DossierNotes
-            .AsNoTracking()
-            .Where(n => n.CountyId == countyId && n.Id == noteId)
-            .Select(n => new
-            {
-                n.Id,
-                n.NoteType,
-                n.CreatedAt,
-                n.CreatedBy,
-                n.Content,
-            })
-            .FirstOrDefaultAsync();
+    var note = await _db.DossierNotes
+        .AsNoTracking()
+        .Where(n => n.CountyId == countyId && n.Id == noteId)
+        .Select(n => new
+        {
+          n.Id,
+          n.NoteType,
+          n.CreatedAt,
+          n.CreatedBy,
+          n.Content,
+        })
+        .FirstOrDefaultAsync();
 
-        if (note is null)
-            return null;
+    if (note is null)
+      return null;
 
-        var author = string.IsNullOrWhiteSpace(note.CreatedBy) ? "County Staff" : note.CreatedBy;
-        return
-        [
-            new ChainEventItem(
+    var author = string.IsNullOrWhiteSpace(note.CreatedBy) ? "County Staff" : note.CreatedBy;
+    return
+    [
+        new ChainEventItem(
                 note.CreatedAt,
                 author,
                 $"Recorded {HumanizeToken(note.NoteType)}",
@@ -1343,111 +1321,111 @@ public class DossierController : ControllerBase
                 "Linked note into parcel casefile",
                 ComputeSha256($"chain:note:linked:{note.Id:N}:{note.CreatedAt.AddMinutes(2):O}")),
         ];
-    }
+  }
 
-    private static string MapDocumentType(string noteType)
-    {
-        var normalized = noteType.Trim().ToLowerInvariant();
-        if (normalized.Contains("photo"))
-            return "photo";
-        if (normalized.Contains("appeal"))
-            return "appeal";
-        if (normalized.Contains("inspection"))
-            return "report";
-        if (normalized.Contains("appraisal") || normalized.Contains("valuation"))
-            return "appraisal";
-        if (normalized.Contains("correspondence") || normalized.Contains("letter"))
-            return "correspondence";
-        if (normalized.Contains("sketch"))
-            return "sketch";
+  private static string MapDocumentType(string noteType)
+  {
+    var normalized = noteType.Trim().ToLowerInvariant();
+    if (normalized.Contains("photo"))
+      return "photo";
+    if (normalized.Contains("appeal"))
+      return "appeal";
+    if (normalized.Contains("inspection"))
+      return "report";
+    if (normalized.Contains("appraisal") || normalized.Contains("valuation"))
+      return "appraisal";
+    if (normalized.Contains("correspondence") || normalized.Contains("letter"))
+      return "correspondence";
+    if (normalized.Contains("sketch"))
+      return "sketch";
 
-        return "report";
-    }
+    return "report";
+  }
 
-    private static string MapDocumentStatus(string noteType)
-    {
-        var normalized = noteType.Trim().ToLowerInvariant();
-        if (normalized.Contains("sealed"))
-            return "sealed";
-        if (normalized.Contains("archived"))
-            return "archived";
+  private static string MapDocumentStatus(string noteType)
+  {
+    var normalized = noteType.Trim().ToLowerInvariant();
+    if (normalized.Contains("sealed"))
+      return "sealed";
+    if (normalized.Contains("archived"))
+      return "archived";
 
-        return "active";
-    }
+    return "active";
+  }
 
-    private static string MapEvidenceType(string noteType)
-    {
-        var normalized = noteType.Trim().ToLowerInvariant();
-        if (normalized.Contains("market") || normalized.Contains("sale"))
-            return "market-data";
-        if (normalized.Contains("inspection") || normalized.Contains("field"))
-            return "field-inspection";
-        if (normalized.Contains("cost") || normalized.Contains("appraisal") || normalized.Contains("valuation"))
-            return "cost-analysis";
-        if (normalized.Contains("income"))
-            return "income-analysis";
-        if (normalized.Contains("appeal"))
-            return "appeal-evidence";
+  private static string MapEvidenceType(string noteType)
+  {
+    var normalized = noteType.Trim().ToLowerInvariant();
+    if (normalized.Contains("market") || normalized.Contains("sale"))
+      return "market-data";
+    if (normalized.Contains("inspection") || normalized.Contains("field"))
+      return "field-inspection";
+    if (normalized.Contains("cost") || normalized.Contains("appraisal") || normalized.Contains("valuation"))
+      return "cost-analysis";
+    if (normalized.Contains("income"))
+      return "income-analysis";
+    if (normalized.Contains("appeal"))
+      return "appeal-evidence";
 
-        return "regulatory";
-    }
+    return "regulatory";
+  }
 
-    private static string MapIntegrityStatus(string noteType, string createdBy, string content)
-    {
-        var normalized = noteType.Trim().ToLowerInvariant();
-        if (normalized.Contains("dispute"))
-            return "disputed";
-        if (ClassifyAuthorKind(createdBy) == "system" || content.Length >= 64)
-            return "verified";
+  private static string MapIntegrityStatus(string noteType, string createdBy, string content)
+  {
+    var normalized = noteType.Trim().ToLowerInvariant();
+    if (normalized.Contains("dispute"))
+      return "disputed";
+    if (ClassifyAuthorKind(createdBy) == "system" || content.Length >= 64)
+      return "verified";
 
-        return "pending";
-    }
+    return "pending";
+  }
 
-    private static string HumanizeToken(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return "Casefile";
+  private static string HumanizeToken(string value)
+  {
+    if (string.IsNullOrWhiteSpace(value))
+      return "Casefile";
 
-        var words = value
-            .Replace('-', ' ')
-            .Replace('_', ' ')
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Select(word => word.Length == 1
-                ? char.ToUpperInvariant(word[0]).ToString()
-                : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
+    var words = value
+        .Replace('-', ' ')
+        .Replace('_', ' ')
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Select(word => word.Length == 1
+            ? char.ToUpperInvariant(word[0]).ToString()
+            : $"{char.ToUpperInvariant(word[0])}{word[1..].ToLowerInvariant()}");
 
-        return string.Join(' ', words);
-    }
+    return string.Join(' ', words);
+  }
 
-    // ── CX-25: Hash Helper ───────────────────────────────────────
+  // ── CX-25: Hash Helper ───────────────────────────────────────
 
-    private static readonly JsonSerializerOptions JsonHashOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = false,
-    };
+  private static readonly JsonSerializerOptions JsonHashOptions = new()
+  {
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    WriteIndented = false,
+  };
 
-    private static string ComputeSha256(string input)
-    {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
-        return Convert.ToHexString(bytes).ToLowerInvariant();
-    }
+  private static string ComputeSha256(string input)
+  {
+    var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+    return Convert.ToHexString(bytes).ToLowerInvariant();
+  }
 
-    /// <summary>
-    /// Classify note author into a non-PII kind bucket.
-    /// "system" for known system prefixes, "human" otherwise.
-    /// </summary>
-    private static string ClassifyAuthorKind(string createdBy)
-    {
-        if (string.IsNullOrWhiteSpace(createdBy))
-            return "unknown";
+  /// <summary>
+  /// Classify note author into a non-PII kind bucket.
+  /// "system" for known system prefixes, "human" otherwise.
+  /// </summary>
+  private static string ClassifyAuthorKind(string createdBy)
+  {
+    if (string.IsNullOrWhiteSpace(createdBy))
+      return "unknown";
 
-        var lower = createdBy.ToLowerInvariant();
-        if (lower.StartsWith("system") || lower.StartsWith("auto") ||
-            lower.StartsWith("cx") || lower.StartsWith("seed") ||
-            lower.StartsWith("bot") || lower.StartsWith("agent"))
-            return "system";
+    var lower = createdBy.ToLowerInvariant();
+    if (lower.StartsWith("system") || lower.StartsWith("auto") ||
+        lower.StartsWith("cx") || lower.StartsWith("seed") ||
+        lower.StartsWith("bot") || lower.StartsWith("agent"))
+      return "system";
 
-        return "human";
-    }
+    return "human";
+  }
 }

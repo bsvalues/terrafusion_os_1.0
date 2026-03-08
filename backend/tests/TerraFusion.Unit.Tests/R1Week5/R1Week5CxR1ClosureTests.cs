@@ -505,4 +505,71 @@ public sealed class R1Week5CxR1ClosureTests
 
     result.Should().BeOfType<ForbidResult>();
   }
+
+  [Fact]
+  public async Task PiltController_CreateReceipt_BentonCounty_ReturnsCreated()
+  {
+    await using var db = CreateDbContext(nameof(PiltController_CreateReceipt_BentonCounty_ReturnsCreated));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new PiltController(
+        db,
+        NullLogger<PiltController>.Instance,
+        CreateHostEnvironment());
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.CreateReceipt(new PiltController.CreateReceiptRequest(2025, "Federal PILT Test", 100000m));
+
+    var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
+    json.RootElement.GetProperty("fiscalYear").GetInt32().Should().Be(2025);
+    json.RootElement.GetProperty("source").GetString().Should().Be("Federal PILT Test");
+    json.RootElement.GetProperty("amount").GetDecimal().Should().Be(100000m);
+    json.RootElement.GetProperty("status").GetString().Should().Be("created");
+    json.RootElement.GetProperty("receiptId").GetString().Should().NotBeNullOrWhiteSpace();
+  }
+
+  [Fact]
+  public async Task PiltController_CreateReceipt_InvalidAmount_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(PiltController_CreateReceipt_InvalidAmount_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new PiltController(
+        db,
+        NullLogger<PiltController>.Instance,
+        CreateHostEnvironment());
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.CreateReceipt(new PiltController.CreateReceiptRequest(2025, "Test", -500m));
+
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  public async Task PiltController_Approve_BentonCounty_ReturnsApproval()
+  {
+    await using var db = CreateDbContext(nameof(PiltController_Approve_BentonCounty_ReturnsApproval));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new PiltController(
+        db,
+        NullLogger<PiltController>.Instance,
+        CreateHostEnvironment());
+    AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
+
+    var result = await controller.Approve("calc-2025-abc123");
+
+    var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
+    json.RootElement.GetProperty("calculationId").GetString().Should().Be("calc-2025-abc123");
+    json.RootElement.GetProperty("status").GetString().Should().Be("approved");
+    json.RootElement.GetProperty("approvedBy").GetString().Should().NotBeNullOrWhiteSpace();
+  }
 }
