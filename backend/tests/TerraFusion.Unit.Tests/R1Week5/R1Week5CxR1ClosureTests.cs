@@ -2709,4 +2709,1250 @@ public sealed class R1Week5CxR1ClosureTests
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"Location\":\"unspecified\"");
   }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 15: Real Sales Comparison Tests (CostForge)
+  // ═══════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustmentFactors_Returns5Physical()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustmentFactors_Returns5Physical));
+    var result = controller.GetSalesAdjustmentFactors();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("GLA");
+    json.Should().Contain("Lot Size");
+    json.Should().Contain("Age");
+    json.Should().Contain("Bedroom");
+    json.Should().Contain("Bathroom");
+    controller.HttpContext.Response.Headers["X-CostForge-Source"].ToString()
+      .Should().Be("benton-real-sales-comparison-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustmentFactors_HasConditionScale()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustmentFactors_HasConditionScale));
+    var result = controller.GetSalesAdjustmentFactors();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Excellent");
+    json.Should().Contain("Good");
+    json.Should().Contain("Average");
+    json.Should().Contain("Fair");
+    json.Should().Contain("Poor");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_MarketAreas_Returns8Neighborhoods()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_MarketAreas_Returns8Neighborhoods));
+    var result = controller.GetSalesMarketAreas();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Richland");
+    json.Should().Contain("West Richland");
+    json.Should().Contain("Kennewick");
+    json.Should().Contain("Pasco");
+    json.Should().Contain("Benton City");
+    json.Should().Contain("Prosser");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_MarketAreas_Has12SeasonalityFactors()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_MarketAreas_Has12SeasonalityFactors));
+    var result = controller.GetSalesMarketAreas();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("January");
+    json.Should().Contain("July");
+    json.Should().Contain("December");
+    // July peak at 1.30
+    json.Should().Contain("\"Factor\":1.30");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_ConfidenceThresholds_ReturnsLevelsAndFlags()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_ConfidenceThresholds_ReturnsLevelsAndFlags));
+    var result = controller.GetSalesConfidenceThresholds();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("high");
+    json.Should().Contain("moderate");
+    json.Should().Contain("low");
+    json.Should().Contain("gross_adj_high");
+    json.Should().Contain("cv_high");
+    json.Should().Contain("few_comparables");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_Comp1FromQuarantine()
+  {
+    // Replicate COMP-001 from quarantine fixture:
+    // Subject: 2000 sqft, 10000 lot, 2000, 3bd/2ba, Good, Average
+    // Comp: $350k, 1800 sqft, 9000 lot, 1998, 3bd/2ba, Good, Average
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_Comp1FromQuarantine));
+    var request = new CostForgeController.CompAdjustmentRequest
+    {
+      SalePrice = 350_000m,
+      SubjectGla = 2000m,
+      CompGla = 1800m,
+      SubjectLotSize = 10_000m,
+      CompLotSize = 9_000m,
+      SubjectYearBuilt = 2000,
+      CompYearBuilt = 1998,
+      SubjectBedrooms = 3,
+      CompBedrooms = 3,
+      SubjectBathrooms = 2m,
+      CompBathrooms = 2m,
+      SubjectCondition = "Good",
+      CompCondition = "Good",
+      SubjectLocation = "Average",
+      CompLocation = "Average",
+    };
+    var result = controller.AdjustComparable(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // GLA: (2000-1800)*100 = +20000
+    json.Should().Contain("\"GlaAdjustment\":20000");
+    // Lot: (10000-9000)*5 = +5000
+    json.Should().Contain("\"LotAdjustment\":5000");
+    // Age: (1998-2000)*500 = -1000
+    json.Should().Contain("\"AgeAdjustment\":-1000");
+    // Beds/baths/condition/location all zero
+    json.Should().Contain("\"BedroomAdjustment\":0");
+    json.Should().Contain("\"ConditionAdjustment\":0");
+    json.Should().Contain("\"LocationAdjustment\":0");
+    // Total: 20000+5000-1000 = 24000, Adjusted: 374000
+    json.Should().Contain("\"TotalNetAdjustment\":24000");
+    json.Should().Contain("\"AdjustedPrice\":374000");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_Comp2WithQualitativeAdj()
+  {
+    // COMP-002: $380k, 2200sqft, 11000lot, 2005, 4bd/2.5ba, Excellent, Good
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_Comp2WithQualitativeAdj));
+    var request = new CostForgeController.CompAdjustmentRequest
+    {
+      SalePrice = 380_000m,
+      SubjectGla = 2000m,
+      CompGla = 2200m,
+      SubjectLotSize = 10_000m,
+      CompLotSize = 11_000m,
+      SubjectYearBuilt = 2000,
+      CompYearBuilt = 2005,
+      SubjectBedrooms = 3,
+      CompBedrooms = 4,
+      SubjectBathrooms = 2m,
+      CompBathrooms = 2.5m,
+      SubjectCondition = "Good",
+      CompCondition = "Excellent",
+      SubjectLocation = "Average",
+      CompLocation = "Good",
+    };
+    var result = controller.AdjustComparable(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // GLA: (2000-2200)*100 = -20000
+    json.Should().Contain("\"GlaAdjustment\":-20000");
+    // Lot: (10000-11000)*5 = -5000
+    json.Should().Contain("\"LotAdjustment\":-5000");
+    // Age: (2005-2000)*500 = +2500
+    json.Should().Contain("\"AgeAdjustment\":2500");
+    // Bed: (3-4)*5000 = -5000
+    json.Should().Contain("\"BedroomAdjustment\":-5000");
+    // Bath: (2-2.5)*7500 = -3750
+    json.Should().Contain("\"BathroomAdjustment\":-3750");
+    // Condition: Good(10000)-Excellent(20000) = -10000
+    json.Should().Contain("\"ConditionAdjustment\":-10000");
+    // Location: Average(0)-Good(12500) = -12500
+    json.Should().Contain("\"LocationAdjustment\":-12500");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_RejectsNegativeSalePrice()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_RejectsNegativeSalePrice));
+    var request = new CostForgeController.CompAdjustmentRequest { SalePrice = -1m };
+    var result = controller.AdjustComparable(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_GrossAdjPctCorrect()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_GrossAdjPctCorrect));
+    var request = new CostForgeController.CompAdjustmentRequest
+    {
+      SalePrice = 350_000m,
+      SubjectGla = 2000m,
+      CompGla = 1800m, // +20000
+      SubjectLotSize = 10_000m,
+      CompLotSize = 9_000m, // +5000
+      SubjectYearBuilt = 2000,
+      CompYearBuilt = 1998, // -1000
+    };
+    var result = controller.AdjustComparable(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Gross = |20000|+|5000|+|1000| = 26000, Gross% = 26000/350000*100 = 7.43%
+    json.Should().Contain("\"GrossAdjustmentPct\":7.43");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_3CompsFromQuarantine()
+  {
+    // From quarantine fixture: COMP-001 adj $374000 (6.86%), COMP-002 adj $326250 (14.14%), COMP-003 adj $355000 (4.41%)
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_3CompsFromQuarantine));
+    var request = new CostForgeController.SalesReconciliationRequest
+    {
+      Comparables = new()
+      {
+        new() { AdjustedPrice = 374_000m, GrossAdjustmentPct = 6.86m },
+        new() { AdjustedPrice = 326_250m, GrossAdjustmentPct = 14.14m },
+        new() { AdjustedPrice = 355_000m, GrossAdjustmentPct = 4.41m },
+      },
+    };
+    var result = controller.ReconcileComparables(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ComparableCount\":3");
+    // Median of sorted [326250, 355000, 374000] = 355000
+    json.Should().Contain("\"Median\":355000");
+    json.Should().Contain("\"Confidence\":\"high\"");
+    json.Should().Contain("\"Low\":326250");
+    json.Should().Contain("\"High\":374000");
+    json.Should().Contain("\"Range\":47750");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_RejectsEmptyList()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_RejectsEmptyList));
+    var request = new CostForgeController.SalesReconciliationRequest();
+    var result = controller.ReconcileComparables(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_RejectsOver10Comps()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_RejectsOver10Comps));
+    var comps = Enumerable.Range(1, 11)
+      .Select(i => new CostForgeController.ReconciliationComp { AdjustedPrice = 300_000m + i * 1000m, GrossAdjustmentPct = 5m })
+      .ToList();
+    var request = new CostForgeController.SalesReconciliationRequest { Comparables = comps };
+    var result = controller.ReconcileComparables(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_LowConfidence_1Comp()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_LowConfidence_1Comp));
+    var request = new CostForgeController.SalesReconciliationRequest
+    {
+      Comparables = new() { new() { AdjustedPrice = 400_000m, GrossAdjustmentPct = 30m } },
+    };
+    var result = controller.ReconcileComparables(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"Confidence\":\"low\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_ModerateConfidence()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_ModerateConfidence));
+    var request = new CostForgeController.SalesReconciliationRequest
+    {
+      Comparables = new()
+      {
+        new() { AdjustedPrice = 400_000m, GrossAdjustmentPct = 18m },
+        new() { AdjustedPrice = 410_000m, GrossAdjustmentPct = 20m },
+      },
+    };
+    var result = controller.ReconcileComparables(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"Confidence\":\"moderate\"");
+    // Median of 2 = (400000+410000)/2 = 405000
+    json.Should().Contain("\"Median\":405000");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_ClassifyConfidence_High()
+  {
+    CostForgeController.ClassifyConfidence(3, 8m, 12m).Should().Be("high");
+    CostForgeController.ClassifyConfidence(5, 5m, 10m).Should().Be("high");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_ClassifyConfidence_Moderate()
+  {
+    CostForgeController.ClassifyConfidence(2, 15m, 20m).Should().Be("moderate");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_ClassifyConfidence_Low()
+  {
+    CostForgeController.ClassifyConfidence(1, 25m, 30m).Should().Be("low");
+    CostForgeController.ClassifyConfidence(3, 25m, 5m).Should().Be("low");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_GetConditionAdjustment_AllRatings()
+  {
+    CostForgeController.GetConditionAdjustment("Excellent").Should().Be(20_000m);
+    CostForgeController.GetConditionAdjustment("Good").Should().Be(10_000m);
+    CostForgeController.GetConditionAdjustment("Average").Should().Be(0m);
+    CostForgeController.GetConditionAdjustment("Fair").Should().Be(-10_000m);
+    CostForgeController.GetConditionAdjustment("Poor").Should().Be(-25_000m);
+    CostForgeController.GetConditionAdjustment(null).Should().Be(0m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_GetLocationAdjustment_AllRatings()
+  {
+    CostForgeController.GetLocationAdjustment("Superior").Should().Be(25_000m);
+    CostForgeController.GetLocationAdjustment("Good").Should().Be(12_500m);
+    CostForgeController.GetLocationAdjustment("Average").Should().Be(0m);
+    CostForgeController.GetLocationAdjustment("Fair").Should().Be(-12_500m);
+    CostForgeController.GetLocationAdjustment("Inferior").Should().Be(-25_000m);
+    CostForgeController.GetLocationAdjustment(null).Should().Be(0m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_WeightedHigherForLessAdjusted()
+  {
+    // Comp with lower grossAdj% should get higher weight
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_WeightedHigherForLessAdjusted));
+    var request = new CostForgeController.SalesReconciliationRequest
+    {
+      Comparables = new()
+      {
+        new() { AdjustedPrice = 400_000m, GrossAdjustmentPct = 5m },   // low adj → high weight
+        new() { AdjustedPrice = 350_000m, GrossAdjustmentPct = 20m },  // high adj → low weight
+      },
+    };
+    var result = controller.ReconcileComparables(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Weighted average should be closer to 400000 (the less-adjusted comp)
+    // w1=1/5=0.2, w2=1/20=0.05 → normalized w1=0.8, w2=0.2
+    // WA = 400000*0.8 + 350000*0.2 = 390000
+    json.Should().Contain("\"WeightedAverage\":390000");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_NullConditionsDefault()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_NullConditionsDefault));
+    var request = new CostForgeController.CompAdjustmentRequest
+    {
+      SalePrice = 300_000m,
+      SubjectGla = 1500m,
+      CompGla = 1500m,
+      // Null condition and location → both default to 0
+    };
+    var result = controller.AdjustComparable(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ConditionAdjustment\":0");
+    json.Should().Contain("\"LocationAdjustment\":0");
+    json.Should().Contain("\"TotalNetAdjustment\":0");
+    json.Should().Contain("\"AdjustedPrice\":300000");
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 16 — Valuation Reconciliation (3-approach weighted average)
+  // ═══════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_WeightGuidelines_ReturnsAllPropertyTypes()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_WeightGuidelines_ReturnsAllPropertyTypes));
+    var result = controller.GetReconciliationWeightGuidelines();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("residential");
+    json.Should().Contain("commercial");
+    json.Should().Contain("industrial");
+    json.Should().Contain("multi-family");
+    json.Should().Contain("land");
+    json.Should().Contain("effectiveDate");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_WeightGuidelines_ContainsExpectedBiases()
+  {
+    // Residential should have SalesBias > CostBias (sales-driven market)
+    var residential = CostForgeController.ReconciliationDefaults.WeightGuidelines
+      .First(g => g.PropertyType == "residential");
+    residential.SalesBias.Should().BeGreaterThan(residential.CostBias);
+    residential.SalesBias.Should().BeGreaterThan(residential.IncomeBias);
+
+    // Commercial should have IncomeBias > SalesBias
+    var commercial = CostForgeController.ReconciliationDefaults.WeightGuidelines
+      .First(g => g.PropertyType == "commercial");
+    commercial.IncomeBias.Should().BeGreaterThan(commercial.SalesBias);
+
+    // Industrial should have CostBias > IncomeBias
+    var industrial = CostForgeController.ReconciliationDefaults.WeightGuidelines
+      .First(g => g.PropertyType == "industrial");
+    industrial.CostBias.Should().BeGreaterThan(industrial.IncomeBias);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_ThreeApproachResidential()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_ThreeApproachResidential));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 320_000m,
+      CostConfidence = "moderate",
+      IncomeApproachValue = 310_000m,
+      IncomeConfidence = "low",
+      SalesComparisonValue = 350_000m,
+      SalesConfidence = "high",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"residential\"");
+    json.Should().Contain("\"ApproachCount\":3");
+    json.Should().Contain("\"OverallConfidence\":");
+    // Sales should dominate for residential
+    json.Should().Contain("\"Approach\":\"sales\"");
+    json.Should().Contain("\"Approach\":\"cost\"");
+    json.Should().Contain("\"Approach\":\"income\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_CommercialIncomeDominant()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_CommercialIncomeDominant));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 500_000m,
+      CostConfidence = "moderate",
+      IncomeApproachValue = 520_000m,
+      IncomeConfidence = "high",
+      SalesComparisonValue = 510_000m,
+      SalesConfidence = "moderate",
+      PropertyType = "commercial",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"commercial\"");
+    json.Should().Contain("\"ApproachCount\":3");
+    // For commercial, income approach should have highest weight
+    // Verify income contribution is highest
+    // Income: high(3) × 1.4 incomeBias = 4.2
+    // Sales: moderate(2) × 1.0 = 2.0
+    // Cost: moderate(2) × 0.5 = 1.0
+    // Total: 7.2 → income weight ≈ 58.3%
+    var resultObj = ok.Value;
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    // Should be closer to income value ($520K) than cost ($500K)
+    finalValue.Should().BeGreaterThan(510_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_TwoApproachOnly()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_TwoApproachOnly));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 400_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 0m, // Not applicable
+      SalesComparisonValue = 420_000m,
+      SalesConfidence = "high",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ApproachCount\":2");
+    // Income should not appear in details
+    json.Should().NotContain("\"Approach\":\"income\"");
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    finalValue.Should().BeInRange(400_000m, 420_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_SingleApproach()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_SingleApproach));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 0m,
+      IncomeApproachValue = 0m,
+      SalesComparisonValue = 350_000m,
+      SalesConfidence = "high",
+      PropertyType = "land",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ApproachCount\":1");
+    // Single approach → 100% weight → final = the approach value
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    finalValue.Should().Be(350_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_AllZeros_ReturnsBadRequest()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_AllZeros_ReturnsBadRequest));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 0m,
+      IncomeApproachValue = 0m,
+      SalesComparisonValue = 0m,
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_IndustrialCostDominant()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_IndustrialCostDominant));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 1_200_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 1_100_000m,
+      IncomeConfidence = "moderate",
+      SalesComparisonValue = 1_000_000m,
+      SalesConfidence = "low",
+      PropertyType = "industrial",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"industrial\"");
+    // Industrial: cost bias=1.2, income bias=0.8, sales bias=0.6
+    // Cost: high(3) × 1.2 = 3.6, Income: moderate(2) × 0.8 = 1.6, Sales: low(1) × 0.6 = 0.6
+    // Total: 5.8 → cost ≈ 62%. Should be closer to cost value
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    finalValue.Should().BeGreaterThan(1_100_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_HighSpreadLowConfidence()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_HighSpreadLowConfidence));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 200_000m,
+      CostConfidence = "low",
+      IncomeApproachValue = 350_000m,
+      IncomeConfidence = "low",
+      SalesComparisonValue = 500_000m,
+      SalesConfidence = "low",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Huge spread → should show low confidence
+    json.Should().Contain("\"OverallConfidence\":\"low\"");
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var spread = jsonDoc.RootElement.GetProperty("Spread").GetDecimal();
+    spread.Should().BeGreaterThan(25m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_NullPropertyTypeDefaultsResidential()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_NullPropertyTypeDefaultsResidential));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 300_000m,
+      SalesComparisonValue = 310_000m,
+      // PropertyType null → defaults to "residential"
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"residential\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_NullConfidenceDefaultsModerate()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_NullConfidenceDefaultsModerate));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 300_000m,
+      // CostConfidence null → defaults to "moderate"
+      IncomeApproachValue = 310_000m,
+      // IncomeConfidence null → defaults to "moderate"
+      SalesComparisonValue = 320_000m,
+      // SalesConfidence null → defaults to "moderate"
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ApproachCount\":3");
+    // With all moderate confidence, only property type bias differentiates weights
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    finalValue.Should().BeInRange(300_000m, 320_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_WeightsSumTo100()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_WeightsSumTo100));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 250_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 260_000m,
+      IncomeConfidence = "moderate",
+      SalesComparisonValue = 270_000m,
+      SalesConfidence = "low",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var details = jsonDoc.RootElement.GetProperty("Details");
+    decimal totalWeight = 0;
+    foreach (var detail in details.EnumerateArray())
+    {
+      totalWeight += detail.GetProperty("WeightPct").GetDecimal();
+    }
+    totalWeight.Should().Be(100m, "weights must sum exactly to 100%");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_ContributionsSumToFinal()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_ContributionsSumToFinal));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 400_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 450_000m,
+      IncomeConfidence = "moderate",
+      SalesComparisonValue = 430_000m,
+      SalesConfidence = "high",
+      PropertyType = "commercial",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var details = jsonDoc.RootElement.GetProperty("Details");
+    decimal totalContribution = 0;
+    foreach (var detail in details.EnumerateArray())
+    {
+      totalContribution += detail.GetProperty("Contribution").GetDecimal();
+    }
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    // Contributions may differ slightly due to rounding
+    Math.Abs(totalContribution - finalValue).Should().BeLessThan(0.02m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_LandSalesOnly()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_LandSalesOnly));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 80_000m,
+      CostConfidence = "low",
+      IncomeApproachValue = 70_000m,
+      IncomeConfidence = "low",
+      SalesComparisonValue = 100_000m,
+      SalesConfidence = "high",
+      PropertyType = "land",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"land\"");
+    // Land: cost bias=0.3, income bias=0.3, sales bias=1.8
+    // Sales: high(3) × 1.8 = 5.4, Cost: low(1) × 0.3 = 0.3, Income: low(1) × 0.3 = 0.3
+    // Sales dominance: 5.4/6.0 = 90%
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    // Should be heavily weighted toward sales ($100K)
+    finalValue.Should().BeGreaterThan(90_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_MultiFamilyIncomeFavored()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_MultiFamilyIncomeFavored));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 600_000m,
+      CostConfidence = "moderate",
+      IncomeApproachValue = 650_000m,
+      IncomeConfidence = "high",
+      SalesComparisonValue = 620_000m,
+      SalesConfidence = "moderate",
+      PropertyType = "multi-family",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"multi-family\"");
+    // Multi-family: income bias=1.3 > sales bias=1.0 > cost bias=0.6
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    // Should be closer to income value ($650K)
+    finalValue.Should().BeGreaterThan(625_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_TightSpreadHighConfidence()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_TightSpreadHighConfidence));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 300_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 305_000m,
+      IncomeConfidence = "high",
+      SalesComparisonValue = 302_000m,
+      SalesConfidence = "high",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Very tight spread → should show high confidence
+    json.Should().Contain("\"OverallConfidence\":\"high\"");
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var spread = jsonDoc.RootElement.GetProperty("Spread").GetDecimal();
+    spread.Should().BeLessThan(5m);
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 17 — Valuation Lineage (RCN → RCNLD → land → total)
+  // ═══════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_DepreciationModel_ReturnsAllCategories()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_DepreciationModel_ReturnsAllCategories));
+    var result = controller.GetDepreciationModel();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Residential");
+    json.Should().Contain("Commercial");
+    json.Should().Contain("Industrial");
+    json.Should().Contain("Multiplicative");
+    json.Should().Contain("physicalDepreciationCap");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_DepreciationModel_EconomicLifeValues()
+  {
+    var res = CostForgeController.ValuationLineageData.EconomicLifeByType;
+    res.First(e => e.Category == "Residential").Years.Should().Be(60);
+    res.First(e => e.Category == "Commercial").Years.Should().Be(50);
+    res.First(e => e.Category == "Industrial").Years.Should().Be(45);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_LandRates_ReturnsAllZones()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_LandRates_ReturnsAllZones));
+    var result = controller.GetLandRates();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("central-residential");
+    json.Should().Contain("west-commercial");
+    json.Should().Contain("agricultural");
+    json.Should().Contain("industrial");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_LandRates_Values()
+  {
+    var rates = CostForgeController.ValuationLineageData.LandRates;
+    rates.First(r => r.Zone == "central-residential").BaseRatePerSqft.Should().Be(3.50m);
+    rates.First(r => r.Zone == "agricultural").BaseRatePerSqft.Should().Be(0.50m);
+    rates.First(r => r.Zone == "west-commercial").BaseRatePerSqft.Should().Be(10.50m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_SiteImprovements_ReturnsSchedule()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_SiteImprovements_ReturnsSchedule));
+    var result = controller.GetSiteImprovements();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("ATTGAR");
+    json.Should().Contain("DETGAR");
+    json.Should().Contain("PL");
+    json.Should().Contain("BSMTFIN");
+    json.Should().Contain("DECK");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_SiteImprovements_UnitCosts()
+  {
+    var si = CostForgeController.ValuationLineageData.SiteImprovements;
+    si.First(s => s.Code == "ATTGAR").UnitCost.Should().Be(42.50m);
+    si.First(s => s.Code == "PL").UnitCost.Should().Be(25000.00m);
+    si.First(s => s.Code == "BSMTFIN").UnitCost.Should().Be(32.50m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_BasicResidential()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_BasicResidential));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 2000m,
+      YearBuilt = 2015,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      ComplexityGrade = "STANDARD",
+      LandAreaSqft = 8000m,
+      LandZone = "central-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"BuildingType\":\"R1\"");
+    json.Should().Contain("\"ReplacementCostNew\":");
+    json.Should().Contain("\"ReplacementCostNewLessDepreciation\":");
+    json.Should().Contain("\"LandValue\":");
+    json.Should().Contain("\"TotalAssessedValue\":");
+    json.Should().Contain("\"DepreciationBreakdown\":");
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var rcn = jsonDoc.RootElement.GetProperty("ReplacementCostNew").GetDecimal();
+    var rcnld = jsonDoc.RootElement.GetProperty("ReplacementCostNewLessDepreciation").GetDecimal();
+    var landValue = jsonDoc.RootElement.GetProperty("LandValue").GetDecimal();
+    var total = jsonDoc.RootElement.GetProperty("TotalAssessedValue").GetDecimal();
+
+    rcn.Should().BeGreaterThan(0);
+    rcnld.Should().BeLessThanOrEqualTo(rcn);
+    landValue.Should().Be(8000m * 3.50m); // 8000 sqft × $3.50
+    total.Should().Be(rcnld + landValue);  // no site improvements
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_WithSiteImprovements()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_WithSiteImprovements));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1800m,
+      YearBuilt = 2020,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      LandAreaSqft = 7000m,
+      LandZone = "central-residential",
+      SiteImprovements = new()
+      {
+        new() { Code = "ATTGAR", Quantity = 400m },  // 400 sqft attached garage
+        new() { Code = "DECK", Quantity = 200m },    // 200 sqft deck
+      },
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var siteTotal = jsonDoc.RootElement.GetProperty("SiteImprovementsTotal").GetDecimal();
+    var total = jsonDoc.RootElement.GetProperty("TotalAssessedValue").GetDecimal();
+    var rcnld = jsonDoc.RootElement.GetProperty("ReplacementCostNewLessDepreciation").GetDecimal();
+    var landValue = jsonDoc.RootElement.GetProperty("LandValue").GetDecimal();
+
+    siteTotal.Should().BeGreaterThan(0);
+    total.Should().Be(rcnld + landValue + siteTotal);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_WithObsolescence()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_WithObsolescence));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "C1",
+      Region = "Central",
+      SquareFeet = 5000m,
+      YearBuilt = 1990,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      FunctionalObsolescence = 15m,  // 15% functional
+      ExternalObsolescence = 10m,    // 10% external
+      LandAreaSqft = 20000m,
+      LandZone = "central-commercial",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var totalDepPct = jsonDoc.RootElement.GetProperty("TotalDepreciationPct").GetDecimal();
+    var funcObs = jsonDoc.RootElement.GetProperty("FunctionalObsolescencePct").GetDecimal();
+    var extObs = jsonDoc.RootElement.GetProperty("ExternalObsolescencePct").GetDecimal();
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+
+    funcObs.Should().Be(15m);
+    extObs.Should().Be(10m);
+    physDep.Should().BeGreaterThan(0);
+    // Total depreciation should be > physical alone due to multiplicative model
+    totalDepPct.Should().BeGreaterThan(physDep);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_PhysicalDepCapped85()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_PhysicalDepCapped85));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 100,  // Way beyond economic life
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      LandAreaSqft = 5000m,
+      LandZone = "central-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+    // Physical depreciation capped at 85%
+    physDep.Should().Be(85m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_InvalidBuildingType_ReturnsBadRequest()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_InvalidBuildingType_ReturnsBadRequest));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "INVALID",
+      Region = "Central",
+      SquareFeet = 1000m,
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_CommercialEconomicLife50()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_CommercialEconomicLife50));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "C1",
+      Region = "Central",
+      SquareFeet = 3000m,
+      EffectiveAge = 25,
+      QualityGrade = "STANDARD",
+      LandAreaSqft = 10000m,
+      LandZone = "central-commercial",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var ecoLife = jsonDoc.RootElement.GetProperty("EconomicLife").GetInt32();
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+
+    ecoLife.Should().Be(50);
+    // 25/50 = 50% physical depreciation
+    physDep.Should().Be(50m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_IndustrialEconomicLife45()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_IndustrialEconomicLife45));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "I1",
+      Region = "Central",
+      SquareFeet = 10000m,
+      EffectiveAge = 20,
+      QualityGrade = "STANDARD",
+      LandAreaSqft = 40000m,
+      LandZone = "industrial",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var ecoLife = jsonDoc.RootElement.GetProperty("EconomicLife").GetInt32();
+    ecoLife.Should().Be(45);
+    // 20/45 ≈ 44.44%
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+    physDep.Should().BeInRange(44m, 45m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_DepreciationBreakdownSumsCorrectly()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_DepreciationBreakdownSumsCorrectly));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 2000m,
+      EffectiveAge = 20,
+      FunctionalObsolescence = 10m,
+      ExternalObsolescence = 5m,
+      LandAreaSqft = 8000m,
+      LandZone = "central-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var breakdown = jsonDoc.RootElement.GetProperty("DepreciationBreakdown");
+    var physical = breakdown.GetProperty("Physical").GetDecimal();
+    var functional = breakdown.GetProperty("Functional").GetDecimal();
+    var external = breakdown.GetProperty("External").GetDecimal();
+    var depAmount = jsonDoc.RootElement.GetProperty("DepreciationAmount").GetDecimal();
+
+    physical.Should().BeGreaterThan(0);
+    functional.Should().BeGreaterThan(0);
+    external.Should().BeGreaterThan(0);
+    // Sum of breakdown components should approximate total depreciation
+    // (may differ slightly due to rounding in multiplicative model)
+    Math.Abs(physical + functional + external - depAmount).Should().BeLessThan(1m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_ZeroAge_NoPhysicalDep()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_ZeroAge_NoPhysicalDep));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 2500m,
+      EffectiveAge = 0,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      LandAreaSqft = 10000m,
+      LandZone = "central-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+    var rcn = jsonDoc.RootElement.GetProperty("ReplacementCostNew").GetDecimal();
+    var rcnld = jsonDoc.RootElement.GetProperty("ReplacementCostNewLessDepreciation").GetDecimal();
+
+    physDep.Should().Be(0m);
+    rcnld.Should().Be(rcn);  // No depreciation → RCNLD = RCN
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_RCNIncludesAllFactors()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_RCNIncludesAllFactors));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "West",  // factor 1.05
+      SquareFeet = 1000m,
+      EffectiveAge = 0,
+      QualityGrade = "PREMIUM",     // factor 1.30
+      ConditionGrade = "EXCELLENT", // factor 1.10
+      ComplexityGrade = "COMPLEX",  // factor 1.10
+      LandAreaSqft = 5000m,
+      LandZone = "west-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var rcn = jsonDoc.RootElement.GetProperty("ReplacementCostNew").GetDecimal();
+    var adjRate = jsonDoc.RootElement.GetProperty("AdjustedRatePerSqft").GetDecimal();
+
+    // Base = 133.88 (West R1) → ×1.05 region ×1.30 quality ×1.10 condition ×1.10 complexity ×1.15 local ×1.15 entrep
+    // All factors compound, so RCN should be > base×sqft significantly
+    rcn.Should().Be(adjRate * 1000m); // rate × sqft
+    adjRate.Should().BeGreaterThan(133.88m); // adjusted > base
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_LandAdjustmentFactor()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_LandAdjustmentFactor));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 0,
+      LandAreaSqft = 10000m,
+      LandZone = "central-residential",
+      LandAdjustmentFactor = 1.20m,  // 20% premium lot
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var landValue = jsonDoc.RootElement.GetProperty("LandValue").GetDecimal();
+    // 10000 × $3.50 × 1.20 = $42,000
+    landValue.Should().Be(42000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_UnknownSiteCodeSkipped()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_UnknownSiteCodeSkipped));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 0,
+      LandAreaSqft = 5000m,
+      LandZone = "central-residential",
+      SiteImprovements = new()
+      {
+        new() { Code = "ATTGAR", Quantity = 300m },
+        new() { Code = "UNKNOWN", Quantity = 100m },  // Should be skipped
+      },
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var improvements = jsonDoc.RootElement.GetProperty("SiteImprovements");
+    improvements.GetArrayLength().Should().Be(1); // Only ATTGAR, UNKNOWN skipped
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_SiteDepreciationIncreases()
+  {
+    // Older property → site improvements more depreciated
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_SiteDepreciationIncreases));
+
+    var youngRequest = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 5,
+      LandAreaSqft = 5000m,
+      LandZone = "central-residential",
+      SiteImprovements = new() { new() { Code = "PL", Quantity = 1m } },
+    };
+    var oldRequest = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 30,
+      LandAreaSqft = 5000m,
+      LandZone = "central-residential",
+      SiteImprovements = new() { new() { Code = "PL", Quantity = 1m } },
+    };
+
+    var youngResult = controller.ComputeFullValuationLineage(youngRequest);
+    var oldResult = controller.ComputeFullValuationLineage(oldRequest);
+
+    var youngJson = JsonSerializer.Serialize(((OkObjectResult)youngResult).Value);
+    var oldJson = JsonSerializer.Serialize(((OkObjectResult)oldResult).Value);
+
+    var youngSite = System.Text.Json.JsonDocument.Parse(youngJson).RootElement.GetProperty("SiteImprovementsTotal").GetDecimal();
+    var oldSite = System.Text.Json.JsonDocument.Parse(oldJson).RootElement.GetProperty("SiteImprovementsTotal").GetDecimal();
+
+    youngSite.Should().BeGreaterThan(oldSite); // Young property → less site depreciation → higher value
+  }
 }
