@@ -3,6 +3,7 @@
  *
  * PR-UI1: Property Workbench Pilot Tab — Governed Tool Invocation
  *
+ * R2.12: Tools grouped by suite with direct-route indicators.
  * Dynamically loads tools from the Pilot manifest via listPilotTools().
  * All invocations go through useToolInvocation → preflight → confirm → execute.
  * Write-risk tools enforce Gate 5 (confirmation + reason code) via RiskConfirmationModal.
@@ -22,6 +23,7 @@ import { ExecutionConsole } from '../../../components/pilot/ExecutionConsole';
 import { EvidenceRail } from '../../../components/pilot/EvidenceRail';
 import { useToolInvocation } from '../../../hooks/useToolInvocation';
 import { usePilotTraceList } from '../../../hooks/usePilotTraceList';
+import { groupToolsBySuite, SUITE_INFO, hasDirectRoute } from '../../../services/toolServiceRouter';
 
 // ============================================================================
 // Risk level display helpers
@@ -48,6 +50,9 @@ const RISK_BADGE_CLASS: Record<Risk, string> = {
   irreversible: 'tf-status-error',
 };
 
+// Suite display order (most relevant for property work first)
+const SUITE_ORDER = ['forge', 'atlas', 'dais', 'dossier', 'os', 'pilot', 'gpt'];
+
 // ============================================================================
 // Component
 // ============================================================================
@@ -66,6 +71,9 @@ export const PropertyPilot: React.FC = () => {
 
   // Track the selected tool for ExecutionConsole metadata display
   const [activeTool, setActiveTool] = useState<PilotTool | null>(null);
+
+  // Suite filter (null = show all)
+  const [suiteFilter, setSuiteFilter] = useState<string | null>(null);
 
   // Load tools from the Pilot manifest on mount
   useEffect(() => {
@@ -130,6 +138,13 @@ export const PropertyPilot: React.FC = () => {
 
   const isInvoking = invocation.state.phase !== 'idle';
 
+  // R2.12: Group tools by suite
+  const grouped = useMemo(() => groupToolsBySuite(tools), [tools]);
+  const activeSuites = useMemo(
+    () => SUITE_ORDER.filter((s) => grouped[s]?.length > 0),
+    [grouped]
+  );
+
   // Evidence Rail — parcel-scoped trace list feed
   const traceList = usePilotTraceList({ parcelId });
 
@@ -140,7 +155,7 @@ export const PropertyPilot: React.FC = () => {
         icon='🎮'
         title='Pilot'
         parcelId={parcelId}
-        subtitle={`Tool execution for parcel ${parcelId}`}
+        subtitle={`${tools.length} tools available for parcel ${parcelId}`}
         actions={
           <button
             onClick={() => window.open(`/property/${encodeURIComponent(parcelId)}/pilot`, '_blank')}
@@ -179,45 +194,103 @@ export const PropertyPilot: React.FC = () => {
         </div>
       )}
 
-      {/* Tool Cards — dynamically loaded from manifest */}
+      {/* R2.12: Suite filter chips */}
       {!toolsLoading && !toolsError && tools.length > 0 && (
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          {tools.map((tool) => (
-            <div
-              key={tool.toolId}
-              className='tf-suite-card rounded-xl p-5'
-            >
-              <div className='flex items-start justify-between mb-3'>
-                <div className='flex items-center gap-2'>
-                  <span className='text-2xl'>{RISK_ICON[tool.risk]}</span>
-                  <div>
-                    <h3 className='tf-text font-semibold'>
-                      {tool.displayName ?? tool.toolId}
-                    </h3>
-                    <code className='text-xs tf-text-muted'>{tool.toolId}</code>
+        <div className='flex flex-wrap gap-2'>
+          <button
+            onClick={() => setSuiteFilter(null)}
+            className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
+              suiteFilter === null
+                ? 'bg-white/20 tf-text font-semibold'
+                : 'bg-white/5 tf-text-muted hover:bg-white/10'
+            }`}
+          >
+            All ({tools.length})
+          </button>
+          {activeSuites.map((suiteId) => {
+            const info = SUITE_INFO[suiteId];
+            const count = grouped[suiteId]?.length ?? 0;
+            return (
+              <button
+                key={suiteId}
+                onClick={() => setSuiteFilter(suiteFilter === suiteId ? null : suiteId)}
+                className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
+                  suiteFilter === suiteId
+                    ? 'bg-white/20 tf-text font-semibold'
+                    : 'bg-white/5 tf-text-muted hover:bg-white/10'
+                }`}
+              >
+                {info?.icon ?? '📦'} {info?.name ?? suiteId} ({count})
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Tool Cards — grouped by suite */}
+      {!toolsLoading && !toolsError && tools.length > 0 && (
+        <div className='space-y-6'>
+          {activeSuites
+            .filter((s) => !suiteFilter || s === suiteFilter)
+            .map((suiteId) => {
+              const suiteTools = grouped[suiteId] ?? [];
+              const info = SUITE_INFO[suiteId];
+              return (
+                <div key={suiteId}>
+                  <div className='flex items-center gap-2 mb-3'>
+                    <span className='text-lg'>{info?.icon ?? '📦'}</span>
+                    <h2 className='tf-text font-semibold text-sm'>
+                      {info?.name ?? suiteId}
+                    </h2>
+                    <span className='tf-text-muted text-xs'>
+                      {info?.description}
+                    </span>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    {suiteTools.map((tool) => (
+                      <div
+                        key={tool.toolId}
+                        className='tf-suite-card rounded-xl p-5'
+                      >
+                        <div className='flex items-start justify-between mb-3'>
+                          <div className='flex items-center gap-2'>
+                            <span className='text-2xl'>{RISK_ICON[tool.risk]}</span>
+                            <div>
+                              <h3 className='tf-text font-semibold'>
+                                {tool.displayName ?? tool.toolId}
+                              </h3>
+                              <div className='flex items-center gap-1.5'>
+                                <code className='text-xs tf-text-muted'>{tool.toolId}</code>
+                                {hasDirectRoute(tool.toolId) && (
+                                  <span className='text-[10px] px-1 py-0.5 rounded bg-green-500/20 text-green-400' title='Direct frontend→backend route available'>
+                                    direct
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <span className={`px-2 py-0.5 text-xs ${RISK_BADGE_CLASS[tool.risk]} rounded`}>
+                            {RISK_LABEL[tool.risk]}
+                          </span>
+                        </div>
+                        {tool.description && (
+                          <p className='tf-text-secondary text-sm mb-4'>{tool.description}</p>
+                        )}
+                        <button
+                          onClick={() => handleInvokeTool(tool)}
+                          disabled={isInvoking}
+                          className='tf-suite-pilot-cta w-full px-4 py-2 rounded-lg transition-colors disabled:opacity-50'
+                        >
+                          {isInvoking && invocation.state.toolId === tool.toolId
+                            ? 'Running…'
+                            : 'Run Tool'}
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <span className={`px-2 py-0.5 text-xs ${RISK_BADGE_CLASS[tool.risk]} rounded`}>
-                  {RISK_LABEL[tool.risk]}
-                </span>
-              </div>
-              {tool.description && (
-                <p className='tf-text-secondary text-sm mb-4'>{tool.description}</p>
-              )}
-              {tool.suite && (
-                <p className='tf-text-muted text-xs mb-3'>Suite: {tool.suite}</p>
-              )}
-              <button
-                onClick={() => handleInvokeTool(tool)}
-                disabled={isInvoking}
-                className='tf-suite-pilot-cta w-full px-4 py-2 rounded-lg transition-colors disabled:opacity-50'
-              >
-                {isInvoking && invocation.state.toolId === tool.toolId
-                  ? 'Running…'
-                  : 'Run Tool'}
-              </button>
-            </div>
-          ))}
+              );
+            })}
         </div>
       )}
 
