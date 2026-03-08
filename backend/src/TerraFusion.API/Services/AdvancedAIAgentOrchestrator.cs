@@ -13,10 +13,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using TerraFusion.Core.Services;
 using TerraFusion.AI.Services;
-using TerraFusion.API.Interfaces; // ✅ Primary source for TerraFusion.API.Interfaces.OptimizationRecommendation (decimal ExpectedImprovement, int Priority)
+using TerraFusion.API.Interfaces; // ✅ Primary source for OptimizationRecommendation (decimal ExpectedImprovement, int Priority)
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Models;
-// Models.Performance namespace removed to avoid TerraFusion.API.Interfaces.OptimizationRecommendation ambiguity
+using OptimizationRecommendation = TerraFusion.API.Interfaces.OptimizationRecommendation;
 
 namespace TerraFusion.API.Services;
 

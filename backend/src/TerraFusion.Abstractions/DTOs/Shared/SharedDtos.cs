@@ -25,42 +25,6 @@ public class PerformanceDataPoint
   public string? MetricName { get; set; }
 }
 
-/// <summary>
-/// Synchronization result for distributed system operations
-/// </summary>
-public class SyncResult
-{
-  public bool Success { get; set; }
-  public string? Message { get; set; }
-  public DateTime SyncTimestamp { get; set; }
-  public int ItemsSynced { get; set; }
-  public List<string>? Errors { get; set; }
-}
-
-/// <summary>
-/// System optimization recommendation
-/// </summary>
-public class OptimizationRecommendation
-{
-  public string? Category { get; set; }
-  public string? Title { get; set; }
-  public string? Description { get; set; }
-  public string? Priority { get; set; } // High, Medium, Low
-  public double? EstimatedImpact { get; set; }
-  public List<string>? ActionItems { get; set; }
-}
-
-/// <summary>
-/// Compliance violation record for audit trails
-/// </summary>
-public class ComplianceViolation
-{
-  public string? ViolationId { get; set; }
-  public string? RuleCode { get; set; }
-  public string? Severity { get; set; } // Critical, High, Medium, Low
-  public string? Description { get; set; }
-  public string? AffectedComponent { get; set; }
-  public DateTime DetectedAt { get; set; }
-  public string? RemediationSteps { get; set; }
-  public bool IsResolved { get; set; }
-}
+// SyncResult → canonical in TerraFusion.Abstractions.DTOs.Responses.CommonResponses
+// OptimizationRecommendation → canonical in TerraFusion.Abstractions.DTOs.Responses.CommonResponses
+// ComplianceViolation → canonical in TerraFusion.Abstractions.DTOs.Responses.CommonResponses

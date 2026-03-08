@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using TerraFusion.API.Services;
 using TerraFusion.Abstractions.Interfaces;
-using TerraFusion.API.Interfaces; // ✅ Added for TerraFusion.API.Interfaces.OptimizationRecommendation and performance monitoring types
+using TerraFusion.API.Interfaces;
+using OptimizationRecommendation = TerraFusion.API.Interfaces.OptimizationRecommendation;
 
 namespace TerraFusion.API.Services
 {

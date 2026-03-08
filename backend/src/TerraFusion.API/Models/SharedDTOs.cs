@@ -10,13 +10,10 @@ using TerraFusion.Abstractions.DTOs.Shared;
 
 namespace TerraFusion.API.Models;
 
-// All shared DTOs now use canonical implementations from TerraFusion.Abstractions
+// All shared DTOs now use canonical implementations from TerraFusion.Abstractions.DTOs.Responses
 // This ensures Single Source of Truth for type definitions across all services
-
-// Performance metrics available via canonical types:
-// - QuantumPerformanceMetricsDto (from TerraFusion.Abstractions.DTOs.Responses)
-// - CostForgePerformanceMetricsDto (from TerraFusion.Abstractions.DTOs.Responses)
-// - ElitePerformanceMetrics (from TerraFusion.Abstractions.DTOs.Shared)
-// - SyncResult (from TerraFusion.Abstractions.DTOs.Shared)
-// - OptimizationRecommendation (from TerraFusion.Abstractions.DTOs.Shared)
-// - ComplianceViolation (from TerraFusion.Abstractions.DTOs.Shared)
+//
+// Canonical types (from TerraFusion.Abstractions.DTOs.Responses):
+// - SyncResult, OptimizationRecommendation, ComplianceViolation, ElitePerformanceMetrics
+// Shared types (from TerraFusion.Abstractions.DTOs.Shared):
+// - ElitePerformanceMetrics, PerformanceDataPoint

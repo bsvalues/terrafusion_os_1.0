@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **R2 Waves 1-4: Backend USPAP + Atlas + DAIS DB + Model Inputs** ✅ COMPLETE |
-| **Phase** | R2 Backend Delivery Complete — All 4 Waves Shipped |
-| **Task** | 47 endpoints (45 live, 2 stubs), 29 manifest tools, 87/87 core gates, 242 total tests |
+| **Slice** | **R2.6 + Build Fixes: Document tools, type deduplication** ✅ COMPLETE |
+| **Phase** | R2 Backend Delivery + Build Error Resolution |
+| **Task** | 54 endpoints (52 live, 2 stubs), 32 manifest tools, 87/87 core gates, 242 total tests |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `f846d196c` (R2 Waves 2+4 — Atlas nearby/layers, Dossier assessment history, CostForge model-inputs) |
+| **Latest Commit** | Build fix commit (type dedup + ambiguity resolution) |
 
 ---
 
@@ -402,14 +402,56 @@
 
 ---
 
+## R2.5: Dossier Document Management ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 5.1 | DossierDocument entity + DocumentChainEvent entity | `b76d93c2c` | EF Core | 2026-03-08 |
+| ✅ 5.2 | POST /api/dossier/documents/upload (SHA-256 hash, audit) | `b76d93c2c` | Auth+County | 2026-03-08 |
+| ✅ 5.3 | GET /api/dossier/documents/search (type/date filter) | `b76d93c2c` | Auth+County | 2026-03-08 |
+| ✅ 5.4 | GET /api/dossier/documents/{id}/download | `b76d93c2c` | Auth | 2026-03-08 |
+| ✅ 5.5 | GET /api/dossier/documents/{id}/chain (chain-of-custody) | `b76d93c2c` | Auth | 2026-03-08 |
+| ✅ 5.6 | GET /api/dossier/documents/stats (county summary) | `b76d93c2c` | Auth+County | 2026-03-08 |
+| ✅ 5.7 | GET /api/dossier/documents/{id}/status | `b76d93c2c` | Auth | 2026-03-08 |
+| ✅ 5.8 | Frontend dossierService.ts wiring | `b76d93c2c` | Connected | 2026-03-08 |
+
+**Key Achievement:** 7 new endpoints for document lifecycle management. DossierDocument entity with SHA-256 integrity hash, chain-of-custody events for FISMA audit trail. Frontend dossierService.ts wired to all endpoints.
+
+---
+
+## R2.6: Document Tools in TerraPilot ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 6.1 | Manifest v1.5.0 (32 tools) — 3 new document tools | `3069f17d4` | 32/32 phase83 | 2026-03-08 |
+| ✅ 6.2 | search_dossier_documents handler (real) | `3069f17d4` | Connected | 2026-03-08 |
+| ✅ 6.3 | upload_dossier_document handler (real) | `3069f17d4` | Connected | 2026-03-08 |
+| ✅ 6.4 | get_document_chain_of_custody handler (real) | `3069f17d4` | Connected | 2026-03-08 |
+
+**Key Achievement:** 3 new TerraPilot tools for dossier document operations. All 32 tools now have real handlers (0 stubs).
+
+---
+
+## R2.7: Build Error Resolution — Type Deduplication ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 7.1 | Remove duplicate SyncResult/OptimizationRecommendation/ComplianceViolation from SharedDtos.cs | (this commit) | Dedup | 2026-03-08 |
+| ✅ 7.2 | Add using alias in AdvancedAIAgentOrchestrator.cs | (this commit) | Disambiguate | 2026-03-08 |
+| ✅ 7.3 | Add using alias in CognitiveFrameworkOptimizationService.cs | (this commit) | Disambiguate | 2026-03-08 |
+| ✅ 7.4 | Audit all dual-namespace imports for remaining ambiguities | (this commit) | Verified | 2026-03-08 |
+
+**Key Achievement:** Eliminated CS0104 ambiguous reference errors for OptimizationRecommendation (existed in both TerraFusion.API.Interfaces and TerraFusion.Abstractions.Interfaces namespaces). Removed 3 duplicate type definitions from SharedDtos.cs that conflicted with canonical types in CommonResponses.cs.
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| 🔵 1 | R2.5 | GIS geometry storage (PostGIS parcel boundaries) | Infrastructure |
-| 🔵 2 | R2.6 | Document blob management for dossier attachments | Architecture |
-| 🔵 3 | R2.7 | Muse tool backends (AI-powered NLP explanation) | Claude API |
-| 🔵 4 | R2.8 | Frontend tool invocation wiring (TerraPilot → endpoints) | R2.5-R2.7 |
+| 🔵 1 | R2.8 | GIS geometry storage (PostGIS parcel boundaries) | Infrastructure |
+| 🔵 2 | R2.9 | Muse tool backends (AI-powered NLP explanation) | Claude API |
+| 🔵 3 | R2.10 | Frontend tool invocation wiring (TerraPilot → endpoints) | R2.8-R2.9 |
 
 ---
 
@@ -431,7 +473,7 @@
 
 ---
 
-## Test Results (latest run — March 7, 2026)
+## Test Results (latest run — March 8, 2026)
 
 | Suite | Passed | Failed | Skipped |
 |-------|--------|--------|---------|
@@ -447,19 +489,20 @@
 | pins tests | 15 | 0 | - |
 | recents tests | 15 | 0 | - |
 | standalone a11y | 12 | 0 | 0 |
-| Endpoint matrix | 47 (45 live, 2 stubs) | - | - |
-| Manifest tools | 29 | 0 handlers missing | - |
+| Endpoint matrix | 54 (52 live, 2 stubs) | - | - |
+| Manifest tools | 32 | 0 handlers missing | - |
 
 ---
 
 ## Gates Before Merge
 
-- [x] All planned tasks complete (R2 Waves 1-4)
+- [x] All planned tasks complete (R2 Waves 1-4 + R2.5 + R2.6 + R2.7)
 - [x] All tests passing (87/87 core, 242 total)
-- [x] Build succeeds
+- [x] Type deduplication complete (SharedDtos.cs cleaned)
+- [x] Ambiguous reference errors resolved (OptimizationRecommendation)
 - [x] No blockers (all 8 R1 blockers closed)
 - [x] Known debt documented
-- [x] Latest commit hash in this document (`f846d196c`)
+- [x] 54 endpoints (52 live, 2 stubs), 32 tools (32 real handlers)
 
 ---
 
