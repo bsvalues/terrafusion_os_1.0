@@ -14,6 +14,7 @@
     <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\TerraFusion.API\TerraFusion.API.csproj" />
