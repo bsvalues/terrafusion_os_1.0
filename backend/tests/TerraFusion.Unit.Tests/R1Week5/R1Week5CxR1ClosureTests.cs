@@ -2709,4 +2709,383 @@ public sealed class R1Week5CxR1ClosureTests
     var json = JsonSerializer.Serialize(ok.Value);
     json.Should().Contain("\"Location\":\"unspecified\"");
   }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 15: Real Sales Comparison Tests (CostForge)
+  // ═══════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustmentFactors_Returns5Physical()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustmentFactors_Returns5Physical));
+    var result = controller.GetSalesAdjustmentFactors();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("GLA");
+    json.Should().Contain("Lot Size");
+    json.Should().Contain("Age");
+    json.Should().Contain("Bedroom");
+    json.Should().Contain("Bathroom");
+    controller.HttpContext.Response.Headers["X-CostForge-Source"].ToString()
+      .Should().Be("benton-real-sales-comparison-fy2025");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustmentFactors_HasConditionScale()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustmentFactors_HasConditionScale));
+    var result = controller.GetSalesAdjustmentFactors();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Excellent");
+    json.Should().Contain("Good");
+    json.Should().Contain("Average");
+    json.Should().Contain("Fair");
+    json.Should().Contain("Poor");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_MarketAreas_Returns8Neighborhoods()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_MarketAreas_Returns8Neighborhoods));
+    var result = controller.GetSalesMarketAreas();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Richland");
+    json.Should().Contain("West Richland");
+    json.Should().Contain("Kennewick");
+    json.Should().Contain("Pasco");
+    json.Should().Contain("Benton City");
+    json.Should().Contain("Prosser");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_MarketAreas_Has12SeasonalityFactors()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_MarketAreas_Has12SeasonalityFactors));
+    var result = controller.GetSalesMarketAreas();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("January");
+    json.Should().Contain("July");
+    json.Should().Contain("December");
+    // July peak at 1.30
+    json.Should().Contain("\"Factor\":1.30");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_ConfidenceThresholds_ReturnsLevelsAndFlags()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_ConfidenceThresholds_ReturnsLevelsAndFlags));
+    var result = controller.GetSalesConfidenceThresholds();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("high");
+    json.Should().Contain("moderate");
+    json.Should().Contain("low");
+    json.Should().Contain("gross_adj_high");
+    json.Should().Contain("cv_high");
+    json.Should().Contain("few_comparables");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_Comp1FromQuarantine()
+  {
+    // Replicate COMP-001 from quarantine fixture:
+    // Subject: 2000 sqft, 10000 lot, 2000, 3bd/2ba, Good, Average
+    // Comp: $350k, 1800 sqft, 9000 lot, 1998, 3bd/2ba, Good, Average
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_Comp1FromQuarantine));
+    var request = new CostForgeController.CompAdjustmentRequest
+    {
+      SalePrice = 350_000m,
+      SubjectGla = 2000m,
+      CompGla = 1800m,
+      SubjectLotSize = 10_000m,
+      CompLotSize = 9_000m,
+      SubjectYearBuilt = 2000,
+      CompYearBuilt = 1998,
+      SubjectBedrooms = 3,
+      CompBedrooms = 3,
+      SubjectBathrooms = 2m,
+      CompBathrooms = 2m,
+      SubjectCondition = "Good",
+      CompCondition = "Good",
+      SubjectLocation = "Average",
+      CompLocation = "Average",
+    };
+    var result = controller.AdjustComparable(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // GLA: (2000-1800)*100 = +20000
+    json.Should().Contain("\"GlaAdjustment\":20000");
+    // Lot: (10000-9000)*5 = +5000
+    json.Should().Contain("\"LotAdjustment\":5000");
+    // Age: (1998-2000)*500 = -1000
+    json.Should().Contain("\"AgeAdjustment\":-1000");
+    // Beds/baths/condition/location all zero
+    json.Should().Contain("\"BedroomAdjustment\":0");
+    json.Should().Contain("\"ConditionAdjustment\":0");
+    json.Should().Contain("\"LocationAdjustment\":0");
+    // Total: 20000+5000-1000 = 24000, Adjusted: 374000
+    json.Should().Contain("\"TotalNetAdjustment\":24000");
+    json.Should().Contain("\"AdjustedPrice\":374000");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_Comp2WithQualitativeAdj()
+  {
+    // COMP-002: $380k, 2200sqft, 11000lot, 2005, 4bd/2.5ba, Excellent, Good
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_Comp2WithQualitativeAdj));
+    var request = new CostForgeController.CompAdjustmentRequest
+    {
+      SalePrice = 380_000m,
+      SubjectGla = 2000m,
+      CompGla = 2200m,
+      SubjectLotSize = 10_000m,
+      CompLotSize = 11_000m,
+      SubjectYearBuilt = 2000,
+      CompYearBuilt = 2005,
+      SubjectBedrooms = 3,
+      CompBedrooms = 4,
+      SubjectBathrooms = 2m,
+      CompBathrooms = 2.5m,
+      SubjectCondition = "Good",
+      CompCondition = "Excellent",
+      SubjectLocation = "Average",
+      CompLocation = "Good",
+    };
+    var result = controller.AdjustComparable(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // GLA: (2000-2200)*100 = -20000
+    json.Should().Contain("\"GlaAdjustment\":-20000");
+    // Lot: (10000-11000)*5 = -5000
+    json.Should().Contain("\"LotAdjustment\":-5000");
+    // Age: (2005-2000)*500 = +2500
+    json.Should().Contain("\"AgeAdjustment\":2500");
+    // Bed: (3-4)*5000 = -5000
+    json.Should().Contain("\"BedroomAdjustment\":-5000");
+    // Bath: (2-2.5)*7500 = -3750
+    json.Should().Contain("\"BathroomAdjustment\":-3750");
+    // Condition: Good(10000)-Excellent(20000) = -10000
+    json.Should().Contain("\"ConditionAdjustment\":-10000");
+    // Location: Average(0)-Good(12500) = -12500
+    json.Should().Contain("\"LocationAdjustment\":-12500");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_RejectsNegativeSalePrice()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_RejectsNegativeSalePrice));
+    var request = new CostForgeController.CompAdjustmentRequest { SalePrice = -1m };
+    var result = controller.AdjustComparable(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_GrossAdjPctCorrect()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_GrossAdjPctCorrect));
+    var request = new CostForgeController.CompAdjustmentRequest
+    {
+      SalePrice = 350_000m,
+      SubjectGla = 2000m,
+      CompGla = 1800m, // +20000
+      SubjectLotSize = 10_000m,
+      CompLotSize = 9_000m, // +5000
+      SubjectYearBuilt = 2000,
+      CompYearBuilt = 1998, // -1000
+    };
+    var result = controller.AdjustComparable(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Gross = |20000|+|5000|+|1000| = 26000, Gross% = 26000/350000*100 = 7.43%
+    json.Should().Contain("\"GrossAdjustmentPct\":7.43");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_3CompsFromQuarantine()
+  {
+    // From quarantine fixture: COMP-001 adj $374000 (6.86%), COMP-002 adj $326250 (14.14%), COMP-003 adj $355000 (4.41%)
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_3CompsFromQuarantine));
+    var request = new CostForgeController.SalesReconciliationRequest
+    {
+      Comparables = new()
+      {
+        new() { AdjustedPrice = 374_000m, GrossAdjustmentPct = 6.86m },
+        new() { AdjustedPrice = 326_250m, GrossAdjustmentPct = 14.14m },
+        new() { AdjustedPrice = 355_000m, GrossAdjustmentPct = 4.41m },
+      },
+    };
+    var result = controller.ReconcileComparables(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ComparableCount\":3");
+    // Median of sorted [326250, 355000, 374000] = 355000
+    json.Should().Contain("\"Median\":355000");
+    json.Should().Contain("\"Confidence\":\"high\"");
+    json.Should().Contain("\"Low\":326250");
+    json.Should().Contain("\"High\":374000");
+    json.Should().Contain("\"Range\":47750");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_RejectsEmptyList()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_RejectsEmptyList));
+    var request = new CostForgeController.SalesReconciliationRequest();
+    var result = controller.ReconcileComparables(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_RejectsOver10Comps()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_RejectsOver10Comps));
+    var comps = Enumerable.Range(1, 11)
+      .Select(i => new CostForgeController.ReconciliationComp { AdjustedPrice = 300_000m + i * 1000m, GrossAdjustmentPct = 5m })
+      .ToList();
+    var request = new CostForgeController.SalesReconciliationRequest { Comparables = comps };
+    var result = controller.ReconcileComparables(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_LowConfidence_1Comp()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_LowConfidence_1Comp));
+    var request = new CostForgeController.SalesReconciliationRequest
+    {
+      Comparables = new() { new() { AdjustedPrice = 400_000m, GrossAdjustmentPct = 30m } },
+    };
+    var result = controller.ReconcileComparables(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"Confidence\":\"low\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_ModerateConfidence()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_ModerateConfidence));
+    var request = new CostForgeController.SalesReconciliationRequest
+    {
+      Comparables = new()
+      {
+        new() { AdjustedPrice = 400_000m, GrossAdjustmentPct = 18m },
+        new() { AdjustedPrice = 410_000m, GrossAdjustmentPct = 20m },
+      },
+    };
+    var result = controller.ReconcileComparables(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"Confidence\":\"moderate\"");
+    // Median of 2 = (400000+410000)/2 = 405000
+    json.Should().Contain("\"Median\":405000");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_ClassifyConfidence_High()
+  {
+    CostForgeController.ClassifyConfidence(3, 8m, 12m).Should().Be("high");
+    CostForgeController.ClassifyConfidence(5, 5m, 10m).Should().Be("high");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_ClassifyConfidence_Moderate()
+  {
+    CostForgeController.ClassifyConfidence(2, 15m, 20m).Should().Be("moderate");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_ClassifyConfidence_Low()
+  {
+    CostForgeController.ClassifyConfidence(1, 25m, 30m).Should().Be("low");
+    CostForgeController.ClassifyConfidence(3, 25m, 5m).Should().Be("low");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_GetConditionAdjustment_AllRatings()
+  {
+    CostForgeController.GetConditionAdjustment("Excellent").Should().Be(20_000m);
+    CostForgeController.GetConditionAdjustment("Good").Should().Be(10_000m);
+    CostForgeController.GetConditionAdjustment("Average").Should().Be(0m);
+    CostForgeController.GetConditionAdjustment("Fair").Should().Be(-10_000m);
+    CostForgeController.GetConditionAdjustment("Poor").Should().Be(-25_000m);
+    CostForgeController.GetConditionAdjustment(null).Should().Be(0m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_GetLocationAdjustment_AllRatings()
+  {
+    CostForgeController.GetLocationAdjustment("Superior").Should().Be(25_000m);
+    CostForgeController.GetLocationAdjustment("Good").Should().Be(12_500m);
+    CostForgeController.GetLocationAdjustment("Average").Should().Be(0m);
+    CostForgeController.GetLocationAdjustment("Fair").Should().Be(-12_500m);
+    CostForgeController.GetLocationAdjustment("Inferior").Should().Be(-25_000m);
+    CostForgeController.GetLocationAdjustment(null).Should().Be(0m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_Reconcile_WeightedHigherForLessAdjusted()
+  {
+    // Comp with lower grossAdj% should get higher weight
+    var controller = CreateCostForgeController(nameof(SalesComp_Reconcile_WeightedHigherForLessAdjusted));
+    var request = new CostForgeController.SalesReconciliationRequest
+    {
+      Comparables = new()
+      {
+        new() { AdjustedPrice = 400_000m, GrossAdjustmentPct = 5m },   // low adj → high weight
+        new() { AdjustedPrice = 350_000m, GrossAdjustmentPct = 20m },  // high adj → low weight
+      },
+    };
+    var result = controller.ReconcileComparables(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Weighted average should be closer to 400000 (the less-adjusted comp)
+    // w1=1/5=0.2, w2=1/20=0.05 → normalized w1=0.8, w2=0.2
+    // WA = 400000*0.8 + 350000*0.2 = 390000
+    json.Should().Contain("\"WeightedAverage\":390000");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Sales")]
+  public void SalesComp_AdjustComparable_NullConditionsDefault()
+  {
+    var controller = CreateCostForgeController(nameof(SalesComp_AdjustComparable_NullConditionsDefault));
+    var request = new CostForgeController.CompAdjustmentRequest
+    {
+      SalePrice = 300_000m,
+      SubjectGla = 1500m,
+      CompGla = 1500m,
+      // Null condition and location → both default to 0
+    };
+    var result = controller.AdjustComparable(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ConditionAdjustment\":0");
+    json.Should().Contain("\"LocationAdjustment\":0");
+    json.Should().Contain("\"TotalNetAdjustment\":0");
+    json.Should().Contain("\"AdjustedPrice\":300000");
+  }
 }
