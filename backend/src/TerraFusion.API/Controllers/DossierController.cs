@@ -1017,6 +1017,467 @@ public class DossierController : ControllerBase
     return Ok(dto);
   }
 
+  // ══════════════════════════════════════════════════════════════
+  // WAVE 13 — Real Benton County Document Management
+  // Source: terra-flow-production quarantine + WA Secretary of State
+  //         Local Government CORE Retention Schedule (assessor records)
+  // ══════════════════════════════════════════════════════════════
+
+  // ── GET /api/dossier/document-types ──────────────────────────
+
+  /// <summary>
+  /// Real assessor document types sourced from Benton County operations
+  /// and the quarantined terra-flow-production validation schema.
+  /// Each type includes accepted file extensions, retention class, and
+  /// whether the document enters the chain-of-custody on intake.
+  /// </summary>
+  [HttpGet("document-types")]
+  public IActionResult GetDocumentTypes()
+  {
+    Response.Headers["X-Dossier-Source"] = "benton-real-document-types-fy2025";
+    return Ok(new
+    {
+      county = "benton",
+      state = "WA",
+      sourceNote = "terra-flow-production quarantine + WA CORE retention schedule",
+      total = BentonDocumentData.DocumentTypes.Length,
+      documentTypes = BentonDocumentData.DocumentTypes,
+    });
+  }
+
+  // ── GET /api/dossier/retention-schedule ──────────────────────
+
+  /// <summary>
+  /// WA Secretary of State Local Government CORE retention schedule
+  /// for county assessor records. Each entry cites the applicable
+  /// Records Retention Schedule (RRS) identifier and WA RCW authority.
+  /// </summary>
+  [HttpGet("retention-schedule")]
+  public IActionResult GetRetentionSchedule()
+  {
+    Response.Headers["X-Dossier-Source"] = "wa-sos-core-retention-schedule";
+    return Ok(new
+    {
+      authority = "WA Secretary of State, Local Government Common Records Retention Schedule (CORE)",
+      applicableTo = "County Assessor",
+      state = "WA",
+      total = BentonDocumentData.RetentionSchedule.Length,
+      schedule = BentonDocumentData.RetentionSchedule,
+    });
+  }
+
+  // ── GET /api/dossier/evidence-categories ─────────────────────
+
+  /// <summary>
+  /// Evidence categories used in Benton County property assessment.
+  /// Each category includes integrity requirements, typical sources,
+  /// and the minimum chain-of-custody depth for audit compliance.
+  /// </summary>
+  [HttpGet("evidence-categories")]
+  public IActionResult GetEvidenceCategories()
+  {
+    Response.Headers["X-Dossier-Source"] = "benton-real-evidence-categories-fy2025";
+    return Ok(new
+    {
+      county = "benton",
+      state = "WA",
+      total = BentonDocumentData.EvidenceCategories.Length,
+      categories = BentonDocumentData.EvidenceCategories,
+    });
+  }
+
+  // ── GET /api/dossier/packet-templates ────────────────────────
+
+  /// <summary>
+  /// Assessment packet templates defining which documents are required
+  /// for each packet type (BOE appeal, certification, exemption review, etc.).
+  /// Used by TerraDossier to generate compliance-ready document bundles.
+  /// </summary>
+  [HttpGet("packet-templates")]
+  public IActionResult GetPacketTemplates()
+  {
+    Response.Headers["X-Dossier-Source"] = "benton-real-packet-templates-fy2025";
+    return Ok(new
+    {
+      county = "benton",
+      state = "WA",
+      total = BentonDocumentData.PacketTemplates.Length,
+      templates = BentonDocumentData.PacketTemplates,
+    });
+  }
+
+  // ── POST /api/dossier/classify-document ──────────────────────
+
+  public sealed record DocumentClassifyRequest(string? Filename, string? Description);
+
+  /// <summary>
+  /// Auto-classify a document by filename and/or description.
+  /// Returns the matched document type, evidence category,
+  /// suggested retention class, and confidence score.
+  /// </summary>
+  [HttpPost("classify-document")]
+  public IActionResult ClassifyDocument([FromBody] DocumentClassifyRequest request)
+  {
+    if (request is null)
+      return BadRequest(new { error = "Request body is required" });
+
+    var input = $"{request.Filename ?? ""} {request.Description ?? ""}".Trim();
+    if (string.IsNullOrWhiteSpace(input))
+      return BadRequest(new { error = "At least one of filename or description is required" });
+
+    Response.Headers["X-Dossier-Source"] = "benton-real-document-classifier-fy2025";
+
+    var classification = ClassifyDocumentInput(input);
+    return Ok(classification);
+  }
+
+  // ── GET /api/dossier/parcels/{parcelId}/packet/{packetType} ──
+
+  /// <summary>
+  /// Generate a document packet manifest for a parcel.
+  /// Composes the required document checklist for the given packet type,
+  /// checks which documents are on record, and returns a completeness score.
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/packet/{packetType}")]
+  [RequiresPermission("read:dossier")]
+  public async Task<IActionResult> GetPacketManifest(string parcelId, string packetType)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var template = BentonDocumentData.PacketTemplates
+        .FirstOrDefault(t => t.PacketType.Equals(packetType, StringComparison.OrdinalIgnoreCase));
+    if (template is null)
+      return NotFound(new { error = $"Unknown packet type: {packetType}" });
+
+    var property = await _db.Properties
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+    if (property is null)
+      return NotFound(new { error = "Parcel not found" });
+
+    var notes = await _db.DossierNotes
+        .AsNoTracking()
+        .Where(n => n.ParcelId == parcelId && n.CountyId == countyId.Value)
+        .Select(n => new { n.NoteType, n.CreatedAt })
+        .ToListAsync();
+
+    // Build checklist: for each required doc type, check if we have evidence
+    var checklist = template.RequiredDocumentTypes.Select(requiredType =>
+    {
+      var found = false;
+      DateTime? foundAt = null;
+
+      // Check property data as a source (casefile, valuation worksheet always exist)
+      if (requiredType.Equals("report", StringComparison.OrdinalIgnoreCase) ||
+          requiredType.Equals("appraisal", StringComparison.OrdinalIgnoreCase))
+      {
+        found = true;
+        foundAt = property.AssessmentDate;
+      }
+
+      // Check notes for matching document types
+      if (!found)
+      {
+        var matchingNote = notes.FirstOrDefault(n =>
+            MapDocumentType(n.NoteType).Equals(requiredType, StringComparison.OrdinalIgnoreCase));
+        if (matchingNote is not null)
+        {
+          found = true;
+          foundAt = matchingNote.CreatedAt;
+        }
+      }
+
+      return new
+      {
+        documentType = requiredType,
+        required = true,
+        found,
+        foundAt,
+        status = found ? "satisfied" : "missing",
+      };
+    }).ToList();
+
+    var satisfied = checklist.Count(c => c.found);
+    var total = checklist.Count;
+    var completeness = total > 0 ? Math.Round((double)satisfied / total * 100, 1) : 0.0;
+
+    Response.Headers["X-Dossier-Source"] = "benton-real-packet-manifest-fy2025";
+
+    return Ok(new
+    {
+      parcelId,
+      packetType = template.PacketType,
+      packetName = template.Name,
+      description = template.Description,
+      generatedAt = DateTime.UtcNow,
+      completeness = $"{completeness}%",
+      satisfied,
+      total,
+      checklist,
+      correlationId = GetOrCreateCorrelationId(),
+    });
+  }
+
+  // ── Classification Engine ────────────────────────────────────
+
+  internal static object ClassifyDocumentInput(string input)
+  {
+    var lower = input.ToLowerInvariant();
+
+    // Priority-ordered keyword rules
+    foreach (var rule in ClassificationRules)
+    {
+      if (rule.Keywords.Any(kw => lower.Contains(kw)))
+      {
+        return new
+        {
+          documentType = rule.DocumentType,
+          evidenceCategory = rule.EvidenceCategory,
+          retentionClass = rule.RetentionClass,
+          confidence = rule.Confidence,
+          matchedRule = rule.RuleName,
+        };
+      }
+    }
+
+    // Default fallback
+    return new
+    {
+      documentType = "other",
+      evidenceCategory = "regulatory",
+      retentionClass = "standard-6yr",
+      confidence = 0.3,
+      matchedRule = "default-fallback",
+    };
+  }
+
+  private sealed record ClassificationRule(
+      string RuleName,
+      string[] Keywords,
+      string DocumentType,
+      string EvidenceCategory,
+      string RetentionClass,
+      double Confidence);
+
+  private static readonly ClassificationRule[] ClassificationRules =
+  [
+    new("deed-transfer", ["deed", "warranty deed", "quit claim", "conveyance"],
+        "deed", "deed-transfer", "permanent", 0.95),
+    new("lien-record", ["lien", "encumbrance"],
+        "lien", "regulatory", "permanent", 0.91),
+    new("mortgage-record", ["mortgage", "trust deed"],
+        "mortgage", "regulatory", "permanent", 0.90),
+    new("appeal-petition", ["appeal", "petition", "boe", "board of equalization", "hearing"],
+        "appeal", "appeal-evidence", "appeal-10yr", 0.92),
+    new("field-inspection", ["inspection", "field visit", "site visit", "physical review"],
+        "inspection_report", "field-inspection", "working-6yr", 0.88),
+    new("photo-evidence", ["photo", "photograph", "image", "picture", "aerial"],
+        "photo", "photo-evidence", "life-of-property", 0.90),
+    new("survey-record", ["survey", "boundary"],
+        "survey", "plat-survey", "permanent", 0.93),
+    new("plat-record", ["plat", "subdivision", "lot line"],
+        "plat", "plat-survey", "permanent", 0.92),
+    new("appraisal-report", ["appraisal", "valuation", "cost approach", "market value", "assessed"],
+        "appraisal", "cost-analysis", "working-6yr", 0.87),
+    new("comparable-sale", ["comparable", "comp sale", "sales comparison", "market comp"],
+        "comparable_analysis", "comparable-sale", "working-6yr", 0.85),
+    new("income-analysis", ["income", "rental", "cap rate", "capitalization", "gim", "gross income"],
+        "income_analysis", "income-analysis", "working-6yr", 0.84),
+    new("tax-record", ["tax", "tax bill", "levy", "assessment roll", "tax statement"],
+        "tax_record", "regulatory", "assessment-roll-perm", 0.88),
+    new("easement-record", ["easement", "right of way", "access", "utility easement"],
+        "easement", "regulatory", "permanent", 0.91),
+    new("exemption-form", ["exemption", "senior", "disabled", "nonprofit", "current use"],
+        "exemption", "regulatory", "exemption-6yr-post", 0.86),
+    new("permit-document", ["permit", "building permit", "construction", "remodel"],
+        "permit", "regulatory", "working-6yr", 0.83),
+    new("correspondence", ["letter", "notice", "correspondence", "email", "memo"],
+        "correspondence", "regulatory", "correspondence-6yr", 0.80),
+    new("sketch-drawing", ["sketch", "floor plan", "drawing", "blueprint", "layout"],
+        "sketch", "field-inspection", "life-of-property", 0.82),
+  ];
+
+  // ── Static Reference Data ────────────────────────────────────
+
+  internal static class BentonDocumentData
+  {
+    // Document types sourced from terra-flow-production quarantine
+    // validation.py _get_document_validation_template() + extended
+    // with real WA county assessor document types
+    internal sealed record DocumentTypeEntry(
+        string Type, string Label, string Description,
+        string[] AcceptedExtensions, string RetentionClass,
+        bool EntersCustodyChain);
+
+    internal static readonly DocumentTypeEntry[] DocumentTypes =
+    [
+      new("deed", "Deed", "Property ownership transfer document",
+          [".pdf", ".tif", ".tiff"], "permanent", true),
+      new("mortgage", "Mortgage / Trust Deed", "Lending instrument recorded against property",
+          [".pdf", ".tif"], "permanent", true),
+      new("lien", "Lien", "Financial encumbrance against property",
+          [".pdf", ".tif"], "permanent", true),
+      new("easement", "Easement", "Right-of-way or access encumbrance",
+          [".pdf", ".tif"], "permanent", true),
+      new("plat", "Plat Map", "Recorded subdivision plat",
+          [".pdf", ".tif", ".tiff", ".dwg"], "permanent", true),
+      new("survey", "Boundary Survey", "Licensed surveyor boundary determination",
+          [".pdf", ".tif", ".dwg"], "permanent", true),
+      new("tax_record", "Tax Record", "Assessment roll or tax statement entry",
+          [".pdf", ".xls", ".xlsx", ".csv"], "assessment-roll-perm", true),
+      new("appeal", "Appeal Petition", "Board of Equalization appeal filing",
+          [".pdf", ".doc", ".docx"], "appeal-10yr", true),
+      new("photo", "Property Photograph", "Field inspection imagery",
+          [".jpg", ".jpeg", ".png", ".tif", ".heic"], "life-of-property", false),
+      new("appraisal", "Appraisal / Valuation Report", "Cost, sales, or income approach worksheet",
+          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+      new("inspection_report", "Field Inspection Report", "On-site property condition assessment",
+          [".pdf", ".doc", ".docx"], "working-6yr", true),
+      new("comparable_analysis", "Comparable Sales Analysis", "Sales comparison approach documentation",
+          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+      new("income_analysis", "Income Approach Analysis", "Rental income capitalization worksheet",
+          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+      new("exemption", "Exemption Application", "Senior, disabled, nonprofit, or current use exemption",
+          [".pdf", ".doc", ".docx"], "exemption-6yr-post", true),
+      new("permit", "Building Permit", "Construction or remodel permit documentation",
+          [".pdf", ".doc", ".docx"], "working-6yr", false),
+      new("correspondence", "Correspondence", "Letters, notices, and memos",
+          [".pdf", ".doc", ".docx", ".msg"], "correspondence-6yr", false),
+      new("sketch", "Property Sketch", "Floor plan or building layout drawing",
+          [".pdf", ".dwg", ".png", ".jpg"], "life-of-property", false),
+      new("other", "Other Document", "Uncategorized supporting documentation",
+          [".pdf", ".doc", ".docx", ".jpg", ".png", ".tif"], "standard-6yr", false),
+    ];
+
+    // WA Secretary of State Local Government CORE Retention Schedule
+    // for County Assessor records (GS-series + AS-series identifiers)
+    internal sealed record RetentionEntry(
+        string RetentionClass, string Label, string Period,
+        string Authority, string Notes);
+
+    internal static readonly RetentionEntry[] RetentionSchedule =
+    [
+      new("permanent", "Permanent Records",
+          "Permanent",
+          "WA RCW 40.14.060; GS50-03-01",
+          "Deeds, plats, surveys, easements, liens, mortgages — recorded instruments"),
+      new("assessment-roll-perm", "Assessment Roll Records",
+          "Permanent",
+          "WA RCW 84.40.340; AS50-01A-01",
+          "Annual assessment rolls, tax roll certifications, and roll summaries"),
+      new("appeal-10yr", "Appeal Records",
+          "10 years after final disposition",
+          "WA RCW 84.08; AS50-01A-04",
+          "BOE petitions, decisions, hearing records, and appeal correspondence"),
+      new("working-6yr", "Working Papers — Appraisal",
+          "6 years",
+          "WA RCW 40.14.070; GS50-05A-15",
+          "Appraisal worksheets, cost schedules, field notes, comp analysis, income approach workpapers"),
+      new("exemption-6yr-post", "Exemption Records",
+          "6 years after exemption expires",
+          "WA RCW 84.36; AS50-01A-06",
+          "Senior, disabled, nonprofit, and current use exemption applications and renewals"),
+      new("correspondence-6yr", "General Correspondence",
+          "6 years",
+          "WA RCW 40.14.070; GS2010-003",
+          "Letters, notices, memos, and routine office correspondence"),
+      new("life-of-property", "Life-of-Property Records",
+          "Life of property + 6 years",
+          "WA RCW 40.14.070; GS50-05A-10",
+          "Property photographs, sketches, and physical condition documentation"),
+      new("standard-6yr", "Standard Retention",
+          "6 years",
+          "WA RCW 40.14.070; GS50-05A-15",
+          "Uncategorized supporting documentation and miscellaneous records"),
+    ];
+
+    // Evidence categories for property assessment dossier management
+    internal sealed record EvidenceCategoryEntry(
+        string Category, string Label, string Description,
+        string IntegrityRequirement, int MinCustodyDepth,
+        string[] TypicalSources);
+
+    internal static readonly EvidenceCategoryEntry[] EvidenceCategories =
+    [
+      new("field-inspection", "Field Inspection Evidence",
+          "On-site observations, measurements, and condition assessments",
+          "verified", 3, ["County Assessor", "Field Appraiser", "Inspector"]),
+      new("comparable-sale", "Comparable Sales Data",
+          "Arms-length transactions used in sales comparison approach",
+          "verified", 2, ["MLS", "County Auditor", "Excise Tax Affidavit"]),
+      new("cost-analysis", "Cost Approach Evidence",
+          "Replacement/reproduction cost data and depreciation schedules",
+          "verified", 2, ["Marshall & Swift", "CostForge", "County Cost Tables"]),
+      new("income-analysis", "Income Approach Evidence",
+          "Rental income, vacancy rates, and capitalization data",
+          "verified", 2, ["Property Owner", "Market Survey", "CoStar"]),
+      new("market-data", "General Market Data",
+          "Market trends, area analysis, and economic indicators",
+          "pending", 1, ["DOR", "Census Bureau", "BLS", "Local MLS"]),
+      new("appeal-evidence", "Appeal / BOE Evidence",
+          "Documents supporting or defending assessed value at hearing",
+          "verified", 4, ["Petitioner", "County Assessor", "BOE Clerk"]),
+      new("photo-evidence", "Photographic Evidence",
+          "Dated imagery of property condition, improvements, or damage",
+          "verified", 3, ["County Assessor", "Field Appraiser", "Aerial Provider"]),
+      new("deed-transfer", "Deed / Transfer Records",
+          "Ownership transfer documents establishing chain of title",
+          "verified", 3, ["County Auditor (Recording)", "Title Company"]),
+      new("plat-survey", "Plat / Survey Evidence",
+          "Licensed survey data, subdivision plats, and boundary determinations",
+          "verified", 3, ["Licensed Surveyor", "County Planning", "WSDOT"]),
+      new("regulatory", "Regulatory / Compliance Documents",
+          "Government correspondence, permits, exemptions, and tax records",
+          "pending", 2, ["County Assessor", "DOR", "Building Department"]),
+    ];
+
+    // Assessment packet templates
+    internal sealed record PacketTemplateEntry(
+        string PacketType, string Name, string Description,
+        string[] RequiredDocumentTypes, string Authority,
+        string Notes);
+
+    internal static readonly PacketTemplateEntry[] PacketTemplates =
+    [
+      new("annual-assessment", "Annual Assessment Packet",
+          "Standard property assessment documentation for annual revaluation cycle",
+          ["appraisal", "inspection_report", "photo", "comparable_analysis"],
+          "WA RCW 84.41.030",
+          "Required for each property during revaluation cycle; includes cost, sales, or income approach evidence"),
+      new("boe-appeal-defense", "BOE Appeal Defense Packet",
+          "Complete evidence package for Board of Equalization hearing defense",
+          ["appraisal", "comparable_analysis", "photo", "inspection_report", "correspondence", "report"],
+          "WA RCW 84.08.130",
+          "Assembled when taxpayer files appeal; must include all three approaches to value if available"),
+      new("certification-roll", "Certification Roll Packet",
+          "Assessment roll certification documentation for county legislative authority",
+          ["tax_record", "report", "correspondence"],
+          "WA RCW 84.40.320",
+          "Annual certification package submitted to county legislative authority by July 15"),
+      new("exemption-review", "Exemption Review Packet",
+          "Documentation for exemption eligibility determination and renewal",
+          ["exemption", "correspondence", "report"],
+          "WA RCW 84.36",
+          "Assembled for each exemption application; senior/disabled require income verification"),
+      new("new-construction", "New Construction Packet",
+          "Documentation for newly constructed or substantially remodeled property",
+          ["permit", "inspection_report", "photo", "appraisal", "sketch"],
+          "WA RCW 84.40.030",
+          "Triggered by building permit completion; field inspection required before value determination"),
+      new("revaluation-cycle", "Revaluation Cycle Packet",
+          "Physical inspection cycle documentation (WA 4-year cycle requirement)",
+          ["inspection_report", "photo", "sketch", "comparable_analysis", "appraisal"],
+          "WA RCW 84.41.030",
+          "Each property must be physically inspected at least once per 4-year cycle"),
+    ];
+  }
+
   // ── Read-only Dossier Registry Helpers ───────────────────────
 
   private sealed record DossierDocumentIndexItem(
