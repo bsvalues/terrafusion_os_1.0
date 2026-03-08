@@ -3484,4 +3484,475 @@ public sealed class R1Week5CxR1ClosureTests
     var spread = jsonDoc.RootElement.GetProperty("Spread").GetDecimal();
     spread.Should().BeLessThan(5m);
   }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 17 — Valuation Lineage (RCN → RCNLD → land → total)
+  // ═══════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_DepreciationModel_ReturnsAllCategories()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_DepreciationModel_ReturnsAllCategories));
+    var result = controller.GetDepreciationModel();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("Residential");
+    json.Should().Contain("Commercial");
+    json.Should().Contain("Industrial");
+    json.Should().Contain("Multiplicative");
+    json.Should().Contain("physicalDepreciationCap");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_DepreciationModel_EconomicLifeValues()
+  {
+    var res = CostForgeController.ValuationLineageData.EconomicLifeByType;
+    res.First(e => e.Category == "Residential").Years.Should().Be(60);
+    res.First(e => e.Category == "Commercial").Years.Should().Be(50);
+    res.First(e => e.Category == "Industrial").Years.Should().Be(45);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_LandRates_ReturnsAllZones()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_LandRates_ReturnsAllZones));
+    var result = controller.GetLandRates();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("central-residential");
+    json.Should().Contain("west-commercial");
+    json.Should().Contain("agricultural");
+    json.Should().Contain("industrial");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_LandRates_Values()
+  {
+    var rates = CostForgeController.ValuationLineageData.LandRates;
+    rates.First(r => r.Zone == "central-residential").BaseRatePerSqft.Should().Be(3.50m);
+    rates.First(r => r.Zone == "agricultural").BaseRatePerSqft.Should().Be(0.50m);
+    rates.First(r => r.Zone == "west-commercial").BaseRatePerSqft.Should().Be(10.50m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_SiteImprovements_ReturnsSchedule()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_SiteImprovements_ReturnsSchedule));
+    var result = controller.GetSiteImprovements();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("ATTGAR");
+    json.Should().Contain("DETGAR");
+    json.Should().Contain("PL");
+    json.Should().Contain("BSMTFIN");
+    json.Should().Contain("DECK");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_SiteImprovements_UnitCosts()
+  {
+    var si = CostForgeController.ValuationLineageData.SiteImprovements;
+    si.First(s => s.Code == "ATTGAR").UnitCost.Should().Be(42.50m);
+    si.First(s => s.Code == "PL").UnitCost.Should().Be(25000.00m);
+    si.First(s => s.Code == "BSMTFIN").UnitCost.Should().Be(32.50m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_BasicResidential()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_BasicResidential));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 2000m,
+      YearBuilt = 2015,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      ComplexityGrade = "STANDARD",
+      LandAreaSqft = 8000m,
+      LandZone = "central-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"BuildingType\":\"R1\"");
+    json.Should().Contain("\"ReplacementCostNew\":");
+    json.Should().Contain("\"ReplacementCostNewLessDepreciation\":");
+    json.Should().Contain("\"LandValue\":");
+    json.Should().Contain("\"TotalAssessedValue\":");
+    json.Should().Contain("\"DepreciationBreakdown\":");
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var rcn = jsonDoc.RootElement.GetProperty("ReplacementCostNew").GetDecimal();
+    var rcnld = jsonDoc.RootElement.GetProperty("ReplacementCostNewLessDepreciation").GetDecimal();
+    var landValue = jsonDoc.RootElement.GetProperty("LandValue").GetDecimal();
+    var total = jsonDoc.RootElement.GetProperty("TotalAssessedValue").GetDecimal();
+
+    rcn.Should().BeGreaterThan(0);
+    rcnld.Should().BeLessThanOrEqualTo(rcn);
+    landValue.Should().Be(8000m * 3.50m); // 8000 sqft × $3.50
+    total.Should().Be(rcnld + landValue);  // no site improvements
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_WithSiteImprovements()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_WithSiteImprovements));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1800m,
+      YearBuilt = 2020,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      LandAreaSqft = 7000m,
+      LandZone = "central-residential",
+      SiteImprovements = new()
+      {
+        new() { Code = "ATTGAR", Quantity = 400m },  // 400 sqft attached garage
+        new() { Code = "DECK", Quantity = 200m },    // 200 sqft deck
+      },
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var siteTotal = jsonDoc.RootElement.GetProperty("SiteImprovementsTotal").GetDecimal();
+    var total = jsonDoc.RootElement.GetProperty("TotalAssessedValue").GetDecimal();
+    var rcnld = jsonDoc.RootElement.GetProperty("ReplacementCostNewLessDepreciation").GetDecimal();
+    var landValue = jsonDoc.RootElement.GetProperty("LandValue").GetDecimal();
+
+    siteTotal.Should().BeGreaterThan(0);
+    total.Should().Be(rcnld + landValue + siteTotal);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_WithObsolescence()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_WithObsolescence));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "C1",
+      Region = "Central",
+      SquareFeet = 5000m,
+      YearBuilt = 1990,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      FunctionalObsolescence = 15m,  // 15% functional
+      ExternalObsolescence = 10m,    // 10% external
+      LandAreaSqft = 20000m,
+      LandZone = "central-commercial",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var totalDepPct = jsonDoc.RootElement.GetProperty("TotalDepreciationPct").GetDecimal();
+    var funcObs = jsonDoc.RootElement.GetProperty("FunctionalObsolescencePct").GetDecimal();
+    var extObs = jsonDoc.RootElement.GetProperty("ExternalObsolescencePct").GetDecimal();
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+
+    funcObs.Should().Be(15m);
+    extObs.Should().Be(10m);
+    physDep.Should().BeGreaterThan(0);
+    // Total depreciation should be > physical alone due to multiplicative model
+    totalDepPct.Should().BeGreaterThan(physDep);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_PhysicalDepCapped85()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_PhysicalDepCapped85));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 100,  // Way beyond economic life
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      LandAreaSqft = 5000m,
+      LandZone = "central-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+    // Physical depreciation capped at 85%
+    physDep.Should().Be(85m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_InvalidBuildingType_ReturnsBadRequest()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_InvalidBuildingType_ReturnsBadRequest));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "INVALID",
+      Region = "Central",
+      SquareFeet = 1000m,
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_CommercialEconomicLife50()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_CommercialEconomicLife50));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "C1",
+      Region = "Central",
+      SquareFeet = 3000m,
+      EffectiveAge = 25,
+      QualityGrade = "STANDARD",
+      LandAreaSqft = 10000m,
+      LandZone = "central-commercial",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var ecoLife = jsonDoc.RootElement.GetProperty("EconomicLife").GetInt32();
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+
+    ecoLife.Should().Be(50);
+    // 25/50 = 50% physical depreciation
+    physDep.Should().Be(50m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_IndustrialEconomicLife45()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_IndustrialEconomicLife45));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "I1",
+      Region = "Central",
+      SquareFeet = 10000m,
+      EffectiveAge = 20,
+      QualityGrade = "STANDARD",
+      LandAreaSqft = 40000m,
+      LandZone = "industrial",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var ecoLife = jsonDoc.RootElement.GetProperty("EconomicLife").GetInt32();
+    ecoLife.Should().Be(45);
+    // 20/45 ≈ 44.44%
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+    physDep.Should().BeInRange(44m, 45m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_DepreciationBreakdownSumsCorrectly()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_DepreciationBreakdownSumsCorrectly));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 2000m,
+      EffectiveAge = 20,
+      FunctionalObsolescence = 10m,
+      ExternalObsolescence = 5m,
+      LandAreaSqft = 8000m,
+      LandZone = "central-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var breakdown = jsonDoc.RootElement.GetProperty("DepreciationBreakdown");
+    var physical = breakdown.GetProperty("Physical").GetDecimal();
+    var functional = breakdown.GetProperty("Functional").GetDecimal();
+    var external = breakdown.GetProperty("External").GetDecimal();
+    var depAmount = jsonDoc.RootElement.GetProperty("DepreciationAmount").GetDecimal();
+
+    physical.Should().BeGreaterThan(0);
+    functional.Should().BeGreaterThan(0);
+    external.Should().BeGreaterThan(0);
+    // Sum of breakdown components should approximate total depreciation
+    // (may differ slightly due to rounding in multiplicative model)
+    Math.Abs(physical + functional + external - depAmount).Should().BeLessThan(1m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_ZeroAge_NoPhysicalDep()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_ZeroAge_NoPhysicalDep));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 2500m,
+      EffectiveAge = 0,
+      QualityGrade = "STANDARD",
+      ConditionGrade = "GOOD",
+      LandAreaSqft = 10000m,
+      LandZone = "central-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var physDep = jsonDoc.RootElement.GetProperty("PhysicalDepreciationPct").GetDecimal();
+    var rcn = jsonDoc.RootElement.GetProperty("ReplacementCostNew").GetDecimal();
+    var rcnld = jsonDoc.RootElement.GetProperty("ReplacementCostNewLessDepreciation").GetDecimal();
+
+    physDep.Should().Be(0m);
+    rcnld.Should().Be(rcn);  // No depreciation → RCNLD = RCN
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_RCNIncludesAllFactors()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_RCNIncludesAllFactors));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "West",  // factor 1.05
+      SquareFeet = 1000m,
+      EffectiveAge = 0,
+      QualityGrade = "PREMIUM",     // factor 1.30
+      ConditionGrade = "EXCELLENT", // factor 1.10
+      ComplexityGrade = "COMPLEX",  // factor 1.10
+      LandAreaSqft = 5000m,
+      LandZone = "west-residential",
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var rcn = jsonDoc.RootElement.GetProperty("ReplacementCostNew").GetDecimal();
+    var adjRate = jsonDoc.RootElement.GetProperty("AdjustedRatePerSqft").GetDecimal();
+
+    // Base = 133.88 (West R1) → ×1.05 region ×1.30 quality ×1.10 condition ×1.10 complexity ×1.15 local ×1.15 entrep
+    // All factors compound, so RCN should be > base×sqft significantly
+    rcn.Should().Be(adjRate * 1000m); // rate × sqft
+    adjRate.Should().BeGreaterThan(133.88m); // adjusted > base
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_LandAdjustmentFactor()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_LandAdjustmentFactor));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 0,
+      LandAreaSqft = 10000m,
+      LandZone = "central-residential",
+      LandAdjustmentFactor = 1.20m,  // 20% premium lot
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var landValue = jsonDoc.RootElement.GetProperty("LandValue").GetDecimal();
+    // 10000 × $3.50 × 1.20 = $42,000
+    landValue.Should().Be(42000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_UnknownSiteCodeSkipped()
+  {
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_UnknownSiteCodeSkipped));
+    var request = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 0,
+      LandAreaSqft = 5000m,
+      LandZone = "central-residential",
+      SiteImprovements = new()
+      {
+        new() { Code = "ATTGAR", Quantity = 300m },
+        new() { Code = "UNKNOWN", Quantity = 100m },  // Should be skipped
+      },
+    };
+    var result = controller.ComputeFullValuationLineage(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var improvements = jsonDoc.RootElement.GetProperty("SiteImprovements");
+    improvements.GetArrayLength().Should().Be(1); // Only ATTGAR, UNKNOWN skipped
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Lineage")]
+  public void Lineage_ComputeFull_SiteDepreciationIncreases()
+  {
+    // Older property → site improvements more depreciated
+    var controller = CreateCostForgeController(nameof(Lineage_ComputeFull_SiteDepreciationIncreases));
+
+    var youngRequest = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 5,
+      LandAreaSqft = 5000m,
+      LandZone = "central-residential",
+      SiteImprovements = new() { new() { Code = "PL", Quantity = 1m } },
+    };
+    var oldRequest = new CostForgeController.FullLineageRequest
+    {
+      BuildingType = "R1",
+      Region = "Central",
+      SquareFeet = 1500m,
+      EffectiveAge = 30,
+      LandAreaSqft = 5000m,
+      LandZone = "central-residential",
+      SiteImprovements = new() { new() { Code = "PL", Quantity = 1m } },
+    };
+
+    var youngResult = controller.ComputeFullValuationLineage(youngRequest);
+    var oldResult = controller.ComputeFullValuationLineage(oldRequest);
+
+    var youngJson = JsonSerializer.Serialize(((OkObjectResult)youngResult).Value);
+    var oldJson = JsonSerializer.Serialize(((OkObjectResult)oldResult).Value);
+
+    var youngSite = System.Text.Json.JsonDocument.Parse(youngJson).RootElement.GetProperty("SiteImprovementsTotal").GetDecimal();
+    var oldSite = System.Text.Json.JsonDocument.Parse(oldJson).RootElement.GetProperty("SiteImprovementsTotal").GetDecimal();
+
+    youngSite.Should().BeGreaterThan(oldSite); // Young property → less site depreciation → higher value
+  }
 }
