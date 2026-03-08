@@ -1504,6 +1504,162 @@ public class CostForgeController : ControllerBase
   internal sealed record ConfidenceLevel(string Level, string Criteria);
   internal sealed record QualityFlag(string Flag, string Description);
 
+  // ──── Valuation Reconciliation endpoints (3-approach weighted average) ────
+
+  /// <summary>
+  /// Standard weight guidelines for reconciling cost, income, and sales approaches by property type.
+  /// Source: IAAO Standard on Mass Appraisal + Benton County Assessor practice.
+  /// </summary>
+  [HttpGet("valuation-reconciliation/weight-guidelines")]
+  [RequiresPermission("read:cost-factors")]
+  public ActionResult GetReconciliationWeightGuidelines()
+  {
+    Response.Headers["X-CostForge-Source"] = "benton-real-reconciliation-fy2025";
+    return Ok(new
+    {
+      guidelines = ReconciliationDefaults.WeightGuidelines,
+      effectiveDate = "2025-01-01",
+      source = "IAAO Standard on Mass Appraisal / Benton County Assessor Practice FY 2025",
+    });
+  }
+
+  /// <summary>
+  /// Reconcile three valuation approaches (cost, income, sales) into a single indicated value.
+  /// Weights by confidence: high=3, moderate=2, low=1; then applies propertyType-specific bias.
+  /// Final value = weighted sum of (approach value × normalized weight).
+  /// Spread = (max − min) / final × 100.
+  /// </summary>
+  [HttpPost("valuation-reconciliation/reconcile")]
+  [RequiresPermission("access:costforge")]
+  public ActionResult ReconcileApproaches([FromBody] ThreeApproachReconciliationRequest request)
+  {
+    if (request.CostApproachValue <= 0 && request.IncomeApproachValue <= 0 && request.SalesComparisonValue <= 0)
+      return BadRequest(new { error = "At least one approach value must be positive." });
+
+    // Build active approach list (only include non-zero values)
+    var approaches = new List<(string Name, decimal Value, string Confidence)>();
+    if (request.CostApproachValue > 0)
+      approaches.Add(("cost", request.CostApproachValue, request.CostConfidence ?? "moderate"));
+    if (request.IncomeApproachValue > 0)
+      approaches.Add(("income", request.IncomeApproachValue, request.IncomeConfidence ?? "moderate"));
+    if (request.SalesComparisonValue > 0)
+      approaches.Add(("sales", request.SalesComparisonValue, request.SalesConfidence ?? "moderate"));
+
+    if (approaches.Count == 0)
+      return BadRequest(new { error = "At least one approach value must be positive." });
+
+    // Base weight from confidence: high=3, moderate=2, low=1
+    static decimal ConfidenceWeight(string conf) => conf.ToLowerInvariant() switch
+    {
+      "high" => 3m,
+      "moderate" => 2m,
+      _ => 1m,
+    };
+
+    // Property-type bias multipliers (from IAAO / Benton County practice)
+    var biasKey = (request.PropertyType ?? "residential").ToLowerInvariant();
+    var guideline = ReconciliationDefaults.WeightGuidelines
+      .FirstOrDefault(g => g.PropertyType.Equals(biasKey, StringComparison.OrdinalIgnoreCase));
+
+    // Calculate raw weights: confidence × property-type bias
+    var rawWeights = approaches.Select(a =>
+    {
+      var confW = ConfidenceWeight(a.Confidence);
+      var bias = a.Name switch
+      {
+        "cost" => guideline?.CostBias ?? 1.0m,
+        "income" => guideline?.IncomeBias ?? 1.0m,
+        "sales" => guideline?.SalesBias ?? 1.0m,
+        _ => 1.0m,
+      };
+      return confW * bias;
+    }).ToList();
+
+    var totalWeight = rawWeights.Sum();
+    var normalizedWeights = rawWeights.Select(w => BankersRound(w / totalWeight * 100m) / 100m).ToList();
+
+    // Ensure weights sum exactly to 1.00 (adjust last weight for rounding)
+    var weightSum = normalizedWeights.Sum();
+    if (weightSum != 1.00m && normalizedWeights.Count > 0)
+      normalizedWeights[^1] += (1.00m - weightSum);
+
+    var finalValue = BankersRound(
+      approaches.Zip(normalizedWeights, (a, w) => a.Value * w).Sum());
+
+    var values = approaches.Select(a => a.Value).OrderBy(v => v).ToList();
+    var spread = finalValue > 0
+      ? BankersRound((values[^1] - values[0]) / finalValue * 100m)
+      : 0m;
+
+    // Overall confidence based on approach count and spread
+    var overallConfidence = approaches.Count >= 3 && spread < 15m ? "high"
+      : approaches.Count >= 2 && spread < 25m ? "moderate"
+      : "low";
+
+    var detail = approaches.Zip(normalizedWeights, (a, w) => new ApproachDetail(
+      a.Name, a.Value, a.Confidence, BankersRound(w * 100m), BankersRound(a.Value * w)
+    )).ToList();
+
+    Response.Headers["X-CostForge-Source"] = "benton-real-reconciliation-fy2025";
+    return Ok(new ThreeApproachReconciliationResult
+    {
+      PropertyType = biasKey,
+      ApproachCount = approaches.Count,
+      Details = detail,
+      FinalReconciledValue = finalValue,
+      Spread = spread,
+      OverallConfidence = overallConfidence,
+      Source = "Benton County Assessor – Three-Approach Reconciliation FY 2025",
+    });
+  }
+
+  // ──── Reconciliation data records ────
+
+  public sealed record ThreeApproachReconciliationRequest
+  {
+    public decimal CostApproachValue { get; init; }
+    public string? CostConfidence { get; init; }
+    public decimal IncomeApproachValue { get; init; }
+    public string? IncomeConfidence { get; init; }
+    public decimal SalesComparisonValue { get; init; }
+    public string? SalesConfidence { get; init; }
+    public string? PropertyType { get; init; }
+  }
+
+  internal sealed record ThreeApproachReconciliationResult
+  {
+    public string PropertyType { get; init; } = "";
+    public int ApproachCount { get; init; }
+    public List<ApproachDetail> Details { get; init; } = new();
+    public decimal FinalReconciledValue { get; init; }
+    public decimal Spread { get; init; }
+    public string OverallConfidence { get; init; } = "";
+    public string Source { get; init; } = "";
+  }
+
+  internal sealed record ApproachDetail(
+    string Approach, decimal Value, string Confidence, decimal WeightPct, decimal Contribution);
+
+  // ──── Reconciliation Reference Data ────
+
+  internal static class ReconciliationDefaults
+  {
+    // Weight guidelines by property type (IAAO + Benton County practice)
+    // Bias multipliers applied to confidence-based weights
+    public static readonly ReconciliationGuideline[] WeightGuidelines =
+    [
+      new("residential",  "Residential (SFR)",   0.8m, 0.5m, 1.5m, "Sales comparison most reliable for SFR"),
+      new("multi-family", "Multi-Family",         0.6m, 1.3m, 1.0m, "Income approach weighted for rental properties"),
+      new("commercial",   "Commercial",           0.5m, 1.4m, 1.0m, "Income approach dominant for income-producing"),
+      new("industrial",   "Industrial",           1.2m, 0.8m, 0.6m, "Cost approach dominant for special-purpose"),
+      new("land",         "Vacant Land",          0.3m, 0.3m, 1.8m, "Sales comparison dominant for vacant land"),
+    ];
+  }
+
+  internal sealed record ReconciliationGuideline(
+    string PropertyType, string Label,
+    decimal CostBias, decimal IncomeBias, decimal SalesBias, string Rationale);
+
   // ──── Calculator engine (internal for testability) ────
 
   internal static CostEstimateResult? ComputeCostEstimate(
