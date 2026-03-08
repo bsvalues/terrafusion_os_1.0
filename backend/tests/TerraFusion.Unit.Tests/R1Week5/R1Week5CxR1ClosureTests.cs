@@ -3088,4 +3088,400 @@ public sealed class R1Week5CxR1ClosureTests
     json.Should().Contain("\"TotalNetAdjustment\":0");
     json.Should().Contain("\"AdjustedPrice\":300000");
   }
+
+  // ═══════════════════════════════════════════════════════════
+  //  Wave 16 — Valuation Reconciliation (3-approach weighted average)
+  // ═══════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_WeightGuidelines_ReturnsAllPropertyTypes()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_WeightGuidelines_ReturnsAllPropertyTypes));
+    var result = controller.GetReconciliationWeightGuidelines();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("residential");
+    json.Should().Contain("commercial");
+    json.Should().Contain("industrial");
+    json.Should().Contain("multi-family");
+    json.Should().Contain("land");
+    json.Should().Contain("effectiveDate");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_WeightGuidelines_ContainsExpectedBiases()
+  {
+    // Residential should have SalesBias > CostBias (sales-driven market)
+    var residential = CostForgeController.ReconciliationDefaults.WeightGuidelines
+      .First(g => g.PropertyType == "residential");
+    residential.SalesBias.Should().BeGreaterThan(residential.CostBias);
+    residential.SalesBias.Should().BeGreaterThan(residential.IncomeBias);
+
+    // Commercial should have IncomeBias > SalesBias
+    var commercial = CostForgeController.ReconciliationDefaults.WeightGuidelines
+      .First(g => g.PropertyType == "commercial");
+    commercial.IncomeBias.Should().BeGreaterThan(commercial.SalesBias);
+
+    // Industrial should have CostBias > IncomeBias
+    var industrial = CostForgeController.ReconciliationDefaults.WeightGuidelines
+      .First(g => g.PropertyType == "industrial");
+    industrial.CostBias.Should().BeGreaterThan(industrial.IncomeBias);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_ThreeApproachResidential()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_ThreeApproachResidential));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 320_000m,
+      CostConfidence = "moderate",
+      IncomeApproachValue = 310_000m,
+      IncomeConfidence = "low",
+      SalesComparisonValue = 350_000m,
+      SalesConfidence = "high",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"residential\"");
+    json.Should().Contain("\"ApproachCount\":3");
+    json.Should().Contain("\"OverallConfidence\":");
+    // Sales should dominate for residential
+    json.Should().Contain("\"Approach\":\"sales\"");
+    json.Should().Contain("\"Approach\":\"cost\"");
+    json.Should().Contain("\"Approach\":\"income\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_CommercialIncomeDominant()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_CommercialIncomeDominant));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 500_000m,
+      CostConfidence = "moderate",
+      IncomeApproachValue = 520_000m,
+      IncomeConfidence = "high",
+      SalesComparisonValue = 510_000m,
+      SalesConfidence = "moderate",
+      PropertyType = "commercial",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"commercial\"");
+    json.Should().Contain("\"ApproachCount\":3");
+    // For commercial, income approach should have highest weight
+    // Verify income contribution is highest
+    // Income: high(3) × 1.4 incomeBias = 4.2
+    // Sales: moderate(2) × 1.0 = 2.0
+    // Cost: moderate(2) × 0.5 = 1.0
+    // Total: 7.2 → income weight ≈ 58.3%
+    var resultObj = ok.Value;
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    // Should be closer to income value ($520K) than cost ($500K)
+    finalValue.Should().BeGreaterThan(510_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_TwoApproachOnly()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_TwoApproachOnly));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 400_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 0m, // Not applicable
+      SalesComparisonValue = 420_000m,
+      SalesConfidence = "high",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ApproachCount\":2");
+    // Income should not appear in details
+    json.Should().NotContain("\"Approach\":\"income\"");
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    finalValue.Should().BeInRange(400_000m, 420_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_SingleApproach()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_SingleApproach));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 0m,
+      IncomeApproachValue = 0m,
+      SalesComparisonValue = 350_000m,
+      SalesConfidence = "high",
+      PropertyType = "land",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ApproachCount\":1");
+    // Single approach → 100% weight → final = the approach value
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    finalValue.Should().Be(350_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_AllZeros_ReturnsBadRequest()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_AllZeros_ReturnsBadRequest));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 0m,
+      IncomeApproachValue = 0m,
+      SalesComparisonValue = 0m,
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_IndustrialCostDominant()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_IndustrialCostDominant));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 1_200_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 1_100_000m,
+      IncomeConfidence = "moderate",
+      SalesComparisonValue = 1_000_000m,
+      SalesConfidence = "low",
+      PropertyType = "industrial",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"industrial\"");
+    // Industrial: cost bias=1.2, income bias=0.8, sales bias=0.6
+    // Cost: high(3) × 1.2 = 3.6, Income: moderate(2) × 0.8 = 1.6, Sales: low(1) × 0.6 = 0.6
+    // Total: 5.8 → cost ≈ 62%. Should be closer to cost value
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    finalValue.Should().BeGreaterThan(1_100_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_HighSpreadLowConfidence()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_HighSpreadLowConfidence));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 200_000m,
+      CostConfidence = "low",
+      IncomeApproachValue = 350_000m,
+      IncomeConfidence = "low",
+      SalesComparisonValue = 500_000m,
+      SalesConfidence = "low",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Huge spread → should show low confidence
+    json.Should().Contain("\"OverallConfidence\":\"low\"");
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var spread = jsonDoc.RootElement.GetProperty("Spread").GetDecimal();
+    spread.Should().BeGreaterThan(25m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_NullPropertyTypeDefaultsResidential()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_NullPropertyTypeDefaultsResidential));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 300_000m,
+      SalesComparisonValue = 310_000m,
+      // PropertyType null → defaults to "residential"
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"residential\"");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_NullConfidenceDefaultsModerate()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_NullConfidenceDefaultsModerate));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 300_000m,
+      // CostConfidence null → defaults to "moderate"
+      IncomeApproachValue = 310_000m,
+      // IncomeConfidence null → defaults to "moderate"
+      SalesComparisonValue = 320_000m,
+      // SalesConfidence null → defaults to "moderate"
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"ApproachCount\":3");
+    // With all moderate confidence, only property type bias differentiates weights
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    finalValue.Should().BeInRange(300_000m, 320_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_WeightsSumTo100()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_WeightsSumTo100));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 250_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 260_000m,
+      IncomeConfidence = "moderate",
+      SalesComparisonValue = 270_000m,
+      SalesConfidence = "low",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var details = jsonDoc.RootElement.GetProperty("Details");
+    decimal totalWeight = 0;
+    foreach (var detail in details.EnumerateArray())
+    {
+      totalWeight += detail.GetProperty("WeightPct").GetDecimal();
+    }
+    totalWeight.Should().Be(100m, "weights must sum exactly to 100%");
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_ContributionsSumToFinal()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_ContributionsSumToFinal));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 400_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 450_000m,
+      IncomeConfidence = "moderate",
+      SalesComparisonValue = 430_000m,
+      SalesConfidence = "high",
+      PropertyType = "commercial",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var details = jsonDoc.RootElement.GetProperty("Details");
+    decimal totalContribution = 0;
+    foreach (var detail in details.EnumerateArray())
+    {
+      totalContribution += detail.GetProperty("Contribution").GetDecimal();
+    }
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    // Contributions may differ slightly due to rounding
+    Math.Abs(totalContribution - finalValue).Should().BeLessThan(0.02m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_LandSalesOnly()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_LandSalesOnly));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 80_000m,
+      CostConfidence = "low",
+      IncomeApproachValue = 70_000m,
+      IncomeConfidence = "low",
+      SalesComparisonValue = 100_000m,
+      SalesConfidence = "high",
+      PropertyType = "land",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"land\"");
+    // Land: cost bias=0.3, income bias=0.3, sales bias=1.8
+    // Sales: high(3) × 1.8 = 5.4, Cost: low(1) × 0.3 = 0.3, Income: low(1) × 0.3 = 0.3
+    // Sales dominance: 5.4/6.0 = 90%
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    // Should be heavily weighted toward sales ($100K)
+    finalValue.Should().BeGreaterThan(90_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_MultiFamilyIncomeFavored()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_MultiFamilyIncomeFavored));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 600_000m,
+      CostConfidence = "moderate",
+      IncomeApproachValue = 650_000m,
+      IncomeConfidence = "high",
+      SalesComparisonValue = 620_000m,
+      SalesConfidence = "moderate",
+      PropertyType = "multi-family",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    json.Should().Contain("\"PropertyType\":\"multi-family\"");
+    // Multi-family: income bias=1.3 > sales bias=1.0 > cost bias=0.6
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var finalValue = jsonDoc.RootElement.GetProperty("FinalReconciledValue").GetDecimal();
+    // Should be closer to income value ($650K)
+    finalValue.Should().BeGreaterThan(625_000m);
+  }
+
+  [Fact]
+  [Trait("Category", "CostForge-Reconciliation")]
+  public void Reconciliation_Reconcile_TightSpreadHighConfidence()
+  {
+    var controller = CreateCostForgeController(nameof(Reconciliation_Reconcile_TightSpreadHighConfidence));
+    var request = new CostForgeController.ThreeApproachReconciliationRequest
+    {
+      CostApproachValue = 300_000m,
+      CostConfidence = "high",
+      IncomeApproachValue = 305_000m,
+      IncomeConfidence = "high",
+      SalesComparisonValue = 302_000m,
+      SalesConfidence = "high",
+      PropertyType = "residential",
+    };
+    var result = controller.ReconcileApproaches(request);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(ok.Value);
+    // Very tight spread → should show high confidence
+    json.Should().Contain("\"OverallConfidence\":\"high\"");
+    var jsonDoc = System.Text.Json.JsonDocument.Parse(json);
+    var spread = jsonDoc.RootElement.GetProperty("Spread").GetDecimal();
+    spread.Should().BeLessThan(5m);
+  }
 }
