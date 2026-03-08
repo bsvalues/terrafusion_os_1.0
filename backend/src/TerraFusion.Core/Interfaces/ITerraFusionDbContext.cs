@@ -49,6 +49,9 @@ public interface ITerraFusionDbContext
     DbSet<Permission> Permissions { get; set; }
     DbSet<UserPermission> UserPermissions { get; set; }
 
+    // R2.10: GIS Geometry Storage
+    DbSet<ParcelGeometry> ParcelGeometries { get; set; }
+
     // Codex 3-6-9 Framework Entities
     DbSet<CodexMetric> CodexMetrics { get; set; }
     DbSet<CodexScore> CodexScores { get; set; }

@@ -88,6 +88,61 @@ export interface SpatialStats {
   lastDataUpdate: string;
 }
 
+// R2.10: GIS geometry types
+
+export interface ParcelCentroid {
+  parcelId: string;
+  lat: number;
+  lng: number;
+}
+
+export interface NearbyParcel {
+  parcelId: string;
+  address: string;
+  propertyType: string;
+  assessedValue: number;
+  yearBuilt: number | null;
+  distanceMiles?: number;
+}
+
+export interface NearbyParcelsResponse {
+  subjectParcelId: string;
+  propertyTypeFilter: string | null;
+  total: number;
+  gisProximity: boolean;
+  radiusMiles?: number;
+  parcels: NearbyParcel[];
+}
+
+export interface UpsertGeometryRequest {
+  geoJson?: string;
+  centroidLat?: number;
+  centroidLng?: number;
+  areaSqft?: number;
+  areaAcres?: number;
+  zoningCode?: string;
+  zoningDescription?: string;
+  srid?: number;
+  source?: string;
+  sourceDate?: string;
+}
+
+export interface UpsertGeometryResponse {
+  parcelId: string;
+  status: 'created' | 'updated';
+  geometryAvailable: boolean;
+}
+
+export interface GeometryStats {
+  countyId: string;
+  totalParcels: number;
+  withGeometry: number;
+  withCentroid: number;
+  withZoning: number;
+  coveragePercent: number;
+  centroidCoveragePercent: number;
+}
+
 // ============================================================================
 // HELPERS
 // ============================================================================
@@ -108,6 +163,16 @@ async function atlasGet<T>(path: string): Promise<T> {
 async function atlasPost<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${ATLAS_API}${path}`, {
     method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) throw new Error(`Atlas API error: ${response.statusText}`);
+  return response.json();
+}
+
+async function atlasPut<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(`${ATLAS_API}${path}`, {
+    method: 'PUT',
     headers: authHeaders(),
     body: JSON.stringify(body),
   });
@@ -175,18 +240,20 @@ export const atlasService = {
   // R2 Wave 2 endpoints
 
   /**
-   * Get nearby parcels by parcel ID (prefix heuristic, county-isolated)
+   * Get nearby parcels by parcel ID.
+   * R2.10: Uses Haversine spatial proximity when centroids available;
+   * falls back to prefix heuristic otherwise.
    */
   getNearbyParcels: async (
     parcelId: string,
-    options?: { radius?: number; limit?: number; type?: string }
-  ): Promise<ParcelResult[]> => {
+    options?: { radiusMiles?: number; limit?: number; propertyType?: string }
+  ): Promise<NearbyParcelsResponse> => {
     const params = new URLSearchParams();
-    if (options?.radius) params.set('radius', String(options.radius));
+    if (options?.radiusMiles) params.set('radiusMiles', String(options.radiusMiles));
     if (options?.limit) params.set('limit', String(options.limit));
-    if (options?.type) params.set('type', options.type);
+    if (options?.propertyType) params.set('propertyType', options.propertyType);
     const qs = params.toString();
-    return atlasGet<ParcelResult[]>(
+    return atlasGet<NearbyParcelsResponse>(
       `/parcels/${encodeURIComponent(parcelId)}/nearby${qs ? `?${qs}` : ''}`
     );
   },
@@ -203,6 +270,37 @@ export const atlasService = {
    */
   getParcelLayers: async (parcelId: string): Promise<MapLayer[]> => {
     return atlasGet<MapLayer[]>(`/parcels/${encodeURIComponent(parcelId)}/layers`);
+  },
+
+  // R2.10 endpoints — GIS geometry storage
+
+  /**
+   * Get parcel centroid coordinates for map pin placement
+   */
+  getParcelCentroid: async (parcelId: string): Promise<ParcelCentroid> => {
+    return atlasGet<ParcelCentroid>(
+      `/parcels/${encodeURIComponent(parcelId)}/centroid`
+    );
+  },
+
+  /**
+   * Upsert GeoJSON geometry for a parcel (county data import)
+   */
+  upsertParcelGeometry: async (
+    parcelId: string,
+    geometry: UpsertGeometryRequest
+  ): Promise<UpsertGeometryResponse> => {
+    return atlasPut<UpsertGeometryResponse>(
+      `/parcels/${encodeURIComponent(parcelId)}/geometry`,
+      geometry
+    );
+  },
+
+  /**
+   * Get geometry coverage statistics for the county
+   */
+  getGeometryStats: async (): Promise<GeometryStats> => {
+    return atlasGet<GeometryStats>('/geometry/stats');
   },
 };
 

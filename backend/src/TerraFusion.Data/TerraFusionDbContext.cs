@@ -95,6 +95,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     public DbSet<DossierDocument> DossierDocuments { get; set; }
     public DbSet<DocumentChainEvent> DocumentChainEvents { get; set; }
 
+    // R2.10: Parcel Geometry (GIS boundary + centroid storage)
+    public DbSet<ParcelGeometry> ParcelGeometries { get; set; }
+
     // R2 Wave 1: Cost Matrix (real Benton County CAMA data)
     public DbSet<TerraFusion.Data.Entities.CostMatrix> CostMatrices { get; set; }
 
@@ -249,6 +252,23 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
             entity.Property(e => e.DataSource).HasMaxLength(100);
             entity.Property(e => e.CreatedBy).HasMaxLength(100);
             entity.HasIndex(e => new { e.CountyCode, e.BuildingType, e.Region, e.MatrixYear });
+        });
+
+        // Configure ParcelGeometry entity (R2.10 — GIS boundary storage)
+        modelBuilder.Entity<ParcelGeometry>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("parcel_geometries");
+            entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.GeoJson).HasColumnType("TEXT");
+            entity.Property(e => e.ZoningCode).HasMaxLength(50);
+            entity.Property(e => e.ZoningDescription).HasMaxLength(200);
+            entity.Property(e => e.Source).HasMaxLength(100);
+            entity.Property(e => e.CreatedBy).HasMaxLength(200);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(200);
+            entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
+            entity.HasIndex(e => new { e.CountyId, e.ParcelId }).IsUnique();
+            entity.HasIndex(e => new { e.CentroidLat, e.CentroidLng });
         });
 
         // Configure GovernmentUser entity

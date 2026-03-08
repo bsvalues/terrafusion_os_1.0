@@ -1,5 +1,5 @@
 /**
- * TerraFusion OS — Real Handlers (32 Tools: 24 R1 + 5 R2 Wave 1 + 3 R2.5)
+ * TerraFusion OS — Real Handlers (35 Tools: 24 R1 + 5 R2 Wave 1 + 3 R2.5 + 3 R2.10)
  *
  * Production handler implementations for ALL governed tools.
  * These call real backend endpoints instead of returning canned data.
@@ -44,6 +44,16 @@
  *  27. run_cost_approach         → POST /api/costforge/approach/cost
  *  28. run_reconciliation        → POST /api/costforge/approach/reconcile
  *  29. get_cost_matrix           → GET  /api/costforge/cost-matrix/{type}/{region}
+ *
+ * R2.5: Dossier Document Management (3):
+ *  30. search_dossier_documents     → GET  /api/dossier/documents/search
+ *  31. upload_dossier_document      → POST /api/dossier/documents/upload
+ *  32. get_document_chain_of_custody → GET  /api/dossier/documents/{id}/chain
+ *
+ * R2.10: GIS Geometry Storage (3) → AtlasController geometry endpoints:
+ *  33. get_parcel_geometry       → GET  /api/atlas/parcels/{parcelId}
+ *  34. get_parcel_centroid       → GET  /api/atlas/parcels/{parcelId}/centroid
+ *  35. get_geometry_stats        → GET  /api/atlas/geometry/stats
  */
 
 import type { ToolHandler } from './ToolRunner.js';
@@ -1285,6 +1295,96 @@ export const getDocumentChainHandler: ToolHandler<
 };
 
 // ============================================================================
+// R2.10: GIS Geometry Storage Handlers (3)
+// ============================================================================
+
+export interface GetParcelGeometryParams {
+  county: string;
+  parcelId: string;
+}
+
+export interface GetParcelGeometryResult {
+  parcelId: string;
+  address?: string;
+  propertyType?: string;
+  geometry?: string;
+  centroid?: { lat: number; lng: number } | null;
+  areaSqft?: number | null;
+  areaAcres?: number | null;
+  zoning?: string | null;
+  zoningDescription?: string | null;
+  geometryAvailable: boolean;
+  layers: string[];
+}
+
+export const getParcelGeometryHandler: ToolHandler<
+  GetParcelGeometryParams,
+  GetParcelGeometryResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendGet<GetParcelGeometryResult>(
+    `/api/atlas/parcels/${encodeURIComponent(params.parcelId)}`,
+    { token }
+  );
+  return unwrapBackend(raw, 'Parcel geometry lookup failed');
+};
+
+export interface GetParcelCentroidParams {
+  county: string;
+  parcelId: string;
+}
+
+export interface GetParcelCentroidResult {
+  parcelId: string;
+  lat: number;
+  lng: number;
+}
+
+export const getParcelCentroidHandler: ToolHandler<
+  GetParcelCentroidParams,
+  GetParcelCentroidResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendGet<GetParcelCentroidResult>(
+    `/api/atlas/parcels/${encodeURIComponent(params.parcelId)}/centroid`,
+    { token }
+  );
+  return unwrapBackend(raw, 'Parcel centroid lookup failed');
+};
+
+export interface GetGeometryStatsParams {
+  county: string;
+}
+
+export interface GetGeometryStatsResult {
+  countyId: string;
+  totalParcels: number;
+  withGeometry: number;
+  withCentroid: number;
+  withZoning: number;
+  coveragePercent: number;
+  centroidCoveragePercent: number;
+}
+
+export const getGeometryStatsHandler: ToolHandler<
+  GetGeometryStatsParams,
+  GetGeometryStatsResult
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendGet<GetGeometryStatsResult>(
+    `/api/atlas/geometry/stats`,
+    { token }
+  );
+  return unwrapBackend(raw, 'Geometry stats fetch failed');
+};
+
+// ============================================================================
 // Handler Registration
 // ============================================================================
 
@@ -1337,4 +1437,9 @@ export function registerR1Handlers(
   runner.registerHandler('search_dossier_documents', searchDossierDocumentsHandler);
   runner.registerHandler('upload_dossier_document', uploadDossierDocumentHandler);
   runner.registerHandler('get_document_chain_of_custody', getDocumentChainHandler);
+
+  // R2.10: GIS geometry storage handlers (3)
+  runner.registerHandler('get_parcel_geometry', getParcelGeometryHandler);
+  runner.registerHandler('get_parcel_centroid', getParcelCentroidHandler);
+  runner.registerHandler('get_geometry_stats', getGeometryStatsHandler);
 }

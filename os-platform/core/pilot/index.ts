@@ -107,6 +107,15 @@ export {
     type UploadDossierDocumentResult,
     type GetDocumentChainParams,
     type GetDocumentChainResult,
+    getParcelGeometryHandler,
+    getParcelCentroidHandler,
+    getGeometryStatsHandler,
+    type GetParcelGeometryParams,
+    type GetParcelGeometryResult,
+    type GetParcelCentroidParams,
+    type GetParcelCentroidResult,
+    type GetGeometryStatsParams,
+    type GetGeometryStatsResult,
 } from './handlers.real.js';
 
 // Backend HTTP Client

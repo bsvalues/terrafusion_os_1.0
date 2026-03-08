@@ -1,8 +1,8 @@
 {
   "$schema": "./terrapilot.tools.schema.json",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "TerraPilot tool registry - authoritative manifest for Gates 4-7 enforcement",
-  "lastUpdated": "2026-03-07",
+  "lastUpdated": "2026-03-08",
   "tools": [
     {
       "toolId": "route_to_parcel",
@@ -602,6 +602,56 @@
         },
         "required": ["parcelId"]
       }
+    },
+    {
+      "toolId": "get_parcel_geometry",
+      "displayName": "Get Parcel Geometry",
+      "suite": "atlas",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel"],
+      "description": "Retrieve GeoJSON geometry, centroid, area, and zoning for a parcel. Returns geometryAvailable flag indicating whether real GIS data is stored.",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel ID to look up geometry for" }
+        },
+        "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "get_parcel_centroid",
+      "displayName": "Get Parcel Centroid",
+      "suite": "atlas",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel"],
+      "description": "Get centroid lat/lng coordinates for map pin placement. Lightweight alternative to full geometry lookup.",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": { "type": "string", "description": "Parcel ID to look up centroid for" }
+        },
+        "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "get_geometry_stats",
+      "displayName": "Get Geometry Coverage Stats",
+      "suite": "atlas",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel"],
+      "description": "Get county-level GIS geometry coverage statistics: total parcels, parcels with geometry/centroid/zoning, and coverage percentages.",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only"
     },
     {
       "toolId": "get_document_chain_of_custody",

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
@@ -9,8 +10,9 @@ using TerraFusion.API.Security;
 namespace TerraFusion.API.Controllers;
 
 /// <summary>
-/// TerraAtlas — Parcel geometry and layer endpoints for R1.
+/// TerraAtlas — Parcel geometry, spatial queries, and layer endpoints.
 /// Write-lane: atlas. County isolation enforced on all queries.
+/// R2.10: Real GIS geometry storage with Haversine spatial queries.
 /// </summary>
 [ApiController]
 [Route("api/atlas")]
@@ -131,7 +133,7 @@ public class AtlasController : ControllerBase
             candidates.Add(value.Trim());
     }
 
-    // ── Available Layers (static for R1) ─────────────────────────────
+    // ── Validation ───────────────────────────────────────────────────
 
     private static readonly string[] DefaultLayers = ["boundary", "zoning", "flood", "aerial", "parcels"];
     private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
@@ -141,10 +143,31 @@ public class AtlasController : ControllerBase
         return !string.IsNullOrWhiteSpace(parcelId) && ParcelIdPattern.IsMatch(parcelId);
     }
 
+    // ── Haversine Distance (SQLite-compatible spatial query) ─────────
+
+    /// <summary>
+    /// Haversine distance in miles between two WGS84 lat/lng points.
+    /// Used for spatial proximity queries without PostGIS.
+    /// </summary>
+    private static double HaversineDistanceMiles(double lat1, double lng1, double lat2, double lng2)
+    {
+        const double R = 3958.8; // Earth radius in miles
+        var dLat = ToRadians(lat2 - lat1);
+        var dLng = ToRadians(lng2 - lng1);
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return R * c;
+    }
+
+    private static double ToRadians(double degrees) => degrees * Math.PI / 180.0;
+
     // ── GET /api/atlas/parcels/{parcelId} ────────────────────────────
 
     /// <summary>
     /// Return parcel geometry, centroid, area, and zoning.
+    /// R2.10: Returns real GeoJSON geometry when stored in ParcelGeometries table.
     /// County isolation enforced.
     /// </summary>
     [HttpGet("parcels/{parcelId}")]
@@ -175,18 +198,82 @@ public class AtlasController : ControllerBase
         if (property is null)
             return NotFound(new { error = "Parcel not found" });
 
-        // R1 guardrail: do not fabricate GIS geometry. If geometry storage
-        // is not available yet, return explicit nulls and availability=false.
+        // R2.10: Look up real geometry from ParcelGeometries table
+        var geometry = await _db.ParcelGeometries
+            .AsNoTracking()
+            .Where(g => g.ParcelId == parcelId && g.CountyId == countyId.Value)
+            .Select(g => new
+            {
+                g.GeoJson,
+                g.CentroidLat,
+                g.CentroidLng,
+                g.AreaSqft,
+                g.AreaAcres,
+                g.ZoningCode,
+                g.ZoningDescription,
+                g.Srid,
+                g.Source,
+                g.SourceDate,
+            })
+            .FirstOrDefaultAsync();
+
+        var hasGeometry = geometry?.GeoJson != null;
+
         return Ok(new
         {
             parcelId = property.ParcelId,
-            geometry = (string?)null,
-            centroid = (object?)null,
-            areaSqft = (int?)null,
-            areaAcres = (double?)null,
-            zoning = (string?)null,
-            geometryAvailable = false,
+            address = property.Address,
+            propertyType = property.PropertyType,
+            geometry = geometry?.GeoJson,
+            centroid = geometry?.CentroidLat != null && geometry?.CentroidLng != null
+                ? new { lat = geometry.CentroidLat, lng = geometry.CentroidLng }
+                : null,
+            areaSqft = geometry?.AreaSqft,
+            areaAcres = geometry?.AreaAcres,
+            zoning = geometry?.ZoningCode,
+            zoningDescription = geometry?.ZoningDescription,
+            srid = geometry?.Srid ?? 4326,
+            geometrySource = geometry?.Source,
+            geometryDate = geometry?.SourceDate,
+            geometryAvailable = hasGeometry,
             layers = DefaultLayers,
+        });
+    }
+
+    // ── GET /api/atlas/parcels/{parcelId}/centroid ────────────────────
+    // R2.10: Quick centroid lookup for map pin placement
+
+    /// <summary>
+    /// Return centroid coordinates for a parcel.
+    /// Lightweight endpoint for map pin placement without full geometry.
+    /// County isolation enforced.
+    /// </summary>
+    [HttpGet("parcels/{parcelId}/centroid")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> GetParcelCentroid(string parcelId)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        var centroid = await _db.ParcelGeometries
+            .AsNoTracking()
+            .Where(g => g.ParcelId == parcelId && g.CountyId == countyId.Value)
+            .Select(g => new { g.CentroidLat, g.CentroidLng })
+            .FirstOrDefaultAsync();
+
+        if (centroid is null || centroid.CentroidLat is null || centroid.CentroidLng is null)
+            return NotFound(new { error = "Centroid not available for this parcel" });
+
+        return Ok(new
+        {
+            parcelId,
+            lat = centroid.CentroidLat,
+            lng = centroid.CentroidLng,
         });
     }
 
@@ -237,12 +324,12 @@ public class AtlasController : ControllerBase
     }
 
     // ── GET /api/atlas/parcels/{parcelId}/nearby ──────────────────────
-    // R2 Wave 2: Nearby parcels search (same county, optional type filter)
+    // R2.10: Upgraded with Haversine spatial proximity when geometry available
 
     /// <summary>
     /// Return nearby parcels in the same county.
-    /// Uses property-type matching and parcel-ID prefix proximity
-    /// as a heuristic until full GIS geometry is available.
+    /// R2.10: Uses Haversine distance when centroids are available;
+    /// falls back to parcel-ID prefix heuristic otherwise.
     /// County isolation enforced.
     /// </summary>
     [HttpGet("parcels/{parcelId}/nearby")]
@@ -250,13 +337,15 @@ public class AtlasController : ControllerBase
     public async Task<IActionResult> GetNearbyParcels(
         string parcelId,
         [FromQuery] string? propertyType = null,
-        [FromQuery] int limit = 10)
+        [FromQuery] int limit = 10,
+        [FromQuery] double radiusMiles = 1.0)
     {
         parcelId = parcelId.Trim();
         if (!IsValidParcelId(parcelId))
             return BadRequest(new { error = "Invalid parcelId format" });
 
         limit = Math.Clamp(limit, 1, 50);
+        radiusMiles = Math.Clamp(radiusMiles, 0.1, 25.0);
 
         var countyId = await ResolveCountyIdAsync();
         if (countyId is null)
@@ -273,9 +362,93 @@ public class AtlasController : ControllerBase
         if (subject is null)
             return NotFound(new { error = "Parcel not found" });
 
-        // Heuristic proximity: parcels sharing a prefix (common in county numbering)
-        var prefix = parcelId.Length >= 4 ? parcelId[..4] : parcelId;
+        // R2.10: Try spatial proximity via centroid if available
+        var subjectGeometry = await _db.ParcelGeometries
+            .AsNoTracking()
+            .Where(g => g.ParcelId == parcelId && g.CountyId == countyId.Value
+                        && g.CentroidLat != null && g.CentroidLng != null)
+            .Select(g => new { g.CentroidLat, g.CentroidLng })
+            .FirstOrDefaultAsync();
+
         var effectiveType = propertyType ?? subject.PropertyType;
+        var usingSpatial = subjectGeometry != null;
+
+        if (usingSpatial)
+        {
+            // Spatial path: Haversine distance from subject centroid
+            var subLat = subjectGeometry!.CentroidLat!.Value;
+            var subLng = subjectGeometry.CentroidLng!.Value;
+
+            // Pre-filter with bounding box (1 degree lat ≈ 69 miles)
+            var latDelta = radiusMiles / 69.0;
+            var lngDelta = radiusMiles / (69.0 * Math.Cos(ToRadians(subLat)));
+
+            var candidateGeometries = await _db.ParcelGeometries
+                .AsNoTracking()
+                .Where(g => g.CountyId == countyId.Value
+                            && g.ParcelId != parcelId
+                            && g.CentroidLat != null && g.CentroidLng != null
+                            && g.CentroidLat >= subLat - latDelta && g.CentroidLat <= subLat + latDelta
+                            && g.CentroidLng >= subLng - lngDelta && g.CentroidLng <= subLng + lngDelta)
+                .Select(g => new { g.ParcelId, Lat = g.CentroidLat!.Value, Lng = g.CentroidLng!.Value })
+                .ToListAsync();
+
+            // Compute exact Haversine, filter by radius, sort by distance
+            var nearbyParcelIds = candidateGeometries
+                .Select(g => new { g.ParcelId, Distance = HaversineDistanceMiles(subLat, subLng, g.Lat, g.Lng) })
+                .Where(g => g.Distance <= radiusMiles)
+                .OrderBy(g => g.Distance)
+                .ToList();
+
+            // Join with property data
+            var nearbyIds = nearbyParcelIds.Select(n => n.ParcelId).ToHashSet();
+            var distanceLookup = nearbyParcelIds.ToDictionary(n => n.ParcelId, n => n.Distance);
+
+            var propertiesQuery = _db.Properties
+                .AsNoTracking()
+                .Where(p => p.CountyId == countyId.Value && nearbyIds.Contains(p.ParcelId));
+
+            if (!string.IsNullOrWhiteSpace(effectiveType))
+                propertiesQuery = propertiesQuery.Where(p => p.PropertyType == effectiveType);
+
+            var properties = await propertiesQuery
+                .Select(p => new
+                {
+                    p.ParcelId,
+                    p.Address,
+                    p.PropertyType,
+                    p.AssessedValue,
+                    p.YearBuilt,
+                })
+                .ToListAsync();
+
+            var spatialResults = properties
+                .Select(p => new
+                {
+                    parcelId = p.ParcelId,
+                    address = p.Address,
+                    propertyType = p.PropertyType,
+                    assessedValue = p.AssessedValue,
+                    yearBuilt = p.YearBuilt,
+                    distanceMiles = Math.Round(distanceLookup.GetValueOrDefault(p.ParcelId), 3),
+                })
+                .OrderBy(p => p.distanceMiles)
+                .Take(limit)
+                .ToList();
+
+            return Ok(new
+            {
+                subjectParcelId = parcelId,
+                propertyTypeFilter = effectiveType,
+                total = spatialResults.Count,
+                gisProximity = true,
+                radiusMiles,
+                parcels = spatialResults,
+            });
+        }
+
+        // Fallback: prefix-based heuristic (no geometry available)
+        var prefix = parcelId.Length >= 4 ? parcelId[..4] : parcelId;
 
         var query = _db.Properties
             .AsNoTracking()
@@ -284,7 +457,6 @@ public class AtlasController : ControllerBase
         if (!string.IsNullOrWhiteSpace(effectiveType))
             query = query.Where(p => p.PropertyType == effectiveType);
 
-        // Prefer parcels with same prefix (neighbors in numbering scheme)
         var nearby = await query
             .OrderByDescending(p => p.ParcelId.StartsWith(prefix))
             .ThenBy(p => p.ParcelId)
@@ -304,17 +476,144 @@ public class AtlasController : ControllerBase
             subjectParcelId = parcelId,
             propertyTypeFilter = effectiveType,
             total = nearby.Count,
-            gisProximity = false, // R2: no GIS geometry yet, prefix-based heuristic
+            gisProximity = false,
             parcels = nearby,
         });
     }
 
+    // ── PUT /api/atlas/parcels/{parcelId}/geometry ────────────────────
+    // R2.10: Upsert parcel geometry (for county data imports)
+
+    /// <summary>
+    /// Upsert GeoJSON geometry for a parcel.
+    /// Used by county data import pipelines to store parcel boundaries.
+    /// County isolation enforced.
+    /// </summary>
+    [HttpPut("parcels/{parcelId}/geometry")]
+    [RequiresPermission("write:parcel")]
+    public async Task<IActionResult> UpsertParcelGeometry(
+        string parcelId,
+        [FromBody] UpsertGeometryRequest request)
+    {
+        parcelId = parcelId.Trim();
+        if (!IsValidParcelId(parcelId))
+            return BadRequest(new { error = "Invalid parcelId format" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        // Verify parcel exists in this county
+        var propertyExists = await _db.Properties
+            .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+        if (!propertyExists)
+            return NotFound(new { error = "Parcel not found in this county" });
+
+        _logger.LogInformation("Upserting geometry for parcel {ParcelId} in county {CountyId}", parcelId, countyId);
+
+        var existing = await _db.ParcelGeometries
+            .FirstOrDefaultAsync(g => g.ParcelId == parcelId && g.CountyId == countyId.Value);
+
+        var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("email")?.Value ?? "system";
+
+        if (existing != null)
+        {
+            existing.GeoJson = request.GeoJson;
+            existing.CentroidLat = request.CentroidLat;
+            existing.CentroidLng = request.CentroidLng;
+            existing.AreaSqft = request.AreaSqft;
+            existing.AreaAcres = request.AreaAcres;
+            existing.ZoningCode = request.ZoningCode;
+            existing.ZoningDescription = request.ZoningDescription;
+            existing.Srid = request.Srid ?? 4326;
+            existing.Source = request.Source;
+            existing.SourceDate = request.SourceDate;
+            existing.UpdatedAt = DateTime.UtcNow;
+            existing.UpdatedBy = userId;
+        }
+        else
+        {
+            var newGeometry = new ParcelGeometry
+            {
+                ParcelId = parcelId,
+                CountyId = countyId.Value,
+                GeoJson = request.GeoJson,
+                CentroidLat = request.CentroidLat,
+                CentroidLng = request.CentroidLng,
+                AreaSqft = request.AreaSqft,
+                AreaAcres = request.AreaAcres,
+                ZoningCode = request.ZoningCode,
+                ZoningDescription = request.ZoningDescription,
+                Srid = request.Srid ?? 4326,
+                Source = request.Source,
+                SourceDate = request.SourceDate,
+                CreatedBy = userId,
+                UpdatedBy = userId,
+            };
+            _db.ParcelGeometries.Add(newGeometry);
+        }
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            parcelId,
+            status = existing != null ? "updated" : "created",
+            geometryAvailable = request.GeoJson != null,
+        });
+    }
+
+    // ── GET /api/atlas/geometry/stats ─────────────────────────────────
+    // R2.10: County geometry coverage statistics
+
+    /// <summary>
+    /// Return geometry coverage statistics for the current county.
+    /// County isolation enforced.
+    /// </summary>
+    [HttpGet("geometry/stats")]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> GetGeometryStats()
+    {
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null)
+            return Forbid();
+
+        var totalParcels = await _db.Properties
+            .CountAsync(p => p.CountyId == countyId.Value);
+
+        var withGeometry = await _db.ParcelGeometries
+            .CountAsync(g => g.CountyId == countyId.Value && g.GeoJson != null);
+
+        var withCentroid = await _db.ParcelGeometries
+            .CountAsync(g => g.CountyId == countyId.Value
+                             && g.CentroidLat != null && g.CentroidLng != null);
+
+        var withZoning = await _db.ParcelGeometries
+            .CountAsync(g => g.CountyId == countyId.Value
+                             && g.ZoningCode != null);
+
+        return Ok(new
+        {
+            countyId,
+            totalParcels,
+            withGeometry,
+            withCentroid,
+            withZoning,
+            coveragePercent = totalParcels > 0
+                ? Math.Round(100.0 * withGeometry / totalParcels, 1)
+                : 0.0,
+            centroidCoveragePercent = totalParcels > 0
+                ? Math.Round(100.0 * withCentroid / totalParcels, 1)
+                : 0.0,
+        });
+    }
+
     // ── GET /api/atlas/layers/{layerId} ───────────────────────────────
-    // R2 Wave 2: Layer metadata detail
 
     /// <summary>
     /// Return metadata for a specific map layer.
-    /// Static layer catalog for R2 — real tile/WMS sources deferred to R3.
+    /// Static layer catalog — real tile/WMS sources deferred to R3.
     /// </summary>
     [HttpGet("layers/{layerId}")]
     [RequiresPermission("read:parcel")]
@@ -392,4 +691,42 @@ public class AtlasController : ControllerBase
 
         return Ok(layer);
     }
+}
+
+// ── Request Models ─────────────────────────────────────────────────
+
+public class UpsertGeometryRequest
+{
+    /// <summary>GeoJSON geometry string (Polygon/MultiPolygon).</summary>
+    public string? GeoJson { get; set; }
+
+    /// <summary>Centroid latitude (WGS84).</summary>
+    public double? CentroidLat { get; set; }
+
+    /// <summary>Centroid longitude (WGS84).</summary>
+    public double? CentroidLng { get; set; }
+
+    /// <summary>Area in square feet.</summary>
+    public double? AreaSqft { get; set; }
+
+    /// <summary>Area in acres.</summary>
+    public double? AreaAcres { get; set; }
+
+    /// <summary>Zoning classification code.</summary>
+    [StringLength(50)]
+    public string? ZoningCode { get; set; }
+
+    /// <summary>Human-readable zoning description.</summary>
+    [StringLength(200)]
+    public string? ZoningDescription { get; set; }
+
+    /// <summary>SRID / coordinate reference system (default 4326 = WGS84).</summary>
+    public int? Srid { get; set; }
+
+    /// <summary>Source of geometry data.</summary>
+    [StringLength(100)]
+    public string? Source { get; set; }
+
+    /// <summary>Date geometry was last updated from source.</summary>
+    public DateTime? SourceDate { get; set; }
 }
