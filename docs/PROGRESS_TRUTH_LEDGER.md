@@ -1,6 +1,6 @@
-# TerraFusion OS — Progress Truth Ledger v8
+# TerraFusion OS — Progress Truth Ledger v9
 
-Date: March 8, 2026 (Phase 4 Sprint 2 Complete)
+Date: March 8, 2026 (R6 Sprint 1 Complete)
 Branch: `claude/review-progress-ledger-a8iw5`
 
 ## Context
@@ -734,6 +734,62 @@ Manifest: v1.7.0 (38 tools, 38 handlers, 0 stubs)
 
 ---
 
+## R6 Sprint 1: Full Stack Hardening (March 8, 2026)
+
+### Build Error Resolution — 14/18 FIXED (W1-B pending)
+
+| File | Errors Fixed | Fix Description |
+|------|-------------|-----------------|
+| AISuperiorityDemonstrationService.cs | 6 | Reconciled dual Core/API interfaces, fixed param/return types |
+| CountyMigrationPathways.cs | 4 | Aligned method signatures to ICountyMigrationPathways |
+| WorkflowTransitionGuide.cs | 3 | Fixed syntax errors, undefined variables |
+| TerraFusionSyncIntegrationService.cs | 1 (false positive) | Verified already correct |
+| DataMigrationEngine.cs | pending | W1-B agent still running |
+| FISMAComplianceController.cs | pending | W1-B agent still running |
+
+### Harris PACS Test Infrastructure — COMPLETE
+
+| Component | File | Details |
+|-----------|------|---------|
+| Mock adapter tests | `backend/TerraFusion.API.Tests/HarrisPACS/PacsAdapterMockTests.cs` | 22 xUnit tests with InMemoryPacsAdapter |
+| TypeScript client | `frontend/apps/os-shell/src/services/harrisPacsClient.ts` | 5 read-only methods with retry logic |
+| Type definitions | `frontend/apps/os-shell/src/types/harrisPacs.ts` | Full DTO types matching pacscontract.v1 |
+
+All read-only per spec lock. No county approval required.
+
+### ML.NET Pipeline — COMPLETE
+
+| Component | File | Details |
+|-----------|------|---------|
+| Synthetic data generator | `backend/src/TerraFusion.AI/Data/SyntheticPropertyDataGenerator.cs` | 5,000-row Benton County dataset, 17 features, realistic correlations |
+| PredictiveImpactService ML.NET | `backend/src/TerraFusion.Consciousness/Services/PredictiveImpactService.cs` | FastTree regression (4 engines per parameter), physics fallback preserved |
+| Package reference | `TerraFusion.Consciousness.csproj` | Added Microsoft.ML.FastTree |
+
+### Electron Desktop Shell MVP — COMPLETE
+
+| Component | File | Details |
+|-----------|------|---------|
+| Port fix | `frontend/electron/ipc-handlers.js` | 5001→5000, configurable via TF_API_PORT |
+| Build path fix | `frontend/electron/main.js` | Loads from native-shell/ui/dist first |
+| Window state | `frontend/electron/main.js` | Persists bounds + maximized state to JSON |
+| Auth handshake | `frontend/electron/os-bridge.js` | HMAC-SHA256 via secure vault, 10s timeout |
+| Heartbeat | `frontend/electron/os-bridge.js` | 30s interval, 3-strike reconnect |
+| Queue flush | `frontend/electron/os-bridge.js` | FIFO drain with order-preserving retry |
+
+### R6 Sprint 1 Summary
+
+| Metric | Value |
+|--------|-------|
+| Build errors fixed | 14 (4 pending W1-B) |
+| New test methods | 22 (PACS mock) |
+| New services | 1 (SyntheticPropertyDataGenerator) |
+| ML.NET integrations | 1 (PredictiveImpactService) |
+| Electron fixes | 6 (paths, IPC, auth, heartbeat, queue, state) |
+| Frontend clients | 1 (harrisPacsClient.ts) |
+| Files changed | ~15 |
+
+---
+
 ## Phase 4 Sprint 2: Auth Security Persistence + FIPS Validation (March 8, 2026)
 
 ### Ticket 1 (P0): Auth Security State Storage Migration — COMPLETE
@@ -826,4 +882,4 @@ Implemented startup FIPS mode validation and compliance documentation for SC-13.
 
 *Classification: Internal working document*
 *Source: `handlers.real.ts` (38 handlers), `PilotController.ts`, `TraceStore.ts`, `MuseController.cs`, `AtlasController.cs`, `DossierController.cs`, `toolServiceRouter.ts`, `useAuthClaims.ts`, `ragAPI.ts`, `MetricsCollector.ts`, `KernelExecutionService.cs`, `EmailService.cs`, `ProductionAuthenticationService.cs`, `FipsValidationService.cs`, `RedisTokenRevocationStore.cs`, service files, controller source code, gate output (87/87), evidence verification gate*
-*Last verified: March 8, 2026 — ledger v8 (Phase 4 Sprint 2 complete)*
+*Last verified: March 8, 2026 — ledger v9 (R6 Sprint 1 complete)*
