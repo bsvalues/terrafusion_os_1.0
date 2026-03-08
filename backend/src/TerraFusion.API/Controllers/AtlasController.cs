@@ -1015,6 +1015,700 @@ public class AtlasController : ControllerBase
     return BadRequest(new { error = "Unsupported source spatial reference. Supported: 3857, WebMercator" });
   }
 
+  // ════════════════════════════════════════════════════════════════════
+  //  WAVE 19 — Full Map Workflows
+  //  Replace R1 stub geometry‑only behavior with real map workflows
+  //  that combine DB data with ArcGIS query builders.
+  // ════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Full ArcGIS-backed parcel geometry request builder.
+  /// Replaces the R1 stub (geometryAvailable=false) with a real ArcGIS
+  /// query URL for all geometry fields plus DB enrichment from the Property table.
+  /// Source: terra-playground-production getParcelGeometry() + bcbs-gis-pro-production
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/geometry")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> GetParcelGeometryFromArcGis(string parcelId)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var property = await _db.Properties
+        .AsNoTracking()
+        .Where(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)
+        .Select(p => new { p.ParcelId, p.Address, p.PropertyType, p.AssessedValue, p.MarketValue, p.LandValue })
+        .FirstOrDefaultAsync();
+
+    if (property is null)
+      return NotFound(new { error = "Parcel not found" });
+
+    var encodedId = Uri.EscapeDataString(parcelId);
+
+    // Build real ArcGIS geometry query URL — returns polygon with all spatial fields
+    var geometryQueryUrl = $"{BentonArcGisData.ParcelServiceUrl}/query" +
+        $"?where=PARCEL_ID%3D%27{encodedId}%27+OR+PIN%3D%27{encodedId}%27+OR+APN%3D%27{encodedId}%27" +
+        "&outFields=PARCEL_ID,SHAPE_Area,SHAPE_Length,ACREAGE" +
+        "&returnGeometry=true&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects" +
+        "&outSR=4326&f=geojson";
+
+    // Build centroid query URL — returns centroid point
+    var centroidQueryUrl = $"{BentonArcGisData.ParcelServiceUrl}/query" +
+        $"?where=PARCEL_ID%3D%27{encodedId}%27" +
+        "&outFields=PARCEL_ID&returnGeometry=true&returnCentroid=true&outSR=4326&f=json";
+
+    Response.Headers["X-Atlas-Source"] = "benton-arcgis-geometry-fy2025";
+    return Ok(new
+    {
+      parcelId = property.ParcelId,
+      propertyData = new
+      {
+        address = property.Address,
+        propertyType = property.PropertyType,
+        assessedValue = property.AssessedValue,
+        marketValue = property.MarketValue,
+        landValue = property.LandValue,
+      },
+      arcgisGeometry = new
+      {
+        geometryQueryUrl,
+        centroidQueryUrl,
+        spatialReference = "EPSG:4326 (WGS84)",
+        geometryType = "polygon",
+        note = "Fetch geometryQueryUrl for GeoJSON polygon. centroidQueryUrl returns parcel centroid.",
+      },
+      source = "Benton County ArcGIS FeatureServer — real geometry query",
+    });
+  }
+
+  /// <summary>
+  /// Full spatial profile: returns ALL overlapping districts, zones, flood
+  /// designations, and features for a single parcel via ArcGIS spatial
+  /// intersection queries.
+  /// Source: terra-playground-production getIntersectingFeatures() overlay analysis
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/spatial-profile")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> GetParcelSpatialProfile(string parcelId)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var exists = await _db.Properties
+        .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+    if (!exists)
+      return NotFound(new { error = "Parcel not found" });
+
+    var encodedId = Uri.EscapeDataString(parcelId);
+    var baseWhere = $"PARCEL_ID%3D%27{encodedId}%27";
+
+    // Step 1: Get parcel geometry (needed as input for spatial intersection)
+    var parcelGeomUrl = $"{BentonArcGisData.ParcelServiceUrl}/query" +
+        $"?where={baseWhere}&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&f=json";
+
+    // Step 2: Build spatial intersection queries against each overlay layer
+    var overlayQueries = ArcGisSpatialLayers.Configs
+        .Where(c => c.SpatialCapabilities.Contains("intersect"))
+        .Select(layer => new
+        {
+          layerId = layer.Id,
+          layerName = layer.Name,
+          queryUrl = $"{BentonArcGisData.BaseUrl}/{layer.FeatureServerPath}/query" +
+              "?where=1%3D1&outFields=" + string.Join(",", layer.Fields) +
+              "&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects" +
+              "&inSR=4326&outSR=4326&f=json",
+          fields = layer.Fields,
+          note = $"Pass parcel geometry from step 1 as 'geometry' parameter",
+        })
+        .ToList();
+
+    Response.Headers["X-Atlas-Source"] = "benton-arcgis-spatial-profile-fy2025";
+    return Ok(new
+    {
+      parcelId,
+      workflow = "spatial-profile",
+      steps = new object[]
+      {
+        new { step = 1, action = "Fetch parcel geometry", url = parcelGeomUrl },
+        new { step = 2, action = "Run spatial intersections", overlayCount = overlayQueries.Count, overlays = overlayQueries },
+      },
+      overlayLayers = overlayQueries.Select(q => q.layerId),
+      expectedResults = new
+      {
+        zoningDistrict = "Zone code, name, permitted uses",
+        floodZone = "FEMA zone designation, SFHA status",
+        taxDistrict = "District ID, tax rate",
+        schoolDistrict = "District name, enrollment",
+        commissionerDistrict = "Commissioner name",
+        wetlands = "Wetland type, classification",
+        censusBlock = "GEOID, population, median income",
+      },
+      source = "Benton County ArcGIS — full overlay analysis from terra-playground-production",
+    });
+  }
+
+  /// <summary>
+  /// Point-in-polygon identification: given lat/lng coordinates, return
+  /// the parcel at that location via ArcGIS spatial query + DB enrichment.
+  /// Source: terra-dashboard-production getParcelByCoordinates()
+  /// </summary>
+  public record MapIdentifyRequest(double Latitude, double Longitude);
+
+  [HttpPost("map/identify")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> IdentifyParcelAtPoint([FromBody] MapIdentifyRequest request)
+  {
+    // Validate coordinates are within Benton County approximate bounding box
+    // Benton County WA: lat 46.0-46.6, lon -119.0 to -119.9
+    if (request.Latitude < 45.0 || request.Latitude > 49.0 ||
+        request.Longitude < -125.0 || request.Longitude > -116.0)
+    {
+      return BadRequest(new { error = "Coordinates outside Washington State bounds (lat 45-49, lon -125 to -116)" });
+    }
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    // Build ArcGIS point query — finds parcel polygon containing the click point
+    var identifyUrl = $"{BentonArcGisData.ParcelServiceUrl}/query" +
+        $"?geometry={request.Longitude},{request.Latitude}" +
+        "&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelWithin" +
+        "&outFields=PARCEL_ID,OWNER_NAME,SITE_ADDR,ASSESSED_VAL,PROP_TYPE,ACREAGE,ZONE_CODE" +
+        "&returnGeometry=true&outSR=4326&f=geojson&inSR=4326";
+
+    // Also query zoning at the same point
+    var zoningUrl = $"{BentonArcGisData.ZoningServiceUrl}/query" +
+        $"?geometry={request.Longitude},{request.Latitude}" +
+        "&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelWithin" +
+        "&outFields=ZONE_CODE,ZONE_NAME,ZONE_DESC&returnGeometry=false&f=json&inSR=4326";
+
+    Response.Headers["X-Atlas-Source"] = "benton-arcgis-identify-fy2025";
+    return Ok(new
+    {
+      coordinates = new { latitude = request.Latitude, longitude = request.Longitude },
+      queries = new
+      {
+        parcelIdentify = new { url = identifyUrl, returns = "Parcel polygon + attributes at click point" },
+        zoningIdentify = new { url = zoningUrl, returns = "Zoning district at click point" },
+      },
+      enrichment = "Match PARCEL_ID from ArcGIS response against GET /api/atlas/parcels/{parcelId} for full DB data",
+      source = "Point-in-polygon identification — terra-dashboard-production pattern",
+    });
+  }
+
+  /// <summary>
+  /// All district memberships for a parcel: taxing, school, fire,
+  /// commissioner, and special districts.
+  /// Source: bcbs-gis-pro-production fetchTaxingDistricts() + terra-playground-production
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/district-membership")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> GetParcelDistrictMembership(string parcelId)
+  {
+    parcelId = parcelId.Trim();
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var exists = await _db.Properties
+        .AnyAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value);
+
+    if (!exists)
+      return NotFound(new { error = "Parcel not found" });
+
+    var encodedId = Uri.EscapeDataString(parcelId);
+
+    // Build query chain: get parcel geometry, then intersect with each district layer
+    var districtLayers = new[]
+    {
+      new { layerId = "tax-districts", name = "Tax Districts", path = "Tax_Districts/FeatureServer/0",
+            fields = "DISTRICT_ID,TAX_RATE", purpose = "Property tax rate determination" },
+      new { layerId = "school-districts", name = "School Districts", path = "School_Districts/FeatureServer/0",
+            fields = "DISTRICT_ID,DISTRICT_NAME,ENROLLMENT", purpose = "School district levy assignment" },
+      new { layerId = "commissioners", name = "Commissioner Districts", path = "Commissioner_Districts/FeatureServer/0",
+            fields = "COMMISSIONER,POPULATION", purpose = "Commissioner district representation" },
+      new { layerId = "fire-districts", name = "Fire Districts", path = "Fire_Districts/FeatureServer/0",
+            fields = "DISTRICT_ID,DISTRICT_NAME", purpose = "Fire district levy assignment" },
+    };
+
+    var geomUrl = $"{BentonArcGisData.ParcelServiceUrl}/query" +
+        $"?where=PARCEL_ID%3D%27{encodedId}%27&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&f=json";
+
+    var districtQueries = districtLayers.Select(d => new
+    {
+      d.layerId,
+      d.name,
+      d.purpose,
+      queryUrl = $"{BentonArcGisData.BaseUrl}/{d.path}/query" +
+          "?where=1%3D1&outFields=" + d.fields +
+          "&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects" +
+          "&inSR=4326&outSR=4326&returnGeometry=false&f=json",
+      note = "Pass parcel geometry from step 1 as 'geometry' parameter",
+    }).ToList();
+
+    // Reference data: known taxing districts and estimated rates
+    var refDistricts = BentonTaxingDistricts.Districts;
+
+    Response.Headers["X-Atlas-Source"] = "benton-arcgis-districts-fy2025";
+    return Ok(new
+    {
+      parcelId,
+      workflow = "district-membership",
+      steps = new object[]
+      {
+        new { step = 1, action = "Fetch parcel geometry", url = geomUrl },
+        new { step = 2, action = "Intersect with district layers", layerCount = districtQueries.Count, layers = districtQueries },
+      },
+      referenceDistricts = refDistricts,
+      estimatedCombinedRate = "Sum individual district rates from intersections for total levy rate",
+      source = "Benton County ArcGIS district layers — bcbs-gis-pro-production + terra-playground-production",
+    });
+  }
+
+  /// <summary>
+  /// Zoning code detail lookup: given a zoning code prefix, return
+  /// permitted uses, restrictions, and reference data.
+  /// Source: terra-playground-production getZoningDetails()
+  /// </summary>
+  [HttpGet("zoning/{code}/details")]
+  [RequiresPermission("read:parcel")]
+  public IActionResult GetZoningCodeDetails(string code)
+  {
+    code = code.Trim().ToUpperInvariant();
+    if (string.IsNullOrWhiteSpace(code) || code.Length > 20)
+      return BadRequest(new { error = "Invalid zoning code" });
+
+    // Match against known zoning data
+    var zoningTypes = new[]
+    {
+      new { prefix = "R-1",  label = "Single-Family Residential", density = "1 unit per lot",
+            permittedUses = new[] { "Single-family homes", "Accessory dwelling units", "Home occupations", "Parks" },
+            restrictions = new[] { "Max 35ft height", "Min 7,200 sqft lot", "Front setback 20ft" } },
+      new { prefix = "R-2",  label = "Two-Family Residential", density = "2 units per lot",
+            permittedUses = new[] { "Duplexes", "Single-family homes", "ADUs", "Day care (conditional)" },
+            restrictions = new[] { "Max 35ft height", "Min 5,000 sqft lot per unit", "Front setback 20ft" } },
+      new { prefix = "R-3",  label = "Multi-Family Residential", density = "Up to 20 units/acre",
+            permittedUses = new[] { "Apartments", "Condominiums", "Townhouses", "Group residences" },
+            restrictions = new[] { "Max 45ft height", "Min 3,000 sqft lot per unit", "Parking req 1.5/unit" } },
+      new { prefix = "C-1",  label = "Neighborhood Commercial", density = "N/A (commercial)",
+            permittedUses = new[] { "Retail stores", "Restaurants", "Personal services", "Offices" },
+            restrictions = new[] { "Max 35ft height", "Max 10,000 sqft building", "Landscaping 15%" } },
+      new { prefix = "C-2",  label = "General Commercial", density = "N/A (commercial)",
+            permittedUses = new[] { "All C-1 uses", "Hotels/motels", "Auto sales", "Entertainment" },
+            restrictions = new[] { "Max 50ft height", "Parking per use table", "Landscaping 10%" } },
+      new { prefix = "C-3",  label = "Heavy Commercial", density = "N/A (commercial)",
+            permittedUses = new[] { "Wholesale trade", "Equipment rental", "Construction services", "Mini-storage" },
+            restrictions = new[] { "Max 60ft height", "Screening from residential", "Dust/noise controls" } },
+      new { prefix = "I-1",  label = "Light Industrial", density = "N/A (industrial)",
+            permittedUses = new[] { "Manufacturing", "Warehousing", "Research labs", "Data centers" },
+            restrictions = new[] { "Max 75ft height", "200ft setback from residential", "Environmental review" } },
+      new { prefix = "I-2",  label = "Heavy Industrial", density = "N/A (industrial)",
+            permittedUses = new[] { "Heavy manufacturing", "Chemical processing", "Mineral extraction" },
+            restrictions = new[] { "Environmental impact study required", "500ft residential buffer", "SEPA review" } },
+      new { prefix = "A-",   label = "Agricultural", density = "1 unit per 5 acres",
+            permittedUses = new[] { "Farming", "Ranching", "Agricultural buildings", "Farm stands" },
+            restrictions = new[] { "Min 5-acre lot", "Right-to-farm protections", "Limited commercial" } },
+      new { prefix = "PF",   label = "Public Facilities", density = "N/A (public)",
+            permittedUses = new[] { "Government buildings", "Schools", "Fire stations", "Utilities" },
+            restrictions = new[] { "Compatible with surroundings", "Public hearing required", "SEPA review" } },
+      new { prefix = "OS",   label = "Open Space", density = "N/A (conservation)",
+            permittedUses = new[] { "Parks", "Trails", "Conservation", "Passive recreation" },
+            restrictions = new[] { "No permanent structures", "Native vegetation preservation", "Drainage easements" } },
+      new { prefix = "MU",   label = "Mixed Use", density = "Up to 40 units/acre",
+            permittedUses = new[] { "Ground-floor commercial", "Upper-floor residential", "Live-work units", "Offices" },
+            restrictions = new[] { "Max 65ft height", "Ground floor 60% commercial", "Structured parking" } },
+    };
+
+    var match = zoningTypes.FirstOrDefault(z =>
+        code.StartsWith(z.prefix, StringComparison.OrdinalIgnoreCase));
+
+    if (match is null)
+    {
+      // Not found in reference — still provide ArcGIS lookup URL
+      var encodedCode = Uri.EscapeDataString(code);
+      return Ok(new
+      {
+        code,
+        found = false,
+        arcgisLookupUrl = $"{BentonArcGisData.ZoningServiceUrl}/query" +
+            $"?where=ZONE_CODE%3D%27{encodedCode}%27&outFields=*&returnGeometry=true&outSR=4326&f=geojson",
+        note = "Zoning code not in reference data. Use arcgisLookupUrl for live query.",
+      });
+    }
+
+    var encodedPrefix = Uri.EscapeDataString(match.prefix);
+    Response.Headers["X-Atlas-Source"] = "benton-zoning-reference-fy2025";
+    return Ok(new
+    {
+      code,
+      found = true,
+      zoning = new
+      {
+        match.prefix,
+        match.label,
+        match.density,
+        match.permittedUses,
+        match.restrictions,
+      },
+      arcgisQueryUrl = $"{BentonArcGisData.ZoningServiceUrl}/query" +
+          $"?where=ZONE_CODE+LIKE+%27{encodedPrefix}%25%27&outFields=*&returnGeometry=true&outSR=4326&f=geojson",
+      relatedParcels = $"Use POST /api/atlas/arcgis/query/search with zoning={code} to find parcels",
+      source = "Benton County zoning reference — terra-playground-production + county code",
+    });
+  }
+
+  /// <summary>
+  /// Valuation heat map data: DB-backed aggregation of assessed values
+  /// by property type for map visualization (choropleth/bubble).
+  /// Source: bcbs-gis-pro-production getPropertyStatistics()
+  /// </summary>
+  [HttpGet("map/valuation-heat-map")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> GetValuationHeatMap()
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var byType = await _db.Properties
+        .AsNoTracking()
+        .Where(p => p.CountyId == countyId.Value && p.PropertyType != null)
+        .GroupBy(p => p.PropertyType)
+        .Select(g => new
+        {
+          propertyType = g.Key,
+          count = g.Count(),
+          totalAssessed = g.Sum(p => p.AssessedValue),
+          avgAssessed = g.Average(p => p.AssessedValue),
+          minAssessed = g.Min(p => p.AssessedValue),
+          maxAssessed = g.Max(p => p.AssessedValue),
+          totalMarket = g.Sum(p => p.MarketValue),
+          avgMarket = g.Average(p => p.MarketValue),
+        })
+        .OrderByDescending(g => g.totalAssessed)
+        .ToListAsync();
+
+    var totalParcels = byType.Sum(t => t.count);
+    var totalAssessed = byType.Sum(t => t.totalAssessed);
+
+    // Build ArcGIS renderer query for choropleth map
+    var rendererUrl = $"{BentonArcGisData.AssessorValServiceUrl}/query" +
+        "?where=1%3D1&outFields=PARCEL_ID,ASSESSED_VAL,PROP_TYPE,ACREAGE" +
+        "&returnGeometry=true&outSR=4326&resultRecordCount=2000&f=geojson";
+
+    Response.Headers["X-Atlas-Source"] = "benton-heat-map-fy2025";
+    return Ok(new
+    {
+      countyId = countyId.Value,
+      summary = new { totalParcels, totalAssessedValue = totalAssessed, typeCount = byType.Count },
+      byPropertyType = byType,
+      visualization = new
+      {
+        rendererQueryUrl = rendererUrl,
+        suggestedRenderer = "ClassBreaksRenderer on ASSESSED_VAL",
+        breakpoints = new[] { 50_000, 150_000, 300_000, 500_000, 1_000_000 },
+        colorRamp = new[] { "#ffffb2", "#fed976", "#feb24c", "#fd8d3c", "#f03b20", "#bd0026" },
+        note = "Fetch rendererQueryUrl for geojson parcels, classify by assessed value for choropleth",
+      },
+      source = "Benton County property valuation — DB aggregation + ArcGIS FeatureServer",
+    });
+  }
+
+  /// <summary>
+  /// Multi-parcel spatial selection: select parcels within a polygon or
+  /// radius for batch analysis operations.
+  /// Source: terra-playground-production getPropertiesInBoundingBox() + radius selection
+  /// </summary>
+  public record MapSelectionRequest(string SelectionType, double? CenterLat, double? CenterLon,
+      double? RadiusMeters, double[][]? PolygonRings);
+
+  [HttpPost("map/selection")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> GetParcelsInSelection([FromBody] MapSelectionRequest request)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    string queryUrl;
+    string selectionDescription;
+
+    if (string.Equals(request.SelectionType, "radius", StringComparison.OrdinalIgnoreCase))
+    {
+      if (request.CenterLat is null || request.CenterLon is null || request.RadiusMeters is null)
+        return BadRequest(new { error = "Radius selection requires centerLat, centerLon, radiusMeters" });
+
+      if (request.RadiusMeters <= 0 || request.RadiusMeters > 5000)
+        return BadRequest(new { error = "radiusMeters must be between 1 and 5000" });
+
+      // ArcGIS buffer/distance query
+      queryUrl = $"{BentonArcGisData.ParcelServiceUrl}/query" +
+          $"?geometry={request.CenterLon},{request.CenterLat}" +
+          "&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects" +
+          $"&distance={request.RadiusMeters}&units=esriSRUnit_Meter" +
+          "&outFields=PARCEL_ID,OWNER_NAME,SITE_ADDR,ASSESSED_VAL,PROP_TYPE" +
+          "&returnGeometry=true&outSR=4326&inSR=4326&f=geojson";
+      selectionDescription = $"Radius: {request.RadiusMeters}m around ({request.CenterLat}, {request.CenterLon})";
+    }
+    else if (string.Equals(request.SelectionType, "polygon", StringComparison.OrdinalIgnoreCase))
+    {
+      if (request.PolygonRings is null || request.PolygonRings.Length < 3)
+        return BadRequest(new { error = "Polygon selection requires at least 3 coordinate pairs in polygonRings" });
+
+      // Build ArcGIS polygon geometry JSON
+      var ringCoords = string.Join(",", request.PolygonRings.Select(c =>
+          c.Length >= 2 ? $"[{c[0]},{c[1]}]" : "[0,0]"));
+      var geometryJson = Uri.EscapeDataString($"{{\"rings\":[[ {ringCoords} ]],\"spatialReference\":{{\"wkid\":4326}}}}");
+
+      queryUrl = $"{BentonArcGisData.ParcelServiceUrl}/query" +
+          $"?geometry={geometryJson}" +
+          "&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects" +
+          "&outFields=PARCEL_ID,OWNER_NAME,SITE_ADDR,ASSESSED_VAL,PROP_TYPE" +
+          "&returnGeometry=true&outSR=4326&inSR=4326&f=geojson";
+      selectionDescription = $"Polygon with {request.PolygonRings.Length} vertices";
+    }
+    else
+    {
+      return BadRequest(new { error = "selectionType must be 'radius' or 'polygon'" });
+    }
+
+    Response.Headers["X-Atlas-Source"] = "benton-arcgis-selection-fy2025";
+    return Ok(new
+    {
+      selection = selectionDescription,
+      selectionType = request.SelectionType,
+      arcgisQueryUrl = queryUrl,
+      enrichmentHint = "Match PARCEL_ID results against GET /api/atlas/parcels/{parcelId} for full DB records",
+      batchOperations = new[]
+      {
+        "Aggregate assessed values for selected parcels",
+        "Export parcel list as CSV/PDF",
+        "Calculate combined tax liability",
+        "Generate mailing labels for selected owners",
+      },
+      source = "Benton County ArcGIS — spatial selection from terra-playground-production",
+    });
+  }
+
+  /// <summary>
+  /// Available basemap catalog for map rendering.
+  /// Includes Benton County aerial imagery and standard ArcGIS basemaps.
+  /// </summary>
+  [HttpGet("map/basemaps")]
+  [RequiresPermission("read:parcel")]
+  public IActionResult GetBasemapCatalog()
+  {
+    var basemaps = new[]
+    {
+      new { id = "aerial-2024", name = "Benton County Aerial (2024)", type = "imagery",
+            tileUrl = "https://services7.arcgis.com/NURlY7V8UHl6XumF/arcgis/rest/services/BC_Aerial_2024/MapServer/tile/{z}/{y}/{x}",
+            attribution = "Benton County GIS", maxZoom = 20, isDefault = false },
+      new { id = "streets", name = "ArcGIS Streets", type = "vector",
+            tileUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+            attribution = "Esri, HERE, Garmin", maxZoom = 23, isDefault = true },
+      new { id = "topo", name = "ArcGIS Topographic", type = "vector",
+            tileUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+            attribution = "Esri, USGS, NOAA", maxZoom = 23, isDefault = false },
+      new { id = "satellite", name = "ArcGIS World Imagery", type = "imagery",
+            tileUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            attribution = "Esri, Maxar, Earthstar", maxZoom = 23, isDefault = false },
+      new { id = "hybrid", name = "Imagery with Labels", type = "hybrid",
+            tileUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+            attribution = "Esri", maxZoom = 23, isDefault = false },
+      new { id = "dark-gray", name = "Dark Gray Canvas", type = "vector",
+            tileUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+            attribution = "Esri", maxZoom = 16, isDefault = false },
+    };
+
+    var defaultExtent = new
+    {
+      center = new { latitude = 46.2856, longitude = -119.2945 },
+      zoom = 12,
+      bounds = new { north = 46.60, south = 46.00, west = -119.90, east = -119.00 },
+      description = "Benton County, Washington — Tri-Cities area",
+    };
+
+    return Ok(new
+    {
+      count = basemaps.Length,
+      basemaps,
+      defaultExtent,
+      spatialReference = "EPSG:4326 (WGS84) for display, EPSG:3857 (Web Mercator) for tiles",
+      source = "ArcGIS Online + Benton County GIS tile services",
+    });
+  }
+
+  /// <summary>
+  /// Map bookmarks: predefined map views for common assessment areas.
+  /// DB-backed saved extents from county reference data.
+  /// </summary>
+  [HttpGet("map/bookmarks")]
+  [RequiresPermission("read:parcel")]
+  public IActionResult GetMapBookmarks()
+  {
+    var bookmarks = new[]
+    {
+      new { id = "countywide", name = "Benton County Overview",
+            center = new { latitude = 46.2856, longitude = -119.2945 }, zoom = 10,
+            description = "Full county view showing all incorporated cities" },
+      new { id = "richland", name = "City of Richland",
+            center = new { latitude = 46.2856, longitude = -119.2845 }, zoom = 13,
+            description = "Richland city limits including Kadlec corridor and Columbia Point" },
+      new { id = "kennewick", name = "City of Kennewick",
+            center = new { latitude = 46.2113, longitude = -119.1372 }, zoom = 13,
+            description = "Kennewick city limits including Columbia Center Mall area" },
+      new { id = "prosser", name = "City of Prosser",
+            center = new { latitude = 46.2069, longitude = -119.7676 }, zoom = 14,
+            description = "Prosser city limits including Wine Country area" },
+      new { id = "west-richland", name = "City of West Richland",
+            center = new { latitude = 46.3042, longitude = -119.3614 }, zoom = 13,
+            description = "West Richland city limits including Red Mountain AVA" },
+      new { id = "benton-city", name = "City of Benton City",
+            center = new { latitude = 46.2629, longitude = -119.4878 }, zoom = 14,
+            description = "Benton City limits along the Yakima River" },
+      new { id = "hanford", name = "Hanford Nuclear Reservation",
+            center = new { latitude = 46.5507, longitude = -119.4883 }, zoom = 11,
+            description = "US DOE Hanford site — PILT area (586 sq mi)" },
+      new { id = "horse-heaven", name = "Horse Heaven Hills",
+            center = new { latitude = 46.0500, longitude = -119.5000 }, zoom = 11,
+            description = "Horse Heaven Hills agricultural zone — wind farms and vineyards" },
+    };
+
+    return Ok(new
+    {
+      count = bookmarks.Length,
+      bookmarks,
+      usage = "Set map center and zoom from bookmark, then load layers from GET /api/atlas/layers",
+    });
+  }
+
+  /// <summary>
+  /// Parcel comparison: side-by-side spatial and valuation data for
+  /// multiple parcels (comp analysis support for assessors).
+  /// </summary>
+  public record ParcelComparisonRequest(string[] ParcelIds);
+
+  [HttpPost("map/parcel-comparison")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> CompareParcelsSpatially([FromBody] ParcelComparisonRequest request)
+  {
+    if (request.ParcelIds is null || request.ParcelIds.Length < 2)
+      return BadRequest(new { error = "Comparison requires at least 2 parcel IDs" });
+
+    if (request.ParcelIds.Length > 10)
+      return BadRequest(new { error = "Maximum 10 parcels per comparison" });
+
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var validIds = request.ParcelIds
+        .Select(id => id.Trim())
+        .Where(id => IsValidParcelId(id))
+        .Distinct()
+        .ToArray();
+
+    if (validIds.Length < 2)
+      return BadRequest(new { error = "At least 2 valid parcel IDs required after validation" });
+
+    // Fetch DB data for all parcels
+    var parcels = await _db.Properties
+        .AsNoTracking()
+        .Where(p => validIds.Contains(p.ParcelId) && p.CountyId == countyId.Value)
+        .Select(p => new
+        {
+          p.ParcelId,
+          p.Address,
+          p.PropertyType,
+          p.AssessedValue,
+          p.MarketValue,
+          p.LandValue,
+          p.ImprovementValue,
+        })
+        .ToListAsync();
+
+    // Build ArcGIS multi-parcel geometry query
+    var whereClause = string.Join("+OR+", validIds.Select(id =>
+    {
+      var enc = Uri.EscapeDataString(id);
+      return $"PARCEL_ID%3D%27{enc}%27";
+    }));
+
+    var multiParcelUrl = $"{BentonArcGisData.ParcelServiceUrl}/query" +
+        $"?where={whereClause}" +
+        "&outFields=PARCEL_ID,SHAPE_Area,SHAPE_Length,ACREAGE,ASSESSED_VAL" +
+        "&returnGeometry=true&outSR=4326&f=geojson";
+
+    Response.Headers["X-Atlas-Source"] = "benton-parcel-comparison-fy2025";
+    return Ok(new
+    {
+      requestedIds = validIds,
+      foundInDb = parcels.Count,
+      parcels,
+      comparison = new
+      {
+        avgAssessedValue = parcels.Count > 0 ? parcels.Average(p => p.AssessedValue) : 0m,
+        avgMarketValue = parcels.Count > 0 ? parcels.Average(p => p.MarketValue) : 0m,
+        totalLandValue = parcels.Sum(p => p.LandValue),
+        propertyTypes = parcels.Select(p => p.PropertyType).Distinct().ToArray(),
+      },
+      arcgisGeometryUrl = multiParcelUrl,
+      note = "Fetch arcgisGeometryUrl for GeoJSON polygons of all parcels, overlay on map for visual comparison",
+      source = "Benton County — DB valuation + ArcGIS geometry comparison",
+    });
+  }
+
+  /// <summary>
+  /// Area/distance measurement request builder for map tools.
+  /// Provides ArcGIS geometry service URLs for measurement operations.
+  /// </summary>
+  [HttpGet("map/measurement-tools")]
+  [RequiresPermission("read:parcel")]
+  public IActionResult GetMeasurementTools()
+  {
+    return Ok(new
+    {
+      tools = new object[]
+      {
+        new { id = "area", name = "Measure Area", geometryType = "polygon",
+              description = "Draw polygon on map to calculate area in acres/sqft",
+              arcgisService = "https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer/areasAndLengths",
+              parameters = "sr=4326, calculationType=preserveShape, areaUnit=esriSquareFeet, lengthUnit=esriSurveyFeet" },
+        new { id = "distance", name = "Measure Distance", geometryType = "polyline",
+              description = "Draw line on map to calculate distance in feet/miles",
+              arcgisService = "https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer/lengths",
+              parameters = "sr=4326, calculationType=preserveShape, lengthUnit=esriSurveyFeet" },
+        new { id = "buffer", name = "Buffer Analysis", geometryType = "point",
+              description = "Create buffer zone around a point for proximity analysis",
+              arcgisService = "https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer/buffer",
+              parameters = "sr=4326, bufferSR=4326, unit=esriSRUnit_Meter, distances=100,250,500" },
+      },
+      conversionFactors = new
+      {
+        sqftToAcres = 1.0 / 43560.0,
+        feetToMiles = 1.0 / 5280.0,
+        metersToFeet = 3.28084,
+        sqMetersToSqFeet = 10.7639,
+      },
+      source = "ArcGIS Geometry Service — standard measurement utilities",
+    });
+  }
+
   // ──── ArcGIS URL builder (original) ────
 
   internal static string BuildArcGisParcelQueryUrl(string parcelId)

@@ -4355,4 +4355,503 @@ public sealed class R1Week5CxR1ClosureTests
     // All cities have FIPS codes
     json.Should().Contain("fipsCode");
   }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  WAVE 19 — Full Map Workflows Tests
+  // ════════════════════════════════════════════════════════════════════
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_ParcelGeometryArcGis_ValidParcel_ReturnsGeometryUrls()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelGeometryArcGis_ValidParcel_ReturnsGeometryUrls));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    var prop = CreateProperty(countyId, "55001-100");
+    db.Properties.Add(prop);
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var result = await controller.GetParcelGeometryFromArcGis("55001-100");
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("geometryQueryUrl");
+    json.Should().Contain("centroidQueryUrl");
+    json.Should().Contain("55001-100");
+    json.Should().Contain("EPSG:4326");
+    json.Should().Contain("propertyData");
+    json.Should().Contain("returnGeometry");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_ParcelGeometryArcGis_Forbidden_NoCountyClaim()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelGeometryArcGis_Forbidden_NoCountyClaim));
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    AttachPrincipal(controller, CreateEmptyPrincipal());
+
+    var result = await controller.GetParcelGeometryFromArcGis("55001-100");
+    result.Should().BeOfType<ForbidResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_ParcelGeometryArcGis_NotFound_Returns404()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelGeometryArcGis_NotFound_Returns404));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var result = await controller.GetParcelGeometryFromArcGis("99999-999");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_ParcelGeometryArcGis_InvalidId_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelGeometryArcGis_InvalidId_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var result = await controller.GetParcelGeometryFromArcGis("!!!invalid!!!");
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_SpatialProfile_ValidParcel_ReturnsOverlayWorkflow()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_SpatialProfile_ValidParcel_ReturnsOverlayWorkflow));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    var prop = CreateProperty(countyId, "55002-200");
+    db.Properties.Add(prop);
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var result = await controller.GetParcelSpatialProfile("55002-200");
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("spatial-profile");
+    json.Should().Contain("overlayLayers");
+    json.Should().Contain("esriSpatialRelIntersects");
+    json.Should().Contain("zoningDistrict");
+    json.Should().Contain("floodZone");
+    json.Should().Contain("taxDistrict");
+    json.Should().Contain("schoolDistrict");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_SpatialProfile_NotFoundParcel_Returns404()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_SpatialProfile_NotFoundParcel_Returns404));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var result = await controller.GetParcelSpatialProfile("99999-999");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_MapIdentify_ValidCoordinates_ReturnsQueryUrls()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_MapIdentify_ValidCoordinates_ReturnsQueryUrls));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var request = new AtlasController.MapIdentifyRequest(46.2856, -119.2945);
+    var result = await controller.IdentifyParcelAtPoint(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("parcelIdentify");
+    json.Should().Contain("zoningIdentify");
+    json.Should().Contain("esriGeometryPoint");
+    json.Should().Contain("esriSpatialRelWithin");
+    json.Should().Contain("46.2856");
+    json.Should().Contain("-119.2945");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_MapIdentify_OutOfBounds_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_MapIdentify_OutOfBounds_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var request = new AtlasController.MapIdentifyRequest(10.0, -200.0); // way outside WA
+    var result = await controller.IdentifyParcelAtPoint(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_DistrictMembership_ValidParcel_ReturnsDistrictLayers()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_DistrictMembership_ValidParcel_ReturnsDistrictLayers));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    var prop = CreateProperty(countyId, "55003-300");
+    db.Properties.Add(prop);
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var result = await controller.GetParcelDistrictMembership("55003-300");
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("district-membership");
+    json.Should().Contain("tax-districts");
+    json.Should().Contain("school-districts");
+    json.Should().Contain("commissioners");
+    json.Should().Contain("fire-districts");
+    json.Should().Contain("referenceDistricts");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_DistrictMembership_NotFound_Returns404()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_DistrictMembership_NotFound_Returns404));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var result = await controller.GetParcelDistrictMembership("99999-001");
+    result.Should().BeOfType<NotFoundObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public void Atlas_ZoningDetails_KnownCode_ReturnsPermittedUses()
+  {
+    var controller = new AtlasController(null!, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetZoningCodeDetails("R-1");
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Single-Family Residential");
+    json.Should().Contain("permittedUses");
+    json.Should().Contain("restrictions");
+    json.Should().Contain("Max 35ft height");
+    json.Should().Contain("true"); // found = true
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public void Atlas_ZoningDetails_UnknownCode_ReturnsFallbackWithArcGisUrl()
+  {
+    var controller = new AtlasController(null!, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetZoningCodeDetails("X-99");
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("false"); // found = false
+    json.Should().Contain("arcgisLookupUrl");
+    json.Should().Contain("ZONE_CODE");
+    json.Should().Contain("X-99");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public void Atlas_ZoningDetails_AllKnownZones()
+  {
+    var controller = new AtlasController(null!, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var codes = new[] { "R-1", "R-2", "R-3", "C-1", "C-2", "C-3", "I-1", "I-2", "A-1", "PF", "OS", "MU" };
+    foreach (var code in codes)
+    {
+      var result = controller.GetZoningCodeDetails(code);
+      var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+      var json = JsonSerializer.Serialize(okResult.Value);
+      json.Should().Contain("permittedUses", because: $"zone {code} should have permitted uses");
+    }
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public void Atlas_ZoningDetails_EmptyCode_ReturnsBadRequest()
+  {
+    var controller = new AtlasController(null!, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    var result = controller.GetZoningCodeDetails("  ");
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_ValuationHeatMap_ReturnsAggregation()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ValuationHeatMap_ReturnsAggregation));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    var p1 = CreateProperty(countyId, "HM-001");
+    p1.PropertyType = "Residential";
+    p1.AssessedValue = 300_000;
+    var p2 = CreateProperty(countyId, "HM-002");
+    p2.PropertyType = "Residential";
+    p2.AssessedValue = 400_000;
+    var p3 = CreateProperty(countyId, "HM-003");
+    p3.PropertyType = "Commercial";
+    p3.AssessedValue = 800_000;
+    db.Properties.AddRange(p1, p2, p3);
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var result = await controller.GetValuationHeatMap();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("byPropertyType");
+    json.Should().Contain("Residential");
+    json.Should().Contain("Commercial");
+    json.Should().Contain("rendererQueryUrl");
+    json.Should().Contain("ClassBreaksRenderer");
+    json.Should().Contain("colorRamp");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_MapSelection_Radius_ReturnsQueryUrl()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_MapSelection_Radius_ReturnsQueryUrl));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var request = new AtlasController.MapSelectionRequest("radius", 46.2856, -119.2945, 500, null);
+    var result = await controller.GetParcelsInSelection(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("radius");
+    json.Should().Contain("arcgisQueryUrl");
+    json.Should().Contain("distance");
+    json.Should().Contain("esriSRUnit_Meter");
+    json.Should().Contain("batchOperations");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_MapSelection_Polygon_ReturnsQueryUrl()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_MapSelection_Polygon_ReturnsQueryUrl));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var rings = new[]
+    {
+      new[] { -119.30, 46.28 },
+      new[] { -119.29, 46.28 },
+      new[] { -119.29, 46.29 },
+      new[] { -119.30, 46.29 },
+    };
+    var request = new AtlasController.MapSelectionRequest("polygon", null, null, null, rings);
+    var result = await controller.GetParcelsInSelection(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("polygon");
+    json.Should().Contain("arcgisQueryUrl");
+    json.Should().Contain("esriGeometryPolygon");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_MapSelection_InvalidType_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_MapSelection_InvalidType_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var request = new AtlasController.MapSelectionRequest("lasso", null, null, null, null);
+    var result = await controller.GetParcelsInSelection(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_MapSelection_RadiusTooLarge_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_MapSelection_RadiusTooLarge_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var request = new AtlasController.MapSelectionRequest("radius", 46.28, -119.29, 10000, null);
+    var result = await controller.GetParcelsInSelection(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public void Atlas_Basemaps_ReturnsFullCatalog()
+  {
+    var controller = new AtlasController(null!, NullLogger<AtlasController>.Instance);
+    var result = controller.GetBasemapCatalog();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("aerial-2024");
+    json.Should().Contain("streets");
+    json.Should().Contain("topo");
+    json.Should().Contain("satellite");
+    json.Should().Contain("hybrid");
+    json.Should().Contain("dark-gray");
+    json.Should().Contain("defaultExtent");
+    json.Should().Contain("Benton County");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public void Atlas_MapBookmarks_ReturnsAllBentonLocations()
+  {
+    var controller = new AtlasController(null!, NullLogger<AtlasController>.Instance);
+    var result = controller.GetMapBookmarks();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("countywide");
+    json.Should().Contain("richland");
+    json.Should().Contain("kennewick");
+    json.Should().Contain("prosser");
+    json.Should().Contain("west-richland");
+    json.Should().Contain("benton-city");
+    json.Should().Contain("hanford");
+    json.Should().Contain("horse-heaven");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_ParcelComparison_TwoParcels_ReturnsComparison()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelComparison_TwoParcels_ReturnsComparison));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    var p1 = CreateProperty(countyId, "CMP-001");
+    p1.AssessedValue = 200_000;
+    var p2 = CreateProperty(countyId, "CMP-002");
+    p2.AssessedValue = 300_000;
+    db.Properties.AddRange(p1, p2);
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var request = new AtlasController.ParcelComparisonRequest(new[] { "CMP-001", "CMP-002" });
+    var result = await controller.CompareParcelsSpatially(request);
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("CMP-001");
+    json.Should().Contain("CMP-002");
+    json.Should().Contain("comparison");
+    json.Should().Contain("avgAssessedValue");
+    json.Should().Contain("arcgisGeometryUrl");
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_ParcelComparison_OnlyOneParcel_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelComparison_OnlyOneParcel_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var request = new AtlasController.ParcelComparisonRequest(new[] { "CMP-001" });
+    var result = await controller.CompareParcelsSpatially(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public async Task Atlas_ParcelComparison_TooMany_ReturnsBadRequest()
+  {
+    await using var db = CreateDbContext(nameof(Atlas_ParcelComparison_TooMany_ReturnsBadRequest));
+    var countyId = Guid.NewGuid();
+    db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
+    await db.SaveChangesAsync();
+
+    var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
+    controller.ControllerContext.HttpContext = new DefaultHttpContext { User = CreatePrincipal(countyId, "BENTON") };
+
+    var ids = Enumerable.Range(1, 11).Select(i => $"CMP-{i:D3}").ToArray();
+    var request = new AtlasController.ParcelComparisonRequest(ids);
+    var result = await controller.CompareParcelsSpatially(request);
+    result.Should().BeOfType<BadRequestObjectResult>();
+  }
+
+  [Fact]
+  [Trait("Category", "Atlas-MapWorkflows")]
+  public void Atlas_MeasurementTools_ReturnsAllTools()
+  {
+    var controller = new AtlasController(null!, NullLogger<AtlasController>.Instance);
+    var result = controller.GetMeasurementTools();
+    var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var json = JsonSerializer.Serialize(okResult.Value);
+
+    json.Should().Contain("Measure Area");
+    json.Should().Contain("Measure Distance");
+    json.Should().Contain("Buffer Analysis");
+    json.Should().Contain("conversionFactors");
+    json.Should().Contain("GeometryServer");
+  }
 }
