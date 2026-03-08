@@ -1,17 +1,13 @@
 #!/bin/bash
 
 # ==================================================
-# REVOLUTIONARY: TerraFusion OS 1.0 Phase Beta Deployment
-# Government-Grade Microservices Architecture Launch
-# 
-# This script represents the systematic deployment of a complete
-# AI-enhanced government operating system with quantum routing,
-# citizen-centric optimization, and FISMA-HIGH compliance.
+# TerraFusion OS 1.0 Phase Beta Deployment
+# Deploys only services that have real Dockerfiles.
 # ==================================================
 
 set -euo pipefail
 
-# Colors for enhanced terminal output
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -19,7 +15,7 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 WHITE='\033[1;37m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 # Configuration
 TERRAFUSION_VERSION="1.0.0"
@@ -27,74 +23,63 @@ DEPLOYMENT_ENV="${DEPLOYMENT_ENV:-development}"
 COMPOSE_FILE="docker-compose.microservices.yml"
 LOG_FILE="deployment-$(date +%Y%m%d-%H%M%S).log"
 
-# Create logs directory
 mkdir -p logs
 
 echo -e "${PURPLE}=================================================="
-echo -e "🚀 TERRAFUSION OS 1.0 - PHASE BETA DEPLOYMENT"
-echo -e "   Government. Transcended. Microservices Architecture."
+echo -e "  TERRAFUSION OS 1.0 - PHASE BETA DEPLOYMENT"
 echo -e "==================================================${NC}"
 echo ""
 
-# Function: Log with timestamp
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "logs/$LOG_FILE"
 }
 
-# Function: Print section header
 section() {
-    echo -e "\n${CYAN}▶ $1${NC}"
+    echo -e "\n${CYAN}> $1${NC}"
     log "SECTION: $1"
 }
 
-# Function: Print success message
 success() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN}  OK: $1${NC}"
     log "SUCCESS: $1"
 }
 
-# Function: Print warning message
 warning() {
-    echo -e "${YELLOW}⚠️ $1${NC}"
+    echo -e "${YELLOW}  WARN: $1${NC}"
     log "WARNING: $1"
 }
 
-# Function: Print error message
 error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED}  ERROR: $1${NC}"
     log "ERROR: $1"
 }
 
-# Function: Check prerequisites
+# ── Prerequisites ─────────────────────────────────
 check_prerequisites() {
-    section "PHASE BETA-0: Prerequisites Validation"
-    
-    # Check Docker
+    section "Phase 0: Prerequisites"
+
     if ! command -v docker &> /dev/null; then
-        error "Docker is not installed. Please install Docker first."
+        error "Docker is not installed."
         exit 1
     fi
     success "Docker found: $(docker --version)"
-    
-    # Check Docker Compose
-    if ! command -v docker-compose &> /dev/null; then
-        error "Docker Compose is not installed. Please install Docker Compose first."
+
+    if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+        error "Docker Compose is not installed."
         exit 1
     fi
-    success "Docker Compose found: $(docker-compose --version)"
-    
-    # Check .NET SDK
-    if ! command -v dotnet &> /dev/null; then
-        warning ".NET SDK not found. Some development features may not work."
-    else
+    success "Docker Compose available"
+
+    if command -v dotnet &> /dev/null; then
         success ".NET SDK found: $(dotnet --version)"
+    else
+        warning ".NET SDK not found — Docker-only deploy"
     fi
-    
-    # Check available ports
-    section "Port Availability Check"
-    ports=(5000 5001 5002 5003 5004 5005 5006 5007 5008 5009 5010 5011 5012 5013 8500 5432 6379 3000 9090)
+
+    section "Port availability"
+    ports=(5000 3002 3004 8500 5432 6379 5672 15672 9090 3001)
     for port in "${ports[@]}"; do
-        if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
+        if lsof -Pi :"$port" -sTCP:LISTEN -t >/dev/null 2>&1; then
             warning "Port $port is already in use"
         else
             echo -e "  Port $port: ${GREEN}Available${NC}"
@@ -102,343 +87,211 @@ check_prerequisites() {
     done
 }
 
-# Function: Setup environment
+# ── Environment ───────────────────────────────────
 setup_environment() {
-    section "PHASE BETA-1: Environment Configuration"
-    
-    # Create environment file if it doesn't exist
+    section "Phase 1: Environment configuration"
+
     if [ ! -f .env ]; then
-        log "Creating .env file from template"
+        log "Creating .env from defaults"
         cat > .env << EOF
-# TerraFusion OS 1.0 - Phase Beta Environment Configuration
+# TerraFusion OS 1.0 — Phase Beta
 TERRAFUSION_ENVIRONMENT=${DEPLOYMENT_ENV}
 ASPNETCORE_ENVIRONMENT=${DEPLOYMENT_ENV^}
-
-# Database Configuration
 POSTGRES_USER=terrafusion
 POSTGRES_PASSWORD=TerraFusion2024!
 POSTGRES_DB=terrafusion_os
-
-# Redis Configuration
 REDIS_PASSWORD=TerraFusion2024!
-
-# RabbitMQ Configuration
 RABBITMQ_USER=terrafusion
 RABBITMQ_PASSWORD=TerraFusion2024!
-
-# Monitoring
 GRAFANA_USER=admin
 GRAFANA_PASSWORD=TerraFusion2024!
-
-# Security
-JWT_SECRET=$(openssl rand -base64 32)
-
-# Development Tools
+JWT_SECRET=$(openssl rand -base64 32 2>/dev/null || echo "dev-jwt-secret-replace-me")
 PGADMIN_PASSWORD=TerraFusion2024!
 EOF
-        success "Environment configuration created"
+        success "Created .env"
     else
-        success "Environment configuration already exists"
+        success ".env already exists"
     fi
-    
-    # Load environment
+
+    # shellcheck disable=SC1091
     source .env
 }
 
-# Function: Build services
+# ── Build ─────────────────────────────────────────
 build_services() {
-    section "PHASE BETA-2: Building Microservices"
-    
-    echo -e "${BLUE}Building TerraFusion microservices...${NC}"
-    
-    # Build .NET solution first
+    section "Phase 2: Building microservices"
+
     if [ -f "TerraFusion.sln" ]; then
         log "Building .NET solution"
         dotnet restore TerraFusion.sln
         dotnet build TerraFusion.sln --configuration Release --no-restore
-        success ".NET solution built successfully"
+        success ".NET solution built"
     else
-        warning ".NET solution not found, skipping build"
+        warning ".NET solution not found, skipping dotnet build"
     fi
-    
-    # Build Docker images
-    log "Building Docker images for microservices"
-    docker-compose -f $COMPOSE_FILE build --parallel
-    success "All microservice images built successfully"
+
+    log "Building Docker images"
+    docker-compose -f "$COMPOSE_FILE" build --parallel
+    success "Docker images built"
 }
 
-# Function: Start infrastructure services
+# ── Infrastructure ────────────────────────────────
 start_infrastructure() {
-    section "PHASE BETA-3: Infrastructure Services Startup"
-    
-    echo -e "${BLUE}Starting infrastructure services...${NC}"
-    
-    # Start infrastructure services first
-    docker-compose -f $COMPOSE_FILE up -d consul postgres redis rabbitmq
-    
-    # Wait for services to be ready
-    echo -e "${YELLOW}Waiting for infrastructure services to be ready...${NC}"
-    
-    # Wait for Consul
-    echo -n "Consul: "
-    while ! curl -s http://localhost:8500/v1/status/leader | grep -q '"'; do
-        echo -n "."
-        sleep 2
+    section "Phase 3: Infrastructure services"
+
+    docker-compose -f "$COMPOSE_FILE" up -d consul postgres redis rabbitmq
+    echo -e "${YELLOW}Waiting for infrastructure...${NC}"
+
+    echo -n "  Consul: "
+    for i in $(seq 1 30); do
+        if curl -sf http://localhost:8500/v1/status/leader | grep -q '"'; then break; fi
+        echo -n "."; sleep 2
     done
     echo -e " ${GREEN}Ready${NC}"
-    
-    # Wait for PostgreSQL
-    echo -n "PostgreSQL: "
-    while ! PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d $POSTGRES_DB -c '\q' 2>/dev/null; do
-        echo -n "."
-        sleep 2
+
+    echo -n "  PostgreSQL: "
+    for i in $(seq 1 30); do
+        if docker exec terrafusion-postgres pg_isready -U terrafusion -d terrafusion_os &>/dev/null; then break; fi
+        echo -n "."; sleep 2
     done
     echo -e " ${GREEN}Ready${NC}"
-    
-    # Wait for Redis
-    echo -n "Redis: "
-    while ! redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping 2>/dev/null | grep -q PONG; do
-        echo -n "."
-        sleep 2
+
+    echo -n "  Redis: "
+    for i in $(seq 1 30); do
+        if docker exec terrafusion-redis redis-cli ping 2>/dev/null | grep -q PONG; then break; fi
+        echo -n "."; sleep 2
     done
     echo -e " ${GREEN}Ready${NC}"
-    
-    # Wait for RabbitMQ
-    echo -n "RabbitMQ: "
-    while ! curl -s -u $RABBITMQ_USER:$RABBITMQ_PASSWORD http://localhost:15672/api/overview 2>/dev/null | grep -q management_version; do
-        echo -n "."
-        sleep 2
+
+    echo -n "  RabbitMQ: "
+    for i in $(seq 1 30); do
+        if curl -sf -u "${RABBITMQ_USER:-terrafusion}:${RABBITMQ_PASSWORD:-TerraFusion2024!}" http://localhost:15672/api/overview | grep -q management_version; then break; fi
+        echo -n "."; sleep 2
     done
     echo -e " ${GREEN}Ready${NC}"
-    
-    success "Infrastructure services are ready"
+
+    success "Infrastructure up"
 }
 
-# Function: Start monitoring services
+# ── Monitoring ────────────────────────────────────
 start_monitoring() {
-    section "PHASE BETA-4: Monitoring and Observability"
-    
-    echo -e "${BLUE}Starting monitoring services...${NC}"
-    
-    # Start monitoring services
-    docker-compose -f $COMPOSE_FILE up -d prometheus grafana
-    
-    # Wait for services
-    echo -n "Prometheus: "
-    while ! curl -s http://localhost:9090/api/v1/status/config 2>/dev/null | grep -q status; do
-        echo -n "."
-        sleep 2
+    section "Phase 4: Monitoring"
+
+    docker-compose -f "$COMPOSE_FILE" up -d prometheus grafana
+
+    echo -n "  Prometheus: "
+    for i in $(seq 1 20); do
+        if curl -sf http://localhost:9090/api/v1/status/config | grep -q status; then break; fi
+        echo -n "."; sleep 2
     done
     echo -e " ${GREEN}Ready${NC}"
-    
-    echo -n "Grafana: "
-    while ! curl -s http://localhost:3000/api/health 2>/dev/null | grep -q ok; do
-        echo -n "."
-        sleep 2
+
+    echo -n "  Grafana: "
+    for i in $(seq 1 20); do
+        if curl -sf http://localhost:3001/api/health | grep -q ok; then break; fi
+        echo -n "."; sleep 2
     done
     echo -e " ${GREEN}Ready${NC}"
-    
-    success "Monitoring services are ready"
+
+    success "Monitoring up"
 }
 
-# Function: Start TerraFusion microservices
+# ── Core services ─────────────────────────────────
 start_microservices() {
-    section "PHASE BETA-5: TerraFusion Microservices Deployment"
-    
-    echo -e "${BLUE}Starting TerraFusion microservices in order...${NC}"
-    
-    # Start API Gateway first
-    echo -e "${CYAN}Starting API Gateway...${NC}"
-    docker-compose -f $COMPOSE_FILE up -d gateway
-    
-    # Wait for gateway
-    echo -n "API Gateway: "
-    while ! curl -s http://localhost:5000/health 2>/dev/null | grep -q "Healthy\|healthy"; do
-        echo -n "."
-        sleep 3
+    section "Phase 5: TerraFusion core services"
+
+    echo -e "${CYAN}Starting API (Kernel)...${NC}"
+    docker-compose -f "$COMPOSE_FILE" up -d api
+    echo -n "  API: "
+    for i in $(seq 1 30); do
+        if curl -sf http://localhost:5000/health | grep -qi "healthy"; then break; fi
+        echo -n "."; sleep 3
     done
     echo -e " ${GREEN}Ready${NC}"
-    
-    # Start core services
-    echo -e "${CYAN}Starting core government services...${NC}"
-    docker-compose -f $COMPOSE_FILE up -d \
-        property-service \
-        citizen-service \
-        document-service \
-        compliance-service
-    
-    # Start AI services
-    echo -e "${CYAN}Starting AI intelligence services...${NC}"
-    docker-compose -f $COMPOSE_FILE up -d \
-        ai-service \
-        knowledge-service \
-        emotion-service
-    
-    # Start supporting services
-    echo -e "${CYAN}Starting supporting services...${NC}"
-    docker-compose -f $COMPOSE_FILE up -d \
-        communication-service \
-        analytics-service \
-        event-service \
-        identity-service \
-        audit-service \
-        backup-service
-    
-    success "All TerraFusion microservices started"
+
+    echo -e "${CYAN}Starting Gateway (Shell)...${NC}"
+    docker-compose -f "$COMPOSE_FILE" up -d gateway
+    echo -n "  Gateway: "
+    for i in $(seq 1 30); do
+        if curl -sf http://localhost:3002/health | grep -qi "healthy"; then break; fi
+        echo -n "."; sleep 3
+    done
+    echo -e " ${GREEN}Ready${NC}"
+
+    echo -e "${CYAN}Starting Consciousness (AI Swarm)...${NC}"
+    docker-compose -f "$COMPOSE_FILE" up -d consciousness
+    echo -n "  Consciousness: "
+    for i in $(seq 1 30); do
+        if curl -sf http://localhost:3004/health | grep -qi "healthy"; then break; fi
+        echo -n "."; sleep 3
+    done
+    echo -e " ${GREEN}Ready${NC}"
+
+    success "All core services started"
 }
 
-# Function: Validate deployment
+# ── Validation ────────────────────────────────────
 validate_deployment() {
-    section "PHASE BETA-6: Deployment Validation"
-    
-    echo -e "${BLUE}Validating microservices health...${NC}"
-    
+    section "Phase 6: Deployment validation"
+
     services=(
-        "5000:gateway:API Gateway"
-        "5001:property-service:Property Assessment"
-        "5002:citizen-service:Citizen Services"
-        "5003:document-service:Document Management"
-        "5004:compliance-service:Compliance Monitoring"
-        "5005:ai-service:AI Intelligence"
-        "5006:knowledge-service:Knowledge Graph"
-        "5007:emotion-service:Emotional Intelligence"
-        "5008:communication-service:Communication Hub"
-        "5009:analytics-service:Analytics & Reporting"
-        "5010:event-service:Event Streaming"
-        "5011:identity-service:Identity & Access"
-        "5012:audit-service:Audit & Logging"
-        "5013:backup-service:Backup & Recovery"
+        "5000:api:API (Kernel)"
+        "3002:gateway:Gateway (Shell)"
+        "3004:consciousness:Consciousness (AI Swarm)"
     )
-    
-    healthy_services=0
-    total_services=${#services[@]}
-    
-    for service in "${services[@]}"; do
-        IFS=':' read -r port container name <<< "$service"
-        
+
+    healthy=0
+    total=${#services[@]}
+
+    for svc in "${services[@]}"; do
+        IFS=':' read -r port container name <<< "$svc"
         echo -n "  $name ($port): "
-        if curl -s http://localhost:$port/health 2>/dev/null | grep -q "Healthy\|healthy\|ok"; then
+        if curl -sf "http://localhost:$port/health" | grep -qi "healthy"; then
             echo -e "${GREEN}Healthy${NC}"
-            ((healthy_services++))
+            ((healthy++))
         else
             echo -e "${RED}Unhealthy${NC}"
         fi
     done
-    
+
     echo ""
-    if [ $healthy_services -eq $total_services ]; then
-        success "All $total_services microservices are healthy"
+    if [ "$healthy" -eq "$total" ]; then
+        success "All $total services healthy"
     else
-        warning "$healthy_services out of $total_services services are healthy"
+        warning "$healthy/$total services healthy"
     fi
 }
 
-# Function: Display access information
+# ── Access info ───────────────────────────────────
 display_access_info() {
-    section "PHASE BETA-7: Access Information"
-    
-    echo -e "${WHITE}TerraFusion OS 1.0 - Phase Beta Deployment Complete!${NC}"
+    section "Phase 7: Access information"
+
+    echo -e "${WHITE}TerraFusion OS 1.0 — Phase Beta Deployed${NC}"
     echo ""
-    echo -e "${CYAN}🏛️ Government Services:${NC}"
-    echo -e "  API Gateway:        ${BLUE}http://localhost:5000${NC}"
-    echo -e "  Property Service:   ${BLUE}http://localhost:5001${NC}"
-    echo -e "  Citizen Services:   ${BLUE}http://localhost:5002${NC}"
-    echo -e "  AI Intelligence:    ${BLUE}http://localhost:5005${NC}"
+    echo -e "${CYAN}Core Services:${NC}"
+    echo -e "  API (Kernel):       ${BLUE}http://localhost:5000${NC}"
+    echo -e "  Gateway (Shell):    ${BLUE}http://localhost:3002${NC}"
+    echo -e "  Consciousness:      ${BLUE}http://localhost:3004${NC}"
     echo ""
-    echo -e "${CYAN}🖥️ Management Interfaces:${NC}"
+    echo -e "${CYAN}Infrastructure:${NC}"
     echo -e "  Consul UI:          ${BLUE}http://localhost:8500${NC}"
-    echo -e "  Grafana:            ${BLUE}http://localhost:3000${NC} (admin/TerraFusion2024!)"
+    echo -e "  Grafana:            ${BLUE}http://localhost:3001${NC}"
     echo -e "  Prometheus:         ${BLUE}http://localhost:9090${NC}"
-    echo -e "  RabbitMQ:           ${BLUE}http://localhost:15672${NC} (terrafusion/TerraFusion2024!)"
+    echo -e "  RabbitMQ Mgmt:      ${BLUE}http://localhost:15672${NC}"
     echo ""
-    echo -e "${CYAN}🔧 Development Tools:${NC}"
-    echo -e "  pgAdmin:            ${BLUE}http://localhost:8080${NC} (admin@terrafusion.local/TerraFusion2024!)"
-    echo -e "  Redis Commander:    ${BLUE}http://localhost:8081${NC}"
+    echo -e "${CYAN}Health Checks:${NC}"
+    echo -e "  API:                ${BLUE}http://localhost:5000/health${NC}"
+    echo -e "  Gateway:            ${BLUE}http://localhost:3002/health${NC}"
+    echo -e "  Consciousness:      ${BLUE}http://localhost:3004/health${NC}"
     echo ""
-    echo -e "${CYAN}📊 Health Checks:${NC}"
-    echo -e "  Gateway Health:     ${BLUE}http://localhost:5000/health${NC}"
-    echo -e "  Service Discovery:  ${BLUE}http://localhost:5000/gateway/services${NC}"
-    echo -e "  Gateway Info:       ${BLUE}http://localhost:5000/gateway/info${NC}"
-    echo ""
-    echo -e "${YELLOW}📋 Next Steps:${NC}"
-    echo -e "  1. Check service health: ${BLUE}./scripts/check-health.sh${NC}"
-    echo -e "  2. View logs: ${BLUE}docker-compose -f $COMPOSE_FILE logs -f [service]${NC}"
-    echo -e "  3. Scale services: ${BLUE}docker-compose -f $COMPOSE_FILE up -d --scale [service]=3${NC}"
-    echo -e "  4. Stop services: ${BLUE}docker-compose -f $COMPOSE_FILE down${NC}"
-    echo ""
-    echo -e "${GREEN}🎯 THE TERRAFUSION WAY: Systematic Excellence Achieved!${NC}"
+    echo -e "${CYAN}Commands:${NC}"
+    echo -e "  Logs:   docker-compose -f $COMPOSE_FILE logs -f [service]"
+    echo -e "  Stop:   docker-compose -f $COMPOSE_FILE down"
 }
 
-# Function: Create helper scripts
-create_helper_scripts() {
-    section "Creating Helper Scripts"
-    
-    mkdir -p scripts
-    
-    # Health check script
-    cat > scripts/check-health.sh << 'EOF'
-#!/bin/bash
-echo "🏥 TerraFusion OS Health Check"
-echo "============================="
-
-services=(
-    "5000:API Gateway"
-    "5001:Property Service"
-    "5002:Citizen Services"
-    "5003:Document Management"
-    "5004:Compliance Monitoring"
-    "5005:AI Intelligence"
-    "5006:Knowledge Graph"
-    "5007:Emotional Intelligence"
-    "5008:Communication Hub"
-    "5009:Analytics & Reporting"
-    "5010:Event Streaming"
-    "5011:Identity & Access"
-    "5012:Audit & Logging"
-    "5013:Backup & Recovery"
-)
-
-for service in "${services[@]}"; do
-    IFS=':' read -r port name <<< "$service"
-    echo -n "$name: "
-    if curl -s http://localhost:$port/health >/dev/null 2>&1; then
-        echo "✅ Healthy"
-    else
-        echo "❌ Unhealthy"
-    fi
-done
-EOF
-    
-    chmod +x scripts/check-health.sh
-    success "Health check script created"
-    
-    # Logs script
-    cat > scripts/view-logs.sh << 'EOF'
-#!/bin/bash
-SERVICE=${1:-gateway}
-echo "📋 Viewing logs for: $SERVICE"
-docker-compose -f docker-compose.microservices.yml logs -f $SERVICE
-EOF
-    
-    chmod +x scripts/view-logs.sh
-    success "Logs viewing script created"
-    
-    # Stop script
-    cat > scripts/stop-all.sh << 'EOF'
-#!/bin/bash
-echo "🛑 Stopping TerraFusion OS microservices..."
-docker-compose -f docker-compose.microservices.yml down
-echo "✅ All services stopped"
-EOF
-    
-    chmod +x scripts/stop-all.sh
-    success "Stop script created"
-}
-
-# Main deployment function
+# ── Main ──────────────────────────────────────────
 main() {
     log "Starting TerraFusion OS 1.0 Phase Beta deployment"
-    
     check_prerequisites
     setup_environment
     build_services
@@ -446,21 +299,16 @@ main() {
     start_monitoring
     start_microservices
     validate_deployment
-    create_helper_scripts
     display_access_info
-    
-    log "TerraFusion OS 1.0 Phase Beta deployment completed successfully"
-    success "Deployment completed in $(date)"
+    log "Deployment completed"
 }
 
-# Handle script termination
 cleanup() {
-    echo -e "\n${YELLOW}Deployment interrupted. Cleaning up...${NC}"
-    docker-compose -f $COMPOSE_FILE down 2>/dev/null || true
+    echo -e "\n${YELLOW}Deployment interrupted. Stopping services...${NC}"
+    docker-compose -f "$COMPOSE_FILE" down 2>/dev/null || true
     exit 1
 }
 
 trap cleanup INT TERM
 
-# Execute main function
 main "$@"
