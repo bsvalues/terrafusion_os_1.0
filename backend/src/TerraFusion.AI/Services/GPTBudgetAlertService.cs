@@ -38,15 +38,16 @@ namespace TerraFusion.AI.Services
     {
         private readonly TerraFusionDbContext _context;
         private readonly ILogger<GPTBudgetAlertService> _logger;
-        // TODO: Inject email service when available
-        // private readonly IEmailService _emailService;
+        private readonly IEmailService _emailService;
 
         public GPTBudgetAlertService(
             TerraFusionDbContext context,
-            ILogger<GPTBudgetAlertService> logger)
+            ILogger<GPTBudgetAlertService> logger,
+            IEmailService emailService)
         {
             _context = context;
             _logger = logger;
+            _emailService = emailService;
         }
 
         /// <summary>
