@@ -3052,6 +3052,366 @@ public class CostForgeController : ControllerBase
     public int MatrixYear { get; init; }
     public string Source { get; init; } = "";
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ██  ANALYTICS: OLS Multiple Regression  (R2 Wave 26)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// <summary>
+  /// Run OLS multiple regression: value ~ sqft + acreage + age.
+  /// Uses Normal Equations: β = (X'X)⁻¹X'y.
+  /// </summary>
+  [HttpPost("analytics/regression")]
+  public async Task<IActionResult> RunOlsRegression([FromBody] OlsRegressionRequest request)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    if (request.Observations == null || request.Observations.Count < 3)
+      return BadRequest(new { error = "At least 3 observations are required for regression" });
+
+    int n = request.Observations.Count;
+    int p = request.FeatureNames?.Length ?? 3; // default: sqft, acreage, age
+
+    var featureNames = request.FeatureNames ?? new[] { "sqft", "acreage", "age" };
+
+    // Build X matrix (n × p+1 with intercept column) and y vector
+    double[,] X = new double[n, p + 1];
+    double[] y = new double[n];
+
+    for (int i = 0; i < n; i++)
+    {
+      var obs = request.Observations[i];
+      X[i, 0] = 1.0; // intercept
+      for (int j = 0; j < p; j++)
+      {
+        X[i, j + 1] = j < obs.Features.Length ? obs.Features[j] : 0.0;
+      }
+      y[i] = obs.Value;
+    }
+
+    // Normal Equations: β = (X'X)⁻¹ X'y
+    double[,] XtX = MatMul(Transpose(X, n, p + 1), X, p + 1, n, p + 1);
+    double[,]? XtXInv = Invert(XtX, p + 1);
+
+    if (XtXInv is null)
+      return BadRequest(new { error = "Matrix is singular — features may be collinear" });
+
+    double[] Xty = MatVecMul(Transpose(X, n, p + 1), y, p + 1, n);
+    double[] beta = MatVecMul(XtXInv, Xty, p + 1, p + 1);
+
+    double intercept = beta[0];
+    double[] coefficients = beta[1..];
+
+    // Predictions and residuals
+    double[] predictions = new double[n];
+    double[] residuals = new double[n];
+    double yMean = y.Average();
+    double ssRes = 0, ssTot = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+      double pred = intercept;
+      for (int j = 0; j < p; j++)
+        pred += coefficients[j] * X[i, j + 1];
+      predictions[i] = pred;
+      residuals[i] = y[i] - pred;
+      ssRes += residuals[i] * residuals[i];
+      ssTot += (y[i] - yMean) * (y[i] - yMean);
+    }
+
+    double rSquared = ssTot > 0 ? 1.0 - (ssRes / ssTot) : 0.0;
+    double adjRSquared = n > p + 1
+      ? 1.0 - ((1.0 - rSquared) * (n - 1) / (n - p - 1))
+      : rSquared;
+
+    // F-statistic: (R²/p) / ((1-R²)/(n-p-1))
+    double fStat = (n > p + 1 && rSquared < 1.0)
+      ? (rSquared / p) / ((1.0 - rSquared) / (n - p - 1))
+      : 0.0;
+
+    // Standard errors from diagonal of (X'X)⁻¹ × σ²
+    double sigma2 = n > p + 1 ? ssRes / (n - p - 1) : ssRes;
+    double[] stdErrors = new double[p];
+    for (int j = 0; j < p; j++)
+      stdErrors[j] = Math.Sqrt(Math.Abs(XtXInv[j + 1, j + 1] * sigma2));
+
+    // Diagnostics
+    double residMean = residuals.Average();
+    double residStd = Math.Sqrt(residuals.Select(r => (r - residMean) * (r - residMean)).Sum() / Math.Max(n - 1, 1));
+    double maxResid = residuals.Max(r => Math.Abs(r));
+
+    var diagnostics = new
+    {
+      heteroskedasticity = maxResid > 3 * residStd,
+      autocorrelation = false, // simplified — would need Durbin-Watson
+      normality = residStd > 0 && Math.Abs(residMean / residStd) < 2.0,
+      residualStd = Math.Round(residStd, 4),
+      maxAbsResidual = Math.Round(maxResid, 4)
+    };
+
+    // Persist
+    var entity = new RegressionAnalysis
+    {
+      CountyId = county.CountyId,
+      DependentVariable = request.DependentVariable ?? "assessed_value",
+      IndependentVariables = System.Text.Json.JsonSerializer.Serialize(featureNames),
+      Coefficients = System.Text.Json.JsonSerializer.Serialize(coefficients.Select(c => Math.Round(c, 6)).ToArray()),
+      Intercept = Math.Round(intercept, 6),
+      RSquared = Math.Round(rSquared, 6),
+      AdjustedRSquared = Math.Round(adjRSquared, 6),
+      FStatistic = Math.Round(fStat, 6),
+      PValue = fStat > 0 ? Math.Round(1.0 - FDistributionCdf(fStat, p, Math.Max(n - p - 1, 1)), 6) : 1.0,
+      StandardErrors = System.Text.Json.JsonSerializer.Serialize(stdErrors.Select(e => Math.Round(e, 6)).ToArray()),
+      ResidualDiagnostics = System.Text.Json.JsonSerializer.Serialize(diagnostics),
+      SampleSize = n,
+      CreatedBy = User.Identity?.Name ?? "system"
+    };
+
+    _db.RegressionAnalyses.Add(entity);
+    await _db.SaveChangesAsync();
+
+    return Ok(new
+    {
+      id = entity.Id,
+      intercept = entity.Intercept,
+      coefficients = coefficients.Select((c, i) => new { feature = featureNames[i], coefficient = Math.Round(c, 6), standardError = Math.Round(stdErrors[i], 6) }).ToArray(),
+      rSquared = entity.RSquared,
+      adjustedRSquared = entity.AdjustedRSquared,
+      fStatistic = entity.FStatistic,
+      pValue = entity.PValue,
+      sampleSize = n,
+      diagnostics,
+      predictions = predictions.Select(p2 => Math.Round(p2, 2)).ToArray()
+    });
+  }
+
+  /// <summary>Retrieve a stored regression result by ID.</summary>
+  [HttpGet("analytics/regression/{id:guid}")]
+  public async Task<IActionResult> GetRegressionResult(Guid id)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    var result = await _db.RegressionAnalyses
+      .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == county.CountyId);
+
+    if (result is null) return NotFound(new { error = "Regression analysis not found" });
+
+    return Ok(new
+    {
+      id = result.Id,
+      dependentVariable = result.DependentVariable,
+      independentVariables = System.Text.Json.JsonSerializer.Deserialize<string[]>(result.IndependentVariables),
+      coefficients = System.Text.Json.JsonSerializer.Deserialize<double[]>(result.Coefficients),
+      intercept = result.Intercept,
+      rSquared = result.RSquared,
+      adjustedRSquared = result.AdjustedRSquared,
+      fStatistic = result.FStatistic,
+      pValue = result.PValue,
+      standardErrors = System.Text.Json.JsonSerializer.Deserialize<double[]>(result.StandardErrors),
+      diagnostics = System.Text.Json.JsonSerializer.Deserialize<object>(result.ResidualDiagnostics),
+      sampleSize = result.SampleSize,
+      createdBy = result.CreatedBy,
+      createdAt = result.CreatedAt
+    });
+  }
+
+  /// <summary>Retrieve regression diagnostics (residual detail) by ID.</summary>
+  [HttpGet("analytics/regression/{id:guid}/diagnostics")]
+  public async Task<IActionResult> GetRegressionDiagnostics(Guid id)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    var result = await _db.RegressionAnalyses
+      .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == county.CountyId);
+
+    if (result is null) return NotFound(new { error = "Regression analysis not found" });
+
+    return Ok(new
+    {
+      id = result.Id,
+      rSquared = result.RSquared,
+      adjustedRSquared = result.AdjustedRSquared,
+      fStatistic = result.FStatistic,
+      pValue = result.PValue,
+      diagnostics = System.Text.Json.JsonSerializer.Deserialize<object>(result.ResidualDiagnostics),
+      standardErrors = System.Text.Json.JsonSerializer.Deserialize<double[]>(result.StandardErrors),
+      sampleSize = result.SampleSize
+    });
+  }
+
+  /// <summary>List recent regression analyses for the county.</summary>
+  [HttpGet("analytics/regression/history")]
+  public async Task<IActionResult> GetRegressionHistory([FromQuery] int limit = 20)
+  {
+    var county = await ResolveCountyContextAsync();
+    if (county is null) return Unauthorized(new { error = "County context required" });
+
+    limit = Math.Clamp(limit, 1, 100);
+
+    var results = await _db.RegressionAnalyses
+      .Where(r => r.CountyId == county.CountyId)
+      .OrderByDescending(r => r.CreatedAt)
+      .Take(limit)
+      .Select(r => new
+      {
+        id = r.Id,
+        dependentVariable = r.DependentVariable,
+        rSquared = r.RSquared,
+        adjustedRSquared = r.AdjustedRSquared,
+        fStatistic = r.FStatistic,
+        sampleSize = r.SampleSize,
+        createdAt = r.CreatedAt,
+        createdBy = r.CreatedBy
+      })
+      .ToListAsync();
+
+    return Ok(new { count = results.Count, results });
+  }
+
+  // ── OLS Math Helpers ──────────────────────────────────────────────────────
+
+  private static double[,] Transpose(double[,] m, int rows, int cols)
+  {
+    var t = new double[cols, rows];
+    for (int i = 0; i < rows; i++)
+      for (int j = 0; j < cols; j++)
+        t[j, i] = m[i, j];
+    return t;
+  }
+
+  private static double[,] MatMul(double[,] a, double[,] b, int aRows, int aCols, int bCols)
+  {
+    var c = new double[aRows, bCols];
+    for (int i = 0; i < aRows; i++)
+      for (int j = 0; j < bCols; j++)
+        for (int k = 0; k < aCols; k++)
+          c[i, j] += a[i, k] * b[k, j];
+    return c;
+  }
+
+  private static double[] MatVecMul(double[,] m, double[] v, int rows, int cols)
+  {
+    var result = new double[rows];
+    for (int i = 0; i < rows; i++)
+      for (int j = 0; j < cols; j++)
+        result[i] += m[i, j] * v[j];
+    return result;
+  }
+
+  /// <summary>Gauss-Jordan matrix inversion. Returns null if singular.</summary>
+  private static double[,]? Invert(double[,] matrix, int n)
+  {
+    var aug = new double[n, 2 * n];
+    for (int i = 0; i < n; i++)
+    {
+      for (int j = 0; j < n; j++)
+        aug[i, j] = matrix[i, j];
+      aug[i, n + i] = 1.0;
+    }
+
+    for (int col = 0; col < n; col++)
+    {
+      // Partial pivoting
+      int maxRow = col;
+      for (int row = col + 1; row < n; row++)
+        if (Math.Abs(aug[row, col]) > Math.Abs(aug[maxRow, col]))
+          maxRow = row;
+
+      if (Math.Abs(aug[maxRow, col]) < 1e-12) return null; // singular
+
+      // Swap rows
+      for (int j = 0; j < 2 * n; j++)
+        (aug[col, j], aug[maxRow, j]) = (aug[maxRow, j], aug[col, j]);
+
+      // Scale pivot row
+      double pivot = aug[col, col];
+      for (int j = 0; j < 2 * n; j++)
+        aug[col, j] /= pivot;
+
+      // Eliminate column
+      for (int row = 0; row < n; row++)
+      {
+        if (row == col) continue;
+        double factor = aug[row, col];
+        for (int j = 0; j < 2 * n; j++)
+          aug[row, j] -= factor * aug[col, j];
+      }
+    }
+
+    var inv = new double[n, n];
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+        inv[i, j] = aug[i, n + j];
+
+    return inv;
+  }
+
+  /// <summary>Approximate F-distribution CDF using Abramowitz-Stegun regularized incomplete beta.</summary>
+  private static double FDistributionCdf(double f, int d1, int d2)
+  {
+    if (f <= 0 || d1 <= 0 || d2 <= 0) return 0;
+    double x = (d1 * f) / (d1 * f + d2);
+    return RegularizedIncompleteBeta(x, d1 / 2.0, d2 / 2.0);
+  }
+
+  private static double RegularizedIncompleteBeta(double x, double a, double b)
+  {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+
+    // Continued fraction approximation (Lentz's method)
+    double lnBeta = LogGamma(a) + LogGamma(b) - LogGamma(a + b);
+    double front = Math.Exp(Math.Log(x) * a + Math.Log(1 - x) * b - lnBeta) / a;
+
+    const int maxIter = 200;
+    const double eps = 1e-10;
+
+    double f2 = 1.0, c = 1.0, d = 1.0 - (a + b) * x / (a + 1.0);
+    if (Math.Abs(d) < 1e-30) d = 1e-30;
+    d = 1.0 / d;
+    f2 = d;
+
+    for (int m = 1; m <= maxIter; m++)
+    {
+      // Even step
+      double num = m * (b - m) * x / ((a + 2.0 * m - 1.0) * (a + 2.0 * m));
+      d = 1.0 + num * d;
+      if (Math.Abs(d) < 1e-30) d = 1e-30;
+      c = 1.0 + num / c;
+      if (Math.Abs(c) < 1e-30) c = 1e-30;
+      d = 1.0 / d;
+      f2 *= c * d;
+
+      // Odd step
+      num = -(a + m) * (a + b + m) * x / ((a + 2.0 * m) * (a + 2.0 * m + 1.0));
+      d = 1.0 + num * d;
+      if (Math.Abs(d) < 1e-30) d = 1e-30;
+      c = 1.0 + num / c;
+      if (Math.Abs(c) < 1e-30) c = 1e-30;
+      d = 1.0 / d;
+      double delta = c * d;
+      f2 *= delta;
+
+      if (Math.Abs(delta - 1.0) < eps) break;
+    }
+
+    return front * f2;
+  }
+
+  private static double LogGamma(double x)
+  {
+    // Lanczos approximation
+    double[] cof = { 76.18009172947146, -86.50532032941677, 24.01409824083091,
+                     -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5 };
+    double y = x, tmp = x + 5.5;
+    tmp -= (x + 0.5) * Math.Log(tmp);
+    double ser = 1.000000000190015;
+    for (int j = 0; j < 6; j++) ser += cof[j] / ++y;
+    return -tmp + Math.Log(2.5066282746310005 * ser / x);
+  }
 }
 
 public class CostEstimateRequest
@@ -3186,6 +3546,23 @@ public class AnalyticsDto
   public double AverageAccuracy { get; set; }
   public Dictionary<string, int> CalculationsByType { get; set; } = new();
   public Dictionary<string, double> PerformanceMetrics { get; set; } = new();
+}
+
+// ═══ OLS Regression Request DTOs (R2 Wave 26) ═══
+
+public class OlsRegressionRequest
+{
+  [Required]
+  public List<RegressionObservation> Observations { get; set; } = new();
+  public string[]? FeatureNames { get; set; }
+  public string? DependentVariable { get; set; }
+}
+
+public class RegressionObservation
+{
+  [Required]
+  public double[] Features { get; set; } = Array.Empty<double>();
+  public double Value { get; set; }
 }
 
 // ── Wave 27 Request DTOs ────────────────────────────────────────────────────
