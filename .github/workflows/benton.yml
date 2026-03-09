@@ -12,13 +12,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Detect Benton county workspace
+        id: county_workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -d counties/benton ]]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ counties/benton is absent; skipping legacy county workflow"
+          fi
+
+      - name: Skip missing Benton county workspace
+        if: steps.county_workspace.outputs.present != 'true'
+        run: echo "✅ Benton county workflow skipped because counties/benton is not present in this repo state"
+
       - name: Start stack (build)
+        if: steps.county_workspace.outputs.present == 'true'
         working-directory: counties/benton
         run: |
           cp .env.example .env
           docker compose -f docker-compose.county.yml up -d --build
 
       - name: Wait for API
+        if: steps.county_workspace.outputs.present == 'true'
         run: |
           for i in {1..60}; do
             if curl -fsS http://localhost:${TF_API_PORT:-5046}/health; then exit 0; fi
@@ -27,17 +46,18 @@ jobs:
           echo "API not ready"; docker compose -f counties/benton/docker-compose.county.yml logs api; exit 1
 
       - name: Smoke tests
+        if: steps.county_workspace.outputs.present == 'true'
         run: make -C counties/benton test
 
       - name: Build images (tagged)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.county_workspace.outputs.present == 'true'
         run: |
           GIT_TAG=$(git rev-parse --short HEAD)
           docker build -t ghcr.io/${{ github.repository }}/tf-api:benton-${GIT_TAG} ./backend
           echo GIT_TAG=${GIT_TAG} >> $GITHUB_ENV
 
       - name: Login & push
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.county_workspace.outputs.present == 'true'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -45,6 +65,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push images
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.county_workspace.outputs.present == 'true'
         run: |
           docker push ghcr.io/${{ github.repository }}/tf-api:benton-${GIT_TAG}

@@ -46,6 +46,13 @@ interface TerraFusionCSSState {
   systemCapabilities: Map<string, boolean>;
 }
 
+type PerformanceMetricKey = keyof Pick<
+  PerformanceMetrics,
+  'performanceIndex' | 'memoryUsage' | 'fps' | 'cpuUsage' | 'networkLatency' | 'renderTime'
+>;
+
+type ComparisonOperator = '>' | '>=' | '<' | '<=' | '===' | '!==';
+
 // ===== CSS ENGINE CORE =====
 
 export class TerraFusionCSSEngine {
@@ -344,24 +351,46 @@ export class TerraFusionCSSEngine {
 
   private evaluateCondition(condition: string): boolean {
     try {
-      // Safe evaluation of conditions using the current state
-      const context = {
-        performance: this.state.performance,
-        aiAgents: this.state.aiAgents,
-        userPreferences: this.state.userPreferences,
-      };
+      const performanceMatch = condition.match(
+        /^performance\.(performanceIndex|memoryUsage|fps|cpuUsage|networkLatency|renderTime)\s*(>=|<=|===|!==|>|<)\s*(-?\d+(?:\.\d+)?)$/
+      );
 
-      // Simple condition evaluation (can be enhanced with a proper parser)
-      return new Function(
-        'context',
-        `
-        const { performance, aiAgents, userPreferences } = context;
-        return ${condition};
-      `
-      )(context);
+      if (!performanceMatch) {
+        console.warn('⚠️ Unsupported condition pattern:', condition);
+        return false;
+      }
+
+      const [, metric, operator, rawExpected] = performanceMatch;
+      const actual = this.state.performance[metric as PerformanceMetricKey];
+      const expected = Number(rawExpected);
+
+      return this.compareMetric(actual, operator as ComparisonOperator, expected);
     } catch (error) {
       console.warn('⚠️ Condition evaluation failed:', condition, error);
       return false;
+    }
+  }
+
+  private compareMetric(
+    actual: number,
+    operator: ComparisonOperator,
+    expected: number
+  ): boolean {
+    switch (operator) {
+      case '>':
+        return actual > expected;
+      case '>=':
+        return actual >= expected;
+      case '<':
+        return actual < expected;
+      case '<=':
+        return actual <= expected;
+      case '===':
+        return actual === expected;
+      case '!==':
+        return actual !== expected;
+      default:
+        return false;
     }
   }
 
