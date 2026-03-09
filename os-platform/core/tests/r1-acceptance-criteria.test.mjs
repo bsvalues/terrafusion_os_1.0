@@ -561,11 +561,11 @@ describe('AC-9: Atlas/Dossier Real Backend', () => {
 //
 // GIVEN full deployment,
 // THEN no canned/stub/fake markers appear in real handler output.
-// (Structural: handlers.real.ts overrides canned stubs for all 24 active tools.)
+// (Structural: handlers.real.ts overrides canned stubs for all 26 active tools.)
 // ============================================================================
 
 describe('AC-10: No Fake Services Running', () => {
-  it('all 24 real handlers are registered and override canned stubs', () => {
+  it('all 26 real handlers are registered and override canned stubs', () => {
     const { runner } = makeRunner();
     const realTools = [
       'run_valuation_model', 'explain_value_change', 'route_to_parcel',
@@ -578,6 +578,7 @@ describe('AC-10: No Fake Services Running', () => {
       'draft_appeal_response', 'draft_boe_appeal_response', 'draft_notice',
       'synthesize_evidence', 'generate_commissioner_memo',
       'assemble_boe_packet', 'request_trace_redaction',
+      'calculate_pilt_payment', 'run_income_valuation',
     ];
 
     for (const toolId of realTools) {
@@ -587,7 +588,7 @@ describe('AC-10: No Fake Services Running', () => {
         `${toolId} must have a registered handler`);
     }
 
-    console.log('  ✅ AC-10 PASS: All 24 real handlers are registered');
+    console.log('  ✅ AC-10 PASS: All 26 real handlers are registered');
   });
 
   it('real handlers do not produce canned-fixture markers', async () => {
@@ -2071,5 +2072,142 @@ describe('AC-29: request_trace_redaction (Wave 2 Irreversible)', () => {
     assert.equal(tool.requiresConfirmation, true, 'must require confirmation');
     assert.equal(tool.reasonCodeRequired, true, 'must require reasonCode');
     console.log('  ✅ AC-29d PASS: manifest correct for irreversible tool');
+  });
+});
+
+// ============================================================================
+// AC-30: calculate_pilt_payment — Wave 3 Dais Read-Only
+//
+// GIVEN an appraiser in Benton County,
+// WHEN they invoke `calculate_pilt_payment` with county + fiscalYear,
+// THEN the handler returns district-level PILT distribution with real Hanford data.
+// ============================================================================
+
+describe('AC-30: calculate_pilt_payment (Wave 3 Dais Read-Only)', () => {
+  it('returns PILT district data from real backend', async () => {
+    const { runner, traceService } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('pilt/districts')) {
+        return {
+          count: 12,
+          totalAssessedValue: 1247500000,
+          totalPiltDue: 12891450,
+          districts: [
+            { id: 'DIST-01', name: 'Benton County Regular', assessedValue: 450000000, piltDue: 4650000 },
+            { id: 'DIST-02', name: 'City of Richland', assessedValue: 380000000, piltDue: 3920000 },
+          ],
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'calculate_pilt_payment',
+      params: { county: 'benton', fiscalYear: 2026 },
+      context: appraiserContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    const data = result.result;
+    assert.equal(data.county, 'BENTON', 'county must be normalized');
+    assert.equal(data.fiscalYear, 2026, 'fiscalYear must match');
+    assert.ok(data.totalAssessedValue > 0, 'must have assessed value');
+    assert.ok(data.totalPiltDue > 0, 'must have PILT due amount');
+    assert.ok(data.districtCount > 0, 'must have districts');
+    assert.ok(data.summary.includes('PILT'), 'summary must mention PILT');
+
+    const events = await traceService.getByCorrelationIdAsync(result.correlationId);
+    assert.ok(events.length >= 2, 'must have trace events');
+    console.log(`  ✅ AC-30a PASS: calculate_pilt_payment districts=${data.districtCount}, piltDue=$${data.totalPiltDue}`);
+  });
+
+  it('enforces county isolation for calculate_pilt_payment', async () => {
+    const { runner } = makeRunner();
+    mockFetch(() => ({}));
+    const result = await runner.execute({
+      toolId: 'calculate_pilt_payment',
+      params: { county: 'yakima', fiscalYear: 2026 },
+      context: appraiserContext({ countyId: 'benton' }),
+    });
+    assert.equal(result.ok, false, 'must fail on county mismatch');
+    console.log('  ✅ AC-30b PASS: county isolation enforced for calculate_pilt_payment');
+  });
+
+  it('manifest declares correct metadata for calculate_pilt_payment', () => {
+    const tool = getTool('calculate_pilt_payment');
+    assert.ok(tool, 'must exist in manifest');
+    assert.equal(tool.mode, 'pilot', 'must be pilot mode');
+    assert.equal(tool.risk, 'read_only', 'must be read_only risk');
+    assert.equal(tool.suite, 'dais', 'must be dais suite');
+    assert.equal(tool.writeLane, null, 'read_only must have null writeLane');
+    console.log('  ✅ AC-30c PASS: manifest correct for calculate_pilt_payment');
+  });
+});
+
+// ============================================================================
+// AC-31: run_income_valuation — Wave 3 Forge Read-Only
+//
+// GIVEN an appraiser in Benton County,
+// WHEN they invoke `run_income_valuation` with rental income and cap rate,
+// THEN the handler returns NOI, valuation, GIM, and risk classification.
+// ============================================================================
+
+describe('AC-31: run_income_valuation (Wave 3 Forge Read-Only)', () => {
+  it('returns income valuation from real backend', async () => {
+    const { runner, traceService } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('income-approach/calculate-valuation')) {
+        return {
+          NetOperatingIncome: 142500,
+          CapRate: 7.5,
+          AdjustedValuation: 1900000,
+          GrossIncomeMultiplier: 8.44,
+          RiskClassification: 'low',
+          Source: 'Benton County Assessor – Income Approach Valuation FY 2025',
+        };
+      }
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'run_income_valuation',
+      params: { county: 'benton', annualRentalIncome: 225000, vacancyRate: 5, capRate: 7.5, propertyType: 'commercial', location: 'Richland' },
+      context: appraiserContext(),
+    });
+
+    assert.equal(result.ok, true, 'must succeed');
+    const data = result.result;
+    assert.ok(data.netOperatingIncome > 0, 'must have positive NOI');
+    assert.ok(data.capRate > 0, 'must have cap rate');
+    assert.ok(data.valuation > 0, 'must have valuation');
+    assert.ok(data.grossIncomeMultiplier > 0, 'must have GIM');
+    assert.ok(['low', 'medium', 'high'].includes(data.riskClassification), 'must have valid risk classification');
+    assert.ok(data.source.length > 0, 'must have source attribution');
+
+    const events = await traceService.getByCorrelationIdAsync(result.correlationId);
+    assert.ok(events.length >= 2, 'must have trace events');
+    console.log(`  ✅ AC-31a PASS: run_income_valuation NOI=$${data.netOperatingIncome}, valuation=$${data.valuation}, risk=${data.riskClassification}`);
+  });
+
+  it('enforces county isolation for run_income_valuation', async () => {
+    const { runner } = makeRunner();
+    mockFetch(() => ({}));
+    const result = await runner.execute({
+      toolId: 'run_income_valuation',
+      params: { county: 'yakima', annualRentalIncome: 200000 },
+      context: appraiserContext({ countyId: 'benton' }),
+    });
+    assert.equal(result.ok, false, 'must fail on county mismatch');
+    console.log('  ✅ AC-31b PASS: county isolation enforced for run_income_valuation');
+  });
+
+  it('manifest declares correct metadata for run_income_valuation', () => {
+    const tool = getTool('run_income_valuation');
+    assert.ok(tool, 'must exist in manifest');
+    assert.equal(tool.mode, 'pilot', 'must be pilot mode');
+    assert.equal(tool.risk, 'read_only', 'must be read_only risk');
+    assert.equal(tool.suite, 'forge', 'must be forge suite');
+    assert.equal(tool.writeLane, null, 'read_only must have null writeLane');
+    console.log('  ✅ AC-31c PASS: manifest correct for run_income_valuation');
   });
 });
