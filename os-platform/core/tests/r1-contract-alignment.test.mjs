@@ -238,7 +238,7 @@ describe('CP-DOS-01: add_dossier_note contract alignment', () => {
 });
 
 // ============================================================================
-// Cross-cutting: All 24 tools have valid manifest entries
+// Cross-cutting: All 26 tools have valid manifest entries
 // ============================================================================
 
 describe('Manifest integrity: all tools have required fields', () => {
@@ -255,9 +255,9 @@ describe('Manifest integrity: all tools have required fields', () => {
     console.log(`  ✅ All ${tools.length} tools: required fields present`);
   });
 
-  it('manifest version is 1.3.0', () => {
-    assert.equal(manifest.version, '1.3.0');
-    console.log('  ✅ Manifest version: 1.3.0');
+  it('manifest version is 1.4.0', () => {
+    assert.equal(manifest.version, '1.4.0');
+    console.log('  ✅ Manifest version: 1.4.0');
   });
 
   it('5 proof tools all have paramsSchema defined', () => {

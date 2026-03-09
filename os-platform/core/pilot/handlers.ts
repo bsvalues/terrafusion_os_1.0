@@ -224,6 +224,42 @@ export interface RequestTraceRedactionResult {
 }
 
 // ============================================================================
+// Wave 3 Tool Types — PILT + Income Valuation
+// ============================================================================
+
+export interface CalculatePiltPaymentParams {
+  county: string;
+  fiscalYear: number;
+}
+
+export interface CalculatePiltPaymentResult {
+  county: string;
+  fiscalYear: number;
+  totalAssessedValue: number;
+  totalPiltDue: number;
+  districtCount: number;
+  summary: string;
+}
+
+export interface RunIncomeValuationParams {
+  county: string;
+  annualRentalIncome: number;
+  vacancyRate?: number;
+  capRate?: number;
+  propertyType?: 'residential' | 'commercial' | 'industrial' | 'mixed';
+  location?: string;
+}
+
+export interface RunIncomeValuationResult {
+  netOperatingIncome: number;
+  capRate: number;
+  valuation: number;
+  grossIncomeMultiplier: number;
+  riskClassification: string;
+  source: string;
+}
+
+// ============================================================================
 // Handler Implementations
 // ============================================================================
 
@@ -742,6 +778,59 @@ export const requestTraceRedactionHandler: ToolHandler<
   };
 };
 
+/**
+ * Calculate PILT Payment - Pilot/read_only
+ * Returns PILT district distribution for Benton County federal lands.
+ */
+export const calculatePiltPaymentHandler: ToolHandler<
+  CalculatePiltPaymentParams,
+  CalculatePiltPaymentResult
+> = async (params, context, _tool) => {
+  const { county, fiscalYear } = params;
+  assertCountyMatch(county, context.countyId);
+
+  // Canned Benton County PILT data (Hanford Nuclear Reservation)
+  const totalAssessedValue = 1_247_500_000;
+  const totalPiltDue = 12_891_450;
+  const districtCount = 12;
+
+  return {
+    county: county.toUpperCase(),
+    fiscalYear,
+    totalAssessedValue,
+    totalPiltDue,
+    districtCount,
+    summary: `PILT calculation for FY${fiscalYear}: ${districtCount} districts, $${totalPiltDue.toLocaleString()} total due on $${totalAssessedValue.toLocaleString()} assessed value (Hanford Nuclear Reservation, 586,000 federal acres).`,
+  };
+};
+
+/**
+ * Run Income Valuation - Pilot/read_only
+ * Calculates property value using income capitalization approach.
+ */
+export const runIncomeValuationHandler: ToolHandler<
+  RunIncomeValuationParams,
+  RunIncomeValuationResult
+> = async (params, context, _tool) => {
+  const { county, annualRentalIncome, vacancyRate = 5, capRate = 7.5, propertyType = 'commercial' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const effectiveGrossIncome = annualRentalIncome * (1 - vacancyRate / 100);
+  const totalExpenses = effectiveGrossIncome * 0.35; // canned 35% expense ratio
+  const noi = effectiveGrossIncome - totalExpenses;
+  const valuation = noi / (capRate / 100);
+  const gim = effectiveGrossIncome > 0 ? valuation / effectiveGrossIncome : 0;
+
+  return {
+    netOperatingIncome: Math.round(noi * 100) / 100,
+    capRate,
+    valuation: Math.round(valuation * 100) / 100,
+    grossIncomeMultiplier: Math.round(gim * 100) / 100,
+    riskClassification: capRate > 7 ? 'low' : capRate < 4 ? 'high' : 'medium',
+    source: `Canned income approach for ${propertyType} property in ${county}`,
+  };
+};
+
 // ============================================================================
 // Handler Registry
 // ============================================================================
@@ -786,7 +875,7 @@ export function registerWriteGateHandlers(runner: {
 }
 
 /**
- * Register all tool handlers (Phase 8.3 + 8.4 + C2).
+ * Register all tool handlers (Phase 8.3 + 8.4 + C2 + Wave 3).
  */
 export function registerAllHandlers(runner: {
   registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
@@ -794,6 +883,17 @@ export function registerAllHandlers(runner: {
   registerPhase83Handlers(runner);
   registerPhase84Handlers(runner);
   registerWriteGateHandlers(runner);
+  registerWave3Handlers(runner);
+}
+
+/**
+ * Register Wave 3 tool handlers (PILT + Income Valuation).
+ */
+export function registerWave3Handlers(runner: {
+  registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
+}): void {
+  runner.registerHandler('calculate_pilt_payment', calculatePiltPaymentHandler);
+  runner.registerHandler('run_income_valuation', runIncomeValuationHandler);
 }
 
 /**
@@ -827,4 +927,12 @@ export const phase84Handlers = {
 export const writeGateHandlers = {
   assemble_boe_packet: assembleBoePacketHandler,
   request_trace_redaction: requestTraceRedactionHandler,
+} as const;
+
+/**
+ * Map of Wave 3 handlers for direct access.
+ */
+export const wave3Handlers = {
+  calculate_pilt_payment: calculatePiltPaymentHandler,
+  run_income_valuation: runIncomeValuationHandler,
 } as const;

@@ -1,5 +1,5 @@
 /**
- * TerraFusion OS — Real Handlers (R1 + Wave 1 + Wave 2)
+ * TerraFusion OS — Real Handlers (R1 + Wave 1 + Wave 2 + Wave 3)
  *
  * Production handler implementations that call real backend endpoints
  * instead of returning canned data.
@@ -40,6 +40,10 @@
  *  22. generate_commissioner_memo → POST /api/dossier/memos/drafts
  *  23. assemble_boe_packet       → POST /api/dossier/boe/{caseId}/packet
  *  24. request_trace_redaction   → TraceService.requestRedaction() (local)
+ *
+ * Wave 3 Enrichment (2):
+ *  25. calculate_pilt_payment    → GET  /api/pilt/districts
+ *  26. run_income_valuation      → POST /api/costforge/income-approach/calculate-valuation
  */
 
 import type { ToolHandler } from './ToolRunner.js';
@@ -1536,11 +1540,103 @@ export function createRequestTraceRedactionHandler(traceService: TraceService): 
 }
 
 // ============================================================================
+// Wave 3 — Handler 25: calculate_pilt_payment → GET /api/pilt/districts
+//
+// Read-only Pilot tool. Calls PILT controller to get Benton County district
+// PILT distribution for federal lands (Hanford Nuclear Reservation).
+// County-isolated: only Benton County supported (others return 501 from backend).
+// ============================================================================
+
+export const calculatePiltPaymentRealHandler: ToolHandler<
+  { county: string; fiscalYear: number },
+  { county: string; fiscalYear: number; totalAssessedValue: number; totalPiltDue: number; districtCount: number; summary: string }
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendGet<{
+    count?: number;
+    totalAssessedValue?: number;
+    totalPiltDue?: number;
+    districts?: Array<{ id: string; name: string; assessedValue: number; piltDue: number }>;
+  }>('/api/pilt/districts', { token });
+  const data = unwrapBackend(raw, 'PILT district lookup failed');
+
+  const totalAV = data.totalAssessedValue ?? 0;
+  const totalPiltDue = data.totalPiltDue ?? 0;
+  const districtCount = data.count ?? (data.districts?.length ?? 0);
+
+  return {
+    county: params.county.toUpperCase(),
+    fiscalYear: params.fiscalYear,
+    totalAssessedValue: totalAV,
+    totalPiltDue,
+    districtCount,
+    summary: `PILT calculation for FY${params.fiscalYear}: ${districtCount} districts, $${totalPiltDue.toLocaleString()} total due on $${totalAV.toLocaleString()} assessed value (Hanford Nuclear Reservation, 586,000 federal acres).`,
+  };
+};
+
+// ============================================================================
+// Wave 3 — Handler 26: run_income_valuation → POST /api/costforge/income-approach/calculate-valuation
+//
+// Read-only Pilot tool. Calls the income capitalization endpoint with
+// real Benton County market data (location premiums, cap rates).
+// ============================================================================
+
+export const runIncomeValuationRealHandler: ToolHandler<
+  { county: string; annualRentalIncome: number; vacancyRate?: number; capRate?: number; propertyType?: string; location?: string },
+  { netOperatingIncome: number; capRate: number; valuation: number; grossIncomeMultiplier: number; riskClassification: string; source: string }
+> = async (params, context, _tool) => {
+  assertCountyMatch(params.county, context.countyId);
+
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<{
+    NetOperatingIncome?: number;
+    netOperatingIncome?: number;
+    CapRate?: number;
+    capRate?: number;
+    AdjustedValuation?: number;
+    adjustedValuation?: number;
+    GrossIncomeMultiplier?: number;
+    grossIncomeMultiplier?: number;
+    RiskClassification?: string;
+    riskClassification?: string;
+    Source?: string;
+    source?: string;
+  }>('/api/costforge/income-approach/calculate-valuation', {
+    annualRentalIncome: params.annualRentalIncome,
+    vacancyRate: params.vacancyRate ?? 5,
+    capRate: params.capRate ?? 7.5,
+    propertyType: params.propertyType ?? 'commercial',
+    location: params.location ?? '',
+    // Zero-fill expense fields — the handler is for quick calculation
+    otherIncome: 0,
+    propertyTaxes: 0,
+    insurance: 0,
+    utilities: 0,
+    maintenance: 0,
+    managementFees: 0,
+    replacementReserves: 0,
+    otherExpenses: 0,
+  }, { token });
+  const data = unwrapBackend(raw, 'Income valuation calculation failed');
+
+  return {
+    netOperatingIncome: data.NetOperatingIncome ?? data.netOperatingIncome ?? 0,
+    capRate: data.CapRate ?? data.capRate ?? params.capRate ?? 7.5,
+    valuation: data.AdjustedValuation ?? data.adjustedValuation ?? 0,
+    grossIncomeMultiplier: data.GrossIncomeMultiplier ?? data.grossIncomeMultiplier ?? 0,
+    riskClassification: data.RiskClassification ?? data.riskClassification ?? 'medium',
+    source: data.Source ?? data.source ?? 'Benton County Income Approach',
+  };
+};
+
+// ============================================================================
 // Registration
 // ============================================================================
 
 /**
- * Register R1 + Wave 1 + Wave 2 real handlers.
+ * Register R1 + Wave 1 + Wave 2 + Wave 3 real handlers.
  * These OVERRIDE canned stubs when called after registerAllHandlers().
  *
  * @param runner - ToolRunner instance (must have initialized registry)
@@ -1585,4 +1681,8 @@ export function registerR1Handlers(
   runner.registerHandler('generate_commissioner_memo', generateCommissionerMemoRealHandler);
   runner.registerHandler('assemble_boe_packet', assembleBoePacketRealHandler);
   runner.registerHandler('request_trace_redaction', createRequestTraceRedactionHandler(traceService));
+
+  // Wave 3 Enrichment handlers (2)
+  runner.registerHandler('calculate_pilt_payment', calculatePiltPaymentRealHandler);
+  runner.registerHandler('run_income_valuation', runIncomeValuationRealHandler);
 }
