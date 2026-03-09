@@ -485,8 +485,6 @@ namespace TerraFusion.Security.Services
         {
             _logger.LogDebug("⚡ Performing quantum-enhanced penetration testing");
 
-            await Task.CompletedTask; // Placeholder for quantum penetration testing
-
             var penetrationTestResults = new List<PenetrationTestResult>
             {
                 new PenetrationTestResult

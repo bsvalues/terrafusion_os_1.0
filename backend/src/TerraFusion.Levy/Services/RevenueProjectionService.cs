@@ -158,12 +158,10 @@ namespace TerraFusion.Levy.Services
             return averageGrowth;
         }
 
-        public async Task<RiskAssessment> AssessProjectionRisksAsync(
+        public Task<RiskAssessment> AssessProjectionRisksAsync(
             RevenueProjection projection,
             LevyScenario scenario)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation(
                 "Assessing risks for revenue projection {ProjectionId}",
                 projection.Id);
@@ -215,14 +213,14 @@ namespace TerraFusion.Levy.Services
                 mitigations.Add("No immediate mitigation actions required - risk levels acceptable");
             }
 
-            return new RiskAssessment
+            return Task.FromResult(new RiskAssessment
             {
                 OverallRisk = overallRisk,
                 RiskScore = riskScore,
                 IdentifiedRisks = risks,
                 RiskBreakdown = riskBreakdown,
                 MitigationRecommendations = mitigations
-            };
+            });
         }
 
         public async Task<ScenarioComparison> CompareScenariosAsync(
@@ -277,12 +275,10 @@ namespace TerraFusion.Levy.Services
             return comparison;
         }
 
-        public async Task<ConfidenceInterval> CalculateConfidenceIntervalAsync(
+        public Task<ConfidenceInterval> CalculateConfidenceIntervalAsync(
             RevenueProjection projection,
             decimal confidenceLevel = 0.95m)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             // Calculate standard deviation based on historical variance
             var historicalVariance = 0.08m; // 8% standard deviation (typical for government revenue)
             var standardDeviation = projection.ProjectedNetRevenue * historicalVariance;
@@ -298,7 +294,7 @@ namespace TerraFusion.Levy.Services
 
             var marginOfError = zScore * standardDeviation;
 
-            return new ConfidenceInterval
+            return Task.FromResult(new ConfidenceInterval
             {
                 ProjectedValue = projection.ProjectedNetRevenue,
                 LowerBound = projection.ProjectedNetRevenue - marginOfError,
@@ -306,7 +302,7 @@ namespace TerraFusion.Levy.Services
                 ConfidenceLevel = confidenceLevel,
                 StandardDeviation = standardDeviation,
                 Interpretation = $"With {confidenceLevel:P0} confidence, actual revenue will fall between ${projection.ProjectedNetRevenue - marginOfError:N2} and ${projection.ProjectedNetRevenue + marginOfError:N2}"
-            };
+            });
         }
 
         #region Private Helper Methods

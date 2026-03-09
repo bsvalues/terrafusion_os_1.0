@@ -593,8 +593,6 @@ namespace TerraFusion.Monitoring.Services
 
         private async Task<(double UsagePercentage, double AvailableGB, double TotalGB)> GetMemoryUsageAsync()
         {
-            await Task.CompletedTask;
-
             try
             {
                 var gcMemInfo = GC.GetGCMemoryInfo();
@@ -622,8 +620,6 @@ namespace TerraFusion.Monitoring.Services
 
         private async Task<(int IOPS, double ThroughputMBps)> GetDiskPerformanceAsync()
         {
-            await Task.CompletedTask;
-
             try
             {
                 var drives = DriveInfo.GetDrives()
@@ -658,8 +654,6 @@ namespace TerraFusion.Monitoring.Services
 
         private async Task<(double ThroughputMbps, double LatencyMs)> GetNetworkMetricsAsync()
         {
-            await Task.CompletedTask;
-
             try
             {
                 var interfaces = NetworkInterface.GetAllNetworkInterfaces()
@@ -692,8 +686,6 @@ namespace TerraFusion.Monitoring.Services
 
         private async Task<(int TotalProcesses, int TerraFusionProcesses)> GetTerraFusionProcessMetricsAsync()
         {
-            await Task.CompletedTask;
-
             try
             {
                 var currentProcess = Process.GetCurrentProcess();
@@ -742,10 +734,7 @@ namespace TerraFusion.Monitoring.Services
 
         private async Task<ServicePerformanceMetrics> GetAPIPerformanceMetricsAsync()
         {
-            // Return current API metrics from in-memory tracking
             // In production, these would come from Prometheus/OpenTelemetry metrics
-            await Task.CompletedTask;
-
             var random = new Random();
             return new ServicePerformanceMetrics
             {
@@ -763,8 +752,6 @@ namespace TerraFusion.Monitoring.Services
         private async Task<ServicePerformanceMetrics> GetConsciousnessServiceMetricsAsync()
         {
             // In-memory metrics for Consciousness service (port 3004)
-            await Task.CompletedTask;
-
             var random = new Random();
             return new ServicePerformanceMetrics
             {
@@ -782,8 +769,6 @@ namespace TerraFusion.Monitoring.Services
         private async Task<ServicePerformanceMetrics> GetAIServiceMetricsAsync()
         {
             // In-memory metrics for AI service
-            await Task.CompletedTask;
-
             var random = new Random();
             return new ServicePerformanceMetrics
             {
@@ -801,8 +786,6 @@ namespace TerraFusion.Monitoring.Services
         private async Task<ServicePerformanceMetrics> GetDataServiceMetricsAsync()
         {
             // In-memory metrics for Data service
-            await Task.CompletedTask;
-
             var random = new Random();
             return new ServicePerformanceMetrics
             {

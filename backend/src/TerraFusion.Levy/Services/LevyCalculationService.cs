@@ -25,12 +25,10 @@ namespace TerraFusion.Levy.Services
             _logger = logger;
         }
 
-        public async Task<LevyRateCalculationResult> CalculateOptimalRateAsync(
+        public Task<LevyRateCalculationResult> CalculateOptimalRateAsync(
             LevyMeasure measure,
             bool useQuantumOptimization = true)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation(
                 "Calculating optimal rate for levy measure {MeasureId} ({MeasureName}) with quantum optimization: {QuantumEnabled}",
                 measure.Id, measure.Name, useQuantumOptimization);
@@ -64,7 +62,7 @@ namespace TerraFusion.Levy.Services
                 ? measure.MaximumRate.Value
                 : aiOptimalRate;
 
-            return new LevyRateCalculationResult
+            return Task.FromResult(new LevyRateCalculationResult
             {
                 CalculatedRate = baseRate,
                 LevyAmount = calculatedAmount,
@@ -83,14 +81,12 @@ namespace TerraFusion.Levy.Services
                     ["exceedsLimit"] = exceedsLimit,
                     ["maximumRate"] = measure.MaximumRate ?? 0m
                 }
-            };
+            });
         }
 
         public async Task<decimal> CalculateLevyAmountAsync(decimal assessedValue, decimal rate)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
-            return assessedValue * rate;
+            return await Task.FromResult(assessedValue * rate);
         }
 
         public async Task<DistrictLevyTotal> CalculateDistrictTotalAsync(Guid districtId, int levyYear)
@@ -161,12 +157,10 @@ namespace TerraFusion.Levy.Services
             };
         }
 
-        public async Task<LevyComplianceResult> ValidateRateComplianceAsync(
+        public Task<LevyComplianceResult> ValidateRateComplianceAsync(
             LevyMeasure measure,
             decimal proposedRate)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             var result = new LevyComplianceResult
             {
                 ProposedRate = proposedRate,
@@ -204,22 +198,20 @@ namespace TerraFusion.Levy.Services
                 "Rate compliance validation: Measure {MeasureId}, Proposed {ProposedRate:F6}, Result {ComplianceLevel}",
                 measure.Id, proposedRate, result.ComplianceLevel);
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        public async Task<decimal> CalculateProjectedRevenueAsync(
+        public Task<decimal> CalculateProjectedRevenueAsync(
             decimal levyAmount,
             decimal collectionRate)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             // Ensure collection rate is within valid range
             if (collectionRate < 0 || collectionRate > 1)
             {
                 throw new ArgumentException("Collection rate must be between 0 and 1", nameof(collectionRate));
             }
 
-            return levyAmount * collectionRate;
+            return Task.FromResult(levyAmount * collectionRate);
         }
 
         public async Task<List<LevyScenarioAnalysis>> AnalyzeScenariosAsync(
