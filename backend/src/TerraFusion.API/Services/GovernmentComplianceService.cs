@@ -584,8 +584,6 @@ namespace TerraFusion.API.Services
             existing.ComplianceScore = 1.0; // Maintain 100% score
             return existing;
         });
-
-        await Task.CompletedTask;
     }
 
     private async Task ValidateAIEthicsCompliance(string component, string operation, DetailedComplianceResult result) { await Task.CompletedTask; }

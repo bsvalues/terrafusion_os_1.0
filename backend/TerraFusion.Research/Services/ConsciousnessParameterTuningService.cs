@@ -542,7 +542,6 @@ public class ConsciousnessParameterTuningService : IConsciousnessParameterTuning
     private async Task ApplyParameterChangeAsync(string parameterName, double value)
     {
         // Apply parameter change to quantum consciousness orchestrator
-        await Task.CompletedTask;
         _logger.LogDebug("Applied {Parameter} = {Value}", parameterName, value);
     }
 
@@ -551,7 +550,6 @@ public class ConsciousnessParameterTuningService : IConsciousnessParameterTuning
         double oldValue,
         double newValue)
     {
-        await Task.CompletedTask;
 
         return new ActualImpactMeasurement
         {
@@ -590,7 +588,6 @@ public class ConsciousnessParameterTuningService : IConsciousnessParameterTuning
         ConsciousnessPerformanceMetricsDto baseline,
         int simulationIndex)
     {
-        await Task.CompletedTask;
 
         // Simulate parameter impact (simplified Monte Carlo simulation)
         var accuracyGain = _random.NextDouble() * 0.01 - 0.002;
@@ -680,7 +677,6 @@ public class ConsciousnessParameterTuningService : IConsciousnessParameterTuning
         PropertyDto property,
         ConsciousnessParameters parameters)
     {
-        await Task.CompletedTask;
 
         // Simulate assessment accuracy based on consciousness parameters
         var baseAccuracy = 0.99;
@@ -698,7 +694,6 @@ public class ConsciousnessParameterTuningService : IConsciousnessParameterTuning
     private async Task<BatchApplyResult> ApplyVariantParametersAsync(
         Dictionary<string, object> parameters)
     {
-        await Task.CompletedTask;
 
         return new BatchApplyResult
         {
@@ -726,7 +721,6 @@ public class ConsciousnessParameterTuningService : IConsciousnessParameterTuning
 
     private async Task RestoreBaselineParametersAsync()
     {
-        await Task.CompletedTask;
         _logger.LogDebug("Restored baseline parameters");
     }
 
@@ -782,7 +776,6 @@ public class ConsciousnessParameterTuningService : IConsciousnessParameterTuning
         ExperimentResult exp2,
         ComparisonMetrics metrics)
     {
-        await Task.CompletedTask;
 
         var acc1 = exp1.WinningVariant?.AccuracyScore ?? 0;
         var acc2 = exp2.WinningVariant?.AccuracyScore ?? 0;

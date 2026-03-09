@@ -987,7 +987,6 @@ namespace TerraFusion.Monitoring.Services
             // Update prediction model with new data
             _predictionModel.UpdateWithNewData(snapshot);
 
-            await Task.CompletedTask;
         }
 
         private async Task UpdateChampionshipPerformanceDashboardsAsync(PerformanceSnapshot snapshot)
@@ -997,7 +996,6 @@ namespace TerraFusion.Monitoring.Services
                 "Dashboard update: ChampionshipScore={Score:P2}, Grade={Grade}, CPU={CPU:F1}%, Memory={Mem:F1}%",
                 snapshot.OverallChampionshipScore, snapshot.PerformanceGrade,
                 snapshot.SystemMetrics.CPUUsagePercentage, snapshot.SystemMetrics.MemoryUsagePercentage);
-            await Task.CompletedTask;
         }
 
         private async Task GeneratePerformancePredictionsAsync(PerformanceSnapshot snapshot)
@@ -1024,7 +1022,6 @@ namespace TerraFusion.Monitoring.Services
                         cpuTrend, memoryTrend);
                 }
             }
-            await Task.CompletedTask;
         }
 
         #endregion
@@ -1063,13 +1060,11 @@ namespace TerraFusion.Monitoring.Services
                 GC.Collect(1, GCCollectionMode.Optimized);
                 _logger.LogInformation("GC collection triggered due to high memory usage");
             }
-            await Task.CompletedTask;
         }
         private async Task EnhanceQuantumPerformanceAsync(PerformanceSnapshot snapshot)
         {
             _logger.LogDebug("Quantum performance enhancement evaluated: QuantumOpt={Opt:P2}",
                 snapshot.QuantumMetrics.OverallQuantumOptimization);
-            await Task.CompletedTask;
         }
         private async Task ImproveServiceResponseTimesAsync(PerformanceSnapshot snapshot)
         {
@@ -1080,7 +1075,6 @@ namespace TerraFusion.Monitoring.Services
                 slowServices.Add($"AI ({snapshot.ServiceMetrics.AIServiceMetrics.ResponseTimeMs:F1}ms)");
             if (slowServices.Count > 0)
                 _logger.LogWarning("Services exceeding response time target: {Services}", string.Join(", ", slowServices));
-            await Task.CompletedTask;
         }
         private async Task ScaleResourcesIfNeededAsync(PerformanceSnapshot snapshot)
         {
@@ -1088,13 +1082,11 @@ namespace TerraFusion.Monitoring.Services
                 _logger.LogWarning("CPU usage critical at {CPU:F1}% - scaling recommended", snapshot.SystemMetrics.CPUUsagePercentage);
             if (snapshot.SystemMetrics.MemoryUsagePercentage > 90)
                 _logger.LogWarning("Memory usage critical at {Mem:F1}% - scaling recommended", snapshot.SystemMetrics.MemoryUsagePercentage);
-            await Task.CompletedTask;
         }
         private async Task UpdatePerformanceConfigurationsAsync(PerformanceSnapshot snapshot)
         {
             _logger.LogDebug("Performance configuration review: Grade={Grade}, EliteStatus={Elite}",
                 snapshot.PerformanceGrade, snapshot.EliteStatusMaintained);
-            await Task.CompletedTask;
         }
         private double CalculatePerformanceRiskAssessment(List<PerformancePrediction> predictions) => predictions.Count(p => p.ChampionshipRisk == "HIGH") > 2 ? 0.8 : 0.2;
         private string[] GeneratePredictiveInsights(List<PerformancePrediction> predictions, List<PerformanceAnomaly> anomalies) => new[] { $"Predicted {predictions.Count} performance changes", $"Detected {anomalies.Count} anomalies" };

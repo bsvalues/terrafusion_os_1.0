@@ -185,7 +185,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
                 metricName,
                 async () =>
                 {
-                    await Task.CompletedTask;
                     return 0.995 + _random.NextDouble() * 0.004; // Simulated measurement
                 },
                 precisionDigits: 15);
@@ -210,7 +209,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "🔬 Testing statistical significance with {TestType} (n1={N1}, n2={N2})",
             testType, sample1.Count, sample2.Count);
 
-        await Task.CompletedTask;
 
         double pValue;
         double testStatistic;
@@ -278,7 +276,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "⚡ Power analysis: d={EffectSize:F4}, α={Alpha:F4}, power={Power:F4}, n={SampleSize}",
             effectSize, alpha, power, sampleSize);
 
-        await Task.CompletedTask;
 
         // Calculate critical value for given alpha (two-tailed)
         var normalDist = new Normal(0, 1);
@@ -327,7 +324,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "📊 Calculating {CorrelationType} correlation matrix for {VariableCount} variables",
             correlationType, variables.Count);
 
-        await Task.CompletedTask;
 
         var variableNames = variables.Keys.ToList();
         var n = variableNames.Count;
@@ -392,7 +388,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "🎯 Calculating partial correlation between '{Var1}' and '{Var2}' controlling for {ControlCount} variables",
             variable1, variable2, controlVariables.Count);
 
-        await Task.CompletedTask;
 
         // Build correlation matrix
         var varsToInclude = new List<string> { variable1, variable2 };
@@ -442,7 +437,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "🔗 Testing Granger causality with max lag {MaxLag} (n={SampleSize})",
             maxLag, timeSeries1.Count);
 
-        await Task.CompletedTask;
 
         // Test if timeSeries1 Granger-causes timeSeries2
         var fStatistic1to2 = CalculateGrangerFStatistic(timeSeries1, timeSeries2, maxLag);
@@ -485,7 +479,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "🔬 Fitting structural equation model with {ObservedCount} observed, {LatentCount} latent variables, {PathCount} paths",
             observedVariables.Count, latentVariables.Count, hypothesizedPaths.Count);
 
-        await Task.CompletedTask;
 
         // Simplified SEM fitting (in production, use specialized SEM library)
         var pathCoefficients = new Dictionary<string, double>();
@@ -550,7 +543,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "🎲 Performing Bayesian inference with {ObservationCount} observations",
             observations.Count);
 
-        await Task.CompletedTask;
 
         // Simplified Bayesian inference (in production, use MCMC sampling)
         var posteriorMean = CalculatePosteriorMean(observations, prior, likelihood);
@@ -593,7 +585,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "🌌 Quantum hypothesis test: H₀: {Null} vs H₁: {Alternative}",
             nullHypothesis.Description, alternativeHypothesis.Description);
 
-        await Task.CompletedTask;
 
         // Quantum-enhanced hypothesis testing with entanglement factors
         var classicalPValue = CalculateClassicalPValue(sample, nullHypothesis);
@@ -631,7 +622,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "📐 Estimating effect size with {Metric} (n1={N1}, n2={N2})",
             metric, sample1.Count, sample2.Count);
 
-        await Task.CompletedTask;
 
         double effectSize;
         string interpretation;
@@ -691,7 +681,6 @@ public class ResearchGradeMetricsService : IResearchGradeMetricsService
             "💡 Recommending sample size for d={EffectSize:F4}, power={Power:F2}, α={Alpha:F4}",
             expectedEffectSize, desiredPower, significanceLevel);
 
-        await Task.CompletedTask;
 
         var normalDist = new Normal(0, 1);
         var zAlpha = normalDist.InverseCumulativeDistribution(1 - significanceLevel / 2);

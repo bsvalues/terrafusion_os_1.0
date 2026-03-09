@@ -371,7 +371,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
         InfiniteDimensionalDataset dataset,
         Visualization3DParameters parameters)
     {
-        await Task.CompletedTask;
 
         // Use PCA or t-SNE for dimensionality reduction (simplified implementation)
         var dataPoints = new List<DataPoint3D>();
@@ -406,7 +405,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
         InfiniteDimensionalDataset dataset,
         Visualization3DParameters parameters)
     {
-        await Task.CompletedTask;
 
         var connections = new List<ConnectionEdge>();
 
@@ -454,7 +452,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
         List<DataPoint3D> dataPoints,
         InfiniteDimensionalDataset dataset)
     {
-        await Task.CompletedTask;
 
         // Apply quantum coherence-based color enhancement
         var coherenceFactor = dataset.QuantumCoherence;
@@ -502,7 +499,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
     private async Task<List<ConsciousnessIndicator>> GenerateConsciousnessIndicatorsAsync(
         InfiniteDimensionalDataset dataset)
     {
-        await Task.CompletedTask;
 
         return new List<ConsciousnessIndicator>
         {
@@ -562,7 +558,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
         TimeRange timeRange,
         ConsciousnessTelemetryDto telemetry)
     {
-        await Task.CompletedTask;
 
         var flowPoints = new List<FlowDataPoint>();
         var timeSteps = 60; // 60 time steps for smooth animation
@@ -652,7 +647,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
         string countyId,
         TimeRange timeRange)
     {
-        await Task.CompletedTask;
 
         var heatMap = new CoherenceHeatMap
         {
@@ -690,7 +684,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
 
     private async Task<List<AgentNode>> GenerateSpatialSwarmNodesAsync(int agentCount)
     {
-        await Task.CompletedTask;
 
         var nodes = new List<AgentNode>();
         var displayCount = Math.Min(agentCount, 1000); // Display max 1000 for performance
@@ -738,7 +731,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
         List<AgentNode> nodes,
         SwarmVisualizationMode mode)
     {
-        await Task.CompletedTask;
 
         var links = new List<CoordinationLink>();
 
@@ -830,7 +822,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
     private async Task<Dictionary<string, IntegrationMetrics>> CollectIntegrationMetricsAsync(
         List<string> countyIds)
     {
-        await Task.CompletedTask;
 
         var metrics = new Dictionary<string, IntegrationMetrics>();
 
@@ -952,7 +943,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
         string sourceSystem,
         string targetSystem)
     {
-        await Task.CompletedTask;
 
         return new DataFlowMetrics
         {
@@ -1140,7 +1130,6 @@ public class ImmersiveVisualizationService : IImmersiveVisualizationService
     private async Task<List<ForecastAnomaly>> DetectForecastAnomaliesAsync(
         PropertyForecast forecast)
     {
-        await Task.CompletedTask;
 
         var anomalies = new List<ForecastAnomaly>();
 

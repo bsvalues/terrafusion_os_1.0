@@ -449,8 +449,6 @@ public class ModelHealthMonitor
             var today = DateTime.UtcNow.Date;
             history.RemoveAll(dt => dt.Date < today);
         }
-
-        await Task.CompletedTask;
     }
 
     public async System.Threading.Tasks.Task RecordErrorAsync(string modelName, Exception error)
@@ -507,7 +505,6 @@ public class AIModelRegistry
     public async System.Threading.Tasks.Task RegisterModelAsync(string modelName, ModelMetadata metadata)
     {
         _models.TryAdd(modelName, metadata);
-        await Task.CompletedTask;
     }
 
     public async System.Threading.Tasks.Task UpdateModelStatusAsync()
@@ -517,8 +514,6 @@ public class AIModelRegistry
         {
             metadata.LastStatusUpdate = DateTime.UtcNow;
         }
-
-        await Task.CompletedTask;
     }
 
     public ModelMetadata? GetModelMetadata(string modelName)
@@ -558,7 +553,6 @@ public class QuantumModelOptimizer
     public async System.Threading.Tasks.Task InitializeAsync()
     {
         _logger.LogInformation("Initializing quantum model optimization engine");
-        await Task.CompletedTask;
     }
 
     public async System.Threading.Tasks.Task OptimizeModelsAsync(ConcurrentDictionary<string, IModelContainer> models)

@@ -116,46 +116,41 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get total agent count in the swarm
         /// </summary>
-        public async System.Threading.Tasks.Task<int> GetTotalAgentCount()
+        public System.Threading.Tasks.Task<int> GetTotalAgentCount()
         {
-            await Task.CompletedTask;
-            return _allAgents.Count;
+            return Task.FromResult(_allAgents.Count);
         }
 
         /// <summary>
         /// Get currently active agent count
         /// </summary>
-        public async System.Threading.Tasks.Task<int> GetActiveAgentCount()
+        public System.Threading.Tasks.Task<int> GetActiveAgentCount()
         {
-            await Task.CompletedTask;
-            return _allAgents.Values.Count(a => a.IsActive);
+            return Task.FromResult(_allAgents.Values.Count(a => a.IsActive));
         }
 
         /// <summary>
         /// Get swarm coherence score (0.0 to 1.0)
         /// </summary>
-        public async System.Threading.Tasks.Task<double> GetSwarmCoherence()
+        public System.Threading.Tasks.Task<double> GetSwarmCoherence()
         {
-            await Task.CompletedTask;
-            return _swarmCoherence;
+            return Task.FromResult(_swarmCoherence);
         }
 
         /// <summary>
         /// Get collective intelligence score (0.0 to 1.0)
         /// </summary>
-        public async System.Threading.Tasks.Task<double> GetCollectiveIntelligenceScore()
+        public System.Threading.Tasks.Task<double> GetCollectiveIntelligenceScore()
         {
-            await Task.CompletedTask;
-            return _collectiveIntelligenceScore;
+            return Task.FromResult(_collectiveIntelligenceScore);
         }
 
         /// <summary>
         /// Get count of emergent capabilities discovered
         /// </summary>
-        public async System.Threading.Tasks.Task<int> GetEmergentCapabilityCount()
+        public System.Threading.Tasks.Task<int> GetEmergentCapabilityCount()
         {
-            await Task.CompletedTask;
-            return _emergentCapabilityCount;
+            return Task.FromResult(_emergentCapabilityCount);
         }
 
         /// <summary>
@@ -568,7 +563,7 @@ namespace TerraFusion.AI.Services
 
         #region Helper Methods (Placeholders for Complex Operations)
 
-        private async System.Threading.Tasks.Task<List<string>> GenerateSpecializationAreas(AgentTier tier)
+        private System.Threading.Tasks.Task<List<string>> GenerateSpecializationAreas(AgentTier tier)
         {
             // Generate specialization areas based on tier
             var specializations = tier switch
@@ -583,19 +578,17 @@ namespace TerraFusion.AI.Services
                 _ => new[] { "General Purpose" }
             };
 
-            await Task.CompletedTask;
-            return specializations.ToList();
+            return Task.FromResult(specializations.ToList());
         }
 
-        private async System.Threading.Tasks.Task<Dictionary<string, object>> InitializeAgentKnowledge(AgentTier tier)
+        private System.Threading.Tasks.Task<Dictionary<string, object>> InitializeAgentKnowledge(AgentTier tier)
         {
-            await Task.CompletedTask;
-            return new Dictionary<string, object>
+            return Task.FromResult(new Dictionary<string, object>
             {
                 ["tier"] = tier.ToString(),
                 ["initialized"] = DateTime.UtcNow,
                 ["knowledge_version"] = "1.0"
-            };
+            });
         }
 
         private double CalculateConnectionStrength(AgentTier tier)

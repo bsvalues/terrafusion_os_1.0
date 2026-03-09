@@ -755,8 +755,6 @@ public class SecurityIncidentResponseService : ISecurityIncidentResponseService
         // - SMS for critical incidents
         // - Slack/Teams integration
         // - Security Operations Center (SOC) dashboard
-
-        await Task.CompletedTask;
     }
 
     private async Task ExecuteResponseActionAsync(ResponseAction action)

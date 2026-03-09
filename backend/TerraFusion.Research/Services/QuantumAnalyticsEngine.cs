@@ -490,7 +490,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
     private async Task<AccessLevel> ValidateEliteResearchCredentialsAsync(ResearcherCredentials credentials)
     {
         // PhD-level credential validation logic
-        await Task.CompletedTask;
 
         return credentials.InstitutionType switch
         {
@@ -504,7 +503,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
 
     private async Task<QuantumEnvironmentConfig> InitializeQuantumEnvironmentAsync(AnalysisScope scope)
     {
-        await Task.CompletedTask;
 
         return new QuantumEnvironmentConfig
         {
@@ -520,7 +518,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
         ResearcherCredentials credentials,
         AccessLevel accessLevel)
     {
-        await Task.CompletedTask;
 
         return new ConsciousnessAccessConfig
         {
@@ -552,7 +549,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
 
     private async Task<InfinitePrecisionTools> LoadInfinitePrecisionToolsAsync(AccessLevel accessLevel)
     {
-        await Task.CompletedTask;
 
         return new InfinitePrecisionTools
         {
@@ -569,7 +565,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
 
     private async Task<StatisticalValidationSuite> LoadStatisticalValidationSuiteAsync(AccessLevel accessLevel)
     {
-        await Task.CompletedTask;
 
         return new StatisticalValidationSuite
         {
@@ -586,7 +581,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
 
     private async Task<QuantumVisualizationEngine> LoadVisualizationEngineAsync(AccessLevel accessLevel)
     {
-        await Task.CompletedTask;
 
         return new QuantumVisualizationEngine
         {
@@ -605,7 +599,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
     private async Task<List<PropertyDto>> LoadCountyPropertiesAsync(string countyId, PropertyFilter filters)
     {
         // Simulate property loading (would integrate with real services)
-        await Task.CompletedTask;
 
         var properties = new List<PropertyDto>();
         for (int i = 0; i < 100; i++)
@@ -625,7 +618,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
 
     private async Task<List<FeatureVector>> CalculateInfiniteDimensionalVectorsAsync(List<PropertyDto> properties)
     {
-        await Task.CompletedTask;
 
         return properties.Select(p => new FeatureVector
         {
@@ -644,14 +636,12 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
     private async Task<List<FeatureVector>> ApplyQuantumEnhancementAsync(List<FeatureVector> vectors)
     {
         // Quantum enhancement logic
-        await Task.CompletedTask;
         return vectors;
     }
 
     private async Task<List<FeatureVector>> EnhanceWithConsciousnessAsync(List<FeatureVector> vectors)
     {
         // Consciousness enhancement logic
-        await Task.CompletedTask;
         return vectors;
     }
 
@@ -667,7 +657,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
 
     private async Task<double> CalculateStatisticalSignificanceAsync(List<PropertyDto> properties)
     {
-        await Task.CompletedTask;
         return _random.NextDouble() * 0.001; // P-value
     }
 
@@ -675,7 +664,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
         InfiniteDimensionalDataset dataset,
         VisualizationParameters parameters)
     {
-        await Task.CompletedTask;
 
         return dataset.FeatureVectors.Select(v => new DataPoint3D
         {
@@ -694,7 +682,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
         List<DataPoint3D> dataPoints,
         VisualizationParameters parameters)
     {
-        await Task.CompletedTask;
 
         var connections = new List<ConnectionEdge>();
 
@@ -882,7 +869,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
         ConsciousnessTuningParameters tuning,
         PropertyAssessmentContext context)
     {
-        await Task.CompletedTask;
 
         return new SimulationResult
         {
@@ -902,7 +888,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
         SimulationResult simulation,
         double accuracyTarget)
     {
-        await Task.CompletedTask;
 
         return new ConsciousnessParameters
         {
@@ -917,7 +902,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
 
     private async Task<IAAOValidation> ValidateIAAOComplianceAsync(ConsciousnessParameters parameters)
     {
-        await Task.CompletedTask;
         return new IAAOValidation { IsCompliant = true };
     }
 
@@ -935,7 +919,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
         ConsciousnessTuningParameters changes,
         AssessmentSimulationScope scope)
     {
-        await Task.CompletedTask;
 
         return new PerformanceMetrics
         {
@@ -950,13 +933,11 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
         ConsciousnessTuningParameters changes,
         PerformanceMetrics predictedMetrics)
     {
-        await Task.CompletedTask;
         return new List<string>();
     }
 
     private async Task<SwarmCoordinationVisualization> GenerateSpatialSwarmVisualizationAsync(int agentCount)
     {
-        await Task.CompletedTask;
 
         var nodes = new List<SwarmNode>();
         for (int i = 0; i < Math.Min(agentCount, 100); i++)
@@ -990,7 +971,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
     private async Task<CoordinationStrategy> CalculateOptimalCoordinationStrategyAsync(
         SwarmOptimizationParameters parameters)
     {
-        await Task.CompletedTask;
 
         return new CoordinationStrategy
         {
@@ -1006,7 +986,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
 
     private async Task<SwarmPerformanceMetrics> PredictSwarmPerformanceAsync(CoordinationStrategy strategy)
     {
-        await Task.CompletedTask;
 
         return new SwarmPerformanceMetrics
         {
@@ -1057,7 +1036,6 @@ public class QuantumAnalyticsEngine : IQuantumAnalyticsEngine
         List<double> values,
         double nullHypothesisMean)
     {
-        await Task.CompletedTask;
 
         var mean = values.Average();
         var stdDev = CalculateStandardDeviation(values, mean);
