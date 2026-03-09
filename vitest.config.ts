@@ -9,6 +9,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
+  css: {
+    // Keep test runs isolated from parent-directory PostCSS configs.
+    postcss: {
+      plugins: [],
+    },
+  },
   test: {
     include: [
       'tests/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
@@ -35,6 +41,7 @@ export default defineConfig({
     setupFiles: [path.resolve(__dirname, 'tests/setupTests.ts')],
     coverage: {
       provider: 'v8',
+      all: false,
       reporter: ['text', 'json-summary', 'html'],
       reportsDirectory: 'coverage',
       thresholds: {
