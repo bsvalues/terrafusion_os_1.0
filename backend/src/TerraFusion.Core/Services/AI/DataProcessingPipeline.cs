@@ -349,14 +349,12 @@ public class DataProcessingPipeline : IDataProcessingPipeline
 
     public async Task<List<DataProcessingPipeline>> GetAvailablePipelinesAsync()
     {
-        await Task.CompletedTask;
         // Return this instance for each configured pipeline
         return _pipelines.Keys.Select(_ => this).ToList();
     }
 
     public async Task<PipelineExecutionResult> GetPipelineResultsAsync(string executionId)
     {
-        await Task.CompletedTask;
         return _executionResults.GetValueOrDefault(executionId) ?? 
                throw new ArgumentException($"Execution {executionId} not found");
     }

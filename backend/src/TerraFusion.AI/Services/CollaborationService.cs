@@ -146,7 +146,7 @@ namespace TerraFusion.AI.Services
             string userName,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var session = new CollaborativeSession
             {
@@ -177,7 +177,7 @@ namespace TerraFusion.AI.Services
             string connectionId,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             if (!_sessions.TryGetValue(sessionId, out var session))
             {
@@ -219,7 +219,7 @@ namespace TerraFusion.AI.Services
             string userId,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             if (!_sessions.TryGetValue(sessionId, out var session))
             {
@@ -248,7 +248,7 @@ namespace TerraFusion.AI.Services
             string userId,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             if (!_sessions.TryGetValue(sessionId, out var session))
             {
@@ -303,7 +303,7 @@ namespace TerraFusion.AI.Services
             CursorPosition position,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             if (!_sessions.TryGetValue(sessionId, out var session))
             {
@@ -324,7 +324,7 @@ namespace TerraFusion.AI.Services
             TextSelection selection,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             if (!_sessions.TryGetValue(sessionId, out var session))
             {
@@ -343,7 +343,7 @@ namespace TerraFusion.AI.Services
             string sessionId,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             return _sessions.TryGetValue(sessionId, out var session) ? session : null;
         }
@@ -352,7 +352,7 @@ namespace TerraFusion.AI.Services
             string sessionId,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             if (!_sessions.TryGetValue(sessionId, out var session))
             {
@@ -364,7 +364,7 @@ namespace TerraFusion.AI.Services
 
         public async Task CleanupInactiveSessionsAsync(CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var inactiveThreshold = DateTime.UtcNow.AddHours(-2);
             var sessionsToRemove = _sessions
@@ -388,7 +388,7 @@ namespace TerraFusion.AI.Services
             ChangeOperation operation,
             string userId)
         {
-            await Task.CompletedTask;
+
 
             var participant = session.Participants.FirstOrDefault(p => p.UserId == userId);
             var userName = participant?.UserName ?? "Unknown";

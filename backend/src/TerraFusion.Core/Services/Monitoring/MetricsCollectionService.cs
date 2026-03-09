@@ -165,7 +165,6 @@ public class MetricsCollectionService : IMetricsCollectionService
             _telemetryService.TrackException(ex);
         }
 
-        await Task.CompletedTask;
     }
 
     public async Task RecordRequestMetricAsync(string endpoint, TimeSpan responseTime, bool isSuccess)
@@ -332,13 +331,11 @@ public class MetricsCollectionService : IMetricsCollectionService
         }
 
         // Fallback: use GC.GetTotalMemory
-        await Task.CompletedTask;
         return GC.GetTotalMemory(false) / (1024 * 1024); // Convert to MB
     }
 
     private async Task<ProcessMetrics> GetProcessMetricsAsync()
     {
-        await Task.CompletedTask;
         
         using var process = Process.GetCurrentProcess();
         return new ProcessMetrics

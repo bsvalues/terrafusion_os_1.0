@@ -353,7 +353,6 @@ public class RealPerformanceService : IRealPerformanceService, IHostedService
             _logger.LogDebug("Server GC is enabled - optimal for high-throughput scenarios");
         }
         
-        await Task.CompletedTask;
     }
 
     private async Task OptimizeThreadPoolAsync()
@@ -367,7 +366,6 @@ public class RealPerformanceService : IRealPerformanceService, IHostedService
         _logger.LogDebug("Thread pool optimized: Min={0}, Max={1}", 
             processorCount * 2, processorCount * 16);
         
-        await Task.CompletedTask;
     }
 
     private double CalculateOverallImprovement()
@@ -440,7 +438,6 @@ public class RealPerformanceService : IRealPerformanceService, IHostedService
     {
         _logger.LogInformation("⏹️ Stopping Real Performance Service...");
         _metricsCollectionTimer?.Dispose();
-        await Task.CompletedTask;
     }
 }
 
@@ -561,13 +558,11 @@ public class ConnectionPoolOptimizer
     public async Task InitializeAsync()
     {
         _logger.LogDebug("Initializing connection pool optimizer");
-        await Task.CompletedTask;
     }
 
     public async Task OptimizePoolAsync()
     {
         _logger.LogDebug("Optimizing connection pool settings");
-        await Task.CompletedTask;
     }
 
     public IDisposable GetOptimizedConnection()
@@ -598,13 +593,11 @@ public class CacheOptimizer
     public async Task InitializeAsync()
     {
         _logger.LogDebug("Initializing cache optimizer");
-        await Task.CompletedTask;
     }
 
     public async Task OptimizeCacheAsync()
     {
         _logger.LogDebug("Optimizing cache configuration");
-        await Task.CompletedTask;
     }
 
     public Task<T?> TryGetCachedResultAsync<T>(string key) where T : class
@@ -622,7 +615,6 @@ public class CacheOptimizer
     public async Task SetCachedResultAsync<T>(string key, T value, TimeSpan expiration) where T : class
     {
         _cache.Set(key, value, expiration);
-        await Task.CompletedTask;
     }
 
     public double GetHitRatio() => _hits + _misses > 0 ? (double)_hits / (_hits + _misses) : 0.0;

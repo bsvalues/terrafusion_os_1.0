@@ -245,8 +245,6 @@ public class ObservabilityService : IObservabilityService
 
     public async Task StartHealthMonitoringAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         if (_isMonitoring)
         {
             _logger.LogWarning("Health monitoring is already running");
@@ -283,7 +281,6 @@ public class ObservabilityService : IObservabilityService
         _isMonitoring = false;
         
         _telemetryService.TrackEvent("HealthMonitoringStopped");
-        await Task.CompletedTask;
     }
 
     private async Task PerformHealthCheckAsync()

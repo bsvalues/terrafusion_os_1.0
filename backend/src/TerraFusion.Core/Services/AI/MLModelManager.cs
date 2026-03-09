@@ -303,13 +303,11 @@ public class MLModelManager : IMLModelManager
 
     public async Task<List<MLModelInfo>> GetAvailableModelsAsync()
     {
-        await Task.CompletedTask;
         return _modelInfos.Values.Where(m => m.IsActive).ToList();
     }
 
     public async Task<MLModelInfo?> GetModelInfoAsync(string modelId)
     {
-        await Task.CompletedTask;
         return _modelInfos.GetValueOrDefault(modelId);
     }
 

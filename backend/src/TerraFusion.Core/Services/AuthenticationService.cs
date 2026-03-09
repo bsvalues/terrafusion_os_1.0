@@ -332,7 +332,6 @@ namespace TerraFusion.Core.Services
 
         _logger.LogWarning("Revoked all tokens for user {UserId}. Reason: {Reason}", userId, reason);
 
-        await Task.CompletedTask;
       }
       catch (Exception ex)
       {

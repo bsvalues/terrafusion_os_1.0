@@ -90,7 +90,6 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
         }
 
         // Store in metrics (implementation would depend on your metrics storage)
-        await Task.CompletedTask;
     }
 
     public async Task RecordDatabaseQueryAsync(string queryType, TimeSpan duration)
@@ -104,7 +103,6 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
                 queryType, duration.TotalMilliseconds);
         }
 
-        await Task.CompletedTask;
     }
 
     public async Task RecordCacheOperationAsync(string operation, bool hit, TimeSpan duration)
@@ -113,7 +111,6 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
             "Cache operation: {Operation} - {Result} in {Duration}ms",
             operation, hit ? "HIT" : "MISS", duration.TotalMilliseconds);
 
-        await Task.CompletedTask;
     }
 
     public async Task<HealthStatus> GetHealthStatusAsync()

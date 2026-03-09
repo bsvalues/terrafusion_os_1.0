@@ -458,7 +458,6 @@ public class LoggingBackgroundService : BackgroundService
         };
 
         _structuredLogger.LogSystemHealth("Application", "Healthy", healthMetrics);
-        await Task.CompletedTask;
     }
 
     private async Task CleanupOldLogsAsync()
@@ -491,6 +490,5 @@ public class LoggingBackgroundService : BackgroundService
             _logger.LogError(ex, "Error during log cleanup");
         }
 
-        await Task.CompletedTask;
     }
 }

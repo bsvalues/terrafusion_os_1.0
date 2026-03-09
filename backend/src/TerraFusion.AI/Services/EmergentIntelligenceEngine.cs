@@ -606,15 +606,14 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async System.Threading.Tasks.Task<string> DetermineOptimalProtocol(AgentTier tier)
+        private System.Threading.Tasks.Task<string> DetermineOptimalProtocol(AgentTier tier)
         {
-            await Task.CompletedTask;
-            return tier switch
+            return Task.FromResult(tier switch
             {
                 AgentTier.AICouncil => "QuantumSecure",
                 AgentTier.QuantumCommanders => "QuantumSync",
                 _ => "StandardSync"
-            };
+            });
         }
 
         private List<string> SelectCoordinationAgents()
@@ -827,11 +826,9 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async System.Threading.Tasks.Task<EmergentIntelligenceMetrics> GetMetricsAsync()
+        public System.Threading.Tasks.Task<EmergentIntelligenceMetrics> GetMetricsAsync()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
-            return new EmergentIntelligenceMetrics
+            return Task.FromResult(new EmergentIntelligenceMetrics
             {
                 ActiveAgents = _currentActiveAgents,
                 SwarmCoherence = _swarmCoherence,
@@ -839,7 +836,7 @@ namespace TerraFusion.AI.Services
                 EmergentCapabilities = _emergentCapabilityCount,
                 MetricBreakdown = _emergentMetrics.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                 LastUpdated = DateTime.UtcNow
-            };
+            });
         }
 
         public void Dispose()

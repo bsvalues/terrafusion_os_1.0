@@ -165,8 +165,6 @@ namespace TerraFusion.IDE.Gateway.Services
 
         public async Task<IEnumerable<RunningTool>> GetRunningToolsAsync()
         {
-            await Task.CompletedTask; // Async for interface consistency
-            
             lock (_lockObject)
             {
                 return _runningTools.Select(kvp => new RunningTool
@@ -183,8 +181,6 @@ namespace TerraFusion.IDE.Gateway.Services
 
         public async Task<IEnumerable<RecentExecution>> GetRecentExecutionsAsync(string? userId = null, int limit = 50)
         {
-            await Task.CompletedTask; // Async for interface consistency
-
             lock (_lockObject)
             {
                 var executions = _recentExecutions.AsEnumerable();

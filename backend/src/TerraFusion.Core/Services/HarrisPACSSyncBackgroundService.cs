@@ -255,7 +255,6 @@ namespace TerraFusion.Core.Services
             {
                 result.Error = "pacscontract.v1 is read-only; background sync is disabled.";
                 _logger.LogWarning("⚠️ Harris PACS sync skipped for {Jurisdiction}: {Reason}", jurisdiction, result.Error);
-                await Task.CompletedTask;
             }
             catch (Exception ex)
             {

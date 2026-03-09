@@ -186,7 +186,6 @@ namespace TerraFusion.Core.Services
             _cache.Remove(cacheKey);
 
             _logger.LogDebug("Invalidated property count cache for {County}", countyCode);
-            await Task.CompletedTask;
         }
     }
 

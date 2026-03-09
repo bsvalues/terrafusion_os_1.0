@@ -149,7 +149,6 @@ namespace TerraFusion.AI.Services
 
         public async Task<PropertyAnalysisResult> AnalyzePropertyAsync(string parcelId, string countyId)
         {
-            await Task.CompletedTask;
             // Phase 8: Return degraded result instead of crashing at runtime.
             // TODO: Fix type conversions — parcelId to decimal, comparables to dynamic
             _logger.LogWarning("AnalyzePropertyAsync({ParcelId}, {CountyId}) — returning stub result; type conversion not yet implemented", parcelId, countyId);
@@ -199,8 +198,6 @@ namespace TerraFusion.AI.Services
             AIAssistantRequest request,
             SwarmCoordinationResult swarmResponse)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             var messageType = DetermineTaskType(request.Message);
             string content;
             var suggestions = new List<string>();
@@ -351,8 +348,6 @@ What specific task would you like me to help with?";
 
         private async Task<List<AIRecommendation>> GetPropertyRecommendationsAsync(string countyId)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             // Implement property-specific recommendations
             return new List<AIRecommendation>
             {
@@ -371,16 +366,12 @@ What specific task would you like me to help with?";
 
         private async Task<List<AIRecommendation>> GetComplianceRecommendationsAsync(string countyId)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             // Implement compliance recommendations
             return new List<AIRecommendation>();
         }
 
         private async Task<List<AIRecommendation>> GetWorkflowRecommendationsAsync(string countyId)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             // Implement workflow recommendations
             return new List<AIRecommendation>();
         }

@@ -601,8 +601,6 @@ Provide strategic insights on:
         PropertyImprovementRecommendations improvements,
         PropertyTaxOptimization taxOptimization)
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
             var actionItems = new List<ActionItem>();

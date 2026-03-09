@@ -103,7 +103,6 @@ public class RedisCacheService : ICacheService
         // Note: This requires Redis-specific implementation
         // For now, we'll log the pattern removal request
         _logger.LogWarning("Pattern-based cache removal not implemented for key pattern: {Pattern}", pattern);
-        await Task.CompletedTask;
     }
 
     public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
