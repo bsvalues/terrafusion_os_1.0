@@ -192,8 +192,35 @@ jobs:
           path: native-shell/ui/dist
           retention-days: 90
 
+      - name: Detect frontend container assets
+        id: detect_frontend_container
+        run: |
+          set -euo pipefail
+
+          required_files=(
+            "docker/Dockerfile.frontend"
+            "docker/nginx/nginx.conf"
+            "docker/nginx/default.conf"
+            "docker/nginx/security-headers.conf"
+          )
+
+          missing=0
+          for file in "${required_files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "⚠️ Missing frontend container asset: $file"
+              missing=1
+            fi
+          done
+
+          if [[ "$missing" -eq 0 ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Frontend container image build skipped; required docker/nginx assets are absent"
+          fi
+
       - name: Log in to Container Registry
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.detect_frontend_container.outputs.ready == 'true'
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
@@ -202,6 +229,7 @@ jobs:
 
       - name: Docker meta (frontend)
         id: meta_frontend
+        if: steps.detect_frontend_container.outputs.ready == 'true'
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/bsvalues/terrafusion_os_1.0-frontend
@@ -212,6 +240,7 @@ jobs:
 
       - name: Build and push container image
         id: push
+        if: steps.detect_frontend_container.outputs.ready == 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
