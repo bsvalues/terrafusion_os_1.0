@@ -12,7 +12,23 @@ export type Mode = 'pilot' | 'muse';
 export type TouchTarget = 'parcel' | 'dossier' | 'workflow' | 'notice' | 'trace' | 'model' | 'map';
 export type PiiHandling = 'none' | 'sanitize' | 'payload_ref';
 export type TracePolicy = 'none' | 'summary_only' | 'payload_ref';
-export type PayloadStore = 'dossier' | 'secure-blob' | 'case-store';
+export type PayloadStore = 'dossier' | 'secure-blob' | 'case-store' | 'clerk' | 'treasury' | 'audit';
+export type OfficeId = 'assessor' | 'clerk' | 'treasurer' | 'auditor' | 'recorder';
+export type OfficeStatus = 'active' | 'reserved' | 'planned';
+export interface OfficeDefinition {
+    id: OfficeId;
+    displayName: string;
+    suiteIds: Suite[];
+    tabIds: string[];
+    status: OfficeStatus;
+    toolAllowlist: string[];
+}
+export interface OfficeRegistry {
+    offices: OfficeDefinition[];
+    getOffice(id: OfficeId): OfficeDefinition | undefined;
+    getActiveOffices(): OfficeDefinition[];
+    getToolsForOffice(id: OfficeId): string[];
+}
 export interface Tool {
     toolId: string;
     displayName?: string;
@@ -33,6 +49,7 @@ export interface Tool {
     piiHandling?: PiiHandling;
     tracePolicy?: TracePolicy;
     payloadStore?: PayloadStore;
+    officeScope?: OfficeId;
 }
 export interface ToolManifest {
     $schema?: string;
@@ -59,6 +76,7 @@ export interface ToolExecutionContext {
     parcelId?: string;
     /** Target dossier ID (if applicable) */
     dossierId?: string;
+    officeId?: OfficeId;
     /** User confirmed the action */
     confirmation?: boolean;
     /** Reason code for audit trail */
@@ -95,6 +113,7 @@ export interface TraceEventInput {
     correlationId: string;
     /** Execution context */
     context: ToolExecutionContext;
+    officeId?: OfficeId;
     /** Sanitized summary (always present) */
     summary: string;
     /** Reference to secure payload storage (if tracePolicy is payload_ref) */

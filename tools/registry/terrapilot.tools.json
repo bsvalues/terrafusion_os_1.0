@@ -30,7 +30,8 @@
       "reasonCodeRequired": true,
       "reasonCodes": ["workflow_update", "operator_correction"],
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor"
     },
     {
       "toolId": "check_cert_status",
@@ -42,7 +43,8 @@
       "touches": ["workflow"],
       "description": "Query certification status for a parcel or batch",
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor"
     },
     {
       "toolId": "run_valuation_model",
@@ -70,7 +72,10 @@
             "type": "string",
             "description": "County code (must match context.countyId)"
           },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "taxYear": {
             "type": "integer",
             "description": "Assessment tax year"
@@ -83,7 +88,8 @@
           }
         },
         "required": ["county", "parcelId", "taxYear"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "assemble_boe_packet",
@@ -100,7 +106,8 @@
       "crossSuiteReads": ["dossier"],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
-      "payloadStore": "dossier"
+      "payloadStore": "dossier",
+      "officeScope": "assessor"
     },
     {
       "toolId": "draft_notice",
@@ -115,7 +122,8 @@
       "reasonCodeRequired": true,
       "reasonCodes": ["taxpayer_request", "operator_correction"],
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor"
     },
     {
       "toolId": "draft_appeal_response",
@@ -137,7 +145,10 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "appealId": {
             "type": "string",
             "description": "Appeal case identifier"
@@ -152,10 +163,14 @@
             "enum": ["formal", "neutral"],
             "default": "formal"
           },
-          "includeEvidenceRefs": { "type": "boolean", "default": true }
+          "includeEvidenceRefs": {
+            "type": "boolean",
+            "default": true
+          }
         },
         "required": ["parcelId", "appealId"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "explain_value_change",
@@ -175,7 +190,10 @@
             "type": "string",
             "description": "County code (must match context.countyId)"
           },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "fromYear": {
             "type": "integer",
             "description": "Starting comparison year"
@@ -192,7 +210,8 @@
           }
         },
         "required": ["county", "parcelId", "fromYear", "toYear"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "explain_model_results",
@@ -214,7 +233,10 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "taxYear": {
             "type": "integer",
             "description": "Tax year for model results"
@@ -230,7 +252,8 @@
           }
         },
         "required": ["parcelId", "taxYear"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "summarize_dossier",
@@ -268,7 +291,8 @@
           }
         },
         "required": ["dossierId"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "synthesize_evidence",
@@ -281,7 +305,8 @@
       "description": "Synthesize evidence from multiple dossier sources",
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
-      "payloadStore": "dossier"
+      "payloadStore": "dossier",
+      "officeScope": "assessor"
     },
     {
       "toolId": "generate_commissioner_memo",
@@ -294,7 +319,8 @@
       "description": "Generate draft memo for commissioner review",
       "crossSuiteReads": ["dossier"],
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor"
     },
     {
       "toolId": "request_trace_redaction",
@@ -330,7 +356,8 @@
       "touches": ["parcel", "exemption"],
       "description": "Explains how senior/disabled exemptions affect assessed value, taxable value, and estimated taxes for a Benton County parcel (taxpayer-friendly).",
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor"
     },
     {
       "toolId": "summarize_parcel_casefile",
@@ -351,7 +378,10 @@
             "type": "string",
             "description": "County code (must match context.countyId)"
           },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "include": {
             "type": "array",
             "items": {
@@ -362,7 +392,8 @@
           }
         },
         "required": ["county", "parcelId"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "compare_assessed_value_history",
@@ -374,7 +405,8 @@
       "touches": ["parcel", "model"],
       "description": "Compares assessed value year-over-year and explains drivers (market, new construction, corrections) in plain language.",
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor"
     },
     {
       "toolId": "summarize_levy_rate_components",
@@ -404,7 +436,8 @@
           }
         },
         "required": ["county", "taxYear"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "explain_model_inputs",
@@ -416,7 +449,8 @@
       "touches": ["parcel", "model"],
       "description": "Explains which model inputs matter most (quality, size, location, effective age) and what could justify a review.",
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor"
     },
     {
       "toolId": "draft_value_change_notice",
@@ -432,7 +466,8 @@
       "reasonCodes": ["annual_certification", "operator_correction"],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
-      "payloadStore": "dossier"
+      "payloadStore": "dossier",
+      "officeScope": "assessor"
     },
     {
       "toolId": "draft_boe_appeal_response",
@@ -448,7 +483,8 @@
       "reasonCodes": ["appeal_response", "operator_correction"],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
-      "payloadStore": "dossier"
+      "payloadStore": "dossier",
+      "officeScope": "assessor"
     },
     {
       "toolId": "summarize_sales_comps_rationale",
@@ -460,7 +496,8 @@
       "touches": ["parcel", "model"],
       "description": "Summarizes comp selection logic and adjustments at a high level (no raw PII) for taxpayer-facing explanation.",
       "piiHandling": "sanitize",
-      "tracePolicy": "summary_only"
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor"
     },
     {
       "toolId": "search_trace_by_correlation",
@@ -506,8 +543,14 @@
             "type": "string",
             "description": "County code (must match context.countyId)"
           },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
-          "content": { "type": "string", "description": "Note content" },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "content": {
+            "type": "string",
+            "description": "Note content"
+          },
           "type": {
             "type": "string",
             "enum": ["case_note", "review_note", "correction"],
@@ -516,7 +559,8 @@
           }
         },
         "required": ["county", "parcelId", "content"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "query_parcel_layers",
@@ -532,10 +576,15 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "layers": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Layers to include (e.g., boundary, zoning, flood, aerial)"
           },
           "format": {
@@ -545,7 +594,8 @@
           }
         },
         "required": ["parcelId"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "calculate_pilt_payment",
@@ -571,7 +621,8 @@
           }
         },
         "required": ["county", "fiscalYear"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "run_income_valuation",
@@ -616,7 +667,8 @@
           }
         },
         "required": ["county", "annualRentalIncome"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "check_exemption_eligibility",
@@ -632,9 +684,18 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
-          "applicantAge": { "type": "integer", "description": "Applicant age" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "applicantAge": {
+            "type": "integer",
+            "description": "Applicant age"
+          },
           "income": {
             "type": "number",
             "description": "Annual disposable income"
@@ -645,7 +706,8 @@
           }
         },
         "required": ["county", "parcelId"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "process_exemption_renewal",
@@ -665,7 +727,10 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
           "exemptionId": {
             "type": "string",
             "description": "Exemption ID to renew"
@@ -676,7 +741,8 @@
           }
         },
         "required": ["county", "exemptionId", "taxYear"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "file_appeal",
@@ -696,20 +762,30 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "petitionerName": {
             "type": "string",
             "description": "Name of petitioner"
           },
-          "grounds": { "type": "string", "description": "Grounds for appeal" },
+          "grounds": {
+            "type": "string",
+            "description": "Grounds for appeal"
+          },
           "requestedValue": {
             "type": "number",
             "description": "Requested assessed value"
           }
         },
         "required": ["county", "parcelId", "grounds"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "schedule_boe_hearing",
@@ -729,7 +805,10 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
           "appealId": {
             "type": "string",
             "description": "Appeal ID to schedule hearing for"
@@ -740,12 +819,15 @@
           },
           "panelMembers": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Panel member names"
           }
         },
         "required": ["county", "appealId", "requestedDate"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "get_certification_progress",
@@ -761,11 +843,18 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "taxYear": { "type": "integer", "description": "Tax year" }
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
         },
         "required": ["county", "taxYear"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "sign_off_certification_step",
@@ -785,17 +874,30 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "taxYear": { "type": "integer", "description": "Tax year" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
           "stepId": {
             "type": "string",
             "description": "Certification step ID"
           },
-          "signedBy": { "type": "string", "description": "Signer name" },
-          "notes": { "type": "string", "description": "Sign-off notes" }
+          "signedBy": {
+            "type": "string",
+            "description": "Signer name"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Sign-off notes"
+          }
         },
         "required": ["county", "taxYear", "stepId", "signedBy"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "queue_notice_for_mailing",
@@ -815,10 +917,15 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
           "noticeIds": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Notice IDs to queue"
           },
           "deliveryMethod": {
@@ -828,7 +935,8 @@
           }
         },
         "required": ["county", "noticeIds"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "get_queue_statistics",
@@ -844,15 +952,22 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
           "period": {
             "type": "string",
             "description": "Reporting period (e.g. '30d', '90d', 'ytd')"
           },
-          "assignee": { "type": "string", "description": "Filter by assignee" }
+          "assignee": {
+            "type": "string",
+            "description": "Filter by assignee"
+          }
         },
         "required": ["county"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "escalate_task",
@@ -872,16 +987,26 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "taskId": { "type": "string", "description": "Task ID to escalate" },
-          "reason": { "type": "string", "description": "Escalation reason" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taskId": {
+            "type": "string",
+            "description": "Task ID to escalate"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Escalation reason"
+          },
           "escalateTo": {
             "type": "string",
             "description": "Person or role to escalate to"
           }
         },
         "required": ["county", "taskId", "reason"]
-      }
+      },
+      "officeScope": "assessor"
     },
     {
       "toolId": "search_recorded_documents",
@@ -897,10 +1022,22 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
-          "grantor": { "type": "string", "description": "Grantor name search" },
-          "grantee": { "type": "string", "description": "Grantee name search" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "grantor": {
+            "type": "string",
+            "description": "Grantor name search"
+          },
+          "grantee": {
+            "type": "string",
+            "description": "Grantee name search"
+          },
           "documentType": {
             "type": "string",
             "enum": ["deed", "lien", "mortgage", "easement", "all"],
@@ -908,7 +1045,8 @@
           }
         },
         "required": ["county"]
-      }
+      },
+      "officeScope": "clerk"
     },
     {
       "toolId": "get_title_chain",
@@ -924,11 +1062,18 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" }
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          }
         },
         "required": ["county", "parcelId"]
-      }
+      },
+      "officeScope": "clerk"
     },
     {
       "toolId": "explain_recording_fees",
@@ -944,15 +1089,22 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
           "documentType": {
             "type": "string",
             "enum": ["deed", "lien", "mortgage", "easement"]
           },
-          "pageCount": { "type": "integer", "description": "Number of pages" }
+          "pageCount": {
+            "type": "integer",
+            "description": "Number of pages"
+          }
         },
         "required": ["county", "documentType"]
-      }
+      },
+      "officeScope": "clerk"
     },
     {
       "toolId": "record_document",
@@ -972,21 +1124,34 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "documentType": {
             "type": "string",
             "enum": ["deed", "lien", "mortgage", "easement"]
           },
-          "grantor": { "type": "string", "description": "Grantor name" },
-          "grantee": { "type": "string", "description": "Grantee name" },
+          "grantor": {
+            "type": "string",
+            "description": "Grantor name"
+          },
+          "grantee": {
+            "type": "string",
+            "description": "Grantee name"
+          },
           "consideration": {
             "type": "number",
             "description": "Consideration amount"
           }
         },
         "required": ["county", "parcelId", "documentType", "grantor", "grantee"]
-      }
+      },
+      "officeScope": "clerk"
     },
     {
       "toolId": "release_lien",
@@ -1006,15 +1171,22 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "lienId": { "type": "string", "description": "Lien ID to release" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "lienId": {
+            "type": "string",
+            "description": "Lien ID to release"
+          },
           "releaseReason": {
             "type": "string",
             "description": "Reason for release"
           }
         },
         "required": ["county", "lienId"]
-      }
+      },
+      "officeScope": "clerk"
     },
     {
       "toolId": "summarize_parcel_recordings",
@@ -1030,11 +1202,18 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" }
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          }
         },
         "required": ["county", "parcelId"]
-      }
+      },
+      "officeScope": "clerk"
     },
     {
       "toolId": "get_tax_statement",
@@ -1050,12 +1229,22 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
-          "taxYear": { "type": "integer", "description": "Tax year" }
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
         },
         "required": ["county", "parcelId"]
-      }
+      },
+      "officeScope": "treasurer"
     },
     {
       "toolId": "explain_tax_breakdown",
@@ -1071,12 +1260,22 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
-          "taxYear": { "type": "integer", "description": "Tax year" }
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
         },
         "required": ["county", "parcelId"]
-      }
+      },
+      "officeScope": "treasurer"
     },
     {
       "toolId": "record_payment",
@@ -1096,9 +1295,18 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
-          "amount": { "type": "number", "description": "Payment amount" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Payment amount"
+          },
           "paymentMethod": {
             "type": "string",
             "enum": ["check", "cash", "electronic", "escrow"],
@@ -1106,7 +1314,8 @@
           }
         },
         "required": ["county", "parcelId", "amount"]
-      }
+      },
+      "officeScope": "treasurer"
     },
     {
       "toolId": "check_delinquency_status",
@@ -1122,11 +1331,18 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" }
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          }
         },
         "required": ["county", "parcelId"]
-      }
+      },
+      "officeScope": "treasurer"
     },
     {
       "toolId": "create_installment_plan",
@@ -1146,8 +1362,14 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "numberOfPayments": {
             "type": "integer",
             "description": "Number of installments",
@@ -1155,7 +1377,8 @@
           }
         },
         "required": ["county", "parcelId"]
-      }
+      },
+      "officeScope": "treasurer"
     },
     {
       "toolId": "summarize_collection_stats",
@@ -1171,11 +1394,18 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "taxYear": { "type": "integer", "description": "Tax year" }
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
         },
         "required": ["county"]
-      }
+      },
+      "officeScope": "treasurer"
     },
     {
       "toolId": "initiate_tax_sale",
@@ -1195,16 +1425,25 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "parcelId": { "type": "string", "description": "Parcel identifier" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
           "delinquentYears": {
             "type": "array",
-            "items": { "type": "integer" },
+            "items": {
+              "type": "integer"
+            },
             "description": "Delinquent tax years"
           }
         },
         "required": ["county", "parcelId", "delinquentYears"]
-      }
+      },
+      "officeScope": "treasurer"
     },
     {
       "toolId": "audit_roll_summary",
@@ -1220,11 +1459,18 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "taxYear": { "type": "integer", "description": "Tax year" }
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
         },
         "required": ["county", "taxYear"]
-      }
+      },
+      "officeScope": "auditor"
     },
     {
       "toolId": "check_levy_compliance",
@@ -1240,15 +1486,22 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "taxYear": { "type": "integer", "description": "Tax year" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
           "districtCode": {
             "type": "string",
             "description": "Taxing district code"
           }
         },
         "required": ["county", "taxYear"]
-      }
+      },
+      "officeScope": "auditor"
     },
     {
       "toolId": "submit_audit_finding",
@@ -1272,7 +1525,10 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
           "parcelId": {
             "type": "string",
             "description": "Parcel identifier (optional for district-level)"
@@ -1292,7 +1548,8 @@
           }
         },
         "required": ["county", "findingType", "description"]
-      }
+      },
+      "officeScope": "auditor"
     },
     {
       "toolId": "reconcile_cross_office",
@@ -1312,16 +1569,25 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "taxYear": { "type": "integer", "description": "Tax year" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
           "offices": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Offices to reconcile"
           }
         },
         "required": ["county", "taxYear"]
-      }
+      },
+      "officeScope": "auditor"
     },
     {
       "toolId": "generate_compliance_report",
@@ -1337,8 +1603,14 @@
       "paramsSchema": {
         "type": "object",
         "properties": {
-          "county": { "type": "string", "description": "County code" },
-          "taxYear": { "type": "integer", "description": "Tax year" },
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
           "scope": {
             "type": "string",
             "enum": ["full", "levy_only", "roll_only"],
@@ -1346,7 +1618,8 @@
           }
         },
         "required": ["county", "taxYear"]
-      }
+      },
+      "officeScope": "auditor"
     }
   ]
 }
