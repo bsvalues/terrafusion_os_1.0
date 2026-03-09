@@ -109,6 +109,15 @@ interface LevyResult { components: LevyComponent[]; totalRate: number; explanati
 /** Commissioner memo from generate_commissioner_memo */
 interface MemoResult { memo: { title: string; body: string }; wordCount: number; payloadRef: string }
 
+/** Value change notice from draft_value_change_notice (write_low) */
+interface NoticeResult { document: { title: string; body: string }; payloadRef: string; disclaimer: string }
+
+/** Appeal response from draft_appeal_response (write_low) */
+interface AppealResponseResult { appealId: string; payloadRef: string; draftSummary: string; wordCount: number; position: string }
+
+/** Draft notice from draft_notice (write_low) */
+interface DraftNoticeResult { noticeId: string; parcelId: string; noticeType: string; payloadRef: string; status: string }
+
 type DaisToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
 
 export const PropertyDais: React.FC = () => {
@@ -121,6 +130,13 @@ export const PropertyDais: React.FC = () => {
   const [levyState, setLevyState] = useState<DaisToolState<LevyResult>>({ status: 'idle' });
   const [memoState, setMemoState] = useState<DaisToolState<MemoResult>>({ status: 'idle' });
   const [memoTopic, setMemoTopic] = useState<string>('');
+  const [noticeState, setNoticeState] = useState<DaisToolState<NoticeResult>>({ status: 'idle' });
+  const [noticeReasons, setNoticeReasons] = useState<string>('');
+  const [appealState, setAppealState] = useState<DaisToolState<AppealResponseResult>>({ status: 'idle' });
+  const [appealId, setAppealId] = useState<string>('');
+  const [appealPosition, setAppealPosition] = useState<'uphold' | 'adjust' | 'partial'>('uphold');
+  const [draftNoticeState, setDraftNoticeState] = useState<DaisToolState<DraftNoticeResult>>({ status: 'idle' });
+  const [draftNoticeType, setDraftNoticeType] = useState<string>('assessment');
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
   const handleCheckStatus = useCallback(async () => {
@@ -360,6 +376,62 @@ export const PropertyDais: React.FC = () => {
     }
   }, [parcelId, memoTopic]);
 
+  /** Invoke draft_value_change_notice — write_low notice draft */
+  const handleDraftNotice = useCallback(async () => {
+    const codes = noticeReasons.split(',').map(s => s.trim()).filter(Boolean);
+    if (codes.length === 0) { setNoticeState({ status: 'error', error: { code: 'VALIDATION', message: 'Enter at least one reason code', severity: 'error' } }); return; }
+    setNoticeState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'draft_value_change_notice', params: { county: 'benton', parcelId, taxYear: new Date().getFullYear(), reasonCodes: codes }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setNoticeState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'draft_value_change_notice', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setNoticeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'DRAFT_FAILED', message: response.error?.message || 'Notice draft failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, noticeReasons]);
+
+  /** Invoke draft_appeal_response — write_low appeal response draft */
+  const handleDraftAppealResponse = useCallback(async () => {
+    if (!appealId.trim()) { setAppealState({ status: 'error', error: { code: 'VALIDATION', message: 'Appeal ID is required', severity: 'error' } }); return; }
+    setAppealState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'draft_appeal_response', params: { parcelId, appealId: appealId.trim(), position: appealPosition, tone: 'formal', includeEvidenceRefs: true }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setAppealState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'draft_appeal_response', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setAppealState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'APPEAL_DRAFT_FAILED', message: response.error?.message || 'Appeal response draft failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, appealId, appealPosition]);
+
+  /** Invoke draft_notice — write_low general notice */
+  const handleGeneralNotice = useCallback(async () => {
+    setDraftNoticeState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'draft_notice', params: { county: 'benton', parcelId, noticeType: draftNoticeType, taxYear: new Date().getFullYear() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setDraftNoticeState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'draft_notice', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setDraftNoticeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'NOTICE_FAILED', message: response.error?.message || 'Notice creation failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setDraftNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, draftNoticeType]);
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
   }, []);
@@ -792,6 +864,88 @@ export const PropertyDais: React.FC = () => {
           </div>
         )}
         {memoState.status === 'error' && memoState.error && <ErrorDisplay error={{ message: memoState.error.message, errorCode: memoState.error.code, correlationId: memoState.correlationId }} />}
+      </BentoCard>
+
+      {/* Value Change Notice (write_low) */}
+      <BentoCard title='📨 Value Change Notice' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Draft a value change notice for parcel {parcelId}</p>
+        <input type='text' value={noticeReasons} onChange={e => setNoticeReasons(e.target.value)} placeholder='Reason codes (comma-separated, e.g. revaluation, new_construction)' className='w-full p-2 rounded-lg tf-input mb-3' data-testid='notice-reasons-input' />
+        <button onClick={handleDraftNotice} disabled={noticeState.status === 'loading' || !noticeReasons.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {noticeState.status === 'loading' ? 'Drafting...' : 'Draft Value Change Notice'}
+        </button>
+        {noticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Generating notice...</span></div>}
+        {noticeState.status === 'success' && noticeState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <h4 className='font-semibold tf-text mb-2'>{noticeState.result.document.title}</h4>
+              <p className='tf-text-secondary whitespace-pre-line text-sm'>{noticeState.result.document.body}</p>
+            </div>
+            <div className='text-xs tf-text-dim italic'>{noticeState.result.disclaimer}</div>
+            {noticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{noticeState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {noticeState.status === 'error' && noticeState.error && <ErrorDisplay error={{ message: noticeState.error.message, errorCode: noticeState.error.code, correlationId: noticeState.correlationId }} />}
+      </BentoCard>
+
+      {/* Appeal Response Draft (write_low) */}
+      <BentoCard title='⚖️ Appeal Response Draft' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Draft an appeal response for parcel {parcelId}</p>
+        <div className='flex gap-2 mb-3'>
+          <input type='text' value={appealId} onChange={e => setAppealId(e.target.value)} placeholder='Appeal ID (e.g. APL-2026-001)' className='flex-1 p-2 rounded-lg tf-input' data-testid='appeal-id-input' />
+          <select value={appealPosition} onChange={e => setAppealPosition(e.target.value as 'uphold' | 'adjust' | 'partial')} className='p-2 rounded-lg tf-input'>
+            <option value='uphold'>Uphold</option>
+            <option value='adjust'>Adjust</option>
+            <option value='partial'>Partial</option>
+          </select>
+        </div>
+        <button onClick={handleDraftAppealResponse} disabled={appealState.status === 'loading' || !appealId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {appealState.status === 'loading' ? 'Drafting...' : 'Draft Appeal Response'}
+        </button>
+        {appealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Drafting response...</span></div>}
+        {appealState.status === 'success' && appealState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between mb-2'>
+                <span className='font-semibold tf-text'>Appeal: {appealState.result.appealId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{appealState.result.position}</span>
+              </div>
+              <p className='tf-text-secondary text-sm'>{appealState.result.draftSummary}</p>
+            </div>
+            <div className='flex items-center gap-4 text-xs tf-text-dim'>
+              <span>{appealState.result.wordCount} words</span>
+              {appealState.correlationId && <span>ID: <code className='tf-suite-accent-text font-mono'>{appealState.correlationId.slice(0, 16)}...</code></span>}
+            </div>
+          </div>
+        )}
+        {appealState.status === 'error' && appealState.error && <ErrorDisplay error={{ message: appealState.error.message, errorCode: appealState.error.code, correlationId: appealState.correlationId }} />}
+      </BentoCard>
+
+      {/* General Notice Draft (write_low) */}
+      <BentoCard title='📝 Draft Notice' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Create a notice draft for parcel {parcelId}</p>
+        <select value={draftNoticeType} onChange={e => setDraftNoticeType(e.target.value)} className='w-full p-2 rounded-lg tf-input mb-3' data-testid='notice-type-select'>
+          <option value='assessment'>Assessment Notice</option>
+          <option value='exemption'>Exemption Notice</option>
+          <option value='appeal_hearing'>Appeal Hearing</option>
+          <option value='certification'>Certification Notice</option>
+        </select>
+        <button onClick={handleGeneralNotice} disabled={draftNoticeState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {draftNoticeState.status === 'loading' ? 'Drafting...' : 'Create Notice Draft'}
+        </button>
+        {draftNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Creating draft...</span></div>}
+        {draftNoticeState.status === 'success' && draftNoticeState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between'>
+                <span className='font-semibold tf-text'>{draftNoticeState.result.noticeType} Notice</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{draftNoticeState.result.status}</span>
+              </div>
+              <div className='text-xs tf-text-dim mt-1'>Notice ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.result.noticeId}</code></div>
+            </div>
+            {draftNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {draftNoticeState.status === 'error' && draftNoticeState.error && <ErrorDisplay error={{ message: draftNoticeState.error.message, errorCode: draftNoticeState.error.code, correlationId: draftNoticeState.correlationId }} />}
       </BentoCard>
 
       {/* History */}
