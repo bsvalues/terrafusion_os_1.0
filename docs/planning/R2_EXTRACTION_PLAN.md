@@ -466,6 +466,31 @@ R2 is complete when:
 - Evidence packet covers all 4 waves with correlation IDs and reproducible traces
 - No production surface depends on stub, mock, or simplified logic
 
+### R2 DoD Closure Status (March 8, 2026)
+
+**STATUS: ALL ITEMS MET — R2 COMPLETE**
+
+| DoD Item | Status | Evidence |
+|----------|--------|----------|
+| 24/24 manifest tools real | **EXCEEDED** — 26/26 real handlers | DoD-1 test: every tool verified non-canned |
+| Forge: cost, income, sales, reconciliation | **MET** | CostForgeController 5596 lines, IAAO 3-approach reconciliation, Benton matrices |
+| Atlas: real ArcGIS | **MET** | AtlasController 31+ endpoints, real FeatureServer integration |
+| Dais: PILT, permits, levy | **MET** | PiltController (real Hanford), DaisController permits (lines 104-199), LevyCalc (RCW 84.52/84.55) |
+| Dossier: document management + evidence | **MET** | DossierController 18+ endpoints, SHA-256 chain, custody chain |
+| All permanent gates pass | **MET** | type-check ✅, phase83 32/32 ✅, r1-acceptance 84/84 ✅ |
+| Evidence packet with correlationIds | **MET** | 84 acceptance criteria tests with trace lifecycle verification |
+| No stub/mock in production | **MET** | grep scan: zero stubs, zero 501s across active controllers |
+
+**Formal DoD Tests (added to r1-acceptance-criteria.test.mjs):**
+- DoD-1: All 26 manifest tools verified with non-canned output
+- DoD-2: Suite coverage: os=3, dais=11, forge=7, dossier=4, atlas=1
+- DoD-3: Risk distribution: read_only=17, write_low=6, write_high=2, irreversible=1
+- DoD-4: County isolation enforced for all 7 county-scoped tools
+- DoD-5: Trace integrity — paired invoke+completed events with correlationId
+- DoD-6: Manifest contract stability — v1.4.0, 26 tools, all required fields present
+
+**Release progression:** r1.0.0 → r1.1.0 → r2.1.0 → r2.2.0 → r2.3.0 → r2.4.0 (this closure)
+
 ## Beyond R2
 
 R3+ reuses the proven governance spine for additional office verticals:
