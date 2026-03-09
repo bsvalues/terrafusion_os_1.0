@@ -278,8 +278,6 @@ public class CodexPerformanceOptimizationService : ICodexPerformanceOptimization
 
     public async Task<CodexPerformanceMetricsDto> GetPerformanceMetricsAsync()
     {
-        await Task.CompletedTask; // Async method for consistency
-
         var cacheStats = await _cachingService.GetCacheStatisticsAsync();
 
         PerformanceBreakdown breakdown;

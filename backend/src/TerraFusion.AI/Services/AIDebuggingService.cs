@@ -162,7 +162,6 @@ namespace TerraFusion.AI.Services
             int? lineNumber,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var suggestions = new List<DebugSuggestion>();
 
@@ -189,7 +188,6 @@ namespace TerraFusion.AI.Services
             Dictionary<string, object> variables,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var inspections = new List<VariableInspection>();
 
@@ -232,7 +230,6 @@ namespace TerraFusion.AI.Services
             Dictionary<string, object> initialValues,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var paths = new List<ExecutionPath>();
 
@@ -263,7 +260,6 @@ namespace TerraFusion.AI.Services
             List<int> breakpoints,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var analyses = new List<BreakpointAnalysis>();
             var lines = code.Split('\n');

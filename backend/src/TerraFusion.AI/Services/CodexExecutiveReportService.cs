@@ -409,7 +409,6 @@ public class CodexExecutiveReportService : ICodexExecutiveReportService
 
     public async Task<string> ExportReportToCsvAsync(ExecutiveReportDto report)
     {
-        await Task.CompletedTask;
 
         var csv = new StringBuilder();
 
@@ -453,7 +452,6 @@ public class CodexExecutiveReportService : ICodexExecutiveReportService
 
     public async Task<string> ExportReportToJsonAsync(ExecutiveReportDto report)
     {
-        await Task.CompletedTask;
 
         var options = new JsonSerializerOptions
         {
@@ -466,7 +464,6 @@ public class CodexExecutiveReportService : ICodexExecutiveReportService
 
     public async Task<byte[]> ExportReportToPdfAsync(ExecutiveReportDto report)
     {
-        await Task.CompletedTask;
 
         // PDF generation would use a library like QuestPDF or iTextSharp
         // For now, return placeholder

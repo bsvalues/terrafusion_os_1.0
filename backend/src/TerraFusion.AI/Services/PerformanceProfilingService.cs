@@ -165,7 +165,6 @@ namespace TerraFusion.AI.Services
             Dictionary<int, double> lineTimings,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var bottlenecks = new List<BottleneckAnalysis>();
             var lines = code.Split('\n');
@@ -267,7 +266,6 @@ namespace TerraFusion.AI.Services
             ProfilingResult profile,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var recommendations = new List<ProfilingOptimizationRecommendation>();
 
@@ -377,7 +375,6 @@ namespace TerraFusion.AI.Services
             List<ExecutionProfile> profiles,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var metrics = new ProfilingPerformanceMetrics
             {
@@ -453,7 +450,6 @@ namespace TerraFusion.AI.Services
             List<(string Name, int Start, int End)> functions,
             string code)
         {
-            await Task.CompletedTask;
 
             var profiles = new List<ExecutionProfile>();
             var random = new Random(42); // Deterministic for testing

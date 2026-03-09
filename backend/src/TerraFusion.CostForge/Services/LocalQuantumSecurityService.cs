@@ -27,9 +27,6 @@ namespace TerraFusion.CostForge.Services
             {
                 _logger.LogDebug("Validating quantum security protocols with factor {QuantumFactor}", QuantumFactor);
 
-                // Implementation placeholder - quantum security validation
-                await Task.CompletedTask;
-
                 // Simulate quantum validation
                 var isValid = true; // Would perform actual quantum validation
 
@@ -57,9 +54,6 @@ namespace TerraFusion.CostForge.Services
 
                 _logger.LogDebug("Performing quantum encryption with factor {QuantumFactor}", QuantumFactor);
 
-                // Implementation placeholder - quantum encryption
-                await Task.CompletedTask;
-
                 // Simulate quantum encryption (would use actual quantum algorithms)
                 var encryptedData = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"QE_{QuantumFactor}_{data}"));
 
@@ -83,9 +77,6 @@ namespace TerraFusion.CostForge.Services
                     throw new ArgumentException("Encrypted data cannot be null or empty", nameof(encryptedData));
 
                 _logger.LogDebug("Performing quantum decryption with factor {QuantumFactor}", QuantumFactor);
-
-                // Implementation placeholder - quantum decryption
-                await Task.CompletedTask;
 
                 // Simulate quantum decryption (would use actual quantum algorithms)
                 var decodedBytes = Convert.FromBase64String(encryptedData);
@@ -119,9 +110,6 @@ namespace TerraFusion.CostForge.Services
 
                 _logger.LogDebug("Generating quantum-secured token with factor {QuantumFactor}", QuantumFactor);
 
-                // Implementation placeholder - quantum token generation
-                await Task.CompletedTask;
-
                 // Simulate quantum token generation
                 var payloadJson = System.Text.Json.JsonSerializer.Serialize(payload);
                 var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -149,9 +137,6 @@ namespace TerraFusion.CostForge.Services
                     return false;
 
                 _logger.LogDebug("Validating quantum token with factor {QuantumFactor}", QuantumFactor);
-
-                // Implementation placeholder - quantum token validation
-                await Task.CompletedTask;
 
                 // Simulate quantum token validation
                 var decodedBytes = Convert.FromBase64String(token);

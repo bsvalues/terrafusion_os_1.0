@@ -350,8 +350,6 @@ public class EliteSecurityHardening : IEliteSecurityHardening
                 missingHeaders.Select(h => $"Missing security header: {h}")).ToArray() ??
                 missingHeaders.Select(h => $"Missing security header: {h}").ToArray();
         }
-
-        await Task.CompletedTask;
     }
 
     private async Task DetectSuspiciousPatterns(HttpContext context, EliteSecurityValidationResult result)
@@ -431,8 +429,6 @@ public class EliteSecurityHardening : IEliteSecurityHardening
             result.ValidationErrors = result.ValidationErrors?.Append($"JWT validation failed: {ex.Message}").ToArray() ??
                 new[] { $"JWT validation failed: {ex.Message}" };
         }
-
-        await Task.CompletedTask;
     }
 
     private async Task ApplyGovernmentGradeValidation(HttpContext context, EliteSecurityValidationResult result)
@@ -454,8 +450,6 @@ public class EliteSecurityHardening : IEliteSecurityHardening
                 new[] { "Rate limit exceeded" };
             result.IsValid = false;
         }
-
-        await Task.CompletedTask;
     }
 
     private string GetClientIdentifier(HttpContext context)
@@ -520,7 +514,6 @@ public class EliteSecurityHardening : IEliteSecurityHardening
             .Where(r => r.LastRequest > DateTime.UtcNow.AddMinutes(-1))
             .Count();
 
-        await Task.CompletedTask; // Placeholder for async pattern analysis
         return recentRequests > 100; // More than 100 requests per minute is suspicious
     }
 

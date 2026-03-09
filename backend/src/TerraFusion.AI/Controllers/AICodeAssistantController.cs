@@ -205,8 +205,6 @@ namespace TerraFusion.AI.Controllers
             CellSuggestionsRequest request,
             CancellationToken cancellationToken)
         {
-            await Task.CompletedTask; // Placeholder for async ML model
-
             var suggestions = new List<CellSuggestionDto>();
 
             // Analyze notebook state

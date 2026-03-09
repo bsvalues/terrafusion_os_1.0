@@ -292,8 +292,7 @@ namespace TerraFusion.API.Services
         /// </summary>
         private async Task InitializeHarrisPACSBridgeIntegrationAsync(MarketplaceInitializationResult result)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             _logger.LogInformation("🔗 Initializing Harris PACS Bridge Integration");
 
             try
@@ -518,16 +517,14 @@ namespace TerraFusion.API.Services
         // Helper methods
         private async Task<ModuleRequirementValidation> ValidateModuleRequirementsAsync(MarketplaceModule module, ModuleActivationRequest request)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             // Implementation would validate system requirements, dependencies, etc.
             return new ModuleRequirementValidation { IsValid = true };
         }
 
         private async Task<AIAgentAllocation> AllocateAIAgentsForModuleAsync(MarketplaceModule module, ModuleActivationRequest request)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             return new AIAgentAllocation
             {
                 RequestedAgentCount = module.AIAgentsRequired,
@@ -538,8 +535,7 @@ namespace TerraFusion.API.Services
 
         private async Task<HarrisPACSBridgeActivation> SetupHarrisPACSBridgeForModuleAsync(MarketplaceModule module, ModuleActivationRequest request)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             return new HarrisPACSBridgeActivation
             {
                 BridgeId = module.HarrisPACSBridge.BridgeId,
@@ -557,16 +553,14 @@ namespace TerraFusion.API.Services
 
         private async Task SetupModuleDependenciesAsync(MarketplaceInitializationResult result)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             _logger.LogInformation("🔗 Setting up module dependencies");
             // Implementation would resolve and setup module dependencies
         }
 
         private async Task InitializeModulePerformanceMonitoringAsync(MarketplaceInitializationResult result)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             _logger.LogInformation("📊 Initializing module performance monitoring");
             // Implementation would setup performance monitoring infrastructure
         }

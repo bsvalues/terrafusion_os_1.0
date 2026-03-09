@@ -119,7 +119,6 @@ namespace TerraFusion.AI.Services
             string language,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var optimizations = new List<OptimizationSuggestion>();
 
@@ -274,7 +273,6 @@ namespace TerraFusion.AI.Services
             string language,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var recommendations = new List<RefactoringRecommendation>();
 

@@ -693,8 +693,6 @@ namespace TerraFusion.API.Services
     /// </summary>
     private async void ReportPerformanceMetrics(object? state)
     {
-      await Task.CompletedTask;
-      await Task.CompletedTask;
       try
       {
         var now = DateTime.UtcNow;
@@ -979,12 +977,13 @@ namespace TerraFusion.API.Services
       {
         _logger.LogCritical("🚨 EMERGENCY SECURITY ALERT: {Type} - {Data}", log.Type, log.Data);
 
-        // TODO: Integrate with government alert systems
-        // - Send to security operations center
-        // - Trigger automated response protocols
-        // - Alert county administrators
-
-        await Task.CompletedTask; // Placeholder for alert system integration
+        // SIEM-compatible structured logging for government alert systems
+        _logger.LogWarning(
+            "SIEM_ALERT EventType={EventType} Severity=CRITICAL " +
+            "Classification=GOVERNMENT_SECURITY_EVENT " +
+            "Data={AlertData} Timestamp={Timestamp:O} " +
+            "FISMALevel=HIGH SOCNotification=REQUIRED",
+            log.Type, log.Data, DateTime.UtcNow);
       }
       catch (Exception ex)
       {

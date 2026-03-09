@@ -401,8 +401,6 @@ public class CodexCachingService : ICodexCachingService
 
     public async Task<CacheStatisticsDto> GetCacheStatisticsAsync()
     {
-        await Task.CompletedTask; // Async method for future database queries
-
         var totalRequests = _cacheHits + _cacheMisses;
         var hitRate = totalRequests > 0 ? (double)_cacheHits / totalRequests * 100 : 0;
 

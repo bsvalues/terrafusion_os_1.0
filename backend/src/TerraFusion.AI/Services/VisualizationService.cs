@@ -161,7 +161,6 @@ namespace TerraFusion.AI.Services
             string context,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var recommendations = new List<VisualizationRecommendation>();
 
@@ -330,7 +329,6 @@ namespace TerraFusion.AI.Services
             string dataSource,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var analysis = new DataAnalysis();
 
@@ -402,7 +400,6 @@ namespace TerraFusion.AI.Services
             DataAnalysis analysis,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var config = new ChartConfiguration
             {

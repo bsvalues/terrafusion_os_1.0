@@ -124,7 +124,6 @@ public class EnterpriseAIAgentCoordinator : BackgroundService, IEnterpriseAIAgen
 
     public async System.Threading.Tasks.Task<List<AIAgentTeam>> GetActiveAgentTeamsAsync()
     {
-        await Task.CompletedTask;
         return _agentTeams.Values.Where(t => t.Status == AgentTeamStatus.Active).ToList();
     }
 
@@ -360,13 +359,11 @@ public class EnterpriseAIAgentCoordinator : BackgroundService, IEnterpriseAIAgen
             }
         }
 
-        await Task.CompletedTask;
     }
 
     private async System.Threading.Tasks.Task OptimizeAgentDistribution()
     {
         // Agent load balancing and optimization logic
-        await Task.CompletedTask;
     }
 
     private Dictionary<string, CountyPerformanceMetrics> GenerateCountyPerformanceMetrics(List<AIAgentTeam> activeTeams)

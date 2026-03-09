@@ -43,7 +43,6 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             _logger.LogInformation("Generating analytics summary for time range: {TimeRange}", timeRange);
 
@@ -124,7 +123,6 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var trends = new List<TrendAnalysis>();
             var dataPoints = GetDataPointsCount(timeRange);
@@ -193,7 +191,6 @@ namespace TerraFusion.AI.Services
             ReportRequest request,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             _logger.LogInformation("Generating custom report: {ReportName}", request.ReportName);
 
@@ -247,7 +244,6 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var aggregations = new List<DataAggregation>();
 
@@ -283,7 +279,6 @@ namespace TerraFusion.AI.Services
             string metric,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var insights = new AnalyticsReportingPredictiveInsights
             {
@@ -348,7 +343,6 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             return new UserActivityReport
             {
@@ -380,7 +374,6 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             return new SystemUsageReport
             {

@@ -329,8 +329,6 @@ namespace TerraFusion.CostForge.Services
         private async Task<OptimizationResult> ApplyParticleSwarmOptimizationAsync(
             Models.SwarmPerformanceData performanceData)
         {
-            await Task.CompletedTask; // Placeholder for PSO implementation
-
             // Simulate PSO optimization results
             var optimizationGain = 0.08 + (Random.Shared.NextDouble() * 0.04); // 8-12% improvement
 
@@ -349,8 +347,6 @@ namespace TerraFusion.CostForge.Services
         private async Task<OptimizationResult> ApplyAntColonyOptimizationAsync(
             Models.SwarmPerformanceData performanceData)
         {
-            await Task.CompletedTask; // Placeholder for ACO implementation
-
             // Simulate ACO optimization results
             var optimizationGain = 0.06 + (Random.Shared.NextDouble() * 0.04); // 6-10% improvement
 
@@ -369,8 +365,6 @@ namespace TerraFusion.CostForge.Services
         private async Task<OptimizationResult> ApplyGeneticAlgorithmOptimizationAsync(
             Models.SwarmPerformanceData performanceData)
         {
-            await Task.CompletedTask; // Placeholder for GA implementation
-
             // Simulate GA optimization results
             var optimizationGain = 0.07 + (Random.Shared.NextDouble() * 0.03); // 7-10% improvement
 
@@ -432,8 +426,6 @@ namespace TerraFusion.CostForge.Services
             AssessmentTaskAnalysis taskAnalysis)
         {
             _logger.LogDebug("Executing {Strategy} coordination strategy", strategy.StrategyName);
-
-            await Task.CompletedTask; // Placeholder for actual coordination
 
             // Simulate coordination execution
             var efficiency = ELITE_COORDINATION_EFFICIENCY - (Random.Shared.NextDouble() * 0.02); // 98% ±2%

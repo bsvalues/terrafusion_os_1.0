@@ -192,7 +192,6 @@ namespace TerraFusion.AI.Services
             string language,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             if (language.ToLower() != "python")
             {
@@ -265,7 +264,6 @@ namespace TerraFusion.AI.Services
             string projectName,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var module = await AnalyzeModuleAsync(code, "python", cancellationToken);
 
@@ -301,7 +299,6 @@ namespace TerraFusion.AI.Services
             string language,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var module = new ModuleDocumentation
             {

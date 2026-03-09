@@ -461,8 +461,6 @@ namespace TerraFusion.AI.Services
             string workflowId,
             string countyId)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             return new List<WorkflowExecution>();
         }
     }

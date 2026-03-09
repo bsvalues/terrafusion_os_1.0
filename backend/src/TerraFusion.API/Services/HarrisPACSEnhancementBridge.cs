@@ -540,12 +540,11 @@ namespace TerraFusion.API.Services
             };
         }
 
-        private async Task StartRealTimeEnhancementProcessingAsync(string sessionId)
+        private Task StartRealTimeEnhancementProcessingAsync(string sessionId)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             // Initialize real-time enhancement processing pipeline
             _logger.LogInformation("🔄 Started real-time enhancement processing for session: {SessionId}", sessionId);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -645,15 +644,14 @@ namespace TerraFusion.API.Services
         }
 
         // Helper methods for missing functionality
-        private async Task<dynamic> GenerateExecutiveSummaryAsync(dynamic comparativeAnalysis, dynamic roiAnalysis, string countyCode)
+        private Task<dynamic> GenerateExecutiveSummaryAsync(dynamic comparativeAnalysis, dynamic roiAnalysis, string countyCode)
         {
-            await Task.CompletedTask;
-            return new
+            return Task.FromResult<dynamic>(new
             {
                 CountyCode = countyCode,
                 Summary = "Executive summary of Harris PACS enhancement analysis",
                 Timestamp = DateTime.UtcNow
-            };
+            });
         }
 
         private List<TerraFusion.API.Models.KeyFinding> ExtractKeyFindings(dynamic comparativeAnalysis, dynamic roiAnalysis)
@@ -704,28 +702,26 @@ namespace TerraFusion.API.Services
             };
         }
 
-        private async Task<dynamic> EnhanceComplianceValidationAsync(dynamic enhancementRequest)
+        private Task<dynamic> EnhanceComplianceValidationAsync(dynamic enhancementRequest)
         {
-            await Task.CompletedTask;
-            return new
+            return Task.FromResult<dynamic>(new
             {
                 ComplianceScore = 0.99m,
                 ValidationsPassed = 15,
                 ValidationsFailed = 0,
                 Timestamp = DateTime.UtcNow
-            };
+            });
         }
 
-        private async Task<dynamic> EnhancePerformanceOptimizationAsync(dynamic enhancementRequest)
+        private Task<dynamic> EnhancePerformanceOptimizationAsync(dynamic enhancementRequest)
         {
-            await Task.CompletedTask;
-            return new
+            return Task.FromResult<dynamic>(new
             {
                 OptimizationScore = 0.95m,
                 ImprovementPercentage = 25.0m,
                 OptimizationRecommendations = new List<string> { "Optimize caching", "Improve query performance" },
                 Timestamp = DateTime.UtcNow
-            };
+            });
         }
 
         public void Dispose()

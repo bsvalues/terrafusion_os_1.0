@@ -328,8 +328,6 @@ namespace TerraFusion.CostForge.Services
         /// </summary>
         private async Task GeneratePredictiveInsightsAsync(PerformanceTrendAnalysis trends)
         {
-            await Task.CompletedTask; // Placeholder for predictive analytics
-
             if (!trends.InsufficientData && _performanceHistory.Count % 20 == 0) // Every 20th cycle
             {
                 _logger.LogInformation(

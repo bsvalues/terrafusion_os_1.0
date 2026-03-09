@@ -85,8 +85,6 @@ namespace TerraFusion.AI.Functions
             JsonElement arguments,
             SecurityContext securityContext)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             var actualAge = arguments.GetProperty("actualAge").GetDouble();
             var effectiveAge = arguments.GetProperty("effectiveAge").GetDouble();
             var economicLife = arguments.GetProperty("economicLife").GetDouble();

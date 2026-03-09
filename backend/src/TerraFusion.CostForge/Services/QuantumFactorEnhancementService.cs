@@ -137,8 +137,6 @@ namespace TerraFusion.CostForge.Services
         {
             _logger.LogDebug("⚡ Calculating optimal quantum factors");
 
-            await Task.CompletedTask; // For async pattern
-
             // Elite quantum factor calculations for property valuation
             var propertyComplexityFactor = CalculatePropertyComplexityFactor(request);
             var marketDataFactor = CalculateMarketDataQuantumFactor(request.CountyCode);
@@ -238,8 +236,6 @@ namespace TerraFusion.CostForge.Services
             QuantumApplicationResult enhancementResult)
         {
             _logger.LogDebug("🏆 Validating championship-level accuracy");
-
-            await Task.CompletedTask; // Placeholder for async validation
 
             var accuracyScore = Math.Min(0.9995, enhancementResult.EnhancedAccuracy); // Cap at 99.95%
             var meetsChampionshipStandards = accuracyScore >= CHAMPIONSHIP_ACCURACY_TARGET;

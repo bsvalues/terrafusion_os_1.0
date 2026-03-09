@@ -299,7 +299,6 @@ namespace TerraFusion.AI.Services
             string language,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var issues = new List<ErrorPrediction>();
 
@@ -359,7 +358,6 @@ namespace TerraFusion.AI.Services
             string language,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var issues = new List<ErrorPrediction>();
 
@@ -420,7 +418,6 @@ namespace TerraFusion.AI.Services
             ErrorPredictionRequest request,
             CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
 
             var issues = new List<ErrorPrediction>();
 

@@ -80,9 +80,6 @@ namespace TerraFusion.CostForge.Services
 
         private async Task<MonitoringPerformanceMetrics> CollectPerformanceMetricsAsync()
         {
-            // Implementation placeholder - would collect actual system metrics
-            await Task.CompletedTask;
-
             return new MonitoringPerformanceMetrics
             {
                 CpuUsage = 15.2, // Placeholder values
@@ -110,7 +107,6 @@ namespace TerraFusion.CostForge.Services
                     metrics.MemoryUsage, memoryThreshold);
             }
 
-            await Task.CompletedTask;
         }
     }
 

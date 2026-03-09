@@ -343,8 +343,6 @@ namespace TerraFusion.AI.Services
 
         private async System.Threading.Tasks.Task<bool> InitializeFallbackSystems()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation("Initializing fallback classical systems...");
 
             // Initialize high-performance classical optimization

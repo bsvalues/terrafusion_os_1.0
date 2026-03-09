@@ -180,7 +180,6 @@ namespace TerraFusion.AI.Services
             List<CellData> cells,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var metrics = new CodeMetrics
             {
@@ -220,7 +219,6 @@ namespace TerraFusion.AI.Services
             List<CellData> cells,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var insights = new List<PerformanceInsight>();
 
@@ -246,7 +244,6 @@ namespace TerraFusion.AI.Services
             List<CellData> cells,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var allExecutions = cells.SelectMany(c => c.ExecutionHistory).ToList();
 

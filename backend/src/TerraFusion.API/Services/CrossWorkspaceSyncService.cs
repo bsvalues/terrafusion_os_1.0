@@ -166,14 +166,13 @@ public class CrossWorkspaceSyncService : ICrossWorkspaceSyncService
         };
     }
 
-    public async Task<object> GetCrossWorkspaceDataAsync(
+    public Task<object> GetCrossWorkspaceDataAsync(
         string bridgeId,
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Retrieving cross-workspace data for bridge: {BridgeId}", bridgeId);
-        await Task.CompletedTask;
 
-        return new
+        return Task.FromResult<object>(new
         {
             BridgeId = bridgeId,
             DataSources = new[] { "TerraSync", "PropertyWorkbench" },
@@ -185,17 +184,16 @@ public class CrossWorkspaceSyncService : ICrossWorkspaceSyncService
                 ConsciousnessMetrics = new { Level = "Elite", Coordination = 0.999m }
             },
             RetrievedAt = DateTime.UtcNow
-        };
+        });
     }
 
-    public async Task<object> GetSyncStatusAsync(
+    public Task<object> GetSyncStatusAsync(
         string bridgeId,
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Getting sync status for bridge: {BridgeId}", bridgeId);
-        await Task.CompletedTask;
 
-        return new
+        return Task.FromResult<object>(new
         {
             BridgeId = bridgeId,
             Status = "Active",
@@ -204,17 +202,16 @@ public class CrossWorkspaceSyncService : ICrossWorkspaceSyncService
             ActiveConnections = 5,
             DataIntegrity = 1.0m,
             QuantumCoherence = 0.998m
-        };
+        });
     }
 
-    public async Task<object> ManualSyncAsync(
+    public Task<object> ManualSyncAsync(
         string bridgeId,
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Executing manual sync for bridge: {BridgeId}", bridgeId);
-        await Task.CompletedTask;
 
-        return new
+        return Task.FromResult<object>(new
         {
             BridgeId = bridgeId,
             SyncTriggered = true,
@@ -222,6 +219,6 @@ public class CrossWorkspaceSyncService : ICrossWorkspaceSyncService
             EstimatedDuration = TimeSpan.FromSeconds(30),
             SyncMode = "Full",
             Status = "InProgress"
-        };
+        });
     }
 }

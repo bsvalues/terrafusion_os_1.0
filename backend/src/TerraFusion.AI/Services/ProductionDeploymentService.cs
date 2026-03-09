@@ -243,7 +243,6 @@ namespace TerraFusion.AI.Services
             DeploymentRequest request,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var validation = new PreDeploymentValidation { IsValid = true };
 
@@ -451,7 +450,6 @@ namespace TerraFusion.AI.Services
             string deploymentId,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             if (_deployments.ContainsKey(deploymentId))
             {
@@ -467,7 +465,6 @@ namespace TerraFusion.AI.Services
             string environment,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             return _history
                 .Where(h => string.IsNullOrEmpty(environment) || h.Environment == environment)
@@ -620,7 +617,6 @@ namespace TerraFusion.AI.Services
             _logger.LogInformation(
                 "Deployment {DeploymentId} - {Phase} ({Progress}%): {Message}",
                 status.DeploymentId, status.CurrentPhase, status.Progress, message);
-            await Task.CompletedTask;
         }
 
         private void RecordDeploymentHistory(DeploymentResult result, DeploymentStatus status)

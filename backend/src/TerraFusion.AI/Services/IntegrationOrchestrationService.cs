@@ -189,7 +189,6 @@ namespace TerraFusion.AI.Services
         public async Task<IntegrationStatus> GetIntegrationStatusAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var uptime = DateTime.UtcNow - _startTime;
             var connectedSystems = _connectors.Values.Count(s => s.Status == "connected");
@@ -313,7 +312,6 @@ namespace TerraFusion.AI.Services
         public async Task<List<SystemConnector>> GetSystemConnectorsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var connectors = new List<SystemConnector>();
 
@@ -387,7 +385,6 @@ namespace TerraFusion.AI.Services
             SyncRequest request,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             Interlocked.Increment(ref _totalSyncOperations);
 
@@ -483,7 +480,6 @@ namespace TerraFusion.AI.Services
             string systemId,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             lock (_syncHistory)
             {
@@ -504,7 +500,6 @@ namespace TerraFusion.AI.Services
         public async Task<IntegrationHealth> GetIntegrationHealthAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var health = new IntegrationHealth
             {
@@ -614,7 +609,6 @@ namespace TerraFusion.AI.Services
             DataMappingRequest request,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var result = new DataMappingResult
             {
@@ -656,7 +650,6 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var dataPoints = GetDataPointsCount(timeRange);
             var now = DateTime.UtcNow;

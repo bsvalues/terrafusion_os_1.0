@@ -326,10 +326,8 @@ namespace TerraFusion.API.Services
 
         // Helper Methods
 
-        private async Task<SourceDataAnalysis> AnalyzeSourceDataStructureAsync(string countyCode)
+        private Task<SourceDataAnalysis> AnalyzeSourceDataStructureAsync(string countyCode)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation("🔍 Analyzing Source Data Structure - County: {CountyCode}", countyCode);
 
             // This would integrate with Harris PACS to analyze data structure
@@ -346,13 +344,11 @@ namespace TerraFusion.API.Services
                 EstimatedComplexity = 0.7m
             };
 
-            return analysis;
+            return Task.FromResult(analysis);
         }
 
-        private async Task<DataMigrationMapping> CreateDataMigrationMappingAsync(string countyCode, SourceDataAnalysis sourceAnalysis)
+        private Task<DataMigrationMapping> CreateDataMigrationMappingAsync(string countyCode, SourceDataAnalysis sourceAnalysis)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogInformation("🗺️ Creating Data Migration Mapping - County: {CountyCode}", countyCode);
 
             var mapping = new DataMigrationMapping
@@ -372,7 +368,7 @@ namespace TerraFusion.API.Services
                 };
             }
 
-            return mapping;
+            return Task.FromResult(mapping);
         }
 
         private Dictionary<string, string> GenerateFieldMappings(string tableName)
@@ -462,28 +458,24 @@ namespace TerraFusion.API.Services
             };
         }
 
-        private async Task<RollbackValidationResult> ValidateRollbackTargetAsync(string migrationId, string rollbackTargetId)
+        private Task<RollbackValidationResult> ValidateRollbackTargetAsync(string migrationId, string rollbackTargetId)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             // Validate that rollback target is valid and available
-            return new RollbackValidationResult
+            return Task.FromResult(new RollbackValidationResult
             {
                 IsValid = true,
                 ErrorMessage = null
-            };
+            });
         }
 
-        private async Task<long> ExecuteDataRollbackAsync(string migrationId, string rollbackTargetId)
+        private Task<long> ExecuteDataRollbackAsync(string migrationId, string rollbackTargetId)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             // Execute actual data rollback operations
             // This would restore data from the specified rollback point
-            return 50000; // Example: 50,000 records rolled back
+            return Task.FromResult(50000L); // Example: 50,000 records rolled back
         }
 
-        private async Task UpdateProgressMetricsAsync(string migrationId, DataMigrationProgress progress)
+        private Task UpdateProgressMetricsAsync(string migrationId, DataMigrationProgress progress)
         {
             // Update real-time progress metrics
             progress.LastUpdateTime = DateTime.UtcNow;
@@ -496,8 +488,7 @@ namespace TerraFusion.API.Services
                     (elapsedTime.TotalMilliseconds / progress.ProcessedRecords));
             }
 
-            // Persist progress to storage (simulated async operation)
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         #region IDataMigrationEngine Implementation

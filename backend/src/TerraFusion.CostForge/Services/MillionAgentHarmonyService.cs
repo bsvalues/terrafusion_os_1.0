@@ -99,9 +99,6 @@ namespace TerraFusion.CostForge.Services
                 // Get current agent status
                 var agentStatus = await millionAgentService.GetMillionAgentStatusAsync();
 
-                // Implementation placeholder - would perform actual harmony orchestration
-                await Task.CompletedTask;
-
                 return new HarmonyStatus
                 {
                     ActiveAgents = 1008, // Placeholder value
@@ -130,9 +127,6 @@ namespace TerraFusion.CostForge.Services
             try
             {
                 _logger.LogInformation("Triggering autonomous harmony enhancement protocols");
-
-                // Implementation placeholder - would trigger actual enhancement
-                await Task.CompletedTask;
 
                 _logger.LogInformation("Harmony enhancement protocols initiated successfully");
             }

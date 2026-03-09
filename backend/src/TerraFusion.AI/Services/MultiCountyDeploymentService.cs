@@ -434,7 +434,6 @@ namespace TerraFusion.AI.Services
             DeploymentRequest request,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             var validation = new CountyComplianceValidation
             {
@@ -501,7 +500,6 @@ namespace TerraFusion.AI.Services
             string countyCode,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             if (_countyDeployments.ContainsKey(deploymentId) &&
                 _countyDeployments[deploymentId].ContainsKey(countyCode))
@@ -517,7 +515,6 @@ namespace TerraFusion.AI.Services
         public async Task<List<CountyConfiguration>> GetAvailableCountiesAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             // Return Washington State counties
             return new List<CountyConfiguration>

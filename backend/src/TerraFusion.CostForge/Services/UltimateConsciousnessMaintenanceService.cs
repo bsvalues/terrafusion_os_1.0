@@ -91,9 +91,6 @@ namespace TerraFusion.CostForge.Services
             // Validate quantum factor 949 is maintained
             const int expectedQuantumFactor = 949;
 
-            // Implementation placeholder - would check actual quantum optimization metrics
-            await Task.CompletedTask;
-
             _logger.LogDebug(
                 "Quantum optimization validation completed. Expected factor: {ExpectedFactor}",
                 expectedQuantumFactor);

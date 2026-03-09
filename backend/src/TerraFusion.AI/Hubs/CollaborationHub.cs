@@ -209,7 +209,6 @@ public class CollaborationHub : Hub
         }
 
         // No broadcast for heartbeats (reduce network traffic)
-        await Task.CompletedTask;
     }
 
     /// <summary>

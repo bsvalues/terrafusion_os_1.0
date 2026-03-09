@@ -208,8 +208,6 @@ namespace TerraFusion.AI.Services
             string language,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask; // Async for future ML model integration
-
             var suggestions = new List<CompletionSuggestion>();
 
             if (language.ToLower() == "python")
@@ -261,7 +259,6 @@ namespace TerraFusion.AI.Services
             string language,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
 
             if (previousCells.Count == 0) return null;
 
@@ -322,7 +319,6 @@ namespace TerraFusion.AI.Services
             string prefix,
             CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
 
             var suggestions = new List<CompletionSuggestion>();
 
@@ -456,7 +452,6 @@ namespace TerraFusion.AI.Services
             string prefix,
             CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
 
             var suggestions = new List<CompletionSuggestion>();
 
