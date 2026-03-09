@@ -49,6 +49,27 @@ interface SummarizeState {
   error?: ErrorInfo;
 }
 
+/** Evidence synthesis result from synthesize_evidence governed tool */
+interface EvidenceCategory {
+  category: string;
+  items: string[];
+  count: number;
+}
+
+interface SynthesizeResult {
+  parcelId: string;
+  categories: EvidenceCategory[];
+  totalItems: number;
+  synthesisNarrative?: string;
+}
+
+interface SynthesizeState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: SynthesizeResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
+
 interface DocumentManagementState {
   loading: boolean;
   error: ErrorInfo | null;
@@ -250,6 +271,7 @@ export const PropertyDossier: React.FC = () => {
   const dossierDetails = useDossierDetails(parcelId);
 
   const [summarizeState, setSummarizeState] = useState<SummarizeState>({ status: 'idle' });
+  const [synthesizeState, setSynthesizeState] = useState<SynthesizeState>({ status: 'idle' });
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
   const [documentManagement, setDocumentManagement] = useState<DocumentManagementState>({
     loading: false,
@@ -440,6 +462,52 @@ export const PropertyDossier: React.FC = () => {
   const clearSummarizeState = useCallback(() => {
     setSummarizeState({ status: 'idle' });
   }, []);
+
+  /** synthesize_evidence — aggregate evidence items by category */
+  const handleSynthesizeEvidence = useCallback(async () => {
+    setSynthesizeState({ status: 'loading' });
+
+    try {
+      const response = await invokeTool({
+        toolId: 'synthesize_evidence',
+        params: { county: 'benton', parcelId },
+        parcelId,
+      });
+
+      const record: InvocationRecord = {
+        id: `inv-${Date.now()}`,
+        toolId: 'synthesize_evidence',
+        status: response.success ? 'success' : 'error',
+        correlationId: response.correlationId,
+        timestamp: new Date(),
+      };
+      setInvocationHistory((prev) => [record, ...prev]);
+
+      if (response.success && response.result) {
+        let parsed: SynthesizeResult;
+        try {
+          parsed = typeof response.result.output === 'string'
+            ? JSON.parse(response.result.output)
+            : response.result.output;
+        } catch {
+          parsed = { parcelId, categories: [], totalItems: 0 };
+        }
+        setSynthesizeState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setSynthesizeState({
+          status: 'error', correlationId: response.correlationId,
+          error: { code: response.error?.code || 'SYNTHESIZE_FAILED', message: response.error?.message || 'Evidence synthesis failed', severity: 'error', correlationId: response.correlationId },
+        });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setSynthesizeState({
+        status: 'error', correlationId: cid,
+        error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid },
+      });
+      setInvocationHistory((prev) => [{ id: `inv-${Date.now()}`, toolId: 'synthesize_evidence', status: 'error', correlationId: cid, timestamp: new Date() }, ...prev]);
+    }
+  }, [parcelId]);
 
   return (
     <div className='tf-suite-dossier space-y-6' data-testid='property-dossier-tab'>
@@ -834,12 +902,76 @@ export const PropertyDossier: React.FC = () => {
         </BentoCard>
       </BentoGrid>
 
-      {/* Invocation History */}
+      {/* ================================================================ */}
+      {/* Evidence Synthesis — synthesize_evidence governed tool            */}
+      {/* ================================================================ */}
+      <BentoCard title="Evidence Synthesis" actions={<span>🔬</span>}>
+        <div className='flex items-start justify-between gap-4 flex-wrap mb-3'>
+          <p className='tf-text-dim text-sm'>
+            Aggregate and categorize all evidence items for this parcel
+          </p>
+          <button
+            onClick={handleSynthesizeEvidence}
+            disabled={synthesizeState.status === 'loading'}
+            className='px-4 py-2 rounded-lg font-semibold transition-all tf-suite-dossier-cta'
+          >
+            {synthesizeState.status === 'loading' ? 'Synthesizing...' : 'Synthesize Evidence'}
+          </button>
+        </div>
+
+        {synthesizeState.status === 'success' && synthesizeState.result && (
+          <div className='space-y-3'>
+            <div className='flex items-center justify-between text-sm'>
+              <span className='tf-text-secondary'>
+                {synthesizeState.result.totalItems} total evidence items
+              </span>
+              {synthesizeState.correlationId && (
+                <code className='tf-suite-accent-text font-mono text-xs'>
+                  {synthesizeState.correlationId.slice(0, 16)}...
+                </code>
+              )}
+            </div>
+
+            {synthesizeState.result.synthesisNarrative && (
+              <p className='tf-text-secondary text-sm'>{synthesizeState.result.synthesisNarrative}</p>
+            )}
+
+            {synthesizeState.result.categories?.length ? (
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                {synthesizeState.result.categories.map((cat, idx) => (
+                  <div key={idx} className='tf-panel p-4 rounded-xl'>
+                    <div className='flex items-center justify-between mb-2'>
+                      <span className='tf-text font-medium'>{cat.category}</span>
+                      <span className='tf-text-dim text-xs'>{cat.count} items</span>
+                    </div>
+                    <div className='space-y-1'>
+                      {cat.items.slice(0, 3).map((item, i) => (
+                        <p key={i} className='tf-text-tertiary text-xs truncate'>• {item}</p>
+                      ))}
+                      {cat.items.length > 3 && (
+                        <p className='tf-text-dim text-xs'>+{cat.items.length - 3} more</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className='tf-text-dim text-sm italic'>No categorized evidence returned.</p>
+            )}
+          </div>
+        )}
+
+        {synthesizeState.status === 'error' && synthesizeState.error && (
+          <ErrorDisplay error={{ message: synthesizeState.error.message, errorCode: synthesizeState.error.code, correlationId: synthesizeState.correlationId }} />
+        )}
+      </BentoCard>
+
+      {/* Governed Tool Invocation History */}
       <InvocationHistory
         records={invocationHistory}
-        title="Summarization History"
+        title="Dossier Tool History"
         icon="📜"
-        emptyMessage="No summarizations yet."
+        emptyMessage="No governed tool invocations yet."
       />
     </div>
   );
