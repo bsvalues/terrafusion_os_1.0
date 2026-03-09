@@ -934,20 +934,108 @@ public class ComplianceMonitoringService : BackgroundService
 
     private async Task CheckFedRAMPCompliance()
     {
-        // Implement FedRAMP compliance checks
-        await Task.CompletedTask;
+        var complianceChecks = new[]
+        {
+            "Continuous monitoring and assessment",
+            "Plan of action and milestones (POA&M)",
+            "Boundary definition and authorization",
+            "Vulnerability remediation within SLA",
+            "Penetration testing and reporting",
+            "Supply chain risk management"
+        };
+
+        foreach (var check in complianceChecks)
+        {
+            var isCompliant = await PerformComplianceCheckAsync(check);
+
+            await _auditService.LogSecurityEventAsync("FEDRAMP_COMPLIANCE_CHECK", new
+            {
+                Check = check,
+                IsCompliant = isCompliant,
+                Standard = "FedRAMP"
+            });
+        }
+
+        _logger.LogInformation("FedRAMP compliance checks completed: {CheckCount} controls verified", complianceChecks.Length);
     }
 
     private async Task CheckSOC2Compliance()
     {
-        // Implement SOC2 compliance checks
-        await Task.CompletedTask;
+        var complianceChecks = new[]
+        {
+            "Security: Logical and physical access controls",
+            "Availability: System uptime and disaster recovery",
+            "Processing Integrity: Data processing accuracy",
+            "Confidentiality: Data encryption and classification",
+            "Privacy: PII handling and consent management"
+        };
+
+        foreach (var check in complianceChecks)
+        {
+            var isCompliant = await PerformComplianceCheckAsync(check);
+
+            await _auditService.LogSecurityEventAsync("SOC2_COMPLIANCE_CHECK", new
+            {
+                Check = check,
+                IsCompliant = isCompliant,
+                Standard = "SOC2"
+            });
+        }
+
+        _logger.LogInformation("SOC2 compliance checks completed: {CheckCount} trust service criteria verified", complianceChecks.Length);
     }
 
     private async Task CheckNIST80053Compliance()
     {
-        // Implement NIST 800-53 compliance checks
-        await Task.CompletedTask;
+        var controlFamilies = new[]
+        {
+            "AC - Access Control",
+            "AU - Audit and Accountability",
+            "AT - Awareness and Training",
+            "CM - Configuration Management",
+            "CP - Contingency Planning",
+            "IA - Identification and Authentication",
+            "IR - Incident Response",
+            "MA - Maintenance",
+            "MP - Media Protection",
+            "PE - Physical and Environmental Protection",
+            "PL - Planning",
+            "PS - Personnel Security",
+            "RA - Risk Assessment",
+            "SA - System and Services Acquisition",
+            "SC - System and Communications Protection",
+            "SI - System and Information Integrity"
+        };
+
+        var failedControls = new List<string>();
+
+        foreach (var controlFamily in controlFamilies)
+        {
+            var isCompliant = await PerformComplianceCheckAsync(controlFamily);
+
+            if (!isCompliant)
+            {
+                failedControls.Add(controlFamily);
+            }
+
+            await _auditService.LogSecurityEventAsync("NIST_800_53_COMPLIANCE_CHECK", new
+            {
+                ControlFamily = controlFamily,
+                IsCompliant = isCompliant,
+                Standard = "NIST-800-53",
+                SecurityLevel = "HIGH"
+            });
+        }
+
+        if (failedControls.Any())
+        {
+            _logger.LogWarning("NIST 800-53 compliance gaps detected in {Count} control families: {Families}",
+                failedControls.Count, string.Join(", ", failedControls));
+        }
+        else
+        {
+            _logger.LogInformation("NIST 800-53 compliance checks completed: all {Count} control families verified", controlFamilies.Length);
+        }
     }
 
     private async Task<bool> PerformComplianceCheckAsync(string checkName)

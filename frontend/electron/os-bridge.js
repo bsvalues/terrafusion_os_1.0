@@ -141,7 +141,11 @@ class TerraFusionOSBridge {
 
   // Public helper to create an HMAC-signed auth envelope matching backend expectations
   async createAuthEnvelope(countyId, legacySystem) {
-    const secret = process.env.TF_OS_SHARED_SECRET || process.env.TF_VAULT_KEY || 'dev-shared-secret';
+    const secret = process.env.TF_OS_SHARED_SECRET || process.env.TF_VAULT_KEY;
+    if (!secret && process.env.NODE_ENV === 'production') {
+      throw new Error('TF_OS_SHARED_SECRET or TF_VAULT_KEY must be set in production');
+    }
+    const effectiveSecret = secret || 'dev-only-not-for-production';
     const payload = {
       CountyId: countyId,
       LegacySystem: legacySystem,
@@ -149,7 +153,7 @@ class TerraFusionOSBridge {
       Ts: Date.now()
     };
     const canonical = JSON.stringify(payload);
-    const hmac = crypto.createHmac('sha256', Buffer.from(secret, 'utf8'));
+    const hmac = crypto.createHmac('sha256', Buffer.from(effectiveSecret, 'utf8'));
     hmac.update(Buffer.from(canonical, 'utf8'));
     const signature = hmac.digest('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
     return { Payload: payload, Signature: signature, Alg: 'HS256' };
@@ -322,8 +326,11 @@ class TerraFusionOSBridge {
     // Generate HMAC-SHA256 signed auth envelope
     const secret = (vaultCredentials && vaultCredentials.sharedSecret)
       || process.env.TF_OS_SHARED_SECRET
-      || process.env.TF_VAULT_KEY
-      || 'dev-shared-secret';
+      || process.env.TF_VAULT_KEY;
+    if (!secret && process.env.NODE_ENV === 'production') {
+      throw new Error('TF_OS_SHARED_SECRET or TF_VAULT_KEY must be set in production');
+    }
+    const effectiveSecret = secret || 'dev-only-not-for-production';
     const payload = {
       CountyId: countyId,
       LegacySystem: legacySystem,
@@ -331,7 +338,7 @@ class TerraFusionOSBridge {
       Ts: Date.now()
     };
     const canonical = JSON.stringify(payload);
-    const hmac = crypto.createHmac('sha256', Buffer.from(secret, 'utf8'));
+    const hmac = crypto.createHmac('sha256', Buffer.from(effectiveSecret, 'utf8'));
     hmac.update(Buffer.from(canonical, 'utf8'));
     const signature = hmac.digest('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const envelope = { Payload: payload, Signature: signature, Alg: 'HS256' };

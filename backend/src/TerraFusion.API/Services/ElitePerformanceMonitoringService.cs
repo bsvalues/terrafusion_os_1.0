@@ -697,8 +697,24 @@ public class ElitePerformanceMonitoringService : BackgroundService, IElitePerfor
 
     private async Task<object> GetCurrentSystemPerformanceAsync()
     {
-        await Task.CompletedTask;
-        return new { CPUUsage = 35.0, MemoryUsage = 512.0, DiskUsage = 45.0 };
+        var process = Process.GetCurrentProcess();
+        var cpuUsage = process.TotalProcessorTime.TotalMilliseconds / (Environment.ProcessorCount * (DateTime.UtcNow - process.StartTime.ToUniversalTime()).TotalMilliseconds) * 100;
+        var memoryUsageMb = process.WorkingSet64 / (1024.0 * 1024.0);
+        var threadCount = process.Threads.Count;
+
+        _logger.LogDebug("System performance collected: CPU={CpuUsage:F1}%, Memory={MemoryMb:F1}MB, Threads={Threads}",
+            cpuUsage, memoryUsageMb, threadCount);
+
+        // Allow async context switch for non-blocking performance collection
+        await Task.Yield();
+        return new
+        {
+            CPUUsage = Math.Round(cpuUsage, 1),
+            MemoryUsage = Math.Round(memoryUsageMb, 1),
+            ThreadCount = threadCount,
+            GCMemory = GC.GetTotalMemory(false) / (1024.0 * 1024.0),
+            Uptime = (DateTime.UtcNow - process.StartTime.ToUniversalTime()).TotalHours
+        };
     }
 
     private async Task<double> CalculateOverallHealthScore(object metrics)

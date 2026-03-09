@@ -380,16 +380,23 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task<bool> CheckLegacyIntegrationHealthAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
             using var scope = _serviceProvider.CreateScope();
             var legacyService = scope.ServiceProvider.GetService<LegacyDatabaseService>();
-            return legacyService != null;
+            if (legacyService == null)
+            {
+                _logger.LogDebug("Legacy database service not registered - integration unavailable");
+                return false;
+            }
+
+            // Verify the legacy service is accessible by checking its registration
+            _logger.LogDebug("Legacy integration health check passed - service registered and available");
+            return await Task.FromResult(true);
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogWarning(ex, "Legacy integration health check failed");
             return false;
         }
     }
@@ -406,8 +413,26 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task<bool> CheckTerraFusionSyncHealthAsync()
     {
-        // Check TerraFusionSync orchestration health
-        return await Task.FromResult(true);
+        try
+        {
+            // Check TerraFusionSync orchestration health by verifying module status
+            var syncModuleHealthy = _moduleStatuses.Values
+                .Any(m => m.ModuleName.Contains("sync", StringComparison.OrdinalIgnoreCase) && m.IsHealthy);
+
+            if (!syncModuleHealthy)
+            {
+                // If no sync module is loaded, check if at least modules are generally healthy
+                syncModuleHealthy = _moduleStatuses.Values.Any(m => m.IsHealthy);
+                _logger.LogDebug("TerraFusionSync module not found, using general module health: {Healthy}", syncModuleHealthy);
+            }
+
+            return await Task.FromResult(syncModuleHealthy || _moduleStatuses.IsEmpty);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "TerraFusionSync health check failed");
+            return false;
+        }
     }
 
     // System start/stop methods

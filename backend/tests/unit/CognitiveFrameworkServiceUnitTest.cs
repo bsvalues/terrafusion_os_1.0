@@ -300,37 +300,93 @@ public class CognitiveFrameworkServiceUnitTest
 }
 
 /// <summary>
-/// Mock audit logger for testing
+/// Mock audit logger for testing - tracks all logged events for assertion/verification
 /// </summary>
 public class MockAuditLogger : IAuditLogger
 {
+    public List<(string EventType, string Description, object? Data)> SystemEvents { get; } = new();
+    public List<(string UserId, string Action, string Resource, object? Metadata)> UserActions { get; } = new();
+    public List<(string EventType, string UserId, string? IpAddress, object? Details)> SecurityEvents { get; } = new();
+    public List<(string Regulation, string EventType, object Data, bool IsCompliant)> ComplianceEvents { get; } = new();
+    public List<(string MetricName, double Value, string? UserId, Dictionary<string, object>? Tags)> PerformanceMetrics { get; } = new();
+
+    public int TotalEventCount =>
+        SystemEvents.Count + UserActions.Count + SecurityEvents.Count +
+        ComplianceEvents.Count + PerformanceMetrics.Count;
+
     public async Task LogSystemEventAsync(string eventType, string description, object? data = null)
     {
-        // Mock implementation - just return completed task
-        await Task.CompletedTask;
+        SystemEvents.Add((eventType, description, data));
+        Assert.False(string.IsNullOrEmpty(eventType), "System event type must not be empty");
+        Assert.False(string.IsNullOrEmpty(description), "System event description must not be empty");
+        Assert.True(SystemEvents.Count > 0, "System event should be recorded after logging");
+        await Task.Yield();
     }
 
     public async Task LogUserActionAsync(string userId, string action, string resource, object? metadata = null)
     {
-        // Mock implementation - just return completed task
-        await Task.CompletedTask;
+        UserActions.Add((userId, action, resource, metadata));
+        Assert.False(string.IsNullOrEmpty(userId), "User ID must not be empty for user action logging");
+        Assert.False(string.IsNullOrEmpty(action), "Action must not be empty for user action logging");
+        Assert.False(string.IsNullOrEmpty(resource), "Resource must not be empty for user action logging");
+        Assert.Contains(UserActions, ua => ua.UserId == userId && ua.Action == action);
+        await Task.Yield();
     }
 
     public async Task LogSecurityEventAsync(string eventType, string userId, string? ipAddress, object? details = null)
     {
-        // Mock implementation - just return completed task
-        await Task.CompletedTask;
+        SecurityEvents.Add((eventType, userId, ipAddress, details));
+        Assert.False(string.IsNullOrEmpty(eventType), "Security event type must not be empty");
+        Assert.False(string.IsNullOrEmpty(userId), "User ID must not be empty for security event logging");
+        Assert.Contains(SecurityEvents, se => se.EventType == eventType && se.UserId == userId);
+        await Task.Yield();
     }
 
     public async Task LogComplianceEventAsync(string regulation, string eventType, object data, bool isCompliant = true)
     {
-        // Mock implementation - just return completed task
-        await Task.CompletedTask;
+        ComplianceEvents.Add((regulation, eventType, data, isCompliant));
+        Assert.False(string.IsNullOrEmpty(regulation), "Regulation must not be empty for compliance logging");
+        Assert.False(string.IsNullOrEmpty(eventType), "Event type must not be empty for compliance logging");
+        Assert.NotNull(data);
+        Assert.Contains(ComplianceEvents, ce => ce.Regulation == regulation && ce.EventType == eventType);
+        await Task.Yield();
     }
 
     public async Task LogPerformanceMetricAsync(string metricName, double value, string? userId = null, Dictionary<string, object>? tags = null)
     {
-        // Mock implementation - just return completed task
-        await Task.CompletedTask;
+        PerformanceMetrics.Add((metricName, value, userId, tags));
+        Assert.False(string.IsNullOrEmpty(metricName), "Metric name must not be empty for performance logging");
+        Assert.True(double.IsFinite(value), "Metric value must be a finite number");
+        Assert.True(value >= 0 || tags != null, "Performance metric value should be non-negative or accompanied by contextual tags");
+        Assert.Contains(PerformanceMetrics, pm => pm.MetricName == metricName);
+        await Task.Yield();
+    }
+
+    /// <summary>
+    /// Verifies that at least one system event with the given type was logged
+    /// </summary>
+    public void AssertSystemEventLogged(string eventType)
+    {
+        Assert.Contains(SystemEvents, e => e.EventType == eventType);
+    }
+
+    /// <summary>
+    /// Verifies that at least one security event with the given type was logged
+    /// </summary>
+    public void AssertSecurityEventLogged(string eventType)
+    {
+        Assert.Contains(SecurityEvents, e => e.EventType == eventType);
+    }
+
+    /// <summary>
+    /// Resets all tracked events for clean test isolation
+    /// </summary>
+    public void Reset()
+    {
+        SystemEvents.Clear();
+        UserActions.Clear();
+        SecurityEvents.Clear();
+        ComplianceEvents.Clear();
+        PerformanceMetrics.Clear();
     }
 }

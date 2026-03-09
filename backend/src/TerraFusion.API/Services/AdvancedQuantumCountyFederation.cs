@@ -494,10 +494,11 @@ public class AdvancedQuantumCountyFederation : IAdvancedQuantumCountyFederation
     /// </summary>
     public async Task<FederationHealthMetrics> GetQuantumFederationHealthAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
+            _logger.LogDebug("Collecting quantum federation health metrics across {CountyCount} counties",
+                WashingtonStateCounties.Counties.Count);
+
             var totalCounties = WashingtonStateCounties.Counties.Count;
             var activeNodes = _sovereignNodes.Count(n => n.Value.Status == "ACTIVE");
             var activeChannels = _quantumChannels.Count(c => c.Value.Status == "ACTIVE");

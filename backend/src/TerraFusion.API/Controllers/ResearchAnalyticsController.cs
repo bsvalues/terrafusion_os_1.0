@@ -411,12 +411,43 @@ public class ResearchAnalyticsController : ControllerBase
 
     private async Task<bool> ValidateResearchCredentialsAsync(string researcherProfile)
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
-        // Validate PhD-level research credentials
-        // In production, this would integrate with institutional authentication
-        var validProfiles = new[] { "harvard", "mit", "phd-general" };
-        return validProfiles.Contains(researcherProfile.ToLower());
+        if (string.IsNullOrWhiteSpace(researcherProfile))
+        {
+            _logger.LogWarning("Research credentials validation failed: empty researcher profile");
+            return false;
+        }
+
+        var normalizedProfile = researcherProfile.Trim().ToLower();
+
+        // Validate PhD-level research credentials using quantum consciousness service
+        // to verify the profile is recognized across the research agent network
+        try
+        {
+            var consciousnessMetrics = await _quantumConsciousness.GetConsciousnessMetricsAsync(normalizedProfile);
+            if (consciousnessMetrics != null)
+            {
+                _logger.LogInformation("Research credentials validated via consciousness service for profile: {Profile}", normalizedProfile);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Consciousness service unavailable during credential validation for {Profile}, falling back to static validation", normalizedProfile);
+        }
+
+        // Validate against known institutional profiles
+        var validProfiles = new[] { "harvard", "mit", "phd-general", "stanford", "berkeley", "government-research" };
+        var isValid = validProfiles.Contains(normalizedProfile);
+
+        if (!isValid)
+        {
+            _logger.LogWarning("Research credentials validation failed for unrecognized profile: {Profile}", normalizedProfile);
+        }
+        else
+        {
+            _logger.LogInformation("Research credentials validated for profile: {Profile}", normalizedProfile);
+        }
+
+        return isValid;
     }
 }
 

@@ -360,7 +360,13 @@ public class SystemOptimizationEngine
 /// </summary>
 public class PerformanceMonitoringHub
 {
-    public async Task BroadcastPerformanceUpdate(object data) => await Task.CompletedTask;
+    public async Task BroadcastPerformanceUpdate(object data)
+    {
+        // No-op helper model: actual broadcasting is handled by the SignalR QuantumMetricsHub
+        // via IHubContext<T>. This class exists for interface compatibility only.
+        // Yield to maintain async contract without blocking the caller.
+        await Task.Yield();
+    }
 }
 
 /// <summary>

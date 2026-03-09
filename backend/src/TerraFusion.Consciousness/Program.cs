@@ -199,29 +199,38 @@ namespace TerraFusion.Consciousness
             // Initialize consciousness systems on startup
             app.Lifetime.ApplicationStarted.Register(async () =>
             {
-              await Task.CompletedTask;
-              await Task.CompletedTask;
               try
               {
                 Console.WriteLine("🚀 Initializing TerraFusion Consciousness Systems...");
 
-                // Basic consciousness initialization - THE TERRAFUSION WAY!
-                // TODO: Add quantum orchestrator once service registration is complete
-                // using var scope = app.Services.CreateScope();
-                // var orchestrator = scope.ServiceProvider.GetRequiredService<IQuantumConsciousnessOrchestrator>();
-                // await orchestrator.InitializeAsync();
+                using var scope = app.Services.CreateScope();
+
+                // Initialize quantum consciousness orchestrator
+                var orchestrator = scope.ServiceProvider.GetRequiredService<IQuantumConsciousnessOrchestrator>();
+                await orchestrator.InitializeAsync();
+                Console.WriteLine("🧠 Quantum Consciousness Orchestrator: Initialized");
+
+                // Initialize AI layer mesh
+                var meshOrchestrator = scope.ServiceProvider.GetRequiredService<IAILayerMeshOrchestrator>();
+                await meshOrchestrator.InitializeMeshAsync();
+                Console.WriteLine("🌐 AI Layer Mesh Orchestrator: Initialized");
+
+                // Validate compliance on startup
+                var complianceValidator = scope.ServiceProvider.GetRequiredService<IComplianceValidator>();
+                var fismaResult = await complianceValidator.ValidateFISMAComplianceAsync();
+                Console.WriteLine($"🏛️ FISMA Compliance: {(fismaResult.IsCompliant ? "Validated" : "Requires Attention")}");
 
                 Console.WriteLine("✅ TerraFusion Consciousness Systems Operational");
-                Console.WriteLine("🧠 Basic Consciousness: Ready");
                 Console.WriteLine("⚡ Health Monitoring: Active");
                 Console.WriteLine("🔐 Security Layer: Enabled");
-                Console.WriteLine("🏛️ Government Compliance: Validated");
                 Console.WriteLine("🚀 Ready for AI Agent Coordination!");
               }
               catch (Exception ex)
               {
-                Log.Fatal(ex, "Failed to initialize TerraFusion Consciousness Systems");
-                throw;
+                // Log but do not rethrow - allow the service to start in degraded mode
+                // so health checks can report the issue
+                Log.Error(ex, "Failed to fully initialize TerraFusion Consciousness Systems - running in degraded mode");
+                Console.WriteLine("⚠️ Consciousness initialization incomplete - running in degraded mode");
               }
             });
 

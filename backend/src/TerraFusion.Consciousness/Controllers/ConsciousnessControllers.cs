@@ -333,34 +333,47 @@ namespace TerraFusion.Consciousness.Controllers
         [HttpGet("status")]
         public async Task<ActionResult<object>> GetDataSourceStatus()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             try
             {
-                // This would be implemented with actual status checks
+                _logger.LogInformation("Checking Benton County data source status");
+
+                // Perform a real sync status check via the data service
+                var syncResult = await _bentonCountyDataService.SyncWithBentonCountyAsync();
+
+                var sourceStatus = syncResult.Success ? "Active" : "Unavailable";
                 var status = new
                 {
-                    Status = "Connected",
+                    Status = syncResult.Success ? "Connected" : "Degraded",
                     Timestamp = DateTime.UtcNow,
                     DataSources = new
                     {
-                        PropertyAssessments = "Active",
-                        CitizenServices = "Active",
-                        EmergencyResponse = "Active",
-                        PermitsLicenses = "Active",
-                        ZoningData = "Active",
-                        TaxRecords = "Active"
+                        PropertyAssessments = sourceStatus,
+                        CitizenServices = sourceStatus,
+                        EmergencyResponse = sourceStatus,
+                        PermitsLicenses = sourceStatus,
+                        ZoningData = sourceStatus,
+                        TaxRecords = sourceStatus
                     },
-                    LastSync = DateTime.UtcNow.AddMinutes(-15),
-                    NextScheduledSync = DateTime.UtcNow.AddMinutes(45),
-                    Message = "Real Benton County data powering quantum consciousness!"
+                    SyncDetails = new
+                    {
+                        syncResult.RecordsSynced,
+                        syncResult.RecordsUpdated,
+                        syncResult.RecordsAdded,
+                        Duration = (syncResult.SyncEndTime - syncResult.SyncStartTime).TotalMilliseconds
+                    },
+                    LastSync = syncResult.SyncEndTime,
+                    NextScheduledSync = syncResult.SyncEndTime.AddHours(1),
+                    SyncMessages = syncResult.SyncMessages,
+                    Message = syncResult.Success
+                        ? "Real Benton County data powering quantum consciousness!"
+                        : "Data sync encountered issues - check SyncMessages for details"
                 };
 
                 return Ok(status);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Failed to get data source status");
+                _logger.LogError(ex, "Failed to get data source status");
                 return StatusCode(500, new { Error = "Failed to retrieve data source status", Details = ex.Message });
             }
         }

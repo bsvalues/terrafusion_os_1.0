@@ -351,8 +351,42 @@ public class EnterpriseAuthService : IEnterpriseAuthService
 
     private async Task StoreAuditEventAsync(AuthenticationEvent authEvent)
     {
-        // Implementation would store to database or audit service
-        await Task.CompletedTask;
+        try
+        {
+            _logger.LogInformation(
+                "Storing authentication audit event: UserId={UserId}, Action={Action}, Success={Success}, IP={IP}, Timestamp={Timestamp}",
+                authEvent.UserId, authEvent.Action, authEvent.Success, authEvent.IpAddress, authEvent.Timestamp);
+
+            _structuredLogger.LogSecurityEvent(
+                $"Auth:{authEvent.Action}",
+                authEvent.Success
+                    ? $"Successful {authEvent.Action} for user {authEvent.UserId}"
+                    : $"Failed {authEvent.Action} for user {authEvent.UserId}: {authEvent.Details}",
+                authEvent.UserId,
+                new
+                {
+                    authEvent.Action,
+                    authEvent.Success,
+                    authEvent.Details,
+                    authEvent.IpAddress,
+                    authEvent.UserAgent,
+                    authEvent.Timestamp
+                });
+
+            if (!authEvent.Success)
+            {
+                _logger.LogWarning(
+                    "Failed authentication event recorded: UserId={UserId}, Action={Action}, Details={Details}, IP={IP}",
+                    authEvent.UserId, authEvent.Action, authEvent.Details, authEvent.IpAddress);
+            }
+
+            // Yield to maintain async contract; structured logger calls above are synchronous
+            await Task.Yield();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to store audit event for user {UserId}, action {Action}", authEvent.UserId, authEvent.Action);
+        }
     }
 }
 

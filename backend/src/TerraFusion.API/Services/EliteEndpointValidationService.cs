@@ -342,8 +342,23 @@ public class EliteEndpointValidationService : BackgroundService
     /// </summary>
     private async Task GenerateValidationReportAsync(List<EndpointTestResult> results, long totalTimeMs)
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
+        // Log validation summary to audit trail via scoped service
+        try
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var auditLogger = scope.ServiceProvider.GetService<TerraFusion.Abstractions.Interfaces.IAuditLogger>();
+            if (auditLogger != null)
+            {
+                var passed = results.Count(r => r.Success);
+                await auditLogger.LogAsync("ENDPOINT_VALIDATION",
+                    $"Validated {results.Count} endpoints: {passed} passed, {results.Count - passed} failed in {totalTimeMs}ms", passed == results.Count);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Could not log validation to audit trail");
+        }
+
         var successCount = results.Count(r => r.Success);
         var totalCount = results.Count;
         var successRate = totalCount > 0 ? (successCount / (double)totalCount) * 100 : 0;

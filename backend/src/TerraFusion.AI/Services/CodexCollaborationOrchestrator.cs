@@ -139,9 +139,10 @@ public class CodexCollaborationOrchestrator : ICodexCollaborationOrchestrator
 
             if (_emailEnabled && alert.Level == "Critical")
             {
-                // Critical alerts trigger email notifications
+                // Critical alerts trigger immediate email notification
+                var safeCountyId = countyId ?? "System-Wide";
                 tasks.Add(SafeExecuteAsync(
-                    async () => await Task.CompletedTask, // Email handled by background service
+                    () => _emailService.SendAlertNotificationAsync(alert, safeCountyId),
                     "Email critical alert"));
             }
 

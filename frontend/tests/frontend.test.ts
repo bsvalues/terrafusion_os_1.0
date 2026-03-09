@@ -43,8 +43,7 @@ describe.skip('frontend Government Backend Tests', () => {
 
   describe('Data Integrity', () => {
     it('should maintain government data consistency', async () => {
-      // Test government data validation and consistency
-      expect(true).toBe(true); // Placeholder for actual tests
+      global.testGovernmentAPI.compliance.testDataConsistency('frontend');
     });
   });
 });

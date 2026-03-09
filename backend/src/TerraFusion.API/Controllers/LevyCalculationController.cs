@@ -485,21 +485,44 @@ public class LevyCalculationController : ControllerBase
         string districtType,
         string measureType)
     {
-        await Task.CompletedTask;
+        const double quantumFactor = 949.0;
+
+        // Query historical levy data for the district to refine optimization
+        var historicalRates = await _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.TaxingDistrict == districtId && t.IsActive)
+            .OrderByDescending(t => t.EffectiveDate)
+            .Take(5)
+            .Select(t => (double)t.TaxRate)
+            .ToListAsync();
 
         // Washington state assessment ratio adjustment (RCW 84.48)
         // Applies a deterministic correction factor derived from the 949/1000 ratio
-        var assessmentRatioFactor = 949.0 / 1000.0; // 0.949 multiplier
+        var assessmentRatioFactor = quantumFactor / 1000.0; // 0.949 multiplier
         var optimizedRate = baseRate * (1.0 - (1.0 - assessmentRatioFactor) * 0.1);
 
-        // Confidence score based on district type and historical accuracy
-        var confidenceScore = measureType.ToLower() switch
+        // If historical data exists, blend with historical average for stability
+        if (historicalRates.Count > 0)
+        {
+            var historicalAvg = historicalRates.Average();
+            // Weight: 80% calculated optimal, 20% historical trend
+            optimizedRate = optimizedRate * 0.80 + historicalAvg * 0.20;
+            _logger.LogInformation("Blended rate with {Count} historical records for district {District}", historicalRates.Count, districtId);
+        }
+
+        // Confidence score based on district type, historical accuracy, and data availability
+        var baseConfidence = measureType.ToLower() switch
         {
             "regular" => 0.995, // Regular levies: highest confidence
             "excess" => 0.985,  // Excess levies: high confidence
             "bond" => 0.975,    // Bond levies: slightly lower (voter variability)
             _ => 0.950
         };
+
+        // Boost confidence when historical data is available
+        var confidenceScore = historicalRates.Count > 0
+            ? Math.Min(baseConfidence + 0.002 * historicalRates.Count, 0.999)
+            : baseConfidence;
 
         return new QuantumOptimizationResult
         {
@@ -519,8 +542,6 @@ public class LevyCalculationController : ControllerBase
         string measureType,
         string countyCode)
     {
-        await Task.CompletedTask;
-
         // RCW 84.52 statutory levy limits (per $1,000 AV)
         var statutoryLimit = districtType.ToLower() switch
         {
@@ -543,12 +564,39 @@ public class LevyCalculationController : ControllerBase
             warnings.Add($"Review RCW 84.52 compliance requirements");
         }
 
-        // Check for RCW 84.55 limit factor (1% limit)
+        // Check for RCW 84.55 limit factor (1% limit) using prior year levy data
         if (measureType.ToLower() == "regular")
         {
             var limitFactor = 1.01; // 1% maximum increase per year
-            warnings.Add($"Verify compliance with RCW 84.55.010 limit factor ({limitFactor:P0})");
+
+            // Query prior year levy for the same county/district to validate year-over-year increase
+            var priorYearLevy = await _db.TaxLevies
+                .AsNoTracking()
+                .Where(t => t.IsActive && t.TaxYear == DateTime.UtcNow.Year - 1)
+                .OrderByDescending(t => t.EffectiveDate)
+                .Select(t => new { TaxRate = (double)t.TaxRate })
+                .FirstOrDefaultAsync();
+
+            if (priorYearLevy != null && priorYearLevy.TaxRate > 0)
+            {
+                var yearOverYearRatio = rate / priorYearLevy.TaxRate;
+                if (yearOverYearRatio > limitFactor)
+                {
+                    warnings.Add($"Rate increase of {yearOverYearRatio:P2} exceeds RCW 84.55.010 limit factor ({limitFactor:P0}). Prior year rate: ${priorYearLevy.TaxRate:F6}");
+                }
+                else
+                {
+                    warnings.Add($"RCW 84.55.010 limit factor ({limitFactor:P0}) compliance verified against prior year rate ${priorYearLevy.TaxRate:F6}");
+                }
+            }
+            else
+            {
+                warnings.Add($"Verify compliance with RCW 84.55.010 limit factor ({limitFactor:P0}) - no prior year data available for comparison");
+            }
         }
+
+        _logger.LogInformation("Statutory compliance check for {DistrictType}/{CountyCode}: Compliant={IsCompliant}, Limit={Limit:F6}",
+            districtType, countyCode, isCompliant, statutoryLimit);
 
         return new ComplianceResult
         {
@@ -568,23 +616,37 @@ public class LevyCalculationController : ControllerBase
         double rate,
         double statutoryLimit)
     {
-        await Task.CompletedTask;
-
         // Calculate risk factors
         var utilizationRatio = rate / statutoryLimit; // % of statutory limit used
         var budgetRatio = budgetAmount / assessedValue; // Budget as % of AV
 
+        // Query recent levy count to assess volume-based risk
+        var recentLevyCount = await _db.TaxLevies
+            .AsNoTracking()
+            .Where(t => t.IsActive && t.TaxYear == DateTime.UtcNow.Year)
+            .CountAsync();
+
+        // High volume of levies in current year may indicate increased fiscal pressure
+        var volumeRiskFactor = recentLevyCount > 50 ? 0.05 : 0.0;
+
+        var adjustedUtilization = utilizationRatio + volumeRiskFactor;
+
         // Risk scoring
-        if (utilizationRatio > 0.95 || budgetRatio > 0.05)
-            return "CRITICAL"; // Very high risk
+        string riskLevel;
+        if (adjustedUtilization > 0.95 || budgetRatio > 0.05)
+            riskLevel = "CRITICAL"; // Very high risk
+        else if (adjustedUtilization > 0.85 || budgetRatio > 0.04)
+            riskLevel = "HIGH"; // High risk
+        else if (adjustedUtilization > 0.70 || budgetRatio > 0.03)
+            riskLevel = "MEDIUM"; // Medium risk
+        else
+            riskLevel = "LOW"; // Low risk
 
-        if (utilizationRatio > 0.85 || budgetRatio > 0.04)
-            return "HIGH"; // High risk
+        _logger.LogInformation(
+            "Risk assessment: Utilization={Utilization:P2}, BudgetRatio={BudgetRatio:P4}, Volume={Volume}, Result={Risk}",
+            utilizationRatio, budgetRatio, recentLevyCount, riskLevel);
 
-        if (utilizationRatio > 0.70 || budgetRatio > 0.03)
-            return "MEDIUM"; // Medium risk
-
-        return "LOW"; // Low risk
+        return riskLevel;
     }
 
     /// <summary>

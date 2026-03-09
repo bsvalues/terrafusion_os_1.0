@@ -184,19 +184,26 @@ public class EliteProductionLauncherService : BackgroundService
     /// </summary>
     private async Task StopApiProcessAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         if (_apiProcess != null && !_apiProcess.HasExited)
         {
             try
             {
                 _logger.LogInformation("🛑 Stopping API process gracefully...");
 
-                // Send Ctrl+C signal for graceful shutdown
+                // Send close signal for graceful shutdown
                 _apiProcess.CloseMainWindow();
 
-                // Wait for graceful shutdown
-                var gracefulShutdown = _apiProcess.WaitForExit(30000); // 30 seconds
+                // Wait for graceful shutdown asynchronously
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                try
+                {
+                    await _apiProcess.WaitForExitAsync(cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Timeout reached
+                }
+                var gracefulShutdown = _apiProcess.HasExited;
 
                 if (!gracefulShutdown)
                 {

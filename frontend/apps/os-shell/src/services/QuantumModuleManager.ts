@@ -7,6 +7,7 @@
  */
 
 import { moduleAPI } from './moduleAPI';
+import { getToken } from '@/auth/authStorage';
 
 export interface QuantumModule {
   id: string;
@@ -235,12 +236,13 @@ class QuantumModuleManagerService {
       // Create mounting element if not provided
       const mountElement = targetElement || this.createModuleContainer(module);
 
-      // Create quantum loading context
+      // Create quantum loading context from auth session
+      const sessionClaims = this.getSessionClaims();
       const context: ModuleLoadingContext = {
-        countyId: 'default', // TODO: Get from user session
+        countyId: sessionClaims.countyId,
         sessionId: this.generateSessionId(),
-        permissions: ['read', 'write', 'execute'], // TODO: Get from user permissions
-        securityLevel: 'STANDARD', // TODO: Get from security context
+        permissions: sessionClaims.permissions,
+        securityLevel: sessionClaims.securityLevel,
         quantumOptimization: 949, // Golden quantum factor
       };
 
@@ -345,6 +347,95 @@ class QuantumModuleManagerService {
 
     document.body.appendChild(container);
     return container;
+  }
+
+  /**
+   * Extract session claims (countyId, permissions, securityLevel) from the
+   * current auth token.  Falls back to safe read-only defaults when no token
+   * is available (e.g. during development or before login).
+   */
+  private getSessionClaims(): {
+    countyId: string;
+    permissions: string[];
+    securityLevel: 'STANDARD' | 'ELEVATED' | 'MAXIMUM';
+  } {
+    const DEFAULT_COUNTY = 'benton';
+    const DEFAULT_PERMISSIONS: string[] = ['read'];
+    const DEFAULT_SECURITY: 'STANDARD' | 'ELEVATED' | 'MAXIMUM' = 'STANDARD';
+
+    try {
+      const token = getToken();
+      if (!token) {
+        return { countyId: DEFAULT_COUNTY, permissions: DEFAULT_PERMISSIONS, securityLevel: DEFAULT_SECURITY };
+      }
+
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return { countyId: DEFAULT_COUNTY, permissions: DEFAULT_PERMISSIONS, securityLevel: DEFAULT_SECURITY };
+      }
+
+      // Base64url decode
+      let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const pad = base64.length % 4;
+      if (pad) base64 += '='.repeat(4 - pad);
+
+      const payload = JSON.parse(atob(base64));
+
+      const countyId =
+        payload.county_id ?? payload.countyId ?? payload.county ?? DEFAULT_COUNTY;
+
+      // Derive permissions from roles
+      const rawRoles: string[] = Array.isArray(payload.roles)
+        ? payload.roles
+        : typeof payload.role === 'string'
+          ? [payload.role]
+          : [];
+
+      const permissions =
+        rawRoles.length > 0
+          ? this.derivePermissionsFromRoles(rawRoles)
+          : DEFAULT_PERMISSIONS;
+
+      // Derive security level from roles
+      const securityLevel = this.deriveSecurityLevel(rawRoles);
+
+      return { countyId, permissions, securityLevel };
+    } catch {
+      return { countyId: DEFAULT_COUNTY, permissions: DEFAULT_PERMISSIONS, securityLevel: DEFAULT_SECURITY };
+    }
+  }
+
+  /**
+   * Map role names to concrete module permissions.
+   */
+  private derivePermissionsFromRoles(roles: string[]): string[] {
+    const perms = new Set<string>(['read']);
+    for (const role of roles) {
+      const r = role.toLowerCase();
+      if (r === 'admin' || r === 'administrator' || r === 'sysadmin') {
+        perms.add('read');
+        perms.add('write');
+        perms.add('execute');
+        perms.add('admin');
+      } else if (r === 'assessor' || r === 'editor' || r === 'manager') {
+        perms.add('read');
+        perms.add('write');
+        perms.add('execute');
+      } else if (r === 'viewer' || r === 'auditor') {
+        perms.add('read');
+      }
+    }
+    return Array.from(perms);
+  }
+
+  /**
+   * Derive the security level from the user's roles.
+   */
+  private deriveSecurityLevel(roles: string[]): 'STANDARD' | 'ELEVATED' | 'MAXIMUM' {
+    const lower = roles.map((r) => r.toLowerCase());
+    if (lower.includes('sysadmin') || lower.includes('administrator')) return 'MAXIMUM';
+    if (lower.includes('admin') || lower.includes('manager')) return 'ELEVATED';
+    return 'STANDARD';
   }
 
   /**

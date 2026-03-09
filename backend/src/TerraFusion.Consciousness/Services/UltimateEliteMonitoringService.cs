@@ -397,7 +397,10 @@ namespace TerraFusion.Consciousness.Services
                 _benchmarks.TryAdd(benchmark.Key, benchmark.Value);
             }
 
-            await Task.CompletedTask;
+            // Benchmark initialization is purely in-memory; async signature kept for
+            // future persistence to distributed cache or database.
+            _logger.LogDebug("Initialized {Count} championship benchmarks", _benchmarks.Count);
+            await Task.Yield();
         }
 
         /// <summary>
@@ -440,7 +443,10 @@ namespace TerraFusion.Consciousness.Services
                 _healingProtocols.TryAdd(protocol.Key, protocol.Value);
             }
 
-            await Task.CompletedTask;
+            // Protocol registration is purely in-memory; async signature kept for
+            // future persistence or remote protocol registry integration.
+            _logger.LogDebug("Deployed {Count} autonomous healing protocols", _healingProtocols.Count);
+            await Task.Yield();
         }
 
         /// <summary>

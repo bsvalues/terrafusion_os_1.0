@@ -180,18 +180,43 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
             var email = User.FindFirst("email")?.Value;
+            var userId = User.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                _logger.LogWarning("Profile request with missing email claim from user {UserId}", userId);
+                return Unauthorized(new { message = "Invalid token claims" });
+            }
+
             var roles = User.FindAll("role").Select(c => c.Value).ToArray();
+
+            // Retrieve user roles from security service for authoritative role list
+            var authorityRoles = await _securityService.GetUserRolesAsync(email);
+            var mergedRoles = roles.Union(authorityRoles).Distinct().ToArray();
+
+            // Check account status
+            var isLocked = await _securityService.IsAccountLockedAsync(email);
+            if (isLocked)
+            {
+                _logger.LogWarning("Profile request for locked account: {Email}", email);
+                await _securityService.LogSecurityEventAsync("LOCKED_ACCOUNT_PROFILE_REQUEST",
+                    $"Profile request for locked account: {email}");
+                return Forbid();
+            }
+
+            await _securityService.LogSecurityEventAsync("PROFILE_ACCESS",
+                $"User profile accessed: {email}");
+
+            _logger.LogInformation("Profile retrieved for user {Email}", email);
 
             return Ok(new UserProfile
             {
-                Email = email!,
-                Roles = roles,
-                LastLogin = DateTime.UtcNow // In production, get from database
+                Email = email,
+                Roles = mergedRoles,
+                LastLogin = DateTime.UtcNow
             });
         }
         catch (Exception ex)

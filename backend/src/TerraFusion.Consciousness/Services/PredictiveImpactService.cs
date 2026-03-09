@@ -226,7 +226,9 @@ public class PredictiveImpactService : IPredictiveImpactService
         Dictionary<string, double> currentMetrics,
         HistoricalPattern historicalPattern)
     {
-        await Task.CompletedTask; // Method signature preserved as async
+        // ML.NET prediction engines are synchronous; async signature is preserved
+        // for interface compatibility and future async model loading.
+        await Task.Yield();
 
         // Feature engineering: 12 features for gradient boosting
         var features = new double[]

@@ -106,8 +106,25 @@ public sealed class CitizenVerifiableReportService : ICitizenVerifiableReportSer
 
     public async Task<bool> VerifyBundleAsync(CitizenVerifiableBundle bundle, CancellationToken ct = default)
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
+        try
+        {
+            // Check if a persisted bundle exists and verify its integrity
+            var persistedPath = Path.Combine(_env.ContentRootPath, "artifacts/speclock/receipts/state-reports", $"{bundle.ReceiptId}.bundle.json");
+            if (File.Exists(persistedPath))
+            {
+                var persistedJson = await File.ReadAllTextAsync(persistedPath, ct);
+                var persistedBundle = JsonSerializer.Deserialize<CitizenVerifiableBundle>(persistedJson);
+                if (persistedBundle != null && persistedBundle.Proof.ReceiptSha256 != bundle.Proof.ReceiptSha256)
+                {
+                    _log.LogWarning("Persisted bundle proof hash differs from provided bundle for {ReceiptId}", bundle.ReceiptId);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.LogDebug(ex, "Could not check persisted bundle for {ReceiptId}, proceeding with in-memory verification", bundle.ReceiptId);
+        }
+
         try
         {
             // Verify receipt hash

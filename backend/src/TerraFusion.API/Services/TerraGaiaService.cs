@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data;
 using TerraFusion.Abstractions.Interfaces;
@@ -163,13 +164,51 @@ public class TerraGaiaService : ITerraGaiaService
 
     public async Task<SystemOrchestrationStatus> GetSystemOrchestrationStatusAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
-        return new SystemOrchestrationStatus
+        try
         {
-            TotalSystemsCoordinated = 12,
-            OverallHealthScore = 0.967
-        };
+            _logger.LogDebug("Retrieving system orchestration status from database context");
+
+            // Query actual system state from database
+            var propertyCount = await _context.Properties.CountAsync();
+            var countyCount = await _context.Counties.CountAsync();
+            var aiModelCount = await _context.AIModels.CountAsync();
+
+            // Calculate health based on actual data availability
+            var hasProperties = propertyCount > 0;
+            var hasCounties = countyCount > 0;
+            var systemsCoordinated = 0;
+            var healthFactors = new List<double>();
+
+            if (hasProperties) { systemsCoordinated++; healthFactors.Add(1.0); }
+            else { healthFactors.Add(0.5); }
+
+            if (hasCounties) { systemsCoordinated++; healthFactors.Add(1.0); }
+            else { healthFactors.Add(0.5); }
+
+            if (aiModelCount > 0) { systemsCoordinated++; healthFactors.Add(1.0); }
+            else { healthFactors.Add(0.8); }
+
+            // Core system tiers always counted
+            systemsCoordinated += 3; // Kernel, Shell, Consciousness tiers
+            healthFactors.Add(1.0); // Kernel is running (we're executing this code)
+
+            var overallHealth = healthFactors.Count > 0 ? healthFactors.Average() : 0.5;
+
+            return new SystemOrchestrationStatus
+            {
+                TotalSystemsCoordinated = systemsCoordinated,
+                OverallHealthScore = Math.Round(overallHealth, 3)
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving system orchestration status, returning degraded status");
+            return new SystemOrchestrationStatus
+            {
+                TotalSystemsCoordinated = 3, // Minimum: the three core tiers
+                OverallHealthScore = 0.5
+            };
+        }
     }
 
     private string GenerateIntelligentResponse(string query)
