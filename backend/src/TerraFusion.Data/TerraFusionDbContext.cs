@@ -127,6 +127,22 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<Workflow> Workflows { get; set; }
   public DbSet<WorkflowExecution> WorkflowExecutions { get; set; }
 
+  // TerraClerk — County Clerk Recording (R3 CX)
+  public DbSet<ClerkDocument> ClerkDocuments { get; set; }
+  public DbSet<TitleChainEntry> TitleChainEntries { get; set; }
+  public DbSet<ClerkLien> ClerkLiens { get; set; }
+
+  // TerraTreasury — Tax Collection (R3 CX)
+  public DbSet<TaxStatement> TaxStatements { get; set; }
+  public DbSet<TaxPayment> TaxPayments { get; set; }
+  public DbSet<DelinquencyRecord> DelinquencyRecords { get; set; }
+  public DbSet<InstallmentPlan> InstallmentPlans { get; set; }
+  public DbSet<TaxSale> TaxSales { get; set; }
+
+  // TerraAudit — Roll Audit & Compliance (R3 CX)
+  public DbSet<AuditFinding> AuditFindings { get; set; }
+  public DbSet<AuditReconciliation> AuditReconciliations { get; set; }
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)
@@ -502,6 +518,104 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
 
     // Apply all configurations from Configurations folder
     modelBuilder.ApplyConfiguration(new NotificationPreferencesConfiguration());
+
+    // ── TerraClerk entities (R3 CX) ──────────────────────────────────
+    modelBuilder.Entity<ClerkDocument>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.RecordingNumber).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.DocumentType).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.ParcelId).HasMaxLength(50);
+      entity.Property(e => e.Grantor).IsRequired().HasMaxLength(200);
+      entity.Property(e => e.Grantee).IsRequired().HasMaxLength(200);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+      entity.HasIndex(e => new { e.CountyId, e.RecordingNumber }).IsUnique();
+    });
+
+    modelBuilder.Entity<TitleChainEntry>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.TransferType).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.FromParty).IsRequired().HasMaxLength(200);
+      entity.Property(e => e.ToParty).IsRequired().HasMaxLength(200);
+      entity.HasOne(e => e.Document).WithMany().HasForeignKey(e => e.DocumentId);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId, e.TransferDate });
+    });
+
+    modelBuilder.Entity<ClerkLien>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.LienType).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.LienHolder).IsRequired().HasMaxLength(200);
+      entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+    });
+
+    // ── TerraTreasury entities (R3 CX) ──────────────────────────────
+    modelBuilder.Entity<TaxStatement>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId, e.TaxYear }).IsUnique();
+    });
+
+    modelBuilder.Entity<TaxPayment>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ReceiptId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.PaymentMethod).HasMaxLength(30);
+      entity.HasOne(e => e.Statement).WithMany(s => s.Payments).HasForeignKey(e => e.StatementId).IsRequired(false);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+      entity.HasIndex(e => new { e.CountyId, e.ReceiptId }).IsUnique();
+    });
+
+    modelBuilder.Entity<DelinquencyRecord>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId }).IsUnique();
+    });
+
+    modelBuilder.Entity<InstallmentPlan>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.Status).HasMaxLength(20);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+    });
+
+    modelBuilder.Entity<TaxSale>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.Status).HasMaxLength(20);
+      entity.Property(e => e.DelinquentYears).HasMaxLength(500);
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+    });
+
+    // ── TerraAudit entities (R3 CX) ─────────────────────────────────
+    modelBuilder.Entity<AuditFinding>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.ParcelId).HasMaxLength(50);
+      entity.Property(e => e.FindingType).IsRequired().HasMaxLength(50);
+      entity.Property(e => e.Description).IsRequired().HasMaxLength(2000);
+      entity.Property(e => e.Severity).HasMaxLength(20);
+      entity.Property(e => e.Status).HasMaxLength(20);
+      entity.HasIndex(e => new { e.CountyId, e.TaxYear });
+      entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+    });
+
+    modelBuilder.Entity<AuditReconciliation>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.Offices).HasMaxLength(500);
+      entity.Property(e => e.Status).HasMaxLength(20);
+      entity.HasIndex(e => new { e.CountyId, e.TaxYear });
+    });
 
     // Configure encryption for sensitive fields
     ConfigureEncryption(modelBuilder);
