@@ -24,7 +24,7 @@ const HarrisPacsPlugin = ({ pluginApi }) => {
     try {
       setImportRunning(true);
       const result = await pluginApi.invoke('harris.startImport');
-      console.log('Import started:', result);
+      // Import started successfully — status will be refreshed below
       // Refresh status after starting import
       setTimeout(() => {
         loadImportStatus();

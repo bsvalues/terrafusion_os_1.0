@@ -183,7 +183,7 @@ export function useNotebookHub(
 
         // User joined notebook
         connection.on('UserJoined', (data: { userName: string; joinedAt: string }) => {
-          console.log(`👤 User joined: ${data.userName}`);
+          console.debug(`👤 User joined: ${data.userName}`);
           setState((prev) => ({
             ...prev,
             activeUsers: [...prev.activeUsers, data.userName],
@@ -192,7 +192,7 @@ export function useNotebookHub(
 
         // User left notebook
         connection.on('UserLeft', (data: { userName: string; leftAt: string }) => {
-          console.log(`👤 User left: ${data.userName}`);
+          console.debug(`👤 User left: ${data.userName}`);
           setState((prev) => ({
             ...prev,
             activeUsers: prev.activeUsers.filter((u) => u !== data.userName),
@@ -201,7 +201,7 @@ export function useNotebookHub(
 
         // Cell updated
         connection.on('CellUpdated', (update: CellUpdate) => {
-          console.log(`📝 Cell ${update.cellIndex} updated by ${update.updatedBy}`);
+          console.debug(`📝 Cell ${update.cellIndex} updated by ${update.updatedBy}`);
           setState((prev) => ({
             ...prev,
             cellUpdates: [...prev.cellUpdates, update],
@@ -217,7 +217,7 @@ export function useNotebookHub(
             executionTime: number;
             executedBy: string;
           }) => {
-            console.log(
+            console.debug(
               `▶️ Cell ${data.cellIndex} executed in ${data.executionTime}ms by ${data.executedBy}`
             );
           }
@@ -227,7 +227,7 @@ export function useNotebookHub(
         connection.on(
           'CellAdded',
           (data: { cellIndex: number; cellType: string; addedBy: string }) => {
-            console.log(`➕ Cell added at index ${data.cellIndex} by ${data.addedBy}`);
+            console.debug(`➕ Cell added at index ${data.cellIndex} by ${data.addedBy}`);
           }
         );
 
@@ -235,7 +235,7 @@ export function useNotebookHub(
         connection.on(
           'CellDeleted',
           (data: { cellIndex: number; deletedBy: string }) => {
-            console.log(`🗑️ Cell ${data.cellIndex} deleted by ${data.deletedBy}`);
+            console.debug(`🗑️ Cell ${data.cellIndex} deleted by ${data.deletedBy}`);
           }
         );
 
@@ -260,7 +260,7 @@ export function useNotebookHub(
             userName: string;
             timestamp: string;
           }) => {
-            console.log(`💬 Comment on cell ${data.cellIndex} by ${data.userName}`);
+            console.debug(`💬 Comment on cell ${data.cellIndex} by ${data.userName}`);
           }
         );
 

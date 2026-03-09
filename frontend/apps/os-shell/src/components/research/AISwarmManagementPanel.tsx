@@ -346,7 +346,7 @@ export const AISwarmManagementPanel: React.FC = () => {
       // Reload swarm data after optimization
       await loadSwarmData();
 
-      console.log('Swarm optimization complete:', data);
+      console.debug('Swarm optimization complete:', data);
     } catch (error) {
       console.error('Failed to optimize swarm:', error);
     }

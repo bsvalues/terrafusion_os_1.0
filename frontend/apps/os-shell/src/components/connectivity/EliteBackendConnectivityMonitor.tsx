@@ -180,7 +180,7 @@ const EliteBackendConnectivityMonitor: React.FC = () => {
       setConnections((prev) =>
         prev.map((conn) => {
           if (conn.status === 'disconnected' || conn.status === 'retrying') {
-            console.log(`🔄 [Elite Backend] Auto-reconnecting to ${conn.name}`);
+            console.debug(`🔄 [Elite Backend] Auto-reconnecting to ${conn.name}`);
             return {
               ...conn,
               status: 'retrying',
@@ -223,7 +223,7 @@ const EliteBackendConnectivityMonitor: React.FC = () => {
 
   const optimizeConnections = useCallback(async () => {
     setIsOptimizing(true);
-    console.log('🚀 [Elite Backend] Running connection optimization...');
+    console.debug('🚀 [Elite Backend] Running connection optimization...');
 
     // Simulate optimization process
     await new Promise((resolve) => setTimeout(resolve, 3000));

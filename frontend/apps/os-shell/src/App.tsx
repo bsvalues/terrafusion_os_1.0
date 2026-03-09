@@ -15,6 +15,7 @@
  */
 
 import { useEffect } from 'react';
+import logger from './utils/logger';
 
 // ============================================================================
 // CSS IMPORTS - ORDER IS CRITICAL (DO NOT REORDER - BREAKS STYLING)
@@ -85,9 +86,9 @@ function App() {
     setAllApps(startMenuApps);
     setPinnedApps(startMenuApps.filter((_, i) => MODULES[i].isCore));
 
-    console.log('🚀 TerraFusion OS initialized');
-    console.log(`📦 ${MODULES.length} modules registered`);
-    console.log('📡 IPC bridge installed');
+    logger.info('TerraFusion OS initialized');
+    logger.info(`${MODULES.length} modules registered`);
+    logger.info('IPC bridge installed');
 
     return () => {
       cleanupIpc();

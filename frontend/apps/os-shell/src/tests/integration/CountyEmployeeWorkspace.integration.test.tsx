@@ -6,6 +6,6 @@
 // Skip: MSW (Mock Service Worker) requires TextEncoder polyfill not available in this Jest setup
 describe.skip('CountyEmployeeWorkspace Integration Tests', () => {
   it('placeholder - requires MSW polyfill configuration', () => {
-    expect(true).toBe(true);
+    expect(typeof globalThis.TextEncoder).not.toBe('undefined');
   });
 });

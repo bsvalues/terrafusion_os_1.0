@@ -44,19 +44,19 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
 
       // Connection state change handlers
       connection.onclose((error) => {
-        console.log('SignalR connection closed:', error);
+        console.debug('SignalR connection closed:', error);
         setConnectionState(signalR.HubConnectionState.Disconnected);
         setError(error?.message || 'Connection closed');
       });
 
       connection.onreconnecting((error) => {
-        console.log('SignalR reconnecting:', error);
+        console.debug('SignalR reconnecting:', error);
         setConnectionState(signalR.HubConnectionState.Reconnecting);
         setError(error?.message || null);
       });
 
       connection.onreconnected((connectionId) => {
-        console.log('SignalR reconnected:', connectionId);
+        console.debug('SignalR reconnected:', connectionId);
         setConnectionState(signalR.HubConnectionState.Connected);
         setError(null);
       });
@@ -68,7 +68,7 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
       setConnectionState(connection.state);
       setError(null);
 
-      console.log('SignalR connected to:', fullHubUrl);
+      console.debug('SignalR connected to:', fullHubUrl);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown connection error';
       console.error('SignalR connection failed:', errorMessage);

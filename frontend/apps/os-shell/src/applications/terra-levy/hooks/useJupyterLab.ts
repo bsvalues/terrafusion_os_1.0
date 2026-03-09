@@ -71,7 +71,7 @@ export const useJupyterLab = (userId: string, department: string) => {
   // Initialize Jupyter Lab connection
   const initializeConnection = useCallback(async () => {
     try {
-      console.log('Connecting to TerraLevy Jupyter Lab server...');
+      console.debug('Connecting to TerraLevy Jupyter Lab server...');
 
       // In production, this would connect to actual Jupyter Lab server
       // Using Jupyter's REST API and WebSocket connections
@@ -84,7 +84,7 @@ export const useJupyterLab = (userId: string, department: string) => {
       wsRef.current = new WebSocket(`${jupyterUrl.replace('http', 'ws')}/jupyter-ws`);
 
       wsRef.current.onopen = () => {
-        console.log('Jupyter WebSocket connected');
+        console.debug('Jupyter WebSocket connected');
         setIsConnected(true);
         setConnectionError(null);
 
@@ -106,7 +106,7 @@ export const useJupyterLab = (userId: string, department: string) => {
       };
 
       wsRef.current.onclose = () => {
-        console.log('Jupyter WebSocket disconnected');
+        console.debug('Jupyter WebSocket disconnected');
         setIsConnected(false);
       };
 
@@ -125,7 +125,7 @@ export const useJupyterLab = (userId: string, department: string) => {
       // Load quantum computing resources
       await loadQuantumResources();
 
-      console.log('Jupyter Lab connection initialized successfully');
+      console.debug('Jupyter Lab connection initialized successfully');
     } catch (error) {
       console.error('Failed to initialize Jupyter Lab connection:', error);
       setConnectionError('Failed to connect to Jupyter Lab');
@@ -152,7 +152,7 @@ export const useJupyterLab = (userId: string, department: string) => {
         handleCollaborationUpdate(message);
         break;
       default:
-        console.log('Unknown WebSocket message type:', message.type);
+        console.debug('Unknown WebSocket message type:', message.type);
     }
   }, []);
 
@@ -292,7 +292,7 @@ export const useJupyterLab = (userId: string, department: string) => {
         // In production, create notebook via Jupyter API: POST /api/contents
         setNotebooks((prev) => [newNotebook, ...prev]);
 
-        console.log('Created notebook:', newNotebook.name);
+        console.debug('Created notebook:', newNotebook.name);
         return newNotebook;
       } catch (error) {
         console.error('Failed to create notebook:', error);
@@ -633,7 +633,7 @@ This notebook demonstrates TerraLevy's quantum-enhanced ${template} capabilities
 
   // Handle collaboration updates
   const handleCollaborationUpdate = useCallback((message: any) => {
-    console.log('Collaboration update:', message);
+    console.debug('Collaboration update:', message);
     // Handle real-time collaboration updates
   }, []);
 
@@ -645,7 +645,7 @@ This notebook demonstrates TerraLevy's quantum-enhanced ${template} capabilities
         if (!notebook) throw new Error('Notebook not found');
 
         // In production, save via Jupyter API: PUT /api/contents/{path}
-        console.log('Saving notebook:', notebook.name);
+        console.debug('Saving notebook:', notebook.name);
 
         // Update last modified time
         const updatedNotebook = {

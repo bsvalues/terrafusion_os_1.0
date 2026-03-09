@@ -13,6 +13,7 @@
 
 import * as signalR from '@microsoft/signalr';
 import { getViteEnv } from '../env/getViteEnv';
+import logger from '../utils/logger';
 
 export type HubConnectionState = 'Disconnected' | 'Connecting' | 'Connected' | 'Reconnecting' | 'Disconnected';
 
@@ -48,7 +49,7 @@ export class SignalRClient {
    */
   async connect(): Promise<void> {
     if (this.connection) {
-      console.warn('SignalR connection already exists');
+      logger.warn('SignalR connection already exists');
       return;
     }
 
@@ -70,27 +71,27 @@ export class SignalRClient {
 
       // Register lifecycle event handlers
       this.connection.onclose((error) => {
-        console.log('SignalR connection closed', error);
+        logger.info('SignalR connection closed', error);
         this.options.onDisconnected?.(error);
       });
 
       this.connection.onreconnecting((error) => {
-        console.log('SignalR reconnecting...', error);
+        logger.info('SignalR reconnecting...', error);
         this.options.onReconnecting?.(error);
       });
 
       this.connection.onreconnected((connectionId) => {
-        console.log('SignalR reconnected', connectionId);
+        logger.info('SignalR reconnected', connectionId);
         this.options.onReconnected?.(connectionId);
       });
 
       // Start connection
       await this.connection.start();
-      console.log(`SignalR connected to ${this.options.hubUrl}`);
+      logger.info(`SignalR connected to ${this.options.hubUrl}`);
       this.options.onConnected?.();
 
     } catch (error) {
-      console.error('SignalR connection failed:', error);
+      logger.error('SignalR connection failed:', error);
       throw error;
     }
   }
@@ -107,9 +108,9 @@ export class SignalRClient {
       await this.connection.stop();
       this.connection = null;
       this.eventHandlers.clear();
-      console.log('SignalR disconnected');
+      logger.info('SignalR disconnected');
     } catch (error) {
-      console.error('SignalR disconnect error:', error);
+      logger.error('SignalR disconnect error:', error);
       throw error;
     }
   }
@@ -162,7 +163,7 @@ export class SignalRClient {
     try {
       return await this.connection.invoke<T>(methodName, ...args);
     } catch (error) {
-      console.error(`SignalR invoke error (${methodName}):`, error);
+      logger.error(`SignalR invoke error (${methodName}):`, error);
       throw error;
     }
   }
@@ -178,7 +179,7 @@ export class SignalRClient {
     try {
       await this.connection.send(methodName, ...args);
     } catch (error) {
-      console.error(`SignalR send error (${methodName}):`, error);
+      logger.error(`SignalR send error (${methodName}):`, error);
       throw error;
     }
   }
@@ -232,10 +233,10 @@ export class SignalRClientFactory {
       hubUrl: `${getViteEnv().VITE_CONSCIOUSNESS_URL || ''}/hubs/consciousness`,
       accessToken,
       automaticReconnect: true,
-      onConnected: () => console.log('✅ Connected to AI Swarm Hub'),
-      onDisconnected: (error) => console.warn('❌ Disconnected from AI Swarm Hub', error),
-      onReconnecting: () => console.log('🔄 Reconnecting to AI Swarm Hub...'),
-      onReconnected: () => console.log('✅ Reconnected to AI Swarm Hub')
+      onConnected: () => logger.info('Connected to AI Swarm Hub'),
+      onDisconnected: (error) => logger.warn('Disconnected from AI Swarm Hub', error),
+      onReconnecting: () => logger.info('Reconnecting to AI Swarm Hub...'),
+      onReconnected: () => logger.info('Reconnected to AI Swarm Hub')
     });
   }
 
@@ -247,10 +248,10 @@ export class SignalRClientFactory {
       hubUrl: `${getViteEnv().VITE_PERFORMANCE_URL || ''}/hubs/streaming`,
       accessToken,
       automaticReconnect: true,
-      onConnected: () => console.log('✅ Connected to Streaming Analytics Hub'),
-      onDisconnected: (error) => console.warn('❌ Disconnected from Streaming Analytics Hub', error),
-      onReconnecting: () => console.log('🔄 Reconnecting to Streaming Analytics Hub...'),
-      onReconnected: () => console.log('✅ Reconnected to Streaming Analytics Hub')
+      onConnected: () => logger.info('Connected to Streaming Analytics Hub'),
+      onDisconnected: (error) => logger.warn('Disconnected from Streaming Analytics Hub', error),
+      onReconnecting: () => logger.info('Reconnecting to Streaming Analytics Hub...'),
+      onReconnected: () => logger.info('Reconnected to Streaming Analytics Hub')
     });
   }
 
@@ -262,10 +263,10 @@ export class SignalRClientFactory {
       hubUrl: `${getViteEnv().VITE_API_URL || ''}/hubs/oscore`,
       accessToken,
       automaticReconnect: true,
-      onConnected: () => console.log('✅ Connected to System Notifications Hub'),
-      onDisconnected: (error) => console.warn('❌ Disconnected from System Notifications Hub', error),
-      onReconnecting: () => console.log('🔄 Reconnecting to System Notifications Hub...'),
-      onReconnected: () => console.log('✅ Reconnected to System Notifications Hub')
+      onConnected: () => logger.info('Connected to System Notifications Hub'),
+      onDisconnected: (error) => logger.warn('Disconnected from System Notifications Hub', error),
+      onReconnecting: () => logger.info('Reconnecting to System Notifications Hub...'),
+      onReconnected: () => logger.info('Reconnected to System Notifications Hub')
     });
   }
 }

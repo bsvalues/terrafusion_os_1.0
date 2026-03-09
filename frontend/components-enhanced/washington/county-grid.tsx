@@ -190,7 +190,7 @@ export function CountyGrid() {
   })
 
   const handleMigration = (countyName: string) => {
-    console.log(`Initiating Terrafusion migration for ${countyName}`)
+    console.debug(`Initiating Terrafusion migration for ${countyName}`)
     // Migration logic would go here
   }
 

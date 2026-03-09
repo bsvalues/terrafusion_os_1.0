@@ -9,6 +9,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import logger from '../utils/logger';
 import { GENERATED_MODULES } from '../config/generatedModules';
 import { useAgentStore } from '../sentinel/agentStore';
 import { getViteEnv } from '../shared/viteEnv';
@@ -60,9 +61,7 @@ export function useIpcBridge(): void {
 
       setAppBadge: (appId, state, label) => {
         // Badge system not yet implemented - log for now
-        if (env.DEV) {
-          console.log(`[IPC] Badge update: ${appId} → ${state}${label ? ` (${label})` : ''}`);
-        }
+        logger.debug(`[IPC] Badge update: ${appId} → ${state}${label ? ` (${label})` : ''}`);
       },
     };
 
@@ -70,16 +69,12 @@ export function useIpcBridge(): void {
     const cleanup = installIpcBridge(deps);
 
     // Log installation in dev
-    if (env.DEV) {
-      console.log('[IPC] Bridge installed - listening for app messages');
-    }
+    logger.debug('[IPC] Bridge installed - listening for app messages');
 
     return () => {
       cleanup();
       installedRef.current = false;
-      if (env.DEV) {
-        console.log('[IPC] Bridge uninstalled');
-      }
+      logger.debug('[IPC] Bridge uninstalled');
     };
   }, [appendEvents, openWindow]);
 }

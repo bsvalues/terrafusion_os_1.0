@@ -100,7 +100,7 @@ test_infrastructure() {
         "PONG"
 
     run_test "RabbitMQ Broker" \
-        "curl -s -u terrafusion:TerraFusion2024! http://localhost:15672/api/overview" \
+        "curl -s -u ${RABBITMQ_USER:-terrafusion}:${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD must be set} http://localhost:15672/api/overview" \
         "management_version"
 }
 

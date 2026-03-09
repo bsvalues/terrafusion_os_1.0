@@ -81,7 +81,7 @@ export function StrategicMessagingDashboard() {
   }, [])
 
   const handleCampaignLaunch = (segmentId: string) => {
-    console.log(`Launching campaign for ${segmentId} segment`)
+    console.debug(`Launching campaign for ${segmentId} segment`)
   }
 
   return (

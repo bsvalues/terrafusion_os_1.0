@@ -173,7 +173,7 @@ const EliteAIDashboard: React.FC = () => {
 
       if (applicableInsights.length > 0) {
         const insight = applicableInsights[0];
-        console.log(`🤖 [Elite AI] Auto-applying optimization: ${insight.title}`);
+        console.debug(`🤖 [Elite AI] Auto-applying optimization: ${insight.title}`);
 
         // Remove applied insight
         setAIInsights((prev) => prev.filter((i) => i.id !== insight.id));
@@ -195,7 +195,7 @@ const EliteAIDashboard: React.FC = () => {
     const insight = aiInsights.find((i) => i.id === insightId);
     if (!insight) return;
 
-    console.log(`🚀 [Elite AI] Manually applying insight: ${insight.title}`);
+    console.debug(`🚀 [Elite AI] Manually applying insight: ${insight.title}`);
 
     setAIInsights((prev) => prev.filter((i) => i.id !== insightId));
 

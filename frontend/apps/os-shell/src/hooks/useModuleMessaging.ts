@@ -16,7 +16,7 @@ import { Message, useMessageBusStore } from '../stores/messageBusStore';
  *
  * // Listen for messages
  * useSubscription('DATA_UPDATED', (payload, source) => {
- *   console.log('Received update from', source, payload);
+ *   console.debug('Received update from', source, payload);
  * });
  * ```
  */

@@ -139,14 +139,14 @@ export class PerformanceMonitor {
     new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
       const lastEntry = entries[entries.length - 1];
-      console.log('LCP:', lastEntry.startTime);
+      console.debug('LCP:', lastEntry.startTime);
     }).observe({ entryTypes: ['largest-contentful-paint'] });
 
     // First Input Delay (FID)
     new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
       entries.forEach((entry) => {
-        console.log('FID:', entry.processingStart - entry.startTime);
+        console.debug('FID:', entry.processingStart - entry.startTime);
       });
     }).observe({ entryTypes: ['first-input'] });
 
@@ -159,7 +159,7 @@ export class PerformanceMonitor {
           clsValue += entry.value;
         }
       });
-      console.log('CLS:', clsValue);
+      console.debug('CLS:', clsValue);
     }).observe({ entryTypes: ['layout-shift'] });
   }
 }

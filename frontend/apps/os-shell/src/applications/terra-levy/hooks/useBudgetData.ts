@@ -37,7 +37,7 @@ export const useBudgetData = () => {
         wsRef.current = new WebSocket(`${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/budget-updates`);
 
         wsRef.current.onopen = () => {
-          console.log('Connected to budget data stream');
+          console.debug('Connected to budget data stream');
         };
 
         wsRef.current.onmessage = (event) => {
@@ -65,7 +65,7 @@ export const useBudgetData = () => {
         };
 
         wsRef.current.onclose = () => {
-          console.log('WebSocket connection closed');
+          console.debug('WebSocket connection closed');
           // Attempt to reconnect after 5 seconds
           setTimeout(connectWebSocket, 5000);
         };

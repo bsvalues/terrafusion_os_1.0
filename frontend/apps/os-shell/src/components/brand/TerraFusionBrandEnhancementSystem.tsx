@@ -36,7 +36,7 @@ export function TerraFusionBrandEnhancementSystem({
   }, []);
 
   const initializeTerraFusionBrandSystem = () => {
-    console.log('🎨 Initializing TerraFusion Brand Enhancement System...');
+    console.debug('🎨 Initializing TerraFusion Brand Enhancement System...');
 
     // Apply Brand Codex CSS Variables
     applyTerraFusionTokens();
@@ -61,7 +61,7 @@ export function TerraFusionBrandEnhancementSystem({
       applyBrandConsistencyFramework();
     }
 
-    console.log('✅ TerraFusion Brand Enhancement System activated with quantum excellence!');
+    console.debug('✅ TerraFusion Brand Enhancement System activated with quantum excellence!');
   };
 
   const applyTerraFusionTokens = () => {

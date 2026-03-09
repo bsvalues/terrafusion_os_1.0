@@ -55,10 +55,10 @@ export function useSentinel(pollMs = 7000) {
         const prev = lastStatusRef.current;
         lastStatusRef.current = result.status;
         console.groupCollapsed('[Sentinel] status change');
-        console.log('from:', prev, 'to:', result.status);
-        console.log('endpoint:', endpoint);
-        console.log('latencyMs:', result.latencyMs);
-        console.log('warnings:', result.warnings);
+        console.debug('from:', prev, 'to:', result.status);
+        console.debug('endpoint:', endpoint);
+        console.debug('latencyMs:', result.latencyMs);
+        console.debug('warnings:', result.warnings);
         console.groupEnd();
       }
 

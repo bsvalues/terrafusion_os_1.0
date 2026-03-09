@@ -38,12 +38,12 @@ export function ModuleLauncher() {
 
   const handleLaunch = (moduleId: string) => {
     // In a real implementation, this would navigate to the module or open it in a new context
-    console.log(`Launching module: ${moduleId}`)
+    console.debug(`Launching module: ${moduleId}`)
   }
 
   const handleConfigure = (moduleId: string) => {
     // In a real implementation, this would open the module configuration panel
-    console.log(`Configuring module: ${moduleId}`)
+    console.debug(`Configuring module: ${moduleId}`)
   }
 
   return (

@@ -18,7 +18,7 @@ export const bridgeService = {
         'x-tf-bridge-key': BRIDGE_KEY,
       };
 
-      console.log(`[Bridge] Hailing frequency open to ${BRIDGE_URL}/v1/parcels/${parcelId}`);
+      console.debug(`[Bridge] Hailing frequency open to ${BRIDGE_URL}/v1/parcels/${parcelId}`);
 
       const response = await fetch(`${BRIDGE_URL}/v1/parcels/${parcelId}`, {
         method: 'GET',

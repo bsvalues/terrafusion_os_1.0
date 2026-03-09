@@ -98,15 +98,15 @@ setup_environment() {
 TERRAFUSION_ENVIRONMENT=${DEPLOYMENT_ENV}
 ASPNETCORE_ENVIRONMENT=${DEPLOYMENT_ENV^}
 POSTGRES_USER=terrafusion
-POSTGRES_PASSWORD=TerraFusion2024!
+POSTGRES_PASSWORD=$(openssl rand -base64 24 2>/dev/null || pwgen -s 32 1)
 POSTGRES_DB=terrafusion_os
-REDIS_PASSWORD=TerraFusion2024!
+REDIS_PASSWORD=$(openssl rand -base64 24 2>/dev/null || pwgen -s 32 1)
 RABBITMQ_USER=terrafusion
-RABBITMQ_PASSWORD=TerraFusion2024!
+RABBITMQ_PASSWORD=$(openssl rand -base64 24 2>/dev/null || pwgen -s 32 1)
 GRAFANA_USER=admin
-GRAFANA_PASSWORD=TerraFusion2024!
-JWT_SECRET=$(openssl rand -base64 32 2>/dev/null || echo "dev-jwt-secret-replace-me")
-PGADMIN_PASSWORD=TerraFusion2024!
+GRAFANA_PASSWORD=$(openssl rand -base64 24 2>/dev/null || pwgen -s 32 1)
+JWT_SECRET=$(openssl rand -base64 32 2>/dev/null || pwgen -s 48 1)
+PGADMIN_PASSWORD=$(openssl rand -base64 24 2>/dev/null || pwgen -s 32 1)
 EOF
         success "Created .env"
     else
@@ -165,7 +165,7 @@ start_infrastructure() {
 
     echo -n "  RabbitMQ: "
     for i in $(seq 1 30); do
-        if curl -sf -u "${RABBITMQ_USER:-terrafusion}:${RABBITMQ_PASSWORD:-TerraFusion2024!}" http://localhost:15672/api/overview | grep -q management_version; then break; fi
+        if curl -sf -u "${RABBITMQ_USER:-terrafusion}:${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD not set}" http://localhost:15672/api/overview | grep -q management_version; then break; fi
         echo -n "."; sleep 2
     done
     echo -e " ${GREEN}Ready${NC}"

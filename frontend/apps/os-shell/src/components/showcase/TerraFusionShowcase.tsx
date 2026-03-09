@@ -78,8 +78,8 @@ function TerraFusionShowcase() {
     toast.error('System Alert', 'Quantum coherence levels below threshold', {
       persistent: true,
       actions: [
-        { label: 'Recalibrate', action: () => console.log('Recalibrating...'), variant: 'primary' },
-        { label: 'Ignore', action: () => console.log('Ignored'), variant: 'secondary' },
+        { label: 'Recalibrate', action: () => console.debug('Recalibrating...'), variant: 'primary' },
+        { label: 'Ignore', action: () => console.debug('Ignored'), variant: 'secondary' },
       ],
     });
   };
@@ -98,7 +98,7 @@ function TerraFusionShowcase() {
   const handleRefresh = async () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Data refreshed');
+    console.debug('Data refreshed');
   };
 
   return (

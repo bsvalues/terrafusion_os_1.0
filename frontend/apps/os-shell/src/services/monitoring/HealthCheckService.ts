@@ -133,7 +133,7 @@ export class HealthCheckService {
       await this.performHealthChecks();
     }, this.config.pollingIntervalMs);
 
-    console.log(`Health check polling started (interval: ${this.config.pollingIntervalMs}ms)`);
+    console.debug(`Health check polling started (interval: ${this.config.pollingIntervalMs}ms)`);
   }
 
   /**
@@ -143,7 +143,7 @@ export class HealthCheckService {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
       this.pollingInterval = null;
-      console.log('Health check polling stopped');
+      console.debug('Health check polling stopped');
     }
   }
 
@@ -265,7 +265,7 @@ export class HealthCheckService {
     this.lastAggregatedStatus = aggregatedStatus;
 
     const elapsedTime = Date.now() - startTime;
-    console.log(`Health checks completed in ${elapsedTime}ms - Status: ${overallStatus}`);
+    console.debug(`Health checks completed in ${elapsedTime}ms - Status: ${overallStatus}`);
 
     return aggregatedStatus;
   }
@@ -552,7 +552,7 @@ export class HealthCheckService {
    */
   public resetHealthHistory(): void {
     this.healthHistory.clear();
-    console.log('Health history reset');
+    console.debug('Health history reset');
   }
 
   /**

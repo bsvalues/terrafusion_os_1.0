@@ -613,7 +613,7 @@ width="100%" height={300}>
                 startIcon={<DownloadIcon />}
                 onClick={() => {
                   // Export functionality would go here
-                  console.log('Export properties data');
+                  console.debug('Export properties data');
                 }}
               >
                 Export

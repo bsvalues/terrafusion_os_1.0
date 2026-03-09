@@ -107,7 +107,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
   // Initialize research environment
   const initializeResearchEnvironment = useCallback(async () => {
     try {
-      console.log('Initializing TerraLevy Quantum Research Environment...');
+      console.debug('Initializing TerraLevy Quantum Research Environment...');
 
       // pending R2 backend integration — datasets will be fetched from API
       const researchDatasets: ResearchDataset[] = [];
@@ -129,7 +129,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
         wsRef.current = new WebSocket(`${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/quantum-research`);
 
         wsRef.current.onopen = () => {
-          console.log('Quantum research WebSocket connected');
+          console.debug('Quantum research WebSocket connected');
           wsRef.current?.send(
             JSON.stringify({
               type: 'init_research_session',
@@ -151,7 +151,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
       }
 
       setIsInitialized(true);
-      console.log('Quantum Research Environment initialized successfully');
+      console.debug('Quantum Research Environment initialized successfully');
     } catch (error) {
       console.error('Failed to initialize quantum research environment:', error);
     }
@@ -176,7 +176,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
         setQuantumResourceStatus(message.status);
         break;
       default:
-        console.log('Unknown research message type:', message.type);
+        console.debug('Unknown research message type:', message.type);
     }
   }, []);
 
@@ -203,7 +203,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
         setExecutions((prev) => [execution, ...prev]);
 
         // Simulate quantum execution
-        console.log(`Starting quantum execution: ${algorithm.name}`);
+        console.debug(`Starting quantum execution: ${algorithm.name}`);
 
         // Update to running status
         setTimeout(() => {
@@ -273,7 +273,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
             )
           );
 
-          console.log('Quantum execution completed:', results);
+          console.debug('Quantum execution completed:', results);
         }, algorithm.expectedRuntime * 1000);
 
         return execution;
@@ -319,7 +319,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
       setCustomModels((prev) => [model, ...prev]);
 
       // Simulate training process
-      console.log('Starting custom model training:', model.name);
+      console.debug('Starting custom model training:', model.name);
 
       setTimeout(() => {
         const performance = {
@@ -343,7 +343,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
           )
         );
 
-        console.log('Model training completed:', performance);
+        console.debug('Model training completed:', performance);
       }, 15000);
 
       return model;
@@ -360,7 +360,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
         const connection = academicConnections.find((c) => c.id === institutionId);
         if (!connection) throw new Error('Institution not found');
 
-        console.log(`Connecting to ${connection.institution}...`);
+        console.debug(`Connecting to ${connection.institution}...`);
 
         // Simulate connection process
         await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -378,7 +378,7 @@ export const useQuantumResearch = (userId: string, department: string) => {
           )
         );
 
-        console.log(`Successfully connected to ${connection.institution}`);
+        console.debug(`Successfully connected to ${connection.institution}`);
         return true;
       } catch (error) {
         console.error('Failed to connect to academic institution:', error);

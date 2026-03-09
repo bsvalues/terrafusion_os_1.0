@@ -91,7 +91,7 @@ export class EnhancementCommunicationService {
   async initialize(): Promise<void> {
     try {
       // eslint-disable-next-line no-console
-      console.log('🚀 Initializing Enhancement Communication Service...');
+      console.debug('🚀 Initializing Enhancement Communication Service...');
 
       // Initialize SignalR connection for real-time updates
       await this.initializeSignalRConnection();
@@ -106,7 +106,7 @@ export class EnhancementCommunicationService {
       isEnhancementConnected.value = true;
 
       // eslint-disable-next-line no-console
-      console.log('✅ Enhancement Communication Service initialized successfully');
+      console.debug('✅ Enhancement Communication Service initialized successfully');
     } catch (error) {
       console.error('❌ Failed to initialize Enhancement Communication Service:', error);
       enhancementError.value = `Initialization failed: ${error}`;
@@ -134,7 +134,7 @@ export class EnhancementCommunicationService {
       // Start connection
       await this.hubConnection.start();
       // eslint-disable-next-line no-console
-      console.log('🔗 Enhancement SignalR connection established');
+      console.debug('🔗 Enhancement SignalR connection established');
 
       // Join enhancement monitoring groups
       await this.hubConnection.invoke('StartEnhancementMonitoring', [
@@ -160,7 +160,7 @@ export class EnhancementCommunicationService {
       enhancementStatus.value = status;
       lastEnhancementUpdate.value = new Date();
       // eslint-disable-next-line no-console
-      console.log('📊 Enhancement status updated:', status);
+      console.debug('📊 Enhancement status updated:', status);
     });
 
     // Enhancement metrics updates
@@ -168,41 +168,41 @@ export class EnhancementCommunicationService {
       enhancementMetrics.value = metrics;
       lastEnhancementUpdate.value = new Date();
       // eslint-disable-next-line no-console
-      console.log('📈 Enhancement metrics updated:', metrics);
+      console.debug('📈 Enhancement metrics updated:', metrics);
     });
 
     // Swarm operation complete
     this.hubConnection.on('SwarmOperationComplete', (result: any) => {
       // eslint-disable-next-line no-console
-      console.log('🤖 Swarm operation completed:', result);
+      console.debug('🤖 Swarm operation completed:', result);
       this.refreshEnhancementStatus();
     });
 
     // Consciousness update
     this.hubConnection.on('ConsciousnessUpdate', (result: any) => {
       // eslint-disable-next-line no-console
-      console.log('🧠 Consciousness coordination updated:', result);
+      console.debug('🧠 Consciousness coordination updated:', result);
       this.refreshEnhancementStatus();
     });
 
     // Security audit complete
     this.hubConnection.on('SecurityAuditComplete', (result: any) => {
       // eslint-disable-next-line no-console
-      console.log('🔒 Security audit completed:', result);
+      console.debug('🔒 Security audit completed:', result);
       this.refreshEnhancementStatus();
     });
 
     // Performance optimization complete
     this.hubConnection.on('PerformanceOptimizationComplete', (result: any) => {
       // eslint-disable-next-line no-console
-      console.log('⚡ Performance optimization completed:', result);
+      console.debug('⚡ Performance optimization completed:', result);
       this.refreshEnhancementStatus();
     });
 
     // Enhancement coordination complete
     this.hubConnection.on('EnhancementCoordinationComplete', (result: any) => {
       // eslint-disable-next-line no-console
-      console.log('🎯 Enhancement coordination completed:', result);
+      console.debug('🎯 Enhancement coordination completed:', result);
       this.refreshEnhancementStatus();
     });
 
@@ -215,20 +215,20 @@ export class EnhancementCommunicationService {
     // Connection events
     this.hubConnection.onreconnecting(() => {
       // eslint-disable-next-line no-console
-      console.log('🔄 Enhancement SignalR reconnecting...');
+      console.debug('🔄 Enhancement SignalR reconnecting...');
       isEnhancementConnected.value = false;
     });
 
     this.hubConnection.onreconnected(() => {
       // eslint-disable-next-line no-console
-      console.log('✅ Enhancement SignalR reconnected');
+      console.debug('✅ Enhancement SignalR reconnected');
       isEnhancementConnected.value = true;
       this.refreshEnhancementStatus();
     });
 
     this.hubConnection.onclose(() => {
       // eslint-disable-next-line no-console
-      console.log('🔴 Enhancement SignalR connection closed');
+      console.debug('🔴 Enhancement SignalR connection closed');
       isEnhancementConnected.value = false;
     });
   }
@@ -278,7 +278,7 @@ export class EnhancementCommunicationService {
   async executeSwarmOperation(request: SwarmOperationRequest): Promise<any> {
     try {
       // eslint-disable-next-line no-console
-      console.log('🤖 Executing swarm operation:', request);
+      console.debug('🤖 Executing swarm operation:', request);
 
       const response = await fetch(`${ENHANCEMENT_API_URL}/swarm/execute`, {
         method: 'POST',
@@ -294,7 +294,7 @@ export class EnhancementCommunicationService {
 
       const result = await response.json();
       // eslint-disable-next-line no-console
-      console.log('✅ Swarm operation completed:', result);
+      console.debug('✅ Swarm operation completed:', result);
 
       return result;
     } catch (error) {
@@ -310,7 +310,7 @@ export class EnhancementCommunicationService {
   async coordinateConsciousness(request: ConsciousnessRequest): Promise<any> {
     try {
       // eslint-disable-next-line no-console
-      console.log('🧠 Coordinating consciousness:', request);
+      console.debug('🧠 Coordinating consciousness:', request);
 
       const response = await fetch(`${ENHANCEMENT_API_URL}/consciousness/coordinate`, {
         method: 'POST',
@@ -326,7 +326,7 @@ export class EnhancementCommunicationService {
 
       const result = await response.json();
       // eslint-disable-next-line no-console
-      console.log('✅ Consciousness coordination completed:', result);
+      console.debug('✅ Consciousness coordination completed:', result);
 
       return result;
     } catch (error) {
@@ -342,7 +342,7 @@ export class EnhancementCommunicationService {
   async executeSecurityAudit(request: SecurityAuditRequest): Promise<any> {
     try {
       // eslint-disable-next-line no-console
-      console.log('🔒 Executing security audit:', request);
+      console.debug('🔒 Executing security audit:', request);
 
       const response = await fetch(`${ENHANCEMENT_API_URL}/security/audit`, {
         method: 'POST',
@@ -358,7 +358,7 @@ export class EnhancementCommunicationService {
 
       const result = await response.json();
       // eslint-disable-next-line no-console
-      console.log('✅ Security audit completed:', result);
+      console.debug('✅ Security audit completed:', result);
 
       return result;
     } catch (error) {
@@ -374,7 +374,7 @@ export class EnhancementCommunicationService {
   async optimizePerformance(request: PerformanceOptimizationRequest): Promise<any> {
     try {
       // eslint-disable-next-line no-console
-      console.log('⚡ Optimizing performance:', request);
+      console.debug('⚡ Optimizing performance:', request);
 
       const response = await fetch(`${ENHANCEMENT_API_URL}/performance/optimize`, {
         method: 'POST',
@@ -390,7 +390,7 @@ export class EnhancementCommunicationService {
 
       const result = await response.json();
       // eslint-disable-next-line no-console
-      console.log('✅ Performance optimization completed:', result);
+      console.debug('✅ Performance optimization completed:', result);
 
       return result;
     } catch (error) {
@@ -406,7 +406,7 @@ export class EnhancementCommunicationService {
   async coordinateEnhancements(request: EnhancementCoordinationRequest): Promise<any> {
     try {
       // eslint-disable-next-line no-console
-      console.log('🎯 Coordinating enhancements:', request);
+      console.debug('🎯 Coordinating enhancements:', request);
 
       const response = await fetch(`${ENHANCEMENT_API_URL}/coordinate`, {
         method: 'POST',
@@ -422,7 +422,7 @@ export class EnhancementCommunicationService {
 
       const result = await response.json();
       // eslint-disable-next-line no-console
-      console.log('✅ Enhancement coordination completed:', result);
+      console.debug('✅ Enhancement coordination completed:', result);
 
       return result;
     } catch (error) {
@@ -501,7 +501,7 @@ export class EnhancementCommunicationService {
       isEnhancementConnected.value = false;
 
       // eslint-disable-next-line no-console
-      console.log('🧹 Enhancement Communication Service cleaned up');
+      console.debug('🧹 Enhancement Communication Service cleaned up');
     } catch (error) {
       console.error('❌ Error during cleanup:', error);
     }

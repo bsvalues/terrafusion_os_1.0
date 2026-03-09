@@ -134,18 +134,18 @@ class GPTHubClient {
 
     // Connection lifecycle handlers
     this.connection.onreconnecting(() => {
-      console.log('GPT Hub: Reconnecting...');
+      console.debug('GPT Hub: Reconnecting...');
       this.handlers.onReconnecting?.();
     });
 
     this.connection.onreconnected(() => {
-      console.log('GPT Hub: Reconnected');
+      console.debug('GPT Hub: Reconnected');
       this.reconnectAttempts = 0;
       this.handlers.onReconnected?.();
     });
 
     this.connection.onclose((error) => {
-      console.log('GPT Hub: Connection closed', error);
+      console.debug('GPT Hub: Connection closed', error);
       this.handlers.onDisconnected?.();
       if (error) {
         this.handlers.onError?.(error);
@@ -155,7 +155,7 @@ class GPTHubClient {
     // Start connection
     try {
       await this.connection.start();
-      console.log('GPT Hub: Connected successfully');
+      console.debug('GPT Hub: Connected successfully');
       this.handlers.onConnected?.();
     } catch (error) {
       console.error('GPT Hub: Connection failed', error);
@@ -242,15 +242,15 @@ class GPTHubClient {
 
     // Subscription confirmations
     this.connection.on('SubscribedToConversation', (conversationId: number) => {
-      console.log(`GPT Hub: Subscribed to conversation ${conversationId}`);
+      console.debug(`GPT Hub: Subscribed to conversation ${conversationId}`);
     });
 
     this.connection.on('SubscribedToMarketplace', () => {
-      console.log('GPT Hub: Subscribed to marketplace');
+      console.debug('GPT Hub: Subscribed to marketplace');
     });
 
     this.connection.on('SubscribedToCountyGPTs', (countyId: number) => {
-      console.log(`GPT Hub: Subscribed to county ${countyId} GPTs`);
+      console.debug(`GPT Hub: Subscribed to county ${countyId} GPTs`);
     });
   }
 

@@ -531,7 +531,7 @@ export const useBackendConnection = (baseUrl: string = (getViteEnv().VITE_API_UR
 
       if (healthy) {
         setConnectionAttempts(0);
-        console.log('[TerraFusion] Backend connection established ✓');
+        console.debug('[TerraFusion] Backend connection established ✓');
       } else {
         throw new Error('Health check failed');
       }

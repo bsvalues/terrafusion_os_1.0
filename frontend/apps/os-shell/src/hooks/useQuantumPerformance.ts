@@ -104,7 +104,7 @@ export function useQuantumPerformance() {
 
         entries.forEach((entry) => {
           if (entry.entryType === 'paint' && entry.name === 'first-contentful-paint') {
-            console.log(`🎨 TerraFusion First Paint: ${entry.startTime.toFixed(2)}ms`);
+            console.debug(`🎨 TerraFusion First Paint: ${entry.startTime.toFixed(2)}ms`);
           }
 
           if (entry.entryType === 'layout-shift') {
@@ -152,7 +152,7 @@ export function useQuantumPerformance() {
     if (animationFps < 45 || renderTime > 20) {
       document.documentElement.style.setProperty('--animation-duration', '0.1s');
       document.documentElement.style.setProperty('--blur-intensity', '5px');
-      console.log('🔧 TerraFusion: Optimizing for performance');
+      console.debug('🔧 TerraFusion: Optimizing for performance');
     }
 
     // Memory cleanup
@@ -161,7 +161,7 @@ export function useQuantumPerformance() {
       if ('gc' in window) {
         (window as any).gc();
       }
-      console.log('🧹 TerraFusion: Memory optimization triggered');
+      console.debug('🧹 TerraFusion: Memory optimization triggered');
     }
   }, [metrics]);
 

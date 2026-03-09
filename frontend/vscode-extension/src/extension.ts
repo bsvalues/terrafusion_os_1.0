@@ -29,7 +29,7 @@ export class TerraFusionExtension {
   }
 
   public activate() {
-    console.log('🧠 Activating TerraFusion Quantum AI Extension...');
+    console.debug('🧠 Activating TerraFusion Quantum AI Extension...');
 
     // Detect TerraFusion project
     this.detectTerraFusionProject();
@@ -43,7 +43,7 @@ export class TerraFusionExtension {
     // Start real-time monitoring
     this.startQuantumMonitoring();
 
-    console.log('✅ TerraFusion Quantum AI Extension activated successfully!');
+    console.debug('✅ TerraFusion Quantum AI Extension activated successfully!');
   }
 
   private detectTerraFusionProject(): boolean {
@@ -637,5 +637,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  console.log('🧠 TerraFusion Quantum AI Extension deactivated');
+  console.debug('🧠 TerraFusion Quantum AI Extension deactivated');
 }

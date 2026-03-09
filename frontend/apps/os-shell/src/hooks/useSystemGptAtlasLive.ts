@@ -196,7 +196,7 @@ export function useSystemGptAtlasLive(
 
       eventSource.onopen = () => {
         if (!isMountedRef.current) return;
-        console.log('[Atlas Live] SSE connected');
+        console.debug('[Atlas Live] SSE connected');
         retryCountRef.current = 0;
         updateConnectionState('connected');
         setError(null);

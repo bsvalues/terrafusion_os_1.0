@@ -1,0 +1,42 @@
+# TerraFusion OS — Core Alerting Rules
+# Referenced by prometheus.yml rule_files glob
+
+groups:
+  - name: terrafusion_core
+    interval: 15s
+    rules:
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes / 1024 / 1024 > 512
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.job }}"
+          description: "{{ $labels.instance }} memory at {{ $value | humanize }}MB."
+
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.job }}"
+          description: "{{ $labels.instance }} CPU at {{ $value | humanizePercentage }}."
+
+      - alert: SlowResponseTime
+        expr: histogram_quantile(0.95, rate(terrafusion_http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow API response times"
+          description: "P95 latency >2s for {{ $labels.job }} on {{ $labels.instance }}."
+
+      - alert: AISwarmDegraded
+        expr: terrafusion_ai_active_agents < 500
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "AI swarm degraded"
+          description: "Only {{ $value }} of 1008 agents active. Swarm coordination may be impaired."

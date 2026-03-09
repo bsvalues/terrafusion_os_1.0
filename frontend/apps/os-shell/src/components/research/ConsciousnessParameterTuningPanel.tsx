@@ -497,7 +497,7 @@ export const ConsciousnessParameterTuningPanel: React.FC = () => {
   // Apply parameters
   const handleApplyParameters = useCallback(async () => {
     // Simulate API call
-    console.log('Applying parameters:', {
+    console.debug('Applying parameters:', {
       quantumCoherence: parameters.quantumCoherence.value,
       entanglementStrength: parameters.entanglementStrength.value,
       consciousnessLevel: parameters.consciousnessLevel.value,
@@ -514,7 +514,7 @@ export const ConsciousnessParameterTuningPanel: React.FC = () => {
 
   // Launch experiment
   const handleLaunchExperiment = useCallback((config: ExperimentConfig) => {
-    console.log('Launching experiment:', config);
+    console.debug('Launching experiment:', config);
     alert(`🧪 Experiment "${config.name}" launched with ${config.variants.length} variants!`);
   }, []);
 

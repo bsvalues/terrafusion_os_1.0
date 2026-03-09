@@ -85,7 +85,7 @@ const perceptionStep: MCPWorkflowStep = {
   name: 'perception',
   execute: async (input, state) => {
     // Process and validate input data
-    console.log('Executing perception step with input:', input);
+    console.debug('Executing perception step with input:', input);
     
     // Store original input for reference
     state.set('originalInput', input);
@@ -109,7 +109,7 @@ const perceptionStep: MCPWorkflowStep = {
 const reasoningStep: MCPWorkflowStep = {
   name: 'reasoning',
   execute: async (input, state) => {
-    console.log('Executing reasoning step with input:', input);
+    console.debug('Executing reasoning step with input:', input);
     
     // Analyze what data needs to be fetched
     const queryKeys = [];
@@ -137,7 +137,7 @@ const reasoningStep: MCPWorkflowStep = {
 const actionStep: MCPWorkflowStep = {
   name: 'action',
   execute: async (input, state) => {
-    console.log('Executing action step with input:', input);
+    console.debug('Executing action step with input:', input);
     
     // Define API endpoints based on reasoning
     const endpoints = {
@@ -306,7 +306,7 @@ export function MCPVisualizationProvider({ children }: { children: ReactNode }) 
   
   // Export data function
   const exportData = async (format: string) => {
-    console.log(`Exporting data in ${format} format`);
+    console.debug(`Exporting data in ${format} format`);
     // Implementation will be added in future
   };
   

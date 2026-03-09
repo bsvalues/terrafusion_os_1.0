@@ -172,12 +172,12 @@ const EliteLiveDevelopmentStatus: React.FC = () => {
   };
 
   const handleBackendStart = () => {
-    console.log('🚀 [Elite Dev] Starting backend services...');
+    console.debug('🚀 [Elite Dev] Starting backend services...');
     // Implementation would start backend
   };
 
   const handleOptimize = () => {
-    console.log('⚡ [Elite Dev] Running performance optimization...');
+    console.debug('⚡ [Elite Dev] Running performance optimization...');
     setDevStatus((prev) => ({
       ...prev,
       performance: {

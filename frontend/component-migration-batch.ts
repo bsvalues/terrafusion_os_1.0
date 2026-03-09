@@ -113,13 +113,13 @@ class ComponentMigrationBatch {
   private migrationCount: number = 0;
 
   async migrateDirectory(directory: string): Promise<void> {
-    console.log(`🔍 Scanning directory: ${directory}`);
+    console.debug(`🔍 Scanning directory: ${directory}`);
     
     const files = await glob(`${directory}/**/*.{tsx,ts,jsx,js}`, {
       ignore: ['**/node_modules/**', '**/dist/**', '**/.git/**']
     });
 
-    console.log(`📁 Found ${files.length} files to process`);
+    console.debug(`📁 Found ${files.length} files to process`);
 
     for (const file of files) {
       await this.migrateFile(file);
@@ -144,7 +144,7 @@ class ComponentMigrationBatch {
         migratedContent = migratedContent.replace(rule.pattern, rule.replacement);
         if (before !== migratedContent) {
           hasChanges = true;
-          console.log(`✨ Applied: ${rule.description} in ${path.basename(filePath)}`);
+          console.debug(`✨ Applied: ${rule.description} in ${path.basename(filePath)}`);
         }
       }
 
@@ -154,7 +154,7 @@ class ComponentMigrationBatch {
         migratedContent = migratedContent.replace(rule.pattern, rule.replacement);
         if (before !== migratedContent) {
           hasChanges = true;
-          console.log(`✨ Applied: ${rule.description} in ${path.basename(filePath)}`);
+          console.debug(`✨ Applied: ${rule.description} in ${path.basename(filePath)}`);
         }
       }
 
@@ -164,7 +164,7 @@ class ComponentMigrationBatch {
         migratedContent = migratedContent.replace(rule.pattern, rule.replacement);
         if (before !== migratedContent) {
           hasChanges = true;
-          console.log(`✨ Applied: ${rule.description} in ${path.basename(filePath)}`);
+          console.debug(`✨ Applied: ${rule.description} in ${path.basename(filePath)}`);
         }
       }
 
@@ -172,7 +172,7 @@ class ComponentMigrationBatch {
       if (hasChanges) {
         fs.writeFileSync(filePath, migratedContent);
         this.migrationCount++;
-        console.log(`✅ Migrated: ${path.basename(filePath)}`);
+        console.debug(`✅ Migrated: ${path.basename(filePath)}`);
       }
 
       this.processedFiles.add(filePath);
@@ -187,26 +187,26 @@ class ComponentMigrationBatch {
   }
 
   private printSummary(): void {
-    console.log('\n🎯 MIGRATION SUMMARY');
-    console.log('===================');
-    console.log(`📊 Files processed: ${this.processedFiles.size}`);
-    console.log(`✅ Files migrated: ${this.migrationCount}`);
-    console.log(`❌ Errors: ${this.errors.length}`);
+    console.debug('\n🎯 MIGRATION SUMMARY');
+    console.debug('===================');
+    console.debug(`📊 Files processed: ${this.processedFiles.size}`);
+    console.debug(`✅ Files migrated: ${this.migrationCount}`);
+    console.debug(`❌ Errors: ${this.errors.length}`);
     
     if (this.errors.length > 0) {
-      console.log('\n⚠️  ERRORS:');
+      console.debug('\n⚠️  ERRORS:');
       this.errors.forEach(({file, error}) => {
-        console.log(`   ${path.basename(file)}: ${error}`);
+        console.debug(`   ${path.basename(file)}: ${error}`);
       });
     }
 
-    console.log('\n🚀 Component migration batch complete!');
+    console.debug('\n🚀 Component migration batch complete!');
   }
 
   // Safe migration method that validates before applying changes
   async safeMigrate(directories: string[]): Promise<void> {
-    console.log('🛡️  Starting SAFE component migration...');
-    console.log('This will migrate frontend components to @terrafusion/shared');
+    console.debug('🛡️  Starting SAFE component migration...');
+    console.debug('This will migrate frontend components to @terrafusion/shared');
     
     for (const dir of directories) {
       if (fs.existsSync(dir)) {

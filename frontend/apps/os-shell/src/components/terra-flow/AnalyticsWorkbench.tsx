@@ -54,7 +54,7 @@ export function AnalyticsWorkbench() {
     {
       id: '2',
       type: 'code',
-      content: '// Phase 1 Example: Fetch property data\nconst response = await fetch(\'/api/properties?county=benton\');\nconst properties = await response.json();\nconsole.log(`Loaded ${properties.length} properties`);',
+      content: '// Phase 1 Example: Fetch property data\nconst response = await fetch(\'/api/properties?county=benton\');\nconst properties = await response.json();\nconsole.debug(`Loaded ${properties.length} properties`);',
       output: 'Loaded await DynamicPropertyService.GetPropertyCountAsync("benton") properties',
       executionTime: 124,
       status: 'completed'
@@ -62,7 +62,7 @@ export function AnalyticsWorkbench() {
     {
       id: '3',
       type: 'code',
-      content: '// Phase 1 Example: Basic statistics\nconst values = properties.map(p => p.assessedValue);\nconst mean = values.reduce((a, b) => a + b) / values.length;\nconst sorted = values.sort((a, b) => a - b);\nconst median = sorted[Math.floor(sorted.length / 2)];\nconsole.log(`Mean: $${mean.toFixed(2)}`);\nconsole.log(`Median: $${median.toFixed(2)}`);',
+      content: '// Phase 1 Example: Basic statistics\nconst values = properties.map(p => p.assessedValue);\nconst mean = values.reduce((a, b) => a + b) / values.length;\nconst sorted = values.sort((a, b) => a - b);\nconst median = sorted[Math.floor(sorted.length / 2)];\nconsole.debug(`Mean: $${mean.toFixed(2)}`);\nconsole.debug(`Median: $${median.toFixed(2)}`);',
       status: 'idle'
     }
   ]);

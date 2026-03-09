@@ -432,7 +432,7 @@ describe('moduleActivation', () => {
       await activateModule('costforge', { source: 'deep_link' });
       await activateModule('costforge', { source: 'system' });
 
-      expect(true).toBe(true); // If we get here, types are correct
+      expect(mockOpenWindow).toHaveBeenCalledTimes(6); // All six activations succeeded
     });
 
     it('ActivateModuleOptions supports all optional fields', async () => {
@@ -447,7 +447,7 @@ describe('moduleActivation', () => {
       // Minimal options
       await activateModule('costforge', { source: 'system' });
 
-      expect(true).toBe(true);
+      expect(mockOpenWindow).toHaveBeenCalledTimes(2); // Both full and minimal options work
     });
   });
 });

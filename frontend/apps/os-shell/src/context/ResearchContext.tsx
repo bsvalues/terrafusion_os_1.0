@@ -150,7 +150,7 @@ export const ResearchSessionProvider: React.FC<{ children: ReactNode }> = ({ chi
     setSession(null);
     localStorage.removeItem('terrafusion_research_session');
     clearToken();
-    console.log('🚪 Research session terminated');
+    console.debug('🚪 Research session terminated');
   }, []);
 
   const isAuthenticated = useMemo(
@@ -276,7 +276,7 @@ export const QuantumConsciousnessProvider: React.FC<{ children: ReactNode }> = (
         };
       });
 
-      console.log(`🔧 Quantum parameter ${paramName} updated to ${value}`);
+      console.debug(`🔧 Quantum parameter ${paramName} updated to ${value}`);
     },
     []
   );
@@ -298,7 +298,7 @@ export const QuantumConsciousnessProvider: React.FC<{ children: ReactNode }> = (
       };
     });
 
-    console.log(`✨ Applied preset: ${presetName}`);
+    console.debug(`✨ Applied preset: ${presetName}`);
   }, []);
 
   const rollbackParameters = useCallback(() => {
@@ -311,7 +311,7 @@ export const QuantumConsciousnessProvider: React.FC<{ children: ReactNode }> = (
     setParameters(previousState);
     setParameterHistory((history) => history.slice(0, -1));
 
-    console.log('↩️ Parameters rolled back to previous state');
+    console.debug('↩️ Parameters rolled back to previous state');
   }, [parameterHistory]);
 
   const value = useMemo(
@@ -374,7 +374,7 @@ export const AISwarmProvider: React.FC<{ children: ReactNode }> = ({ children })
       lastUpdate: new Date(),
     }));
 
-    console.log(`🐝 Swarm coordination mode changed to: ${mode}`);
+    console.debug(`🐝 Swarm coordination mode changed to: ${mode}`);
   }, []);
 
   const refreshMetrics = useCallback(async () => {
@@ -462,7 +462,7 @@ export const StatisticalAnalyticsProvider: React.FC<{ children: ReactNode }> = (
       lastAnalysisTime: new Date(),
     }));
 
-    console.log('📊 Analysis results saved to context');
+    console.debug('📊 Analysis results saved to context');
   }, []);
 
   const value = useMemo(
@@ -531,7 +531,7 @@ export const IAAOComplianceProvider: React.FC<{ children: ReactNode }> = ({ chil
       lastValidation: new Date(),
     }));
 
-    console.log(`✓ Certification level updated: ${level} (${score.toFixed(1)}%)`);
+    console.debug(`✓ Certification level updated: ${level} (${score.toFixed(1)}%)`);
   }, []);
 
   const value = useMemo(

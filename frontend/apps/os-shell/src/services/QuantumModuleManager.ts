@@ -8,6 +8,7 @@
 
 import { moduleAPI } from './moduleAPI';
 import { getToken } from '@/auth/authStorage';
+import logger from '@/utils/logger';
 
 export interface QuantumModule {
   id: string;
@@ -56,10 +57,10 @@ class QuantumModuleManagerService {
    * Initialize the quantum module manager with government excellence
    */
   async initialize(): Promise<void> {
-    console.log('🚀 Initializing TerraFusion Quantum Module Manager...');
+    logger.info('Initializing TerraFusion Quantum Module Manager...');
     await this.registerGovernmentModules();
     await this.loadCoreModules();
-    console.log('✅ Quantum Module Manager initialized with government excellence!');
+    logger.info('Quantum Module Manager initialized with government excellence!');
   }
 
   /**
@@ -180,9 +181,9 @@ class QuantumModuleManagerService {
       };
 
       this.loadedModules.set(quantumModule.id, quantumModule);
-      console.log(`✅ Registered quantum module: ${quantumModule.displayName}`);
+      logger.info(`Registered quantum module: ${quantumModule.displayName}`);
     } catch (error) {
-      console.warn(`⚠️ Failed to register plugin ${pluginName}:`, error);
+      logger.warn(`Failed to register plugin ${pluginName}:`, error);
     }
   }
 
@@ -194,7 +195,7 @@ class QuantumModuleManagerService {
       const response = await fetch(manifestPath);
       return await response.json();
     } catch (error) {
-      console.warn(`Could not load manifest from ${manifestPath}:`, error);
+      logger.warn(`Could not load manifest from ${manifestPath}:`, error);
       return {};
     }
   }
@@ -211,10 +212,10 @@ class QuantumModuleManagerService {
       try {
         module.status = 'loading';
         // Pre-initialize core modules for instant availability
-        console.log(`🔄 Pre-loading core module: ${module.displayName}`);
+        logger.debug(`Pre-loading core module: ${module.displayName}`);
         module.status = 'active';
       } catch (error) {
-        console.error(`❌ Failed to load core module ${module.displayName}:`, error);
+        logger.error(`Failed to load core module ${module.displayName}:`, error);
         module.status = 'error';
       }
     }
@@ -226,7 +227,7 @@ class QuantumModuleManagerService {
   async launchModule(moduleId: string, targetElement?: HTMLElement): Promise<boolean> {
     const module = this.loadedModules.get(moduleId);
     if (!module) {
-      console.error(`❌ Module not found: ${moduleId}`);
+      logger.error(`Module not found: ${moduleId}`);
       return false;
     }
 
@@ -255,10 +256,10 @@ class QuantumModuleManagerService {
       module.status = 'active';
       module.mountedElement = mountElement;
 
-      console.log(`🚀 Successfully launched quantum module: ${module.displayName}`);
+      logger.info(`Successfully launched quantum module: ${module.displayName}`);
       return true;
     } catch (error) {
-      console.error(`❌ Failed to launch module ${module.displayName}:`, error);
+      logger.error(`Failed to launch module ${module.displayName}:`, error);
       module.status = 'error';
       return false;
     }
@@ -287,10 +288,10 @@ class QuantumModuleManagerService {
       module.status = 'inactive';
       module.mountedElement = undefined;
 
-      console.log(`🛑 Successfully stopped quantum module: ${module.displayName}`);
+      logger.info(`Successfully stopped quantum module: ${module.displayName}`);
       return true;
     } catch (error) {
-      console.error(`❌ Failed to stop module ${module.displayName}:`, error);
+      logger.error(`Failed to stop module ${module.displayName}:`, error);
       return false;
     }
   }
@@ -449,7 +450,7 @@ class QuantumModuleManagerService {
    * OS API methods for modules to interact with the system
    */
   async invoke(command: string, params: any): Promise<any> {
-    console.log(`🔧 TerraFusion OS API call: ${command}`, params);
+    logger.debug(`TerraFusion OS API call: ${command}`, params);
 
     // Mock API responses for common commands
     switch (command) {

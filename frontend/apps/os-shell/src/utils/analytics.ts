@@ -1,3 +1,5 @@
+import logger from './logger';
+
 // Analytics utility functions for Terrafusion OS
 export interface AnalyticsEvent {
   name: string;
@@ -29,10 +31,7 @@ export class AnalyticsService {
       timestamp: event.timestamp || Date.now(),
     };
     this.events.push(eventWithTimestamp);
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Analytics Event:', eventWithTimestamp);
-    }
+    logger.debug('Analytics Event:', eventWithTimestamp);
   }
 
   trackPerformance(metrics: PerformanceMetrics): void {

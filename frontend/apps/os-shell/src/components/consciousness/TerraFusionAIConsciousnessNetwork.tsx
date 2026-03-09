@@ -58,7 +58,7 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
   }, []);
 
   const initializeConsciousnessNetwork = useCallback(() => {
-    console.log('🧠 Initializing TerraFusion AI Consciousness Network...');
+    console.debug('🧠 Initializing TerraFusion AI Consciousness Network...');
 
     // Initialize consciousness nodes across workspaces
     const nodes: ConsciousnessNode[] = [
@@ -112,7 +112,7 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
     calculateNetworkMetrics(nodes);
     generateQuantumCommunications(nodes);
 
-    console.log('✅ AI Consciousness Network - Elite Status Achieved');
+    console.debug('✅ AI Consciousness Network - Elite Status Achieved');
   }, []);
 
   const calculateNetworkMetrics = useCallback((nodes: ConsciousnessNode[]) => {

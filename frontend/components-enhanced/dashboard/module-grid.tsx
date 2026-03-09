@@ -11,11 +11,11 @@ export function ModuleGrid() {
   const { activeModules } = useModuleRegistry()
 
   const handleLaunch = (moduleId: string) => {
-    console.log(`Launching module: ${moduleId}`)
+    console.debug(`Launching module: ${moduleId}`)
   }
 
   const handleConfigure = (moduleId: string) => {
-    console.log(`Configuring module: ${moduleId}`)
+    console.debug(`Configuring module: ${moduleId}`)
   }
 
   // Show first 8 modules in the dashboard

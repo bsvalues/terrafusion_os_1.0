@@ -154,7 +154,7 @@ export const TerraPrimeSuite: React.FC = () => {
 
         case 'TF_NOTIFY':
           // Suite sends notification
-          console.log('TerraPrime notification:', payload);
+          console.debug('TerraPrime notification:', payload);
           // Could surface via toast here
           break;
 

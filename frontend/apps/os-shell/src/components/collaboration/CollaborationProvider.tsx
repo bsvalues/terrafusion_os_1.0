@@ -176,7 +176,7 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
       .start()
       .then(() => {
         setIsConnected(true);
-        console.log('Collaboration hub connected');
+        console.debug('Collaboration hub connected');
       })
       .catch((error) => {
         console.error('Failed to connect to collaboration hub:', error);
@@ -237,7 +237,7 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
 
     // User joined
     connection.on('UserJoined', (data: { userId: string; userName: string }) => {
-      console.log(`User ${data.userName} joined the session`);
+      console.debug(`User ${data.userName} joined the session`);
     });
 
     // User left
@@ -257,7 +257,7 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
 
     // Receive notification
     connection.on('ReceiveNotification', (data: { type: string; message: string }) => {
-      console.log(`Notification [${data.type}]:`, data.message);
+      console.debug(`Notification [${data.type}]:`, data.message);
     });
   };
 
@@ -304,7 +304,7 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
         setParticipants(session.participants || []);
         setServerVersion(session.version || 0);
 
-        console.log(`Joined session ${newSessionId} with ${session.participants?.length || 0} participants`);
+        console.debug(`Joined session ${newSessionId} with ${session.participants?.length || 0} participants`);
       } catch (error) {
         console.error('Failed to join session:', error);
         throw error;
@@ -325,7 +325,7 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
       setRemoteCursors([]);
       setPendingChanges([]);
 
-      console.log('Left session');
+      console.debug('Left session');
     } catch (error) {
       console.error('Failed to leave session:', error);
     }

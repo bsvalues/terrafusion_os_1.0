@@ -111,7 +111,7 @@ describe('StatisticalValidationWorkbench.tsx – token leak guard', () => {
     });
     // We don't assert zero — we just log for awareness.
     // String-literal colours are allowed (tooltips, labels, etc.).
-    expect(true).toBe(true);
+    expect(Array.isArray(stringHits)).toBe(true);
   });
 
   test('every hsl() uses a var(--tf-*) channel token', () => {

@@ -86,7 +86,7 @@ export const TerraFusionBlockchainLedger: React.FC<BlockchainLedgerProps> = ({
   }, []);
 
   const initializeBlockchainLedger = useCallback(() => {
-    console.log('⛓️ Initializing TerraFusion Blockchain Government Ledger...');
+    console.debug('⛓️ Initializing TerraFusion Blockchain Government Ledger...');
 
     // Initialize smart contracts
     const contracts: SmartContract[] = [
@@ -267,7 +267,7 @@ export const TerraFusionBlockchainLedger: React.FC<BlockchainLedgerProps> = ({
     setRecentTransactions(transactions);
     calculateNetworkMetrics(contracts, nodes, transactions);
 
-    console.log('✅ Blockchain Government Ledger - Elite Status Achieved');
+    console.debug('✅ Blockchain Government Ledger - Elite Status Achieved');
   }, []);
 
   const calculateNetworkMetrics = useCallback(
@@ -320,7 +320,7 @@ export const TerraFusionBlockchainLedger: React.FC<BlockchainLedgerProps> = ({
   }, []);
 
   const deploySmartContract = useCallback((contractType: SmartContract['type']) => {
-    console.log(`🚀 Deploying ${contractType} smart contract...`);
+    console.debug(`🚀 Deploying ${contractType} smart contract...`);
     // Implementation would trigger actual smart contract deployment
   }, []);
 

@@ -68,7 +68,7 @@ export class CollaborationService {
       // Join user's teams and projects
       await this.joinUserContext(user);
       
-      console.log('CollaborationService: Connected to SignalR hub');
+      console.debug('CollaborationService: Connected to SignalR hub');
     } catch (error) {
       console.error('CollaborationService: Failed to connect:', error);
       throw error;
@@ -83,7 +83,7 @@ export class CollaborationService {
       await this.connection.stop();
       this.isConnected = false;
       this.connection = null;
-      console.log('CollaborationService: Disconnected from SignalR hub');
+      console.debug('CollaborationService: Disconnected from SignalR hub');
     }
   }
 

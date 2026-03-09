@@ -124,7 +124,7 @@ export class TerraFusionCSSEngine {
       });
 
       await this.signalRConnection.start();
-      console.log('🔗 Terrafusion CSS Engine connected to SignalR');
+      console.debug('🔗 Terrafusion CSS Engine connected to SignalR');
     } catch (error) {
       console.error('❌ SignalR connection failed:', error);
     }

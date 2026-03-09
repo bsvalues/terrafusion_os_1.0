@@ -1,13 +1,13 @@
 // Test Deduplication Success - Using Shared Package in Frontend
 import { ProjectStatus, UserRole, TaskStatus } from '../../shared-types/enums';
 
-console.log('🎯 DEDUPLICATION TEST - FRONTEND USAGE');
-console.log('='.repeat(50));
+console.debug('🎯 DEDUPLICATION TEST - FRONTEND USAGE');
+console.debug('='.repeat(50));
 
-console.log('✅ Successfully importing from @terrafusion/shared:');
-console.log('   ProjectStatus.ACTIVE:', ProjectStatus.ACTIVE);
-console.log('   UserRole.MANAGER:', UserRole.MANAGER);
-console.log('   TaskStatus.IN_PROGRESS:', TaskStatus.IN_PROGRESS);
+console.debug('✅ Successfully importing from @terrafusion/shared:');
+console.debug('   ProjectStatus.ACTIVE:', ProjectStatus.ACTIVE);
+console.debug('   UserRole.MANAGER:', UserRole.MANAGER);
+console.debug('   TaskStatus.IN_PROGRESS:', TaskStatus.IN_PROGRESS);
 
 // Simulate real usage
 const createProject = (name: string, status: ProjectStatus, owner: UserRole) => {
@@ -20,10 +20,10 @@ const createProject = (name: string, status: ProjectStatus, owner: UserRole) => 
 };
 
 const newProject = createProject('Test Project', ProjectStatus.ACTIVE, UserRole.MANAGER);
-console.log('   Created project:', newProject);
+console.debug('   Created project:', newProject);
 
-console.log('');
-console.log('🚀 DEDUPLICATION SUCCESS! Code reduction achieved!');
-console.log('   ✅ Removed duplicate enum definitions');
-console.log('   ✅ Using centralized @terrafusion/shared package');
-console.log('   ✅ TypeScript compilation successful');
+console.debug('');
+console.debug('🚀 DEDUPLICATION SUCCESS! Code reduction achieved!');
+console.debug('   ✅ Removed duplicate enum definitions');
+console.debug('   ✅ Using centralized @terrafusion/shared package');
+console.debug('   ✅ TypeScript compilation successful');

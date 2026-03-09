@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../utils/logger';
 interface CountyData {
   name: string;
   properties: string;
@@ -92,10 +93,7 @@ const ABTestingFramework: React.FC = () => {
   }, [startTime, engagementEvents, metrics.ctaClicks]);
   const trackEvent = (eventName: string, data?: any) => {
     // Analytics tracking for event: ${eventName}
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Analytics Event:', eventName, data);
-    }
+    logger.debug('Analytics Event:', eventName, data);
     setEngagementEvents((prev) => prev + 1);
   };
   const trackCTA = (type: 'primary' | 'secondary') => {

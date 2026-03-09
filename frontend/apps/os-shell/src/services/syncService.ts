@@ -2,6 +2,7 @@ import { useNetworkStore } from '../stores/networkStore';
 import { useStartMenuStore } from '../stores/startMenuStore';
 import { useSyncStore } from '../stores/syncStore';
 import { useThemeStore } from '../stores/themeStore';
+import logger from '../utils/logger';
 
 const CHANNEL_NAME = 'terrafusion_sync_channel';
 
@@ -28,7 +29,7 @@ class SyncService {
     });
 
     this.isInitialized = true;
-    console.log('SyncService initialized');
+    logger.info('SyncService initialized');
   }
 
   public broadcast(storeName: string, action: string, payload: any) {
@@ -50,7 +51,7 @@ class SyncService {
 
   private handleMessage(event: MessageEvent) {
     const { storeName, action, payload } = event.data;
-    console.log(`[Sync] Received update for ${storeName}: ${action}`, payload);
+    logger.debug(`[Sync] Received update for ${storeName}: ${action}`, payload);
 
     this.isApplyingSync = true;
 
@@ -91,7 +92,7 @@ class SyncService {
     const queue = useSyncStore.getState().pendingQueue;
     if (queue.length === 0) return;
 
-    console.log(`[Sync] Processing ${queue.length} offline items`);
+    logger.info(`[Sync] Processing ${queue.length} offline items`);
     useSyncStore.getState().setStatus('syncing');
 
     queue.forEach((item) => {

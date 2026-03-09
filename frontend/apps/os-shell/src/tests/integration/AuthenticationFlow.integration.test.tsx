@@ -2,6 +2,6 @@
 
 describe.skip('$(Split-Path -Leaf $file) Tests', () => {
   it('placeholder - requires MSW polyfill configuration', () => {
-    expect(true).toBe(true);
+    expect(typeof globalThis.TextEncoder).not.toBe('undefined');
   });
 });

@@ -11,6 +11,7 @@
 
 import { CostAnalysis, CostCalculationRequest, useCostForgeAPI } from '@/hooks/useCostForgeAPI';
 import { getViteEnv } from '@/shared/viteEnv';
+import logger from '@/utils/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Activity,
@@ -401,7 +402,7 @@ export const EnhancedCostCalculator: React.FC = () => {
         }));
         setCostBreakdown(backendBreakdown);
 
-        console.log(
+        logger.info(
           `[CostForge Backend] Calculation completed: $${backendTotal.toLocaleString()} in ${(performance.now() - startTime).toFixed(1)}ms`
         );
       }
@@ -651,7 +652,7 @@ export const EnhancedCostCalculator: React.FC = () => {
         setBackendConnected(healthResponse);
 
         if (healthResponse && !backendConnected) {
-          console.log('[CostForge] Backend connection established ✓');
+          logger.info('[CostForge] Backend connection established');
         }
       } catch (error) {
         setBackendConnected(false);

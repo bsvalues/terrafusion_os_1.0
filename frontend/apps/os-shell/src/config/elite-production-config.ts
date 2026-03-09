@@ -28,7 +28,7 @@ interface OptimizationMetrics {
 const eliteBundleAnalyzer = (): Plugin => ({
   name: 'elite-bundle-analyzer',
   buildStart() {
-    console.log('🔬 [Elite Optimizer] Starting advanced bundle analysis...');
+    console.debug('🔬 [Elite Optimizer] Starting advanced bundle analysis...');
   },
   generateBundle(options, bundle) {
     const chunks = Object.values(bundle);
@@ -36,15 +36,15 @@ const eliteBundleAnalyzer = (): Plugin => ({
       return acc + (chunk.type === 'chunk' ? chunk.code.length : 0);
     }, 0);
 
-    console.log(`📊 [Elite Optimizer] Bundle Analysis:`);
-    console.log(`   Total Size: ${(totalSize / 1024).toFixed(2)} KB`);
-    console.log(`   Chunks: ${chunks.filter((c) => c.type === 'chunk').length}`);
-    console.log(`   Assets: ${chunks.filter((c) => c.type === 'asset').length}`);
+    console.debug(`📊 [Elite Optimizer] Bundle Analysis:`);
+    console.debug(`   Total Size: ${(totalSize / 1024).toFixed(2)} KB`);
+    console.debug(`   Chunks: ${chunks.filter((c) => c.type === 'chunk').length}`);
+    console.debug(`   Assets: ${chunks.filter((c) => c.type === 'asset').length}`);
 
     // Advanced chunk analysis
     chunks.forEach((chunk) => {
       if (chunk.type === 'chunk' && chunk.code.length > 100000) {
-        console.log(
+        console.debug(
           `⚠️  [Elite Optimizer] Large chunk detected: ${chunk.fileName} (${(chunk.code.length / 1024).toFixed(2)} KB)`
         );
       }
@@ -66,16 +66,16 @@ const elitePerformanceMonitor = (): Plugin => {
     },
     buildEnd() {
       const buildTime = Date.now() - (startTime || 0);
-      console.log(`⚡ [Elite Optimizer] Build completed in ${buildTime}ms`);
+      console.debug(`⚡ [Elite Optimizer] Build completed in ${buildTime}ms`);
 
       if (buildTime > 30000) {
-        console.log(
+        console.debug(
           '🔧 [Elite Optimizer] Recommendation: Consider enabling build caching for faster builds'
         );
       }
 
       if (buildTime < 5000) {
-        console.log('🏆 [Elite Optimizer] Excellent build performance!');
+        console.debug('🏆 [Elite Optimizer] Excellent build performance!');
       }
     },
   };
@@ -114,7 +114,7 @@ const eliteCSSOptimizer = (): Plugin => ({
         );
 
         chunk.source = cssContent;
-        console.log(`✨ [Elite Optimizer] Optimized CSS: ${fileName}`);
+        console.debug(`✨ [Elite Optimizer] Optimized CSS: ${fileName}`);
       }
     });
   },
@@ -321,10 +321,10 @@ export class EliteMetricsCollector {
       this.metrics.bundleSize = totalSize;
       this.metrics.chunkCount = chunkCount;
 
-      console.log('📈 [Elite Metrics] Production build analysis:');
-      console.log(`   Bundle Size: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
-      console.log(`   Chunk Count: ${chunkCount}`);
-      console.log(`   Target FPS: 60fps (16.67ms frame budget)`);
+      console.debug('📈 [Elite Metrics] Production build analysis:');
+      console.debug(`   Bundle Size: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
+      console.debug(`   Chunk Count: ${chunkCount}`);
+      console.debug(`   Target FPS: 60fps (16.67ms frame budget)`);
 
       return this.metrics;
     } catch (error) {

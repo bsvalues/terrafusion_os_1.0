@@ -95,7 +95,7 @@ export const TerraFusionEliteCommandCenter: React.FC<CommandCenterProps> = ({ cl
   }, []);
 
   const initializeCommandCenter = useCallback(() => {
-    console.log('🏛️ Initializing TerraFusion Elite Command Center...');
+    console.debug('🏛️ Initializing TerraFusion Elite Command Center...');
 
     const platformSummaries: PlatformSummary[] = [
       {
@@ -227,7 +227,7 @@ export const TerraFusionEliteCommandCenter: React.FC<CommandCenterProps> = ({ cl
     ];
 
     setPlatforms(platformSummaries);
-    console.log('✅ Elite Command Center - Full System Status Achieved');
+    console.debug('✅ Elite Command Center - Full System Status Achieved');
   }, []);
 
   const updateLiveMetrics = useCallback(() => {

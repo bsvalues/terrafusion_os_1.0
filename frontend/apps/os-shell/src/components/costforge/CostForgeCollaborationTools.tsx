@@ -17,6 +17,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import logger from '@/utils/logger';
 
 // CostForge Collaboration Types
 interface TeamMember {
@@ -173,7 +174,7 @@ export function CostForgeCollaborationTools() {
       };
 
       // In real implementation, this would be sent to the backend
-      console.log('New comment:', comment);
+      logger.debug('New comment:', comment);
       setNewComment('');
       setSelectedMembers([]);
     }

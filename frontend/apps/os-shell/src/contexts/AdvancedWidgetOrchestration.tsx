@@ -290,13 +290,13 @@ export const AdvancedWidgetOrchestrationProvider: React.FC<{ children: React.Rea
 
   // Elite Widget Registration
   const registerWidget = useCallback((widget: AdvancedWidget) => {
-    console.log(`🚀 [WidgetOrchestration] Registering elite widget: ${widget.name}`);
+    console.debug(`🚀 [WidgetOrchestration] Registering elite widget: ${widget.name}`);
     dispatch({ type: 'REGISTER_WIDGET', payload: widget });
   }, []);
 
   // Widget Unregistration
   const unregisterWidget = useCallback((id: string) => {
-    console.log(`🗑️ [WidgetOrchestration] Unregistering widget: ${id}`);
+    console.debug(`🗑️ [WidgetOrchestration] Unregistering widget: ${id}`);
     dispatch({ type: 'UNREGISTER_WIDGET', payload: id });
   }, []);
 
@@ -310,7 +310,7 @@ export const AdvancedWidgetOrchestrationProvider: React.FC<{ children: React.Rea
 
   // AI-Powered Layout Optimization
   const optimizeLayout = useCallback(() => {
-    console.log('🧠 [WidgetOrchestration] Running AI layout optimization...');
+    console.debug('🧠 [WidgetOrchestration] Running AI layout optimization...');
 
     // Elite PhD-Level AI Optimization Algorithm
     const widgets = Array.from(state.widgets.values());
@@ -364,21 +364,21 @@ export const AdvancedWidgetOrchestrationProvider: React.FC<{ children: React.Rea
 
   // System Integration Functions
   const integrateWithHealthMonitor = useCallback((connected: boolean) => {
-    console.log(
+    console.debug(
       `💚 [WidgetOrchestration] Health Monitor integration: ${connected ? 'CONNECTED' : 'DISCONNECTED'}`
     );
     dispatch({ type: 'UPDATE_SYSTEM_INTEGRATION', payload: { healthMonitorConnected: connected } });
   }, []);
 
   const integrateWithBackend = useCallback((connected: boolean) => {
-    console.log(
+    console.debug(
       `🔗 [WidgetOrchestration] Backend integration: ${connected ? 'CONNECTED' : 'DISCONNECTED'}`
     );
     dispatch({ type: 'UPDATE_SYSTEM_INTEGRATION', payload: { backendConnected: connected } });
   }, []);
 
   const integrateWithAISwarm = useCallback((connected: boolean) => {
-    console.log(
+    console.debug(
       `🧠 [WidgetOrchestration] AI Swarm integration: ${connected ? 'CONNECTED' : 'DISCONNECTED'}`
     );
     dispatch({ type: 'UPDATE_SYSTEM_INTEGRATION', payload: { aiSwarmConnected: connected } });

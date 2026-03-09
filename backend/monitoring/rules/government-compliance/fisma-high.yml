@@ -1,0 +1,103 @@
+# FISMA-HIGH Compliance Monitoring Rules for TerraFusion OS
+# NIST 800-53 control families mapped to Prometheus alerts
+
+groups:
+  - name: fisma_high_access_control
+    interval: 30s
+    rules:
+      - alert: ExcessiveFailedLogins
+        expr: rate(terrafusion_auth_failed_logins_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: critical
+          compliance: "NIST-AC-7"
+          fisma_control: "AC-7 Unsuccessful Logon Attempts"
+        annotations:
+          summary: "Excessive failed login attempts detected"
+          description: "More than 5 failed logins/min for {{ $labels.instance }} — potential brute force attack."
+
+      - alert: UnauthorizedAccessAttempt
+        expr: rate(terrafusion_auth_unauthorized_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          compliance: "NIST-AC-3"
+          fisma_control: "AC-3 Access Enforcement"
+        annotations:
+          summary: "Unauthorized access attempt detected"
+          description: "Unauthorized access on {{ $labels.instance }}: {{ $labels.resource }}."
+
+  - name: fisma_high_audit
+    interval: 30s
+    rules:
+      - alert: AuditLogGap
+        expr: time() - terrafusion_audit_last_write_timestamp > 300
+        for: 5m
+        labels:
+          severity: critical
+          compliance: "NIST-AU-3"
+          fisma_control: "AU-3 Content of Audit Records"
+        annotations:
+          summary: "Audit log gap detected"
+          description: "No audit log writes for >5 minutes on {{ $labels.instance }}. FISMA-HIGH requires continuous audit logging."
+
+      - alert: AuditStorageCapacity
+        expr: terrafusion_audit_storage_used_bytes / terrafusion_audit_storage_total_bytes > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          compliance: "NIST-AU-4"
+          fisma_control: "AU-4 Audit Storage Capacity"
+        annotations:
+          summary: "Audit storage approaching capacity"
+          description: "Audit storage at {{ $value | humanizePercentage }} on {{ $labels.instance }}."
+
+  - name: fisma_high_availability
+    interval: 30s
+    rules:
+      - alert: ServiceUnavailable
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          compliance: "NIST-CP-10"
+          fisma_control: "CP-10 Information System Recovery"
+        annotations:
+          summary: "TerraFusion service down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} is unreachable."
+
+      - alert: HighErrorRate
+        expr: rate(terrafusion_http_requests_total{status=~"5.."}[5m]) / rate(terrafusion_http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          compliance: "NIST-SI-4"
+          fisma_control: "SI-4 Information System Monitoring"
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate >5% for {{ $labels.job }} on {{ $labels.instance }}."
+
+  - name: fisma_high_data_integrity
+    interval: 60s
+    rules:
+      - alert: DatabaseConnectionPoolExhausted
+        expr: terrafusion_db_active_connections / terrafusion_db_max_connections > 0.9
+        for: 5m
+        labels:
+          severity: critical
+          compliance: "NIST-SC-8"
+          fisma_control: "SC-8 Transmission Confidentiality and Integrity"
+        annotations:
+          summary: "Database connection pool near exhaustion"
+          description: "DB pool at {{ $value | humanizePercentage }} on {{ $labels.instance }}."
+
+      - alert: CountyDataIsolationViolation
+        expr: terrafusion_cross_county_access_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          compliance: "NIST-AC-4"
+          fisma_control: "AC-4 Information Flow Enforcement"
+        annotations:
+          summary: "Cross-county data access detected"
+          description: "Sovereign County isolation violation: cross-county access on {{ $labels.instance }}."

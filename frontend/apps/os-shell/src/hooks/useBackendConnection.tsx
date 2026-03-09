@@ -101,7 +101,7 @@ export const useBackendConnection = () => {
       const responseTime = Math.round(endTime - startTime);
 
       if (error.name === 'AbortError') {
-        console.log('Health check aborted');
+        console.debug('Health check aborted');
         return null;
       }
 
@@ -130,10 +130,10 @@ export const useBackendConnection = () => {
       }
 
       const delay = RETRY_DELAY_BASE * Math.pow(2, attemptNumber); // Exponential backoff
-      console.log(`Scheduling reconnection attempt ${attemptNumber + 1} in ${delay}ms`);
+      console.debug(`Scheduling reconnection attempt ${attemptNumber + 1} in ${delay}ms`);
 
       reconnectTimeoutRef.current = setTimeout(async () => {
-        console.log(`Reconnection attempt ${attemptNumber + 1}...`);
+        console.debug(`Reconnection attempt ${attemptNumber + 1}...`);
         const result = await testConnection();
 
         if (!result) {
@@ -147,7 +147,7 @@ export const useBackendConnection = () => {
   const startMonitoring = useCallback(() => {
     if (isMonitoring) return;
 
-    console.log('🔍 Starting backend connection monitoring...');
+    console.debug('🔍 Starting backend connection monitoring...');
     setIsMonitoring(true);
 
     // Initial connection test
@@ -159,13 +159,13 @@ export const useBackendConnection = () => {
   }, [isMonitoring, testConnection, scheduleReconnect]);
 
   const stopMonitoring = useCallback(() => {
-    console.log('⏹️ Stopping backend connection monitoring...');
+    console.debug('⏹️ Stopping backend connection monitoring...');
     setIsMonitoring(false);
     cleanup();
   }, [cleanup]);
 
   const forceReconnect = useCallback(() => {
-    console.log('🔄 Forcing backend reconnection...');
+    console.debug('🔄 Forcing backend reconnection...');
     setState((prev) => ({ ...prev, connectionAttempts: 0, lastError: null }));
     testConnection();
   }, [testConnection]);

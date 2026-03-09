@@ -8,6 +8,7 @@
  */
 
 import { useEffect, useCallback } from 'react';
+import logger from '../utils/logger';
 import { validateOriginAndGetModuleId } from './ipcOrigin';
 import { routeIpcMessage, type TelemetryEvent } from './ipcRouter';
 import { useAgentStore } from '../sentinel/agentStore';
@@ -112,16 +113,11 @@ export function useIpcListener() {
   useEffect(() => {
     window.addEventListener('message', handleMessage);
 
-    if (import.meta.env.DEV) {
-      console.log('[IPC] Shell IPC bridge installed');
-    }
+    logger.debug('[IPC] Shell IPC bridge installed');
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      
-      if (import.meta.env.DEV) {
-        console.log('[IPC] Shell IPC bridge removed');
-      }
+      logger.debug('[IPC] Shell IPC bridge removed');
     };
   }, [handleMessage]);
 

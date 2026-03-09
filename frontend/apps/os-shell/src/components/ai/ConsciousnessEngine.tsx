@@ -146,7 +146,7 @@ export function useConsciousnessEngine() {
         suggestion: 'Auto-populate property details from county records',
         confidence: 85,
         reason: 'Based on your recent assessment patterns',
-        action: () => console.log('Auto-populating property data...'),
+        action: () => console.debug('Auto-populating property data...'),
       });
     }
 
@@ -157,7 +157,7 @@ export function useConsciousnessEngine() {
         suggestion: 'Review pending assessments from yesterday',
         confidence: 75,
         reason: 'Morning review pattern detected',
-        action: () => console.log('Loading pending assessments...'),
+        action: () => console.debug('Loading pending assessments...'),
       });
     }
 
@@ -169,7 +169,7 @@ export function useConsciousnessEngine() {
         suggestion: 'Create macro for repeated workflow',
         confidence: 90,
         reason: `You've repeated "${repeatActions[0]}" ${userPatterns.find((p) => p.action === repeatActions[0])?.frequency} times`,
-        action: () => console.log('Creating workflow macro...'),
+        action: () => console.debug('Creating workflow macro...'),
       });
     }
 

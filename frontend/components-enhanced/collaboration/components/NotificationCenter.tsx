@@ -348,7 +348,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     // Handle navigation based on notification type
     if (notification.data) {
       // Navigate to relevant page based on notification data
-      console.log('Navigate to:', notification.data);
+      console.debug('Navigate to:', notification.data);
     }
   }, [markAsReadMutation]);
 

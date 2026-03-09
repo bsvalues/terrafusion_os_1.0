@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logger from '../utils/logger';
 const GovernmentArchitecture: React.FC = () => {
   const [_activeSection, _setActiveSection] = useState('architecture');
   const [deploymentStatus, setDeploymentStatus] = useState('ready');
@@ -153,18 +154,11 @@ const GovernmentArchitecture: React.FC = () => {
   const deployChampionship = () => {
     setDeploymentStatus('deploying');
     // Championship Deployment initiated
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Initiating Championship Deployment...');
-      // eslint-disable-next-line no-console
-      console.log('Package: Terrafusion-Gov-Edition-2.0.msi');
-      // eslint-disable-next-line no-console
-      console.log('Size: ~50MB');
-      // eslint-disable-next-line no-console
-      console.log('Requirements: None (no admin, no drivers)');
-      // eslint-disable-next-line no-console
-      console.log('Deployment: SCCM/Intune ready');
-    }
+    logger.info('Initiating Championship Deployment...');
+    logger.debug('Package: Terrafusion-Gov-Edition-2.0.msi');
+    logger.debug('Size: ~50MB');
+    logger.debug('Requirements: None (no admin, no drivers)');
+    logger.debug('Deployment: SCCM/Intune ready');
     setTimeout(() => {
       setDeploymentStatus('deployed');
       alert('Championship deployment package ready for IT!');
@@ -173,23 +167,12 @@ const GovernmentArchitecture: React.FC = () => {
   const activateSwarm = () => {
     setSwarmActive(true);
     // AI Swarm activation logs
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Activating 164-agent swarm...');
-      // eslint-disable-next-line no-console
-      console.log('Supreme Commander: BELICHICK');
-      // eslint-disable-next-line no-console
-      console.log('Brady Units: GOV, COM, AI');
-      // eslint-disable-next-line no-console
-      console.log('Coordinators: BUILD, TEST, DEPLOY, OPS');
-    }
-    // Additional swarm details
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Squad Leaders: 12 active');
-      // eslint-disable-next-line no-console
-      console.log('Micro Agents: 144 operational');
-    }
+    logger.info('Activating 164-agent swarm...');
+    logger.debug('Supreme Commander: BELICHICK');
+    logger.debug('Brady Units: GOV, COM, AI');
+    logger.debug('Coordinators: BUILD, TEST, DEPLOY, OPS');
+    logger.debug('Squad Leaders: 12 active');
+    logger.debug('Micro Agents: 144 operational');
     setTimeout(() => {
       alert('Swarm fully operational at 379,000,000× performance!');
     }, 1500);
@@ -197,10 +180,7 @@ const GovernmentArchitecture: React.FC = () => {
   const validateCompliance = () => {
     setComplianceChecked(true);
     // Compliance validation initiated
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Running compliance validation...');
-    }
+    logger.info('Running compliance validation...');
     const checks = [
       'FISMA Moderate: PASSED',
       'NIST CSF 1.1: COMPLIANT',
@@ -210,10 +190,7 @@ const GovernmentArchitecture: React.FC = () => {
       'Encryption: AES-256-GCM',
       'Audit Logs: ENABLED',
     ];
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      checks.forEach((check) => console.log('✓ ' + check));
-    }
+    checks.forEach((check) => logger.debug(check));
     setTimeout(() => {
       alert('All compliance checks PASSED!');
     }, 1000);

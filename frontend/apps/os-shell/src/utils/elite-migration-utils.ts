@@ -56,6 +56,8 @@ export const ariaEnhancements = {
   },
 };
 
-console.log('🔧 [Elite Migration] Icon mappings and ARIA enhancements loaded');
-console.log('📊 [Elite Status] Available icon mappings:', Object.keys(iconMappings).length);
-console.log('♿ [Elite Accessibility] ARIA enhancements configured');
+import logger from './logger';
+
+logger.debug('[Elite Migration] Icon mappings and ARIA enhancements loaded');
+logger.debug('[Elite Status] Available icon mappings:', Object.keys(iconMappings).length);
+logger.debug('[Elite Accessibility] ARIA enhancements configured');

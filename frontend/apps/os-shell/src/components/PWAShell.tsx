@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logger from '../utils/logger';
 interface Module {
   id: string;
   name: string;
@@ -203,10 +204,7 @@ const PWAShell: React.FC = () => {
         if (healthResponse.ok) {
           const health = await healthResponse.json();
           setSystemHealth(health);
-          if (process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
-            console.log('✨ System Health:', health);
-          }
+          logger.debug('System Health:', health);
         }
         setLoadingMessage('Loading modules from registry...');
 
@@ -225,17 +223,11 @@ const PWAShell: React.FC = () => {
               url: mod.LaunchPath || `/modules/${mod.Name}/index.html`,
             }));
             setModules(convertedModules);
-            if (process.env.NODE_ENV === 'development') {
-              // eslint-disable-next-line no-console
-              console.log('🔧 PWAShell: Loaded', convertedModules.length, 'modules from backend');
-            }
+            logger.debug('PWAShell: Loaded', convertedModules.length, 'modules from backend');
           } else {
             // Fallback to default modules
             setModules(defaultModules);
-            if (process.env.NODE_ENV === 'development') {
-              // eslint-disable-next-line no-console
-              console.log('⚠️ Using default modules as fallback');
-            }
+            logger.debug('Using default modules as fallback');
           }
         } else {
           setModules(defaultModules);
@@ -248,20 +240,14 @@ const PWAShell: React.FC = () => {
           if (aiResponse.ok) {
             const aiInfo = await aiResponse.json();
             setAiAgentStatus(aiInfo);
-            if (process.env.NODE_ENV === 'development') {
-              // eslint-disable-next-line no-console
-              console.log('🤖 AI Swarm Status:', aiInfo.AIAgents, 'agents active');
-            }
+            logger.debug('AI Swarm Status:', aiInfo.AIAgents, 'agents active');
           }
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
-            console.log('⚠️ AI Swarm status unavailable');
-          }
+          logger.debug('AI Swarm status unavailable');
         }
         setLoadingMessage('Finalizing transcendence...');
       } catch (error) {
-        console.error('Failed to load real system data:', error);
+        logger.error('Failed to load real system data:', error);
         // Fallback to default modules
         setModules(defaultModules);
         throw error;
@@ -304,10 +290,7 @@ const PWAShell: React.FC = () => {
             setRealDataConnected(health.IsHealthy);
           }
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
-            console.log('⚠️ Health check failed, system may be offline');
-          }
+          logger.debug('Health check failed, system may be offline');
           setRealDataConnected(false);
         }
       }, 30000); // Check every 30 seconds
@@ -326,7 +309,7 @@ const PWAShell: React.FC = () => {
           startHealthChecks();
         }, 500);
       } catch (error) {
-        console.error('Failed to initialize app:', error);
+        logger.error('Failed to initialize app:', error);
         showError('Failed to connect to Terrafusion unified backend');
         setLoading(false);
       }
@@ -349,7 +332,7 @@ const PWAShell: React.FC = () => {
   const showError = (message: string) => {
     const brandMessage =
       BRAND.errorMessages[Math.floor(Math.random() * BRAND.errorMessages.length)];
-    console.error(`${brandMessage}: ${message}`);
+    logger.error(`${brandMessage}: ${message}`);
   };
   if (loading) {
     return (

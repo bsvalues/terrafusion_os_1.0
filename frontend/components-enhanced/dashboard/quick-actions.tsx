@@ -51,7 +51,7 @@ const quickActions = [
 
 export function QuickActions() {
   const handleAction = (action: string) => {
-    console.log(`Executing quick action: ${action}`)
+    console.debug(`Executing quick action: ${action}`)
   }
 
   return (

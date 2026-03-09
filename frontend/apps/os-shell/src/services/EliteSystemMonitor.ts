@@ -95,7 +95,7 @@ class EliteSystemMonitor {
       this.notifySubscribers();
     }, intervalMs);
 
-    console.log('🚀 Elite System Monitor: Championship monitoring activated');
+    console.debug('🚀 Elite System Monitor: Championship monitoring activated');
   }
 
   /**
@@ -107,7 +107,7 @@ class EliteSystemMonitor {
       this.monitoringInterval = null;
     }
     this.isMonitoring = false;
-    console.log('Elite System Monitor: Monitoring stopped');
+    console.debug('Elite System Monitor: Monitoring stopped');
   }
 
   /**

@@ -20,7 +20,7 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
         setMetrics(response.data);
       }
     } catch (error) {
-      console.log('📊 Government AI: Loading elite metrics');
+      console.debug('📊 Government AI: Loading elite metrics');
     } finally {
       setLoading(false);
     }

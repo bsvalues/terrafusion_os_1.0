@@ -82,6 +82,8 @@ export { };
 
 describe('integrationSetup.setup', () => {
   it('loads integration test setup', () => {
-    expect(true).toBe(true);
+    expect(window.matchMedia).toBeDefined();
+    expect(global.IntersectionObserver).toBeDefined();
+    expect(global.ResizeObserver).toBeDefined();
   });
 });

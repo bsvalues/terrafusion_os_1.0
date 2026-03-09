@@ -135,7 +135,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
           await gptHub.start({
             onRAGProcessingStatus: (status) => {
               // Update processing status
-              console.log('RAG Processing Status:', status);
+              console.debug('RAG Processing Status:', status);
 
               // Refresh data if processing completed
               if (status.status === 'Completed') {

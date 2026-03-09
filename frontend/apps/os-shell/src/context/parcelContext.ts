@@ -256,7 +256,7 @@ export function setParcelContextFromRoute(parcelId: string, parcelName?: string)
  * ```tsx
  * const parcel = useParcelContext();
  * if (parcel) {
- *   console.log(`Working with parcel: ${parcel.parcelId}`);
+ *   console.debug(`Working with parcel: ${parcel.parcelId}`);
  * }
  * ```
  */

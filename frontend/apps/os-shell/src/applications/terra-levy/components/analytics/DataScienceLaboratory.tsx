@@ -179,7 +179,7 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
   // Initialize Jupyter Lab connection
   const initializeJupyterLab = useCallback(async () => {
     try {
-      console.log('Initializing Jupyter Lab for TerraLevy Data Science...');
+      console.debug('Initializing Jupyter Lab for TerraLevy Data Science...');
 
       // In production, this would connect to actual Jupyter Lab server
       // For now, we'll simulate the connection
@@ -192,7 +192,7 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
       setDatasets([]);
       setAlgorithms([]);
 
-      console.log('Jupyter Lab initialized successfully');
+      console.debug('Jupyter Lab initialized successfully');
     } catch (error) {
       console.error('Failed to initialize Jupyter Lab:', error);
       setIsJupyterConnected(false);
@@ -219,7 +219,7 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
         setNotebooks((prev) => [newNotebook, ...prev]);
 
         // In production, would create actual Jupyter notebook file
-        console.log('Created new notebook:', newNotebook);
+        console.debug('Created new notebook:', newNotebook);
 
         return newNotebook;
       } catch (error) {
@@ -249,7 +249,7 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
         wsRef.current = new WebSocket(`${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/jupyter-collaboration`);
 
         wsRef.current.onopen = () => {
-          console.log('Collaborative session started');
+          console.debug('Collaborative session started');
           if (wsRef.current) {
             wsRef.current.send(
               JSON.stringify({
@@ -275,7 +275,7 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
   const executeQuantumAlgorithm = useCallback(
     async (algorithmId: string, parameters: any) => {
       try {
-        console.log(`Executing quantum algorithm: ${algorithmId}`);
+        console.debug(`Executing quantum algorithm: ${algorithmId}`);
 
         const algorithm = algorithms.find((a) => a.id === algorithmId);
         if (!algorithm) throw new Error('Algorithm not found');

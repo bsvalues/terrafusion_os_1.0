@@ -88,7 +88,7 @@ export function CollaborativeEditor({
           await createSession(documentId, user);
         }
 
-        console.log('Collaboration session initialized');
+        console.debug('Collaboration session initialized');
       } catch (error) {
         console.error('Failed to initialize session:', error);
         setSyncError('Failed to initialize collaboration session');
@@ -123,7 +123,7 @@ export function CollaborativeEditor({
 
       isApplyingRemoteChanges.current = false;
 
-      console.log(`Applied ${operations.length} remote operations from user ${userId}`);
+      console.debug(`Applied ${operations.length} remote operations from user ${userId}`);
     });
   }, [subscribeToContentChanges, user.userId]);
 
