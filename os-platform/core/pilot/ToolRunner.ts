@@ -183,8 +183,10 @@ const ROLE_CLAIMS: Record<string, string[]> = {
   viewer:        ['read:parcel', 'read:dossier'],
   appraiser:     ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier'],
   supervisor:    ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier', 'write:dais', 'approve:irreversible'],
-  administrator: ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier', 'write:dais', 'approve:irreversible', 'admin:trace', 'admin:system'],
-  auditor:       ['read:parcel', 'read:dossier', 'read:trace', 'audit:all'],
+  administrator: ['read:parcel', 'read:dossier', 'write:forge', 'write:dossier', 'write:dais', 'write:clerk', 'write:treasury', 'write:audit', 'approve:irreversible', 'admin:trace', 'admin:system'],
+  clerk:         ['read:parcel', 'read:dossier', 'write:clerk'],
+  treasurer:     ['read:parcel', 'read:dossier', 'write:treasury'],
+  auditor:       ['read:parcel', 'read:dossier', 'read:trace', 'write:audit', 'audit:all'],
 };
 
 /**
