@@ -8,6 +8,7 @@ module.exports = {
   extends: ['eslint:recommended'],
   ignorePatterns: ['dist', '.eslintrc.js', 'node_modules', 'components-enhanced', '**/*.test.*'],
   parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint', 'react-hooks'],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
