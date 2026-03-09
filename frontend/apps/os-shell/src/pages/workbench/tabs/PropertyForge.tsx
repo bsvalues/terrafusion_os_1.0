@@ -1,10 +1,14 @@
 /**
  * PropertyForge.tsx
  *
- * Phase 5.4 + R2.5: Property Forge Tab - Valuation MWUX Slice
+ * Phase 5.4 + R2.6: Property Forge Tab - Valuation MWUX Slice
  * Real MWUX with governed tool invocations:
  * - explain_model_results: AI-powered valuation explanation
  * - explain_value_change: Year-over-year value change analysis
+ * - compare_assessed_value_history: Multi-year value trend with narrative
+ * - run_income_valuation: Income capitalization approach (NOI / cap rate)
+ * - explain_model_inputs: Model input factor breakdown with PII flags
+ * - summarize_sales_comps_rationale: Comp selection rationale + similarity
  *
  * Architecture: UI → select params → governed tool → correlationId UX
  */
@@ -78,6 +82,33 @@ interface ValueChangeState {
   error?: ErrorInfo;
 }
 
+/** Assessed value history trend from compare_assessed_value_history */
+interface ValueHistoryEntry { year: number; av: number; tv?: number }
+interface ValueHistoryResult {
+  trend: ValueHistoryEntry[];
+  narrative?: string;
+  flags?: string[];
+}
+type ToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
+
+/** Income valuation from run_income_valuation */
+interface IncomeResult {
+  netOperatingIncome: number;
+  capRate: number;
+  valuation: number;
+  grossIncomeMultiplier: number;
+  riskClassification: string;
+  source: string;
+}
+
+/** Model inputs from explain_model_inputs */
+interface ModelInput { name: string; source: string; pii: boolean }
+interface ModelInputsResult { inputs: ModelInput[]; summary: string }
+
+/** Sales comps from summarize_sales_comps_rationale */
+interface CompEntry { id: string; similarity: number; notes: string[] }
+interface SalesCompsResult { rationale: string; comps: CompEntry[] }
+
 export const PropertyForge: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
 
@@ -87,6 +118,13 @@ export const PropertyForge: React.FC = () => {
   const [compareToYear, setCompareToYear] = useState<number>(CURRENT_YEAR - 1);
   const [explainState, setExplainState] = useState<ExplainState>({ status: 'idle' });
   const [valueChangeState, setValueChangeState] = useState<ValueChangeState>({ status: 'idle' });
+  const [historyState, setHistoryState] = useState<ToolState<ValueHistoryResult>>({ status: 'idle' });
+  const [incomeState, setIncomeState] = useState<ToolState<IncomeResult>>({ status: 'idle' });
+  const [modelInputsState, setModelInputsState] = useState<ToolState<ModelInputsResult>>({ status: 'idle' });
+  const [compsState, setCompsState] = useState<ToolState<SalesCompsResult>>({ status: 'idle' });
+  const [rentalIncome, setRentalIncome] = useState<string>('');
+  const [modelId, setModelId] = useState<string>('cost-approach');
+  const [compIds, setCompIds] = useState<string>('');
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
   const handleExplain = useCallback(async () => {
@@ -289,6 +327,83 @@ export const PropertyForge: React.FC = () => {
       ]);
     }
   }, [parcelId, taxYear]);
+
+  /** Invoke compare_assessed_value_history — multi-year value trend */
+  const handleValueHistory = useCallback(async () => {
+    setHistoryState({ status: 'loading' });
+    try {
+      const years = TAX_YEARS.slice(0, 5);
+      const response = await invokeTool({ toolId: 'compare_assessed_value_history', params: { county: 'benton', parcelId, years, includeBreakdown: true }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setHistoryState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'compare_assessed_value_history', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { years: years.length } }, ...prev.slice(0, 19)]);
+      } else {
+        setHistoryState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'HISTORY_FAILED', message: response.error?.message || 'Failed to fetch value history', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setHistoryState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId]);
+
+  /** Invoke run_income_valuation — income capitalization approach */
+  const handleIncomeValuation = useCallback(async () => {
+    const income = parseFloat(rentalIncome);
+    if (!income || income <= 0) return;
+    setIncomeState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'run_income_valuation', params: { county: 'benton', annualRentalIncome: income }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setIncomeState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'run_income_valuation', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { income } }, ...prev.slice(0, 19)]);
+      } else {
+        setIncomeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'INCOME_FAILED', message: response.error?.message || 'Income valuation failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setIncomeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, rentalIncome]);
+
+  /** Invoke explain_model_inputs — model factor breakdown */
+  const handleModelInputs = useCallback(async () => {
+    setModelInputsState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'explain_model_inputs', params: { county: 'benton', modelId, asOfYear: taxYear }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setModelInputsState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'explain_model_inputs', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { modelId } }, ...prev.slice(0, 19)]);
+      } else {
+        setModelInputsState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'MODEL_INPUTS_FAILED', message: response.error?.message || 'Model inputs lookup failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setModelInputsState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, modelId, taxYear]);
+
+  /** Invoke summarize_sales_comps_rationale — comp analysis */
+  const handleSalesComps = useCallback(async () => {
+    const ids = compIds.split(',').map(s => s.trim()).filter(Boolean);
+    if (ids.length === 0) return;
+    setCompsState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'summarize_sales_comps_rationale', params: { county: 'benton', subjectId: parcelId, compIds: ids, adjustments: true }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setCompsState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'summarize_sales_comps_rationale', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { comps: ids.length } }, ...prev.slice(0, 19)]);
+      } else {
+        setCompsState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'COMPS_FAILED', message: response.error?.message || 'Sales comps analysis failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setCompsState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, compIds]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -650,6 +765,127 @@ export const PropertyForge: React.FC = () => {
             }}
           />
         )}
+      </BentoCard>
+
+      {/* Value History Trend */}
+      <BentoCard title='📊 Value History Trend' variant='default'>
+        <p className='tf-text-tertiary text-sm mb-4'>
+          Multi-year assessed value comparison for {parcelId}
+        </p>
+        <button onClick={handleValueHistory} disabled={historyState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4'>
+          {historyState.status === 'loading' ? 'Loading...' : 'Compare Value History'}
+        </button>
+        {historyState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Fetching history...</span></div>}
+        {historyState.status === 'success' && historyState.result && (
+          <div className='space-y-4'>
+            <div className='grid grid-cols-5 gap-2'>
+              {historyState.result.trend.map(t => (
+                <div key={t.year} className='tf-panel p-3 text-center'>
+                  <div className='tf-text-tertiary text-xs'>{t.year}</div>
+                  <div className='text-sm font-bold tf-text'>{formatCurrency(t.av)}</div>
+                  {t.tv !== undefined && <div className='text-xs tf-text-dim'>Tax: {formatCurrency(t.tv)}</div>}
+                </div>
+              ))}
+            </div>
+            {historyState.result.narrative && <div className='tf-panel p-4'><p className='tf-text-secondary text-sm'>{historyState.result.narrative}</p></div>}
+            {historyState.result.flags && historyState.result.flags.length > 0 && (
+              <div className='flex gap-2 flex-wrap'>{historyState.result.flags.map(f => <span key={f} className='text-xs tf-panel px-2 py-1 rounded'>{f}</span>)}</div>
+            )}
+          </div>
+        )}
+        {historyState.status === 'error' && historyState.error && <ErrorDisplay error={{ message: historyState.error.message, errorCode: historyState.error.code, correlationId: historyState.correlationId }} />}
+      </BentoCard>
+
+      {/* Income Approach */}
+      <BentoCard title='💰 Income Approach' variant='default'>
+        <p className='tf-text-tertiary text-sm mb-4'>Income capitalization for commercial property valuation</p>
+        <div className='mb-4'>
+          <label htmlFor='rental-income' className='block tf-text-secondary text-sm mb-2'>Annual Rental Income ($)</label>
+          <input id='rental-income' type='number' min='0' step='1000' value={rentalIncome} onChange={e => setRentalIncome(e.target.value)} placeholder='e.g. 120000' className='w-full tf-input px-3 py-2' />
+        </div>
+        <button onClick={handleIncomeValuation} disabled={incomeState.status === 'loading' || !rentalIncome} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4'>
+          {incomeState.status === 'loading' ? 'Calculating...' : 'Run Income Valuation'}
+        </button>
+        {incomeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Running income approach...</span></div>}
+        {incomeState.status === 'success' && incomeState.result && (
+          <div className='space-y-3'>
+            <div className='grid grid-cols-3 gap-3'>
+              <div className='tf-panel p-3 text-center'><div className='tf-text-tertiary text-xs'>NOI</div><div className='text-lg font-bold tf-text'>{formatCurrency(incomeState.result.netOperatingIncome)}</div></div>
+              <div className='tf-panel p-3 text-center'><div className='tf-text-tertiary text-xs'>Cap Rate</div><div className='text-lg font-bold tf-text'>{incomeState.result.capRate}%</div></div>
+              <div className='tf-panel p-3 text-center'><div className='tf-text-tertiary text-xs'>Valuation</div><div className='text-lg font-bold tf-suite-accent-text'>{formatCurrency(incomeState.result.valuation)}</div></div>
+            </div>
+            <div className='grid grid-cols-2 gap-3'>
+              <div className='tf-panel p-3'><span className='tf-text-tertiary text-xs'>GIM</span><span className='ml-2 font-mono tf-text'>{incomeState.result.grossIncomeMultiplier.toFixed(2)}</span></div>
+              <div className='tf-panel p-3'><span className='tf-text-tertiary text-xs'>Risk</span><span className='ml-2 font-mono tf-text'>{incomeState.result.riskClassification}</span></div>
+            </div>
+            <div className='text-xs tf-text-dim'>{incomeState.result.source}</div>
+          </div>
+        )}
+        {incomeState.status === 'error' && incomeState.error && <ErrorDisplay error={{ message: incomeState.error.message, errorCode: incomeState.error.code, correlationId: incomeState.correlationId }} />}
+      </BentoCard>
+
+      {/* Model Inputs */}
+      <BentoCard title='🔍 Model Inputs' variant='default'>
+        <p className='tf-text-tertiary text-sm mb-4'>Valuation model factor breakdown with PII flagging</p>
+        <div className='mb-4'>
+          <label htmlFor='model-id' className='block tf-text-secondary text-sm mb-2'>Model</label>
+          <select id='model-id' value={modelId} onChange={e => setModelId(e.target.value)} className='w-full tf-input px-3 py-2'>
+            <option value='cost-approach'>Cost Approach</option>
+            <option value='income-approach'>Income Approach</option>
+            <option value='sales-comparison'>Sales Comparison</option>
+          </select>
+        </div>
+        <button onClick={handleModelInputs} disabled={modelInputsState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4'>
+          {modelInputsState.status === 'loading' ? 'Loading...' : `Explain Inputs (${taxYear})`}
+        </button>
+        {modelInputsState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Loading model inputs...</span></div>}
+        {modelInputsState.status === 'success' && modelInputsState.result && (
+          <div className='space-y-3'>
+            <p className='tf-text-secondary text-sm'>{modelInputsState.result.summary}</p>
+            <div className='space-y-1'>
+              {modelInputsState.result.inputs.map((inp, idx) => (
+                <div key={idx} className='flex items-center justify-between py-2 px-3 tf-panel rounded'>
+                  <span className='tf-text-secondary'>{inp.name}</span>
+                  <span className='flex items-center gap-2'>
+                    <span className='text-xs tf-text-dim'>{inp.source}</span>
+                    {inp.pii && <span className='text-xs px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-error) / 0.15)', color: 'hsl(var(--tf-error))' }}>PII</span>}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {modelInputsState.status === 'error' && modelInputsState.error && <ErrorDisplay error={{ message: modelInputsState.error.message, errorCode: modelInputsState.error.code, correlationId: modelInputsState.correlationId }} />}
+      </BentoCard>
+
+      {/* Sales Comps */}
+      <BentoCard title='🏘️ Sales Comps Rationale' variant='default'>
+        <p className='tf-text-tertiary text-sm mb-4'>Comparable sales selection logic and similarity analysis</p>
+        <div className='mb-4'>
+          <label htmlFor='comp-ids' className='block tf-text-secondary text-sm mb-2'>Comp Parcel IDs (comma-separated)</label>
+          <input id='comp-ids' type='text' value={compIds} onChange={e => setCompIds(e.target.value)} placeholder='e.g. 12345, 12346, 12347' className='w-full tf-input px-3 py-2' />
+        </div>
+        <button onClick={handleSalesComps} disabled={compsState.status === 'loading' || !compIds.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4'>
+          {compsState.status === 'loading' ? 'Analyzing...' : 'Analyze Comps'}
+        </button>
+        {compsState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Analyzing comparables...</span></div>}
+        {compsState.status === 'success' && compsState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'><p className='tf-text-secondary'>{compsState.result.rationale}</p></div>
+            <div className='space-y-2'>
+              {compsState.result.comps.map(c => (
+                <div key={c.id} className='tf-panel p-3 rounded'>
+                  <div className='flex items-center justify-between mb-1'>
+                    <span className='font-mono tf-text text-sm'>{c.id}</span>
+                    <span className='text-sm font-semibold tf-suite-accent-text'>{Math.round(c.similarity * 100)}% match</span>
+                  </div>
+                  {c.notes.length > 0 && <ul className='list-disc list-inside text-xs tf-text-dim'>{c.notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {compsState.status === 'error' && compsState.error && <ErrorDisplay error={{ message: compsState.error.message, errorCode: compsState.error.code, correlationId: compsState.correlationId }} />}
       </BentoCard>
 
       {/* History */}
