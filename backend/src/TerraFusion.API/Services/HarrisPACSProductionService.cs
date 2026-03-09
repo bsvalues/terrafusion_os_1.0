@@ -759,100 +759,86 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
     // Additional implementation methods would continue here...
     // (Truncated for brevity - full implementation would include all helper methods)
 
-    private async Task<CIAPSProperty?> QueryCIAPSPropertyDataAsync(SqlConnection connection, string parcelId)
+    private Task<CIAPSProperty?> QueryCIAPSPropertyDataAsync(SqlConnection connection, string parcelId)
     {
-        await Task.CompletedTask;
-        return new CIAPSProperty { ParcelId = parcelId, AssessedValue = 250000m };
+        return Task.FromResult<CIAPSProperty?>(new CIAPSProperty { ParcelId = parcelId, AssessedValue = 250000m });
     }
 
-    private async Task CacheAssessmentResultAsync(string parcelId, object aiAssessment, object complianceValidation)
+    private Task CacheAssessmentResultAsync(string parcelId, object aiAssessment, object complianceValidation)
     {
-        await Task.CompletedTask;
         _logger.LogInformation("Assessment result cached for parcel {ParcelId}", parcelId);
+        return Task.CompletedTask;
     }
 
-    private async Task<BuildingPermit?> QueryBuildingPermitDataAsync(SqlConnection connection, string parcelId)
+    private Task<BuildingPermit?> QueryBuildingPermitDataAsync(SqlConnection connection, string parcelId)
     {
-        await Task.CompletedTask;
-        return new BuildingPermit { ParcelId = parcelId };
+        return Task.FromResult<BuildingPermit?>(new BuildingPermit { ParcelId = parcelId });
     }
 
-    private async Task UpdateAffectedPropertiesAsync(BuildingPermit permit)
+    private Task UpdateAffectedPropertiesAsync(BuildingPermit permit)
     {
-        await Task.CompletedTask;
         _logger.LogInformation("Updated affected properties for permit {PermitId}", permit.PermitId);
+        return Task.CompletedTask;
     }
 
-    private async Task<SyncResult> SynchronizeCIAPSDataAsync()
+    private Task<SyncResult> SynchronizeCIAPSDataAsync()
     {
-        await Task.CompletedTask;
-        return new SyncResult { Success = true };
+        return Task.FromResult(new SyncResult { Success = true });
     }
 
-    private async Task<SyncResult> SynchronizeBuildingPermitDataAsync()
+    private Task<SyncResult> SynchronizeBuildingPermitDataAsync()
     {
-        await Task.CompletedTask;
-        return new SyncResult { Success = true };
+        return Task.FromResult(new SyncResult { Success = true });
     }
 
-    private async Task<SyncResult> SynchronizeAssessmentRecordsAsync()
+    private Task<SyncResult> SynchronizeAssessmentRecordsAsync()
     {
-        await Task.CompletedTask;
-        return new SyncResult { Success = true };
+        return Task.FromResult(new SyncResult { Success = true });
     }
 
-    private async Task<SyncResult> UpdateAITrainingDataAsync()
+    private Task<SyncResult> UpdateAITrainingDataAsync()
     {
-        await Task.CompletedTask;
-        return new SyncResult { Success = true };
+        return Task.FromResult(new SyncResult { Success = true });
     }
 
-    private async Task<object> LoadHistoricalArchiveDataAsync(int year)
+    private Task<object> LoadHistoricalArchiveDataAsync(int year)
     {
-        await Task.CompletedTask;
-        return new { Year = year, RecordsLoaded = 1000 };
+        return Task.FromResult<object>(new { Year = year, RecordsLoaded = 1000 });
     }
 
-    private async Task<object> PrepareAITrainingDatasetsAsync(object historicalData)
+    private Task<object> PrepareAITrainingDatasetsAsync(object historicalData)
     {
-        await Task.CompletedTask;
-        return new { DatasetSize = 10000 };
+        return Task.FromResult<object>(new { DatasetSize = 10000 });
     }
 
-    private async Task<object> TrainPropertyValuationAgentsAsync(object trainingDatasets)
+    private Task<object> TrainPropertyValuationAgentsAsync(object trainingDatasets)
     {
-        await Task.CompletedTask;
-        return new { Accuracy = 0.999m };
+        return Task.FromResult<object>(new { Accuracy = 0.999m });
     }
 
-    private async Task<object> TrainAssessmentAccuracyAgentsAsync(object trainingDatasets)
+    private Task<object> TrainAssessmentAccuracyAgentsAsync(object trainingDatasets)
     {
-        await Task.CompletedTask;
-        return new { Accuracy = 0.998m };
+        return Task.FromResult<object>(new { Accuracy = 0.998m });
     }
 
-    private async Task<object> TrainComplianceValidationAgentsAsync(object trainingDatasets)
+    private Task<object> TrainComplianceValidationAgentsAsync(object trainingDatasets)
     {
-        await Task.CompletedTask;
-        return new { ComplianceScore = 0.999m };
+        return Task.FromResult<object>(new { ComplianceScore = 0.999m });
     }
 
-    private async Task<object> TrainPredictiveAnalyticsAgentsAsync(object trainingDatasets)
+    private Task<object> TrainPredictiveAnalyticsAgentsAsync(object trainingDatasets)
     {
-        await Task.CompletedTask;
-        return new { PredictionAccuracy = 0.997m };
+        return Task.FromResult<object>(new { PredictionAccuracy = 0.997m });
     }
 
-    private async Task<object> LoadRecentAssessmentDataAsync(TimeSpan period)
+    private Task<object> LoadRecentAssessmentDataAsync(TimeSpan period)
     {
-        await Task.CompletedTask;
-        return new { RecordsLoaded = 5000, Period = period };
+        return Task.FromResult<object>(new { RecordsLoaded = 5000, Period = period });
     }
 
-    private async Task<object> LoadComparableSalesDataAsync(TimeSpan period)
+    private Task<object> LoadComparableSalesDataAsync(TimeSpan period)
     {
-        await Task.CompletedTask;
-        return new { SalesLoaded = 1500, Period = period };
+        return Task.FromResult<object>(new { SalesLoaded = 1500, Period = period });
     }
 
     private object ValidateAssessmentLevel(object ratioStudy)
@@ -871,60 +857,55 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
     }
 
     // Pipeline execution methods
-    private async Task<PipelineStepResult> ExecuteDataExtractionAsync()
+    private Task<PipelineStepResult> ExecuteDataExtractionAsync()
     {
-        await Task.CompletedTask;
-        return new PipelineStepResult
+        return Task.FromResult(new PipelineStepResult
         {
             Success = true,
             StepName = "Extraction",
             RecordsExtracted = 10000,
             ExtractedData = new { Records = 10000 }
-        };
+        });
     }
 
-    private async Task<PipelineStepResult> ExecuteDataTransformationAsync(object? extractedData)
+    private Task<PipelineStepResult> ExecuteDataTransformationAsync(object? extractedData)
     {
-        await Task.CompletedTask;
-        return new PipelineStepResult
+        return Task.FromResult(new PipelineStepResult
         {
             Success = true,
             StepName = "Transformation",
             TransformedData = new { Records = 10000 }
-        };
+        });
     }
 
-    private async Task<PipelineStepResult> ExecuteDataLoadingAsync(object? transformedData)
+    private Task<PipelineStepResult> ExecuteDataLoadingAsync(object? transformedData)
     {
-        await Task.CompletedTask;
-        return new PipelineStepResult
+        return Task.FromResult(new PipelineStepResult
         {
             Success = true,
             StepName = "Loading",
             LoadedData = new { Records = 10000 }
-        };
+        });
     }
 
-    private async Task<PipelineStepResult> ExecuteDataValidationAsync(object? loadedData)
+    private Task<PipelineStepResult> ExecuteDataValidationAsync(object? loadedData)
     {
-        await Task.CompletedTask;
-        return new PipelineStepResult
+        return Task.FromResult(new PipelineStepResult
         {
             Success = true,
             StepName = "Validation",
             ValidatedData = new { Records = 10000 },
             QualityScore = 0.999m
-        };
+        });
     }
 
-    private async Task<PipelineStepResult> UpdateAITrainingDatasetsAsync(object? validatedData)
+    private Task<PipelineStepResult> UpdateAITrainingDatasetsAsync(object? validatedData)
     {
-        await Task.CompletedTask;
-        return new PipelineStepResult
+        return Task.FromResult(new PipelineStepResult
         {
             Success = true,
             StepName = "AI Training Update"
-        };
+        });
     }
 
     // Performance metrics methods
@@ -978,10 +959,9 @@ public class HarrisPACSProductionService : IHarrisPACSProductionService
         return await Task.FromResult(0.35);
     }
 
-    private async Task<object> ValidateCIAPSSchemaAsync(SqlConnection connection)
+    private Task<object> ValidateCIAPSSchemaAsync(SqlConnection connection)
     {
-        await Task.CompletedTask;
-        return new { IsValid = true, Message = "Schema validated", ValidatedTimestamp = DateTime.UtcNow };
+        return Task.FromResult<object>(new { IsValid = true, Message = "Schema validated", ValidatedTimestamp = DateTime.UtcNow });
     }
 
     public void Dispose()
