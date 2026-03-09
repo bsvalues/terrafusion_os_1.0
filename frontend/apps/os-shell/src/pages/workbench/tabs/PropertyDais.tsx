@@ -1,7 +1,7 @@
 /**
  * PropertyDais.tsx
  *
- * Phase 5.5 + R2.8: Property Dais Tab - Workflow MWUX Slice
+ * Phase 5.5 + R2.9: Property Dais Tab - Workflow MWUX Slice
  * Real MWUX with governed tool invocations:
  * - check_cert_status: Certification workflow status
  * - calculate_pilt_payment: PILT payment calculation (RCW, Hanford)
@@ -14,6 +14,16 @@
  * - assign_task: Task assignment (write_low)
  * - assemble_boe_packet: BOE evidence packet (write_high)
  * - draft_boe_appeal_response: BOE appeal response draft (write_low)
+ * R2.9 TerraDais Hardening:
+ * - check_exemption_eligibility: Exemption eligibility check (read_only)
+ * - process_exemption_renewal: Exemption renewal (write_low)
+ * - file_appeal: File BOE appeal (write_low)
+ * - schedule_boe_hearing: Schedule BOE hearing (write_high)
+ * - get_certification_progress: Certification progress (read_only)
+ * - sign_off_certification_step: Certification sign-off (write_high)
+ * - queue_notice_for_mailing: Notice mailing queue (write_low)
+ * - get_queue_statistics: Queue statistics (read_only)
+ * - escalate_task: Task escalation (write_low)
  *
  * Architecture: UI → select params → governed tool → correlationId UX
  */
@@ -144,6 +154,33 @@ const BOE_POSITIONS = [
 
 type DaisToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
 
+/** R2.9 — Exemption eligibility from check_exemption_eligibility */
+interface EligibilityResult { eligible: boolean; program: string; reason: string; incomeThreshold: number; parcelId: string }
+
+/** R2.9 — Exemption renewal from process_exemption_renewal */
+interface RenewalResult { exemptionId: string; taxYear: number; status: string; payloadRef: string }
+
+/** R2.9 — File appeal from file_appeal */
+interface FileAppealResult { appealId: string; parcelId: string; status: string; filedAt: string; payloadRef: string }
+
+/** R2.9 — BOE hearing from schedule_boe_hearing */
+interface HearingResult { hearingId: string; appealId: string; scheduledDate: string; panelSize: number; payloadRef: string }
+
+/** R2.9 — Certification progress from get_certification_progress */
+interface CertProgressResult { county: string; taxYear: number; percentComplete: number; steps: Array<{ id: string; name: string; complete: boolean }>; blockers: string[] }
+
+/** R2.9 — Certification sign-off from sign_off_certification_step */
+interface SignOffResult { stepId: string; signedBy: string; signedAt: string; payloadRef: string }
+
+/** R2.9 — Notice queue from queue_notice_for_mailing */
+interface QueueNoticeResult { queued: number; batchId: string; deliveryMethod: string; payloadRef: string }
+
+/** R2.9 — Queue statistics from get_queue_statistics */
+interface QueueStatsResult { county: string; period: string; totalTasks: number; completedTasks: number; slaCompliance: number; overdueCount: number }
+
+/** R2.9 — Task escalation from escalate_task */
+interface EscalateResult { taskId: string; escalatedTo: string; status: string; payloadRef: string }
+
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
 
@@ -174,6 +211,28 @@ export const PropertyDais: React.FC = () => {
   const [boeAppealPosition, setBoeAppealPosition] = useState<string>('support_assessor');
   const [boeAppealPoints, setBoeAppealPoints] = useState<string>('');
   const [history, setHistory] = useState<InvocationRecord[]>([]);
+
+  // R2.9 state
+  const [eligibilityState, setEligibilityState] = useState<DaisToolState<EligibilityResult>>({ status: 'idle' });
+  const [renewalState, setRenewalState] = useState<DaisToolState<RenewalResult>>({ status: 'idle' });
+  const [renewalExemptionId, setRenewalExemptionId] = useState<string>('');
+  const [fileAppealState, setFileAppealState] = useState<DaisToolState<FileAppealResult>>({ status: 'idle' });
+  const [appealGrounds, setAppealGrounds] = useState<string>('');
+  const [hearingState, setHearingState] = useState<DaisToolState<HearingResult>>({ status: 'idle' });
+  const [hearingAppealId, setHearingAppealId] = useState<string>('');
+  const [hearingDate, setHearingDate] = useState<string>('');
+  const [hearingConfirmed, setHearingConfirmed] = useState(false);
+  const [certProgressState, setCertProgressState] = useState<DaisToolState<CertProgressResult>>({ status: 'idle' });
+  const [signOffState, setSignOffState] = useState<DaisToolState<SignOffResult>>({ status: 'idle' });
+  const [signOffStepId, setSignOffStepId] = useState<string>('');
+  const [signOffName, setSignOffName] = useState<string>('');
+  const [signOffConfirmed, setSignOffConfirmed] = useState(false);
+  const [queueNoticeState, setQueueNoticeState] = useState<DaisToolState<QueueNoticeResult>>({ status: 'idle' });
+  const [queueNoticeIds, setQueueNoticeIds] = useState<string>('');
+  const [queueStatsState, setQueueStatsState] = useState<DaisToolState<QueueStatsResult>>({ status: 'idle' });
+  const [escalateState, setEscalateState] = useState<DaisToolState<EscalateResult>>({ status: 'idle' });
+  const [escalateTaskId, setEscalateTaskId] = useState<string>('');
+  const [escalateReason, setEscalateReason] = useState<string>('');
 
   const handleCheckStatus = useCallback(async () => {
     setStatusState({ status: 'loading' });
@@ -542,6 +601,168 @@ export const PropertyDais: React.FC = () => {
       setBoeAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, boeAppealCaseId, boeAppealPosition, boeAppealPoints]);
+
+  // R2.9 Handlers
+
+  const handleCheckEligibility = useCallback(async () => {
+    setEligibilityState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'check_exemption_eligibility', params: { county: 'benton', parcelId }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setEligibilityState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'check_exemption_eligibility', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { parcelId } }, ...prev.slice(0, 19)]);
+      } else {
+        setEligibilityState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'ELIGIBILITY_FAILED', message: response.error?.message || 'Eligibility check failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setEligibilityState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId]);
+
+  const handleProcessRenewal = useCallback(async () => {
+    if (!renewalExemptionId.trim()) { setRenewalState({ status: 'error', error: { code: 'VALIDATION', message: 'Exemption ID is required', severity: 'error' } }); return; }
+    setRenewalState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'process_exemption_renewal', params: { county: 'benton', exemptionId: renewalExemptionId.trim(), taxYear: new Date().getFullYear() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setRenewalState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'process_exemption_renewal', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { exemptionId: renewalExemptionId } }, ...prev.slice(0, 19)]);
+      } else {
+        setRenewalState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'RENEWAL_FAILED', message: response.error?.message || 'Renewal processing failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setRenewalState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, renewalExemptionId]);
+
+  const handleFileAppeal = useCallback(async () => {
+    if (!appealGrounds.trim()) { setFileAppealState({ status: 'error', error: { code: 'VALIDATION', message: 'Appeal grounds are required', severity: 'error' } }); return; }
+    setFileAppealState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'file_appeal', params: { county: 'benton', parcelId, grounds: appealGrounds.trim() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setFileAppealState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'file_appeal', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { parcelId } }, ...prev.slice(0, 19)]);
+      } else {
+        setFileAppealState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'APPEAL_FAILED', message: response.error?.message || 'Appeal filing failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setFileAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, appealGrounds]);
+
+  const handleScheduleHearing = useCallback(async () => {
+    if (!hearingAppealId.trim() || !hearingDate.trim()) { setHearingState({ status: 'error', error: { code: 'VALIDATION', message: 'Appeal ID and date are required', severity: 'error' } }); return; }
+    setHearingState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'schedule_boe_hearing', params: { county: 'benton', appealId: hearingAppealId.trim(), requestedDate: hearingDate }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setHearingState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'schedule_boe_hearing', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { appealId: hearingAppealId } }, ...prev.slice(0, 19)]);
+      } else {
+        setHearingState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'HEARING_FAILED', message: response.error?.message || 'Hearing scheduling failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setHearingState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, hearingAppealId, hearingDate]);
+
+  const handleGetCertProgress = useCallback(async () => {
+    setCertProgressState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'get_certification_progress', params: { county: 'benton', taxYear: new Date().getFullYear() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setCertProgressState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'get_certification_progress', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setCertProgressState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'CERT_PROGRESS_FAILED', message: response.error?.message || 'Certification progress lookup failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setCertProgressState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId]);
+
+  const handleSignOff = useCallback(async () => {
+    if (!signOffStepId.trim() || !signOffName.trim()) { setSignOffState({ status: 'error', error: { code: 'VALIDATION', message: 'Step ID and signer name are required', severity: 'error' } }); return; }
+    setSignOffState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'sign_off_certification_step', params: { county: 'benton', taxYear: new Date().getFullYear(), stepId: signOffStepId.trim(), signedBy: signOffName.trim() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setSignOffState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'sign_off_certification_step', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { stepId: signOffStepId } }, ...prev.slice(0, 19)]);
+      } else {
+        setSignOffState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'SIGN_OFF_FAILED', message: response.error?.message || 'Certification sign-off failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setSignOffState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, signOffStepId, signOffName]);
+
+  const handleQueueNotice = useCallback(async () => {
+    const ids = queueNoticeIds.split(',').map(s => s.trim()).filter(Boolean);
+    if (ids.length === 0) { setQueueNoticeState({ status: 'error', error: { code: 'VALIDATION', message: 'Enter at least one notice ID', severity: 'error' } }); return; }
+    setQueueNoticeState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'queue_notice_for_mailing', params: { county: 'benton', noticeIds: ids }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setQueueNoticeState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'queue_notice_for_mailing', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { count: ids.length } }, ...prev.slice(0, 19)]);
+      } else {
+        setQueueNoticeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'QUEUE_FAILED', message: response.error?.message || 'Notice queuing failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setQueueNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, queueNoticeIds]);
+
+  const handleGetQueueStats = useCallback(async () => {
+    setQueueStatsState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'get_queue_statistics', params: { county: 'benton' }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setQueueStatsState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'get_queue_statistics', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setQueueStatsState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'STATS_FAILED', message: response.error?.message || 'Queue statistics failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setQueueStatsState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId]);
+
+  const handleEscalateTask = useCallback(async () => {
+    if (!escalateTaskId.trim() || !escalateReason.trim()) { setEscalateState({ status: 'error', error: { code: 'VALIDATION', message: 'Task ID and reason are required', severity: 'error' } }); return; }
+    setEscalateState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'escalate_task', params: { county: 'benton', taskId: escalateTaskId.trim(), reason: escalateReason.trim() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setEscalateState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'escalate_task', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { taskId: escalateTaskId } }, ...prev.slice(0, 19)]);
+      } else {
+        setEscalateState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'ESCALATE_FAILED', message: response.error?.message || 'Task escalation failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setEscalateState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, escalateTaskId, escalateReason]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -1168,6 +1389,209 @@ export const PropertyDais: React.FC = () => {
           </div>
         )}
         {boeAppealState.status === 'error' && boeAppealState.error && <ErrorDisplay error={{ message: boeAppealState.error.message, errorCode: boeAppealState.error.code, correlationId: boeAppealState.correlationId }} />}
+      </BentoCard>
+
+      {/* ═══ R2.9 TerraExempt Module ═══ */}
+
+      {/* Exemption Eligibility Check (read_only) */}
+      <BentoCard title='🛡️ Exemption Eligibility' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Check senior/disabled exemption eligibility per RCW 84.36.381</p>
+        <button onClick={handleCheckEligibility} disabled={eligibilityState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {eligibilityState.status === 'loading' ? 'Checking...' : 'Check Eligibility'}
+        </button>
+        {eligibilityState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Checking eligibility...</span></div>}
+        {eligibilityState.status === 'success' && eligibilityState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center gap-2 mb-2'>
+                <span className={`text-lg ${eligibilityState.result.eligible ? '' : ''}`}>{eligibilityState.result.eligible ? '✅' : '❌'}</span>
+                <span className='font-semibold tf-text'>{eligibilityState.result.eligible ? 'Eligible' : 'Not Eligible'}</span>
+              </div>
+              <p className='tf-text-secondary text-sm'>{eligibilityState.result.reason}</p>
+              <p className='tf-text-dim text-xs mt-1'>Program: {eligibilityState.result.program} | Threshold: ${eligibilityState.result.incomeThreshold.toLocaleString()}</p>
+            </div>
+            {eligibilityState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{eligibilityState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {eligibilityState.status === 'error' && eligibilityState.error && <ErrorDisplay error={{ message: eligibilityState.error.message, errorCode: eligibilityState.error.code, correlationId: eligibilityState.correlationId }} />}
+      </BentoCard>
+
+      {/* Exemption Renewal (write_low) */}
+      <BentoCard title='🔄 Exemption Renewal' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Process annual exemption renewal with documentation verification</p>
+        <input type='text' value={renewalExemptionId} onChange={e => setRenewalExemptionId(e.target.value)} placeholder='Exemption ID (e.g. EXM-2026-001)' className='w-full p-2 rounded-lg tf-input mb-3' />
+        <button onClick={handleProcessRenewal} disabled={renewalState.status === 'loading' || !renewalExemptionId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+          {renewalState.status === 'loading' ? 'Processing...' : 'Process Renewal'}
+        </button>
+        {renewalState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Processing renewal...</span></div>}
+        {renewalState.status === 'success' && renewalState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Status: {renewalState.result.status}</span><p className='tf-text-secondary text-sm'>Exemption {renewalState.result.exemptionId} renewed for {renewalState.result.taxYear}</p></div>
+            {renewalState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{renewalState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {renewalState.status === 'error' && renewalState.error && <ErrorDisplay error={{ message: renewalState.error.message, errorCode: renewalState.error.code, correlationId: renewalState.correlationId }} />}
+      </BentoCard>
+
+      {/* ═══ R2.9 TerraAppeal Module ═══ */}
+
+      {/* File Appeal (write_low) */}
+      <BentoCard title='📋 File Appeal' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>File a new Board of Equalization appeal for parcel {parcelId}</p>
+        <textarea value={appealGrounds} onChange={e => setAppealGrounds(e.target.value)} placeholder='Grounds for appeal...' rows={3} className='w-full p-2 rounded-lg tf-input resize-y mb-3' />
+        <button onClick={handleFileAppeal} disabled={fileAppealState.status === 'loading' || !appealGrounds.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+          {fileAppealState.status === 'loading' ? 'Filing...' : 'File Appeal'}
+        </button>
+        {fileAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Filing appeal...</span></div>}
+        {fileAppealState.status === 'success' && fileAppealState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Appeal {fileAppealState.result.appealId}</span><p className='tf-text-secondary text-sm'>Status: {fileAppealState.result.status} | Filed: {formatDate(fileAppealState.result.filedAt)}</p></div>
+            {fileAppealState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{fileAppealState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {fileAppealState.status === 'error' && fileAppealState.error && <ErrorDisplay error={{ message: fileAppealState.error.message, errorCode: fileAppealState.error.code, correlationId: fileAppealState.correlationId }} />}
+      </BentoCard>
+
+      {/* Schedule BOE Hearing (write_high) */}
+      <BentoCard title='📅 Schedule BOE Hearing' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Schedule a Board of Equalization hearing with panel assignment</p>
+        <div className='space-y-2 mb-3'>
+          <input type='text' value={hearingAppealId} onChange={e => setHearingAppealId(e.target.value)} placeholder='Appeal ID' className='w-full p-2 rounded-lg tf-input' />
+          <input type='date' value={hearingDate} onChange={e => setHearingDate(e.target.value)} className='w-full p-2 rounded-lg tf-input' />
+          <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
+            <label className='flex items-center gap-3 cursor-pointer'>
+              <input type='checkbox' checked={hearingConfirmed} onChange={e => setHearingConfirmed(e.target.checked)} className='h-4 w-4' />
+              <span className='text-sm tf-text'>I confirm scheduling this hearing</span>
+            </label>
+          </div>
+        </div>
+        <button onClick={handleScheduleHearing} disabled={hearingState.status === 'loading' || !hearingAppealId.trim() || !hearingDate.trim() || !hearingConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+          {hearingState.status === 'loading' ? 'Scheduling...' : hearingConfirmed ? 'Schedule Hearing' : '⚠️ Confirm Above to Enable'}
+        </button>
+        {hearingState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Scheduling hearing...</span></div>}
+        {hearingState.status === 'success' && hearingState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Hearing {hearingState.result.hearingId}</span><p className='tf-text-secondary text-sm'>Date: {formatDate(hearingState.result.scheduledDate)} | Panel: {hearingState.result.panelSize} members</p></div>
+            {hearingState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{hearingState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {hearingState.status === 'error' && hearingState.error && <ErrorDisplay error={{ message: hearingState.error.message, errorCode: hearingState.error.code, correlationId: hearingState.correlationId }} />}
+      </BentoCard>
+
+      {/* ═══ R2.9 TerraCert Module ═══ */}
+
+      {/* Certification Progress (read_only) */}
+      <BentoCard title='📊 Certification Progress' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Assessment roll certification progress with checklist and blockers</p>
+        <button onClick={handleGetCertProgress} disabled={certProgressState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {certProgressState.status === 'loading' ? 'Loading...' : 'Get Certification Progress'}
+        </button>
+        {certProgressState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Loading progress...</span></div>}
+        {certProgressState.status === 'success' && certProgressState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between mb-2'>
+                <span className='font-semibold tf-text'>{certProgressState.result.percentComplete}% Complete</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{certProgressState.result.taxYear}</span>
+              </div>
+              <div className='w-full bg-gray-700 rounded-full h-2 mb-3'><div className='bg-green-500 h-2 rounded-full transition-all' style={{ width: `${certProgressState.result.percentComplete}%` }} /></div>
+              {certProgressState.result.steps.length > 0 && <div className='space-y-1'>{certProgressState.result.steps.map(s => <div key={s.id} className='flex items-center gap-2 text-sm'><span>{s.complete ? '✅' : '⏳'}</span><span className='tf-text'>{s.name}</span></div>)}</div>}
+              {certProgressState.result.blockers.length > 0 && <div className='mt-2 text-xs text-red-400'>Blockers: {certProgressState.result.blockers.join(', ')}</div>}
+            </div>
+            {certProgressState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{certProgressState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {certProgressState.status === 'error' && certProgressState.error && <ErrorDisplay error={{ message: certProgressState.error.message, errorCode: certProgressState.error.code, correlationId: certProgressState.correlationId }} />}
+      </BentoCard>
+
+      {/* Certification Sign-Off (write_high) */}
+      <BentoCard title='✍️ Certification Sign-Off' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Sign off a certification checklist step</p>
+        <div className='space-y-2 mb-3'>
+          <input type='text' value={signOffStepId} onChange={e => setSignOffStepId(e.target.value)} placeholder='Step ID (e.g. step-review-001)' className='w-full p-2 rounded-lg tf-input' />
+          <input type='text' value={signOffName} onChange={e => setSignOffName(e.target.value)} placeholder='Signer name' className='w-full p-2 rounded-lg tf-input' />
+          <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
+            <label className='flex items-center gap-3 cursor-pointer'>
+              <input type='checkbox' checked={signOffConfirmed} onChange={e => setSignOffConfirmed(e.target.checked)} className='h-4 w-4' />
+              <span className='text-sm tf-text'>I confirm this write_high sign-off for step <strong>{signOffStepId || '...'}</strong></span>
+            </label>
+          </div>
+        </div>
+        <button onClick={handleSignOff} disabled={signOffState.status === 'loading' || !signOffStepId.trim() || !signOffName.trim() || !signOffConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+          {signOffState.status === 'loading' ? 'Signing...' : signOffConfirmed ? 'Sign Off Step' : '⚠️ Confirm Above to Enable'}
+        </button>
+        {signOffState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Processing sign-off...</span></div>}
+        {signOffState.status === 'success' && signOffState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Step {signOffState.result.stepId} signed off</span><p className='tf-text-secondary text-sm'>By: {signOffState.result.signedBy} at {formatDate(signOffState.result.signedAt)}</p></div>
+            {signOffState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{signOffState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {signOffState.status === 'error' && signOffState.error && <ErrorDisplay error={{ message: signOffState.error.message, errorCode: signOffState.error.code, correlationId: signOffState.correlationId }} />}
+      </BentoCard>
+
+      {/* ═══ R2.9 TerraNotice Module ═══ */}
+
+      {/* Queue Notice for Mailing (write_low) */}
+      <BentoCard title='📬 Queue Notices for Mailing' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Queue generated notices for batch mailing with delivery tracking</p>
+        <input type='text' value={queueNoticeIds} onChange={e => setQueueNoticeIds(e.target.value)} placeholder='Notice IDs (comma-separated)' className='w-full p-2 rounded-lg tf-input mb-3' />
+        <button onClick={handleQueueNotice} disabled={queueNoticeState.status === 'loading' || !queueNoticeIds.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+          {queueNoticeState.status === 'loading' ? 'Queuing...' : 'Queue for Mailing'}
+        </button>
+        {queueNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Queuing notices...</span></div>}
+        {queueNoticeState.status === 'success' && queueNoticeState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>{queueNoticeState.result.queued} notice(s) queued</span><p className='tf-text-secondary text-sm'>Batch: {queueNoticeState.result.batchId} | Method: {queueNoticeState.result.deliveryMethod}</p></div>
+            {queueNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{queueNoticeState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {queueNoticeState.status === 'error' && queueNoticeState.error && <ErrorDisplay error={{ message: queueNoticeState.error.message, errorCode: queueNoticeState.error.code, correlationId: queueNoticeState.correlationId }} />}
+      </BentoCard>
+
+      {/* ═══ R2.9 TerraQueue Module ═══ */}
+
+      {/* Queue Statistics (read_only) */}
+      <BentoCard title='📈 Queue Statistics' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Task queue statistics with SLA compliance metrics</p>
+        <button onClick={handleGetQueueStats} disabled={queueStatsState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {queueStatsState.status === 'loading' ? 'Loading...' : 'Get Queue Statistics'}
+        </button>
+        {queueStatsState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Loading statistics...</span></div>}
+        {queueStatsState.status === 'success' && queueStatsState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='grid grid-cols-2 gap-3'>
+                <div><span className='text-xs tf-text-dim'>Total Tasks</span><p className='font-semibold tf-text'>{queueStatsState.result.totalTasks}</p></div>
+                <div><span className='text-xs tf-text-dim'>Completed</span><p className='font-semibold tf-text'>{queueStatsState.result.completedTasks}</p></div>
+                <div><span className='text-xs tf-text-dim'>SLA Compliance</span><p className='font-semibold tf-text'>{queueStatsState.result.slaCompliance}%</p></div>
+                <div><span className='text-xs tf-text-dim'>Overdue</span><p className='font-semibold text-red-400'>{queueStatsState.result.overdueCount}</p></div>
+              </div>
+            </div>
+            {queueStatsState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{queueStatsState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {queueStatsState.status === 'error' && queueStatsState.error && <ErrorDisplay error={{ message: queueStatsState.error.message, errorCode: queueStatsState.error.code, correlationId: queueStatsState.correlationId }} />}
+      </BentoCard>
+
+      {/* Escalate Task (write_low) */}
+      <BentoCard title='🚨 Escalate Task' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Escalate an overdue or high-priority task</p>
+        <div className='space-y-2 mb-3'>
+          <input type='text' value={escalateTaskId} onChange={e => setEscalateTaskId(e.target.value)} placeholder='Task ID' className='w-full p-2 rounded-lg tf-input' />
+          <input type='text' value={escalateReason} onChange={e => setEscalateReason(e.target.value)} placeholder='Escalation reason' className='w-full p-2 rounded-lg tf-input' />
+        </div>
+        <button onClick={handleEscalateTask} disabled={escalateState.status === 'loading' || !escalateTaskId.trim() || !escalateReason.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+          {escalateState.status === 'loading' ? 'Escalating...' : 'Escalate Task'}
+        </button>
+        {escalateState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Escalating task...</span></div>}
+        {escalateState.status === 'success' && escalateState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Task {escalateState.result.taskId} escalated</span><p className='tf-text-secondary text-sm'>To: {escalateState.result.escalatedTo} | Status: {escalateState.result.status}</p></div>
+            {escalateState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{escalateState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {escalateState.status === 'error' && escalateState.error && <ErrorDisplay error={{ message: escalateState.error.message, errorCode: escalateState.error.code, correlationId: escalateState.correlationId }} />}
       </BentoCard>
 
       {/* History */}

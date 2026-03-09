@@ -10,13 +10,16 @@
  *
  * Layout: ContextRibbon (top) → SuiteCompass (left) + Tabs (center) → ActivityFeed (bottom)
  *
- * Tab Order (Locked per Constitution v1.0):
+ * Tab Order (Locked per Constitution v1.0 + R3 Extensions):
  * 1. Summary — Property overview
  * 2. Forge — AI valuation & appeals
  * 3. Atlas — GIS & mapping
  * 4. Dais — Workflow status
- * 5. Dossier — Documents
- * 6. Pilot — Tool execution log
+ * 5. Clerk — Recording & title (R3.2)
+ * 6. Treasury — Tax collection (R3.3)
+ * 7. Audit — Financial compliance (R3.4)
+ * 8. Dossier — Documents
+ * 9. Pilot — Tool execution log
  *
  * @see 01_PROPERTY_WORKBENCH_SPEC_v3.1.md — Tier-0 OS Surface
  * @see PropertyWorkbenchWindow.tsx — Desktop window adapter (same layout)
@@ -78,6 +81,9 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
     forge: 'forge',
     atlas: 'atlas',
     dais: 'dais',
+    clerk: 'clerk',
+    treasury: 'treasury',
+    audit: 'audit',
     dossier: 'dossier',
     pilot: 'pilot',
   };
@@ -93,6 +99,9 @@ const WORKBENCH_TABS: WorkbenchTab[] = [
   { id: 'forge', label: 'Forge', icon: '🔥', path: 'forge', enabled: true },
   { id: 'atlas', label: 'Atlas', icon: '🗺️', path: 'atlas', enabled: true },
   { id: 'dais', label: 'Dais', icon: '📋', path: 'dais', enabled: true },
+  { id: 'clerk', label: 'Clerk', icon: '📜', path: 'clerk', enabled: true },
+  { id: 'treasury', label: 'Treasury', icon: '💰', path: 'treasury', enabled: true },
+  { id: 'audit', label: 'Audit', icon: '🔍', path: 'audit', enabled: true },
   { id: 'dossier', label: 'Dossier', icon: '📁', path: 'dossier', enabled: true },
   { id: 'pilot', label: 'Pilot', icon: '🎮', path: 'pilot', enabled: true },
 ];
