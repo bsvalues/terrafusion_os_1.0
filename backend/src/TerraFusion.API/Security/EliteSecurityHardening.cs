@@ -324,7 +324,7 @@ public class EliteSecurityHardening : IEliteSecurityHardening
         }
     }
 
-    private async Task ValidateSecurityHeaders(HttpContext context, EliteSecurityValidationResult result)
+    private Task ValidateSecurityHeaders(HttpContext context, EliteSecurityValidationResult result)
     {
         var requiredHeaders = new[]
         {
@@ -350,6 +350,8 @@ public class EliteSecurityHardening : IEliteSecurityHardening
                 missingHeaders.Select(h => $"Missing security header: {h}")).ToArray() ??
                 missingHeaders.Select(h => $"Missing security header: {h}").ToArray();
         }
+
+        return Task.CompletedTask;
     }
 
     private async Task DetectSuspiciousPatterns(HttpContext context, EliteSecurityValidationResult result)
@@ -387,7 +389,7 @@ public class EliteSecurityHardening : IEliteSecurityHardening
         }
     }
 
-    private async Task ValidateJwtSecurity(HttpContext context, EliteSecurityValidationResult result)
+    private Task ValidateJwtSecurity(HttpContext context, EliteSecurityValidationResult result)
     {
         var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
@@ -429,6 +431,8 @@ public class EliteSecurityHardening : IEliteSecurityHardening
             result.ValidationErrors = result.ValidationErrors?.Append($"JWT validation failed: {ex.Message}").ToArray() ??
                 new[] { $"JWT validation failed: {ex.Message}" };
         }
+
+        return Task.CompletedTask;
     }
 
     private async Task ApplyGovernmentGradeValidation(HttpContext context, EliteSecurityValidationResult result)
@@ -507,14 +511,14 @@ public class EliteSecurityHardening : IEliteSecurityHardening
         return suspiciousAgents.Any(agent => userAgent.Contains(agent));
     }
 
-    private async Task<bool> ContainsUnusualPatterns(HttpContext context, string clientId)
+    private Task<bool> ContainsUnusualPatterns(HttpContext context, string clientId)
     {
         // Check for rapid-fire requests from same client
         var recentRequests = _rateLimitTracker.Values
             .Where(r => r.LastRequest > DateTime.UtcNow.AddMinutes(-1))
             .Count();
 
-        return recentRequests > 100; // More than 100 requests per minute is suspicious
+        return Task.FromResult(recentRequests > 100); // More than 100 requests per minute is suspicious
     }
 
     private double CalculateThreatScore()

@@ -91,10 +91,8 @@ public class AICoordinationSupervisorService : BackgroundService
     /// <summary>
     /// Monitor the health of AI coordination services
     /// </summary>
-    private async Task MonitorAICoordinationHealthAsync()
+    private Task MonitorAICoordinationHealthAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
             using var scope = _serviceProvider.CreateScope();
@@ -124,6 +122,8 @@ public class AICoordinationSupervisorService : BackgroundService
         {
             _logger.LogWarning(ex, "⚠️ Error monitoring AI coordination service health");
         }
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -200,17 +200,15 @@ public class AICoordinationSupervisorService : BackgroundService
     /// <summary>
     /// Attempt to gracefully restart AI coordination services
     /// </summary>
-    private async Task AttemptAIServiceRestartAsync(Exception? triggeringException)
+    private Task AttemptAIServiceRestartAsync(Exception? triggeringException)
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         // Check cooldown period
         var timeSinceLastRestart = DateTime.UtcNow - _lastRestartAttempt;
         if (timeSinceLastRestart < _restartCooldown)
         {
             _logger.LogInformation("⏳ AI service restart on cooldown - {RemainingSeconds}s remaining",
                 (_restartCooldown - timeSinceLastRestart).TotalSeconds);
-            return;
+            return Task.CompletedTask;
         }
 
         // Check restart attempt limits
@@ -218,7 +216,7 @@ public class AICoordinationSupervisorService : BackgroundService
         {
             _logger.LogWarning("🛑 AI service restart limit reached ({MaxAttempts}), entering degraded mode",
                 MaxRestartAttempts);
-            return;
+            return Task.CompletedTask;
         }
 
         _lastRestartAttempt = DateTime.UtcNow;
@@ -241,6 +239,8 @@ public class AICoordinationSupervisorService : BackgroundService
         {
             _logger.LogError(ex, "❌ Failed to restart AI coordination services");
         }
+
+        return Task.CompletedTask;
     }
 
     public override async Task StopAsync(CancellationToken stoppingToken)
