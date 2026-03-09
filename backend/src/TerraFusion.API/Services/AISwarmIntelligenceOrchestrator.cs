@@ -356,17 +356,17 @@ namespace TerraFusion.API.Services
       }
     }
 
-    private async Task<SwarmCluster?> SelectOptimalClusterAsync(SwarmCommand command) { await Task.CompletedTask; return null; }
-    private async Task<SwarmCluster> AutoScaleNewClusterAsync(SwarmCommand command) { await Task.CompletedTask; return new SwarmCluster(); }
-    private async Task<SwarmExecutionResult> ExecuteCommandOnClusterAsync(SwarmCommand command, SwarmCluster cluster) { await Task.CompletedTask; return new SwarmExecutionResult(); }
-    private async Task ProcessCommandQueue() { await Task.CompletedTask; }
-    private async Task MonitorAndHealClusters() { await Task.CompletedTask; }
-    private async Task OptimizeAgentDistribution() { await Task.CompletedTask; }
-    private async Task UpdateIntelligenceModels() { await Task.CompletedTask; }
-    private async Task GeneratePerformanceAnalytics() { await Task.CompletedTask; }
-    private async Task OptimizeSwarmTopology() { await Task.CompletedTask; }
-    private async Task BalanceClusterLoads() { await Task.CompletedTask; }
-    private async Task OptimizeResourceAllocation() { await Task.CompletedTask; }
+    private Task<SwarmCluster?> SelectOptimalClusterAsync(SwarmCommand command) { return Task.FromResult<SwarmCluster?>(null); }
+    private Task<SwarmCluster> AutoScaleNewClusterAsync(SwarmCommand command) { return Task.FromResult(new SwarmCluster()); }
+    private Task<SwarmExecutionResult> ExecuteCommandOnClusterAsync(SwarmCommand command, SwarmCluster cluster) { return Task.FromResult(new SwarmExecutionResult()); }
+    private Task ProcessCommandQueue() { return Task.CompletedTask; }
+    private Task MonitorAndHealClusters() { return Task.CompletedTask; }
+    private Task OptimizeAgentDistribution() { return Task.CompletedTask; }
+    private Task UpdateIntelligenceModels() { return Task.CompletedTask; }
+    private Task GeneratePerformanceAnalytics() { return Task.CompletedTask; }
+    private Task OptimizeSwarmTopology() { return Task.CompletedTask; }
+    private Task BalanceClusterLoads() { return Task.CompletedTask; }
+    private Task OptimizeResourceAllocation() { return Task.CompletedTask; }
 
     private double CalculateAverageResponseTime() => 85.2; // Mock value - would be calculated from real metrics
     private double CalculateThroughput() => 1247.8; // Mock value
@@ -482,9 +482,9 @@ namespace TerraFusion.API.Services
       _configuration = configuration;
     }
 
-    public async Task AnalyzeAndScaleAsync(SwarmCommand command, SwarmCommandResult result) { await Task.CompletedTask; }
-    public async Task<SwarmPredictiveInsights> GetPredictiveInsightsAsync() { await Task.CompletedTask; return new SwarmPredictiveInsights(); }
-    public async Task UpdatePredictiveModelsAsync() { await Task.CompletedTask; }
+    public Task AnalyzeAndScaleAsync(SwarmCommand command, SwarmCommandResult result) { return Task.CompletedTask; }
+    public Task<SwarmPredictiveInsights> GetPredictiveInsightsAsync() { return Task.FromResult(new SwarmPredictiveInsights()); }
+    public Task UpdatePredictiveModelsAsync() { return Task.CompletedTask; }
   }
 
   public class SwarmHealthMonitor
@@ -505,8 +505,8 @@ namespace TerraFusion.API.Services
     }
 
     public bool ShouldOptimize(SwarmCommand command, SwarmExecutionResult result) => Random.Shared.NextDouble() > 0.7;
-    public async Task<SwarmExecutionResult> OptimizeExecutionAsync(SwarmExecutionResult result) { await Task.CompletedTask; return result; }
-    public async Task ApplyOptimizationsAsync() { await Task.CompletedTask; }
+    public Task<SwarmExecutionResult> OptimizeExecutionAsync(SwarmExecutionResult result) { return Task.FromResult(result); }
+    public Task ApplyOptimizationsAsync() { return Task.CompletedTask; }
   }
 
   public class AutoHealingManager
@@ -521,6 +521,6 @@ namespace TerraFusion.API.Services
       _configuration = configuration;
     }
 
-    public async Task HandleCommandFailureAsync(SwarmCommand command, Exception ex) { await Task.CompletedTask; }
+    public Task HandleCommandFailureAsync(SwarmCommand command, Exception ex) { return Task.CompletedTask; }
   }
 }
