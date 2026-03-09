@@ -1,11 +1,19 @@
 /**
  * PropertyDais.tsx
  *
- * Phase 5.5 + R2.5: Property Dais Tab - Workflow MWUX Slice
+ * Phase 5.5 + R2.8: Property Dais Tab - Workflow MWUX Slice
  * Real MWUX with governed tool invocations:
  * - check_cert_status: Certification workflow status
  * - calculate_pilt_payment: PILT payment calculation (RCW, Hanford)
  * - explain_senior_exemption_impact: Senior/disabled exemption impact bands
+ * - summarize_levy_rate_components: Levy rate breakdown
+ * - generate_commissioner_memo: AI memo drafting
+ * - draft_value_change_notice: Value change notice (write_low)
+ * - draft_appeal_response: Appeal response draft (write_low)
+ * - draft_notice: General notice creation (write_low)
+ * - assign_task: Task assignment (write_low)
+ * - assemble_boe_packet: BOE evidence packet (write_high)
+ * - draft_boe_appeal_response: BOE appeal response draft (write_low)
  *
  * Architecture: UI → select params → governed tool → correlationId UX
  */
@@ -118,6 +126,22 @@ interface AppealResponseResult { appealId: string; payloadRef: string; draftSumm
 /** Draft notice from draft_notice (write_low) */
 interface DraftNoticeResult { noticeId: string; parcelId: string; noticeType: string; payloadRef: string; status: string }
 
+/** Task assignment from assign_task (write_low) */
+interface AssignTaskResult { taskId: string; assignedTo: string; status: string; payloadRef: string }
+
+/** BOE packet from assemble_boe_packet (write_high) */
+interface BoePacketResult { caseId: string; packetRef: string; sections: string[]; payloadRef: string }
+
+/** BOE appeal response from draft_boe_appeal_response (write_low) */
+interface BoeAppealResult { document: { title: string; body: string }; payloadRef: string; citations?: string[] }
+
+/** BOE position options */
+const BOE_POSITIONS = [
+  { value: 'support_assessor', label: 'Support Assessor' },
+  { value: 'support_taxpayer', label: 'Support Taxpayer' },
+  { value: 'balanced', label: 'Balanced' },
+] as const;
+
 type DaisToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
 
 export const PropertyDais: React.FC = () => {
@@ -137,6 +161,18 @@ export const PropertyDais: React.FC = () => {
   const [appealPosition, setAppealPosition] = useState<'uphold' | 'adjust' | 'partial'>('uphold');
   const [draftNoticeState, setDraftNoticeState] = useState<DaisToolState<DraftNoticeResult>>({ status: 'idle' });
   const [draftNoticeType, setDraftNoticeType] = useState<string>('assessment');
+  const [assignTaskState, setAssignTaskState] = useState<DaisToolState<AssignTaskResult>>({ status: 'idle' });
+  const [assignTaskId, setAssignTaskId] = useState<string>('');
+  const [assignAssigneeId, setAssignAssigneeId] = useState<string>('');
+  const [assignReason, setAssignReason] = useState<string>('');
+  const [boePacketState, setBoePacketState] = useState<DaisToolState<BoePacketResult>>({ status: 'idle' });
+  const [boeCaseId, setBoeCaseId] = useState<string>('');
+  const [boeSections, setBoeSections] = useState<Set<string>>(new Set(['evidence']));
+  const [boeConfirmed, setBoeConfirmed] = useState(false);
+  const [boeAppealState, setBoeAppealState] = useState<DaisToolState<BoeAppealResult>>({ status: 'idle' });
+  const [boeAppealCaseId, setBoeAppealCaseId] = useState<string>('');
+  const [boeAppealPosition, setBoeAppealPosition] = useState<string>('support_assessor');
+  const [boeAppealPoints, setBoeAppealPoints] = useState<string>('');
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
   const handleCheckStatus = useCallback(async () => {
@@ -432,6 +468,81 @@ export const PropertyDais: React.FC = () => {
       setDraftNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, draftNoticeType]);
+
+  /** Invoke assign_task — write_low task assignment */
+  const handleAssignTask = useCallback(async () => {
+    if (!assignTaskId.trim() || !assignAssigneeId.trim()) {
+      setAssignTaskState({ status: 'error', error: { code: 'VALIDATION', message: 'Task ID and Assignee ID are required', severity: 'error' } });
+      return;
+    }
+    setAssignTaskState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'assign_task', params: { county: 'benton', taskId: assignTaskId.trim(), assigneeId: assignAssigneeId.trim(), reason: assignReason.trim() || 'Assigned via TerraPilot' }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setAssignTaskState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'assign_task', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { taskId: assignTaskId } }, ...prev.slice(0, 19)]);
+      } else {
+        setAssignTaskState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'ASSIGN_FAILED', message: response.error?.message || 'Task assignment failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setAssignTaskState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, assignTaskId, assignAssigneeId, assignReason]);
+
+  /** Invoke assemble_boe_packet — write_high BOE evidence packet */
+  const handleAssembleBoePacket = useCallback(async () => {
+    if (!boeCaseId.trim()) {
+      setBoePacketState({ status: 'error', error: { code: 'VALIDATION', message: 'Case ID is required', severity: 'error' } });
+      return;
+    }
+    if (!boeConfirmed) return;
+    setBoePacketState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'assemble_boe_packet', params: { county: 'benton', caseId: boeCaseId.trim(), include: Array.from(boeSections) }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setBoePacketState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'assemble_boe_packet', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { caseId: boeCaseId } }, ...prev.slice(0, 19)]);
+      } else {
+        setBoePacketState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'BOE_PACKET_FAILED', message: response.error?.message || 'BOE packet assembly failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setBoePacketState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    } finally {
+      setBoeConfirmed(false);
+    }
+  }, [parcelId, boeCaseId, boeSections, boeConfirmed]);
+
+  /** Invoke draft_boe_appeal_response — write_low BOE appeal response */
+  const handleBoeAppealResponse = useCallback(async () => {
+    if (!boeAppealCaseId.trim()) {
+      setBoeAppealState({ status: 'error', error: { code: 'VALIDATION', message: 'Case ID is required', severity: 'error' } });
+      return;
+    }
+    const points = boeAppealPoints.split('\n').map(s => s.trim()).filter(Boolean);
+    if (points.length === 0) {
+      setBoeAppealState({ status: 'error', error: { code: 'VALIDATION', message: 'Enter at least one argument point', severity: 'error' } });
+      return;
+    }
+    setBoeAppealState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'draft_boe_appeal_response', params: { county: 'benton', caseId: boeAppealCaseId.trim(), position: boeAppealPosition, points }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setBoeAppealState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'draft_boe_appeal_response', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { caseId: boeAppealCaseId, position: boeAppealPosition } }, ...prev.slice(0, 19)]);
+      } else {
+        setBoeAppealState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'BOE_APPEAL_FAILED', message: response.error?.message || 'BOE appeal response draft failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setBoeAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, boeAppealCaseId, boeAppealPosition, boeAppealPoints]);
+
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
   }, []);
@@ -946,6 +1057,117 @@ export const PropertyDais: React.FC = () => {
           </div>
         )}
         {draftNoticeState.status === 'error' && draftNoticeState.error && <ErrorDisplay error={{ message: draftNoticeState.error.message, errorCode: draftNoticeState.error.code, correlationId: draftNoticeState.correlationId }} />}
+      </BentoCard>
+
+      {/* Assign Task (write_low) */}
+      <BentoCard title='👤 Assign Task' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Assign a workflow task to a queue or user</p>
+        <div className='space-y-2 mb-3'>
+          <input type='text' value={assignTaskId} onChange={e => setAssignTaskId(e.target.value)} placeholder='Task ID (e.g. TSK-2026-042)' className='w-full p-2 rounded-lg tf-input' data-testid='assign-task-id' />
+          <input type='text' value={assignAssigneeId} onChange={e => setAssignAssigneeId(e.target.value)} placeholder='Assignee ID (e.g. usr-jdoe)' className='w-full p-2 rounded-lg tf-input' data-testid='assign-assignee-id' />
+          <input type='text' value={assignReason} onChange={e => setAssignReason(e.target.value)} placeholder='Reason (optional)' className='w-full p-2 rounded-lg tf-input' />
+        </div>
+        <button onClick={handleAssignTask} disabled={assignTaskState.status === 'loading' || !assignTaskId.trim() || !assignAssigneeId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {assignTaskState.status === 'loading' ? 'Assigning...' : 'Assign Task'}
+        </button>
+        {assignTaskState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Assigning task...</span></div>}
+        {assignTaskState.status === 'success' && assignTaskState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between mb-1'>
+                <span className='font-semibold tf-text'>Task: {assignTaskState.result.taskId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{assignTaskState.result.status}</span>
+              </div>
+              <div className='text-sm tf-text-secondary'>Assigned to: <strong>{assignTaskState.result.assignedTo}</strong></div>
+            </div>
+            {assignTaskState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{assignTaskState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {assignTaskState.status === 'error' && assignTaskState.error && <ErrorDisplay error={{ message: assignTaskState.error.message, errorCode: assignTaskState.error.code, correlationId: assignTaskState.correlationId }} />}
+      </BentoCard>
+
+      {/* Assemble BOE Packet (write_high) */}
+      <BentoCard title='📦 BOE Evidence Packet' actions={<span className='text-xs tf-badge-error px-2 py-0.5 rounded'>write_high</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Assemble a Board of Equalization evidence packet — requires confirmation</p>
+        <div className='space-y-3 mb-4'>
+          <input type='text' value={boeCaseId} onChange={e => setBoeCaseId(e.target.value)} placeholder='Case ID (e.g. BOE-2026-001)' className='w-full p-2 rounded-lg tf-input' data-testid='boe-case-id' />
+          <div>
+            <label className='block tf-text-secondary text-sm mb-2'>Include Sections</label>
+            <div className='flex flex-wrap gap-2'>
+              {['evidence', 'valuation_history', 'comps'].map(section => (
+                <label key={section} className='flex items-center gap-1.5 text-sm tf-text-secondary cursor-pointer'>
+                  <input type='checkbox' checked={boeSections.has(section)} onChange={() => {
+                    setBoeSections(prev => {
+                      const next = new Set(prev);
+                      if (next.has(section)) next.delete(section); else next.add(section);
+                      return next;
+                    });
+                  }} className='h-3.5 w-3.5' />
+                  <span className='capitalize'>{section.replace(/_/g, ' ')}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
+            <label className='flex items-center gap-3 cursor-pointer'>
+              <input type='checkbox' checked={boeConfirmed} onChange={e => setBoeConfirmed(e.target.checked)} className='h-4 w-4' data-testid='boe-confirm-checkbox' />
+              <span className='text-sm tf-text'>I confirm this write_high operation: assemble BOE packet for case <strong>{boeCaseId || '...'}</strong></span>
+            </label>
+          </div>
+        </div>
+        <button onClick={handleAssembleBoePacket} disabled={boePacketState.status === 'loading' || !boeCaseId.trim() || !boeConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+          {boePacketState.status === 'loading' ? 'Assembling...' : boeConfirmed ? 'Assemble BOE Packet' : '⚠️ Confirm Above to Enable'}
+        </button>
+        {boePacketState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Assembling BOE packet...</span></div>}
+        {boePacketState.status === 'success' && boePacketState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between mb-2'>
+                <span className='font-semibold tf-text'>Case: {boePacketState.result.caseId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{boePacketState.result.sections.length} sections</span>
+              </div>
+              <div className='flex flex-wrap gap-1'>
+                {boePacketState.result.sections.map(s => <span key={s} className='text-xs tf-badge px-2 py-0.5 rounded'>{s}</span>)}
+              </div>
+            </div>
+            {boePacketState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{boePacketState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {boePacketState.status === 'error' && boePacketState.error && <ErrorDisplay error={{ message: boePacketState.error.message, errorCode: boePacketState.error.code, correlationId: boePacketState.correlationId }} />}
+      </BentoCard>
+
+      {/* BOE Appeal Response (write_low) */}
+      <BentoCard title='⚖️ BOE Appeal Response' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Draft a formal BOE appeal response with legal citations</p>
+        <div className='space-y-2 mb-3'>
+          <input type='text' value={boeAppealCaseId} onChange={e => setBoeAppealCaseId(e.target.value)} placeholder='Case ID (e.g. BOE-2026-001)' className='w-full p-2 rounded-lg tf-input' data-testid='boe-appeal-case-id' />
+          <select value={boeAppealPosition} onChange={e => setBoeAppealPosition(e.target.value)} className='w-full p-2 rounded-lg tf-input'>
+            {BOE_POSITIONS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+          </select>
+          <div>
+            <label className='block tf-text-secondary text-sm mb-1'>Argument Points (one per line)</label>
+            <textarea value={boeAppealPoints} onChange={e => setBoeAppealPoints(e.target.value)} placeholder={'Market comparables support assessed value\nRecent sales data within 6 months\nProperty condition properly accounted for'} rows={3} className='w-full p-2 rounded-lg tf-input resize-y' data-testid='boe-appeal-points' />
+          </div>
+        </div>
+        <button onClick={handleBoeAppealResponse} disabled={boeAppealState.status === 'loading' || !boeAppealCaseId.trim() || !boeAppealPoints.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {boeAppealState.status === 'loading' ? 'Drafting...' : 'Draft BOE Appeal Response'}
+        </button>
+        {boeAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Drafting BOE response...</span></div>}
+        {boeAppealState.status === 'success' && boeAppealState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <h4 className='font-semibold tf-text mb-2'>{boeAppealState.result.document.title}</h4>
+              <p className='tf-text-secondary whitespace-pre-line text-sm'>{boeAppealState.result.document.body}</p>
+            </div>
+            {boeAppealState.result.citations && boeAppealState.result.citations.length > 0 && (
+              <div className='flex flex-wrap gap-1'>
+                {boeAppealState.result.citations.map(c => <span key={c} className='text-xs tf-badge px-2 py-0.5 rounded font-mono'>{c}</span>)}
+              </div>
+            )}
+            {boeAppealState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{boeAppealState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {boeAppealState.status === 'error' && boeAppealState.error && <ErrorDisplay error={{ message: boeAppealState.error.message, errorCode: boeAppealState.error.code, correlationId: boeAppealState.correlationId }} />}
       </BentoCard>
 
       {/* History */}

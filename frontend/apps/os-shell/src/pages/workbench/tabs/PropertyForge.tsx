@@ -1,7 +1,7 @@
 /**
  * PropertyForge.tsx
  *
- * Phase 5.4 + R2.6: Property Forge Tab - Valuation MWUX Slice
+ * Phase 5.4 + R2.8: Property Forge Tab - Valuation MWUX Slice
  * Real MWUX with governed tool invocations:
  * - explain_model_results: AI-powered valuation explanation
  * - explain_value_change: Year-over-year value change analysis
@@ -9,6 +9,7 @@
  * - run_income_valuation: Income capitalization approach (NOI / cap rate)
  * - explain_model_inputs: Model input factor breakdown with PII flags
  * - summarize_sales_comps_rationale: Comp selection rationale + similarity
+ * - run_valuation_model: Execute valuation model (write_high, requires confirmation)
  *
  * Architecture: UI → select params → governed tool → correlationId UX
  */
@@ -109,6 +110,25 @@ interface ModelInputsResult { inputs: ModelInput[]; summary: string }
 interface CompEntry { id: string; similarity: number; notes: string[] }
 interface SalesCompsResult { rationale: string; comps: CompEntry[] }
 
+/** Valuation model result from run_valuation_model (write_high) */
+interface ValuationModelResult {
+  parcelId: string;
+  taxYear: number;
+  modelType: string;
+  estimatedValue: number;
+  confidence: number;
+  components: Record<string, number>;
+  correlationId?: string;
+}
+
+/** Reason codes for write_high valuation */
+const VALUATION_REASON_CODES = [
+  { value: 'annual_certification', label: 'Annual Certification' },
+  { value: 'market_adjustment', label: 'Market Adjustment' },
+  { value: 'new_construction', label: 'New Construction' },
+  { value: 'correction', label: 'Correction' },
+] as const;
+
 export const PropertyForge: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
 
@@ -122,6 +142,10 @@ export const PropertyForge: React.FC = () => {
   const [incomeState, setIncomeState] = useState<ToolState<IncomeResult>>({ status: 'idle' });
   const [modelInputsState, setModelInputsState] = useState<ToolState<ModelInputsResult>>({ status: 'idle' });
   const [compsState, setCompsState] = useState<ToolState<SalesCompsResult>>({ status: 'idle' });
+  const [valuationState, setValuationState] = useState<ToolState<ValuationModelResult>>({ status: 'idle' });
+  const [valuationModelType, setValuationModelType] = useState<'cost' | 'income' | 'sales'>('cost');
+  const [valuationReasonCode, setValuationReasonCode] = useState<string>('annual_certification');
+  const [valuationConfirmed, setValuationConfirmed] = useState(false);
   const [rentalIncome, setRentalIncome] = useState<string>('');
   const [modelId, setModelId] = useState<string>('cost-approach');
   const [compIds, setCompIds] = useState<string>('');
@@ -404,6 +428,27 @@ export const PropertyForge: React.FC = () => {
       setCompsState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, compIds]);
+
+  /** Invoke run_valuation_model — write_high, requires confirmation */
+  const handleRunValuation = useCallback(async () => {
+    if (!valuationConfirmed) return;
+    setValuationState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'run_valuation_model', params: { county: 'benton', parcelId, taxYear, modelType: valuationModelType, reasonCode: valuationReasonCode }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setValuationState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'run_valuation_model', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { modelType: valuationModelType, reason: valuationReasonCode } }, ...prev.slice(0, 19)]);
+      } else {
+        setValuationState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'VALUATION_FAILED', message: response.error?.message || 'Valuation model run failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setValuationState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    } finally {
+      setValuationConfirmed(false);
+    }
+  }, [parcelId, taxYear, valuationModelType, valuationReasonCode, valuationConfirmed]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -886,6 +931,60 @@ export const PropertyForge: React.FC = () => {
           </div>
         )}
         {compsState.status === 'error' && compsState.error && <ErrorDisplay error={{ message: compsState.error.message, errorCode: compsState.error.code, correlationId: compsState.correlationId }} />}
+      </BentoCard>
+
+      {/* Run Valuation Model (write_high) */}
+      <BentoCard title='🏗️ Run Valuation Model' actions={<span className='text-xs tf-badge-error px-2 py-0.5 rounded'>write_high</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Execute a valuation model for parcel {parcelId} — requires confirmation</p>
+        <div className='space-y-3 mb-4'>
+          <div>
+            <label htmlFor='valuation-model-type' className='block tf-text-secondary text-sm mb-1'>Model Type</label>
+            <select id='valuation-model-type' value={valuationModelType} onChange={e => setValuationModelType(e.target.value as 'cost' | 'income' | 'sales')} className='w-full tf-input px-3 py-2'>
+              <option value='cost'>Cost Approach</option>
+              <option value='income'>Income Approach</option>
+              <option value='sales'>Sales Comparison</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor='valuation-reason' className='block tf-text-secondary text-sm mb-1'>Reason Code</label>
+            <select id='valuation-reason' value={valuationReasonCode} onChange={e => setValuationReasonCode(e.target.value)} className='w-full tf-input px-3 py-2'>
+              {VALUATION_REASON_CODES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+            </select>
+          </div>
+          <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
+            <label className='flex items-center gap-3 cursor-pointer'>
+              <input type='checkbox' checked={valuationConfirmed} onChange={e => setValuationConfirmed(e.target.checked)} className='h-4 w-4' data-testid='valuation-confirm-checkbox' />
+              <span className='text-sm tf-text'>I confirm this write_high operation: run <strong>{valuationModelType}</strong> model for tax year <strong>{taxYear}</strong></span>
+            </label>
+          </div>
+        </div>
+        <button onClick={handleRunValuation} disabled={valuationState.status === 'loading' || !valuationConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4 disabled:opacity-50'>
+          {valuationState.status === 'loading' ? 'Running Model...' : valuationConfirmed ? 'Run Valuation Model' : '⚠️ Confirm Above to Enable'}
+        </button>
+        {valuationState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Running valuation model...</span></div>}
+        {valuationState.status === 'success' && valuationState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between mb-2'>
+                <span className='text-2xl font-bold tf-suite-accent-text'>{formatCurrency(valuationState.result.estimatedValue)}</span>
+                <span className='text-sm tf-badge px-2 py-0.5 rounded'>{valuationState.result.modelType}</span>
+              </div>
+              <div className='text-sm tf-text-secondary'>Confidence: {formatConfidence(valuationState.result.confidence)} | Year: {valuationState.result.taxYear}</div>
+            </div>
+            {valuationState.result.components && Object.keys(valuationState.result.components).length > 0 && (
+              <div className='space-y-1'>
+                {Object.entries(valuationState.result.components).map(([key, val]) => (
+                  <div key={key} className='flex items-center justify-between py-2 px-3 tf-panel rounded'>
+                    <span className='tf-text-secondary capitalize'>{key.replace(/_/g, ' ')}</span>
+                    <span className='font-semibold tf-text'>{formatCurrency(val)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {valuationState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{valuationState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {valuationState.status === 'error' && valuationState.error && <ErrorDisplay error={{ message: valuationState.error.message, errorCode: valuationState.error.code, correlationId: valuationState.correlationId }} />}
       </BentoCard>
 
       {/* History */}

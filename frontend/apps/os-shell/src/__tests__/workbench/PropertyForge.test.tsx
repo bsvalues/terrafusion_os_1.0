@@ -52,7 +52,7 @@ describe('PropertyForge', () => {
     it('displays valuation controls', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByLabelText(/tax year/i)).toBeInTheDocument();
+      expect(screen.getAllByLabelText(/tax year/i).length).toBeGreaterThan(0);
       expect(screen.getByRole('button', { name: /explain valuation/i })).toBeInTheDocument();
     });
 
@@ -67,7 +67,7 @@ describe('PropertyForge', () => {
     it('allows tax year selection', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
-      const yearSelect = screen.getByLabelText(/tax year/i);
+      const yearSelect = screen.getAllByLabelText(/tax year/i)[0];
       fireEvent.change(yearSelect, { target: { value: '2025' } });
 
       expect(yearSelect).toHaveValue('2025');
