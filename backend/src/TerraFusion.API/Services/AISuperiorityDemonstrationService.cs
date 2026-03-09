@@ -503,7 +503,7 @@ namespace TerraFusion.API.Services
         /// <summary>
         /// Generate real-time superiority metrics
         /// </summary>
-        private async Task GenerateSupremacyMetricsAsync(AISuperiorityDemo demo)
+        private Task GenerateSupremacyMetricsAsync(AISuperiorityDemo demo)
         {
             _logger.LogInformation($"📊 Generating AI supremacy metrics for championship demonstration");
 
@@ -549,6 +549,8 @@ namespace TerraFusion.API.Services
             demo.CompetitiveAdvantage.OverallSuperiority = CalculateOverallSuperiority(demo.CompetitiveAdvantage);
 
             _logger.LogInformation($"🏆 TerraFusion demonstrates {demo.CompetitiveAdvantage.OverallSuperiority:P2} overall superiority over Harris PACS");
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -677,14 +679,14 @@ namespace TerraFusion.API.Services
         /// <summary>
         /// Get active demonstration dashboard data
         /// </summary>
-        public async Task<AIDemo.AIDemoDashboardData> GetDemoDashboardAsync(string demoId)
+        public Task<AIDemo.AIDemoDashboardData> GetDemoDashboardAsync(string demoId)
         {
             if (!_activeDemos.TryGetValue(demoId, out var demo))
             {
                 throw new DemoNotFoundException($"Demo {demoId} not found or inactive");
             }
 
-            return new AIDemo.AIDemoDashboardData
+            return Task.FromResult(new AIDemo.AIDemoDashboardData
             {
                 DemoId = demoId,
                 Status = MapDemoStatus(demo.Status),
@@ -699,7 +701,7 @@ namespace TerraFusion.API.Services
                 IAAOResults = null,
                 RecentLogs = new List<AIDemo.DemoLogEntry>(),
                 QuantumMetrics = CreateQuantumMetrics(demo)
-            };
+            });
         }
 
         /// <summary>
@@ -989,15 +991,16 @@ namespace TerraFusion.API.Services
         /// <summary>
         /// Aggregate performance metrics from demo test results
         /// </summary>
-        private async Task AggregatePerformanceMetricsAsync(AISuperiorityDemo demo)
+        private Task AggregatePerformanceMetricsAsync(AISuperiorityDemo demo)
         {
             if (demo.TestResults == null || !demo.TestResults.Any())
             {
                 _logger.LogWarning("⚠️ No test results available for aggregation");
-                return;
+                return Task.CompletedTask;
             }
 
             _logger.LogInformation($"📊 Aggregating performance metrics from {demo.TestResults.Count} test scenarios");
+            return Task.CompletedTask;
         }
 
         /// <summary>

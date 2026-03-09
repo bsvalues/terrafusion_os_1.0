@@ -258,10 +258,8 @@ namespace TerraFusion.API.Services
     /// <summary>
     /// 🔑 Quantum Key Rotation Cycle
     /// </summary>
-    private async void QuantumKeyRotationCycle(object? state)
+    private void QuantumKeyRotationCycle(object? state)
     {
-      await Task.CompletedTask;
-      await Task.CompletedTask;
       try
       {
         if (_quantumEncryptionEnabled)
@@ -298,9 +296,9 @@ namespace TerraFusion.API.Services
     }
 
     // Helper methods
-    private async Task ProcessThreatIntelligenceAsync(string threat) { await Task.CompletedTask; }
-    private async Task ProcessComplianceValidationAsync(TerraFusion.API.Interfaces.ComplianceValidation validation) { await Task.CompletedTask; }
-    private async Task ProcessSecurityAuditAsync(string audit) { await Task.CompletedTask; }
+    private Task ProcessThreatIntelligenceAsync(string threat) { return Task.CompletedTask; }
+    private Task ProcessComplianceValidationAsync(TerraFusion.API.Interfaces.ComplianceValidation validation) { return Task.CompletedTask; }
+    private Task ProcessSecurityAuditAsync(string audit) { return Task.CompletedTask; }
 
     private double CalculateOverallSecurityScore() => 0.987;
     private string DetermineThreatLevel() => "LOW";
