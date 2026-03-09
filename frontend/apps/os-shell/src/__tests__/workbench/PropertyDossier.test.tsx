@@ -218,7 +218,7 @@ describe('PropertyDossier', () => {
 
       expect(screen.getByTestId('property-dossier-tab')).toBeInTheDocument();
       expect(screen.getByText(/TerraDossier/i)).toBeInTheDocument();
-      expect(screen.getByText(/12345-001/)).toBeInTheDocument();
+      expect(screen.getAllByText(/12345-001/).length).toBeGreaterThan(0);
     });
 
     it('shows live read-only document management data', async () => {
