@@ -317,7 +317,7 @@ describe('Handler: route_to_parcel', () => {
   });
 
   it('supports all valid tabs', async () => {
-    const tabs = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'pilot'];
+    const tabs = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
     for (const tab of tabs) {
       const result = await routeToParcelHandler(
         { county: 'benton', parcelId: 'R1', tab },

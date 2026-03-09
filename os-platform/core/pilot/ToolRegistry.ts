@@ -23,7 +23,7 @@ const CANONICAL_MANIFEST_PATH = resolve(
   '../../../tools/registry/terrapilot.tools.json'
 );
 
-const VALID_SUITES: readonly Suite[] = ['forge', 'atlas', 'dais', 'dossier', 'os', 'pilot', 'gpt'];
+const VALID_SUITES: readonly Suite[] = ['forge', 'atlas', 'dais', 'dossier', 'os', 'pilot', 'gpt', 'clerk', 'treasury', 'audit'];
 const VALID_RISKS: readonly Risk[] = ['read_only', 'write_low', 'write_high', 'irreversible'];
 const VALID_PII_HANDLING = ['none', 'sanitize', 'payload_ref'] as const;
 const VALID_TRACE_POLICIES = ['none', 'summary_only', 'payload_ref'] as const;

@@ -255,9 +255,9 @@ describe('Manifest integrity: all tools have required fields', () => {
     console.log(`  ✅ All ${tools.length} tools: required fields present`);
   });
 
-  it('manifest version is 1.4.0', () => {
-    assert.equal(manifest.version, '1.4.0');
-    console.log('  ✅ Manifest version: 1.4.0');
+  it('manifest version is 2.0.0', () => {
+    assert.equal(manifest.version, '2.0.0');
+    console.log('  ✅ Manifest version: 2.0.0');
   });
 
   it('5 proof tools all have paramsSchema defined', () => {

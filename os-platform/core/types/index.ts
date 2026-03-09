@@ -11,7 +11,7 @@
 // Suite & Risk Enums (matches manifest schema)
 // ============================================================================
 
-export type Suite = 'forge' | 'atlas' | 'dais' | 'dossier' | 'os' | 'pilot' | 'gpt';
+export type Suite = 'forge' | 'atlas' | 'dais' | 'dossier' | 'os' | 'pilot' | 'gpt' | 'clerk' | 'treasury' | 'audit';
 
 export type Risk = 'read_only' | 'write_low' | 'write_high' | 'irreversible';
 
