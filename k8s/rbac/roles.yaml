@@ -1,0 +1,89 @@
+# TerraFusion OS - Kubernetes RBAC Roles
+# FISMA-HIGH: Role-based access control with least-privilege
+---
+# API role — needs configmaps and secrets for config, service discovery
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: terrafusion-api-role
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    component: api
+    compliance: fisma-high
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["api-config"]
+    verbs: ["get", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["terrafusion-secrets"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list"]
+---
+# Gateway role — needs service discovery for routing
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: terrafusion-gateway-role
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    component: gateway
+    compliance: fisma-high
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["gateway-config"]
+    verbs: ["get", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["terrafusion-secrets"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list"]
+---
+# Consciousness role — needs configmaps, secrets, and pod info for swarm coordination
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: terrafusion-consciousness-role
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    component: consciousness
+    compliance: fisma-high
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["consciousness-config"]
+    verbs: ["get", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["terrafusion-secrets"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list"]
+---
+# Frontend role — minimal permissions (read-only)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: terrafusion-frontend-role
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    component: frontend
+    compliance: fisma-high
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]

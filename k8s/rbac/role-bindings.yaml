@@ -1,0 +1,70 @@
+# TerraFusion OS - Kubernetes RBAC RoleBindings
+# FISMA-HIGH: Bind service accounts to their respective roles
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: terrafusion-api-binding
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    compliance: fisma-high
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: terrafusion-api-role
+subjects:
+  - kind: ServiceAccount
+    name: terrafusion-api
+    namespace: terrafusion
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: terrafusion-gateway-binding
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    compliance: fisma-high
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: terrafusion-gateway-role
+subjects:
+  - kind: ServiceAccount
+    name: terrafusion-gateway
+    namespace: terrafusion
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: terrafusion-consciousness-binding
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    compliance: fisma-high
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: terrafusion-consciousness-role
+subjects:
+  - kind: ServiceAccount
+    name: terrafusion-consciousness
+    namespace: terrafusion
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: terrafusion-frontend-binding
+  namespace: terrafusion
+  labels:
+    app: terrafusion
+    compliance: fisma-high
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: terrafusion-frontend-role
+subjects:
+  - kind: ServiceAccount
+    name: terrafusion-frontend
+    namespace: terrafusion

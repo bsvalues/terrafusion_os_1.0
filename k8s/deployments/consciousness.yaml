@@ -26,9 +26,15 @@ spec:
         component: consciousness
         tier: consciousness
     spec:
+      serviceAccountName: terrafusion-consciousness
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
       containers:
         - name: consciousness
-          image: terrafusion/consciousness:latest
+          image: terrafusion/consciousness:v1.0.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3004
               protocol: TCP

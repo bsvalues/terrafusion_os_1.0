@@ -26,9 +26,15 @@ spec:
         component: gateway
         tier: shell
     spec:
+      serviceAccountName: terrafusion-gateway
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
       containers:
         - name: gateway
-          image: terrafusion/gateway:latest
+          image: terrafusion/gateway:v1.0.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3002
               protocol: TCP

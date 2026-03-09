@@ -118,7 +118,7 @@ export const useBackendConnection = () => {
 
       return null;
     }
-  }, [BACKEND_URL]);
+  }, []);
 
   const scheduleReconnect = useCallback(
     (attemptNumber: number) => {

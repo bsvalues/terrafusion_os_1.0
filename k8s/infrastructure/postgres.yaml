@@ -31,7 +31,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: terrafusion-secrets
-                  key: POSTGRES_PASSWORD
+                  key: POSTGRES_USER
                   optional: true
             - name: POSTGRES_PASSWORD
               valueFrom:

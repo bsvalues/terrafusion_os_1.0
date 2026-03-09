@@ -4,9 +4,18 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  scrape_timeout: 10s
   external_labels:
     cluster: 'terrafusion'
     environment: 'development'
+
+rule_files:
+  - "rules/bulletproof/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
 
 scrape_configs:
   # TerraFusion API (Kernel) - port 5000

@@ -1,24 +1,57 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  scrape_timeout: 10s
 
 rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
+  - "rules/alerts.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
 
 scrape_configs:
+  # Prometheus self-monitoring
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'terrafusion-core'
+  # TerraFusion API (Kernel) - Port 5000
+  - job_name: 'terrafusion-api'
     static_configs:
-      - targets: ['core:8080']
+      - targets: ['api:5000']
     metrics_path: '/metrics'
-    scrape_interval: 30s
+    scrape_interval: 15s
 
-  - job_name: 'terrafusion-worker'
+  # TerraFusion Gateway (Shell) - Port 3002
+  - job_name: 'terrafusion-gateway'
     static_configs:
-      - targets: ['worker:8080']
+      - targets: ['gateway:3002']
     metrics_path: '/metrics'
-    scrape_interval: 30s
+    scrape_interval: 15s
+
+  # TerraFusion Consciousness (AI Swarm) - Port 3004
+  - job_name: 'terrafusion-consciousness'
+    static_configs:
+      - targets: ['consciousness:3004']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Node Exporter - System Metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # cAdvisor - Container Metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  # Consul - Service Discovery Metrics
+  - job_name: 'consul'
+    static_configs:
+      - targets: ['consul:8500']
+    metrics_path: '/v1/agent/metrics'
+    params:
+      format: ['prometheus']

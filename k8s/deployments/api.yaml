@@ -26,9 +26,15 @@ spec:
         component: api
         tier: kernel
     spec:
+      serviceAccountName: terrafusion-api
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
       containers:
         - name: api
-          image: terrafusion/api:latest
+          image: terrafusion/api:v1.0.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
               protocol: TCP
