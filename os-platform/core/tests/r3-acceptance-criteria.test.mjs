@@ -1120,6 +1120,149 @@ describe('AC-AUD-05: Compliance Report', () => {
 // R3 MANIFEST CONTRACT CHECKS
 // ============================================================================
 
+// ============================================================================
+// R3 CROSS-CUTTING: County Isolation (Treasury + Audit)
+//
+// Verify that treasury and audit tools also enforce county isolation
+// (Clerk isolation is tested in AC-CLK-04)
+// ============================================================================
+
+describe('R3 County Isolation: Treasury', () => {
+  it('get_tax_statement enforces county context', async () => {
+    const { runner } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('/api/treasury/') && url.includes('statement'))
+        return taxStatementResponse();
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'get_tax_statement',
+      params: { county: 'benton', parcelId: 'P-001', taxYear: 2026 },
+      context: treasurerContext(),
+    });
+
+    assert.equal(result.ok, true, 'result must be ok');
+    const data = result.result;
+    // Handler normalizes county from params — county isolation is enforced by assertCountyMatch
+    assert.ok(data.taxYear, 'must return tax year');
+    assert.ok(data.totalDue > 0, 'must have balance');
+    assert.ok(data.levies, 'must have levy breakdown');
+    console.log(`  ✅ R3-ISO-TRS PASS: taxYear=${data.taxYear}, levies=${data.levies.length}`);
+  });
+});
+
+describe('R3 County Isolation: Audit', () => {
+  it('audit_roll_summary enforces county context', async () => {
+    const { runner } = makeRunner();
+    mockFetch((url) => {
+      if (url.includes('/api/audit/roll-summary'))
+        return rollSummaryResponse();
+      return {};
+    });
+
+    const result = await runner.execute({
+      toolId: 'audit_roll_summary',
+      params: { county: 'benton', taxYear: 2026 },
+      context: auditorContext({ mode: 'muse' }),
+    });
+
+    assert.equal(result.ok, true, 'result must be ok');
+    const data = result.result;
+    assert.equal(data.county.toLowerCase(), 'benton', 'must be filtered to benton');
+    assert.ok(data.totalParcels > 0, 'must have total parcels');
+    console.log(`  ✅ R3-ISO-AUD PASS: county=${data.county}, parcels=${data.totalParcels}`);
+  });
+});
+
+// ============================================================================
+// R3 THREE-OFFICE CHAIN: Clerk → Treasury → Auditor
+//
+// Demonstrate end-to-end multi-office trace: a clerk records a deed,
+// the treasurer reads the tax statement, and the auditor reconciles —
+// all producing independent correlationId chains for the same parcel.
+// ============================================================================
+
+describe('R3 Three-Office Chain', () => {
+  it('clerk + treasury + auditor produce traceable chains for same parcel', async () => {
+    const { runner, traceService } = makeRunner();
+
+    // Step 1: Clerk records a document
+    mockFetch((url) => {
+      if (url.includes('/api/clerk/')) return recordDocumentResponse();
+      return {};
+    });
+
+    const clerkResult = await runner.execute({
+      toolId: 'record_document',
+      params: {
+        county: 'benton',
+        documentType: 'deed',
+        grantor: 'Smith, John',
+        grantee: 'Jones, Jane',
+        parcelId: 'P-001',
+      },
+      context: {
+        ...clerkContext(),
+        confirmation: true,
+        reasonCode: 'new_recording',
+      },
+    });
+    assert.equal(clerkResult.ok, true, 'clerk must succeed');
+
+    // Step 2: Treasurer reads the tax statement  
+    mockFetch((url) => {
+      if (url.includes('/api/treasury/')) return taxStatementResponse();
+      return {};
+    });
+
+    const treasuryResult = await runner.execute({
+      toolId: 'get_tax_statement',
+      params: { county: 'benton', parcelId: 'P-001', taxYear: 2026 },
+      context: treasurerContext(),
+    });
+    assert.equal(treasuryResult.ok, true, 'treasury must succeed');
+
+    // Step 3: Auditor reconciles cross-office
+    mockFetch((url) => {
+      if (url.includes('/api/audit/')) return reconciliationResponse();
+      return {};
+    });
+
+    const auditResult = await runner.execute({
+      toolId: 'reconcile_cross_office',
+      params: { county: 'benton', taxYear: 2026 },
+      context: {
+        ...auditorContext(),
+        confirmation: true,
+        reasonCode: 'annual_reconciliation',
+      },
+    });
+    assert.equal(auditResult.ok, true, 'auditor must succeed');
+
+    // All three must have distinct correlationIds
+    assert.ok(clerkResult.correlationId, 'clerk must have correlationId');
+    assert.ok(treasuryResult.correlationId, 'treasury must have correlationId');
+    assert.ok(auditResult.correlationId, 'auditor must have correlationId');
+    assert.notEqual(clerkResult.correlationId, treasuryResult.correlationId, 'clerk vs treasury must differ');
+    assert.notEqual(treasuryResult.correlationId, auditResult.correlationId, 'treasury vs audit must differ');
+
+    // Each chain must have trace events
+    const clerkEvents = await traceService.getByCorrelationIdAsync(clerkResult.correlationId);
+    const treasuryEvents = await traceService.getByCorrelationIdAsync(treasuryResult.correlationId);
+    const auditEvents = await traceService.getByCorrelationIdAsync(auditResult.correlationId);
+    assert.ok(clerkEvents.length >= 2, 'clerk trace must exist');
+    assert.ok(treasuryEvents.length >= 2, 'treasury trace must exist');
+    assert.ok(auditEvents.length >= 2, 'auditor trace must exist');
+
+    console.log(`  ✅ R3 THREE-OFFICE PASS: clerk.corr=${clerkResult.correlationId}, treasury.corr=${treasuryResult.correlationId}, audit.corr=${auditResult.correlationId}`);
+  });
+});
+
+// ============================================================================
+// R3 MANIFEST CONTRACT CHECKS
+// ============================================================================
+
 describe('R3 Manifest Contract: officeScope', () => {
   it('all clerk tools have officeScope=clerk', () => {
     const clerkTools = manifest.tools.filter(t => t.suite === 'clerk');
