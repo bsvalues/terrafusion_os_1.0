@@ -219,8 +219,6 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<AvailableCountiesDto> GetAvailableCountiesAsync()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             EnsureInitialized();
 
             try
@@ -599,8 +597,6 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task InitializeBentonCountyNodeAsync()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogDebug("🏛️ Initializing Benton County as anchor node...");
 
             var bentonNode = new CountyMeshNode
@@ -627,8 +623,6 @@ namespace TerraFusion.Consciousness.Services
 
         private async Task DiscoverWashingtonCountiesAsync()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             _logger.LogDebug("🗺️ Discovering Washington State counties for federation...");
 
             // Simulate discovery of Washington counties

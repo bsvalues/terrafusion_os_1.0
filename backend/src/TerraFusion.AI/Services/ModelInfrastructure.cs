@@ -45,8 +45,6 @@ public class ModelContainer<TInput, TOutput> : IModelContainer
 
     public async System.Threading.Tasks.Task<ModelHealthInfo> CheckHealthAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         var healthScore = GetHealthScore();
         var issues = new List<string>();
 
@@ -73,8 +71,6 @@ public class ModelContainer<TInput, TOutput> : IModelContainer
 
     public async System.Threading.Tasks.Task<ModelPerformanceMetrics> GetPerformanceMetricsAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         var averageResponseTime = _totalPredictions > 0 ? _totalResponseTime / _totalPredictions : 0;
         var errorRate = _totalPredictions > 0 ? (float)_totalErrors / _totalPredictions : 0;
 
@@ -94,8 +90,6 @@ public class ModelContainer<TInput, TOutput> : IModelContainer
 
     public async System.Threading.Tasks.Task<ModelDriftAnalysis> AnalyzeDriftAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         var driftScore = CalculateDriftScore();
 
         return new ModelDriftAnalysis
@@ -473,19 +467,15 @@ public class ModelHealthMonitor
         }
 
         _logger.LogError(error, "Model error recorded for {ModelName}", modelName);
-        await Task.CompletedTask;
     }
 
     public async System.Threading.Tasks.Task UpdateHealthStatusAsync(string modelName, ModelHealthInfo healthInfo)
     {
         _logger.LogDebug("Health status updated for model {ModelName}: {Status}", modelName, healthInfo.Status);
-        await Task.CompletedTask;
     }
 
     public async System.Threading.Tasks.Task<int> GetTotalPredictionsTodayAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         var today = DateTime.UtcNow.Date;
         var total = 0;
 
@@ -502,8 +492,6 @@ public class ModelHealthMonitor
 
     public async System.Threading.Tasks.Task<float> GetAverageResponseTimeAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         // Simulate average response time calculation
         return 250f; // 250ms average
     }

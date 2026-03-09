@@ -40,7 +40,6 @@ namespace TerraFusion.Consciousness.Services
                     auditEvent.Description);
 
                 // In production, this would write to secure audit database
-                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
@@ -51,8 +50,6 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<List<AuditEvent>> GetAuditTrailAsync(AuditQuery query)
         {
-            await Task.CompletedTask;
-
             lock (_lockObject)
             {
                 var filteredEvents = _auditEvents.AsQueryable();
@@ -78,8 +75,6 @@ namespace TerraFusion.Consciousness.Services
 
         public async Task<AuditSummary> GetAuditSummaryAsync(DateTime startDate, DateTime endDate)
         {
-            await Task.CompletedTask;
-
             lock (_lockObject)
             {
                 var eventsInRange = _auditEvents

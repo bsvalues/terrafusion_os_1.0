@@ -346,8 +346,6 @@ namespace TerraFusion.Consciousness.Services
         /// <returns>Validation result containing component status, compliance score, and validation messages</returns>
         public async Task<ConsciousnessValidationResult> ValidateSystemIntegrityAsync(CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             try
             {
                 var componentValidations = new Dictionary<string, bool>

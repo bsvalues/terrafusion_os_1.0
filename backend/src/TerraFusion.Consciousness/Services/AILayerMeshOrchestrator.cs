@@ -906,8 +906,6 @@ namespace TerraFusion.Consciousness.Services
         /// </summary>
         public async Task<double> GetMeshHealthIndexAsync()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
             try
             {
                 // Calculate comprehensive health index
