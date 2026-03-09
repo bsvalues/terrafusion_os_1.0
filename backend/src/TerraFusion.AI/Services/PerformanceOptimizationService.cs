@@ -121,7 +121,7 @@ namespace TerraFusion.AI.Services
         public async Task<PerformanceStatus> GetPerformanceStatusAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var uptime = DateTime.UtcNow - _startTime;
             var process = Process.GetCurrentProcess();
@@ -278,7 +278,7 @@ namespace TerraFusion.AI.Services
         public async Task<CacheStatistics> GetCacheStatisticsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var stats = new CacheStatistics
             {
@@ -339,7 +339,7 @@ namespace TerraFusion.AI.Services
         public async Task<List<PerfOptimizationRecommendation>> GetOptimizationRecommendationsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var recommendations = new List<PerfOptimizationRecommendation>();
 
@@ -442,7 +442,7 @@ namespace TerraFusion.AI.Services
         public async Task<QueryPerformanceReport> GetQueryPerformanceAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var report = new QueryPerformanceReport
             {
@@ -511,7 +511,7 @@ namespace TerraFusion.AI.Services
         public async Task<ResourceUtilizationReport> GetResourceUtilizationAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var process = Process.GetCurrentProcess();
 
@@ -580,7 +580,7 @@ namespace TerraFusion.AI.Services
             PerfOptimizationConfig config,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             Interlocked.Increment(ref _totalOptimizations);
 
@@ -671,7 +671,7 @@ namespace TerraFusion.AI.Services
             CacheInvalidationRequest request,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var result = new CacheInvalidationResult
             {

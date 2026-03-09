@@ -129,7 +129,7 @@ namespace TerraFusion.AI.Services
         public async Task<OrchestrationStatus> GetOrchestrationStatusAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var uptime = DateTime.UtcNow - _startTime;
             var activeAgents = _agentStates.Values.Count(a => a.Status != "offline");
@@ -289,7 +289,7 @@ namespace TerraFusion.AI.Services
         public async Task<List<AgentPerformance>> GetAgentPerformanceAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var performances = new List<AgentPerformance>();
 
@@ -372,7 +372,7 @@ namespace TerraFusion.AI.Services
             TerraFusion.Core.DTOs.TaskRequest task,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             Interlocked.Increment(ref _totalTasksDistributed);
 
@@ -451,7 +451,7 @@ namespace TerraFusion.AI.Services
         public async Task<LoadBalancingMetrics> GetLoadBalancingMetricsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var metrics = new LoadBalancingMetrics
             {
@@ -511,7 +511,7 @@ namespace TerraFusion.AI.Services
             TerraFusion.Core.DTOs.OptimizationConfig config,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             Interlocked.Increment(ref _totalOptimizations);
 
@@ -608,7 +608,7 @@ namespace TerraFusion.AI.Services
         public async Task<AgentCoordinationStatus> GetCoordinationStatusAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var coordinators = _agentStates.Values.Where(a => a.AgentType == "Coordinator").ToList();
             var fieldGenerals = _agentStates.Values.Where(a => a.AgentType == "FieldGeneral").ToList();
@@ -714,7 +714,7 @@ namespace TerraFusion.AI.Services
         public async Task<List<SwarmIntelligenceMetric>> GetSwarmIntelligenceMetricsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var metrics = new List<SwarmIntelligenceMetric>
             {

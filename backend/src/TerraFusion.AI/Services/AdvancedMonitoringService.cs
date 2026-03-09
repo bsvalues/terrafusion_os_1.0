@@ -48,7 +48,7 @@ namespace TerraFusion.AI.Services
         public async Task<SystemMetrics> GetSystemMetricsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var process = Process.GetCurrentProcess();
             var uptime = DateTime.UtcNow - _startTime;
@@ -96,7 +96,7 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var metrics = new AdvancedMonitoringPerformanceMetrics
             {
@@ -159,7 +159,7 @@ namespace TerraFusion.AI.Services
         public async Task<List<ServiceHealthMetric>> GetServiceHealthMetricsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             return new List<ServiceHealthMetric>
             {
@@ -243,7 +243,7 @@ namespace TerraFusion.AI.Services
         public async Task<ResourceUtilization> GetResourceUtilizationAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             return new ResourceUtilization
             {
@@ -285,7 +285,7 @@ namespace TerraFusion.AI.Services
         public async Task<List<Alert>> GetActiveAlertsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             // In production, this would query from an alerting system
             var alerts = new List<Alert>();
@@ -358,7 +358,7 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var dataPoints = timeRange switch
             {

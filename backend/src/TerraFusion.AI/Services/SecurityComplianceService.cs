@@ -190,7 +190,7 @@ namespace TerraFusion.AI.Services
         public async Task<SecurityStatus> GetSecurityStatusAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var uptime = DateTime.UtcNow - _startTime;
 
@@ -341,7 +341,7 @@ namespace TerraFusion.AI.Services
         public async Task<ComplianceReport> GetComplianceReportAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var report = new ComplianceReport
             {
@@ -427,7 +427,7 @@ namespace TerraFusion.AI.Services
             int limit,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var events = _securityEvents
                 .Where(e => string.IsNullOrEmpty(severity) || e.Severity.Equals(severity, StringComparison.OrdinalIgnoreCase))
@@ -443,7 +443,7 @@ namespace TerraFusion.AI.Services
         public async Task<VulnerabilityReport> GetVulnerabilityReportAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var report = new VulnerabilityReport
             {
@@ -497,7 +497,7 @@ namespace TerraFusion.AI.Services
         public async Task<AccessControlReport> GetAccessControlReportAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var report = new AccessControlReport
             {
@@ -561,7 +561,7 @@ namespace TerraFusion.AI.Services
         public async Task<List<SecurityRecommendation>> GetSecurityRecommendationsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var recommendations = new List<SecurityRecommendation>
             {
@@ -666,7 +666,7 @@ namespace TerraFusion.AI.Services
             string timeRange,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var report = new AuditTrailReport
             {

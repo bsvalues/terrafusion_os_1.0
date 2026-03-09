@@ -307,8 +307,7 @@ namespace TerraFusion.AI.Services
 
         public async Task<List<Recommendation>> GenerateRecommendations(string context)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             _logger.LogInformation("💡 Generating recommendations for context: {Context}", context);
 
             var recommendations = new List<Recommendation>();
@@ -391,8 +390,7 @@ namespace TerraFusion.AI.Services
 
         public async Task<AnalyticsMetrics> GetAnalyticsMetrics()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             _metrics.ModelsActive = _models.Count;
             _metrics.PatternsDetected = _patterns.Count;
             return _metrics;
@@ -423,8 +421,7 @@ namespace TerraFusion.AI.Services
 
         private async System.Threading.Tasks.Task LoadHistoricalData()
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+
             foreach (var domain in _activeDomains)
             {
                 var data = GenerateSimulatedHistoricalData(domain, 90);

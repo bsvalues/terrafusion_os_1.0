@@ -131,7 +131,7 @@ namespace TerraFusion.AI.Services
         public async Task<FISMAComplianceStatus> ValidateFISMAComplianceAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var status = new FISMAComplianceStatus
             {
@@ -225,7 +225,7 @@ namespace TerraFusion.AI.Services
         public async Task<NISTControlsStatus> ValidateNISTControlsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var status = new NISTControlsStatus
             {
@@ -281,7 +281,7 @@ namespace TerraFusion.AI.Services
         public async Task<AccessibilityComplianceStatus> ValidateAccessibilityAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var status = new AccessibilityComplianceStatus
             {
@@ -396,7 +396,7 @@ namespace TerraFusion.AI.Services
         private async Task<DataPrivacyStatus> ValidateDataPrivacyAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var status = new DataPrivacyStatus
             {
@@ -465,7 +465,7 @@ namespace TerraFusion.AI.Services
         private async Task<CountyComplianceStatus> ValidateCountyRequirementsAsync(
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var status = new CountyComplianceStatus
             {
@@ -519,7 +519,7 @@ namespace TerraFusion.AI.Services
             string severity,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             // In production, this would query a database
             var violations = new List<ComplianceViolation>();
@@ -536,7 +536,7 @@ namespace TerraFusion.AI.Services
             List<ComplianceViolation> violations,
             CancellationToken cancellationToken = default)
         {
-            await Task.CompletedTask;
+
 
             var plan = new RemediationPlan
             {

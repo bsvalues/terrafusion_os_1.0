@@ -51,10 +51,9 @@ public class QuantumPerformanceAnalyzer
     /// <summary>
     /// Analyze quantum performance for elite dashboard visualization
     /// </summary>
-    public async Task<object> AnalyzeQuantumPerformanceAsync(IEnumerable<TerraFusion.API.Models.Performance.PerformanceMetric> metrics)
+    public Task<object> AnalyzeQuantumPerformanceAsync(IEnumerable<TerraFusion.API.Models.Performance.PerformanceMetric> metrics)
     {
-        await Task.CompletedTask;
-        return new { CoherenceLevel = 0.998, EntanglementStrength = 0.995, QuantumScore = 99.7 };
+        return Task.FromResult<object>(new { CoherenceLevel = 0.998, EntanglementStrength = 0.995, QuantumScore = 99.7 });
     }
 }
 
@@ -73,15 +72,14 @@ public class PredictiveHealthAnalyzer
     /// <summary>
     /// Predict system health trends
     /// </summary>
-    public async Task<HealthPrediction> PredictHealthAsync(SystemMetrics metrics)
+    public Task<HealthPrediction> PredictHealthAsync(SystemMetrics metrics)
     {
-        await Task.CompletedTask;
-        return new HealthPrediction
+        return Task.FromResult(new HealthPrediction
         {
             PredictedStatus = "OPTIMAL",
             ConfidenceScore = 0.995m,
             TimeHorizon = TimeSpan.FromHours(24)
-        };
+        });
     }
 }
 
@@ -100,26 +98,24 @@ public class MigrationRiskAssessmentEngine
     /// <summary>
     /// Assess migration risks for county
     /// </summary>
-    public async Task<MigrationRiskAssessment> AssessRisksAsync(string countyCode)
+    public Task<MigrationRiskAssessment> AssessRisksAsync(string countyCode)
     {
-        await Task.CompletedTask;
-        return new MigrationRiskAssessment
+        return Task.FromResult(new MigrationRiskAssessment
         {
             CountyCode = countyCode,
             RiskLevel = "LOW",
             RiskScore = 0.15m,
             Recommendations = new List<string> { "Proceed with confidence" }
-        };
+        });
     }
 
     /// <summary>
     /// Assess migration risks with detailed assessment data
     /// </summary>
-    public async Task<object> AssessMigrationRisksAsync(string countyCode, object assessmentData)
+    public Task<object> AssessMigrationRisksAsync(string countyCode, object assessmentData)
     {
-        await Task.CompletedTask;
         _logger.LogInformation("🔍 Assessing migration risks for {CountyCode}", countyCode);
-        return new
+        return Task.FromResult<object>(new
         {
             CountyCode = countyCode,
             RiskLevel = "LOW",
@@ -129,7 +125,7 @@ public class MigrationRiskAssessmentEngine
             FinancialRisks = new List<string> { "Budget allocation confirmed" },
             OverallRiskMitigation = 0.92m,
             Recommendations = new List<string> { "Proceed with migration", "Maintain current preparation level" }
-        };
+        });
     }
 }
 
@@ -148,24 +144,22 @@ public class PredictiveMigrationAnalytics
     /// <summary>
     /// Predict migration success probability
     /// </summary>
-    public async Task<MigrationPrediction> PredictSuccessAsync(string countyCode)
+    public Task<MigrationPrediction> PredictSuccessAsync(string countyCode)
     {
-        await Task.CompletedTask;
-        return new MigrationPrediction
+        return Task.FromResult(new MigrationPrediction
         {
             CountyCode = countyCode,
             SuccessProbability = 0.985m,
             EstimatedDuration = TimeSpan.FromDays(30),
             ConfidenceLevel = 0.95m
-        };
+        });
     }
 
     /// <summary>
     /// Analyze migration success probability with detailed assessment
     /// </summary>
-    public async Task<object> AnalyzeMigrationSuccessProbabilityAsync(object assessmentData)
+    public Task<object> AnalyzeMigrationSuccessProbabilityAsync(object assessmentData)
     {
-        await Task.CompletedTask;
         _logger.LogInformation("📊 Analyzing migration success probability with AI-powered predictive analytics");
         return new
         {
@@ -182,7 +176,7 @@ public class PredictiveMigrationAnalytics
                 OrganizationalAlignment = 0.97m
             },
             RecommendedActions = new List<string> { "Proceed with migration plan", "Maintain momentum" }
-        };
+        });
     }
 }
 
@@ -201,16 +195,15 @@ public class FISMAHighComplianceValidator
     /// <summary>
     /// Validate FISMA-High compliance
     /// </summary>
-    public async Task<FISMAComplianceResult> ValidateComplianceAsync(string systemId)
+    public Task<FISMAComplianceResult> ValidateComplianceAsync(string systemId)
     {
-        await Task.CompletedTask;
-        return new FISMAComplianceResult
+        return Task.FromResult(new FISMAComplianceResult
         {
             IsCompliant = true,
             ControlsCovered = 325,
             TotalControls = 325,
             ComplianceScore = 1.0m
-        };
+        });
     }
 
     /// <summary>
