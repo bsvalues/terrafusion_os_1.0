@@ -1,6 +1,6 @@
 {
   "$schema": "./terrapilot.tools.schema.json",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "TerraPilot tool registry - authoritative manifest for Gates 4-7 enforcement",
   "lastUpdated": "2026-01-29",
   "tools": [
@@ -545,6 +545,77 @@
           }
         },
         "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "calculate_pilt_payment",
+      "displayName": "Calculate PILT Payment",
+      "suite": "dais",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["workflow"],
+      "description": "Calculate Payment In Lieu of Taxes for federal lands (Hanford Nuclear Reservation) with district-level distribution",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "fiscalYear": {
+            "type": "integer",
+            "description": "Fiscal year for PILT calculation"
+          }
+        },
+        "required": ["county", "fiscalYear"]
+      }
+    },
+    {
+      "toolId": "run_income_valuation",
+      "displayName": "Run Income Valuation",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "model"],
+      "description": "Calculate property value using the income capitalization approach (NOI / cap rate) with Benton County market data",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "annualRentalIncome": {
+            "type": "number",
+            "description": "Annual gross rental income"
+          },
+          "vacancyRate": {
+            "type": "number",
+            "description": "Vacancy rate percentage (0-100)",
+            "default": 5
+          },
+          "capRate": {
+            "type": "number",
+            "description": "Capitalization rate percentage (0-25)",
+            "default": 7.5
+          },
+          "propertyType": {
+            "type": "string",
+            "enum": ["residential", "commercial", "industrial", "mixed"],
+            "default": "commercial"
+          },
+          "location": {
+            "type": "string",
+            "description": "Sub-market location for premium adjustment"
+          }
+        },
+        "required": ["county", "annualRentalIncome"]
       }
     }
   ]

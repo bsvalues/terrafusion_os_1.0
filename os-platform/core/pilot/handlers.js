@@ -13,11 +13,12 @@
  *   - Document generation service (draft_appeal_response)
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeGateHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.requestTraceRedactionHandler = exports.assembleBoePacketHandler = exports.addDossierNoteHandler = exports.searchTraceByCorrelationHandler = exports.summarizeSalesCompsHandler = exports.draftBoeAppealResponseHandler = exports.draftValueChangeNoticeHandler = exports.explainModelInputsHandler = exports.summarizeLevyRateHandler = exports.compareAssessedValueHandler = exports.summarizeParcelCasefileHandler = exports.explainSeniorExemptionHandler = exports.draftAppealResponseHandler = exports.explainModelResultsHandler = exports.summarizeDossierHandler = void 0;
+exports.wave3Handlers = exports.writeGateHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.runIncomeValuationHandler = exports.calculatePiltPaymentHandler = exports.requestTraceRedactionHandler = exports.assembleBoePacketHandler = exports.addDossierNoteHandler = exports.searchTraceByCorrelationHandler = exports.summarizeSalesCompsHandler = exports.draftBoeAppealResponseHandler = exports.draftValueChangeNoticeHandler = exports.explainModelInputsHandler = exports.summarizeLevyRateHandler = exports.compareAssessedValueHandler = exports.summarizeParcelCasefileHandler = exports.explainSeniorExemptionHandler = exports.draftAppealResponseHandler = exports.explainModelResultsHandler = exports.summarizeDossierHandler = void 0;
 exports.registerPhase83Handlers = registerPhase83Handlers;
 exports.registerPhase84Handlers = registerPhase84Handlers;
 exports.registerWriteGateHandlers = registerWriteGateHandlers;
 exports.registerAllHandlers = registerAllHandlers;
+exports.registerWave3Handlers = registerWave3Handlers;
 // ============================================================================
 // Handler Implementations
 // ============================================================================
@@ -405,6 +406,49 @@ const requestTraceRedactionHandler = async (params, context, _tool) => {
     };
 };
 exports.requestTraceRedactionHandler = requestTraceRedactionHandler;
+/**
+ * Calculate PILT Payment - Pilot/read_only
+ * Returns PILT district distribution for Benton County federal lands.
+ */
+const calculatePiltPaymentHandler = async (params, context, _tool) => {
+    const { county, fiscalYear } = params;
+    assertCountyMatch(county, context.countyId);
+    // Canned Benton County PILT data (Hanford Nuclear Reservation)
+    const totalAssessedValue = 1247500000;
+    const totalPiltDue = 12891450;
+    const districtCount = 12;
+    return {
+        county: county.toUpperCase(),
+        fiscalYear,
+        totalAssessedValue,
+        totalPiltDue,
+        districtCount,
+        summary: `PILT calculation for FY${fiscalYear}: ${districtCount} districts, $${totalPiltDue.toLocaleString()} total due on $${totalAssessedValue.toLocaleString()} assessed value (Hanford Nuclear Reservation, 586,000 federal acres).`,
+    };
+};
+exports.calculatePiltPaymentHandler = calculatePiltPaymentHandler;
+/**
+ * Run Income Valuation - Pilot/read_only
+ * Calculates property value using income capitalization approach.
+ */
+const runIncomeValuationHandler = async (params, context, _tool) => {
+    const { county, annualRentalIncome, vacancyRate = 5, capRate = 7.5, propertyType = 'commercial' } = params;
+    assertCountyMatch(county, context.countyId);
+    const effectiveGrossIncome = annualRentalIncome * (1 - vacancyRate / 100);
+    const totalExpenses = effectiveGrossIncome * 0.35; // canned 35% expense ratio
+    const noi = effectiveGrossIncome - totalExpenses;
+    const valuation = noi / (capRate / 100);
+    const gim = effectiveGrossIncome > 0 ? valuation / effectiveGrossIncome : 0;
+    return {
+        netOperatingIncome: Math.round(noi * 100) / 100,
+        capRate,
+        valuation: Math.round(valuation * 100) / 100,
+        grossIncomeMultiplier: Math.round(gim * 100) / 100,
+        riskClassification: capRate > 7 ? 'low' : capRate < 4 ? 'high' : 'medium',
+        source: `Canned income approach for ${propertyType} property in ${county}`,
+    };
+};
+exports.runIncomeValuationHandler = runIncomeValuationHandler;
 // ============================================================================
 // Handler Registry
 // ============================================================================
@@ -439,12 +483,20 @@ function registerWriteGateHandlers(runner) {
     runner.registerHandler('request_trace_redaction', exports.requestTraceRedactionHandler);
 }
 /**
- * Register all tool handlers (Phase 8.3 + 8.4 + C2).
+ * Register all tool handlers (Phase 8.3 + 8.4 + C2 + Wave 3).
  */
 function registerAllHandlers(runner) {
     registerPhase83Handlers(runner);
     registerPhase84Handlers(runner);
     registerWriteGateHandlers(runner);
+    registerWave3Handlers(runner);
+}
+/**
+ * Register Wave 3 tool handlers (PILT + Income Valuation).
+ */
+function registerWave3Handlers(runner) {
+    runner.registerHandler('calculate_pilt_payment', exports.calculatePiltPaymentHandler);
+    runner.registerHandler('run_income_valuation', exports.runIncomeValuationHandler);
 }
 /**
  * Map of all Phase 8.3 handlers for direct access.
@@ -475,4 +527,11 @@ exports.phase84Handlers = {
 exports.writeGateHandlers = {
     assemble_boe_packet: exports.assembleBoePacketHandler,
     request_trace_redaction: exports.requestTraceRedactionHandler,
+};
+/**
+ * Map of Wave 3 handlers for direct access.
+ */
+exports.wave3Handlers = {
+    calculate_pilt_payment: exports.calculatePiltPaymentHandler,
+    run_income_valuation: exports.runIncomeValuationHandler,
 };

@@ -201,8 +201,8 @@ describe('PropertyDais', () => {
         expect(screen.getAllByText(/corr-dais/).length).toBeGreaterThan(0);
       });
 
-      expect(screen.getByText(/History/i)).toBeInTheDocument();
-      expect(screen.getByText(/check_cert_status/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/History/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/check_cert_status/i).length).toBeGreaterThan(0);
 
       const copyButtons = screen.getAllByRole('button', { name: /copy/i });
       expect(copyButtons.length).toBeGreaterThanOrEqual(1);

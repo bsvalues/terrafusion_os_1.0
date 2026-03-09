@@ -52,7 +52,7 @@ describe('PropertyForge', () => {
     it('displays valuation controls', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByLabelText(/tax year/i)).toBeInTheDocument();
+      expect(screen.getAllByLabelText(/tax year/i).length).toBeGreaterThan(0);
       expect(screen.getByRole('button', { name: /explain valuation/i })).toBeInTheDocument();
     });
 
@@ -67,7 +67,7 @@ describe('PropertyForge', () => {
     it('allows tax year selection', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
-      const yearSelect = screen.getByLabelText(/tax year/i);
+      const yearSelect = screen.getAllByLabelText(/tax year/i)[0];
       fireEvent.change(yearSelect, { target: { value: '2025' } });
 
       expect(yearSelect).toHaveValue('2025');
@@ -260,8 +260,8 @@ describe('PropertyForge', () => {
         expect(screen.getAllByText(/corr-forge/).length).toBeGreaterThan(0);
       });
 
-      expect(screen.getByText(/History/i)).toBeInTheDocument();
-      expect(screen.getByText(/explain_model_results/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/History/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/explain_model_results/i).length).toBeGreaterThan(0);
 
       const copyButtons = screen.getAllByRole('button', { name: /copy/i });
       expect(copyButtons.length).toBeGreaterThanOrEqual(1);

@@ -1,10 +1,21 @@
 /**
  * PropertyDais.tsx
  *
- * Phase 5.5: Property Dais Tab - Workflow MWUX Slice
- * Real MWUX with workflow status and check_cert_status tool invocation.
+ * Phase 5.5 + R2.8: Property Dais Tab - Workflow MWUX Slice
+ * Real MWUX with governed tool invocations:
+ * - check_cert_status: Certification workflow status
+ * - calculate_pilt_payment: PILT payment calculation (RCW, Hanford)
+ * - explain_senior_exemption_impact: Senior/disabled exemption impact bands
+ * - summarize_levy_rate_components: Levy rate breakdown
+ * - generate_commissioner_memo: AI memo drafting
+ * - draft_value_change_notice: Value change notice (write_low)
+ * - draft_appeal_response: Appeal response draft (write_low)
+ * - draft_notice: General notice creation (write_low)
+ * - assign_task: Task assignment (write_low)
+ * - assemble_boe_packet: BOE evidence packet (write_high)
+ * - draft_boe_appeal_response: BOE appeal response draft (write_low)
  *
- * Architecture: UI → select workflow type → check_cert_status tool → correlationId UX
+ * Architecture: UI → select params → governed tool → correlationId UX
  */
 
 import React, { useCallback, useState } from 'react';
@@ -55,11 +66,113 @@ interface StatusState {
   error?: ErrorInfo;
 }
 
+/** PILT district result from calculate_pilt_payment */
+interface PiltDistrict {
+  districtName: string;
+  federalAcres: number;
+  piltDue: number;
+  levyRate: number;
+}
+
+interface PiltResult {
+  county: string;
+  taxYear: number;
+  totalPiltDue: number;
+  districtsCount: number;
+  districts: PiltDistrict[];
+}
+
+interface PiltState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: PiltResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
+
+/** Exemption impact result from explain_senior_exemption_impact */
+interface ExemptionBand {
+  incomeRange: string;
+  exemptionLevel: string;
+  estimatedSavings: number;
+}
+
+interface ExemptionResult {
+  parcelId: string;
+  bands: ExemptionBand[];
+  eligibilitySummary?: string;
+  rcwReference?: string;
+}
+
+interface ExemptionState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: ExemptionResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
+
+/** Levy rate components from summarize_levy_rate_components */
+interface LevyComponent { name: string; rate: number }
+interface LevyResult { components: LevyComponent[]; totalRate: number; explanation: string }
+
+/** Commissioner memo from generate_commissioner_memo */
+interface MemoResult { memo: { title: string; body: string }; wordCount: number; payloadRef: string }
+
+/** Value change notice from draft_value_change_notice (write_low) */
+interface NoticeResult { document: { title: string; body: string }; payloadRef: string; disclaimer: string }
+
+/** Appeal response from draft_appeal_response (write_low) */
+interface AppealResponseResult { appealId: string; payloadRef: string; draftSummary: string; wordCount: number; position: string }
+
+/** Draft notice from draft_notice (write_low) */
+interface DraftNoticeResult { noticeId: string; parcelId: string; noticeType: string; payloadRef: string; status: string }
+
+/** Task assignment from assign_task (write_low) */
+interface AssignTaskResult { taskId: string; assignedTo: string; status: string; payloadRef: string }
+
+/** BOE packet from assemble_boe_packet (write_high) */
+interface BoePacketResult { caseId: string; packetRef: string; sections: string[]; payloadRef: string }
+
+/** BOE appeal response from draft_boe_appeal_response (write_low) */
+interface BoeAppealResult { document: { title: string; body: string }; payloadRef: string; citations?: string[] }
+
+/** BOE position options */
+const BOE_POSITIONS = [
+  { value: 'support_assessor', label: 'Support Assessor' },
+  { value: 'support_taxpayer', label: 'Support Taxpayer' },
+  { value: 'balanced', label: 'Balanced' },
+] as const;
+
+type DaisToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
+
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
 
   const [workflowType, setWorkflowType] = useState<WorkflowType>('certification');
   const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
+  const [piltState, setPiltState] = useState<PiltState>({ status: 'idle' });
+  const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
+  const [levyState, setLevyState] = useState<DaisToolState<LevyResult>>({ status: 'idle' });
+  const [memoState, setMemoState] = useState<DaisToolState<MemoResult>>({ status: 'idle' });
+  const [memoTopic, setMemoTopic] = useState<string>('');
+  const [noticeState, setNoticeState] = useState<DaisToolState<NoticeResult>>({ status: 'idle' });
+  const [noticeReasons, setNoticeReasons] = useState<string>('');
+  const [appealState, setAppealState] = useState<DaisToolState<AppealResponseResult>>({ status: 'idle' });
+  const [appealId, setAppealId] = useState<string>('');
+  const [appealPosition, setAppealPosition] = useState<'uphold' | 'adjust' | 'partial'>('uphold');
+  const [draftNoticeState, setDraftNoticeState] = useState<DaisToolState<DraftNoticeResult>>({ status: 'idle' });
+  const [draftNoticeType, setDraftNoticeType] = useState<string>('assessment');
+  const [assignTaskState, setAssignTaskState] = useState<DaisToolState<AssignTaskResult>>({ status: 'idle' });
+  const [assignTaskId, setAssignTaskId] = useState<string>('');
+  const [assignAssigneeId, setAssignAssigneeId] = useState<string>('');
+  const [assignReason, setAssignReason] = useState<string>('');
+  const [boePacketState, setBoePacketState] = useState<DaisToolState<BoePacketResult>>({ status: 'idle' });
+  const [boeCaseId, setBoeCaseId] = useState<string>('');
+  const [boeSections, setBoeSections] = useState<Set<string>>(new Set(['evidence']));
+  const [boeConfirmed, setBoeConfirmed] = useState(false);
+  const [boeAppealState, setBoeAppealState] = useState<DaisToolState<BoeAppealResult>>({ status: 'idle' });
+  const [boeAppealCaseId, setBoeAppealCaseId] = useState<string>('');
+  const [boeAppealPosition, setBoeAppealPosition] = useState<string>('support_assessor');
+  const [boeAppealPoints, setBoeAppealPoints] = useState<string>('');
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
   const handleCheckStatus = useCallback(async () => {
@@ -161,6 +274,274 @@ export const PropertyDais: React.FC = () => {
       ]);
     }
   }, [parcelId, workflowType]);
+
+  /** calculate_pilt_payment — PILT district payment calculation */
+  const handleCalculatePilt = useCallback(async () => {
+    setPiltState({ status: 'loading' });
+
+    try {
+      const response = await invokeTool({
+        toolId: 'calculate_pilt_payment',
+        params: { county: 'benton', taxYear: new Date().getFullYear() },
+        parcelId,
+      });
+
+      if (response.success && response.result) {
+        let parsed: PiltResult;
+        try {
+          parsed = typeof response.result.output === 'string'
+            ? JSON.parse(response.result.output)
+            : response.result.output;
+        } catch {
+          parsed = { county: 'benton', taxYear: new Date().getFullYear(), totalPiltDue: 0, districtsCount: 0, districts: [] };
+        }
+
+        setPiltState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory((prev) => [{
+          id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'success',
+          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
+        }, ...prev.slice(0, 9)]);
+      } else {
+        setPiltState({
+          status: 'error', correlationId: response.correlationId,
+          error: { code: response.error?.code || 'PILT_FAILED', message: response.error?.message || 'PILT calculation failed', severity: 'error', correlationId: response.correlationId },
+        });
+        setHistory((prev) => [{
+          id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'error',
+          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
+          errorCode: response.error?.code || 'PILT_FAILED',
+        }, ...prev.slice(0, 9)]);
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setPiltState({
+        status: 'error', correlationId: cid,
+        error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid },
+      });
+      setHistory((prev) => [{
+        id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'error',
+        correlationId: cid, timestamp: new Date(), errorCode: 'NETWORK_ERROR',
+      }, ...prev.slice(0, 9)]);
+    }
+  }, [parcelId]);
+
+  /** explain_senior_exemption_impact — exemption impact bands */
+  const handleExemptionImpact = useCallback(async () => {
+    setExemptionState({ status: 'loading' });
+
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_senior_exemption_impact',
+        params: { county: 'benton', parcelId, taxYear: new Date().getFullYear() },
+        parcelId,
+      });
+
+      if (response.success && response.result) {
+        let parsed: ExemptionResult;
+        try {
+          parsed = typeof response.result.output === 'string'
+            ? JSON.parse(response.result.output)
+            : response.result.output;
+        } catch {
+          parsed = { parcelId, bands: [] };
+        }
+
+        setExemptionState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory((prev) => [{
+          id: crypto.randomUUID(), toolId: 'explain_senior_exemption_impact', status: 'success',
+          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
+        }, ...prev.slice(0, 9)]);
+      } else {
+        setExemptionState({
+          status: 'error', correlationId: response.correlationId,
+          error: { code: response.error?.code || 'EXEMPTION_FAILED', message: response.error?.message || 'Exemption impact failed', severity: 'error', correlationId: response.correlationId },
+        });
+        setHistory((prev) => [{
+          id: crypto.randomUUID(), toolId: 'explain_senior_exemption_impact', status: 'error',
+          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
+          errorCode: response.error?.code || 'EXEMPTION_FAILED',
+        }, ...prev.slice(0, 9)]);
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setExemptionState({
+        status: 'error', correlationId: cid,
+        error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid },
+      });
+      setHistory((prev) => [{
+        id: crypto.randomUUID(), toolId: 'explain_senior_exemption_impact', status: 'error',
+        correlationId: cid, timestamp: new Date(), errorCode: 'NETWORK_ERROR',
+      }, ...prev.slice(0, 9)]);
+    }
+  }, [parcelId]);
+
+  /** Invoke summarize_levy_rate_components */
+  const handleLevyBreakdown = useCallback(async () => {
+    setLevyState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'summarize_levy_rate_components', params: { county: 'benton', taxYear: new Date().getFullYear() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setLevyState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'summarize_levy_rate_components', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setLevyState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'LEVY_FAILED', message: response.error?.message || 'Levy rate breakdown failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setLevyState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId]);
+
+  /** Invoke generate_commissioner_memo */
+  const handleCommissionerMemo = useCallback(async () => {
+    if (!memoTopic.trim()) return;
+    setMemoState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'generate_commissioner_memo', params: { county: 'benton', topic: memoTopic, taxYear: new Date().getFullYear(), format: 'brief' }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setMemoState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'generate_commissioner_memo', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { topic: memoTopic } }, ...prev.slice(0, 19)]);
+      } else {
+        setMemoState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'MEMO_FAILED', message: response.error?.message || 'Memo generation failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setMemoState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, memoTopic]);
+
+  /** Invoke draft_value_change_notice — write_low notice draft */
+  const handleDraftNotice = useCallback(async () => {
+    const codes = noticeReasons.split(',').map(s => s.trim()).filter(Boolean);
+    if (codes.length === 0) { setNoticeState({ status: 'error', error: { code: 'VALIDATION', message: 'Enter at least one reason code', severity: 'error' } }); return; }
+    setNoticeState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'draft_value_change_notice', params: { county: 'benton', parcelId, taxYear: new Date().getFullYear(), reasonCodes: codes }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setNoticeState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'draft_value_change_notice', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setNoticeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'DRAFT_FAILED', message: response.error?.message || 'Notice draft failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, noticeReasons]);
+
+  /** Invoke draft_appeal_response — write_low appeal response draft */
+  const handleDraftAppealResponse = useCallback(async () => {
+    if (!appealId.trim()) { setAppealState({ status: 'error', error: { code: 'VALIDATION', message: 'Appeal ID is required', severity: 'error' } }); return; }
+    setAppealState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'draft_appeal_response', params: { parcelId, appealId: appealId.trim(), position: appealPosition, tone: 'formal', includeEvidenceRefs: true }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setAppealState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'draft_appeal_response', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setAppealState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'APPEAL_DRAFT_FAILED', message: response.error?.message || 'Appeal response draft failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, appealId, appealPosition]);
+
+  /** Invoke draft_notice — write_low general notice */
+  const handleGeneralNotice = useCallback(async () => {
+    setDraftNoticeState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'draft_notice', params: { county: 'benton', parcelId, noticeType: draftNoticeType, taxYear: new Date().getFullYear() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setDraftNoticeState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'draft_notice', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setDraftNoticeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'NOTICE_FAILED', message: response.error?.message || 'Notice creation failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setDraftNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, draftNoticeType]);
+
+  /** Invoke assign_task — write_low task assignment */
+  const handleAssignTask = useCallback(async () => {
+    if (!assignTaskId.trim() || !assignAssigneeId.trim()) {
+      setAssignTaskState({ status: 'error', error: { code: 'VALIDATION', message: 'Task ID and Assignee ID are required', severity: 'error' } });
+      return;
+    }
+    setAssignTaskState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'assign_task', params: { county: 'benton', taskId: assignTaskId.trim(), assigneeId: assignAssigneeId.trim(), reason: assignReason.trim() || 'Assigned via TerraPilot' }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setAssignTaskState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'assign_task', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { taskId: assignTaskId } }, ...prev.slice(0, 19)]);
+      } else {
+        setAssignTaskState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'ASSIGN_FAILED', message: response.error?.message || 'Task assignment failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setAssignTaskState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, assignTaskId, assignAssigneeId, assignReason]);
+
+  /** Invoke assemble_boe_packet — write_high BOE evidence packet */
+  const handleAssembleBoePacket = useCallback(async () => {
+    if (!boeCaseId.trim()) {
+      setBoePacketState({ status: 'error', error: { code: 'VALIDATION', message: 'Case ID is required', severity: 'error' } });
+      return;
+    }
+    if (!boeConfirmed) return;
+    setBoePacketState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'assemble_boe_packet', params: { county: 'benton', caseId: boeCaseId.trim(), include: Array.from(boeSections) }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setBoePacketState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'assemble_boe_packet', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { caseId: boeCaseId } }, ...prev.slice(0, 19)]);
+      } else {
+        setBoePacketState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'BOE_PACKET_FAILED', message: response.error?.message || 'BOE packet assembly failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setBoePacketState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    } finally {
+      setBoeConfirmed(false);
+    }
+  }, [parcelId, boeCaseId, boeSections, boeConfirmed]);
+
+  /** Invoke draft_boe_appeal_response — write_low BOE appeal response */
+  const handleBoeAppealResponse = useCallback(async () => {
+    if (!boeAppealCaseId.trim()) {
+      setBoeAppealState({ status: 'error', error: { code: 'VALIDATION', message: 'Case ID is required', severity: 'error' } });
+      return;
+    }
+    const points = boeAppealPoints.split('\n').map(s => s.trim()).filter(Boolean);
+    if (points.length === 0) {
+      setBoeAppealState({ status: 'error', error: { code: 'VALIDATION', message: 'Enter at least one argument point', severity: 'error' } });
+      return;
+    }
+    setBoeAppealState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'draft_boe_appeal_response', params: { county: 'benton', caseId: boeAppealCaseId.trim(), position: boeAppealPosition, points }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setBoeAppealState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'draft_boe_appeal_response', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { caseId: boeAppealCaseId, position: boeAppealPosition } }, ...prev.slice(0, 19)]);
+      } else {
+        setBoeAppealState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'BOE_APPEAL_FAILED', message: response.error?.message || 'BOE appeal response draft failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setBoeAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, boeAppealCaseId, boeAppealPosition, boeAppealPoints]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -407,11 +788,393 @@ export const PropertyDais: React.FC = () => {
         />
       )}
 
+      {/* ================================================================ */}
+      {/* PILT Calculator — calculate_pilt_payment governed tool            */}
+      {/* ================================================================ */}
+      <BentoGrid columns={2} gap={1.5} padding={0}>
+        <BentoCard title="PILT Calculator" actions={<span>🏛️</span>}>
+          <p className='tf-text-dim text-sm mb-3'>
+            Payment in Lieu of Taxes — Hanford Nuclear Reservation (RCW 84.33)
+          </p>
+          <button
+            onClick={handleCalculatePilt}
+            disabled={piltState.status === 'loading'}
+            className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'
+          >
+            {piltState.status === 'loading' ? 'Calculating...' : 'Calculate PILT'}
+          </button>
+
+          {piltState.status === 'success' && piltState.result && (
+            <div className='mt-4 space-y-3'>
+              <div className='flex items-center justify-between'>
+                <span className='tf-text-secondary text-sm'>Total PILT Due</span>
+                <span className='tf-text font-bold text-lg'>
+                  ${piltState.result.totalPiltDue?.toLocaleString() ?? '0'}
+                </span>
+              </div>
+              <div className='flex items-center justify-between text-sm'>
+                <span className='tf-text-dim'>Districts</span>
+                <span className='tf-text'>{piltState.result.districtsCount}</span>
+              </div>
+              {piltState.correlationId && (
+                <div className='flex items-center gap-2 text-xs'>
+                  <span className='tf-text-muted'>ID:</span>
+                  <code className='tf-suite-accent-text font-mono'>{piltState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(piltState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {piltState.status === 'error' && piltState.error && (
+            <div className='mt-3'>
+              <ErrorDisplay error={{ message: piltState.error.message, errorCode: piltState.error.code, correlationId: piltState.correlationId }} />
+            </div>
+          )}
+        </BentoCard>
+
+        {/* PILT District Detail */}
+        <BentoCard title="PILT Districts" actions={<span>📋</span>}>
+          {piltState.status === 'success' && piltState.result?.districts?.length ? (
+            <div className='space-y-2 max-h-64 overflow-y-auto'>
+              {piltState.result.districts.map((d, idx) => (
+                <div key={idx} className='tf-overlay rounded-lg px-3 py-2 text-sm'>
+                  <div className='flex justify-between'>
+                    <span className='tf-text font-medium'>{d.districtName}</span>
+                    <span className='tf-text font-semibold'>${d.piltDue?.toLocaleString() ?? '0'}</span>
+                  </div>
+                  <div className='flex justify-between mt-1 text-xs tf-text-dim'>
+                    <span>{d.federalAcres?.toLocaleString()} federal acres</span>
+                    <span>Rate: {d.levyRate?.toFixed(4)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : piltState.status === 'idle' ? (
+            <div className='flex flex-col items-center justify-center py-8 text-center'>
+              <div className='text-3xl mb-2'>🏛️</div>
+              <p className='tf-text-tertiary text-sm'>Run PILT calculation to view district breakdown</p>
+            </div>
+          ) : piltState.status === 'loading' ? (
+            <div className='flex items-center justify-center py-8' role='status'>
+              <div className='tf-spinner h-8 w-8' />
+            </div>
+          ) : null}
+        </BentoCard>
+      </BentoGrid>
+
+      {/* ================================================================ */}
+      {/* Senior Exemption Impact — explain_senior_exemption_impact tool    */}
+      {/* ================================================================ */}
+      <BentoCard title="Senior/Disabled Exemption Impact" actions={<span>🏠</span>}>
+        <div className='flex items-start justify-between gap-4 flex-wrap mb-3'>
+          <p className='tf-text-dim text-sm'>
+            RCW 84.36.381 exemption impact analysis by income band
+          </p>
+          <button
+            onClick={handleExemptionImpact}
+            disabled={exemptionState.status === 'loading'}
+            className='px-4 py-2 rounded-lg font-semibold transition-all tf-suite-dais-cta'
+          >
+            {exemptionState.status === 'loading' ? 'Analyzing...' : 'Analyze Impact'}
+          </button>
+        </div>
+
+        {exemptionState.status === 'success' && exemptionState.result && (
+          <div className='space-y-3'>
+            {exemptionState.result.eligibilitySummary && (
+              <p className='tf-text-secondary text-sm'>{exemptionState.result.eligibilitySummary}</p>
+            )}
+            {exemptionState.result.bands?.length ? (
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
+                {exemptionState.result.bands.map((band, idx) => (
+                  <div key={idx} className='tf-panel p-4 rounded-xl'>
+                    <div className='tf-text-dim text-xs uppercase tracking-wide'>{band.incomeRange}</div>
+                    <div className='tf-text font-bold text-lg mt-1'>{band.exemptionLevel}</div>
+                    <div className='tf-text-secondary text-sm mt-1'>
+                      Saves ${band.estimatedSavings?.toLocaleString() ?? '0'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className='tf-text-dim text-sm italic'>No exemption bands returned.</p>
+            )}
+            {exemptionState.result.rcwReference && (
+              <p className='tf-text-dim text-xs'>Ref: {exemptionState.result.rcwReference}</p>
+            )}
+            {exemptionState.correlationId && (
+              <div className='flex items-center gap-2 text-xs'>
+                <span className='tf-text-muted'>ID:</span>
+                <code className='tf-suite-accent-text font-mono'>{exemptionState.correlationId.slice(0, 16)}...</code>
+                <button onClick={() => copyToClipboard(exemptionState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {exemptionState.status === 'error' && exemptionState.error && (
+          <ErrorDisplay error={{ message: exemptionState.error.message, errorCode: exemptionState.error.code, correlationId: exemptionState.correlationId }} />
+        )}
+      </BentoCard>
+
+      {/* Levy Rate Breakdown */}
+      <BentoCard title='📊 Levy Rate Components' actions={<span>💲</span>}>
+        <p className='tf-text-tertiary text-sm mb-4'>Breakdown of levy rate by component (state, school, local)</p>
+        <button onClick={handleLevyBreakdown} disabled={levyState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {levyState.status === 'loading' ? 'Loading...' : 'Get Levy Breakdown'}
+        </button>
+        {levyState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Calculating levy rates...</span></div>}
+        {levyState.status === 'success' && levyState.result && (
+          <div className='space-y-3'>
+            <div className='space-y-1'>
+              {levyState.result.components.map((c, idx) => (
+                <div key={idx} className='flex items-center justify-between py-2 px-3 tf-panel rounded'>
+                  <span className='tf-text-secondary'>{c.name}</span>
+                  <span className='font-mono tf-suite-accent-text'>${c.rate.toFixed(2)}</span>
+                </div>
+              ))}
+              <div className='flex items-center justify-between py-2 px-3 tf-panel rounded border-t tf-border font-semibold'>
+                <span className='tf-text'>Total Rate</span>
+                <span className='font-mono tf-suite-accent-text'>${levyState.result.totalRate.toFixed(2)}</span>
+              </div>
+            </div>
+            <div className='tf-panel p-3'><p className='tf-text-secondary text-sm'>{levyState.result.explanation}</p></div>
+          </div>
+        )}
+        {levyState.status === 'error' && levyState.error && <ErrorDisplay error={{ message: levyState.error.message, errorCode: levyState.error.code, correlationId: levyState.correlationId }} />}
+      </BentoCard>
+
+      {/* Commissioner Memo */}
+      <BentoCard title='📝 Commissioner Memo' actions={<span>🏛️</span>}>
+        <p className='tf-text-tertiary text-sm mb-4'>Generate a briefing memo for commissioner review</p>
+        <div className='mb-4'>
+          <label htmlFor='memo-topic' className='block tf-text-secondary text-sm mb-2'>Topic</label>
+          <input id='memo-topic' type='text' value={memoTopic} onChange={e => setMemoTopic(e.target.value)} placeholder='e.g. Annual revaluation summary' className='w-full tf-input px-3 py-2' />
+        </div>
+        <button onClick={handleCommissionerMemo} disabled={memoState.status === 'loading' || !memoTopic.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {memoState.status === 'loading' ? 'Generating...' : 'Generate Memo'}
+        </button>
+        {memoState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Generating memo...</span></div>}
+        {memoState.status === 'success' && memoState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <h5 className='tf-text font-semibold mb-2'>{memoState.result.memo.title}</h5>
+              <p className='tf-text-secondary whitespace-pre-wrap'>{memoState.result.memo.body}</p>
+            </div>
+            <div className='flex items-center gap-4 text-xs tf-text-dim'>
+              <span>{memoState.result.wordCount} words</span>
+              {memoState.correlationId && (
+                <span className='flex items-center gap-1'>
+                  <span>ID:</span>
+                  <code className='tf-suite-accent-text font-mono'>{memoState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(memoState.correlationId!)} className='tf-text-tertiary hover:tf-text' aria-label='Copy correlation ID'>📋</button>
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+        {memoState.status === 'error' && memoState.error && <ErrorDisplay error={{ message: memoState.error.message, errorCode: memoState.error.code, correlationId: memoState.correlationId }} />}
+      </BentoCard>
+
+      {/* Value Change Notice (write_low) */}
+      <BentoCard title='📨 Value Change Notice' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Draft a value change notice for parcel {parcelId}</p>
+        <input type='text' value={noticeReasons} onChange={e => setNoticeReasons(e.target.value)} placeholder='Reason codes (comma-separated, e.g. revaluation, new_construction)' className='w-full p-2 rounded-lg tf-input mb-3' data-testid='notice-reasons-input' />
+        <button onClick={handleDraftNotice} disabled={noticeState.status === 'loading' || !noticeReasons.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {noticeState.status === 'loading' ? 'Drafting...' : 'Draft Value Change Notice'}
+        </button>
+        {noticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Generating notice...</span></div>}
+        {noticeState.status === 'success' && noticeState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <h4 className='font-semibold tf-text mb-2'>{noticeState.result.document.title}</h4>
+              <p className='tf-text-secondary whitespace-pre-line text-sm'>{noticeState.result.document.body}</p>
+            </div>
+            <div className='text-xs tf-text-dim italic'>{noticeState.result.disclaimer}</div>
+            {noticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{noticeState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {noticeState.status === 'error' && noticeState.error && <ErrorDisplay error={{ message: noticeState.error.message, errorCode: noticeState.error.code, correlationId: noticeState.correlationId }} />}
+      </BentoCard>
+
+      {/* Appeal Response Draft (write_low) */}
+      <BentoCard title='⚖️ Appeal Response Draft' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Draft an appeal response for parcel {parcelId}</p>
+        <div className='flex gap-2 mb-3'>
+          <input type='text' value={appealId} onChange={e => setAppealId(e.target.value)} placeholder='Appeal ID (e.g. APL-2026-001)' className='flex-1 p-2 rounded-lg tf-input' data-testid='appeal-id-input' />
+          <select value={appealPosition} onChange={e => setAppealPosition(e.target.value as 'uphold' | 'adjust' | 'partial')} className='p-2 rounded-lg tf-input'>
+            <option value='uphold'>Uphold</option>
+            <option value='adjust'>Adjust</option>
+            <option value='partial'>Partial</option>
+          </select>
+        </div>
+        <button onClick={handleDraftAppealResponse} disabled={appealState.status === 'loading' || !appealId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {appealState.status === 'loading' ? 'Drafting...' : 'Draft Appeal Response'}
+        </button>
+        {appealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Drafting response...</span></div>}
+        {appealState.status === 'success' && appealState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between mb-2'>
+                <span className='font-semibold tf-text'>Appeal: {appealState.result.appealId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{appealState.result.position}</span>
+              </div>
+              <p className='tf-text-secondary text-sm'>{appealState.result.draftSummary}</p>
+            </div>
+            <div className='flex items-center gap-4 text-xs tf-text-dim'>
+              <span>{appealState.result.wordCount} words</span>
+              {appealState.correlationId && <span>ID: <code className='tf-suite-accent-text font-mono'>{appealState.correlationId.slice(0, 16)}...</code></span>}
+            </div>
+          </div>
+        )}
+        {appealState.status === 'error' && appealState.error && <ErrorDisplay error={{ message: appealState.error.message, errorCode: appealState.error.code, correlationId: appealState.correlationId }} />}
+      </BentoCard>
+
+      {/* General Notice Draft (write_low) */}
+      <BentoCard title='📝 Draft Notice' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Create a notice draft for parcel {parcelId}</p>
+        <select value={draftNoticeType} onChange={e => setDraftNoticeType(e.target.value)} className='w-full p-2 rounded-lg tf-input mb-3' data-testid='notice-type-select'>
+          <option value='assessment'>Assessment Notice</option>
+          <option value='exemption'>Exemption Notice</option>
+          <option value='appeal_hearing'>Appeal Hearing</option>
+          <option value='certification'>Certification Notice</option>
+        </select>
+        <button onClick={handleGeneralNotice} disabled={draftNoticeState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {draftNoticeState.status === 'loading' ? 'Drafting...' : 'Create Notice Draft'}
+        </button>
+        {draftNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Creating draft...</span></div>}
+        {draftNoticeState.status === 'success' && draftNoticeState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between'>
+                <span className='font-semibold tf-text'>{draftNoticeState.result.noticeType} Notice</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{draftNoticeState.result.status}</span>
+              </div>
+              <div className='text-xs tf-text-dim mt-1'>Notice ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.result.noticeId}</code></div>
+            </div>
+            {draftNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {draftNoticeState.status === 'error' && draftNoticeState.error && <ErrorDisplay error={{ message: draftNoticeState.error.message, errorCode: draftNoticeState.error.code, correlationId: draftNoticeState.correlationId }} />}
+      </BentoCard>
+
+      {/* Assign Task (write_low) */}
+      <BentoCard title='👤 Assign Task' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Assign a workflow task to a queue or user</p>
+        <div className='space-y-2 mb-3'>
+          <input type='text' value={assignTaskId} onChange={e => setAssignTaskId(e.target.value)} placeholder='Task ID (e.g. TSK-2026-042)' className='w-full p-2 rounded-lg tf-input' data-testid='assign-task-id' />
+          <input type='text' value={assignAssigneeId} onChange={e => setAssignAssigneeId(e.target.value)} placeholder='Assignee ID (e.g. usr-jdoe)' className='w-full p-2 rounded-lg tf-input' data-testid='assign-assignee-id' />
+          <input type='text' value={assignReason} onChange={e => setAssignReason(e.target.value)} placeholder='Reason (optional)' className='w-full p-2 rounded-lg tf-input' />
+        </div>
+        <button onClick={handleAssignTask} disabled={assignTaskState.status === 'loading' || !assignTaskId.trim() || !assignAssigneeId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {assignTaskState.status === 'loading' ? 'Assigning...' : 'Assign Task'}
+        </button>
+        {assignTaskState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Assigning task...</span></div>}
+        {assignTaskState.status === 'success' && assignTaskState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between mb-1'>
+                <span className='font-semibold tf-text'>Task: {assignTaskState.result.taskId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{assignTaskState.result.status}</span>
+              </div>
+              <div className='text-sm tf-text-secondary'>Assigned to: <strong>{assignTaskState.result.assignedTo}</strong></div>
+            </div>
+            {assignTaskState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{assignTaskState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {assignTaskState.status === 'error' && assignTaskState.error && <ErrorDisplay error={{ message: assignTaskState.error.message, errorCode: assignTaskState.error.code, correlationId: assignTaskState.correlationId }} />}
+      </BentoCard>
+
+      {/* Assemble BOE Packet (write_high) */}
+      <BentoCard title='📦 BOE Evidence Packet' actions={<span className='text-xs tf-badge-error px-2 py-0.5 rounded'>write_high</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Assemble a Board of Equalization evidence packet — requires confirmation</p>
+        <div className='space-y-3 mb-4'>
+          <input type='text' value={boeCaseId} onChange={e => setBoeCaseId(e.target.value)} placeholder='Case ID (e.g. BOE-2026-001)' className='w-full p-2 rounded-lg tf-input' data-testid='boe-case-id' />
+          <div>
+            <label className='block tf-text-secondary text-sm mb-2'>Include Sections</label>
+            <div className='flex flex-wrap gap-2'>
+              {['evidence', 'valuation_history', 'comps'].map(section => (
+                <label key={section} className='flex items-center gap-1.5 text-sm tf-text-secondary cursor-pointer'>
+                  <input type='checkbox' checked={boeSections.has(section)} onChange={() => {
+                    setBoeSections(prev => {
+                      const next = new Set(prev);
+                      if (next.has(section)) next.delete(section); else next.add(section);
+                      return next;
+                    });
+                  }} className='h-3.5 w-3.5' />
+                  <span className='capitalize'>{section.replace(/_/g, ' ')}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
+            <label className='flex items-center gap-3 cursor-pointer'>
+              <input type='checkbox' checked={boeConfirmed} onChange={e => setBoeConfirmed(e.target.checked)} className='h-4 w-4' data-testid='boe-confirm-checkbox' />
+              <span className='text-sm tf-text'>I confirm this write_high operation: assemble BOE packet for case <strong>{boeCaseId || '...'}</strong></span>
+            </label>
+          </div>
+        </div>
+        <button onClick={handleAssembleBoePacket} disabled={boePacketState.status === 'loading' || !boeCaseId.trim() || !boeConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
+          {boePacketState.status === 'loading' ? 'Assembling...' : boeConfirmed ? 'Assemble BOE Packet' : '⚠️ Confirm Above to Enable'}
+        </button>
+        {boePacketState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Assembling BOE packet...</span></div>}
+        {boePacketState.status === 'success' && boePacketState.result && (
+          <div className='space-y-2'>
+            <div className='tf-panel p-4'>
+              <div className='flex items-center justify-between mb-2'>
+                <span className='font-semibold tf-text'>Case: {boePacketState.result.caseId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{boePacketState.result.sections.length} sections</span>
+              </div>
+              <div className='flex flex-wrap gap-1'>
+                {boePacketState.result.sections.map(s => <span key={s} className='text-xs tf-badge px-2 py-0.5 rounded'>{s}</span>)}
+              </div>
+            </div>
+            {boePacketState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{boePacketState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {boePacketState.status === 'error' && boePacketState.error && <ErrorDisplay error={{ message: boePacketState.error.message, errorCode: boePacketState.error.code, correlationId: boePacketState.correlationId }} />}
+      </BentoCard>
+
+      {/* BOE Appeal Response (write_low) */}
+      <BentoCard title='⚖️ BOE Appeal Response' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Draft a formal BOE appeal response with legal citations</p>
+        <div className='space-y-2 mb-3'>
+          <input type='text' value={boeAppealCaseId} onChange={e => setBoeAppealCaseId(e.target.value)} placeholder='Case ID (e.g. BOE-2026-001)' className='w-full p-2 rounded-lg tf-input' data-testid='boe-appeal-case-id' />
+          <select value={boeAppealPosition} onChange={e => setBoeAppealPosition(e.target.value)} className='w-full p-2 rounded-lg tf-input'>
+            {BOE_POSITIONS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+          </select>
+          <div>
+            <label className='block tf-text-secondary text-sm mb-1'>Argument Points (one per line)</label>
+            <textarea value={boeAppealPoints} onChange={e => setBoeAppealPoints(e.target.value)} placeholder={'Market comparables support assessed value\nRecent sales data within 6 months\nProperty condition properly accounted for'} rows={3} className='w-full p-2 rounded-lg tf-input resize-y' data-testid='boe-appeal-points' />
+          </div>
+        </div>
+        <button onClick={handleBoeAppealResponse} disabled={boeAppealState.status === 'loading' || !boeAppealCaseId.trim() || !boeAppealPoints.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {boeAppealState.status === 'loading' ? 'Drafting...' : 'Draft BOE Appeal Response'}
+        </button>
+        {boeAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Drafting BOE response...</span></div>}
+        {boeAppealState.status === 'success' && boeAppealState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <h4 className='font-semibold tf-text mb-2'>{boeAppealState.result.document.title}</h4>
+              <p className='tf-text-secondary whitespace-pre-line text-sm'>{boeAppealState.result.document.body}</p>
+            </div>
+            {boeAppealState.result.citations && boeAppealState.result.citations.length > 0 && (
+              <div className='flex flex-wrap gap-1'>
+                {boeAppealState.result.citations.map(c => <span key={c} className='text-xs tf-badge px-2 py-0.5 rounded font-mono'>{c}</span>)}
+              </div>
+            )}
+            {boeAppealState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{boeAppealState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {boeAppealState.status === 'error' && boeAppealState.error && <ErrorDisplay error={{ message: boeAppealState.error.message, errorCode: boeAppealState.error.code, correlationId: boeAppealState.correlationId }} />}
+      </BentoCard>
+
       {/* History */}
       <InvocationHistory
         records={history}
-        title='Status History'
-        emptyMessage='No workflow status checks yet.'
+        title='Dais Tool History'
+        emptyMessage='No Dais tool invocations yet.'
       />
     </div>
   );

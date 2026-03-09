@@ -12,11 +12,45 @@ import PropertyDossier from '../../pages/workbench/tabs/PropertyDossier';
 
 // Mock the pilotApi module
 jest.mock('../../api/pilotApi');
-jest.mock('../../services/dossierService');
+jest.mock('../../services/dossierService', () => ({
+  dossierService: {
+    getDetails: jest.fn(),
+    getEvidenceSnapshot: jest.fn(),
+    searchDocuments: jest.fn(),
+    searchEvidence: jest.fn(),
+    getChainOfCustody: jest.fn(),
+    getStats: jest.fn(),
+  },
+}));
+
+const mockGetDetails =
+  dossierServiceModule.dossierService.getDetails as jest.MockedFunction<
+    typeof dossierServiceModule.dossierService.getDetails
+  >;
 
 const mockGetEvidenceSnapshot =
   dossierServiceModule.dossierService.getEvidenceSnapshot as jest.MockedFunction<
     typeof dossierServiceModule.dossierService.getEvidenceSnapshot
+  >;
+
+const mockSearchDocuments =
+  dossierServiceModule.dossierService.searchDocuments as jest.MockedFunction<
+    typeof dossierServiceModule.dossierService.searchDocuments
+  >;
+
+const mockSearchEvidence =
+  dossierServiceModule.dossierService.searchEvidence as jest.MockedFunction<
+    typeof dossierServiceModule.dossierService.searchEvidence
+  >;
+
+const mockGetChainOfCustody =
+  dossierServiceModule.dossierService.getChainOfCustody as jest.MockedFunction<
+    typeof dossierServiceModule.dossierService.getChainOfCustody
+  >;
+
+const mockGetStats =
+  dossierServiceModule.dossierService.getStats as jest.MockedFunction<
+    typeof dossierServiceModule.dossierService.getStats
   >;
 
 // Test wrapper providing parcel context via outlet
@@ -42,6 +76,140 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 describe('PropertyDossier', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    mockGetDetails.mockResolvedValue({
+      data: {
+        parcelId: '12345-001',
+        countyId: 'benton-001',
+        generatedAt: '2026-03-07T18:30:00.000Z',
+        piiRedacted: true,
+        correlationId: 'corr-dossier-001',
+        links: {
+          self: '/api/dossier/parcels/12345-001/details',
+          summary: '/api/dossier/parcels/12345-001/summary',
+          details: '/api/dossier/parcels/12345-001/details',
+          notes: '/api/dossier/parcels/12345-001/notes',
+          casefile: '/api/dossier/parcels/12345-001/casefile',
+        },
+        property: {
+          propertyId: 'prop-12345-001',
+          parcelNumber: '12345-001',
+          address: '456 Oak Ave, Kennewick, WA',
+          propertyType: 'Residential',
+          yearBuilt: 2004,
+          assessedValue: 250000,
+          landValue: 80000,
+          improvementValue: 170000,
+          marketValue: 265000,
+          taxYear: 2024,
+          assessmentDate: '2024-01-02',
+          classCode: null,
+          useCode: null,
+          neighborhood: null,
+        },
+        valuation: {
+          totalValue: 250000,
+          categoryCount: 2,
+          categories: [
+            { name: 'Land', amount: 80000, percentage: 32 },
+            { name: 'Improvements', amount: 170000, percentage: 68 },
+          ],
+        },
+        levies: {
+          levyCountTotal: 2,
+          levyCountReturned: 2,
+          recent: [
+            {
+              taxLevyId: 'levy-001',
+              taxingDistrict: 'Benton County',
+              taxRate: 0.0123,
+              levyAmount: 3075,
+              taxYear: 2024,
+              purpose: 'General Fund',
+              effectiveDate: '2024-01-01',
+            },
+          ],
+        },
+        notes: {
+          noteCountTotal: 1,
+          noteCountReturned: 1,
+          items: [
+            {
+              noteId: 'note-001',
+              noteType: 'inspection',
+              createdAt: '2026-03-06T18:30:00.000Z',
+              authorKind: 'staff',
+            },
+          ],
+        },
+      },
+      correlationId: 'corr-dossier-001',
+    });
+
+    mockSearchDocuments.mockResolvedValue({
+      results: [
+        {
+          id: 'doc-001',
+          name: 'Casefile summary - 12345-001',
+          type: 'report',
+          parcelId: '12345-001',
+          uploadedBy: 'County Assessor',
+          uploadedAt: '2026-03-06T18:30:00.000Z',
+          size: '42 KB',
+          status: 'active',
+          custodyChain: 3,
+          mimeType: 'application/pdf',
+          hash: 'sha256-doc-001',
+        },
+      ],
+      total: 1,
+      hasMore: false,
+    });
+
+    mockSearchEvidence.mockResolvedValue({
+      results: [
+        {
+          id: 'evid-001',
+          title: 'Parcel evidence snapshot - 12345-001',
+          parcelId: '12345-001',
+          evidenceType: 'field-inspection',
+          createdBy: 'Field Appraiser',
+          createdAt: '2026-03-05T11:00:00.000Z',
+          integrity: 'verified',
+          chainLength: 4,
+          lastAction: 'hash-verified',
+        },
+      ],
+      total: 1,
+      hasMore: false,
+    });
+
+    mockGetStats.mockResolvedValue({
+      totalDocuments: 8,
+      activeDocuments: 8,
+      sealedRecords: 0,
+      archivedDocuments: 0,
+      documentTypes: 2,
+      totalEvidence: 5,
+      verifiedEvidence: 4,
+      pendingEvidence: 1,
+      disputedEvidence: 0,
+    });
+
+    mockGetChainOfCustody.mockResolvedValue([
+      {
+        timestamp: '2026-03-05T11:00:00.000Z',
+        actor: 'Field Appraiser',
+        action: 'Collected evidence',
+        hash: 'sha256-chain-001',
+      },
+      {
+        timestamp: '2026-03-05T12:15:00.000Z',
+        actor: 'Evidence Clerk',
+        action: 'Verified evidence hash',
+        hash: 'sha256-chain-002',
+      },
+    ]);
   });
 
   describe('Rendering', () => {
@@ -50,15 +218,32 @@ describe('PropertyDossier', () => {
 
       expect(screen.getByTestId('property-dossier-tab')).toBeInTheDocument();
       expect(screen.getByText(/TerraDossier/i)).toBeInTheDocument();
-      expect(screen.getByText(/12345-001/)).toBeInTheDocument();
+      expect(screen.getAllByText(/12345-001/).length).toBeGreaterThan(0);
     });
 
-    it('shows document management deferred to R2', () => {
+    it('shows live read-only document management data', async () => {
       render(<TestWrapper parcelId='12345-001' />);
 
-      // Document management is disabled pending R2 backend
-      expect(screen.getAllByText(/Document Management/i).length).toBeGreaterThan(0);
-      expect(screen.getByText(/coming in R2/i)).toBeInTheDocument();
+      await screen.findByText('Casefile summary - 12345-001');
+      expect(screen.getByText(/Read-only live registry/i)).toBeInTheDocument();
+      expect(screen.getByText('Casefile summary - 12345-001')).toBeInTheDocument();
+      expect(screen.getByText('Parcel evidence snapshot - 12345-001')).toBeInTheDocument();
+    });
+
+    it('loads and shows the evidence chain-of-custody on demand', async () => {
+      render(<TestWrapper parcelId='12345-001' />);
+
+      await screen.findByText('Parcel evidence snapshot - 12345-001');
+      fireEvent.click(screen.getByTestId('evidence-chain-trigger-evid-001'));
+
+      await waitFor(() => {
+        expect(mockGetChainOfCustody).toHaveBeenCalledWith('evid-001');
+      });
+
+      await screen.findByText('Collected evidence');
+      expect(screen.getByTestId('evidence-chain-panel')).toBeInTheDocument();
+      expect(screen.getByText('Collected evidence')).toBeInTheDocument();
+      expect(screen.getByText('Verified evidence hash')).toBeInTheDocument();
     });
   });
 
@@ -114,7 +299,7 @@ describe('PropertyDossier', () => {
       });
 
       // Verify key data rendered
-      expect(screen.getByText('456 Oak Ave, Kennewick, WA')).toBeInTheDocument();
+      expect(screen.getAllByText('456 Oak Ave, Kennewick, WA').length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText('corr-evidence-snap-001')).toBeInTheDocument();
     });
 

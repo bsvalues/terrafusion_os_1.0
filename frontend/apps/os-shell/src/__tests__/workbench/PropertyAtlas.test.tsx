@@ -109,18 +109,11 @@ describe('PropertyAtlas', () => {
           toolId: 'query_parcel_layers',
           output: JSON.stringify({
             parcelId: '12345-001',
-            layers: {
-              boundary: {
-                type: 'Polygon',
-                area: '0.25 acres',
-                perimeter: '420 ft',
-              },
-              zoning: {
-                code: 'R-1',
-                description: 'Single Family Residential',
-              },
-            },
-            centroid: { lat: 46.2804, lng: -119.2752 },
+            layers: [
+              { id: 'boundary', name: 'Parcel Boundary', available: true },
+              { id: 'zoning', name: 'Zoning Districts', available: true },
+            ],
+            geometryAvailable: false,
           }),
         },
       };
@@ -154,8 +147,9 @@ describe('PropertyAtlas', () => {
 
       // Verify success display
       await waitFor(() => {
-        expect(screen.getByText(/0\.25 acres/i)).toBeInTheDocument();
-        expect(screen.getByText(/R-1/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Parcel Boundary/i).length).toBeGreaterThan(0);
+        expect(screen.getByText(/Zoning Districts/i)).toBeInTheDocument();
+        expect(screen.getByText(/Not exposed on this route yet/i)).toBeInTheDocument();
         // Truncated display shows first 16 chars
         expect(screen.getAllByText(/corr-atlas-abc/).length).toBeGreaterThan(0);
       });
