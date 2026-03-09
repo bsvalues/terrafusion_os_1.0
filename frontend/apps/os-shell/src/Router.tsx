@@ -49,6 +49,9 @@ const PropertyAtlas = lazy(() => import('./pages/workbench/tabs/PropertyAtlas'))
 const PropertyDais = lazy(() => import('./pages/workbench/tabs/PropertyDais'));
 const PropertyDossier = lazy(() => import('./pages/workbench/tabs/PropertyDossier'));
 const PropertyPilot = lazy(() => import('./pages/workbench/tabs/PropertyPilot'));
+const PropertyClerk = lazy(() => import('./pages/workbench/tabs/PropertyClerk'));
+const PropertyTreasury = lazy(() => import('./pages/workbench/tabs/PropertyTreasury'));
+const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'));
 
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
@@ -145,6 +148,9 @@ const Router: React.FC = () => {
                   <Route path='forge' element={<PropertyForge />} />
                   <Route path='atlas' element={<PropertyAtlas />} />
                   <Route path='dais' element={<PropertyDais />} />
+                  <Route path='clerk' element={<PropertyClerk />} />
+                  <Route path='treasury' element={<PropertyTreasury />} />
+                  <Route path='audit' element={<PropertyAudit />} />
                   <Route path='dossier' element={<PropertyDossier />} />
                   <Route path='pilot' element={<PropertyPilot />} />
                 </Route>

@@ -19,6 +19,9 @@ export type WorkbenchTabSlug =
   | 'forge'
   | 'atlas'
   | 'dais'
+  | 'clerk'    // R3.2: TerraClerk — County recording & title
+  | 'treasury' // R3.3: TerraTreasury — Tax collection & payments
+  | 'audit'    // R3.4: TerraAudit — Financial compliance
   | 'dossier'
   | 'pilot';
 
@@ -49,7 +52,7 @@ export interface WorkbenchContext {
 // ============================================================================
 
 /** Owner identifiers for tab ownership. */
-export type TabOwner = 'os' | 'forge' | 'atlas' | 'dais' | 'dossier' | 'pilot';
+export type TabOwner = 'os' | 'forge' | 'atlas' | 'dais' | 'clerk' | 'treasury' | 'audit' | 'dossier' | 'pilot';
 
 /**
  * Describes a single workbench tab.

@@ -39,6 +39,9 @@ export type WorkbenchTabId =
   | 'forge' // TerraForge - AI valuation
   | 'atlas' // TerraAtlas - GIS mapping
   | 'dais' // TerraDais - Workflow
+  | 'clerk' // TerraClerk - Recording & title (R3.2)
+  | 'treasury' // TerraTreasury - Tax collection (R3.3)
+  | 'audit' // TerraAudit - Financial compliance (R3.4)
   | 'dossier' // TerraDossier - Documents
   | 'pilot'; // TerraPilot - Tool execution
 
@@ -541,6 +544,9 @@ export const VALID_WORKBENCH_TAB_IDS: readonly WorkbenchTabId[] = [
   'forge',
   'atlas',
   'dais',
+  'clerk',
+  'treasury',
+  'audit',
   'dossier',
   'pilot',
 ] as const;

@@ -2217,16 +2217,16 @@ describe('AC-31: run_income_valuation (Wave 3 Forge Read-Only)', () => {
 // ============================================================================
 // R2 DoD — Holistic Governed Surface Verification
 //
-// These tests verify the R2 Definition of Done at the system level:
-//   DoD-1: All 26 manifest tools have real handlers (no stubs on production path)
+// These tests verify the R2+R3 Definition of Done at the system level:
+//   DoD-1: All 53 manifest tools have real handlers (no stubs on production path)
 //   DoD-2: Suite coverage — every suite has at least one real governed tool
 //   DoD-3: Risk distribution — all 4 risk levels represented
-//   DoD-4: County isolation — every tool enforces county match
+//   DoD-4: County isolation — every tool with county param enforces match
 //   DoD-5: Trace integrity — every tool execution produces invoke+completed events
-//   DoD-6: Manifest contract stability — all 26 tools have required fields
+//   DoD-6: Manifest contract stability — all 53 tools have required fields
 // ============================================================================
 
-describe('DoD-1: All 26 manifest tools have real handlers (no stub fallthrough)', () => {
+describe('DoD-1: All 53 manifest tools have real handlers (no stub fallthrough)', () => {
   it('every manifest tool has a registered real handler that produces non-canned output', async () => {
     const { runner, traceService } = makeRunner();
     // Mock fetch to return generic but recognizable responses for any endpoint
@@ -2240,12 +2240,15 @@ describe('DoD-1: All 26 manifest tools have real handlers (no stub fallthrough)'
       if (url.includes('collaboration')) return { taskId: 'T-001', assignedTo: 'test-user', status: 'assigned' };
       if (url.includes('dais')) return { county: 'benton', status: 'active', steps: [] };
       if (url.includes('auth')) return { token: 'test-token', email: 'test@gov.', roles: ['appraiser'], expiresAt: new Date(Date.now() + 3600000).toISOString() };
+      if (url.includes('clerk')) return { county: 'benton', documents: [], chain: [], fees: {} };
+      if (url.includes('treasury')) return { county: 'benton', statement: {}, breakdown: {}, status: 'current' };
+      if (url.includes('audit')) return { county: 'benton', summary: {}, findings: [], compliance: true };
       return {};
     });
 
     // Count tools that have real handlers registered (handler !== canned stub)
     const realToolIds = manifest.tools.map(t => t.toolId);
-    assert.equal(realToolIds.length, 26, 'manifest must have exactly 26 tools');
+    assert.equal(realToolIds.length, 53, 'manifest must have exactly 53 tools');
 
     // Verify the runner has all 26 tools registered (registry contains them)
     for (const tool of manifest.tools) {
@@ -2265,12 +2268,17 @@ describe('DoD-2: Suite coverage — every suite has real governed tools', () => 
       suites.get(tool.suite).push(tool.toolId);
     }
 
-    // Required suites for Assessor vertical
+    // Required suites — original Assessor vertical
     assert.ok(suites.has('forge'), 'forge suite must have tools');
     assert.ok(suites.has('dais'), 'dais suite must have tools');
     assert.ok(suites.has('dossier'), 'dossier suite must have tools');
     assert.ok(suites.has('atlas'), 'atlas suite must have tools');
     assert.ok(suites.has('os'), 'os suite must have tools');
+
+    // Required suites — R3 multi-office expansion
+    assert.ok(suites.has('clerk'), 'clerk suite must have tools');
+    assert.ok(suites.has('treasury'), 'treasury suite must have tools');
+    assert.ok(suites.has('audit'), 'audit suite must have tools');
 
     // Minimum depth per suite
     assert.ok(suites.get('forge').length >= 5, `forge suite has ${suites.get('forge').length} tools (need ≥5)`);
@@ -2278,6 +2286,9 @@ describe('DoD-2: Suite coverage — every suite has real governed tools', () => 
     assert.ok(suites.get('dossier').length >= 4, `dossier suite has ${suites.get('dossier').length} tools (need ≥4)`);
     assert.ok(suites.get('atlas').length >= 1, 'atlas suite has ≥1 tool');
     assert.ok(suites.get('os').length >= 2, 'os suite has ≥2 tools');
+    assert.ok(suites.get('clerk').length >= 6, `clerk suite has ${suites.get('clerk').length} tools (need ≥6)`);
+    assert.ok(suites.get('treasury').length >= 7, `treasury suite has ${suites.get('treasury').length} tools (need ≥7)`);
+    assert.ok(suites.get('audit').length >= 5, `audit suite has ${suites.get('audit').length} tools (need ≥5)`);
 
     const suiteReport = [...suites.entries()].map(([s, t]) => `${s}=${t.length}`).join(', ');
     console.log(`  ✅ DoD-2 PASS: suite coverage ${suiteReport}`);
@@ -2376,9 +2387,9 @@ describe('DoD-6: Manifest contract stability — all tools have required fields'
     console.log(`  ✅ DoD-6b PASS: all ${ids.length} toolIds are unique`);
   });
 
-  it('manifest version is 1.4.0 with 26 tools', () => {
-    assert.equal(manifest.version, '1.4.0', 'version must be 1.4.0');
-    assert.equal(manifest.tools.length, 26, 'must have 26 tools');
+  it('manifest version is 2.0.0 with 53 tools', () => {
+    assert.equal(manifest.version, '2.0.0', 'version must be 2.0.0');
+    assert.equal(manifest.tools.length, 53, 'must have 53 tools');
     console.log(`  ✅ DoD-6c PASS: manifest v${manifest.version}, ${manifest.tools.length} tools`);
   });
 });
