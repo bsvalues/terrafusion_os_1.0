@@ -76,6 +76,14 @@ interface CasefileResult {
   highlights: string[];
   payloadRef?: string;
 }
+
+/** Dossier note result from add_dossier_note (write_low) */
+interface DossierNoteResult {
+  noteId: string;
+  appended: true;
+  payloadRef: string;
+}
+
 type DossierToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
 
 interface DocumentManagementState {
@@ -281,6 +289,8 @@ export const PropertyDossier: React.FC = () => {
   const [summarizeState, setSummarizeState] = useState<SummarizeState>({ status: 'idle' });
   const [synthesizeState, setSynthesizeState] = useState<SynthesizeState>({ status: 'idle' });
   const [casefileState, setCasefileState] = useState<DossierToolState<CasefileResult>>({ status: 'idle' });
+  const [noteState, setNoteState] = useState<DossierToolState<DossierNoteResult>>({ status: 'idle' });
+  const [noteText, setNoteText] = useState('');
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
   const [documentManagement, setDocumentManagement] = useState<DocumentManagementState>({
     loading: false,
@@ -517,6 +527,27 @@ export const PropertyDossier: React.FC = () => {
       setInvocationHistory((prev) => [{ id: `inv-${Date.now()}`, toolId: 'synthesize_evidence', status: 'error', correlationId: cid, timestamp: new Date() }, ...prev]);
     }
   }, [parcelId]);
+
+  /** Invoke add_dossier_note — write_low case note */
+  const handleAddNote = useCallback(async () => {
+    if (!noteText.trim()) return;
+    if (noteText.length > 2000) { setNoteState({ status: 'error', error: { code: 'VALIDATION', message: 'Note exceeds 2000 character limit', severity: 'error' } }); return; }
+    setNoteState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'add_dossier_note', params: { county: 'benton', parcelId, note: noteText.trim() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setNoteState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setNoteText('');
+        setInvocationHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'add_dossier_note', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
+      } else {
+        setNoteState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'NOTE_FAILED', message: response.error?.message || 'Failed to add note', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setNoteState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, noteText]);
 
   /** Invoke summarize_parcel_casefile — parcel-based casefile summary */
   const handleCasefileSummary = useCallback(async () => {
@@ -1019,6 +1050,33 @@ export const PropertyDossier: React.FC = () => {
           </div>
         )}
         {casefileState.status === 'error' && casefileState.error && <ErrorDisplay error={{ message: casefileState.error.message, errorCode: casefileState.error.code, correlationId: casefileState.correlationId }} />}
+      </BentoCard>
+
+      {/* Add Dossier Note (write_low) */}
+      <BentoCard title='📝 Add Case Note' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+        <p className='tf-text-tertiary text-sm mb-3'>Append a case note to parcel {parcelId}</p>
+        <textarea
+          value={noteText}
+          onChange={e => setNoteText(e.target.value)}
+          placeholder='Enter case note (max 2000 chars)...'
+          className='w-full p-3 rounded-lg tf-input resize-y min-h-[80px] mb-2'
+          maxLength={2000}
+          data-testid='note-textarea'
+        />
+        <div className='flex items-center justify-between mb-3'>
+          <span className='text-xs tf-text-dim'>{noteText.length}/2000</span>
+          <button onClick={handleAddNote} disabled={noteState.status === 'loading' || !noteText.trim()} className='py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta'>
+            {noteState.status === 'loading' ? 'Saving...' : 'Add Note'}
+          </button>
+        </div>
+        {noteState.status === 'success' && noteState.result && (
+          <div className='tf-panel p-3 space-y-1'>
+            <div className='flex items-center gap-2'><span>✅</span><span className='tf-text-secondary font-medium'>Note appended</span></div>
+            <div className='text-xs tf-text-dim'>Note ID: <code className='tf-suite-accent-text font-mono'>{noteState.result.noteId}</code></div>
+            {noteState.correlationId && <div className='text-xs tf-text-dim'>Correlation: <code className='tf-suite-accent-text font-mono'>{noteState.correlationId.slice(0, 16)}...</code></div>}
+          </div>
+        )}
+        {noteState.status === 'error' && noteState.error && <ErrorDisplay error={{ message: noteState.error.message, errorCode: noteState.error.code, correlationId: noteState.correlationId }} />}
       </BentoCard>
 
       {/* Governed Tool Invocation History */}
