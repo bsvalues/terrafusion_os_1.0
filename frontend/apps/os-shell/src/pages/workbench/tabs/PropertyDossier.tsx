@@ -70,6 +70,14 @@ interface SynthesizeState {
   error?: ErrorInfo;
 }
 
+/** Casefile summary from summarize_parcel_casefile */
+interface CasefileResult {
+  summary: string;
+  highlights: string[];
+  payloadRef?: string;
+}
+type DossierToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
+
 interface DocumentManagementState {
   loading: boolean;
   error: ErrorInfo | null;
@@ -272,6 +280,7 @@ export const PropertyDossier: React.FC = () => {
 
   const [summarizeState, setSummarizeState] = useState<SummarizeState>({ status: 'idle' });
   const [synthesizeState, setSynthesizeState] = useState<SynthesizeState>({ status: 'idle' });
+  const [casefileState, setCasefileState] = useState<DossierToolState<CasefileResult>>({ status: 'idle' });
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
   const [documentManagement, setDocumentManagement] = useState<DocumentManagementState>({
     loading: false,
@@ -506,6 +515,24 @@ export const PropertyDossier: React.FC = () => {
         error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid },
       });
       setInvocationHistory((prev) => [{ id: `inv-${Date.now()}`, toolId: 'synthesize_evidence', status: 'error', correlationId: cid, timestamp: new Date() }, ...prev]);
+    }
+  }, [parcelId]);
+
+  /** Invoke summarize_parcel_casefile — parcel-based casefile summary */
+  const handleCasefileSummary = useCallback(async () => {
+    setCasefileState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'summarize_parcel_casefile', params: { county: 'benton', parcelId, include: ['notices', 'appeals', 'permits', 'sales'] }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setCasefileState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setInvocationHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'summarize_parcel_casefile', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
+      } else {
+        setCasefileState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'CASEFILE_FAILED', message: response.error?.message || 'Casefile summary failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setCasefileState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId]);
 
@@ -964,6 +991,34 @@ export const PropertyDossier: React.FC = () => {
         {synthesizeState.status === 'error' && synthesizeState.error && (
           <ErrorDisplay error={{ message: synthesizeState.error.message, errorCode: synthesizeState.error.code, correlationId: synthesizeState.correlationId }} />
         )}
+      </BentoCard>
+
+      {/* Casefile Summary */}
+      <BentoCard title='📋 Casefile Summary' actions={<span>📑</span>}>
+        <p className='tf-text-tertiary text-sm mb-4'>Comprehensive casefile overview for {parcelId}</p>
+        <button onClick={handleCasefileSummary} disabled={casefileState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta mb-4'>
+          {casefileState.status === 'loading' ? 'Loading...' : 'Summarize Casefile'}
+        </button>
+        {casefileState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Loading casefile...</span></div>}
+        {casefileState.status === 'success' && casefileState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'><p className='tf-text-secondary'>{casefileState.result.summary}</p></div>
+            {casefileState.result.highlights.length > 0 && (
+              <div className='space-y-1'>
+                {casefileState.result.highlights.map((h, idx) => (
+                  <div key={idx} className='flex items-start gap-2 py-1 px-3 tf-panel rounded'>
+                    <span className='tf-text-dim'>•</span>
+                    <span className='tf-text-secondary text-sm'>{h}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {casefileState.correlationId && (
+              <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{casefileState.correlationId.slice(0, 16)}...</code></div>
+            )}
+          </div>
+        )}
+        {casefileState.status === 'error' && casefileState.error && <ErrorDisplay error={{ message: casefileState.error.message, errorCode: casefileState.error.code, correlationId: casefileState.correlationId }} />}
       </BentoCard>
 
       {/* Governed Tool Invocation History */}

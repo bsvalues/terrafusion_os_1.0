@@ -260,8 +260,8 @@ describe('PropertyForge', () => {
         expect(screen.getAllByText(/corr-forge/).length).toBeGreaterThan(0);
       });
 
-      expect(screen.getByText(/History/i)).toBeInTheDocument();
-      expect(screen.getByText(/explain_model_results/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/History/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/explain_model_results/i).length).toBeGreaterThan(0);
 
       const copyButtons = screen.getAllByRole('button', { name: /copy/i });
       expect(copyButtons.length).toBeGreaterThanOrEqual(1);

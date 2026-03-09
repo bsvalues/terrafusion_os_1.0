@@ -102,6 +102,15 @@ interface ExemptionState {
   error?: ErrorInfo;
 }
 
+/** Levy rate components from summarize_levy_rate_components */
+interface LevyComponent { name: string; rate: number }
+interface LevyResult { components: LevyComponent[]; totalRate: number; explanation: string }
+
+/** Commissioner memo from generate_commissioner_memo */
+interface MemoResult { memo: { title: string; body: string }; wordCount: number; payloadRef: string }
+
+type DaisToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
+
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
 
@@ -109,6 +118,9 @@ export const PropertyDais: React.FC = () => {
   const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
   const [piltState, setPiltState] = useState<PiltState>({ status: 'idle' });
   const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
+  const [levyState, setLevyState] = useState<DaisToolState<LevyResult>>({ status: 'idle' });
+  const [memoState, setMemoState] = useState<DaisToolState<MemoResult>>({ status: 'idle' });
+  const [memoTopic, setMemoTopic] = useState<string>('');
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
   const handleCheckStatus = useCallback(async () => {
@@ -310,6 +322,43 @@ export const PropertyDais: React.FC = () => {
       }, ...prev.slice(0, 9)]);
     }
   }, [parcelId]);
+
+  /** Invoke summarize_levy_rate_components */
+  const handleLevyBreakdown = useCallback(async () => {
+    setLevyState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'summarize_levy_rate_components', params: { county: 'benton', taxYear: new Date().getFullYear() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setLevyState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'summarize_levy_rate_components', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
+      } else {
+        setLevyState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'LEVY_FAILED', message: response.error?.message || 'Levy rate breakdown failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setLevyState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId]);
+
+  /** Invoke generate_commissioner_memo */
+  const handleCommissionerMemo = useCallback(async () => {
+    if (!memoTopic.trim()) return;
+    setMemoState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'generate_commissioner_memo', params: { county: 'benton', topic: memoTopic, taxYear: new Date().getFullYear(), format: 'brief' }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setMemoState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'generate_commissioner_memo', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { topic: memoTopic } }, ...prev.slice(0, 19)]);
+      } else {
+        setMemoState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'MEMO_FAILED', message: response.error?.message || 'Memo generation failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setMemoState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [parcelId, memoTopic]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -684,6 +733,65 @@ export const PropertyDais: React.FC = () => {
         {exemptionState.status === 'error' && exemptionState.error && (
           <ErrorDisplay error={{ message: exemptionState.error.message, errorCode: exemptionState.error.code, correlationId: exemptionState.correlationId }} />
         )}
+      </BentoCard>
+
+      {/* Levy Rate Breakdown */}
+      <BentoCard title='📊 Levy Rate Components' actions={<span>💲</span>}>
+        <p className='tf-text-tertiary text-sm mb-4'>Breakdown of levy rate by component (state, school, local)</p>
+        <button onClick={handleLevyBreakdown} disabled={levyState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {levyState.status === 'loading' ? 'Loading...' : 'Get Levy Breakdown'}
+        </button>
+        {levyState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Calculating levy rates...</span></div>}
+        {levyState.status === 'success' && levyState.result && (
+          <div className='space-y-3'>
+            <div className='space-y-1'>
+              {levyState.result.components.map((c, idx) => (
+                <div key={idx} className='flex items-center justify-between py-2 px-3 tf-panel rounded'>
+                  <span className='tf-text-secondary'>{c.name}</span>
+                  <span className='font-mono tf-suite-accent-text'>${c.rate.toFixed(2)}</span>
+                </div>
+              ))}
+              <div className='flex items-center justify-between py-2 px-3 tf-panel rounded border-t tf-border font-semibold'>
+                <span className='tf-text'>Total Rate</span>
+                <span className='font-mono tf-suite-accent-text'>${levyState.result.totalRate.toFixed(2)}</span>
+              </div>
+            </div>
+            <div className='tf-panel p-3'><p className='tf-text-secondary text-sm'>{levyState.result.explanation}</p></div>
+          </div>
+        )}
+        {levyState.status === 'error' && levyState.error && <ErrorDisplay error={{ message: levyState.error.message, errorCode: levyState.error.code, correlationId: levyState.correlationId }} />}
+      </BentoCard>
+
+      {/* Commissioner Memo */}
+      <BentoCard title='📝 Commissioner Memo' actions={<span>🏛️</span>}>
+        <p className='tf-text-tertiary text-sm mb-4'>Generate a briefing memo for commissioner review</p>
+        <div className='mb-4'>
+          <label htmlFor='memo-topic' className='block tf-text-secondary text-sm mb-2'>Topic</label>
+          <input id='memo-topic' type='text' value={memoTopic} onChange={e => setMemoTopic(e.target.value)} placeholder='e.g. Annual revaluation summary' className='w-full tf-input px-3 py-2' />
+        </div>
+        <button onClick={handleCommissionerMemo} disabled={memoState.status === 'loading' || !memoTopic.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
+          {memoState.status === 'loading' ? 'Generating...' : 'Generate Memo'}
+        </button>
+        {memoState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Generating memo...</span></div>}
+        {memoState.status === 'success' && memoState.result && (
+          <div className='space-y-3'>
+            <div className='tf-panel p-4'>
+              <h5 className='tf-text font-semibold mb-2'>{memoState.result.memo.title}</h5>
+              <p className='tf-text-secondary whitespace-pre-wrap'>{memoState.result.memo.body}</p>
+            </div>
+            <div className='flex items-center gap-4 text-xs tf-text-dim'>
+              <span>{memoState.result.wordCount} words</span>
+              {memoState.correlationId && (
+                <span className='flex items-center gap-1'>
+                  <span>ID:</span>
+                  <code className='tf-suite-accent-text font-mono'>{memoState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(memoState.correlationId!)} className='tf-text-tertiary hover:tf-text' aria-label='Copy correlation ID'>📋</button>
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+        {memoState.status === 'error' && memoState.error && <ErrorDisplay error={{ message: memoState.error.message, errorCode: memoState.error.code, correlationId: memoState.correlationId }} />}
       </BentoCard>
 
       {/* History */}
