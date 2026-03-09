@@ -7,7 +7,7 @@
 - Lane branch HEAD SHA (pre-merge): 118453ca7543da93e537c1369e9a2a607a309a00
 - Merge commit SHA (into r1/integration): 0111b25ddabd3c4ab5ec89aefd307d1c50d630cc
 - Baseline r1/integration SHA used for lane work: 81577b071e5ac6aeaa1fb781e805ee9c3a4a7cd6
-- Final branch-head SHA used for verification: 0afe584756ffd60aa2c986bde8ea2e0edc7bede6
+- Final branch-head SHA used for verification: eef087493343d292efa2681bddc217b76e0ee6b3
 - Date (local): 2026-03-07
 - Verified by: Claude Code (CC lane agent)
 - Command canon version: r1-canon-2026-03-07

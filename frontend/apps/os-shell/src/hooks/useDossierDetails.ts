@@ -89,9 +89,9 @@ export function useDossierDetails(
         setData(null);
         setCorrelationId(null);
       } finally {
-        // Guard after async
-        if (activeParcelRef.current !== pid) return;
-        setLoading(false);
+        if (activeParcelRef.current === pid) {
+          setLoading(false);
+        }
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
