@@ -1,10 +1,13 @@
 /**
  * PropertyDais.tsx
  *
- * Phase 5.5: Property Dais Tab - Workflow MWUX Slice
- * Real MWUX with workflow status and check_cert_status tool invocation.
+ * Phase 5.5 + R2.5: Property Dais Tab - Workflow MWUX Slice
+ * Real MWUX with governed tool invocations:
+ * - check_cert_status: Certification workflow status
+ * - calculate_pilt_payment: PILT payment calculation (RCW, Hanford)
+ * - explain_senior_exemption_impact: Senior/disabled exemption impact bands
  *
- * Architecture: UI → select workflow type → check_cert_status tool → correlationId UX
+ * Architecture: UI → select params → governed tool → correlationId UX
  */
 
 import React, { useCallback, useState } from 'react';
@@ -55,11 +58,57 @@ interface StatusState {
   error?: ErrorInfo;
 }
 
+/** PILT district result from calculate_pilt_payment */
+interface PiltDistrict {
+  districtName: string;
+  federalAcres: number;
+  piltDue: number;
+  levyRate: number;
+}
+
+interface PiltResult {
+  county: string;
+  taxYear: number;
+  totalPiltDue: number;
+  districtsCount: number;
+  districts: PiltDistrict[];
+}
+
+interface PiltState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: PiltResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
+
+/** Exemption impact result from explain_senior_exemption_impact */
+interface ExemptionBand {
+  incomeRange: string;
+  exemptionLevel: string;
+  estimatedSavings: number;
+}
+
+interface ExemptionResult {
+  parcelId: string;
+  bands: ExemptionBand[];
+  eligibilitySummary?: string;
+  rcwReference?: string;
+}
+
+interface ExemptionState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: ExemptionResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
+
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
 
   const [workflowType, setWorkflowType] = useState<WorkflowType>('certification');
   const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
+  const [piltState, setPiltState] = useState<PiltState>({ status: 'idle' });
+  const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
   const handleCheckStatus = useCallback(async () => {
@@ -161,6 +210,106 @@ export const PropertyDais: React.FC = () => {
       ]);
     }
   }, [parcelId, workflowType]);
+
+  /** calculate_pilt_payment — PILT district payment calculation */
+  const handleCalculatePilt = useCallback(async () => {
+    setPiltState({ status: 'loading' });
+
+    try {
+      const response = await invokeTool({
+        toolId: 'calculate_pilt_payment',
+        params: { county: 'benton', taxYear: new Date().getFullYear() },
+        parcelId,
+      });
+
+      if (response.success && response.result) {
+        let parsed: PiltResult;
+        try {
+          parsed = typeof response.result.output === 'string'
+            ? JSON.parse(response.result.output)
+            : response.result.output;
+        } catch {
+          parsed = { county: 'benton', taxYear: new Date().getFullYear(), totalPiltDue: 0, districtsCount: 0, districts: [] };
+        }
+
+        setPiltState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory((prev) => [{
+          id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'success',
+          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
+        }, ...prev.slice(0, 9)]);
+      } else {
+        setPiltState({
+          status: 'error', correlationId: response.correlationId,
+          error: { code: response.error?.code || 'PILT_FAILED', message: response.error?.message || 'PILT calculation failed', severity: 'error', correlationId: response.correlationId },
+        });
+        setHistory((prev) => [{
+          id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'error',
+          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
+          errorCode: response.error?.code || 'PILT_FAILED',
+        }, ...prev.slice(0, 9)]);
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setPiltState({
+        status: 'error', correlationId: cid,
+        error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid },
+      });
+      setHistory((prev) => [{
+        id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'error',
+        correlationId: cid, timestamp: new Date(), errorCode: 'NETWORK_ERROR',
+      }, ...prev.slice(0, 9)]);
+    }
+  }, [parcelId]);
+
+  /** explain_senior_exemption_impact — exemption impact bands */
+  const handleExemptionImpact = useCallback(async () => {
+    setExemptionState({ status: 'loading' });
+
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_senior_exemption_impact',
+        params: { county: 'benton', parcelId, taxYear: new Date().getFullYear() },
+        parcelId,
+      });
+
+      if (response.success && response.result) {
+        let parsed: ExemptionResult;
+        try {
+          parsed = typeof response.result.output === 'string'
+            ? JSON.parse(response.result.output)
+            : response.result.output;
+        } catch {
+          parsed = { parcelId, bands: [] };
+        }
+
+        setExemptionState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setHistory((prev) => [{
+          id: crypto.randomUUID(), toolId: 'explain_senior_exemption_impact', status: 'success',
+          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
+        }, ...prev.slice(0, 9)]);
+      } else {
+        setExemptionState({
+          status: 'error', correlationId: response.correlationId,
+          error: { code: response.error?.code || 'EXEMPTION_FAILED', message: response.error?.message || 'Exemption impact failed', severity: 'error', correlationId: response.correlationId },
+        });
+        setHistory((prev) => [{
+          id: crypto.randomUUID(), toolId: 'explain_senior_exemption_impact', status: 'error',
+          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
+          errorCode: response.error?.code || 'EXEMPTION_FAILED',
+        }, ...prev.slice(0, 9)]);
+      }
+    } catch (err) {
+      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setExemptionState({
+        status: 'error', correlationId: cid,
+        error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid },
+      });
+      setHistory((prev) => [{
+        id: crypto.randomUUID(), toolId: 'explain_senior_exemption_impact', status: 'error',
+        correlationId: cid, timestamp: new Date(), errorCode: 'NETWORK_ERROR',
+      }, ...prev.slice(0, 9)]);
+    }
+  }, [parcelId]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -407,11 +556,141 @@ export const PropertyDais: React.FC = () => {
         />
       )}
 
+      {/* ================================================================ */}
+      {/* PILT Calculator — calculate_pilt_payment governed tool            */}
+      {/* ================================================================ */}
+      <BentoGrid columns={2} gap={1.5} padding={0}>
+        <BentoCard title="PILT Calculator" actions={<span>🏛️</span>}>
+          <p className='tf-text-dim text-sm mb-3'>
+            Payment in Lieu of Taxes — Hanford Nuclear Reservation (RCW 84.33)
+          </p>
+          <button
+            onClick={handleCalculatePilt}
+            disabled={piltState.status === 'loading'}
+            className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'
+          >
+            {piltState.status === 'loading' ? 'Calculating...' : 'Calculate PILT'}
+          </button>
+
+          {piltState.status === 'success' && piltState.result && (
+            <div className='mt-4 space-y-3'>
+              <div className='flex items-center justify-between'>
+                <span className='tf-text-secondary text-sm'>Total PILT Due</span>
+                <span className='tf-text font-bold text-lg'>
+                  ${piltState.result.totalPiltDue?.toLocaleString() ?? '0'}
+                </span>
+              </div>
+              <div className='flex items-center justify-between text-sm'>
+                <span className='tf-text-dim'>Districts</span>
+                <span className='tf-text'>{piltState.result.districtsCount}</span>
+              </div>
+              {piltState.correlationId && (
+                <div className='flex items-center gap-2 text-xs'>
+                  <span className='tf-text-muted'>ID:</span>
+                  <code className='tf-suite-accent-text font-mono'>{piltState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(piltState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {piltState.status === 'error' && piltState.error && (
+            <div className='mt-3'>
+              <ErrorDisplay error={{ message: piltState.error.message, errorCode: piltState.error.code, correlationId: piltState.correlationId }} />
+            </div>
+          )}
+        </BentoCard>
+
+        {/* PILT District Detail */}
+        <BentoCard title="PILT Districts" actions={<span>📋</span>}>
+          {piltState.status === 'success' && piltState.result?.districts?.length ? (
+            <div className='space-y-2 max-h-64 overflow-y-auto'>
+              {piltState.result.districts.map((d, idx) => (
+                <div key={idx} className='tf-overlay rounded-lg px-3 py-2 text-sm'>
+                  <div className='flex justify-between'>
+                    <span className='tf-text font-medium'>{d.districtName}</span>
+                    <span className='tf-text font-semibold'>${d.piltDue?.toLocaleString() ?? '0'}</span>
+                  </div>
+                  <div className='flex justify-between mt-1 text-xs tf-text-dim'>
+                    <span>{d.federalAcres?.toLocaleString()} federal acres</span>
+                    <span>Rate: {d.levyRate?.toFixed(4)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : piltState.status === 'idle' ? (
+            <div className='flex flex-col items-center justify-center py-8 text-center'>
+              <div className='text-3xl mb-2'>🏛️</div>
+              <p className='tf-text-tertiary text-sm'>Run PILT calculation to view district breakdown</p>
+            </div>
+          ) : piltState.status === 'loading' ? (
+            <div className='flex items-center justify-center py-8' role='status'>
+              <div className='tf-spinner h-8 w-8' />
+            </div>
+          ) : null}
+        </BentoCard>
+      </BentoGrid>
+
+      {/* ================================================================ */}
+      {/* Senior Exemption Impact — explain_senior_exemption_impact tool    */}
+      {/* ================================================================ */}
+      <BentoCard title="Senior/Disabled Exemption Impact" actions={<span>🏠</span>}>
+        <div className='flex items-start justify-between gap-4 flex-wrap mb-3'>
+          <p className='tf-text-dim text-sm'>
+            RCW 84.36.381 exemption impact analysis by income band
+          </p>
+          <button
+            onClick={handleExemptionImpact}
+            disabled={exemptionState.status === 'loading'}
+            className='px-4 py-2 rounded-lg font-semibold transition-all tf-suite-dais-cta'
+          >
+            {exemptionState.status === 'loading' ? 'Analyzing...' : 'Analyze Impact'}
+          </button>
+        </div>
+
+        {exemptionState.status === 'success' && exemptionState.result && (
+          <div className='space-y-3'>
+            {exemptionState.result.eligibilitySummary && (
+              <p className='tf-text-secondary text-sm'>{exemptionState.result.eligibilitySummary}</p>
+            )}
+            {exemptionState.result.bands?.length ? (
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
+                {exemptionState.result.bands.map((band, idx) => (
+                  <div key={idx} className='tf-panel p-4 rounded-xl'>
+                    <div className='tf-text-dim text-xs uppercase tracking-wide'>{band.incomeRange}</div>
+                    <div className='tf-text font-bold text-lg mt-1'>{band.exemptionLevel}</div>
+                    <div className='tf-text-secondary text-sm mt-1'>
+                      Saves ${band.estimatedSavings?.toLocaleString() ?? '0'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className='tf-text-dim text-sm italic'>No exemption bands returned.</p>
+            )}
+            {exemptionState.result.rcwReference && (
+              <p className='tf-text-dim text-xs'>Ref: {exemptionState.result.rcwReference}</p>
+            )}
+            {exemptionState.correlationId && (
+              <div className='flex items-center gap-2 text-xs'>
+                <span className='tf-text-muted'>ID:</span>
+                <code className='tf-suite-accent-text font-mono'>{exemptionState.correlationId.slice(0, 16)}...</code>
+                <button onClick={() => copyToClipboard(exemptionState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {exemptionState.status === 'error' && exemptionState.error && (
+          <ErrorDisplay error={{ message: exemptionState.error.message, errorCode: exemptionState.error.code, correlationId: exemptionState.correlationId }} />
+        )}
+      </BentoCard>
+
       {/* History */}
       <InvocationHistory
         records={history}
-        title='Status History'
-        emptyMessage='No workflow status checks yet.'
+        title='Dais Tool History'
+        emptyMessage='No Dais tool invocations yet.'
       />
     </div>
   );

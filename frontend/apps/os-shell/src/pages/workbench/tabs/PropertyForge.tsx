@@ -1,10 +1,12 @@
 /**
  * PropertyForge.tsx
  *
- * Phase 5.4: Property Forge Tab - Valuation MWUX Slice
- * Real MWUX with valuation controls and explain_model_results tool invocation.
+ * Phase 5.4 + R2.5: Property Forge Tab - Valuation MWUX Slice
+ * Real MWUX with governed tool invocations:
+ * - explain_model_results: AI-powered valuation explanation
+ * - explain_value_change: Year-over-year value change analysis
  *
- * Architecture: UI → select params → explain_model_results tool → correlationId UX
+ * Architecture: UI → select params → governed tool → correlationId UX
  */
 
 import React, { useCallback, useState } from 'react';
@@ -58,6 +60,24 @@ interface ExplainState {
   error?: ErrorInfo;
 }
 
+/** Value change explanation from explain_value_change */
+interface ValueChangeResult {
+  parcelId: string;
+  previousValue?: number;
+  currentValue?: number;
+  changeAmount?: number;
+  changePercent?: number;
+  explanation?: string;
+  factors?: Array<{ name: string; contribution: string }>;
+}
+
+interface ValueChangeState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: ValueChangeResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
+
 export const PropertyForge: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
 
@@ -66,6 +86,7 @@ export const PropertyForge: React.FC = () => {
   const [compareEnabled, setCompareEnabled] = useState(false);
   const [compareToYear, setCompareToYear] = useState<number>(CURRENT_YEAR - 1);
   const [explainState, setExplainState] = useState<ExplainState>({ status: 'idle' });
+  const [valueChangeState, setValueChangeState] = useState<ValueChangeState>({ status: 'idle' });
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
   const handleExplain = useCallback(async () => {
@@ -172,6 +193,102 @@ export const PropertyForge: React.FC = () => {
       ]);
     }
   }, [parcelId, taxYear, audience, compareEnabled, compareToYear]);
+
+  /** Invoke explain_value_change — year-over-year value change analysis */
+  const handleValueChange = useCallback(async () => {
+    setValueChangeState({ status: 'loading' });
+
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_value_change',
+        params: { county: 'benton', parcelId, taxYear },
+        parcelId,
+      });
+
+      if (response.success && response.result) {
+        let parsed: ValueChangeResult;
+        try {
+          parsed =
+            typeof response.result.output === 'string'
+              ? JSON.parse(response.result.output)
+              : response.result.output;
+        } catch {
+          parsed = { parcelId };
+        }
+
+        setValueChangeState({
+          status: 'success',
+          result: parsed,
+          correlationId: response.correlationId,
+        });
+
+        setHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            toolId: 'explain_value_change',
+            status: 'success',
+            correlationId: response.correlationId || 'unknown',
+            timestamp: new Date(),
+            meta: { year: taxYear },
+          },
+          ...prev.slice(0, 9),
+        ]);
+      } else {
+        const errorInfo: ErrorInfo = {
+          code: response.error?.code || 'VALUE_CHANGE_FAILED',
+          message: response.error?.message || 'Failed to explain value change',
+          severity: 'error' as const,
+          correlationId: response.correlationId,
+        };
+
+        setValueChangeState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: errorInfo,
+        });
+
+        setHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            toolId: 'explain_value_change',
+            status: 'error',
+            correlationId: response.correlationId || 'unknown',
+            timestamp: new Date(),
+            errorCode: response.error?.code || 'VALUE_CHANGE_FAILED',
+            meta: { year: taxYear },
+          },
+          ...prev.slice(0, 9),
+        ]);
+      }
+    } catch (err) {
+      const clientCorrelationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      const networkError: ErrorInfo = {
+        code: 'NETWORK_ERROR',
+        message: err instanceof Error ? err.message : 'Network error occurred',
+        severity: 'error' as const,
+        correlationId: clientCorrelationId,
+      };
+
+      setValueChangeState({
+        status: 'error',
+        correlationId: clientCorrelationId,
+        error: networkError,
+      });
+
+      setHistory((prev) => [
+        {
+          id: crypto.randomUUID(),
+          toolId: 'explain_value_change',
+          status: 'error',
+          correlationId: clientCorrelationId,
+          timestamp: new Date(),
+          errorCode: 'NETWORK_ERROR',
+          meta: { year: taxYear },
+        },
+        ...prev.slice(0, 9),
+      ]);
+    }
+  }, [parcelId, taxYear]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -422,10 +539,123 @@ export const PropertyForge: React.FC = () => {
         />
       )}
 
+      {/* Value Change Analysis */}
+      <BentoCard title='📈 Value Change Analysis' variant='default'>
+        <p className='tf-text-tertiary text-sm mb-4'>
+          Year-over-year value change breakdown for {parcelId}
+        </p>
+        <button
+          onClick={handleValueChange}
+          disabled={valueChangeState.status === 'loading'}
+          className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4'
+        >
+          {valueChangeState.status === 'loading' ? 'Analyzing...' : `Explain Value Change (${taxYear})`}
+        </button>
+
+        {valueChangeState.status === 'loading' && (
+          <div role='status' className='flex items-center justify-center py-6 gap-3'>
+            <div className='tf-spinner h-8 w-8' />
+            <span className='tf-text-tertiary'>Analyzing value changes...</span>
+          </div>
+        )}
+
+        {valueChangeState.status === 'success' && valueChangeState.result && (
+          <div className='space-y-4'>
+            {/* Value comparison */}
+            <div className='grid grid-cols-3 gap-3'>
+              <div className='tf-panel p-3 text-center'>
+                <div className='tf-text-tertiary text-xs'>Previous</div>
+                <div className='text-lg font-bold tf-text'>
+                  {formatCurrency(valueChangeState.result.previousValue)}
+                </div>
+              </div>
+              <div className='tf-panel p-3 text-center'>
+                <div className='tf-text-tertiary text-xs'>Current</div>
+                <div className='text-lg font-bold tf-text'>
+                  {formatCurrency(valueChangeState.result.currentValue)}
+                </div>
+              </div>
+              <div className='tf-panel p-3 text-center'>
+                <div className='tf-text-tertiary text-xs'>Change</div>
+                <div
+                  className='text-lg font-bold'
+                  style={{
+                    color:
+                      (valueChangeState.result.changeAmount ?? 0) > 0
+                        ? 'hsl(var(--tf-success))'
+                        : (valueChangeState.result.changeAmount ?? 0) < 0
+                          ? 'hsl(var(--tf-error))'
+                          : 'hsl(var(--tf-text) / 0.7)',
+                  }}
+                >
+                  {formatCurrency(valueChangeState.result.changeAmount)}
+                  {valueChangeState.result.changePercent !== undefined && (
+                    <span className='text-sm ml-1'>
+                      ({valueChangeState.result.changePercent > 0 ? '+' : ''}
+                      {valueChangeState.result.changePercent.toFixed(1)}%)
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Explanation */}
+            {valueChangeState.result.explanation && (
+              <div className='tf-panel p-4'>
+                <h5 className='tf-text font-medium mb-2' style={{ opacity: 0.8 }}>📝 Change Explanation</h5>
+                <p className='tf-text-secondary'>{valueChangeState.result.explanation}</p>
+              </div>
+            )}
+
+            {/* Contributing Factors */}
+            {valueChangeState.result.factors && valueChangeState.result.factors.length > 0 && (
+              <div className='tf-panel p-4'>
+                <h5 className='tf-text font-medium mb-3' style={{ opacity: 0.8 }}>📊 Contributing Factors</h5>
+                <div className='space-y-2'>
+                  {valueChangeState.result.factors.map((f, idx) => (
+                    <div key={idx} className='flex items-center justify-between py-2 px-3 tf-panel rounded'>
+                      <span className='tf-text-secondary'>{f.name}</span>
+                      <span className='font-mono tf-text-tertiary'>{f.contribution}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Correlation ID */}
+            {valueChangeState.correlationId && (
+              <div className='flex items-center gap-2 text-xs'>
+                <span className='tf-text-muted'>ID:</span>
+                <code className='tf-suite-accent-text font-mono'>
+                  {valueChangeState.correlationId.slice(0, 16)}...
+                </code>
+                <button
+                  onClick={() => copyToClipboard(valueChangeState.correlationId!)}
+                  className='tf-text-tertiary hover:tf-text'
+                  aria-label='Copy correlation ID'
+                >
+                  📋
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {valueChangeState.status === 'error' && valueChangeState.error && (
+          <ErrorDisplay
+            error={{
+              message: valueChangeState.error.message,
+              errorCode: valueChangeState.error.code,
+              correlationId: valueChangeState.correlationId,
+            }}
+          />
+        )}
+      </BentoCard>
+
       {/* History */}
       <InvocationHistory
         records={history}
-        title='Explanation History'
+        title='Forge Tool History'
         emptyMessage='No valuation explanations yet.'
       />
     </div>
