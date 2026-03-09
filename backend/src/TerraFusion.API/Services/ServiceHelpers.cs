@@ -209,64 +209,57 @@ public class FISMAHighComplianceValidator
     /// <summary>
     /// Validate security controls implementation
     /// </summary>
-    public async Task<SecurityValidationResult> ValidateSecurityControlsAsync()
+    public Task<SecurityValidationResult> ValidateSecurityControlsAsync()
     {
-        await Task.CompletedTask;
-        return new SecurityValidationResult { Success = true, Score = 1.0m };
+        return Task.FromResult(new SecurityValidationResult { Success = true, Score = 1.0m });
     }
 
     /// <summary>
     /// Validate access controls and authentication
     /// </summary>
-    public async Task<SecurityValidationResult> ValidateAccessControlsAsync()
+    public Task<SecurityValidationResult> ValidateAccessControlsAsync()
     {
-        await Task.CompletedTask;
-        return new SecurityValidationResult { Success = true, Score = 1.0m };
+        return Task.FromResult(new SecurityValidationResult { Success = true, Score = 1.0m });
     }
 
     /// <summary>
     /// Validate audit and accountability controls
     /// </summary>
-    public async Task<SecurityValidationResult> ValidateAuditControlsAsync()
+    public Task<SecurityValidationResult> ValidateAuditControlsAsync()
     {
-        await Task.CompletedTask;
-        return new SecurityValidationResult { Success = true, Score = 1.0m };
+        return Task.FromResult(new SecurityValidationResult { Success = true, Score = 1.0m });
     }
 
     /// <summary>
     /// Validate system and communications protection
     /// </summary>
-    public async Task<SecurityValidationResult> ValidateCommunicationProtectionAsync()
+    public Task<SecurityValidationResult> ValidateCommunicationProtectionAsync()
     {
-        await Task.CompletedTask;
-        return new SecurityValidationResult { Success = true, Score = 1.0m };
+        return Task.FromResult(new SecurityValidationResult { Success = true, Score = 1.0m });
     }
 
     /// <summary>
     /// Validate incident response capabilities
     /// </summary>
-    public async Task<SecurityValidationResult> ValidateIncidentResponseAsync()
+    public Task<SecurityValidationResult> ValidateIncidentResponseAsync()
     {
-        await Task.CompletedTask;
-        return new SecurityValidationResult { Success = true, Score = 1.0m };
+        return Task.FromResult(new SecurityValidationResult { Success = true, Score = 1.0m });
     }
 
     /// <summary>
     /// Validate risk assessment and management
     /// </summary>
-    public async Task<SecurityValidationResult> ValidateRiskManagementAsync()
+    public Task<SecurityValidationResult> ValidateRiskManagementAsync()
     {
-        await Task.CompletedTask;
-        return new SecurityValidationResult { Success = true, Score = 1.0m };
+        return Task.FromResult(new SecurityValidationResult { Success = true, Score = 1.0m });
     }
 
     /// <summary>
     /// Validate system and information integrity
     /// </summary>
-    public async Task<SecurityValidationResult> ValidateSystemIntegrityAsync()
+    public Task<SecurityValidationResult> ValidateSystemIntegrityAsync()
     {
-        await Task.CompletedTask;
-        return new SecurityValidationResult { Success = true, Score = 1.0m };
+        return Task.FromResult(new SecurityValidationResult { Success = true, Score = 1.0m });
     }
 }
 
@@ -285,78 +278,70 @@ public class QuantumResistantEncryptionService
     /// <summary>
     /// Encrypt data with CRYSTALS-Kyber 3072-bit quantum-resistant algorithm
     /// </summary>
-    public async Task<EncryptionResult> EncryptAsync(byte[] data)
+    public Task<EncryptionResult> EncryptAsync(byte[] data)
     {
-        await Task.CompletedTask;
-        return new EncryptionResult
+        return Task.FromResult(new EncryptionResult
         {
             Success = true,
             Algorithm = "CRYSTALS-Kyber-3072",
             KeyStrength = 3072
-        };
+        });
     }
 
     /// <summary>
     /// Initialize post-quantum key exchange
     /// </summary>
-    public async Task<EncryptionResult> InitializePostQuantumKeyExchangeAsync()
+    public Task<EncryptionResult> InitializePostQuantumKeyExchangeAsync()
     {
-        await Task.CompletedTask;
-        return new EncryptionResult { Success = true, Algorithm = "CRYSTALS-Kyber-3072" };
+        return Task.FromResult(new EncryptionResult { Success = true, Algorithm = "CRYSTALS-Kyber-3072" });
     }
 
     /// <summary>
     /// Initialize quantum-resistant digital signatures
     /// </summary>
-    public async Task<EncryptionResult> InitializeQuantumResistantSignaturesAsync()
+    public Task<EncryptionResult> InitializeQuantumResistantSignaturesAsync()
     {
-        await Task.CompletedTask;
-        return new EncryptionResult { Success = true, Algorithm = "CRYSTALS-Dilithium" };
+        return Task.FromResult(new EncryptionResult { Success = true, Algorithm = "CRYSTALS-Dilithium" });
     }
 
     /// <summary>
     /// Initialize quantum-resistant AES encryption
     /// </summary>
-    public async Task<EncryptionResult> InitializeQuantumResistantAESAsync()
+    public Task<EncryptionResult> InitializeQuantumResistantAESAsync()
     {
-        await Task.CompletedTask;
-        return new EncryptionResult { Success = true, Algorithm = "AES-256-GCM" };
+        return Task.FromResult(new EncryptionResult { Success = true, Algorithm = "AES-256-GCM" });
     }
 
     /// <summary>
     /// Initialize quantum key distribution
     /// </summary>
-    public async Task<EncryptionResult> InitializeQuantumKeyDistributionAsync()
+    public Task<EncryptionResult> InitializeQuantumKeyDistributionAsync()
     {
-        await Task.CompletedTask;
-        return new EncryptionResult { Success = true, Algorithm = "QKD-BB84" };
+        return Task.FromResult(new EncryptionResult { Success = true, Algorithm = "QKD-BB84" });
     }
 
     /// <summary>
     /// Initialize encrypted communication channels
     /// </summary>
-    public async Task<EncryptionResult> InitializeEncryptedCommunicationChannelsAsync()
+    public Task<EncryptionResult> InitializeEncryptedCommunicationChannelsAsync()
     {
-        await Task.CompletedTask;
-        return new EncryptionResult { Success = true, Algorithm = "TLS-1.3-PQC" };
+        return Task.FromResult(new EncryptionResult { Success = true, Algorithm = "TLS-1.3-PQC" });
     }
 
     /// <summary>
     /// Initialize data at rest encryption
     /// </summary>
-    public async Task<EncryptionResult> InitializeDataAtRestEncryptionAsync()
+    public Task<EncryptionResult> InitializeDataAtRestEncryptionAsync()
     {
-        await Task.CompletedTask;
-        return new EncryptionResult { Success = true, Algorithm = "ChaCha20-Poly1305" };
+        return Task.FromResult(new EncryptionResult { Success = true, Algorithm = "ChaCha20-Poly1305" });
     }
 
     /// <summary>
     /// Validate encryption implementation
     /// </summary>
-    public async Task<SecurityValidationResult> ValidateEncryptionImplementationAsync()
+    public Task<SecurityValidationResult> ValidateEncryptionImplementationAsync()
     {
-        await Task.CompletedTask;
-        return new SecurityValidationResult { Success = true, Score = 1.0m };
+        return Task.FromResult(new SecurityValidationResult { Success = true, Score = 1.0m });
     }
 }
 

@@ -109,8 +109,8 @@ public class AIModelOrchestrationService : BackgroundService
     /// </summary>
     private async System.Threading.Tasks.Task InitializeAIModels()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
+
+
         _logger.LogInformation("Initializing government-grade AI models");
 
         try
@@ -252,7 +252,7 @@ public class AIModelOrchestrationService : BackgroundService
         }
 
         _logger.LogInformation("Load balancers initialized for {LoadBalancerCount} model types", _loadBalancers.Count);
-        await Task.CompletedTask;
+
     }
 
     /// <summary>
@@ -431,14 +431,14 @@ public class AIModelOrchestrationService : BackgroundService
     {
         // In production, this would create new model instances
         _logger.LogInformation("Would scale up model {ModelName}", modelName);
-        await Task.CompletedTask;
+
     }
 
     private async System.Threading.Tasks.Task ScaleDownModel(string modelName)
     {
         // In production, this would remove model instances
         _logger.LogInformation("Would scale down model {ModelName}", modelName);
-        await Task.CompletedTask;
+
     }
 
     /// <summary>
