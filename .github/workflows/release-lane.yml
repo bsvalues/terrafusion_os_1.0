@@ -53,7 +53,7 @@ jobs:
           # headers, etc.).  Always overlay from main — old release SHAs may have
           # incompatible versions (e.g. wrong service names in Caddyfile).
           git fetch origin main --no-tags --depth=1 2>/dev/null || true
-          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml frontend/Dockerfile; do
+          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml frontend/Dockerfile backend/Dockerfile; do
             dir="$(dirname "$path")"
             mkdir -p "$dir"
             echo "Overlaying $path from origin/main"

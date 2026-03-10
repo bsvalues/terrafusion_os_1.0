@@ -95,7 +95,7 @@ COPY --from=build /app/publish ./
 
 # Expose and healthcheck
 EXPOSE 5000
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget -qO- http://localhost:5000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget -qO- http://127.0.0.1:5000/health || exit 1
 
 ENTRYPOINT ["dotnet","TerraFusion.API.dll"]
