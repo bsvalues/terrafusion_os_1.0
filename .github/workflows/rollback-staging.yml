@@ -61,8 +61,21 @@ jobs:
           install -d -m 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
-          grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts
+
+          # Keyscan with retries — GitHub Actions runners sometimes need
+          # longer to reach Hostinger VPS (NAT, firewalls, transient DNS).
+          for i in 1 2 3; do
+            ssh-keyscan -T 10 -t ed25519,rsa -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null && break
+            echo "ssh-keyscan attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
+
+          # Fallback: if keyscan still failed, accept new keys on first connect
+          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
+            echo "WARNING: ssh-keyscan returned no keys; using StrictHostKeyChecking=accept-new"
+            printf 'Host %s\n  StrictHostKeyChecking accept-new\n' "$DEPLOY_HOST" >> ~/.ssh/config
+            chmod 600 ~/.ssh/config
+          fi
 
       - name: Preflight - remote host access
         shell: bash
