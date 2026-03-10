@@ -172,18 +172,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 38 |
+| PUSH-OPTIONAL | 40 |
 | SCHEDULED | 17 |
-| MANUAL | 17 |
+| MANUAL | 19 |
 | DEPRECATED | 2 |
-| **Total** | 77 |
+| **Total** | 81 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (38):
+**PUSH-OPTIONAL** (40):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -197,7 +197,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `benton-runner-smoke.yml`
 - `benton.yml`
 - `build-validation.yml`
-- `ci-cd-main.yml`
+- `ci-cd-pipeline.yml`
 - `ci-verified.yml`
 - `ci.yml`
 - `county-kit-parity.yml`
@@ -207,11 +207,12 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `golden-corpus-compat.yml`
 - `governance-proof.yml`
 - `gpt-rag.yml`
-- `kubernetes-infrastructure-ci.yml`
 - `markdown-lint.yml`
 - `observability-ci.yml`
 - `opa-policy-tests.yml`
 - `release-compliance.yml`
+- `release-lane-guard.yml`
+- `release-lane.yml`
 - `release-validation.yml`
 - `rust-security-gates.yml`
 - `rust-verify.yml`
@@ -221,6 +222,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `terrafusion-ci-cd-production.yml`
 - `testing.yml`
 - `tfctl-ci.yml`
+- `ui-governance.yml`
 - `yaml-sanity.yml`
 
 **SCHEDULED** (17):
@@ -228,10 +230,10 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `accreditation-oracle-health.yml`
 - `autonomy-pr-lane.yml`
 - `break-glass-drill.yml`
-- `ci-cd-pipeline.yml`
 - `ci-cd.yml`
 - `external-verify.yml`
 - `governance-audit.yml`
+- `governance-import-hygiene-nightly.yml`
 - `nightly.yml`
 - `oracle-health.yml`
 - `perf-skill-audit.yml`
@@ -242,15 +244,17 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `security.yml`
 - `terraforge-ci.yml`
 
-**MANUAL** (17):
+**MANUAL** (19):
 - `autonomy-incident-triage.yml`
 - `baseline-guard.yml`
+- `ci-cd-main.yml`
 - `code-intel.yml`
 - `deployment.yml`
 - `e2e-smoke.yml`
 - `frontend-ci-isolated.yml`
 - `grfe-ci.yaml`
 - `infrastructure-cicd.yml`
+- `kubernetes-infrastructure-ci.yml`
 - `manifest-contract-guard.yml`
 - `performance-regression.yml`
 - `scope-drift-guard.yml`
