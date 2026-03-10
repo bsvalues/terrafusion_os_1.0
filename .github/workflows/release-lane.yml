@@ -48,10 +48,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Deploy infrastructure (Caddyfile, compose template, Dockerfile) lives on
-          # the default branch and must match the pipeline expectations (service names,
-          # health headers, etc.).  Always overlay from main — old release SHAs may
-          # have incompatible versions (e.g. wrong service names in Caddyfile).
+          # Deploy infrastructure (Caddyfile, compose template) lives on the default
+          # branch and must match the pipeline expectations (service names, health
+          # headers, etc.).  Always overlay from main — old release SHAs may have
+          # incompatible versions (e.g. wrong service names in Caddyfile).
           git fetch origin main --no-tags --depth=1 2>/dev/null || true
           for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml; do
             dir="$(dirname "$path")"
@@ -60,22 +60,12 @@ jobs:
             git show "origin/main:$path" > "$path"
           done
 
-          # Ensure test project stubs exist for dotnet restore of the full .sln
-          for proj in TerraFusion.Unit.Tests TerraFusion.Unit.SmokeTests TerraFusion.Integration.Tests TerraFusion.Tests.Unit; do
-            dir="backend/tests/$proj"
-            if [ ! -f "$dir/$proj.csproj" ]; then
-              mkdir -p "$dir"
-              cat > "$dir/$proj.csproj" <<'CSPROJ'
-          <Project Sdk="Microsoft.NET.Sdk">
-            <PropertyGroup><TargetFramework>net8.0</TargetFramework></PropertyGroup>
-          </Project>
-          CSPROJ
-            fi
-          done
-
-          # If the Dockerfile does not already copy test projects, patch it
-          if ! grep -q 'tests/TerraFusion' backend/Dockerfile; then
-            sed -i '/COPY src\/TerraFusion\.Levy\/\*\.csproj/a COPY tests/TerraFusion.Unit.Tests/*.csproj ./tests/TerraFusion.Unit.Tests/\nCOPY tests/TerraFusion.Unit.SmokeTests/*.csproj ./tests/TerraFusion.Unit.SmokeTests/\nCOPY tests/TerraFusion.Integration.Tests/*.csproj ./tests/TerraFusion.Integration.Tests/\nCOPY tests/TerraFusion.Tests.Unit/*.csproj ./tests/TerraFusion.Tests.Unit/' backend/Dockerfile
+          # Old SHAs restore from TerraFusion.sln which requires test projects
+          # that are excluded by .dockerignore.  Switch to project-level restore
+          # which resolves transitive deps without needing test .csproj files.
+          if grep -q 'dotnet restore TerraFusion.sln' backend/Dockerfile; then
+            echo "Patching Dockerfile: sln restore → project restore"
+            sed -i 's|dotnet restore TerraFusion\.sln|dotnet restore src/TerraFusion.API/TerraFusion.API.csproj|g' backend/Dockerfile
           fi
 
       - name: Validate environment configuration
