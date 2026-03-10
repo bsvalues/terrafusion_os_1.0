@@ -17,13 +17,10 @@ COPY src/TerraFusion.Consciousness/*.csproj ./src/TerraFusion.Consciousness/
 COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
 COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
-COPY tests/TerraFusion.Unit.Tests/*.csproj ./tests/TerraFusion.Unit.Tests/
-COPY tests/TerraFusion.Unit.SmokeTests/*.csproj ./tests/TerraFusion.Unit.SmokeTests/
-COPY tests/TerraFusion.Integration.Tests/*.csproj ./tests/TerraFusion.Integration.Tests/
-COPY tests/TerraFusion.Tests.Unit/*.csproj ./tests/TerraFusion.Tests.Unit/
 
-# Restore dependencies
-RUN dotnet restore TerraFusion.sln --verbosity minimal
+# Restore dependencies (project-level restore resolves transitive deps without
+# requiring test projects, which are excluded by .dockerignore)
+RUN dotnet restore src/TerraFusion.API/TerraFusion.API.csproj --verbosity minimal
 
 # Copy source
 COPY src/TerraFusion.Abstractions/ ./src/TerraFusion.Abstractions/
@@ -61,13 +58,9 @@ COPY src/TerraFusion.Consciousness/*.csproj ./src/TerraFusion.Consciousness/
 COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
 COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
-COPY tests/TerraFusion.Unit.Tests/*.csproj ./tests/TerraFusion.Unit.Tests/
-COPY tests/TerraFusion.Unit.SmokeTests/*.csproj ./tests/TerraFusion.Unit.SmokeTests/
-COPY tests/TerraFusion.Integration.Tests/*.csproj ./tests/TerraFusion.Integration.Tests/
-COPY tests/TerraFusion.Tests.Unit/*.csproj ./tests/TerraFusion.Tests.Unit/
 
-# Restore
-RUN dotnet restore TerraFusion.sln --verbosity minimal
+# Restore (project-level to avoid test project dependency)
+RUN dotnet restore src/TerraFusion.API/TerraFusion.API.csproj --verbosity minimal
 
 # Copy all source
 COPY . ./
