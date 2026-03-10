@@ -2,17 +2,17 @@
 
 Date: March 10, 2026  
 Branch: `r3/full-execution`  
-Tags: `r3.0.0` → `r3.1.0` → `r3.2.0` → `r3.3.0` (CX lane)  
+Tags: `r3.0.0` → `r3.1.0` → `r3.2.0` (promoted) · `r3.3.0` (CX lane — branch-only, PR #656, not on protected main)  
 
 ---
 
 ## Executive Summary
 
-R3 delivered the Core Platform (CP), Component/UI (CC), and Backend API (CX) lanes
-for the multi-office expansion of TerraFusion OS. Three new county office verticals —
-**TerraClerk**, **TerraTreasury**, and **TerraAudit** — are now fully governed with
-18 real tool handlers, 3 frontend workbench tabs, 3 backend controllers (18 endpoints,
-10 entities), and 30 + 34 = **64 acceptance criteria** all passing.
+R3 CP and CC lanes are promoted to protected main; CX lane is branch-only (PR #656,
+pending merge). Three new county office verticals — **TerraClerk**, **TerraTreasury**,
+and **TerraAudit** — have 18 real tool handlers and 3 frontend workbench tabs on the
+promoted surface. Backend controllers (3 controllers, 18 endpoints, 10 entities) exist
+on the CX branch only. Acceptance criteria: **30 promoted** + **34 branch-only** = 64 total.
 
 ---
 
@@ -22,8 +22,8 @@ for the multi-office expansion of TerraFusion OS. Three new county office vertic
 |-----|--------|---------|
 | `r3.0.0` | `a581ae2d0` | 53 governed tools, v2.0.0 manifest, 9 workbench tabs, 3 new verticals |
 | `r3.1.0` | `00eed894b` | Office registry, RBAC vocabulary expansion, officeScope on all tools, 27 ACs |
-| `r3.2.0` | *current* | Cross-office trace tests, county isolation verification, 3-office chain, evidence |
-| `r3.3.0` | `012f7fe3a` | CX lane: 3 backend controllers, 10 entities, 18 endpoints, 34 CX tests |
+| `r3.2.0` | `bfa315b9e` | Cross-office trace tests, county isolation verification, 3-office chain, evidence |
+| `r3.3.0` | `012f7fe3a` | CX lane: 3 backend controllers, 10 entities, 18 endpoints, 34 CX tests — **branch-only (PR #656)** |
 
 ---
 
@@ -131,9 +131,9 @@ for the multi-office expansion of TerraFusion OS. Three new county office vertic
 | `node --test phase83-tools.test.mjs` | ✅ 32/32 pass |
 | `node --test r1-acceptance-criteria.test.mjs` | ✅ 84/84 pass |
 | `node --test r3-acceptance-criteria.test.mjs` | ✅ 30/30 pass |
-| `node --test r3-cx-acceptance-criteria.test.mjs` | ✅ 34/34 pass |
+| `node --test r3-cx-acceptance-criteria.test.mjs` | ✅ 34/34 pass — ⏳ branch-only (PR #656) |
 | `npx vitest run` | ✅ 920 pass (416 files) |
-| `dotnet build TerraFusion.sln -c Release` | ✅ 0 errors, 0 warnings |
+| `dotnet build TerraFusion.sln -c Release` | ✅ 0 errors, 0 warnings — ⏳ branch-only (PR #656) |
 
 ---
 
@@ -196,10 +196,10 @@ All 9 tabs: visible in tab bar, routed via React Router, lazy-loaded via Suspens
 | Property Workbench displays 9 tabs | ✅ All visible + routed |
 | Cross-office trace linked by correlationId | ✅ AC-TRS-07 + 3-office chain |
 | County isolation per office | ✅ CLK-04 + R3-ISO-TRS + R3-ISO-AUD |
-| All permanent gates pass | ✅ All green |
-| 18+ new acceptance criteria | ✅ 30 tests passing |
+| All permanent gates pass | ✅ All green (promoted surface) |
+| 18+ new acceptance criteria | ✅ 30 tests passing (promoted) |
 | No stubs/mocks in production surface | ✅ All real handlers |
-| Backend controllers (CX lane) | ✅ Complete — 3 controllers, 18 endpoints, 10 entities |
+| Backend controllers (CX lane) | ⏳ Branch-only (PR #656) — 3 controllers, 18 endpoints, 10 entities |
 
 ---
 
@@ -269,7 +269,7 @@ r2.8.0 (55d6baffa) — R2 complete: 26 tools, 23/23 workbench
   └── r3.0.0 (a581ae2d0) — R3 multi-office: 53 tools, v2.0.0, 9 tabs
        └── r3.1.0 (00eed894b) — office registry, RBAC, officeScope, 27 ACs
             └── r3.2.0 (bfa315b9e) — cross-office trace, isolation, 3-office chain, 30 ACs
-                 └── r3.3.0 (012f7fe3a) — CX lane: 3 controllers, 18 endpoints, 10 entities, 34 CX ACs
+                 └── r3.3.0 (012f7fe3a) — CX lane: 3 controllers, 18 endpoints, 10 entities, 34 CX ACs ⏳ BRANCH-ONLY (PR #656, pending merge)
 ```
 
 ---

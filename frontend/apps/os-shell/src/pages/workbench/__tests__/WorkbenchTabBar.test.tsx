@@ -30,6 +30,9 @@ const CONSTITUTIONAL_TAB_ORDER = [
   { id: 'forge', label: 'Forge', icon: '🔥', path: 'forge' },
   { id: 'atlas', label: 'Atlas', icon: '🗺️', path: 'atlas' },
   { id: 'dais', label: 'Dais', icon: '📋', path: 'dais' },
+  { id: 'clerk', label: 'Clerk', icon: '📜', path: 'clerk' },
+  { id: 'treasury', label: 'Treasury', icon: '💰', path: 'treasury' },
+  { id: 'audit', label: 'Audit', icon: '🔍', path: 'audit' },
   { id: 'dossier', label: 'Dossier', icon: '📁', path: 'dossier' },
   { id: 'pilot', label: 'Pilot', icon: '🎮', path: 'pilot' },
 ];
@@ -80,6 +83,21 @@ jest.mock('../tabs/PropertyPilot', () => ({
   default: () => <MockTabWithContext tabName='pilot' />,
 }));
 
+jest.mock('../tabs/PropertyClerk', () => ({
+  __esModule: true,
+  default: () => <MockTabWithContext tabName='clerk' />,
+}));
+
+jest.mock('../tabs/PropertyTreasury', () => ({
+  __esModule: true,
+  default: () => <MockTabWithContext tabName='treasury' />,
+}));
+
+jest.mock('../tabs/PropertyAudit', () => ({
+  __esModule: true,
+  default: () => <MockTabWithContext tabName='audit' />,
+}));
+
 // Mock ErrorBoundary
 jest.mock('../../../components/errors/ErrorBoundary', () => ({
   ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -128,6 +146,9 @@ const renderWorkbench = (initialRoute: string = '/property/12345-001') => {
   const PropertyForge = lazy(() => import('../tabs/PropertyForge'));
   const PropertyAtlas = lazy(() => import('../tabs/PropertyAtlas'));
   const PropertyDais = lazy(() => import('../tabs/PropertyDais'));
+  const PropertyClerk = lazy(() => import('../tabs/PropertyClerk'));
+  const PropertyTreasury = lazy(() => import('../tabs/PropertyTreasury'));
+  const PropertyAudit = lazy(() => import('../tabs/PropertyAudit'));
   const PropertyDossier = lazy(() => import('../tabs/PropertyDossier'));
   const PropertyPilot = lazy(() => import('../tabs/PropertyPilot'));
 
@@ -140,6 +161,9 @@ const renderWorkbench = (initialRoute: string = '/property/12345-001') => {
             <Route path='forge' element={<PropertyForge />} />
             <Route path='atlas' element={<PropertyAtlas />} />
             <Route path='dais' element={<PropertyDais />} />
+            <Route path='clerk' element={<PropertyClerk />} />
+            <Route path='treasury' element={<PropertyTreasury />} />
+            <Route path='audit' element={<PropertyAudit />} />
             <Route path='dossier' element={<PropertyDossier />} />
             <Route path='pilot' element={<PropertyPilot />} />
           </Route>
@@ -169,7 +193,7 @@ describe('WorkbenchTabBar', () => {
       // Get all nav links
       const tabLinks = screen.getAllByRole('link');
       const tabLabels = tabLinks.map((link) =>
-        link.textContent?.replace(/[📊🔥🗺️📋📁🎮]/g, '').trim()
+        link.textContent?.replace(/📊|🔥|🗺️|📋|📜|💰|🔍|📁|🎮/g, '').trim()
       );
 
       // Verify order matches constitutional order
@@ -178,7 +202,7 @@ describe('WorkbenchTabBar', () => {
       });
     });
 
-    it('all_six_tabs_present_in_navigation', async () => {
+    it('all_nine_tabs_present_in_navigation', async () => {
       renderWorkbench();
 
       await waitFor(() => {
@@ -269,6 +293,48 @@ describe('WorkbenchTabBar', () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('tab-content-pilot')).toBeInTheDocument();
+      });
+    });
+
+    it('clicking_clerk_tab_renders_clerk_content', async () => {
+      renderWorkbench();
+
+      await waitFor(() => {
+        expect(screen.getByText('Summary')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Clerk'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('tab-content-clerk')).toBeInTheDocument();
+      });
+    });
+
+    it('clicking_treasury_tab_renders_treasury_content', async () => {
+      renderWorkbench();
+
+      await waitFor(() => {
+        expect(screen.getByText('Summary')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Treasury'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('tab-content-treasury')).toBeInTheDocument();
+      });
+    });
+
+    it('clicking_audit_tab_renders_audit_content', async () => {
+      renderWorkbench();
+
+      await waitFor(() => {
+        expect(screen.getByText('Summary')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Audit'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('tab-content-audit')).toBeInTheDocument();
       });
     });
 

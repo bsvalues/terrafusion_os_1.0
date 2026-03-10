@@ -14,6 +14,7 @@ const SKIP_DIRS = new Set([
   '.git',
   '.venv',
   '.claude',
+  '.codex_split',
   'dist',
   '_archive',
   '_pre_restore_safety_20260108_144218',
