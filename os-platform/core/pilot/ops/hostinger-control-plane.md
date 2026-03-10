@@ -17,17 +17,17 @@ This document contains **no secrets**. Store secrets only in:
 - Production: https://terrafusionmarket.com
 
 ## DNS Control Plane
-- DNS provider for terrafusionmarket.com: (Hostinger / Cloudflare / other)
-- Date/time verified: (UTC timestamp)
-- Verification method: nslookup/dig from local machine + screenshot or panel note
+- DNS provider for terrafusionmarket.com: Hostinger
+- Date/time verified: 2026-03-10T19:00Z (nslookup from local machine)
+- Verification method: `nslookup staging.terrafusionmarket.com` → 72.60.126.11
 
 ### Required DNS Records
-- A: staging -> <STAGING_VPS_IPV4>
+- A: staging -> 72.60.126.11 ✅ verified
 - A: @ (root) -> <PROD_VPS_IPV4> (defer until production provisioning)
 
 ## Staging VPS (Hostinger)
-- VPS name/id: (from Hostinger panel)
-- IPv4: <STAGING_VPS_IPV4>
+- VPS name/id: srv1479342
+- IPv4: 72.60.126.11
 - OS: Ubuntu 22.04 LTS
 - Provider firewall open: 22/tcp, 80/tcp, 443/tcp
 - Server firewall (ufw) open: 22/tcp, 80/tcp, 443/tcp
@@ -42,9 +42,9 @@ This document contains **no secrets**. Store secrets only in:
 - APP_ROOT: /opt/terrafusion/production
 
 ## GHCR Pull Auth (Staging)
-- Configured on VPS (deploy user): yes/no
+- Configured on VPS (deploy user): pending verification
 - Method: `docker login ghcr.io` with least-privilege token
-- Date/time verified: (UTC)
+- Date/time verified: pending
 
 ## GHCR Pull Auth (Production)
 - Configured on VPS (deploy user): yes/no
@@ -54,7 +54,7 @@ This document contains **no secrets**. Store secrets only in:
 ## GitHub Environments
 ### staging
 Variables:
-- DEPLOY_HOST = <STAGING_VPS_IPV4>
+- DEPLOY_HOST = 72.60.126.11
 - DEPLOY_PORT = 22
 - DEPLOY_USER = deploy
 - PUBLIC_URL = https://staging.terrafusionmarket.com

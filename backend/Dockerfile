@@ -17,6 +17,10 @@ COPY src/TerraFusion.Consciousness/*.csproj ./src/TerraFusion.Consciousness/
 COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
 COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
+COPY tests/TerraFusion.Unit.Tests/*.csproj ./tests/TerraFusion.Unit.Tests/
+COPY tests/TerraFusion.Unit.SmokeTests/*.csproj ./tests/TerraFusion.Unit.SmokeTests/
+COPY tests/TerraFusion.Integration.Tests/*.csproj ./tests/TerraFusion.Integration.Tests/
+COPY tests/TerraFusion.Tests.Unit/*.csproj ./tests/TerraFusion.Tests.Unit/
 
 # Restore dependencies
 RUN dotnet restore TerraFusion.sln --verbosity minimal
@@ -57,6 +61,10 @@ COPY src/TerraFusion.Consciousness/*.csproj ./src/TerraFusion.Consciousness/
 COPY src/TerraFusion.CostForge/*.csproj ./src/TerraFusion.CostForge/
 COPY src/TerraFusion.Operations/*.csproj ./src/TerraFusion.Operations/
 COPY src/TerraFusion.Levy/*.csproj ./src/TerraFusion.Levy/
+COPY tests/TerraFusion.Unit.Tests/*.csproj ./tests/TerraFusion.Unit.Tests/
+COPY tests/TerraFusion.Unit.SmokeTests/*.csproj ./tests/TerraFusion.Unit.SmokeTests/
+COPY tests/TerraFusion.Integration.Tests/*.csproj ./tests/TerraFusion.Integration.Tests/
+COPY tests/TerraFusion.Tests.Unit/*.csproj ./tests/TerraFusion.Tests.Unit/
 
 # Restore
 RUN dotnet restore TerraFusion.sln --verbosity minimal
