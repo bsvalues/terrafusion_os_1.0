@@ -48,17 +48,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # The release SHA contains the application source, but deploy infrastructure
-          # (Caddyfile, compose template, Dockerfile fixes) may only exist on the
-          # default branch. Overlay those files without touching application source.
+          # Deploy infrastructure (Caddyfile, compose template, Dockerfile) lives on
+          # the default branch and must match the pipeline expectations (service names,
+          # health headers, etc.).  Always overlay from main — old release SHAs may
+          # have incompatible versions (e.g. wrong service names in Caddyfile).
           git fetch origin main --no-tags --depth=1 2>/dev/null || true
           for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml; do
-            if [ ! -f "$path" ]; then
-              dir="$(dirname "$path")"
-              mkdir -p "$dir"
-              echo "Restoring $path from origin/main"
-              git show "origin/main:$path" > "$path"
-            fi
+            dir="$(dirname "$path")"
+            mkdir -p "$dir"
+            echo "Overlaying $path from origin/main"
+            git show "origin/main:$path" > "$path"
           done
 
           # Ensure test project stubs exist for dotnet restore of the full .sln
@@ -191,8 +190,13 @@ jobs:
 
       - name: Preflight - GHCR pull on VPS
         shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          # Authenticate deploy user to GHCR (token is short-lived, expires after workflow run)
+          printf '%s' "$GHCR_TOKEN" | ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cat | docker login ghcr.io -u ${{ github.actor }} --password-stdin >/dev/null 2>&1"
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
           set -euo pipefail
           docker pull "$BACKEND_IMAGE" >/dev/null

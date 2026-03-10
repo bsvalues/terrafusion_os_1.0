@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 concurrency:
   group: rollback-staging
@@ -105,8 +106,12 @@ jobs:
 
       - name: Prove GHCR pull on VPS
         shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          printf '%s' "$GHCR_TOKEN" | ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cat | docker login ghcr.io -u ${{ github.actor }} --password-stdin >/dev/null 2>&1"
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
           set -euo pipefail
           docker pull "$BACKEND_IMAGE" >/dev/null
