@@ -236,7 +236,7 @@ jobs:
           success=0
 
           for attempt in $(seq 1 18); do
-            if curl -fsSI "$URL" > curl_headers.txt; then
+            if curl -fsS -o /dev/null -D curl_headers.txt "$URL"; then
               HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
               if [ "$HEADER_SHA" = "$RELEASE_SHA" ]; then
                 success=1
