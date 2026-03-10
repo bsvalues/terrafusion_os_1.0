@@ -1,4 +1,25 @@
-:80 {
-    reverse_proxy /api/* terrafusion-iron:5000
-    reverse_proxy /* terrafusion-soul:80
+{$TF_PUBLIC_HOST:localhost} {
+    encode gzip zstd
+
+    @health path /health
+    handle @health {
+        header {
+            X-Release-Sha "{$TF_RELEASE_SHA}"
+            X-Release-Environment "{$TF_RELEASE_ENV}"
+            X-Release-Deployed-At "{$TF_RELEASE_DEPLOYED_AT}"
+        }
+        reverse_proxy backend:5000
+    }
+
+    handle /api/* {
+        reverse_proxy backend:5000
+    }
+
+    handle /hubs/* {
+        reverse_proxy backend:5000
+    }
+
+    handle {
+        reverse_proxy frontend:80
+    }
 }
