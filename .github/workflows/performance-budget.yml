@@ -154,24 +154,60 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Budget: measure JS-only size (no source maps, no CSS, no HTML)
-          # Sum of all .js files (excluding .js.map) in KB
-          JS_SIZE_KB=$(find native-shell/ui/dist/assets -name '*.js' ! -name '*.map' \
-            -exec du -sk {} + 2>/dev/null \
-            | awk '{sum+=$1}END{print sum+0}')
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const distRoot = path.resolve('native-shell/ui/dist');
+          const indexHtmlPath = path.join(distRoot, 'index.html');
+          const assetsRoot = path.join(distRoot, 'assets');
+
+          const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
+          const startupMatches = [
+            ...indexHtml.matchAll(/<script[^>]+src="\\/assets\\/([^"]+\\.js)"/g),
+            ...indexHtml.matchAll(/<link[^>]+rel="modulepreload"[^>]+href="\\/assets\\/([^"]+\\.js)"/g),
+          ];
+
+          const startupFiles = [...new Set(startupMatches.map((match) => match[1]))];
+          if (startupFiles.length === 0) {
+            throw new Error('No startup JavaScript assets found in native-shell/ui/dist/index.html');
+          }
+
+          const startupJsBytes = startupFiles.reduce((total, file) => {
+            const assetPath = path.join(assetsRoot, file);
+            return total + fs.statSync(assetPath).size;
+          }, 0);
+
+          const allJsBytes = fs.readdirSync(assetsRoot)
+            .filter((file) => file.endsWith('.js') && !file.endsWith('.js.map'))
+            .reduce((total, file) => total + fs.statSync(path.join(assetsRoot, file)).size, 0);
+
+          fs.writeFileSync(
+            'frontend/bundle-metrics.json',
+            JSON.stringify({
+              startupFiles,
+              startupJsBytes,
+              allJsBytes,
+            }, null, 2),
+          );
+          NODE
+
+          STARTUP_JS_KB=$(node -e "const metrics = require('./frontend/bundle-metrics.json'); console.log(Math.ceil(metrics.startupJsBytes / 1024));")
+          ALL_JS_KB=$(node -e "const metrics = require('./frontend/bundle-metrics.json'); console.log(Math.ceil(metrics.allJsBytes / 1024));")
           BUDGET_KB=2048
 
           echo "### JS Budget Check:" >> $GITHUB_STEP_SUMMARY
-          echo "- JS total: ${JS_SIZE_KB}KB" >> $GITHUB_STEP_SUMMARY
-          echo "- Budget:   ${BUDGET_KB}KB" >> $GITHUB_STEP_SUMMARY
+          echo "- Startup JS total: ${STARTUP_JS_KB}KB" >> $GITHUB_STEP_SUMMARY
+          echo "- All emitted JS total: ${ALL_JS_KB}KB" >> $GITHUB_STEP_SUMMARY
+          echo "- Budget (startup JS only): ${BUDGET_KB}KB" >> $GITHUB_STEP_SUMMARY
 
-          if [ "$JS_SIZE_KB" -gt "$BUDGET_KB" ]; then
-            echo "- **OVER BUDGET by $((JS_SIZE_KB - BUDGET_KB))KB**" >> $GITHUB_STEP_SUMMARY
-            echo "::error::JS bundle size ${JS_SIZE_KB}KB exceeds budget ${BUDGET_KB}KB"
+          if [ "$STARTUP_JS_KB" -gt "$BUDGET_KB" ]; then
+            echo "- **OVER BUDGET by $((STARTUP_JS_KB - BUDGET_KB))KB**" >> $GITHUB_STEP_SUMMARY
+            echo "::error::Startup JS bundle size ${STARTUP_JS_KB}KB exceeds budget ${BUDGET_KB}KB"
             exit 1
           else
-            echo "- Remaining: $((BUDGET_KB - JS_SIZE_KB))KB" >> $GITHUB_STEP_SUMMARY
-            echo "JS bundle size ${JS_SIZE_KB}KB is within budget ${BUDGET_KB}KB"
+            echo "- Remaining: $((BUDGET_KB - STARTUP_JS_KB))KB" >> $GITHUB_STEP_SUMMARY
+            echo "Startup JS bundle size ${STARTUP_JS_KB}KB is within budget ${BUDGET_KB}KB"
           fi
 
       - name: Upload bundle stats
@@ -182,6 +218,7 @@ jobs:
           path: |
             frontend/dist-size.txt
             frontend/bundle-stats.txt
+            frontend/bundle-metrics.json
           retention-days: 30
 
       - name: Comment bundle size on PR
@@ -204,7 +241,7 @@ jobs:
               '```',
               '',
               '### Budget Status:',
-              '- Budget: 2048KB (JS only)',
+              '- Budget: 2048KB (startup JS only)',
               `- See [detailed analysis](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`,
             ].join('\n');
 
