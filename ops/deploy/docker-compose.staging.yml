@@ -1,0 +1,135 @@
+# ═══════════════════════════════════════════════════════════════
+# TerraFusion OS — Staging Deployment (VPS + GHCR images)
+# Deploy target: /opt/terrafusion/ on staging VPS
+#
+# Usage:
+#   docker compose -f docker-compose.staging.yml up -d
+#   docker compose -f docker-compose.staging.yml pull   # update images
+#   docker compose -f docker-compose.staging.yml down   # stop
+# ═══════════════════════════════════════════════════════════════
+
+services:
+  # ── Reverse Proxy (Caddy — automatic HTTPS) ──────────────────
+  caddy:
+    image: caddy:2-alpine
+    container_name: tf-caddy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp' # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      terrafusion-api:
+        condition: service_healthy
+      terrafusion-frontend:
+        condition: service_healthy
+    networks:
+      - tf-net
+
+  # ── Backend API (.NET 8) ──────────────────────────────────────
+  terrafusion-api:
+    image: ghcr.io/bsvalues/terrafusion_os_1.0/api:${TF_IMAGE_TAG:-latest}
+    container_name: tf-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=terrafusion;Username=terrafusion;Password=${DB_PASSWORD:?DB_PASSWORD required}
+      - JwtSettings__SecretKey=${JWT_SECRET:?JWT_SECRET required}
+      - TF_RELEASE_SHA=${TF_RELEASE_SHA:-unknown}
+    volumes:
+      - api_logs:/app/logs
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:5000/healthz']
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tf-net
+
+  # ── Frontend (nginx serving Vite build) ───────────────────────
+  terrafusion-frontend:
+    image: ghcr.io/bsvalues/terrafusion_os_1.0/frontend:${TF_IMAGE_TAG:-latest}
+    container_name: tf-frontend
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:80/']
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    networks:
+      - tf-net
+
+  # ── PostgreSQL 15 ─────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: tf-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: terrafusion
+      POSTGRES_USER: terrafusion
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U terrafusion']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tf-net
+
+  # ── Prometheus (metrics collection) ───────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: tf-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    networks:
+      - tf-net
+
+  # ── Grafana (dashboards + logs) ───────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: tf-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-terrafusion2026}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_SERVER_ROOT_URL: https://${TF_STAGING_DOMAIN:-staging.terrafusionmarket.com}/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: 'true'
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - tf-net
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+  api_logs:
+
+networks:
+  tf-net:
+    driver: bridge

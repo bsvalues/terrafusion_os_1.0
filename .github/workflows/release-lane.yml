@@ -11,93 +11,184 @@ concurrency:
 
 permissions:
   contents: read
+  packages: write
 
 env:
-  TF_ARTIFACT_NAME: tf-release-artifact
-  TF_ARTIFACT_DIR: dist-release
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/terrafusion_os_1.0
   TF_SHA: ${{ github.sha }}
+  TF_SHORT_SHA: unset # set in build_once
 
 jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # Stage 1: Build Docker images → push to GHCR (immutable tags)
+  # ═══════════════════════════════════════════════════════════════
   build_once:
-    name: Build Once (Immutable Artifact)
+    name: Build Docker Images (Immutable)
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node / pnpm
+      - name: Set image tag
+        id: meta
         run: |
-          corepack enable
-          node -v
-          pnpm -v
+          SHORT_SHA="${TF_SHA:0:12}"
+          echo "tag=sha-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "TF_SHORT_SHA=${SHORT_SHA}" >> "$GITHUB_ENV"
 
-      - name: Build
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          target: runtime
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}/api:${{ steps.meta.outputs.tag }}
+            ${{ env.IMAGE_PREFIX }}/api:latest
+          build-args: |
+            TF_RELEASE_SHA=${{ env.TF_SHA }}
+
+      - name: Build & push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./frontend/Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}/frontend:${{ steps.meta.outputs.tag }}
+            ${{ env.IMAGE_PREFIX }}/frontend:latest
+
+      - name: Write release manifest
         run: |
-          mkdir -p "${TF_ARTIFACT_DIR}"
-          printf '%s\n' "${TF_SHA}" > "${TF_ARTIFACT_DIR}/commit.sha"
-          printf '%s\n' "immutable-release-artifact" > "${TF_ARTIFACT_DIR}/manifest.txt"
+          mkdir -p dist-release
+          cat > dist-release/manifest.json <<EOF
+          {
+            "sha": "${TF_SHA}",
+            "short_sha": "${TF_SHORT_SHA}",
+            "images": {
+              "api": "${{ env.IMAGE_PREFIX }}/api:sha-${{ steps.meta.outputs.tag }}",
+              "frontend": "${{ env.IMAGE_PREFIX }}/frontend:sha-${{ steps.meta.outputs.tag }}"
+            },
+            "built_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          cat dist-release/manifest.json
 
-      - name: Create immutable bundle
-        run: |
-          tar -czf "${TF_ARTIFACT_NAME}-${TF_SHA}.tgz" "${TF_ARTIFACT_DIR}"
-
-      - name: Upload immutable artifact
+      - name: Upload release manifest
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}
-          path: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}.tgz
-          if-no-files-found: error
-          retention-days: 30
+          name: tf-release-manifest-${{ env.TF_SHA }}
+          path: dist-release/manifest.json
+          retention-days: 90
 
-  promote_dev:
-    name: Promote -> DEV
-    needs: [build_once]
-    runs-on: ubuntu-latest
-    environment: dev
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}
-
-      - name: Extract
-        run: |
-          tar -xzf "${TF_ARTIFACT_NAME}-${TF_SHA}.tgz"
-
-      - name: Deploy DEV
-        run: |
-          echo "Deploying ${TF_SHA} to DEV..."
-
+  # ═══════════════════════════════════════════════════════════════
+  # Stage 2: Deploy to STAGING via SSH
+  # ═══════════════════════════════════════════════════════════════
   promote_staging:
-    name: Promote -> STAGING (Approval Required)
-    needs: [promote_dev]
+    name: Deploy -> STAGING
+    needs: [build_once]
     runs-on: ubuntu-latest
     environment: staging
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          name: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}
+          host: ${{ secrets.STAGING_HOST }}
+          username: deploy
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /opt/terrafusion
 
-      - name: Extract
+            # Update image tag in .env
+            sed -i "s/^TF_IMAGE_TAG=.*/TF_IMAGE_TAG=${{ needs.build_once.outputs.image_tag }}/" .env
+            sed -i "s/^TF_RELEASE_SHA=.*/TF_RELEASE_SHA=${{ env.TF_SHA }}/" .env
+
+            # Pull new images and restart
+            docker compose -f docker-compose.staging.yml pull
+            docker compose -f docker-compose.staging.yml up -d --remove-orphans
+
+            # Wait for API to become healthy (up to 60s)
+            echo "Waiting for API health..."
+            for i in $(seq 1 12); do
+              if curl -sf http://localhost:5000/healthz > /dev/null 2>&1; then
+                echo "✅ API healthy after $((i*5))s"
+                break
+              fi
+              if [ "$i" -eq 12 ]; then
+                echo "❌ API health check failed after 60s"
+                docker compose -f docker-compose.staging.yml logs --tail=50 terrafusion-api
+                exit 1
+              fi
+              sleep 5
+            done
+
+            # Verify deployed SHA
+            VERSION_RESPONSE=$(curl -sf http://localhost:5000/version || echo '{}')
+            echo "Version endpoint: ${VERSION_RESPONSE}"
+
+      - name: Verify staging reachability
         run: |
-          tar -xzf "${TF_ARTIFACT_NAME}-${TF_SHA}.tgz"
+          echo "Checking external health endpoint..."
+          for i in $(seq 1 6); do
+            HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+              "https://staging.terrafusionmarket.com/healthz" 2>/dev/null || echo "000")
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Staging reachable (HTTP ${HTTP_CODE})"
+              exit 0
+            fi
+            echo "Attempt ${i}/6: HTTP ${HTTP_CODE}, retrying in 10s..."
+            sleep 10
+          done
+          echo "❌ Staging not reachable after 60s"
+          exit 1
 
-      - name: Deploy STAGING
-        run: |
-          echo "Deploying ${TF_SHA} to STAGING..."
-
+  # ═══════════════════════════════════════════════════════════════
+  # Stage 3: Deploy to PRODUCTION (manual approval required)
+  # ═══════════════════════════════════════════════════════════════
   promote_prod:
-    name: Promote -> PROD (Approval Required)
+    name: Deploy -> PROD (Approval Required)
     needs: [promote_staging]
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          name: ${{ env.TF_ARTIFACT_NAME }}-${{ env.TF_SHA }}
+          host: ${{ secrets.PROD_HOST }}
+          username: deploy
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /opt/terrafusion
 
-      - name: Extract
-        run: |
-          tar -xzf "${TF_ARTIFACT_NAME}-${TF_SHA}.tgz"
+            # Update image tag
+            sed -i "s/^TF_IMAGE_TAG=.*/TF_IMAGE_TAG=${{ needs.build_once.outputs.image_tag }}/" .env
+            sed -i "s/^TF_RELEASE_SHA=.*/TF_RELEASE_SHA=${{ env.TF_SHA }}/" .env
 
-      - name: Deploy PROD
-        run: |
-          echo "Deploying ${TF_SHA} to PROD..."
+            # Pull and restart
+            docker compose -f docker-compose.staging.yml pull
+            docker compose -f docker-compose.staging.yml up -d --remove-orphans
+
+            # Health check (up to 60s)
+            for i in $(seq 1 12); do
+              if curl -sf http://localhost:5000/healthz > /dev/null 2>&1; then
+                echo "✅ Production API healthy"
+                break
+              fi
+              [ "$i" -eq 12 ] && echo "❌ Health check failed" && exit 1
+              sleep 5
+            done

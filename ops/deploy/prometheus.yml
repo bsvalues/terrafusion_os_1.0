@@ -1,0 +1,24 @@
+# TerraFusion OS — Prometheus Configuration (Staging)
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'terrafusion-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['terrafusion-api:5000']
+        labels:
+          service: 'api'
+          environment: 'staging'
+
+  - job_name: 'caddy'
+    static_configs:
+      - targets: ['caddy:2019']
+        labels:
+          service: 'caddy'
+          environment: 'staging'
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

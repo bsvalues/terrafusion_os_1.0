@@ -946,6 +946,14 @@ app.MapHub<TerraFusion.AI.Hubs.AnalyticsHub>("/hubs/analytics");
 app.MapHub<TerraFusion.AI.Hubs.WorkflowHub>("/hubs/workflow");
 app.MapHub<TerraFusion.AI.Hubs.CollaborationHub>("/hubs/collaboration");
 
+// Ops: release version endpoint (returns deployed SHA for deploy/rollback proof)
+app.MapGet("/version", () => Results.Ok(new
+{
+    sha = Environment.GetEnvironmentVariable("TF_RELEASE_SHA") ?? "dev",
+    environment = app.Environment.EnvironmentName,
+    timestamp = DateTime.UtcNow
+}));
+
 // Add test endpoints
 app.MapGet("/api/test", () => new
 {
