@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Playwright Configuration for Terrafusion OS
@@ -6,17 +8,22 @@ import { defineConfig, devices } from '@playwright/test';
  * Government-grade E2E testing with comprehensive browser matrix
  */
 
+const testsRoot = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(testsRoot, '..');
+const e2eRoot = resolve(testsRoot, 'e2e');
+const testResultsRoot = resolve(repoRoot, 'test-results');
+
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: e2eRoot,
   testIgnore: ['**/*.test.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 1, // minimal flakes tolerated
   workers: process.env.CI ? 3 : undefined,
   reporter: [
-    ['html', { outputFolder: 'test-results/playwright-report' }],
-    ['json', { outputFile: 'test-results/playwright-results.json' }],
-    ['junit', { outputFile: 'test-results/playwright-junit.xml' }],
+    ['html', { outputFolder: resolve(testResultsRoot, 'playwright-report') }],
+    ['json', { outputFile: resolve(testResultsRoot, 'playwright-results.json') }],
+    ['junit', { outputFile: resolve(testResultsRoot, 'playwright-junit.xml') }],
   ],
 
   use: {
@@ -48,7 +55,7 @@ export default defineConfig({
       name: 'Desktop Chrome',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
       },
       dependencies: ['setup'],
     },
@@ -57,7 +64,7 @@ export default defineConfig({
       name: 'Desktop Firefox',
       use: {
         ...devices['Desktop Firefox'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
       },
       dependencies: ['setup'],
     },
@@ -66,7 +73,7 @@ export default defineConfig({
       name: 'Desktop Safari',
       use: {
         ...devices['Desktop Safari'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
       },
       dependencies: ['setup'],
     },
@@ -76,7 +83,7 @@ export default defineConfig({
       name: 'Government Compliance - Chrome',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/assessor.json',
+        storageState: resolve(e2eRoot, 'states/assessor.json'),
         permissions: [],
         ignoreHTTPSErrors: false,
         bypassCSP: false,
@@ -94,7 +101,7 @@ export default defineConfig({
       name: 'Mobile Chrome',
       use: {
         ...devices['Pixel 5'],
-        storageState: 'tests/e2e/states/viewer.json',
+        storageState: resolve(e2eRoot, 'states/viewer.json'),
       },
       dependencies: ['setup'],
     },
@@ -103,7 +110,7 @@ export default defineConfig({
       name: 'Mobile Safari',
       use: {
         ...devices['iPhone 12'],
-        storageState: 'tests/e2e/states/viewer.json',
+        storageState: resolve(e2eRoot, 'states/viewer.json'),
       },
       dependencies: ['setup'],
     },
@@ -113,7 +120,7 @@ export default defineConfig({
       name: 'Tablet',
       use: {
         ...devices['iPad Pro'],
-        storageState: 'tests/e2e/states/assessor.json',
+        storageState: resolve(e2eRoot, 'states/assessor.json'),
       },
       dependencies: ['setup'],
     },
@@ -123,7 +130,7 @@ export default defineConfig({
       name: 'Performance Testing',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
         trace: 'on',
         video: 'on',
       },
@@ -136,7 +143,7 @@ export default defineConfig({
       name: 'Accessibility Testing',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
         reducedMotion: 'reduce',
         forcedColors: 'active',
       },
@@ -149,7 +156,7 @@ export default defineConfig({
       name: 'Admin Role Tests',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
       },
       dependencies: ['setup'],
       testMatch: /.*admin.*\.spec\.ts/,
@@ -159,7 +166,7 @@ export default defineConfig({
       name: 'Assessor Role Tests',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/assessor.json',
+        storageState: resolve(e2eRoot, 'states/assessor.json'),
       },
       dependencies: ['setup'],
       testMatch: /.*assessor.*\.spec\.ts/,
@@ -169,7 +176,7 @@ export default defineConfig({
       name: 'Viewer Role Tests',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/viewer.json',
+        storageState: resolve(e2eRoot, 'states/viewer.json'),
       },
       dependencies: ['setup'],
       testMatch: /.*viewer.*\.spec\.ts/,
@@ -180,7 +187,7 @@ export default defineConfig({
       name: 'AI Swarm Testing',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
         extraHTTPHeaders: {
           'X-AI-Swarm-Test': 'enabled',
           'X-Quantum-Performance': 'enabled',
@@ -212,9 +219,9 @@ export default defineConfig({
   },
 
   // Test result retention
-  outputDir: 'test-results/playwright-artifacts',
+  outputDir: resolve(testResultsRoot, 'playwright-artifacts'),
 
   // Global setup and teardown
-  globalSetup: './tests/e2e/global-setup.ts',
-  globalTeardown: './tests/e2e/global-teardown.ts',
+  globalSetup: resolve(e2eRoot, 'global-setup.ts'),
+  globalTeardown: resolve(e2eRoot, 'global-teardown.ts'),
 });
