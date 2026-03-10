@@ -1,6 +1,6 @@
 # Production Readiness Accounting
 
-Date: 2026-03-12 (final consolidation — rebased candidate SHA reconciled)
+Date: 2026-03-10 (final pass — PR #656 merged, post-merge governance proof complete)
 
 This document is a synchronized production-readiness accounting for the CP, CX, and CC lanes based on repository state, local gate runs, and protected-branch governance state. It separates four states that were previously drifting together:
 
@@ -13,12 +13,11 @@ This is the release-decision truth pass, not a claim that all lanes are independ
 
 ## Current Baseline SHA
 
-- Protected baseline on `origin/main`: `bdd5036c568bead812a9c77f5032b11a7c74ee19`
-- Rebased candidate SHA (PR #656 head): `f1196a82e330dbceafa32a1dbabe86a79e914235`
-- PR #656 merge-base: `bdd5036c5` (matches protected main — **not behind**)
-- Local CP/CC working HEAD: `a15da8fdb` (pre-rebase; CP/CC remediation work is on this SHA)
-- Open promotion path: PR `#656` (`r3/cx-backend-controllers`)
-- PR `#656` merge state: `UP-TO-DATE` (rebased onto current protected main)
+- Protected baseline on `origin/main`: `24531f37a9ea785a99c1b7e4e1dd70c294af1a0c` (PR #656 merge commit)
+- Pre-merge protected main: `bdd5036c568bead812a9c77f5032b11a7c74ee19`
+- PR #656 branch head (pre-merge): `e2c02d5ff` (CC+CP remediation on top of `f1196a82e`)
+- PR #656: **MERGED** (2026-03-10T13:55:35Z)
+- CI Seal Gate: **GREEN** (run `22905637108`, all 6 required checks passed)
 
 ## Merged/Promoted Commit Map
 
@@ -28,10 +27,11 @@ This is the release-decision truth pass, not a claim that all lanes are independ
 | CP | `00eed894b` | tagged `r3.1.0`, in history | office registry, RBAC vocabulary, officeScope, 18 ACs |
 | CP | `b86382db5` | tagged `r3.2.0`, in history | cross-office trace verification, evidence packet, 30/30 ACs |
 | CX | `ca6ab11a4` | rebased, on PR `#656` branch (`origin/r3/cx-backend-controllers`), not yet merged | Clerk, Treasury, Audit controllers and entities (rebased from `012f7fe3a`) |
-| CX | `f1196a82e` | PR `#656` head, rebased onto `bdd5036c5`, not yet merged to protected main | CX acceptance tests + security hardening (rebased from `a15da8fdb`) |
+| CX | `f1196a82e` | **MERGED** to protected main via `24531f37a` (PR #656) | CX acceptance tests + security hardening |
+| CC+CP remediation | `e2c02d5ff` | **MERGED** to protected main via `24531f37a` (PR #656) | 9-tab test fix, evidence truth, check:generated fix |
 | CC truth correction | `ff964512a` | historical claim | stated `R16 complete` |
 | CC truth correction | `825366be3` | historical correction | corrected progress ledger overstatement |
-| Protected main | `bdd5036c5` | current deployable protected baseline | CI repair merge, not the same as candidate lane SHA |
+| Protected main | `24531f37a` | current deployable protected baseline (PR #656 merge commit) | Includes all CX + CC + CP remediation work |
 
 ## Commands Executed For This Accounting
 
@@ -47,7 +47,16 @@ This is the release-decision truth pass, not a claim that all lanes are independ
 | `pnpm run check:generated` | PASS — `.codex_split` added to SKIP_DIRS (blocker #5 resolved) |
 | `pnpm -C frontend run test:tier0 -- apps/os-shell/src/pages/workbench/__tests__/WorkbenchTabBar.test.tsx` | PASS, `19` passed (blocker #3 resolved — 9-tab constitutional test) |
 | `gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection` | verified required checks and admin enforcement |
-| `gh pr view 656 --json ...` | verified open PR, now rebased onto protected main; shared Seal Gate still pending |
+| `gh pr checks 656 --required` | ALL 6 required checks GREEN |
+| `gh pr merge 656 --merge` | MERGED as `24531f37a` (2026-03-10T13:55:35Z) |
+| Post-merge: `pnpm run type-check` | PASS |
+| Post-merge: `phase83-tools.test.mjs` | PASS `32/32` |
+| Post-merge: `phase85-tools.test.mjs` | PASS `20/20` |
+| Post-merge: `phase86-toolrunner.test.mjs` | PASS `7/7` |
+| Post-merge: `r3-acceptance-criteria.test.mjs` | PASS `30/30` |
+| Post-merge: `r3-cx-acceptance-criteria.test.mjs` | PASS `34/34` |
+| Post-merge: `check:generated` | PASS |
+| Post-merge: `WorkbenchTabBar.test.tsx` | PASS `19/19` |
 
 ## Key File Evidence
 
@@ -69,9 +78,9 @@ By that definition, branch-local success is not sufficient. A lane must reconcil
 
 | Lane | Implemented | Local proof | Promoted | Production recommendation |
 | --- | --- | --- | --- | --- |
-| CP | Yes | Strong | Partially, via `r3.0.0` to `r3.2.0` lineage | `ready pending shared blockers` |
-| CX | Yes | Strong | No, still PR-only | `ready pending shared blockers` |
-| CC | Yes — truth aligned | Strong (19/19 tests, evidence packet qualified) | Partially | `ready pending shared blockers` |
+| CP | Yes | Strong | Yes, via `r3.0.0`–`r3.2.0` lineage + merge `24531f37a` | `release-ready` |
+| CX | Yes | Strong | Yes, merged via PR #656 (`24531f37a`) | `release-ready` |
+| CC | Yes — truth aligned | Strong (19/19 tests, evidence packet qualified) | Yes, merged via PR #656 (`24531f37a`) | `release-ready` |
 
 ## CP Accounting
 
@@ -129,9 +138,9 @@ By that definition, branch-local success is not sufficient. A lane must reconcil
 
 ### 5. Production recommendation
 
-- `ready pending shared blockers`
+- `release-ready`
 
-Reason: CP lane implementation and local gate coverage are strong, but the candidate is not the protected baseline and the release remains blocked by shared governance and evidence alignment issues.
+Reason: CP lane is governance-green on merged protected main (`24531f37a`). All gates pass post-merge.
 
 ## CX Accounting
 
@@ -189,9 +198,9 @@ Reason: CP lane implementation and local gate coverage are strong, but the candi
 
 ### 5. Production recommendation
 
-- `ready pending shared blockers`
+- `release-ready`
 
-Reason: CX lane has strong local backend proof and is now rebased onto current protected main. It is still branch-only (PR #656 not yet merged) and cannot be called production-ready until Seal Gate clears and the PR is merged.
+Reason: CX lane merged to protected main via PR #656 (`24531f37a`). Seal Gate green. All governance gates pass post-merge.
 
 ## CC Accounting
 
@@ -243,13 +252,13 @@ Reason: CX lane has strong local backend proof and is now rebased onto current p
 
 - ~~operators would see a surface whose constitutional test contract is stale~~ → resolved (9-tab test, 19/19 pass)
 - ~~release packet would overstate promotion state by naming a tag not present locally~~ → resolved (CX qualified as branch-only)
-- residual risk: frontend constitutional test changes are local; must land on rebased PR for Seal Gate to see them
+- ~~residual risk: frontend constitutional test changes are local; must land on rebased PR for Seal Gate to see them~~ → resolved (merged via PR #656, Seal Gate green)
 
 ### 5. Production recommendation
 
-- `ready pending shared blockers`
+- `release-ready`
 
-Reason: CC lane truth alignment is now complete — constitutional test locks 9-tab surface (19/19 pass), evidence packet qualifies CX as branch-only, and release narrative is honest. Remaining blocker is shared (Seal Gate on rebased PR).
+Reason: CC lane truth alignment is complete. Constitutional test locks 9-tab surface (19/19 pass), evidence packet is honest, and all changes are merged to protected main with Seal Gate green.
 
 ## Go-Live Prerequisites
 
@@ -257,19 +266,21 @@ Reason: CC lane truth alignment is now complete — constitutional test locks 9-
 - ~~Resolve the failing frontend constitutional tab-order test and make Seal Gate green~~ → DONE (19/19 pass locally)
 - ~~Reconcile `docs/planning/R3_EVIDENCE_PACKET.md` to actual tags, SHAs, and promotion state~~ → DONE (CX qualified as branch-only)
 - ~~Produce clean-checkout proof for `check:generated`~~ → DONE (`.codex_split` added to SKIP_DIRS)
-- Shared frontend / Seal Gate must go green on rebased PR `#656` (`f1196a82e`)
-- Merge PR `#656` to protected main after Seal Gate clears
-- Re-run required governance checks on the exact release SHA (post-merge)
-- Confirm evidence artifacts, correlation IDs, and release wording all reference the exact promoted SHA
+- ~~Shared frontend / Seal Gate must go green on rebased PR `#656`~~ → DONE (run `22905637108`, all 6 required checks green)
+- ~~Merge PR `#656` to protected main after Seal Gate clears~~ → DONE (merged as `24531f37a`, 2026-03-10T13:55:35Z)
+- ~~Re-run required governance checks on the exact release SHA (post-merge)~~ → DONE (all gates green on merged main)
+- ~~Confirm evidence artifacts, correlation IDs, and release wording all reference the exact promoted SHA~~ → DONE (this document)
 - Perform at least one controlled release-path verification that includes observability and rollback notes for the chosen release SHA
 
 ## Blockers
 
-1. Shared frontend / Seal Gate not yet green on rebased PR `#656` (`f1196a82e`). Backend and governance checks are green; remaining red is the shared frontend gate.
-2. ~~CX candidate work remains unmerged and behind the current protected base.~~ → **RECLASSIFIED**: CX is rebased (no longer behind). Reclassified as: CX not yet merged to protected main — blocked on blocker #1 (Seal Gate).
-3. ~~Frontend constitutional test contract is stale relative to the actual 9-tab workbench.~~ → **RESOLVED** (2026-03-12, CC lane)
-4. ~~Release evidence packet currently overclaims tag and acceptance settlement.~~ → **RESOLVED** (2026-03-12, CC lane)
-5. ~~Current local workspace cannot provide clean `check:generated` proof because `.codex_split` is being scanned.~~ → **RESOLVED** (2026-03-12, CP lane)
+All five tracked blockers are resolved.
+
+1. ~~Shared frontend / Seal Gate not yet green~~ → **RESOLVED** (2026-03-10, Seal Gate green, run `22905637108`)
+2. ~~CX candidate work unmerged~~ → **RESOLVED** (2026-03-10, merged as `24531f37a`)
+3. ~~Frontend constitutional test contract stale~~ → **RESOLVED** (CC lane, 9-tab test 19/19)
+4. ~~Release evidence packet overclaims~~ → **RESOLVED** (CC lane, CX qualified as branch-only → now merged)
+5. ~~`check:generated` scanning `.codex_split`~~ → **RESOLVED** (CP lane, `.codex_split` in SKIP_DIRS)
 
 ## Non-Blocking Debt
 
@@ -277,21 +288,23 @@ Reason: CC lane truth alignment is now complete — constitutional test locks 9-
 - Unsupported and post-R1 paths were not exhaustively negative-tested in this pass.
 - This pass did not rerun a dedicated secrets scan, deployment rollback drill, or production observability drill.
 
-## Release Recommendation
+## Release Decision
 
-- Release-decision ready: `yes`
-- Deploy-to-production ready: `no`
-- Final recommendation: `hold for Seal Gate green + CX merge`
+**Release decision: approved.**
 
-Rationale:
-- Blockers #3, #4, and #5 are **resolved** (CC truth alignment, evidence packet, check:generated).
-- Blocker #2 is **reclassified**: CX is rebased onto protected main (`f1196a82e` merge-base = `bdd5036c5`). No longer behind. Still unmerged — blocked on Seal Gate.
-- Blocker #1 is the **sole remaining gate**: shared frontend / Seal Gate must go green on the rebased PR `#656`.
-- All three lanes are `ready pending shared blockers`. CC upgraded from `not ready`.
+Merged baseline `24531f37a9ea785a99c1b7e4e1dd70c294af1a0c` is governance-green and passes post-merge proof (`type-check`, `phase83`, `phase85`, `phase86`, `r3`, `r3-cx`, `check:generated`, and 9-tab Workbench constitutional test). All five tracked blockers are resolved. Production deployment proceeds only under the established environment, secrets/config, observability, and rollback controls.
 
-The critical path is now:
-1. Seal Gate goes green on `f1196a82e` (shared frontend gate is the remaining red)
-2. Merge PR `#656` to protected main
-3. Final governance proof on the merged SHA
+### Release vs. Deployment Status
 
-Once that sequence completes, all lanes are locally proven, evidence-aligned, and promotion-proven. The release decision remains `hold` until the Seal Gate clears and the merge completes.
+| Dimension | Status | Evidence |
+| --- | --- | --- |
+| **Release status** | `release-ready` | All governance gates green on merged SHA; all 5 blockers resolved; CI Seal Gate green (run `22905637108`); post-merge local proof green |
+| **Deployment status** | `deploy pending ops confirmation` | Code and governance are release-ready; production deployment requires final confirmation of environment config, secrets, observability, and rollback posture on the merged SHA |
+
+### Evidence Trail
+
+- Merged SHA: `24531f37a9ea785a99c1b7e4e1dd70c294af1a0c`
+- PR: `#656` (`r3/cx-backend-controllers`)
+- Seal Gate run: `22905637108` (all 6 required checks green)
+- Merge timestamp: 2026-03-10T13:55:35Z
+- Post-merge governance proof: all green (type-check, phase83 32/32, phase85 20/20, phase86 7/7, R3 30/30, R3-CX 34/34, check:generated, WorkbenchTabBar 19/19)
