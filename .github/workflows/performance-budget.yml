@@ -164,8 +164,8 @@ jobs:
 
           const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
           const startupMatches = [
-            ...indexHtml.matchAll(/<script[^>]+src="\\/assets\\/([^"]+\\.js)"/g),
-            ...indexHtml.matchAll(/<link[^>]+rel="modulepreload"[^>]+href="\\/assets\\/([^"]+\\.js)"/g),
+            ...indexHtml.matchAll(/<script[^>]+src="\/assets\/([^"]+\.js)"/g),
+            ...indexHtml.matchAll(/<link[^>]+rel="modulepreload"[^>]+href="\/assets\/([^"]+\.js)"/g),
           ];
 
           const startupFiles = [...new Set(startupMatches.map((match) => match[1]))];
