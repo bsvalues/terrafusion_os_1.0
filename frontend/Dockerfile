@@ -56,7 +56,7 @@ COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Health check — nginx.conf listens on port 80
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget -qO- http://localhost:80/ || exit 1
+    CMD wget -qO- http://127.0.0.1:80/ || exit 1
 
 EXPOSE 80
 
