@@ -2,17 +2,32 @@
 
 Date: March 10, 2026  
 Branch: `r3/full-execution`  
-Tags: `r3.0.0` → `r3.1.0` → `r3.2.0` → `r3.3.0` (CX lane)  
+Tags: `r3.0.0` → `r3.1.0` → `r3.2.0` → `r3.3.0` (CX lane)
+
+---
+
+## Promotion Status
+
+> **All R3 work is LOCAL MAIN ONLY as of 2026-03-10.**
+>
+> - Tags `r3.0.0`–`r3.3.0` exist on local refs only (not pushed to origin)
+> - `origin/main` HEAD is `6c74b80d6`, local `main` HEAD is `a15da8fdb`
+> - PR #656 (CX rebase) is pending merge onto the protected baseline
+> - Constitutional test updated to 9-tab surface (CC remediation, this branch)
+> - SEAL gate has NOT been proven green on the R3 candidate branch
 
 ---
 
 ## Executive Summary
 
-R3 delivered the Core Platform (CP), Component/UI (CC), and Backend API (CX) lanes
+R3 implemented the Core Platform (CP), Component/UI (CC), and Backend API (CX) lanes
 for the multi-office expansion of TerraFusion OS. Three new county office verticals —
-**TerraClerk**, **TerraTreasury**, and **TerraAudit** — are now fully governed with
+**TerraClerk**, **TerraTreasury**, and **TerraAudit** — are implemented with
 18 real tool handlers, 3 frontend workbench tabs, 3 backend controllers (18 endpoints,
-10 entities), and 30 + 34 = **64 acceptance criteria** all passing.
+10 entities), and 30 + 34 = **64 acceptance criteria** passing locally.
+
+> **Note:** These results were obtained on local main. CI proof on the protected
+> baseline (`origin/main`) is pending PR merge and SEAL gate execution.
 
 ---
 
@@ -123,17 +138,17 @@ for the multi-office expansion of TerraFusion OS. Three new county office vertic
 
 ---
 
-## Gate Results
+## Gate Results (local main — not CI-proven on origin/main)
 
-| Gate | Result |
-|------|--------|
-| `pnpm run type-check` | ✅ Clean (0 errors) |
-| `node --test phase83-tools.test.mjs` | ✅ 32/32 pass |
-| `node --test r1-acceptance-criteria.test.mjs` | ✅ 84/84 pass |
-| `node --test r3-acceptance-criteria.test.mjs` | ✅ 30/30 pass |
-| `node --test r3-cx-acceptance-criteria.test.mjs` | ✅ 34/34 pass |
-| `npx vitest run` | ✅ 920 pass (416 files) |
-| `dotnet build TerraFusion.sln -c Release` | ✅ 0 errors, 0 warnings |
+| Gate | Local Result | CI Status |
+|------|-------------|-----------|
+| `pnpm run type-check` | ✅ Clean (0 errors) | ⏳ pending SEAL gate |
+| `node --test phase83-tools.test.mjs` | ✅ 32/32 pass | ⏳ pending SEAL gate |
+| `node --test r1-acceptance-criteria.test.mjs` | ✅ 84/84 pass | ⏳ pending SEAL gate |
+| `node --test r3-acceptance-criteria.test.mjs` | ✅ 30/30 pass | ⏳ pending SEAL gate |
+| `node --test r3-cx-acceptance-criteria.test.mjs` | ✅ 34/34 pass | ⏳ pending SEAL gate |
+| `npx vitest run` | ✅ 920 pass (416 files) | ⏳ pending SEAL gate |
+| `dotnet build TerraFusion.sln -c Release` | ✅ 0 errors, 0 warnings | ⏳ pending SEAL gate |
 
 ---
 
@@ -152,6 +167,7 @@ for the multi-office expansion of TerraFusion OS. Three new county office vertic
 | 9 | Pilot | PropertyPilot.tsx | — | Live |
 
 All 9 tabs: visible in tab bar, routed via React Router, lazy-loaded via Suspense.
+Constitutional test updated to assert 9 tabs (CC remediation).
 
 ---
 
@@ -184,22 +200,25 @@ All 9 tabs: visible in tab bar, routed via React Router, lazy-loaded via Suspens
 
 ## R3 Definition of Done — Status
 
-| Criterion | Status |
-|-----------|--------|
-| 53+ governed tools with real handlers | ✅ 53 tools |
-| All 8 TerraDais modules active | ✅ All active |
-| 6 constitutional CI gates enforced | ✅ type-check, phase83, R1, R3, vitest |
-| Office registry enables multi-office switching | ✅ 5 offices |
-| TerraClerk: 6 tools + PropertyClerk tab | ✅ Complete |
-| TerraTreasury: 7 tools + PropertyTreasury tab | ✅ Complete |
-| TerraAudit: 5 tools + PropertyAudit tab | ✅ Complete |
-| Property Workbench displays 9 tabs | ✅ All visible + routed |
-| Cross-office trace linked by correlationId | ✅ AC-TRS-07 + 3-office chain |
-| County isolation per office | ✅ CLK-04 + R3-ISO-TRS + R3-ISO-AUD |
-| All permanent gates pass | ✅ All green |
-| 18+ new acceptance criteria | ✅ 30 tests passing |
-| No stubs/mocks in production surface | ✅ All real handlers |
-| Backend controllers (CX lane) | ✅ Complete — 3 controllers, 18 endpoints, 10 entities |
+> Legend: ✅ = implemented + tested locally | ⏳ = pending CI proof on origin/main
+
+| Criterion | Local | CI |
+|-----------|-------|----|
+| 53+ governed tools with real handlers | ✅ 53 tools | ⏳ |
+| All 8 TerraDais modules active | ✅ All active | ⏳ |
+| 6 constitutional CI gates enforced | ✅ type-check, phase83, R1, R3, vitest | ⏳ |
+| Office registry enables multi-office switching | ✅ 5 offices | ⏳ |
+| TerraClerk: 6 tools + PropertyClerk tab | ✅ Complete | ⏳ |
+| TerraTreasury: 7 tools + PropertyTreasury tab | ✅ Complete | ⏳ |
+| TerraAudit: 5 tools + PropertyAudit tab | ✅ Complete | ⏳ |
+| Property Workbench displays 9 tabs | ✅ Visible + routed | ⏳ |
+| Constitutional test matches 9-tab surface | ✅ CC remediation applied | ⏳ |
+| Cross-office trace linked by correlationId | ✅ AC-TRS-07 + 3-office chain | ⏳ |
+| County isolation per office | ✅ CLK-04 + R3-ISO-TRS + R3-ISO-AUD | ⏳ |
+| All permanent gates pass | ✅ Local green | ⏳ SEAL gate not run |
+| 18+ new acceptance criteria | ✅ 30 tests passing | ⏳ |
+| No stubs/mocks in production surface | ✅ All real handlers | ⏳ |
+| Backend controllers (CX lane) | ✅ 3 controllers, 18 endpoints, 10 entities | ⏳ |
 
 ---
 
@@ -262,14 +281,14 @@ All 9 tabs: visible in tab bar, routed via React Router, lazy-loaded via Suspens
 
 ---
 
-## Evidence Chain
+## Evidence Chain (local refs only — not on origin/main)
 
 ```
 r2.8.0 (55d6baffa) — R2 complete: 26 tools, 23/23 workbench
-  └── r3.0.0 (a581ae2d0) — R3 multi-office: 53 tools, v2.0.0, 9 tabs
-       └── r3.1.0 (00eed894b) — office registry, RBAC, officeScope, 27 ACs
-            └── r3.2.0 (bfa315b9e) — cross-office trace, isolation, 3-office chain, 30 ACs
-                 └── r3.3.0 (012f7fe3a) — CX lane: 3 controllers, 18 endpoints, 10 entities, 34 CX ACs
+  └── r3.0.0 (a581ae2d0) — R3 multi-office: 53 tools, v2.0.0, 9 tabs       [local]
+       └── r3.1.0 (00eed894b) — office registry, RBAC, officeScope, 27 ACs  [local]
+            └── r3.2.0 (bfa315b9e) — cross-office trace, isolation, 30 ACs  [local]
+                 └── r3.3.0 (012f7fe3a) — CX lane: 3 controllers, 34 CX ACs [local]
 ```
 
 ---
