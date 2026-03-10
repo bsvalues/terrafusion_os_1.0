@@ -198,12 +198,16 @@ jobs:
         run: |
           set -euo pipefail
           # Authenticate deploy user to GHCR (token is short-lived, expires after workflow run)
-          printf '%s' "$GHCR_TOKEN" | ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "cat | docker login ghcr.io -u ${{ github.actor }} --password-stdin >/dev/null 2>&1"
+          # Pipe token directly to docker login (no 'cat' intermediary — it hangs on SSH EOF).
+          # Trailing newline ensures --password-stdin reads the complete token immediately.
+          printf '%s\n' "$GHCR_TOKEN" | ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "docker login ghcr.io -u ${{ github.actor }} --password-stdin" >/dev/null 2>&1
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
           set -euo pipefail
-          docker pull "$BACKEND_IMAGE" >/dev/null
-          docker pull "$FRONTEND_IMAGE" >/dev/null
+          echo "Pulling backend image..."
+          docker pull "$BACKEND_IMAGE"
+          echo "Pulling frontend image..."
+          docker pull "$FRONTEND_IMAGE"
           SSH
 
       - name: Deploy runtime bundle on VPS
