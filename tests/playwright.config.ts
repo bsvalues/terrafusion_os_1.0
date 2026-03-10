@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Playwright Configuration for Terrafusion OS
@@ -6,18 +8,24 @@ import { defineConfig, devices } from '@playwright/test';
  * Government-grade E2E testing with comprehensive browser matrix
  */
 
+const testsRoot = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(testsRoot, '..');
+const e2eRoot = resolve(testsRoot, 'e2e');
+const testResultsRoot = resolve(repoRoot, 'test-results');
+
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: e2eRoot,
+  testIgnore: ['**/*.test.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 1, // minimal flakes tolerated
   workers: process.env.CI ? 3 : undefined,
   reporter: [
-    ['html', { outputFolder: 'test-results/playwright-report' }],
-    ['json', { outputFile: 'test-results/playwright-results.json' }],
-    ['junit', { outputFile: 'test-results/playwright-junit.xml' }]
+    ['html', { outputFolder: resolve(testResultsRoot, 'playwright-report') }],
+    ['json', { outputFile: resolve(testResultsRoot, 'playwright-results.json') }],
+    ['junit', { outputFile: resolve(testResultsRoot, 'playwright-junit.xml') }],
   ],
-  
+
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
@@ -25,13 +33,13 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     actionTimeout: 10000,
     navigationTimeout: 30000,
-    
+
     // Government security headers
     extraHTTPHeaders: {
       'X-Test-Environment': 'e2e',
       'X-Government-Compliance': 'FISMA-High',
-      'X-Security-Level': 'maximum'
-    }
+      'X-Security-Level': 'maximum',
+    },
   },
 
   projects: [
@@ -39,35 +47,35 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
-      use: { ...devices['Desktop Chrome'] }
+      use: { ...devices['Desktop Chrome'] },
     },
 
     // Desktop browsers
     {
       name: 'Desktop Chrome',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json'
+        storageState: resolve(e2eRoot, 'states/admin.json'),
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
-    
+
     {
       name: 'Desktop Firefox',
-      use: { 
+      use: {
         ...devices['Desktop Firefox'],
-        storageState: 'tests/e2e/states/admin.json'
+        storageState: resolve(e2eRoot, 'states/admin.json'),
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
-    
+
     {
       name: 'Desktop Safari',
-      use: { 
+      use: {
         ...devices['Desktop Safari'],
-        storageState: 'tests/e2e/states/admin.json'
+        storageState: resolve(e2eRoot, 'states/admin.json'),
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
 
     // Government compliance testing
@@ -75,46 +83,46 @@ export default defineConfig({
       name: 'Government Compliance - Chrome',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/assessor.json',
+        storageState: resolve(e2eRoot, 'states/assessor.json'),
         permissions: [],
         ignoreHTTPSErrors: false,
         bypassCSP: false,
         extraHTTPHeaders: {
           'X-Compliance-Mode': 'FISMA-High',
           'X-Accessibility-Test': 'enabled',
-          'Content-Security-Policy': "default-src 'self'"
-        }
+          'Content-Security-Policy': "default-src 'self'",
+        },
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
 
     // Mobile testing for government field workers
     {
       name: 'Mobile Chrome',
-      use: { 
+      use: {
         ...devices['Pixel 5'],
-        storageState: 'tests/e2e/states/viewer.json'
+        storageState: resolve(e2eRoot, 'states/viewer.json'),
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
-    
+
     {
       name: 'Mobile Safari',
-      use: { 
+      use: {
         ...devices['iPhone 12'],
-        storageState: 'tests/e2e/states/viewer.json'
+        storageState: resolve(e2eRoot, 'states/viewer.json'),
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
 
     // Tablet testing for government offices
     {
       name: 'Tablet',
-      use: { 
+      use: {
         ...devices['iPad Pro'],
-        storageState: 'tests/e2e/states/assessor.json'
+        storageState: resolve(e2eRoot, 'states/assessor.json'),
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
 
     // Performance testing
@@ -122,12 +130,12 @@ export default defineConfig({
       name: 'Performance Testing',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
         trace: 'on',
-        video: 'on'
+        video: 'on',
       },
       dependencies: ['setup'],
-      testMatch: /.*performance.*\.spec\.ts/
+      testMatch: /.*performance.*\.spec\.ts/,
     },
 
     // Accessibility testing
@@ -135,43 +143,43 @@ export default defineConfig({
       name: 'Accessibility Testing',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
         reducedMotion: 'reduce',
-        forcedColors: 'active'
+        forcedColors: 'active',
       },
       dependencies: ['setup'],
-      testMatch: /.*accessibility.*\.spec\.ts/
+      testMatch: /.*accessibility.*\.spec\.ts/,
     },
 
     // Role-based testing
     {
       name: 'Admin Role Tests',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json'
+        storageState: resolve(e2eRoot, 'states/admin.json'),
       },
       dependencies: ['setup'],
-      testMatch: /.*admin.*\.spec\.ts/
+      testMatch: /.*admin.*\.spec\.ts/,
     },
-    
+
     {
       name: 'Assessor Role Tests',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/assessor.json'
+        storageState: resolve(e2eRoot, 'states/assessor.json'),
       },
       dependencies: ['setup'],
-      testMatch: /.*assessor.*\.spec\.ts/
+      testMatch: /.*assessor.*\.spec\.ts/,
     },
-    
+
     {
       name: 'Viewer Role Tests',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/viewer.json'
+        storageState: resolve(e2eRoot, 'states/viewer.json'),
       },
       dependencies: ['setup'],
-      testMatch: /.*viewer.*\.spec\.ts/
+      testMatch: /.*viewer.*\.spec\.ts/,
     },
 
     // AI Swarm specific testing
@@ -179,41 +187,41 @@ export default defineConfig({
       name: 'AI Swarm Testing',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'tests/e2e/states/admin.json',
+        storageState: resolve(e2eRoot, 'states/admin.json'),
         extraHTTPHeaders: {
           'X-AI-Swarm-Test': 'enabled',
-          'X-Quantum-Performance': 'enabled'
-        }
+          'X-Quantum-Performance': 'enabled',
+        },
       },
       dependencies: ['setup'],
-      testMatch: /.*ai-swarm.*\.spec\.ts/
-    }
+      testMatch: /.*ai-swarm.*\.spec\.ts/,
+    },
   ],
 
   webServer: {
     command: 'npm run dev',
     port: 3000,
     reuseExistingServer: !process.env.CI,
-    timeout: 120000
+    timeout: 120000,
   },
 
   // Global test timeout
   timeout: 60000,
-  
+
   // Expect timeout for assertions
   expect: {
     timeout: 10000,
     toHaveScreenshot: {
       mode: 'only-on-failure',
       animations: 'disabled',
-      caret: 'hide'
-    }
+      caret: 'hide',
+    },
   },
 
   // Test result retention
-  outputDir: 'test-results/',
-  
+  outputDir: resolve(testResultsRoot, 'playwright-artifacts'),
+
   // Global setup and teardown
-  globalSetup: './tests/e2e/global-setup.ts',
-  globalTeardown: './tests/e2e/global-teardown.ts'
+  globalSetup: resolve(e2eRoot, 'global-setup.ts'),
+  globalTeardown: resolve(e2eRoot, 'global-teardown.ts'),
 });
