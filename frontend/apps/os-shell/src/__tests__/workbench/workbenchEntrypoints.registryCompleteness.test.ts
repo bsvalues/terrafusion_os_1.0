@@ -152,6 +152,9 @@ describe('Workbench Registry Completeness', () => {
       expect(VALID_WORKBENCH_TAB_IDS).toContain('forge');
       expect(VALID_WORKBENCH_TAB_IDS).toContain('atlas');
       expect(VALID_WORKBENCH_TAB_IDS).toContain('dais');
+      expect(VALID_WORKBENCH_TAB_IDS).toContain('clerk');
+      expect(VALID_WORKBENCH_TAB_IDS).toContain('treasury');
+      expect(VALID_WORKBENCH_TAB_IDS).toContain('audit');
       expect(VALID_WORKBENCH_TAB_IDS).toContain('dossier');
       expect(VALID_WORKBENCH_TAB_IDS).toContain('pilot');
     });

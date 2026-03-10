@@ -1,10 +1,9 @@
 // GENERATED - DO NOT EDIT
 "use strict";
 /**
- * TerraFusion OS — Real Handlers (R1 + Wave 1 + Wave 2 + Wave 3)
+ * TerraFusion OS — Real Handlers (R1 + Wave 1–3 + R2.9 + R3.2–R3.4)
  *
- * Production handler implementations that call real backend endpoints
- * instead of returning canned data.
+ * 53 production handler implementations that call real backend endpoints.
  *
  * When registered, they OVERRIDE the canned Phase 8.3/8.4 stubs for the same toolIds.
  * Canned stubs remain for tools NOT in this set (and for test isolation).
@@ -48,7 +47,8 @@
  *  26. run_income_valuation      → POST /api/costforge/income-approach/calculate-valuation
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runIncomeValuationRealHandler = exports.calculatePiltPaymentRealHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.summarizeSalesCompsRealHandler = exports.explainModelResultsRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
+exports.reconcileCrossOfficeRealHandler = exports.submitAuditFindingRealHandler = exports.checkLevyComplianceRealHandler = exports.auditRollSummaryRealHandler = exports.initiateTaxSaleRealHandler = exports.summarizeCollectionStatsRealHandler = exports.createInstallmentPlanRealHandler = exports.checkDelinquencyStatusRealHandler = exports.recordPaymentRealHandler = exports.explainTaxBreakdownRealHandler = exports.getTaxStatementRealHandler = exports.summarizeParcelRecordingsRealHandler = exports.releaseLienRealHandler = exports.recordDocumentRealHandler = exports.explainRecordingFeesRealHandler = exports.getTitleChainRealHandler = exports.searchRecordedDocumentsRealHandler = exports.escalateTaskRealHandler = exports.getQueueStatisticsRealHandler = exports.queueNoticeForMailingRealHandler = exports.signOffCertificationStepRealHandler = exports.getCertificationProgressRealHandler = exports.scheduleBoeHearingRealHandler = exports.fileAppealRealHandler = exports.processExemptionRenewalRealHandler = exports.checkExemptionEligibilityRealHandler = exports.runIncomeValuationRealHandler = exports.calculatePiltPaymentRealHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.summarizeSalesCompsRealHandler = exports.explainModelResultsRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
+exports.generateComplianceReportRealHandler = void 0;
 exports.createSearchTraceHandler = createSearchTraceHandler;
 exports.createRequestTraceRedactionHandler = createRequestTraceRedactionHandler;
 exports.registerR1Handlers = registerR1Handlers;
@@ -885,10 +885,638 @@ const runIncomeValuationRealHandler = async (params, context, _tool) => {
 };
 exports.runIncomeValuationRealHandler = runIncomeValuationRealHandler;
 // ============================================================================
+// R2.9 — Handler 27: check_exemption_eligibility
+// Read-only. Checks senior/disabled exemption eligibility per RCW 84.36.381.
+// Endpoint: GET /api/dais/exemptions/eligibility
+// ============================================================================
+const checkExemptionEligibilityRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const qs = [
+        `county=${encodeURIComponent(normalizeCountyCode(params.county))}`,
+        `parcelId=${encodeURIComponent(params.parcelId)}`,
+    ];
+    if (params.applicantAge != null)
+        qs.push(`age=${params.applicantAge}`);
+    if (params.income != null)
+        qs.push(`income=${params.income}`);
+    if (params.disability != null)
+        qs.push(`disability=${params.disability}`);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/dais/exemptions/eligibility?${qs.join('&')}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Exemption eligibility check failed');
+    return {
+        eligible: data.eligible ?? false,
+        program: data.program ?? (params.disability ? 'disabled' : 'senior'),
+        reason: data.reason ?? (data.eligible ? 'Meets all statutory requirements' : 'Does not meet eligibility criteria'),
+        incomeThreshold: data.incomeThreshold ?? 40000,
+        parcelId: params.parcelId,
+    };
+};
+exports.checkExemptionEligibilityRealHandler = checkExemptionEligibilityRealHandler;
+// ============================================================================
+// R2.9 — Handler 28: process_exemption_renewal
+// Write-low. Processes annual exemption renewal with documentation verification.
+// Endpoint: POST /api/dais/exemptions/renewals
+// ============================================================================
+const processExemptionRenewalRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/dais/exemptions/renewals', {
+        exemptionId: params.exemptionId,
+        taxYear: params.taxYear,
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Exemption renewal failed');
+    return {
+        exemptionId: data.exemptionId ?? params.exemptionId,
+        taxYear: params.taxYear,
+        status: data.status ?? 'renewed',
+        payloadRef: `dais://${context.countyId}/exemptions/${params.exemptionId}/renewal/${params.taxYear}`,
+    };
+};
+exports.processExemptionRenewalRealHandler = processExemptionRenewalRealHandler;
+// ============================================================================
+// R2.9 — Handler 29: file_appeal
+// Write-low. Files a new BOE appeal for a property assessment.
+// Endpoint: POST /api/dais/appeals
+// ============================================================================
+const fileAppealRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    if (!params.grounds || params.grounds.trim().length === 0) {
+        throw new Error('Appeal grounds are required');
+    }
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/dais/appeals', {
+        parcelId: params.parcelId,
+        grounds: params.grounds,
+        requestedValue: params.requestedValue,
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Appeal filing failed');
+    return {
+        appealId: data.appealId ?? `APL-${Date.now()}`,
+        parcelId: params.parcelId,
+        status: data.status ?? 'filed',
+        filedAt: data.filedAt ?? new Date().toISOString(),
+        payloadRef: `dais://${context.countyId}/appeals/${data.appealId ?? 'latest'}`,
+    };
+};
+exports.fileAppealRealHandler = fileAppealRealHandler;
+// ============================================================================
+// R2.9 — Handler 30: schedule_boe_hearing
+// Write-high. Schedules a BOE hearing with panel assignment.
+// Endpoint: POST /api/dais/appeals/{appealId}/hearings
+// ============================================================================
+const scheduleBoeHearingRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/dais/appeals/${encodeURIComponent(params.appealId)}/hearings`, {
+        requestedDate: params.requestedDate,
+        panelMembers: params.panelMembers ?? [],
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'BOE hearing scheduling failed');
+    return {
+        hearingId: data.hearingId ?? `HRG-${Date.now()}`,
+        appealId: params.appealId,
+        scheduledDate: data.scheduledDate ?? params.requestedDate,
+        panelSize: data.panelSize ?? (params.panelMembers?.length ?? 3),
+        payloadRef: `dais://${context.countyId}/appeals/${params.appealId}/hearings/${data.hearingId ?? 'latest'}`,
+    };
+};
+exports.scheduleBoeHearingRealHandler = scheduleBoeHearingRealHandler;
+// ============================================================================
+// R2.9 — Handler 31: get_certification_progress
+// Read-only. Gets assessment roll certification progress with checklist.
+// Endpoint: GET /api/dais/certification/{county}/{taxYear}/progress
+// ============================================================================
+const getCertificationProgressRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const countyCode = normalizeCountyCode(params.county);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/dais/certification/${encodeURIComponent(countyCode)}/${params.taxYear}/progress`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Certification progress lookup failed');
+    return {
+        county: countyCode,
+        taxYear: params.taxYear,
+        percentComplete: data.percentComplete ?? 0,
+        steps: data.steps ?? [],
+        blockers: data.blockers ?? [],
+    };
+};
+exports.getCertificationProgressRealHandler = getCertificationProgressRealHandler;
+// ============================================================================
+// R2.9 — Handler 32: sign_off_certification_step
+// Write-high. Signs off a certification checklist step.
+// Endpoint: POST /api/dais/certification/{county}/{taxYear}/sign-off
+// ============================================================================
+const signOffCertificationStepRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const countyCode = normalizeCountyCode(params.county);
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/dais/certification/${encodeURIComponent(countyCode)}/${params.taxYear}/sign-off`, {
+        stepId: params.stepId,
+        signedBy: params.signedBy,
+        notes: params.notes ?? '',
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Certification sign-off failed');
+    return {
+        stepId: params.stepId,
+        signedBy: params.signedBy,
+        signedAt: data.signedAt ?? new Date().toISOString(),
+        payloadRef: `dais://${context.countyId}/certification/${countyCode}/${params.taxYear}/sign-off/${params.stepId}`,
+    };
+};
+exports.signOffCertificationStepRealHandler = signOffCertificationStepRealHandler;
+// ============================================================================
+// R2.9 — Handler 33: queue_notice_for_mailing
+// Write-low. Queues generated notices for batch mailing.
+// Endpoint: POST /api/dais/notices/queue
+// ============================================================================
+const queueNoticeForMailingRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    if (!params.noticeIds || params.noticeIds.length === 0) {
+        throw new Error('At least one notice ID is required');
+    }
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/dais/notices/queue', {
+        noticeIds: params.noticeIds,
+        deliveryMethod: params.deliveryMethod ?? 'usps_first_class',
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Notice queuing failed');
+    return {
+        queued: data.queued ?? params.noticeIds.length,
+        batchId: data.batchId ?? `BATCH-${Date.now()}`,
+        deliveryMethod: params.deliveryMethod ?? 'usps_first_class',
+        payloadRef: `dais://${context.countyId}/notices/queue/${data.batchId ?? 'latest'}`,
+    };
+};
+exports.queueNoticeForMailingRealHandler = queueNoticeForMailingRealHandler;
+// ============================================================================
+// R2.9 — Handler 34: get_queue_statistics
+// Read-only. Gets task queue statistics with SLA compliance metrics.
+// Endpoint: GET /api/dais/queue/statistics
+// ============================================================================
+const getQueueStatisticsRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const qs = [`county=${encodeURIComponent(normalizeCountyCode(params.county))}`];
+    if (params.period)
+        qs.push(`period=${encodeURIComponent(params.period)}`);
+    if (params.assignee)
+        qs.push(`assignee=${encodeURIComponent(params.assignee)}`);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/dais/queue/statistics?${qs.join('&')}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Queue statistics lookup failed');
+    return {
+        county: normalizeCountyCode(params.county),
+        period: params.period ?? '30d',
+        totalTasks: data.totalTasks ?? 0,
+        completedTasks: data.completedTasks ?? 0,
+        slaCompliance: data.slaCompliance ?? 0,
+        overdueCount: data.overdueCount ?? 0,
+    };
+};
+exports.getQueueStatisticsRealHandler = getQueueStatisticsRealHandler;
+// ============================================================================
+// R2.9 — Handler 35: escalate_task
+// Write-low. Escalates an overdue or high-priority task.
+// Endpoint: POST /api/dais/queue/escalate
+// ============================================================================
+const escalateTaskRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    if (!params.reason || params.reason.trim().length === 0) {
+        throw new Error('Escalation reason is required');
+    }
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/dais/queue/escalate', {
+        taskId: params.taskId,
+        reason: params.reason,
+        escalateTo: params.escalateTo ?? 'supervisor',
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Task escalation failed');
+    return {
+        taskId: params.taskId,
+        escalatedTo: data.escalatedTo ?? params.escalateTo ?? 'supervisor',
+        status: data.status ?? 'escalated',
+        payloadRef: `dais://${context.countyId}/queue/escalations/${params.taskId}`,
+    };
+};
+exports.escalateTaskRealHandler = escalateTaskRealHandler;
+// ============================================================================
+// R3.2 — Handler 36: search_recorded_documents
+// Read-only. Searches clerk recordings by parcel, grantor, grantee, or type.
+// Endpoint: GET /api/clerk/documents
+// ============================================================================
+const searchRecordedDocumentsRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const qs = [`county=${encodeURIComponent(normalizeCountyCode(params.county))}`];
+    if (params.parcelId)
+        qs.push(`parcelId=${encodeURIComponent(params.parcelId)}`);
+    if (params.grantor)
+        qs.push(`grantor=${encodeURIComponent(params.grantor)}`);
+    if (params.grantee)
+        qs.push(`grantee=${encodeURIComponent(params.grantee)}`);
+    if (params.documentType && params.documentType !== 'all')
+        qs.push(`type=${encodeURIComponent(params.documentType)}`);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/clerk/documents?${qs.join('&')}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Recorded document search failed');
+    return {
+        county: normalizeCountyCode(params.county),
+        documents: data.documents ?? [],
+        totalCount: data.totalCount ?? (data.documents?.length ?? 0),
+    };
+};
+exports.searchRecordedDocumentsRealHandler = searchRecordedDocumentsRealHandler;
+// ============================================================================
+// R3.2 — Handler 37: get_title_chain
+// Read-only (Muse). Retrieves chain of title for a parcel.
+// Endpoint: GET /api/clerk/parcels/{parcelId}/title-chain
+// ============================================================================
+const getTitleChainRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/clerk/parcels/${encodeURIComponent(params.parcelId)}/title-chain`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Title chain lookup failed');
+    return {
+        parcelId: params.parcelId,
+        chain: data.chain ?? [],
+        chainLength: data.chain?.length ?? 0,
+    };
+};
+exports.getTitleChainRealHandler = getTitleChainRealHandler;
+// ============================================================================
+// R3.2 — Handler 38: explain_recording_fees
+// Read-only (Muse). Explains fee schedule for document recording.
+// Endpoint: GET /api/clerk/fees
+// ============================================================================
+const explainRecordingFeesRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const qs = [
+        `county=${encodeURIComponent(normalizeCountyCode(params.county))}`,
+        `type=${encodeURIComponent(params.documentType)}`,
+    ];
+    if (params.pageCount != null)
+        qs.push(`pages=${params.pageCount}`);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/clerk/fees?${qs.join('&')}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Recording fee lookup failed');
+    return {
+        documentType: params.documentType,
+        baseFee: data.baseFee ?? 0,
+        perPageFee: data.perPageFee ?? 0,
+        totalFee: data.totalFee ?? 0,
+        statuteRef: data.statuteRef ?? 'RCW 36.18.010',
+    };
+};
+exports.explainRecordingFeesRealHandler = explainRecordingFeesRealHandler;
+// ============================================================================
+// R3.2 — Handler 39: record_document
+// Write-high. Records a new document in the county recording system.
+// Endpoint: POST /api/clerk/documents
+// ============================================================================
+const recordDocumentRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/clerk/documents', {
+        parcelId: params.parcelId,
+        documentType: params.documentType,
+        grantor: params.grantor,
+        grantee: params.grantee,
+        consideration: params.consideration ?? 0,
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Document recording failed');
+    return {
+        documentId: data.documentId ?? `DOC-${Date.now()}`,
+        recordingNumber: data.recordingNumber ?? `REC-${Date.now()}`,
+        recordedAt: data.recordedAt ?? new Date().toISOString(),
+        fees: data.fees ?? 0,
+        payloadRef: `clerk://${context.countyId}/documents/${data.documentId ?? 'latest'}`,
+    };
+};
+exports.recordDocumentRealHandler = recordDocumentRealHandler;
+// ============================================================================
+// R3.2 — Handler 40: release_lien
+// Write-low. Releases an existing lien on a parcel.
+// Endpoint: POST /api/clerk/liens/{lienId}/release
+// ============================================================================
+const releaseLienRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/clerk/liens/${encodeURIComponent(params.lienId)}/release`, {
+        reason: params.releaseReason ?? 'satisfied',
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Lien release failed');
+    return {
+        lienId: params.lienId,
+        status: data.status ?? 'released',
+        releasedAt: data.releasedAt ?? new Date().toISOString(),
+        payloadRef: `clerk://${context.countyId}/liens/${params.lienId}/release`,
+    };
+};
+exports.releaseLienRealHandler = releaseLienRealHandler;
+// ============================================================================
+// R3.2 — Handler 41: summarize_parcel_recordings
+// Read-only (Muse). Summarizes all recordings for a parcel.
+// Endpoint: GET /api/clerk/parcels/{parcelId}/recordings/summary
+// ============================================================================
+const summarizeParcelRecordingsRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/clerk/parcels/${encodeURIComponent(params.parcelId)}/recordings/summary`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Parcel recordings summary failed');
+    return {
+        parcelId: params.parcelId,
+        summary: data.summary ?? `Recording summary for parcel ${params.parcelId}: ${data.totalRecordings ?? 0} documents on file.`,
+        totalRecordings: data.totalRecordings ?? 0,
+        documentTypes: data.documentTypes ?? {},
+    };
+};
+exports.summarizeParcelRecordingsRealHandler = summarizeParcelRecordingsRealHandler;
+// ============================================================================
+// R3.3 — Handler 42: get_tax_statement
+// Read-only. Retrieves property tax statement with levy breakdown.
+// Endpoint: GET /api/treasury/parcels/{parcelId}/statement
+// ============================================================================
+const getTaxStatementRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const yearParam = params.taxYear ? `?taxYear=${params.taxYear}` : '';
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/treasury/parcels/${encodeURIComponent(params.parcelId)}/statement${yearParam}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Tax statement lookup failed');
+    return {
+        parcelId: params.parcelId,
+        taxYear: data.taxYear ?? params.taxYear ?? new Date().getFullYear(),
+        totalDue: data.totalDue ?? 0,
+        paid: data.paid ?? 0,
+        balance: data.balance ?? 0,
+        dueDate: data.dueDate ?? '',
+        levies: data.levies ?? [],
+    };
+};
+exports.getTaxStatementRealHandler = getTaxStatementRealHandler;
+// ============================================================================
+// R3.3 — Handler 43: explain_tax_breakdown
+// Read-only (Muse). Explains levy components in plain language.
+// Endpoint: GET /api/treasury/parcels/{parcelId}/breakdown
+// ============================================================================
+const explainTaxBreakdownRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const yearParam = params.taxYear ? `?taxYear=${params.taxYear}` : '';
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/treasury/parcels/${encodeURIComponent(params.parcelId)}/breakdown${yearParam}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Tax breakdown lookup failed');
+    const levies = data.levies ?? [];
+    const largest = levies.sort((a, b) => b.amount - a.amount)[0];
+    return {
+        parcelId: params.parcelId,
+        explanation: data.explanation ?? `Tax breakdown for parcel ${params.parcelId}: ${levies.length} levy component(s). ${largest ? `Largest: ${largest.name} ($${largest.amount.toLocaleString()}).` : ''}`,
+        levyCount: data.levyCount ?? levies.length,
+        largestLevy: data.largestLevy ?? largest?.name ?? 'unknown',
+    };
+};
+exports.explainTaxBreakdownRealHandler = explainTaxBreakdownRealHandler;
+// ============================================================================
+// R3.3 — Handler 44: record_payment
+// Write-low. Records a property tax payment.
+// Endpoint: POST /api/treasury/parcels/{parcelId}/payments
+// ============================================================================
+const recordPaymentRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    if (params.amount <= 0)
+        throw new Error('Payment amount must be positive');
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/treasury/parcels/${encodeURIComponent(params.parcelId)}/payments`, {
+        amount: params.amount,
+        paymentMethod: params.paymentMethod ?? 'check',
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Payment recording failed');
+    return {
+        receiptId: data.receiptId ?? `RCP-${Date.now()}`,
+        parcelId: params.parcelId,
+        amount: params.amount,
+        newBalance: data.newBalance ?? 0,
+        payloadRef: `treasury://${context.countyId}/parcels/${params.parcelId}/payments/${data.receiptId ?? 'latest'}`,
+    };
+};
+exports.recordPaymentRealHandler = recordPaymentRealHandler;
+// ============================================================================
+// R3.3 — Handler 45: check_delinquency_status
+// Read-only. Checks delinquency status and deadlines.
+// Endpoint: GET /api/treasury/parcels/{parcelId}/delinquency
+// ============================================================================
+const checkDelinquencyStatusRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/treasury/parcels/${encodeURIComponent(params.parcelId)}/delinquency`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Delinquency status lookup failed');
+    return {
+        parcelId: params.parcelId,
+        delinquent: data.delinquent ?? false,
+        amountOverdue: data.amountOverdue ?? 0,
+        oldestDelinquentYear: data.oldestDelinquentYear ?? null,
+        deadlines: data.deadlines ?? [],
+    };
+};
+exports.checkDelinquencyStatusRealHandler = checkDelinquencyStatusRealHandler;
+// ============================================================================
+// R3.3 — Handler 46: create_installment_plan
+// Write-low. Creates installment payment plan for delinquent taxes.
+// Endpoint: POST /api/treasury/parcels/{parcelId}/installment-plans
+// ============================================================================
+const createInstallmentPlanRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/treasury/parcels/${encodeURIComponent(params.parcelId)}/installment-plans`, {
+        numberOfPayments: params.numberOfPayments ?? 12,
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Installment plan creation failed');
+    return {
+        planId: data.planId ?? `PLN-${Date.now()}`,
+        parcelId: params.parcelId,
+        numberOfPayments: data.numberOfPayments ?? params.numberOfPayments ?? 12,
+        monthlyAmount: data.monthlyAmount ?? 0,
+        payloadRef: `treasury://${context.countyId}/parcels/${params.parcelId}/installment-plans/${data.planId ?? 'latest'}`,
+    };
+};
+exports.createInstallmentPlanRealHandler = createInstallmentPlanRealHandler;
+// ============================================================================
+// R3.3 — Handler 47: summarize_collection_stats
+// Read-only (Muse). Summarizes tax collection statistics.
+// Endpoint: GET /api/treasury/collection-stats
+// ============================================================================
+const summarizeCollectionStatsRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const yearParam = params.taxYear ? `?taxYear=${params.taxYear}` : '';
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/treasury/collection-stats${yearParam}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Collection stats lookup failed');
+    return {
+        county: normalizeCountyCode(params.county),
+        taxYear: data.taxYear ?? params.taxYear ?? new Date().getFullYear(),
+        totalBilled: data.totalBilled ?? 0,
+        totalCollected: data.totalCollected ?? 0,
+        collectionRate: data.collectionRate ?? 0,
+        delinquentCount: data.delinquentCount ?? 0,
+    };
+};
+exports.summarizeCollectionStatsRealHandler = summarizeCollectionStatsRealHandler;
+// ============================================================================
+// R3.3 — Handler 48: initiate_tax_sale
+// Write-high. Initiates tax sale process per RCW 84.64.
+// Endpoint: POST /api/treasury/parcels/{parcelId}/tax-sale
+// ============================================================================
+const initiateTaxSaleRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    if (!params.delinquentYears || params.delinquentYears.length === 0) {
+        throw new Error('At least one delinquent year is required');
+    }
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)(`/api/treasury/parcels/${encodeURIComponent(params.parcelId)}/tax-sale`, {
+        delinquentYears: params.delinquentYears,
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Tax sale initiation failed');
+    return {
+        saleId: data.saleId ?? `SALE-${Date.now()}`,
+        parcelId: params.parcelId,
+        status: data.status ?? 'initiated',
+        scheduledDate: data.scheduledDate ?? '',
+        totalOwed: data.totalOwed ?? 0,
+        payloadRef: `treasury://${context.countyId}/parcels/${params.parcelId}/tax-sale/${data.saleId ?? 'latest'}`,
+    };
+};
+exports.initiateTaxSaleRealHandler = initiateTaxSaleRealHandler;
+// ============================================================================
+// R3.4 — Handler 49: audit_roll_summary
+// Read-only (Muse). Summarizes assessment roll audit status.
+// Endpoint: GET /api/audit/roll-summary
+// ============================================================================
+const auditRollSummaryRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/audit/roll-summary?county=${encodeURIComponent(normalizeCountyCode(params.county))}&taxYear=${params.taxYear}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Roll summary lookup failed');
+    return {
+        county: normalizeCountyCode(params.county),
+        taxYear: params.taxYear,
+        totalParcels: data.totalParcels ?? 0,
+        auditedParcels: data.auditedParcels ?? 0,
+        discrepancyCount: data.discrepancyCount ?? 0,
+        summary: data.summary ?? `Roll audit for ${params.taxYear}: ${data.auditedParcels ?? 0} of ${data.totalParcels ?? 0} parcels audited.`,
+    };
+};
+exports.auditRollSummaryRealHandler = auditRollSummaryRealHandler;
+// ============================================================================
+// R3.4 — Handler 50: check_levy_compliance
+// Read-only. Verifies levy limit compliance against RCW 84.52 and 84.55.
+// Endpoint: GET /api/audit/levy-compliance
+// ============================================================================
+const checkLevyComplianceRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const qs = [
+        `county=${encodeURIComponent(normalizeCountyCode(params.county))}`,
+        `taxYear=${params.taxYear}`,
+    ];
+    if (params.districtCode)
+        qs.push(`district=${encodeURIComponent(params.districtCode)}`);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/audit/levy-compliance?${qs.join('&')}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Levy compliance check failed');
+    return {
+        county: normalizeCountyCode(params.county),
+        taxYear: params.taxYear,
+        compliant: data.compliant ?? true,
+        findings: data.findings ?? [],
+        statuteRefs: data.statuteRefs ?? ['RCW 84.52', 'RCW 84.55'],
+    };
+};
+exports.checkLevyComplianceRealHandler = checkLevyComplianceRealHandler;
+// ============================================================================
+// R3.4 — Handler 51: submit_audit_finding
+// Write-low. Submits an audit finding for a parcel or district.
+// Endpoint: POST /api/audit/findings
+// ============================================================================
+const submitAuditFindingRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/audit/findings', {
+        parcelId: params.parcelId,
+        findingType: params.findingType,
+        description: params.description,
+        severity: params.severity ?? 'medium',
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Audit finding submission failed');
+    return {
+        findingId: data.findingId ?? `FND-${Date.now()}`,
+        status: data.status ?? 'submitted',
+        severity: params.severity ?? 'medium',
+        payloadRef: `audit://${context.countyId}/findings/${data.findingId ?? 'latest'}`,
+    };
+};
+exports.submitAuditFindingRealHandler = submitAuditFindingRealHandler;
+// ============================================================================
+// R3.4 — Handler 52: reconcile_cross_office
+// Write-high. Cross-office financial reconciliation.
+// Endpoint: POST /api/audit/reconciliation
+// ============================================================================
+const reconcileCrossOfficeRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/audit/reconciliation', {
+        taxYear: params.taxYear,
+        offices: params.offices ?? ['assessor', 'treasurer'],
+        countyId: context.countyId,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Cross-office reconciliation failed');
+    return {
+        reconciliationId: data.reconciliationId ?? `REC-${Date.now()}`,
+        taxYear: params.taxYear,
+        status: data.status ?? 'completed',
+        discrepancies: data.discrepancies ?? 0,
+        totalReconciled: data.totalReconciled ?? 0,
+        payloadRef: `audit://${context.countyId}/reconciliation/${data.reconciliationId ?? 'latest'}`,
+    };
+};
+exports.reconcileCrossOfficeRealHandler = reconcileCrossOfficeRealHandler;
+// ============================================================================
+// R3.4 — Handler 53: generate_compliance_report
+// Read-only (Muse). Generates compliance report with findings summary.
+// Endpoint: GET /api/audit/compliance-report
+// ============================================================================
+const generateComplianceReportRealHandler = async (params, context, _tool) => {
+    assertCountyMatch(params.county, context.countyId);
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const qs = [
+        `county=${encodeURIComponent(normalizeCountyCode(params.county))}`,
+        `taxYear=${params.taxYear}`,
+    ];
+    if (params.scope)
+        qs.push(`scope=${encodeURIComponent(params.scope)}`);
+    const raw = await (0, backendClient_js_1.backendGet)(`/api/audit/compliance-report?${qs.join('&')}`, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Compliance report generation failed');
+    return {
+        county: normalizeCountyCode(params.county),
+        taxYear: params.taxYear,
+        report: data.report ?? `Compliance report for ${params.taxYear}: ${data.findingsCount ?? 0} findings.`,
+        findingsCount: data.findingsCount ?? 0,
+        complianceScore: data.complianceScore ?? 0,
+        payloadRef: `audit://${context.countyId}/compliance-report/${params.taxYear}`,
+    };
+};
+exports.generateComplianceReportRealHandler = generateComplianceReportRealHandler;
+// ============================================================================
 // Registration
 // ============================================================================
 /**
- * Register R1 + Wave 1 + Wave 2 + Wave 3 real handlers.
+ * Register all 53 real handlers (R1 + Wave 1–3 + R2.9 + R3.2–R3.4).
  * These OVERRIDE canned stubs when called after registerAllHandlers().
  *
  * @param runner - ToolRunner instance (must have initialized registry)
@@ -927,4 +1555,35 @@ function registerR1Handlers(runner, traceService) {
     // Wave 3 Enrichment handlers (2)
     runner.registerHandler('calculate_pilt_payment', exports.calculatePiltPaymentRealHandler);
     runner.registerHandler('run_income_valuation', exports.runIncomeValuationRealHandler);
+    // R2.9 TerraDais Hardening handlers (9)
+    runner.registerHandler('check_exemption_eligibility', exports.checkExemptionEligibilityRealHandler);
+    runner.registerHandler('process_exemption_renewal', exports.processExemptionRenewalRealHandler);
+    runner.registerHandler('file_appeal', exports.fileAppealRealHandler);
+    runner.registerHandler('schedule_boe_hearing', exports.scheduleBoeHearingRealHandler);
+    runner.registerHandler('get_certification_progress', exports.getCertificationProgressRealHandler);
+    runner.registerHandler('sign_off_certification_step', exports.signOffCertificationStepRealHandler);
+    runner.registerHandler('queue_notice_for_mailing', exports.queueNoticeForMailingRealHandler);
+    runner.registerHandler('get_queue_statistics', exports.getQueueStatisticsRealHandler);
+    runner.registerHandler('escalate_task', exports.escalateTaskRealHandler);
+    // R3.2 TerraClerk handlers (6)
+    runner.registerHandler('search_recorded_documents', exports.searchRecordedDocumentsRealHandler);
+    runner.registerHandler('get_title_chain', exports.getTitleChainRealHandler);
+    runner.registerHandler('explain_recording_fees', exports.explainRecordingFeesRealHandler);
+    runner.registerHandler('record_document', exports.recordDocumentRealHandler);
+    runner.registerHandler('release_lien', exports.releaseLienRealHandler);
+    runner.registerHandler('summarize_parcel_recordings', exports.summarizeParcelRecordingsRealHandler);
+    // R3.3 TerraTreasury handlers (7)
+    runner.registerHandler('get_tax_statement', exports.getTaxStatementRealHandler);
+    runner.registerHandler('explain_tax_breakdown', exports.explainTaxBreakdownRealHandler);
+    runner.registerHandler('record_payment', exports.recordPaymentRealHandler);
+    runner.registerHandler('check_delinquency_status', exports.checkDelinquencyStatusRealHandler);
+    runner.registerHandler('create_installment_plan', exports.createInstallmentPlanRealHandler);
+    runner.registerHandler('summarize_collection_stats', exports.summarizeCollectionStatsRealHandler);
+    runner.registerHandler('initiate_tax_sale', exports.initiateTaxSaleRealHandler);
+    // R3.4 TerraAudit handlers (5)
+    runner.registerHandler('audit_roll_summary', exports.auditRollSummaryRealHandler);
+    runner.registerHandler('check_levy_compliance', exports.checkLevyComplianceRealHandler);
+    runner.registerHandler('submit_audit_finding', exports.submitAuditFindingRealHandler);
+    runner.registerHandler('reconcile_cross_office', exports.reconcileCrossOfficeRealHandler);
+    runner.registerHandler('generate_compliance_report', exports.generateComplianceReportRealHandler);
 }

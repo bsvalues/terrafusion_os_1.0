@@ -11,7 +11,7 @@
 // Suite & Risk Enums (matches manifest schema)
 // ============================================================================
 
-export type Suite = 'forge' | 'atlas' | 'dais' | 'dossier' | 'os' | 'pilot' | 'gpt';
+export type Suite = 'forge' | 'atlas' | 'dais' | 'dossier' | 'os' | 'pilot' | 'gpt' | 'clerk' | 'treasury' | 'audit';
 
 export type Risk = 'read_only' | 'write_low' | 'write_high' | 'irreversible';
 
@@ -23,7 +23,41 @@ export type PiiHandling = 'none' | 'sanitize' | 'payload_ref';
 
 export type TracePolicy = 'none' | 'summary_only' | 'payload_ref';
 
-export type PayloadStore = 'dossier' | 'secure-blob' | 'case-store';
+export type PayloadStore = 'dossier' | 'secure-blob' | 'case-store' | 'clerk' | 'treasury' | 'audit';
+
+// ============================================================================
+// Office Registry Types (R3.1)
+// ============================================================================
+
+export type OfficeId = 'assessor' | 'clerk' | 'treasurer' | 'auditor' | 'recorder';
+
+export type OfficeStatus = 'active' | 'reserved' | 'planned';
+
+export interface OfficeDefinition {
+  /** Unique office identifier */
+  id: OfficeId;
+  /** Human-readable display name */
+  displayName: string;
+  /** Suite IDs mapped to this office */
+  suiteIds: Suite[];
+  /** Workbench tab IDs contributed by this office */
+  tabIds: string[];
+  /** Office activation status */
+  status: OfficeStatus;
+  /** Governed tools available to this office */
+  toolAllowlist: string[];
+}
+
+export interface OfficeRegistry {
+  /** All known offices */
+  offices: OfficeDefinition[];
+  /** Get office by ID */
+  getOffice(id: OfficeId): OfficeDefinition | undefined;
+  /** Get active offices */
+  getActiveOffices(): OfficeDefinition[];
+  /** Get tools allowed for an office */
+  getToolsForOffice(id: OfficeId): string[];
+}
 
 // ============================================================================
 // Tool Manifest Types
@@ -49,6 +83,8 @@ export interface Tool {
   piiHandling?: PiiHandling;
   tracePolicy?: TracePolicy;
   payloadStore?: PayloadStore;
+  /** Office scope — which office owns this tool (R3.1) */
+  officeScope?: OfficeId;
 }
 
 export interface ToolManifest {
@@ -82,6 +118,8 @@ export interface ToolExecutionContext {
   parcelId?: string;
   /** Target dossier ID (if applicable) */
   dossierId?: string;
+  /** Active office context (R3.1) */
+  officeId?: OfficeId;
   /** User confirmed the action */
   confirmation?: boolean;
   /** Reason code for audit trail */
@@ -143,6 +181,8 @@ export interface TraceEventInput {
   correlationId: string;
   /** Execution context */
   context: ToolExecutionContext;
+  /** Office that generated this event (R3.1) */
+  officeId?: OfficeId;
   /** Sanitized summary (always present) */
   summary: string;
   /** Reference to secure payload storage (if tracePolicy is payload_ref) */

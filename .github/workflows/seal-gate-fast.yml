@@ -53,7 +53,7 @@ jobs:
   classify:
     name: 📋 Classify Changes
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 4
     outputs:
       skip_backend: ${{ steps.classify.outputs.skip_backend }}
       skip_frontend: ${{ steps.classify.outputs.skip_frontend }}
@@ -62,24 +62,65 @@ jobs:
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
 
       - name: Classify changed files
         id: classify
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          # Get changed files safely for PR vs push
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            CHANGED=$(git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.sha }}" || echo "")
-          else
-            # Push: compare before..after when available
+
+          fetch_pr_files() {
+            local page=1
+            local files=""
+            while true; do
+              local batch
+              batch=$(gh api \
+                -H "Accept: application/vnd.github+json" \
+                "/repos/${GH_REPO}/pulls/${{ github.event.pull_request.number }}/files?per_page=100&page=${page}" \
+                --jq '.[].filename')
+
+              if [ -z "$batch" ]; then
+                break
+              fi
+
+              if [ -n "$files" ]; then
+                files="${files}"$'\n'
+              fi
+              files="${files}${batch}"
+
+              local count
+              count=$(printf '%s\n' "$batch" | sed '/^$/d' | wc -l | tr -d ' ')
+              if [ "$count" -lt 100 ]; then
+                break
+              fi
+
+              page=$((page + 1))
+            done
+
+            printf '%s' "$files"
+          }
+
+          fetch_push_files() {
             if [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
-              CHANGED=$(git diff --name-only "${{ github.event.before }}...${{ github.sha }}" || echo "")
+              gh api \
+                -H "Accept: application/vnd.github+json" \
+                "/repos/${GH_REPO}/compare/${{ github.event.before }}...${{ github.sha }}" \
+                --jq '.files[].filename'
             else
-              # Fallback (first commit / unusual)
-              CHANGED=$(git ls-files)
+              git ls-files
             fi
+          }
+
+          # Get changed files without a full-history checkout.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED=$(fetch_pr_files)
+          else
+            CHANGED=$(fetch_push_files)
           fi
 
           echo "Changed files:"

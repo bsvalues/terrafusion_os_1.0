@@ -71,17 +71,17 @@ jest.mock('../../services/api/activityApi', () => ({
 // ============================================================================
 
 describe('Gate 1: Contract Types', () => {
-  it('WorkbenchTabSlug type covers all 6 canonical tabs', () => {
+  it('WorkbenchTabSlug type covers all 9 canonical tabs', () => {
     // This is enforced at compile time by TypeScript, but we
     // verify the runtime constant matches.
-    const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'pilot'];
+    const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
     for (const tab of expected) {
       expect(VALID_WORKBENCH_TAB_IDS).toContain(tab);
     }
   });
 
-  it('tab slug set is exactly 6 members (no drift)', () => {
-    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(6);
+  it('tab slug set is exactly 9 members (no drift)', () => {
+    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(9);
   });
 });
 
@@ -205,9 +205,9 @@ describe('Gate 4: Workbench Component Barrel', () => {
 // ============================================================================
 
 describe('Gate 5: Tab Slug Canonical Order', () => {
-  it('tab order is exactly: summary, forge, atlas, dais, dossier, pilot', () => {
+  it('tab order is exactly: summary, forge, atlas, dais, clerk, treasury, audit, dossier, pilot', () => {
     // This prevents accidental reordering which would confuse users
-    const expected = ['summary', 'forge', 'atlas', 'dais', 'dossier', 'pilot'];
+    const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
     expect(VALID_WORKBENCH_TAB_IDS).toEqual(expected);
   });
 });
