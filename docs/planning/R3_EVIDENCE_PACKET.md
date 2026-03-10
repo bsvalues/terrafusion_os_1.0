@@ -2,16 +2,17 @@
 
 Date: March 10, 2026  
 Branch: `r3/full-execution`  
-Tags: `r3.0.0` → `r3.1.0` → `r3.2.0`  
+Tags: `r3.0.0` → `r3.1.0` → `r3.2.0` → `r3.3.0` (CX lane)  
 
 ---
 
 ## Executive Summary
 
-R3 delivered the Core Platform (CP) and Component/UI (CC) lanes for the multi-office
-expansion of TerraFusion OS. Three new county office verticals — **TerraClerk**,
-**TerraTreasury**, and **TerraAudit** — are now fully governed with 18 real tool
-handlers, 3 frontend workbench tabs, and 30 acceptance criteria all passing.
+R3 delivered the Core Platform (CP), Component/UI (CC), and Backend API (CX) lanes
+for the multi-office expansion of TerraFusion OS. Three new county office verticals —
+**TerraClerk**, **TerraTreasury**, and **TerraAudit** — are now fully governed with
+18 real tool handlers, 3 frontend workbench tabs, 3 backend controllers (18 endpoints,
+10 entities), and 30 + 34 = **64 acceptance criteria** all passing.
 
 ---
 
@@ -22,6 +23,7 @@ handlers, 3 frontend workbench tabs, and 30 acceptance criteria all passing.
 | `r3.0.0` | `a581ae2d0` | 53 governed tools, v2.0.0 manifest, 9 workbench tabs, 3 new verticals |
 | `r3.1.0` | `00eed894b` | Office registry, RBAC vocabulary expansion, officeScope on all tools, 27 ACs |
 | `r3.2.0` | *current* | Cross-office trace tests, county isolation verification, 3-office chain, evidence |
+| `r3.3.0` | `012f7fe3a` | CX lane: 3 backend controllers, 10 entities, 18 endpoints, 34 CX tests |
 
 ---
 
@@ -129,7 +131,9 @@ handlers, 3 frontend workbench tabs, and 30 acceptance criteria all passing.
 | `node --test phase83-tools.test.mjs` | ✅ 32/32 pass |
 | `node --test r1-acceptance-criteria.test.mjs` | ✅ 84/84 pass |
 | `node --test r3-acceptance-criteria.test.mjs` | ✅ 30/30 pass |
+| `node --test r3-cx-acceptance-criteria.test.mjs` | ✅ 34/34 pass |
 | `npx vitest run` | ✅ 920 pass (416 files) |
+| `dotnet build TerraFusion.sln -c Release` | ✅ 0 errors, 0 warnings |
 
 ---
 
@@ -195,20 +199,66 @@ All 9 tabs: visible in tab bar, routed via React Router, lazy-loaded via Suspens
 | All permanent gates pass | ✅ All green |
 | 18+ new acceptance criteria | ✅ 30 tests passing |
 | No stubs/mocks in production surface | ✅ All real handlers |
-| Backend controllers (CX lane) | ⏳ Pending — outside governed scope |
+| Backend controllers (CX lane) | ✅ Complete — 3 controllers, 18 endpoints, 10 entities |
 
 ---
 
-## Remaining Work (Outside Governed Scope)
+## CX Lane Delivery — Backend API Controllers
 
-The CX (Backend API) lane requires new .NET controllers in `backend/`:
-- `ClerkController.cs` — recording, title chain, liens, fee schedule
-- `TreasuryController.cs` — tax statements, payments, delinquency, tax sales
-- `AuditController.cs` — roll audit, levy compliance, reconciliation
+### Controllers Created
 
-These controllers serve the endpoints that the tool handlers already call.
-Currently the handlers use mockFetch in tests; production requires real endpoints.
-This work requires explicit authorization to modify `backend/`.
+| Controller | Route | Endpoints | Entities |
+|-----------|-------|-----------|----------|
+| `ClerkController.cs` | `api/clerk` | 6 | ClerkDocument, TitleChainEntry, ClerkLien |
+| `TreasuryController.cs` | `api/treasury` | 7 | TaxStatement, TaxPayment, DelinquencyRecord, InstallmentPlan, TaxSale |
+| `AuditController.cs` | `api/audit` | 5 | AuditFinding, AuditReconciliation |
+
+### Endpoint Map (18 total)
+
+**Clerk (6):**
+- `GET /api/clerk/documents` — search recorded documents
+- `GET /api/clerk/parcels/{id}/title-chain` — title chain query
+- `GET /api/clerk/fees` — Benton County recording fee schedule (AllowAnonymous)
+- `POST /api/clerk/documents` — record document
+- `POST /api/clerk/liens/{id}/release` — release lien
+- `GET /api/clerk/parcels/{id}/recordings/summary` — parcel recording summary
+
+**Treasury (7):**
+- `GET /api/treasury/parcels/{id}/statement` — tax statement
+- `GET /api/treasury/parcels/{id}/breakdown` — levy breakdown
+- `POST /api/treasury/parcels/{id}/payments` — record payment
+- `GET /api/treasury/parcels/{id}/delinquency` — delinquency status
+- `POST /api/treasury/parcels/{id}/installment-plans` — create installment plan
+- `GET /api/treasury/collection-stats` — collection statistics
+- `POST /api/treasury/parcels/{id}/tax-sale` — initiate tax sale
+
+**Audit (5):**
+- `GET /api/audit/roll-summary` — roll audit summary
+- `GET /api/audit/levy-compliance` — RCW 84.52/84.55 compliance check
+- `POST /api/audit/findings` — submit audit finding
+- `POST /api/audit/reconciliation` — cross-office reconciliation
+- `GET /api/audit/compliance-report` — compliance report
+
+### Security Pattern (All Controllers)
+- `[Authorize]` attribute on all controller classes
+- `ResolveCountyIdAsync()` county isolation on every endpoint
+- `AsNoTracking()` for all read queries
+- County-scoped indices on all entities (unique constraints include CountyId)
+
+### Static Data
+- **Clerk**: `BentonRecordingFees` — 11 document types per RCW 36.18.010
+- **Treasury**: `BentonLevyData` — 9 levy components (Benton County avg mill rate ~$10.80/$1000)
+- **Audit**: 3 statutory compliance rules per RCW 84.52/84.55
+
+### CX Acceptance Tests (34/34 PASS)
+
+| Suite | Tests | Content |
+|-------|-------|---------|
+| Clerk Endpoint Wiring | 6 | Handler→URL contract for all 6 clerk endpoints |
+| Treasury Endpoint Wiring | 4 | Handler→URL contract for treasury endpoints |
+| Audit Endpoint Wiring | 5 | Handler→URL contract for all 5 audit endpoints |
+| Controller Manifest | 7 | File existence + DbSet registration |
+| Security: County Isolation | 12 | [Authorize], ResolveCountyIdAsync, route, AsNoTracking per controller |
 
 ---
 
@@ -218,7 +268,8 @@ This work requires explicit authorization to modify `backend/`.
 r2.8.0 (55d6baffa) — R2 complete: 26 tools, 23/23 workbench
   └── r3.0.0 (a581ae2d0) — R3 multi-office: 53 tools, v2.0.0, 9 tabs
        └── r3.1.0 (00eed894b) — office registry, RBAC, officeScope, 27 ACs
-            └── r3.2.0 (pending) — cross-office trace, isolation, 3-office chain, evidence
+            └── r3.2.0 (bfa315b9e) — cross-office trace, isolation, 3-office chain, 30 ACs
+                 └── r3.3.0 (012f7fe3a) — CX lane: 3 controllers, 18 endpoints, 10 entities, 34 CX ACs
 ```
 
 ---

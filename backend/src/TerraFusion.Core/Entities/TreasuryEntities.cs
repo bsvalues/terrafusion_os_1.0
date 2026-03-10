@@ -13,9 +13,16 @@ public class TaxStatement
     [Required] [StringLength(50)]
     public string ParcelId { get; set; } = string.Empty;
 
+    [Range(1900, 2100)]
     public int TaxYear { get; set; }
+
+    [Range(0, (double)decimal.MaxValue)]
     public decimal TotalDue { get; set; }
+
+    [Range(0, (double)decimal.MaxValue)]
     public decimal Paid { get; set; }
+
+    [Range(0, (double)decimal.MaxValue)]
     public decimal Balance { get; set; }
 
     public DateTime? DueDate { get; set; }
@@ -43,6 +50,7 @@ public class TaxPayment
     [Required] [StringLength(50)]
     public string ParcelId { get; set; } = string.Empty;
 
+    [Range(0.01, (double)decimal.MaxValue)]
     public decimal Amount { get; set; }
 
     [StringLength(30)]
@@ -69,7 +77,10 @@ public class DelinquencyRecord
     [Required] [StringLength(50)]
     public string ParcelId { get; set; } = string.Empty;
 
+    [Range(0, (double)decimal.MaxValue)]
     public decimal AmountOverdue { get; set; }
+
+    [Range(1900, 2100)]
     public int OldestDelinquentYear { get; set; }
     public bool IsDelinquent { get; set; }
 
@@ -91,8 +102,13 @@ public class InstallmentPlan
     [Required] [StringLength(50)]
     public string ParcelId { get; set; } = string.Empty;
 
+    [Range(1, 360)]
     public int NumberOfPayments { get; set; }
+
+    [Range(0.01, (double)decimal.MaxValue)]
     public decimal MonthlyAmount { get; set; }
+
+    [Range(0.01, (double)decimal.MaxValue)]
     public decimal TotalAmount { get; set; }
 
     [StringLength(20)]
@@ -120,6 +136,7 @@ public class TaxSale
     public string Status { get; set; } = "initiated";
 
     public DateTime? ScheduledDate { get; set; }
+    [Range(0.01, (double)decimal.MaxValue)]
     public decimal TotalOwed { get; set; }
 
     [StringLength(500)]
