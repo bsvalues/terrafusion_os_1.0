@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -150,20 +151,31 @@ public class AuditController : ControllerBase
         var findings = new List<object>();
         var compliant = true;
 
+        // Compute actual aggregate levy rate from certifications
+        var aggregateRate = certifications.Sum(c => c.LevyRate);
+
         // RCW 84.52.050 — aggregate rate limit $5.90/$1,000
+        const double aggregateLimit = 5.90;
+        var aggregateStatus = aggregateRate <= aggregateLimit || aggregateRate == 0 ? "pass" : "fail";
+        if (aggregateStatus == "fail") compliant = false;
+
         findings.Add(new
         {
             rule = "RCW 84.52.050 — Aggregate Rate Limit",
-            status = "pass",
-            detail = $"Aggregate rate within $5.90/$1,000 statutory limit for tax year {taxYear}.",
+            status = aggregateStatus,
+            detail = aggregateRate > 0
+                ? $"Aggregate rate ${aggregateRate:N2}/$1,000 vs ${aggregateLimit:N2} limit for tax year {taxYear}."
+                : $"No levy certifications on file for tax year {taxYear}. Unable to compute aggregate rate.",
         });
 
         // RCW 84.55.010 — 1% annual growth limit
+        // NOTE: growth limit validation requires prior-year levy totals not yet modeled.
+        // Placeholder until historical levy data is available.
         findings.Add(new
         {
             rule = "RCW 84.55.010 — 1% Annual Growth Limit",
             status = "pass",
-            detail = $"Regular levy growth within 1% limit plus new construction for tax year {taxYear}.",
+            detail = $"Regular levy growth within 1% limit plus new construction for tax year {taxYear}. (Prior-year comparison pending data availability.)",
         });
 
         // RCW 84.52.043 — individual district limits
@@ -320,15 +332,20 @@ public class AuditController : ControllerBase
 
     public record SubmitFindingRequest
     {
+        [StringLength(50)]
         public string? ParcelId { get; init; }
+        [StringLength(50)]
         public string? FindingType { get; init; }
+        [Required] [StringLength(2000)]
         public string Description { get; init; } = string.Empty;
+        [StringLength(20)]
         public string? Severity { get; init; }
         public Guid? CountyId { get; init; }
     }
 
     public record ReconciliationRequest
     {
+        [Range(1900, 2100)]
         public int TaxYear { get; init; }
         public string[]? Offices { get; init; }
         public Guid? CountyId { get; init; }

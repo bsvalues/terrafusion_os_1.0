@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -321,16 +322,22 @@ public class ClerkController : ControllerBase
 
     public record RecordDocumentRequest
     {
+        [StringLength(50)]
         public string? ParcelId { get; init; }
+        [Required] [StringLength(50)]
         public string DocumentType { get; init; } = string.Empty;
+        [StringLength(200)]
         public string? Grantor { get; init; }
+        [StringLength(200)]
         public string? Grantee { get; init; }
+        [Range(0, (double)decimal.MaxValue)]
         public decimal Consideration { get; init; }
         public Guid? CountyId { get; init; }
     }
 
     public record ReleaseLienRequest
     {
+        [StringLength(200)]
         public string? Reason { get; init; }
         public Guid? CountyId { get; init; }
     }

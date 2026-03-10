@@ -25,7 +25,10 @@ public class ClerkDocument
     [Required] [StringLength(200)]
     public string Grantee { get; set; } = string.Empty;
 
+    [Range(0, (double)decimal.MaxValue)]
     public decimal Consideration { get; set; }
+
+    [Range(0, (double)decimal.MaxValue)]
     public decimal Fees { get; set; }
 
     public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
@@ -86,6 +89,7 @@ public class ClerkLien
     [Required] [StringLength(200)]
     public string LienHolder { get; set; } = string.Empty;
 
+    [Range(0.01, (double)decimal.MaxValue)]
     public decimal Amount { get; set; }
 
     [StringLength(20)]

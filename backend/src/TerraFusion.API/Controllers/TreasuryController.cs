@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -425,13 +426,16 @@ public class TreasuryController : ControllerBase
 
     public record RecordPaymentRequest
     {
+        [Range(0.01, (double)decimal.MaxValue)]
         public decimal Amount { get; init; }
+        [StringLength(30)]
         public string? PaymentMethod { get; init; }
         public Guid? CountyId { get; init; }
     }
 
     public record CreateInstallmentPlanRequest
     {
+        [Range(1, 360)]
         public int NumberOfPayments { get; init; } = 12;
         public Guid? CountyId { get; init; }
     }
