@@ -174,9 +174,9 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | REQUIRED | 3 |
 | PUSH-OPTIONAL | 39 |
 | SCHEDULED | 17 |
-| MANUAL | 20 |
+| MANUAL | 21 |
 | DEPRECATED | 2 |
-| **Total** | 81 |
+| **Total** | 82 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
@@ -243,7 +243,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `security.yml`
 - `terraforge-ci.yml`
 
-**MANUAL** (20):
+**MANUAL** (21):
 - `autonomy-incident-triage.yml`
 - `baseline-guard.yml`
 - `ci-cd-main.yml`
@@ -257,6 +257,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `manifest-contract-guard.yml`
 - `performance-regression.yml`
 - `release-lane.yml`
+- `rollback-staging.yml`
 - `scope-drift-guard.yml`
 - `tag-lint.yml`
 - `terrafusion-gate-enforcement.yml`
