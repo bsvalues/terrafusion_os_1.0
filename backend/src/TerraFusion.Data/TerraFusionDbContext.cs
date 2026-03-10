@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Models;
@@ -505,6 +506,31 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
 
     // Configure encryption for sensitive fields
     ConfigureEncryption(modelBuilder);
+    NormalizeSqliteColumnTypes(modelBuilder);
+  }
+
+  private void NormalizeSqliteColumnTypes(ModelBuilder modelBuilder)
+  {
+    var provider = Database.ProviderName ?? string.Empty;
+    if (!provider.Contains("Sqlite", StringComparison.OrdinalIgnoreCase))
+      return;
+
+    foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+    {
+      foreach (var property in entityType.GetProperties())
+      {
+        var columnType = property.GetColumnType();
+        if (string.IsNullOrWhiteSpace(columnType))
+          continue;
+
+        if (columnType.Contains("jsonb", StringComparison.OrdinalIgnoreCase) ||
+            columnType.Contains("nvarchar(max)", StringComparison.OrdinalIgnoreCase) ||
+            columnType.Contains("varchar(max)", StringComparison.OrdinalIgnoreCase))
+        {
+          property.SetColumnType("TEXT");
+        }
+      }
+    }
   }
 
   private void ConfigureEncryption(ModelBuilder modelBuilder)

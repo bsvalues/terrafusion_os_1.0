@@ -484,18 +484,21 @@ public sealed class R1Week5CxR1ClosureTests
   }
 
   [Fact]
-  public void AtlasController_GetLayers_ReturnsLiveLayerCatalog()
+  public void AtlasController_GetLayers_ReturnsPostR1Contract()
   {
-    using var db = CreateDbContext(nameof(AtlasController_GetLayers_ReturnsLiveLayerCatalog));
+    using var db = CreateDbContext(nameof(AtlasController_GetLayers_ReturnsPostR1Contract));
     var controller = new AtlasController(db, NullLogger<AtlasController>.Instance);
     AttachPrincipal(controller, CreateEmptyPrincipal());
 
     var result = controller.GetLayers();
 
-    var objectResult = result.Should().BeOfType<OkObjectResult>().Subject;
+    var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
+    objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+    controller.HttpContext.Response.Headers["X-R1-Scope"].ToString().Should().Be("Post-R1");
+
     using var json = JsonDocument.Parse(JsonSerializer.Serialize(objectResult.Value));
-    json.RootElement.GetProperty("count").GetInt32().Should().Be(5);
-    json.RootElement.GetProperty("layers").EnumerateArray().Count().Should().Be(5);
+    json.RootElement.GetProperty("scope").GetString().Should().Be("Post-R1");
+    json.RootElement.GetProperty("operation").GetString().Should().Be("layers");
   }
 
   [Fact]

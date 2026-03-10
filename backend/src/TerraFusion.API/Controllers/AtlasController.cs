@@ -141,39 +141,37 @@ public class AtlasController : ControllerBase
     return !string.IsNullOrWhiteSpace(parcelId) && ParcelIdPattern.IsMatch(parcelId);
   }
 
+  private ActionResult BuildPostR1DisabledResponse(string operation, string detail)
+  {
+    HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
+
+    _logger.LogWarning(
+        "Atlas endpoint {Operation} was invoked, but the backend remains Post-R1 and is intentionally disabled",
+        operation);
+
+    var problem = new ProblemDetails
+    {
+      Title = "Atlas backend is not enabled for this operation",
+      Detail = detail,
+      Status = StatusCodes.Status501NotImplemented,
+      Type = "https://terrafusion.local/problems/atlas-post-r1"
+    };
+
+    problem.Extensions["scope"] = "Post-R1";
+    problem.Extensions["operation"] = operation;
+
+    return StatusCode(StatusCodes.Status501NotImplemented, problem);
+  }
+
   // ── Atlas Suite Endpoints ──────────────────────────────
 
   [HttpGet("layers")]
   [RequiresPermission("read:parcel")]
   public IActionResult GetLayers()
   {
-    return Ok(new
-    {
-      count = DefaultLayers.Length,
-      layers = DefaultLayers.Select(l => new
-      {
-        id = l,
-        name = l switch
-        {
-          "boundary" => "Parcel Boundary",
-          "zoning" => "Zoning Districts",
-          "flood" => "FEMA Flood Zones",
-          "aerial" => "Aerial Imagery (2025)",
-          "parcels" => "All Parcels",
-          _ => l,
-        },
-        available = l is "boundary" or "parcels",
-        description = l switch
-        {
-          "boundary" => "Parcel boundary polygons derived from county GIS data",
-          "zoning" => "Zoning district overlays for land-use classification",
-          "flood" => "FEMA National Flood Hazard Layer zones",
-          "aerial" => "High-resolution aerial imagery from 2025 flight",
-          "parcels" => "County-wide parcel index with centroid points",
-          _ => string.Empty,
-        },
-      }),
-    });
+    return BuildPostR1DisabledResponse(
+        "layers",
+        "The atlas layer catalog remains Post-R1. Parcel-specific atlas reads are live, but the broader layer catalog endpoint is intentionally disabled.");
   }
 
   public record ParcelSearchRequest(string? Query, string? PropertyType, int Limit = 50, int Offset = 0);
