@@ -23,7 +23,10 @@ RUN echo "fetch-timeout=120000" >> .npmrc && echo "fetch-retries=5" >> .npmrc
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter ./frontend...
 
-# Copy frontend source only
+# Copy workspace packages (vite.config.ts resolve aliases reference packages/ui/src/)
+COPY packages/ packages/
+
+# Copy frontend source
 COPY frontend/ frontend/
 
 # Build from workspace root
