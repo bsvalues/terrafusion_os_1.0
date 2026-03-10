@@ -172,9 +172,9 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 40 |
+| PUSH-OPTIONAL | 39 |
 | SCHEDULED | 17 |
-| MANUAL | 19 |
+| MANUAL | 20 |
 | DEPRECATED | 2 |
 | **Total** | 81 |
 
@@ -183,7 +183,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (40):
+**PUSH-OPTIONAL** (39):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -212,7 +212,6 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `opa-policy-tests.yml`
 - `release-compliance.yml`
 - `release-lane-guard.yml`
-- `release-lane.yml`
 - `release-validation.yml`
 - `rust-security-gates.yml`
 - `rust-verify.yml`
@@ -244,7 +243,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `security.yml`
 - `terraforge-ci.yml`
 
-**MANUAL** (19):
+**MANUAL** (20):
 - `autonomy-incident-triage.yml`
 - `baseline-guard.yml`
 - `ci-cd-main.yml`
@@ -257,6 +256,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `kubernetes-infrastructure-ci.yml`
 - `manifest-contract-guard.yml`
 - `performance-regression.yml`
+- `release-lane.yml`
 - `scope-drift-guard.yml`
 - `tag-lint.yml`
 - `terrafusion-gate-enforcement.yml`

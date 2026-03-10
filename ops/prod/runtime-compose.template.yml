@@ -1,0 +1,47 @@
+services:
+  proxy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    env_file:
+      - ./release.env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+
+  backend:
+    image: ${TF_BACKEND_IMAGE}
+    restart: unless-stopped
+    env_file:
+      - ./app.env
+      - ./release.env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://0.0.0.0:5000
+      DatabaseProvider: Sqlite
+      ConnectionStrings__DefaultConnection: Data Source=data/terrafusion.db
+      TF_STATE_MESH_ENFORCE: 'true'
+    volumes:
+      - ./data:/app/data
+      - ./docs/spec-lock:/app/docs/spec-lock:ro
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  frontend:
+    image: ${TF_FRONTEND_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:

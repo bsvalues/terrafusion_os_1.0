@@ -33,7 +33,20 @@ This document contains **no secrets**. Store secrets only in:
 - Server firewall (ufw) open: 22/tcp, 80/tcp, 443/tcp
 - APP_ROOT: /opt/terrafusion/staging
 
+## Production VPS (Hostinger)
+- VPS name/id: (from Hostinger panel)
+- IPv4: <PROD_VPS_IPV4>
+- OS: Ubuntu 22.04 LTS
+- Provider firewall open: 22/tcp, 80/tcp, 443/tcp
+- Server firewall (ufw) open: 22/tcp, 80/tcp, 443/tcp
+- APP_ROOT: /opt/terrafusion/production
+
 ## GHCR Pull Auth (Staging)
+- Configured on VPS (deploy user): yes/no
+- Method: `docker login ghcr.io` with least-privilege token
+- Date/time verified: (UTC)
+
+## GHCR Pull Auth (Production)
 - Configured on VPS (deploy user): yes/no
 - Method: `docker login ghcr.io` with least-privilege token
 - Date/time verified: (UTC)
@@ -50,12 +63,25 @@ Variables:
 Secrets:
 - DEPLOY_SSH_KEY = (stored in GitHub only)
 
+### production
+Variables:
+- DEPLOY_HOST = <PROD_VPS_IPV4>
+- DEPLOY_PORT = 22
+- DEPLOY_USER = deploy
+- PUBLIC_URL = https://terrafusionmarket.com
+- APP_ROOT = /opt/terrafusion/production
+
+Secrets:
+- DEPLOY_SSH_KEY = (stored in GitHub only)
+
 ## Lane Closure Evidence Index
 - Deploy seed 24531f37a... artifact: (link or artifact name)
 - Deploy 864d651a8... artifact: (link or artifact name)
 - Rollback artifact: (link or artifact name)
 - Redeploy 864d651a8... artifact: (link or artifact name)
+- Production deploy 864d651a8... artifact: (link or artifact name)
 
 ## Notes
 - Hostinger MCP is optional discovery only; config is local-only and not committed.
 - Production is not approved until staging deploy + rollback + observability proofs exist.
+- Any credential or secret ever pasted into chat is compromised and must be rotated before use.
