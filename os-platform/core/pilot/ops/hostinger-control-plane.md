@@ -113,7 +113,7 @@ Secrets:
 ### Active Blockers
 - ~~Production SSH fails~~ RESOLVED: v4 key generated on VPS, set via pipe
 - ~~GHCR old public package deletion~~ RESOLVED: 4 packages deleted via `gh api -X DELETE` (2026-03-11)
-- K3s-style kubeconfig material was removed from the repo tree, but cluster trust rotation remains an external infra task if `terrafusion-k8s-api` is still live
+- K3s-style kubeconfig material was removed from the repo tree; ~~cluster trust rotation remains an external infra task if `terrafusion-k8s-api` is still live~~ CLOSED: infra-probe confirmed K3s not installed on VPS
 - ~~Staging and production cannot run simultaneously on the same VPS (port 80/443 conflict)~~ RESOLVED: shared edge proxy routes by hostname (PR #684)
 - `staging.terrafusionmarket.com` DNS A record missing (NXDOMAIN); needs restoration at Hostinger. Staging works via `--resolve` fallback + `tls internal` (self-signed cert) as workaround.
 
@@ -192,8 +192,8 @@ Remaining items:
 - ~~Implement port differentiation or shared proxy for staging/production coexistence~~ DONE (PR #684, shared edge proxy)
 - ~~Deploy staging behind edge proxy~~ DONE (PR #686 `tls internal`, PR #687 caddy reload)
 - ~~Prove staging + production coexistence~~ DONE (2026-03-11, both 200 OK behind edge proxy)
-- ~~K3s trust rotation if cluster is live~~ Probe workflow created (`.github/workflows/infra-probe.yml`); dispatch to determine if K3s is present
-- ~~Production observability validation~~ Health-check cron created (`.github/workflows/health-check.yml`); runs every 15 min, fails on production down
+- ~~K3s trust rotation if cluster is live~~ CLOSED: infra-probe run 22965879505 confirmed K3s NOT installed (which k3s → NOT_FOUND, systemctl → inactive, no K8s ports). No rotation needed.
+- ~~Production observability validation~~ CLOSED: health-check cron created (`.github/workflows/health-check.yml`), first run 22965885009 passed (both envs 200 OK)
 - ~~Final approval memo from production artifacts~~ See `os-platform/core/pilot/ops/production-approval-memo.md`
 - Restore `staging.terrafusionmarket.com` DNS A record at Hostinger (manual step, then remove `tls internal`)
 
