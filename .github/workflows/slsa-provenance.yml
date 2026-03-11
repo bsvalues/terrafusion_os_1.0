@@ -31,7 +31,8 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  SLSA_BACKEND_IMAGE: ghcr.io/bsvalues/terrafusion-os-slsa-backend-internal
+  SLSA_FRONTEND_IMAGE: ghcr.io/bsvalues/terrafusion-os-slsa-frontend-internal
 
 jobs:
   # ===========================================================================
@@ -120,7 +121,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend
+          images: ${{ env.SLSA_BACKEND_IMAGE }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -232,7 +233,7 @@ jobs:
         if: steps.detect_frontend_container.outputs.ready == 'true'
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/bsvalues/terrafusion_os_1.0-frontend
+          images: ${{ env.SLSA_FRONTEND_IMAGE }}
           tags: |
             type=sha,prefix=sha-
             type=ref,event=branch,prefix=branch-

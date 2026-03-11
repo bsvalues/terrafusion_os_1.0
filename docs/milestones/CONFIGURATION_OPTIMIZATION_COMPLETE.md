@@ -1,9 +1,13 @@
 # 🔒 Configuration Optimization Complete - Benton County Production Environment
 
 **Date**: October 11, 2025  
-**Status**: ✅ **COMPLETE - PRODUCTION READY**  
+**Status**: ⚠️ **SANITIZED EXAMPLE - INJECT SECRETS OUT OF BAND BEFORE USE**  
 **File**: `.env.benton`  
 **Methodology**: MIT/PhD-Level Systems Engineering
+
+> Sanitized on 2026-03-11 after public-exposure review. Any secret-looking values
+> below are placeholders only and must be replaced from a secret manager at
+> deploy time.
 
 ---
 
@@ -43,7 +47,7 @@ REDIS_PORT=6379
 # AFTER: Secure production password
 REDIS_HOST=redis
 REDIS_PORT=6379
-REDIS_PASSWORD=BentonCounty_Redis_Production_2025_Cache_Secure_K3y
+REDIS_PASSWORD=<rotate-and-store-in-key-vault>
 REDIS_DB=0
 REDIS_MAX_MEMORY=4gb
 REDIS_EVICTION_POLICY=allkeys-lru
@@ -53,21 +57,21 @@ REDIS_EVICTION_POLICY=allkeys-lru
 
 ```bash
 # ADDED: Monitoring system security
-GRAFANA_ADMIN_PASSWORD=BentonCounty_Grafana_Admin_2025_Monitoring_Secure_P4ssw0rd
+GRAFANA_ADMIN_PASSWORD=<rotate-grafana-admin-password>
 ```
 
 **C. Certificate Password**
 
 ```bash
 # ADDED: SSL/TLS certificate protection
-CERT_PASSWORD=BentonCounty_Certificate_2025_TLS_Secure_K3y
+CERT_PASSWORD=<rotate-certificate-password>
 ```
 
 **D. Session Secret**
 
 ```bash
 # ADDED: Cookie signing security
-SESSION_SECRET=BentonCounty_Session_2025_Secure_Random_String_For_Cookie_Signing
+SESSION_SECRET=<rotate-session-signing-secret>
 ```
 
 ### 2. 📦 New Configuration Sections
@@ -126,7 +130,7 @@ TF_DNS_SECONDARY=8.8.4.4    # NEW: Secondary DNS
 ```bash
 # ===== Postgres / PostGIS =====
 POSTGRES_USER=terrafusion
-POSTGRES_PASSWORD=BentonCounty_PostgreSQL_Production_2025_Secure_89247Parcels_W4sh1ngt0n
+POSTGRES_PASSWORD=<rotate-postgres-password>
 POSTGRES_DB=terrafusion_production
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
@@ -141,7 +145,7 @@ POSTGRES_SHARED_BUFFERS=2GB           # NEW: Performance tuning
 # ===== Redis =====
 REDIS_HOST=redis
 REDIS_PORT=6379
-REDIS_PASSWORD=BentonCounty_Redis_Production_2025_Cache_Secure_K3y  # NEW: Security
+REDIS_PASSWORD=<rotate-and-store-in-key-vault>  # NEW: Security
 REDIS_DB=0                             # NEW: Database selection
 REDIS_MAX_MEMORY=4gb                   # NEW: Memory limits
 REDIS_EVICTION_POLICY=allkeys-lru     # NEW: Cache policy
@@ -151,15 +155,15 @@ REDIS_EVICTION_POLICY=allkeys-lru     # NEW: Cache policy
 
 ```bash
 # BEFORE: Basic secrets
-JWT_SECRET=BentonCounty_TerraFusion_JWT_Production_2025_SecureKey_89247Parcels
-ENCRYPTION_KEY=BentonCounty_AES256_Production_Key_2025
+JWT_SECRET=<legacy-example-placeholder>
+ENCRYPTION_KEY=<legacy-example-placeholder>
 
 # AFTER: Enhanced with documentation and stronger values
-# CRITICAL: These are production values - protect with Azure Key Vault!
+# CRITICAL: Source deployment-specific values from Azure Key Vault or equivalent.
 # JWT_SECRET: Used for authentication tokens (128+ chars recommended)
-JWT_SECRET=BentonCounty_TerraFusion_JWT_Production_2025_SecureKey_89247Parcels_Washington_Government_Operating_System_HMAC_SHA256_Signature
+JWT_SECRET=<rotate-jwt-secret>
 # ENCRYPTION_KEY: AES-256 encryption (64+ chars recommended)
-ENCRYPTION_KEY=BentonCounty_AES256_Production_Key_2025_Government_Data_Encryption_Washington_53005
+ENCRYPTION_KEY=<rotate-encryption-key>
 ```
 
 #### **Section 7: Dynamic MCP Configuration**
@@ -237,9 +241,9 @@ TEMP_DIR=./temp/benton             # NEW: Temporary files
 
 ```bash
 # NEW: Comprehensive security configuration
-GRAFANA_ADMIN_PASSWORD=BentonCounty_Grafana_Admin_2025_Monitoring_Secure_P4ssw0rd
-CERT_PASSWORD=BentonCounty_Certificate_2025_TLS_Secure_K3y
-SESSION_SECRET=BentonCounty_Session_2025_Secure_Random_String_For_Cookie_Signing
+GRAFANA_ADMIN_PASSWORD=<rotate-grafana-admin-password>
+CERT_PASSWORD=<rotate-certificate-password>
+SESSION_SECRET=<rotate-session-signing-secret>
 CORS_ORIGINS=https://terrafusion.bentoncountywa.gov,https://admin.bentoncountywa.gov
 ```
 
@@ -349,10 +353,10 @@ All county-specific values were **100% preserved** during optimization:
 
 **Security Enhancements:**
 
-- ✅ **Redis Authentication** - Strong password with 64+ char complexity
-- ✅ **Monitoring Security** - Grafana password with role-based access
-- ✅ **Certificate Protection** - Encrypted cert storage
-- ✅ **Session Security** - Secure cookie signing key
+- ✅ **Redis Authentication** - Placeholder documented for secret-managed injection
+- ✅ **Monitoring Security** - Placeholder documented for secret-managed injection
+- ✅ **Certificate Protection** - Placeholder documented for secret-managed injection
+- ✅ **Session Security** - Placeholder documented for secret-managed injection
 - ✅ **CORS Protection** - Explicit origin whitelist
 - ✅ **Key Vault Ready** - Azure integration documented and ready
 - ✅ **Dynamic Configuration** - Port variables with fallbacks

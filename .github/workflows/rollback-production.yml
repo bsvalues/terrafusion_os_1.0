@@ -122,8 +122,8 @@ jobs:
           set -euo pipefail
           CURRENT_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/current.sha'")"
           ROLLBACK_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/previous.sha'")"
-          BACKEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-backend:${ROLLBACK_SHA}"
-          FRONTEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-frontend:${ROLLBACK_SHA}"
+          BACKEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-backend-internal:${ROLLBACK_SHA}"
+          FRONTEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-frontend-internal:${ROLLBACK_SHA}"
 
           {
             printf 'current_sha=%s\n' "$CURRENT_SHA"

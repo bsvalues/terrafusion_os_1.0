@@ -111,7 +111,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/terrafusion-api
+          images: ghcr.io/bsvalues/terrafusion-api-internal
           tags: |
             type=ref,event=branch
             type=ref,event=pr

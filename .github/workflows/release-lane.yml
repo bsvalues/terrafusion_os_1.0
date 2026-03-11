@@ -86,8 +86,8 @@ jobs:
 
           PUBLIC_HOST="$(node -e "const url = new URL(process.env.PUBLIC_URL); process.stdout.write(url.hostname);")"
           OWNER="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
-          BACKEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-backend:${RELEASE_SHA}"
-          FRONTEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-frontend:${RELEASE_SHA}"
+          BACKEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-backend-internal:${RELEASE_SHA}"
+          FRONTEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-frontend-internal:${RELEASE_SHA}"
           DEPLOYED_AT="$(date -u +%FT%TZ)"
 
           {
