@@ -1,0 +1,103 @@
+name: health-check
+
+on:
+  schedule:
+    # Every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: Show full response headers
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Health check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Production health
+        id: prod
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Production Health ==="
+          HTTP_CODE=$(curl -sSk -o /tmp/prod_body.txt -w '%{http_code}' \
+            --max-time 15 \
+            --resolve "terrafusionmarket.com:443:72.60.126.11" \
+            -D /tmp/prod_headers.txt \
+            "https://terrafusionmarket.com/health" 2>/dev/null || echo "000")
+
+          echo "http_code=$HTTP_CODE" >> "$GITHUB_OUTPUT"
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            SHA=$(grep -i 'x-release-sha' /tmp/prod_headers.txt | tr -d '\r' | awk '{print $2}')
+            ENV=$(grep -i 'x-release-environment' /tmp/prod_headers.txt | tr -d '\r' | awk '{print $2}')
+            echo "✅ Production: HTTP $HTTP_CODE | SHA: ${SHA:-unknown} | Env: ${ENV:-unknown}"
+          else
+            echo "❌ Production: HTTP $HTTP_CODE"
+            cat /tmp/prod_headers.txt 2>/dev/null || true
+            cat /tmp/prod_body.txt 2>/dev/null || true
+          fi
+
+          if [ "${{ inputs.verbose }}" = "true" ]; then
+            echo "--- Full Headers ---"
+            cat /tmp/prod_headers.txt 2>/dev/null || true
+          fi
+
+      - name: Staging health
+        id: staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Staging Health ==="
+          HTTP_CODE=$(curl -sSk -o /tmp/stg_body.txt -w '%{http_code}' \
+            --max-time 15 \
+            --resolve "staging.terrafusionmarket.com:443:72.60.126.11" \
+            -D /tmp/stg_headers.txt \
+            "https://staging.terrafusionmarket.com/health" 2>/dev/null || echo "000")
+
+          echo "http_code=$HTTP_CODE" >> "$GITHUB_OUTPUT"
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            SHA=$(grep -i 'x-release-sha' /tmp/stg_headers.txt | tr -d '\r' | awk '{print $2}')
+            ENV=$(grep -i 'x-release-environment' /tmp/stg_headers.txt | tr -d '\r' | awk '{print $2}')
+            echo "✅ Staging: HTTP $HTTP_CODE | SHA: ${SHA:-unknown} | Env: ${ENV:-unknown}"
+          else
+            echo "❌ Staging: HTTP $HTTP_CODE"
+            cat /tmp/stg_headers.txt 2>/dev/null || true
+            cat /tmp/stg_body.txt 2>/dev/null || true
+          fi
+
+          if [ "${{ inputs.verbose }}" = "true" ]; then
+            echo "--- Full Headers ---"
+            cat /tmp/stg_headers.txt 2>/dev/null || true
+          fi
+
+      - name: Summary
+        shell: bash
+        run: |
+          PROD="${{ steps.prod.outputs.http_code }}"
+          STG="${{ steps.staging.outputs.http_code }}"
+          echo "## Health Check Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Environment | HTTP | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------------|------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$PROD" = "200" ]; then
+            echo "| Production | $PROD | ✅ Healthy |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "| Production | $PROD | ❌ Unhealthy |" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ "$STG" = "200" ]; then
+            echo "| Staging | $STG | ✅ Healthy |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "| Staging | $STG | ❌ Unhealthy |" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          # Fail the workflow if production is down
+          if [ "$PROD" != "200" ]; then
+            echo "::error::Production health check failed (HTTP $PROD)"
+            exit 1
+          fi

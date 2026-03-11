@@ -1,0 +1,111 @@
+name: infra-probe
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: Environment to probe
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Probe ${{ inputs.target_env }} infrastructure
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_env }}
+    env:
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+    steps:
+      - name: Configure SSH
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          for i in 1 2 3; do
+            ssh-keyscan -T 10 -t ed25519,rsa -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null && break
+            sleep 5
+          done
+          cat > ~/.ssh/config <<SSHCFG
+          Host $DEPLOY_HOST
+            ConnectTimeout 30
+            ServerAliveInterval 15
+            ServerAliveCountMax 3
+          SSHCFG
+          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
+            printf '  StrictHostKeyChecking accept-new\n' >> ~/.ssh/config
+          fi
+          chmod 600 ~/.ssh/config
+
+      - name: K3s / Kubernetes probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          echo "=== K3s / Kubernetes Probe ==="
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
+          set -euo pipefail
+          echo "--- which k3s ---"
+          which k3s 2>/dev/null && echo "FOUND" || echo "NOT_FOUND"
+          echo "--- systemctl is-active k3s ---"
+          systemctl is-active k3s 2>/dev/null || echo "NOT_ACTIVE"
+          echo "--- kubectl get nodes ---"
+          kubectl get nodes 2>/dev/null || echo "KUBECTL_UNAVAILABLE"
+          echo "--- k3s kubectl get nodes ---"
+          k3s kubectl get nodes 2>/dev/null || echo "K3S_KUBECTL_UNAVAILABLE"
+          echo "--- listening ports (6443/10250) ---"
+          ss -tlnp 2>/dev/null | grep -E '6443|10250' || echo "NO_K8S_PORTS"
+          SSH
+
+      - name: Docker inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          echo "=== Docker Inventory ==="
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
+          set -euo pipefail
+          echo "--- docker version ---"
+          docker version --format '{{.Server.Version}}' 2>/dev/null || echo "DOCKER_UNAVAILABLE"
+          echo "--- docker compose version ---"
+          docker compose version 2>/dev/null || echo "COMPOSE_UNAVAILABLE"
+          echo "--- running containers ---"
+          docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null || echo "DOCKER_PS_FAILED"
+          echo "--- docker networks ---"
+          docker network ls --format 'table {{.Name}}\t{{.Driver}}' 2>/dev/null || echo "NETWORK_LS_FAILED"
+          echo "--- disk usage ---"
+          df -h / /opt 2>/dev/null || true
+          echo "--- memory ---"
+          free -h 2>/dev/null || true
+          SSH
+
+      - name: Edge proxy health
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          echo "=== Edge Proxy Health ==="
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
+          set -euo pipefail
+          echo "--- edge proxy container ---"
+          docker inspect terrafusion-edge-proxy-caddy-1 --format '{{.State.Status}} since {{.State.StartedAt}}' 2>/dev/null || echo "EDGE_PROXY_NOT_FOUND"
+          echo "--- caddy config test ---"
+          docker exec terrafusion-edge-proxy-caddy-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile 2>/dev/null || echo "CADDY_VALIDATE_FAILED"
+          echo "--- internal health check (production) ---"
+          curl -sSf --max-time 5 http://terrafusion-production-proxy-1:80/health 2>/dev/null && echo "" || echo "PROD_INTERNAL_UNREACHABLE"
+          echo "--- internal health check (staging) ---"
+          curl -sSf --max-time 5 http://terrafusion-staging-proxy-1:80/health 2>/dev/null && echo "" || echo "STAGING_INTERNAL_UNREACHABLE"
+          echo "--- external health check (localhost) ---"
+          curl -sSfk --max-time 5 https://127.0.0.1/health -H 'Host: terrafusionmarket.com' 2>/dev/null && echo "" || echo "EXTERNAL_HEALTH_FAILED"
+          SSH
