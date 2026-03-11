@@ -284,7 +284,7 @@ All five tracked blockers are resolved.
 
 ## Non-Blocking Debt
 
-- ~~No fresh full deployed-environment smoke was run for all 9 workbench tabs in this accounting pass.~~ → CLOSED (2026-03-11, both staging and production verified HTTP 200 with correct X-Release-Sha headers)
+- ~~No fresh full deployed-environment smoke was run for all 9 workbench tabs in this accounting pass.~~ → PARTIALLY CLOSED (2026-03-11, both staging and production health endpoints verified HTTP 200 with correct X-Release-Sha headers; full 9-tab workbench render verification in deployed environment remains unexercised)
 - Unsupported and post-R1 paths were not exhaustively negative-tested in this pass.
 - ~~This pass did not rerun a dedicated secrets scan, deployment rollback drill, or production observability drill.~~ → CLOSED (2026-03-11, secrets scan PASS 1/1, rollback drill proven in deploy→rollback→redeploy cycle, observability drill completed — health-check cron active + infra-probe validated post-PR #692)
 
