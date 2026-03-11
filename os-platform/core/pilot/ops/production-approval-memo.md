@@ -128,7 +128,7 @@ Both environments running simultaneously behind shared edge proxy (2026-03-11T18
 | ~~Staging DNS A record~~ | DONE (2026-03-11) | Hostinger — resolves to 72.60.126.11 |
 | ~~K3s cluster presence~~ | CLOSED — not installed | infra-probe run 22965879505 |
 | ~~Remove `tls internal`~~ | DONE (PR #691) | Staging now uses ACME (Let's Encrypt) |
-| Prometheus/Grafana on VPS | Future | Pending resource assessment |
+| Prometheus/Grafana on VPS | Deferred | Resource assessment complete (22G disk free, 2.9Gi RAM available — sufficient). Deployment deferred to future ops cycle. |
 
 ## 9. Proven Claims
 
@@ -145,6 +145,9 @@ Both environments running simultaneously behind shared edge proxy (2026-03-11T18
 - [x] Infrastructure probe available for on-demand diagnostics
 - [x] VPS host-state captured: 7 containers, only edge proxy owns host 80/443 (infra-probe run 22969300402)
 - [x] `terrafusion-edge` bridge network confirmed on VPS (`docker network ls`)
+- [x] Infra-probe validated post-PR #692 fix: staging run 22970478118, production run 22970472602
+- [x] Release-path verification complete: deploy→rollback→redeploy cycle (runs 22970615572, 22970967062, 22971169413)
+- [x] Secrets scan: `no-secrets-committed.test.mjs` PASS 1/1, no live secrets in tracked sources
 
 ---
 
