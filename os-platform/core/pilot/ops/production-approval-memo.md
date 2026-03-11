@@ -48,15 +48,16 @@ All runs on internal GHCR packages (post-cutover reseed):
 
 ## 4. Coexistence Proof
 
-Both environments running simultaneously behind shared edge proxy (2026-03-11T16:59Z):
+Both environments running simultaneously behind shared edge proxy (2026-03-11T18:55Z):
 
 | Environment | Health | SHA | TLS |
 |-------------|--------|-----|-----|
 | Production | HTTP 200 | `864d651a8b49ec1b2dc2cbca137091dbc1c3b29b` | ACME (Let's Encrypt) |
-| Staging | HTTP 200 | `4a639b5399edf14683157dfae8dd6eaeaae1b7ae` | Internal CA (self-signed) |
+| Staging | HTTP 200 | `134c05cce8dc025f9b8a575a6469da385754cd66` | ACME (Let's Encrypt) |
 
 - Edge proxy: Caddy 2.8-alpine at `/opt/terrafusion/edge-proxy/`
 - Network isolation: `terrafusion-edge` Docker network, per-env stacks have no host port bindings
+- Host-state proof: infra-probe run 22969300402 (`docker ps` shows 7 containers; only `edge-proxy-edge-1` owns host 80/443)
 - Architecture PRs: #684 (edge proxy), #685 (graceful transition), #686 (`tls internal`), #687 (caddy reload)
 
 ## 5. Health Monitoring
@@ -118,14 +119,15 @@ Both environments running simultaneously behind shared edge proxy (2026-03-11T16
 | #686 | `tls internal` for staging |
 | #687 | `caddy reload` after file copy |
 | #688 | Coexistence evidence documentation |
+| #691 | Staging DNS restored, `tls internal` removed |
 
 ## 8. Outstanding Items
 
 | Item | Status | Owner |
 |------|--------|-------|
-| Staging DNS A record | Pending | Manual (Hostinger) |
-| K3s cluster presence | Probe workflow ready | Dispatch `infra-probe.yml` |
-| Remove `tls internal` | Blocked on DNS | Automated after DNS restored |
+| ~~Staging DNS A record~~ | DONE (2026-03-11) | Hostinger — resolves to 72.60.126.11 |
+| ~~K3s cluster presence~~ | CLOSED — not installed | infra-probe run 22965879505 |
+| ~~Remove `tls internal`~~ | DONE (PR #691) | Staging now uses ACME (Let's Encrypt) |
 | Prometheus/Grafana on VPS | Future | Pending resource assessment |
 
 ## 9. Proven Claims
@@ -141,6 +143,8 @@ Both environments running simultaneously behind shared edge proxy (2026-03-11T16
 - [x] Staging and production coexist behind shared edge proxy
 - [x] Automated health monitoring runs every 15 minutes
 - [x] Infrastructure probe available for on-demand diagnostics
+- [x] VPS host-state captured: 7 containers, only edge proxy owns host 80/443 (infra-probe run 22969300402)
+- [x] `terrafusion-edge` bridge network confirmed on VPS (`docker network ls`)
 
 ---
 
