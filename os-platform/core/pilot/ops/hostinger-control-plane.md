@@ -82,11 +82,12 @@ Secrets:
 - Secret scanning: unavailable on current repo/account plan
 
 ### GHCR Cutover Contract
-- Old public package families must be deleted only after private reseed succeeds:
-  - `ghcr.io/bsvalues/terrafusion-os-backend`
-  - `ghcr.io/bsvalues/terrafusion-os-frontend`
-  - `ghcr.io/bsvalues/terrafusion_os_1.0-frontend`
-  - inspect for `ghcr.io/bsvalues/terrafusion_os_1.0-backend` and delete if present
+- Old public package families DELETED (2026-03-11):
+  - ~~`ghcr.io/bsvalues/terrafusion-os-backend`~~ deleted
+  - ~~`ghcr.io/bsvalues/terrafusion-os-frontend`~~ deleted
+  - ~~`ghcr.io/bsvalues/terrafusion_os_1.0-frontend`~~ deleted
+  - ~~`ghcr.io/bsvalues/terrafusion_os_1.0-backend`~~ deleted (confirmed present, then deleted)
+  - Anonymous pull verified denied for all
 - New internal package families wired in workflows:
   - `ghcr.io/bsvalues/terrafusion-os-backend-internal`
   - `ghcr.io/bsvalues/terrafusion-os-frontend-internal`
@@ -111,7 +112,7 @@ Secrets:
 
 ### Active Blockers
 - ~~Production SSH fails~~ RESOLVED: v4 key generated on VPS, set via pipe
-- GHCR old public package deletion still requires UI or package-admin token
+- ~~GHCR old public package deletion~~ RESOLVED: 4 packages deleted via `gh api -X DELETE` (2026-03-11)
 - K3s-style kubeconfig material was removed from the repo tree, but cluster trust rotation remains an external infra task if `terrafusion-k8s-api` is still live
 - Staging and production cannot run simultaneously on the same VPS (port 80/443 conflict)
 - `staging.terrafusionmarket.com` DNS A record missing (NXDOMAIN); needs restoration at Hostinger
@@ -182,7 +183,7 @@ Proven claims:
 - Both staging and production environments pass the complete 4-dispatch proof
 
 Remaining items:
-- Delete old public GHCR packages (requires UI or package-admin token)
+- ~~Delete old public GHCR packages~~ DONE (2026-03-11, anonymous pull confirmed denied)
 - Restore `staging.terrafusionmarket.com` DNS A record at Hostinger
 - Implement port differentiation or shared proxy for staging/production coexistence
 - K3s trust rotation if cluster is live
