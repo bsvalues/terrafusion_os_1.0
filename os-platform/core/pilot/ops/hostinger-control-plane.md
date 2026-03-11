@@ -115,7 +115,7 @@ Secrets:
 - ~~GHCR old public package deletion~~ RESOLVED: 4 packages deleted via `gh api -X DELETE` (2026-03-11)
 - K3s-style kubeconfig material was removed from the repo tree, but cluster trust rotation remains an external infra task if `terrafusion-k8s-api` is still live
 - ~~Staging and production cannot run simultaneously on the same VPS (port 80/443 conflict)~~ RESOLVED: shared edge proxy routes by hostname (PR #684)
-- `staging.terrafusionmarket.com` DNS A record missing (NXDOMAIN); needs restoration at Hostinger
+- `staging.terrafusionmarket.com` DNS A record missing (NXDOMAIN); needs restoration at Hostinger. Staging works via `--resolve` fallback + `tls internal` (self-signed cert) as workaround.
 
 ## Lane Closure Evidence Index
 
@@ -167,10 +167,12 @@ Notes:
 
 ## Production Readiness Posture (2026-03-11)
 
-TerraFusion OS is now **staging-proven AND production-proven** through live
-deploy, rollback, and redeploy evidence on internal GHCR packages.
+TerraFusion OS is now **staging-proven, production-proven, and coexistence-proven**
+through live deploy, rollback, redeploy, and simultaneous environment operation
+on internal GHCR packages behind a shared edge proxy.
 
 All 8 dispatches (4 staging + 4 production) completed successfully.
+Both environments verified running simultaneously on the same VPS.
 
 Proven claims:
 - GitHub Actions can reach the VPS over SSH (v4 key, port 22)
@@ -181,11 +183,15 @@ Proven claims:
 - Rollback workflow can restore the prior state
 - Redeploy can re-establish the target release after rollback
 - Both staging and production environments pass the complete 4-dispatch proof
+- Staging and production coexist on the same VPS behind a shared edge proxy (PRs #684-#687)
+- Edge proxy routes by hostname: production via ACME TLS, staging via self-signed TLS
 
 Remaining items:
 - ~~Delete old public GHCR packages~~ DONE (2026-03-11, anonymous pull confirmed denied)
-- Restore `staging.terrafusionmarket.com` DNS A record at Hostinger
+- Restore `staging.terrafusionmarket.com` DNS A record at Hostinger (manual Hostinger step)
 - ~~Implement port differentiation or shared proxy for staging/production coexistence~~ DONE (PR #684, shared edge proxy)
+- ~~Deploy staging behind edge proxy~~ DONE (PR #686 `tls internal`, PR #687 caddy reload)
+- ~~Prove staging + production coexistence~~ DONE (2026-03-11, both 200 OK behind edge proxy)
 - K3s trust rotation if cluster is live
 - Production observability validation
 - Final approval memo from production artifacts
@@ -216,8 +222,43 @@ that owns host ports 80/443 and routes by hostname.
 - Per-env proxy: `ops/proxy/Caddyfile` (listens `:80`, no TLS — edge handles ACME)
 - Runtime compose: `ops/prod/runtime-compose.template.yml` (no host ports, joins `terrafusion-edge` network)
 - Deployed to: `/opt/terrafusion/edge-proxy/` on VPS
-- TLS: Edge Caddy handles ACME for both domains automatically
+- TLS: Edge Caddy handles ACME for production; staging uses `tls internal` (self-signed) until DNS A record is restored (PR #686)
+- Config reload: Bootstrap step runs `caddy reload` after file copy to pick up Caddyfile changes (PR #687)
 - Graceful degradation: If one env is down, its route returns 502; the other keeps serving
+
+## Coexistence Evidence (2026-03-11)
+
+Both staging and production run simultaneously behind the shared edge proxy.
+
+### Production (via edge proxy)
+- Deploy run: 22960318843 (SHA `864d651a8b49ec1b2dc2cbca137091dbc1c3b29b`)
+- Health: `GET https://terrafusionmarket.com/health` → HTTP 200
+- X-Release-Sha: `864d651a8b49ec1b2dc2cbca137091dbc1c3b29b`
+- X-Release-Environment: production
+- TLS: ACME (Let's Encrypt) — production DNS resolves
+
+### Staging (via edge proxy)
+- Deploy run: 22963702404 (SHA `4a639b5399edf14683157dfae8dd6eaeaae1b7ae`)
+- Health: `GET https://staging.terrafusionmarket.com/health` → HTTP 200 (via `--resolve` to `72.60.126.11`)
+- X-Release-Sha: `4a639b5399edf14683157dfae8dd6eaeaae1b7ae`
+- X-Release-Environment: staging
+- X-Release-Deployed-At: 2026-03-11T16:50:07Z
+- TLS: internal CA (self-signed) — staging DNS is NXDOMAIN, `tls internal` workaround (PR #686)
+
+### Coexistence Proof
+- Both environments verified responding simultaneously at 2026-03-11T16:59Z
+- Production curl (direct DNS): HTTP 200 + correct release SHA
+- Staging curl (`--resolve` bypass): HTTP 200 + correct release SHA
+- Edge proxy routes by hostname; per-env stacks isolated by Docker network
+- No port conflicts; edge proxy owns 80/443, per-env stacks have no host bindings
+
+### Fixes Required for Coexistence
+| PR | Fix | Why |
+|----|-----|-----|
+| #684 | Shared edge proxy architecture | Route staging/production by hostname |
+| #685 | Graceful edge proxy transition | Stop old port-binding stack before edge proxy bootstrap |
+| #686 | `tls internal` for staging | ACME HTTP-01 fails for NXDOMAIN domain |
+| #687 | `caddy reload` after file copy | Bind-mount Caddyfile changes invisible to running container |
 
 ## Infrastructure Fixes (PRs #660–#671)
 
