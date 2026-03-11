@@ -54,9 +54,8 @@ jobs:
         run: |
           set -euo pipefail
           echo "=== Staging Health ==="
-          HTTP_CODE=$(curl -sSk -o /tmp/stg_body.txt -w '%{http_code}' \
+          HTTP_CODE=$(curl -sS -o /tmp/stg_body.txt -w '%{http_code}' \
             --max-time 15 \
-            --resolve "staging.terrafusionmarket.com:443:72.60.126.11" \
             -D /tmp/stg_headers.txt \
             "https://staging.terrafusionmarket.com/health" 2>/dev/null || echo "000")
 
