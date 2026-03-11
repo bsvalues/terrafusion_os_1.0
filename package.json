@@ -95,6 +95,8 @@
     "test:governance:ui": "vitest run tests/governance/noNewRawColors.contract.test.ts tests/governance/uiTokenBaseline.contract.test.ts tests/governance/ratchetGuardScope.contract.test.ts tests/governance/tfHsAnchorsDefined.contract.test.ts",
     "lint:platform": "node scripts/platform-lint.mjs",
     "doctor": "node scripts/doctor.mjs",
+    "tf": "node tools/bin/tf.mjs",
+    "tf:cli": "node tools/bin/tf.mjs",
     "canon": "node tools/canon/canon.mjs",
     "canon:doctor": "node tools/canon/canon.mjs doctor",
     "canon:gatefast": "node tools/canon/canon.mjs gatefast",
