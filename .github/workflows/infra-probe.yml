@@ -99,13 +99,17 @@ jobs:
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
           set -euo pipefail
           echo "--- edge proxy container ---"
-          docker inspect terrafusion-edge-proxy-caddy-1 --format '{{.State.Status}} since {{.State.StartedAt}}' 2>/dev/null || echo "EDGE_PROXY_NOT_FOUND"
+          docker inspect edge-proxy-edge-1 --format '{{.State.Status}} since {{.State.StartedAt}}' 2>/dev/null || echo "EDGE_PROXY_NOT_FOUND"
           echo "--- caddy config test ---"
-          docker exec terrafusion-edge-proxy-caddy-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile 2>/dev/null || echo "CADDY_VALIDATE_FAILED"
+          docker exec edge-proxy-edge-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile 2>/dev/null || echo "CADDY_VALIDATE_FAILED"
+          echo "--- edge network members ---"
+          docker network inspect terrafusion-edge --format '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null || echo "EDGE_NETWORK_INSPECT_FAILED"
+          echo "--- bound ports (host 80/443) ---"
+          ss -tlnp 2>/dev/null | grep -E ':80\b|:443\b' || echo "NO_EDGE_PORTS"
           echo "--- internal health check (production) ---"
-          curl -sSf --max-time 5 http://terrafusion-production-proxy-1:80/health 2>/dev/null && echo "" || echo "PROD_INTERNAL_UNREACHABLE"
+          docker exec edge-proxy-edge-1 wget -qO- --timeout=5 http://terrafusion-production-proxy-1:80/health 2>/dev/null && echo "" || echo "PROD_INTERNAL_UNREACHABLE"
           echo "--- internal health check (staging) ---"
-          curl -sSf --max-time 5 http://terrafusion-staging-proxy-1:80/health 2>/dev/null && echo "" || echo "STAGING_INTERNAL_UNREACHABLE"
+          docker exec edge-proxy-edge-1 wget -qO- --timeout=5 http://terrafusion-staging-proxy-1:80/health 2>/dev/null && echo "" || echo "STAGING_INTERNAL_UNREACHABLE"
           echo "--- external health check (localhost) ---"
           curl -sSfk --max-time 5 https://127.0.0.1/health -H 'Host: terrafusionmarket.com' 2>/dev/null && echo "" || echo "EXTERNAL_HEALTH_FAILED"
           SSH
