@@ -284,7 +284,7 @@ All five tracked blockers are resolved.
 
 ## Non-Blocking Debt
 
-- ~~No fresh full deployed-environment smoke was run for all 9 workbench tabs in this accounting pass.~~ → CLOSED (2026-03-11, staging deployed UI smoke completed: all 9 tabs verified via HTTP probe — HTTP 200 + SPA shell for each canonical deep-link route on `staging.terrafusionmarket.com`, SHA `b4a5570ba1`. Evidence: `os-platform/core/pilot/ops/deployed-ui-smoke-workbench.md`)
+- ~~No fresh full deployed-environment smoke was run for all 9 workbench tabs in this accounting pass.~~ → PARTIALLY CLOSED (2026-03-11, staging route-level verification complete: all 9 routes serve SPA shell HTTP 200 on `staging.terrafusionmarket.com`, SHA `b4a5570ba1`. Browser render blocked by auth wall — workbench tab content behind login. Full tab-render verification requires staging credentials. Evidence: `os-platform/core/pilot/ops/deployed-ui-smoke-workbench.md`)
 - Unsupported and post-R1 paths were not exhaustively negative-tested in this pass.
 - ~~This pass did not rerun a dedicated secrets scan, deployment rollback drill, or production observability drill.~~ → CLOSED (2026-03-11, secrets scan PASS 1/1, rollback drill proven in deploy→rollback→redeploy cycle, observability drill completed — health-check cron active + infra-probe validated post-PR #692)
 

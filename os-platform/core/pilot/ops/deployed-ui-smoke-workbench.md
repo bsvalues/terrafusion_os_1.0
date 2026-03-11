@@ -47,28 +47,40 @@
 
 ### Staging
 
-**Method:** Automated HTTP probe (`Invoke-WebRequest`) against deployed staging. Each route verified: HTTP 200 + `<div id="root">` present + Vite `<script type="module">` present. Click Nav simulated via base `/property/10001` route (HTTP 200, SPA served). Deep Link = direct route load.
+**Method:** Two-layer verification:
+1. **Layer 1 — HTTP route probe** (`Invoke-WebRequest`): verified all 9 routes return HTTP 200 + SPA shell (`<div id="root">` + Vite module script). This proves server-side routing is correct.
+2. **Layer 2 — Browser render** (`fetch_webpage` + VS Code Simple Browser): loaded `/property/10001` in a real browser/renderer. **Result: auth wall.** The SPA renders a login form ("Your session has expired. Please sign in to continue.") instead of the workbench tabs. Tab content is behind authentication.
 
-**Staging health response headers:**
+**Staging health response headers (public, no auth):**
 - `X-Release-Sha: b4a5570ba14908e9282e3e85b5e2bd15ccf62c3c`
 - `X-Release-Environment: staging`
 - `X-Release-Deployed-At: 2026-03-11T19:43:30Z`
 - `X-Correlation-Id: tf-01fa733a3a6044b7bdcc4bc5b0f3b888`
 - `Server: Caddy, Caddy, Kestrel`
+- `GET /health` → `{"status":"Healthy","environment":"Production","version":"1.0.0","service":"TerraFusion OS API - Basic Mode"}`
 
-**Workbench base route:** `GET /property/10001` → HTTP 200, root div present, Vite SPA bundle `index-6f5bf1f0.js` (2346 bytes HTML shell)
+**Workbench base route:** `GET /property/10001` → HTTP 200, SPA shell served (root div + Vite bundle `index-6f5bf1f0.js`, 2346 bytes). Browser render shows **login page**, not workbench tabs.
+
+#### Layer 1: Route Probe Results (HTTP-level, no auth)
+
+| # | Tab | HTTP Status | SPA Shell | Route | Timestamp | Route Result | Evidence | Notes |
+|---|-----|-------------|-----------|-------|-----------|--------------|----------|-------|
+| 1 | Summary | 200 | ✅ | /property/10001/summary | 2026-03-11T23:10:09Z | ROUTE PASS | HTTP 200, root=True, len=2346 | Server routes to SPA correctly |
+| 2 | Forge | 200 | ✅ | /property/10001/forge | 2026-03-11T23:10:10Z | ROUTE PASS | HTTP 200, root=True, len=2346 | |
+| 3 | Atlas | 200 | ✅ | /property/10001/atlas | 2026-03-11T23:10:12Z | ROUTE PASS | HTTP 200, root=True, len=2346 | |
+| 4 | Dais | 200 | ✅ | /property/10001/dais | 2026-03-11T23:10:13Z | ROUTE PASS | HTTP 200, root=True, len=2346 | |
+| 5 | Clerk | 200 | ✅ | /property/10001/clerk | 2026-03-11T23:10:14Z | ROUTE PASS | HTTP 200, root=True, len=2346 | |
+| 6 | Treasury | 200 | ✅ | /property/10001/treasury | 2026-03-11T23:10:14Z | ROUTE PASS | HTTP 200, root=True, len=2346 | |
+| 7 | Audit | 200 | ✅ | /property/10001/audit | 2026-03-11T23:10:17Z | ROUTE PASS | HTTP 200, root=True, len=2346 | |
+| 8 | Dossier | 200 | ✅ | /property/10001/dossier | 2026-03-11T23:10:18Z | ROUTE PASS | HTTP 200, root=True, len=2346 | |
+| 9 | Pilot | 200 | ✅ | /property/10001/pilot | 2026-03-11T23:10:18Z | ROUTE PASS | HTTP 200, root=True, len=2346 | |
+
+#### Layer 2: Browser Render Results (requires auth)
 
 | # | Tab | Click Nav | Deep Link | Route | Timestamp | Result | Evidence | Notes |
 |---|-----|-----------|-----------|-------|-----------|--------|----------|-------|
-| 1 | Summary | ✅ | ✅ | /property/10001/summary | 2026-03-11T23:10:09Z | PASS | HTTP 200, root=True, len=2346 | SPA shell served; React hydration expected client-side |
-| 2 | Forge | ✅ | ✅ | /property/10001/forge | 2026-03-11T23:10:10Z | PASS | HTTP 200, root=True, len=2346 | |
-| 3 | Atlas | ✅ | ✅ | /property/10001/atlas | 2026-03-11T23:10:12Z | PASS | HTTP 200, root=True, len=2346 | |
-| 4 | Dais | ✅ | ✅ | /property/10001/dais | 2026-03-11T23:10:13Z | PASS | HTTP 200, root=True, len=2346 | |
-| 5 | Clerk | ✅ | ✅ | /property/10001/clerk | 2026-03-11T23:10:14Z | PASS | HTTP 200, root=True, len=2346 | |
-| 6 | Treasury | ✅ | ✅ | /property/10001/treasury | 2026-03-11T23:10:14Z | PASS | HTTP 200, root=True, len=2346 | |
-| 7 | Audit | ✅ | ✅ | /property/10001/audit | 2026-03-11T23:10:17Z | PASS | HTTP 200, root=True, len=2346 | |
-| 8 | Dossier | ✅ | ✅ | /property/10001/dossier | 2026-03-11T23:10:18Z | PASS | HTTP 200, root=True, len=2346 | |
-| 9 | Pilot | ✅ | ✅ | /property/10001/pilot | 2026-03-11T23:10:18Z | PASS | HTTP 200, root=True, len=2346 | |
+| 1 | Summary | ❌ | ❌ | /property/10001/summary | 2026-03-11T23:15:00Z | BLOCKED (auth) | Browser renders login form, not workbench | Auth wall: "Your session has expired. Please sign in to continue." |
+| 2–9 | (all) | ❌ | ❌ | /property/10001/* | 2026-03-11T23:15:00Z | BLOCKED (auth) | Same login form on all routes | Cannot verify tab rendering without credentials |
 
 ### Production (optional)
 
@@ -88,12 +100,24 @@
 
 ## Outcome
 
-- Staging: ☑ **PASS** — All 9 tabs return HTTP 200 with correct SPA shell (root div + Vite module script). Deep-link routing works for all canonical paths. Deployed SHA `b4a5570ba1` matches release-path-verified SHA.
+- Staging: ☑ **PARTIAL** — Server routing PASS (all 9 routes serve SPA shell, HTTP 200). Tab rendering BLOCKED by auth wall. Cannot verify actual workbench tab content without staging credentials.
 - Production: ☐ PASS ☐ FAIL (not run this session)
 
-**If FAIL:** N/A — all PASS.
+**What is proven:**
+- Deployed SHA matches release-path-verified SHA (`b4a5570ba1`)
+- Health endpoint healthy (`TerraFusion OS API - Basic Mode`)
+- All 9 canonical routes correctly serve the Vite SPA shell (server-side catch-all routing works)
+- SPA bundle present and loadable (`index-6f5bf1f0.js`)
 
-**Limitations:** This is an HTTP-level route smoke (server returns SPA shell for each route). Client-side React rendering of tab content is not verified by this probe — that requires a browser or headless Playwright run. The SPA architecture means the server correctly routes all 9 tab paths to the React app; actual tab panel rendering happens in the browser JS runtime.
+**What is NOT proven:**
+- Actual workbench tab panel rendering (auth-gated)
+- Click navigation between tabs (auth-gated)
+- Tab content loads with correct data (auth-gated)
+
+**Blocker:** Staging requires authentication. To complete this smoke test, either:
+1. Provide staging credentials for the browser session, OR
+2. Configure a staging test user with session token for automated probe, OR
+3. Temporarily disable auth on staging for the smoke run
 
 ---
 
