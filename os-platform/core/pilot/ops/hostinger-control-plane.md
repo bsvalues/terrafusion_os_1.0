@@ -192,9 +192,10 @@ Remaining items:
 - ~~Implement port differentiation or shared proxy for staging/production coexistence~~ DONE (PR #684, shared edge proxy)
 - ~~Deploy staging behind edge proxy~~ DONE (PR #686 `tls internal`, PR #687 caddy reload)
 - ~~Prove staging + production coexistence~~ DONE (2026-03-11, both 200 OK behind edge proxy)
-- K3s trust rotation if cluster is live
-- Production observability validation
-- Final approval memo from production artifacts
+- ~~K3s trust rotation if cluster is live~~ Probe workflow created (`.github/workflows/infra-probe.yml`); dispatch to determine if K3s is present
+- ~~Production observability validation~~ Health-check cron created (`.github/workflows/health-check.yml`); runs every 15 min, fails on production down
+- ~~Final approval memo from production artifacts~~ See `os-platform/core/pilot/ops/production-approval-memo.md`
+- Restore `staging.terrafusionmarket.com` DNS A record at Hostinger (manual step, then remove `tls internal`)
 
 ## Shared Edge Proxy Architecture (PR #684)
 
@@ -273,6 +274,29 @@ Both staging and production run simultaneously behind the shared edge proxy.
 | #669 | SSH docker login: remove cat pipe, add newline | E1 attempt 6+ |
 | #670 | Health check: GET instead of HEAD (ASP.NET 405) | E1 attempt 8+ |
 | #671 | Evidence collection: add --env-file release.env | E1 attempt 9 (first full green) |
+
+## Production Observability (2026-03-11)
+
+### Automated Health Check
+- Workflow: `.github/workflows/health-check.yml`
+- Schedule: every 15 minutes (`*/15 * * * *`)
+- Checks: Production (must pass) + Staging (informational)
+- Method: HTTPS GET `/health` via `--resolve` to `72.60.126.11` (DNS-independent)
+- Failure behavior: workflow fails if production returns non-200
+- Manual trigger: `gh workflow run health-check.yml` (optional `verbose` flag for full headers)
+
+### Infrastructure Probe
+- Workflow: `.github/workflows/infra-probe.yml`
+- Trigger: manual dispatch (select environment)
+- Probes: K3s/Kubernetes presence, Docker inventory, edge proxy health, disk/memory
+- Purpose: one-shot diagnostic for infrastructure state assessment
+
+### Observability Posture
+- **Health monitoring**: Automated via cron health-check workflow (GitHub Actions)
+- **Container health**: Docker built-in HEALTHCHECK on backend containers (127.0.0.1:5000/health)
+- **Edge proxy**: Caddy access/error logs in container stdout (viewable via `docker logs`)
+- **Metrics stack**: `compose/docker-compose.obs.yml` (Prometheus + Grafana) available for dev; NOT wired to production
+- **Future**: Prometheus + Grafana on VPS pending resource assessment (infra-probe disk/memory output)
 
 ## Notes
 - Hostinger MCP is optional discovery only; config is local-only and not committed.
