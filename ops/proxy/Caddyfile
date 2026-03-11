@@ -1,4 +1,6 @@
-{$TF_PUBLIC_HOST:localhost} {
+# Per-environment internal proxy — no TLS (edge proxy handles TLS).
+# Listens on :80 inside the Docker network only.
+:80 {
     encode gzip zstd
 
     @health path /health

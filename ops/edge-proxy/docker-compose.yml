@@ -1,0 +1,25 @@
+# TerraFusion OS — Shared Edge Proxy
+# Owns host ports 80/443.  Per-environment stacks expose their Caddy
+# on the terrafusion-edge network (no host port binding).
+
+services:
+  edge:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_edge_data:/data
+      - caddy_edge_config:/config
+    networks:
+      - terrafusion-edge
+
+networks:
+  terrafusion-edge:
+    external: true
+
+volumes:
+  caddy_edge_data:
+  caddy_edge_config:

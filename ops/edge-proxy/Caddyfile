@@ -1,0 +1,12 @@
+# TerraFusion OS — Shared Edge Proxy
+# Handles TLS termination and hostname-based routing.
+# Per-environment stacks join the terrafusion-edge Docker network;
+# this proxy routes to each environment's internal Caddy by container name.
+
+terrafusionmarket.com {
+	reverse_proxy terrafusion-production-proxy-1:80
+}
+
+staging.terrafusionmarket.com {
+	reverse_proxy terrafusion-staging-proxy-1:80
+}
