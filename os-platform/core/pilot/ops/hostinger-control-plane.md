@@ -23,7 +23,7 @@ This document contains **no secrets**. Store secrets only in:
 
 ### Required DNS Records
 - A: staging -> 72.60.126.11 ✅ verified
-- A: @ (root) -> <PROD_VPS_IPV4> (defer until production provisioning)
+- A: @ (root) -> 72.60.126.11 ✅ verified (2026-03-11, Google DNS 8.8.8.8 confirms single A record)
 
 ## Staging VPS (Hostinger)
 - VPS name/id: srv1479342
@@ -33,9 +33,9 @@ This document contains **no secrets**. Store secrets only in:
 - Server firewall (ufw) open: 22/tcp, 80/tcp, 443/tcp
 - APP_ROOT: /opt/terrafusion/staging
 
-## Production VPS (Hostinger)
-- VPS name/id: (from Hostinger panel)
-- IPv4: <PROD_VPS_IPV4>
+## Production VPS (Hostinger) — SAME BOX as staging
+- VPS name/id: srv1479342 (shared with staging)
+- IPv4: 72.60.126.11
 - OS: Ubuntu 22.04 LTS
 - Provider firewall open: 22/tcp, 80/tcp, 443/tcp
 - Server firewall (ufw) open: 22/tcp, 80/tcp, 443/tcp
@@ -65,7 +65,7 @@ Secrets:
 
 ### production
 Variables:
-- DEPLOY_HOST = <PROD_VPS_IPV4>
+- DEPLOY_HOST = 72.60.126.11
 - DEPLOY_PORT = 22
 - DEPLOY_USER = deploy
 - PUBLIC_URL = https://terrafusionmarket.com
