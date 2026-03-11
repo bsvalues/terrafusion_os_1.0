@@ -248,7 +248,7 @@ jobs:
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p /opt/terrafusion/edge-proxy"
           scp -P "$DEPLOY_PORT" edge-proxy/* "$DEPLOY_USER@$DEPLOY_HOST:/opt/terrafusion/edge-proxy/"
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "cd /opt/terrafusion/edge-proxy && docker compose up -d"
+            "cd /opt/terrafusion/edge-proxy && docker compose up -d && docker compose exec -T edge caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile 2>/dev/null || true"
 
       - name: Preflight - GHCR pull on VPS
         shell: bash
@@ -316,6 +316,13 @@ jobs:
                 success=1
                 break
               fi
+            fi
+
+            # Show verbose curl output on first failure to help diagnose connectivity issues
+            if [ "$attempt" -eq 1 ]; then
+              echo "--- Diagnostic: verbose resolve curl ---"
+              curl -vk --resolve "${PUBLIC_HOST}:443:${DEPLOY_HOST}" --resolve "${PUBLIC_HOST}:80:${DEPLOY_HOST}" "$URL" 2>&1 | head -40 || true
+              echo "--- End diagnostic ---"
             fi
 
             echo "Waiting for $URL to report X-Release-Sha=$RELEASE_SHA (attempt $attempt/18)"

@@ -167,6 +167,7 @@ jobs:
           docker network inspect terrafusion-edge >/dev/null 2>&1 || docker network create terrafusion-edge
           if [ -f /opt/terrafusion/edge-proxy/docker-compose.yml ]; then
             cd /opt/terrafusion/edge-proxy && docker compose up -d
+            docker compose exec -T edge caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile 2>/dev/null || true
           fi
           SSH
 
