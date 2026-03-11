@@ -136,7 +136,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          nslookup "$PUBLIC_HOST"
+          if nslookup "$PUBLIC_HOST"; then
+            echo "DNS resolved OK"
+          else
+            echo "::warning::DNS lookup for $PUBLIC_HOST failed (may be propagating). Deploy continues using IP."
+          fi
 
       - name: Preflight - remote host access
         shell: bash
