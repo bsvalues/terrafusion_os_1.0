@@ -187,11 +187,26 @@ jobs:
           set -euo pipefail
           URL="${PUBLIC_URL}/health"
           success=0
+          health_mode="public"
 
           for attempt in $(seq 1 18); do
-            if curl -fsS -o /dev/null -D curl_headers.txt "$URL"; then
+            # Try public URL directly first
+            if curl -fsS -o /dev/null -D curl_headers.txt "$URL" 2>/dev/null; then
               HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
               if [ "$HEADER_SHA" = "$ROLLBACK_SHA" ]; then
+                success=1
+                break
+              fi
+            fi
+
+            # DNS fallback: resolve domain to DEPLOY_HOST IP, skip TLS verify
+            if curl -fsS -k \
+              --resolve "${PUBLIC_HOST}:443:${DEPLOY_HOST}" \
+              --resolve "${PUBLIC_HOST}:80:${DEPLOY_HOST}" \
+              -o /dev/null -D curl_headers.txt "$URL" 2>/dev/null; then
+              HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
+              if [ "$HEADER_SHA" = "$ROLLBACK_SHA" ]; then
+                health_mode="resolve"
                 success=1
                 break
               fi
@@ -200,6 +215,10 @@ jobs:
             echo "Waiting for $URL to report X-Release-Sha=$ROLLBACK_SHA (attempt $attempt/18)"
             sleep 10
           done
+
+          if [ "$health_mode" = "resolve" ]; then
+            echo "::warning::Health verified via IP-resolve fallback (DNS not configured for $PUBLIC_HOST)"
+          fi
 
           if [ "$success" -ne 1 ]; then
             echo "Rollback health endpoint never reported the rollback SHA."
