@@ -73,3 +73,7 @@ versioned repo docs rather than dead GitHub surfaces.
 If you change the workflow contract, branch protection, or deployment process,
 update the matching docs in this directory in the same PR. The point of these
 files is to reduce operator ambiguity, not create another stale layer.
+
+Use `TerraCanon` consistently when referring to the canonical truth/operator
+surface. If a GitHub-facing doc needs background or entrypoints, link the
+repo-hosted wiki and TerraCanon docs rather than inventing a second term.

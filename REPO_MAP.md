@@ -1,70 +1,81 @@
-# TerraFusion OS – Repo Map
+# TerraFusion OS Repo Map
 
-## Top-Level Directory Index
+This is the practical map of the repository, not a historical architecture
+manifest.
 
-| Directory | Purpose |
-|-----------|---------|
-| `backend/` | .NET 8 microservices (Iron, Cortex, Gateway, Consciousness) |
-| `compose/` | Docker compose overrides |
-| `config/` | Shared configuration |
-| `data/` | Local data directory (SQLite DBs, etc.) |
-| `database/` | Schema definitions, migrations |
-| `docker/` | Additional Dockerfiles |
-| `docs/` | Specs, governance locks, architecture docs |
-| `frontend/` | React 18 + Vite (OS Shell) |
-| `grafana/` | Grafana dashboards, provisioning, and observability assets |
-| `golden/` | Golden corpus reference data |
-| `native-shell/` | Electron / WPF desktop shell + frontend build output |
-| `ops/` | Operations: prod compose, proxy config, dev tooling |
-| `os-platform/` | Core platform: pilot, types, tests, AI systems |
-| `packages/` | Shared packages |
-| `scripts/` | Build/deploy automation, repo-shape-guard |
-| `tests/` | Root-level test infrastructure |
-| `tools/` | Dev tools, registry, CLI utilities |
+## Top-Level Layout
 
-## Entropy Cap
+| Path | Purpose |
+| --- | --- |
+| `.github/` | workflows, issue templates, branch-protection and maintainer docs |
+| `backend/` | .NET 8 backend services and solution assets |
+| `frontend/` | frontend workspace, including OS Shell |
+| `docs/` | repo-hosted documentation hub and wiki substitute |
+| `ops/` | operational tooling, rollout, recovery, security, observability |
+| `os-platform/` | platform internals, including governed `core/` surface |
+| `tools/` | CLIs, generators, registry tooling, audits |
+| `tests/` | root-level test infrastructure |
+| `config/` | shared config and environment examples |
+| `compose/` | compose docs and related resources |
+| `docker/` | additional Docker assets |
+| `database/` | schema and DB-related assets |
+| `packages/` | shared package workspaces |
+| `scripts/` | utility scripts and governance helpers |
+| `grafana/` | Grafana dashboards and provisioning assets |
+| `golden/` | golden corpus/reference data |
+| `QUARANTINE/` | preserved historical material, not active source |
 
-- **Max top-level dirs**: 20 (current: 17)
-- **Max root files**: 40 (current: 30)
-- **Guard**: `node scripts/repo-shape-guard.mjs`
+## High-Signal Operational Paths
 
-New top-level directories require justification and updating the guard caps.
+- Release truth: [os-platform/core/pilot/ops/hostinger-control-plane.md](./os-platform/core/pilot/ops/hostinger-control-plane.md)
+- GitHub automation: [.github/README.md](./.github/README.md)
+- Contributor workflow: [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Docs hub: [docs/README.md](./docs/README.md)
+- Wiki home: [docs/TERRAFUSION_WIKI.md](./docs/TERRAFUSION_WIKI.md)
 
-## Quick Start
+## TerraCanon Surfaces
 
-```powershell
-pwsh tools/dev/start.ps1       # boot Docker spine
-pwsh tools/dev/verify.ps1      # run all gates
+Use `TerraCanon` as the canonical name. `TerraCannon` is not the standard repo
+term.
+
+- CLI and diagnostics: [tools/canon/](./tools/canon/)
+- governed core canon surface: [os-platform/core/canon/](./os-platform/core/canon/)
+- OS Shell canon workspace: [frontend/apps/os-shell/src/canon/](./frontend/apps/os-shell/src/canon/)
+- canon landing page: [frontend/apps/os-shell/src/pages/CanonHome.tsx](./frontend/apps/os-shell/src/pages/CanonHome.tsx)
+- strategy and scope docs: [docs/TerraCanon/](./docs/TerraCanon/)
+
+## Governed Surface
+
+The protected core governance edit surface is defined in [AGENTS.md](./AGENTS.md).
+In practice, the most sensitive in-repo areas are:
+
+- `os-platform/core/pilot/**`
+- `os-platform/core/types/**`
+- `tools/registry/**`
+- `tsconfig.core.json`
+- `package.json`
+- `.github/workflows/**`
+
+## Useful Local Commands
+
+```bash
+pnpm install
+pnpm run type-check
+node --test os-platform/core/tests/phase83-tools.test.mjs
+pnpm run governance:check
+pnpm run dev:os:shell
+pnpm run backend:dev
 ```
 
-- **Canonical compose**: `ops/prod/docker-compose.prod.server.yml`
-- Soul builds from **repo root context** using the root lockfile
-- Soul serves on port 80 internally; Shield (Caddy) exposes 8080 externally
-- Cortex docs at `http://localhost:8006/docs`
+## Current Deployment Shape
 
-## Architectural Decisions (do not revert)
+- default branch: `main`
+- repo visibility: private
+- staging and production currently target the same Hostinger box
+- release/rollback workflows live under `.github/workflows/`
+- current package and deploy contract is documented in the Hostinger control-plane runbook
 
-| Decision | Why |
-|----------|-----|
-| Build context = repo root | Single `pnpm-lock.yaml` at root is the lockfile authority. No stale copies. |
-| No `frontend/pnpm-lock.yaml` | Deleted — root lockfile is the single source of truth. |
-| `pnpm@9.0.0` pinned exact | Prevents "pnpm 9 vs 10" drift inside Docker. |
-| `--frozen-lockfile --filter ./frontend...` | Deterministic install scoped to frontend workspace. CI-safe. |
-| `nginx.conf` → `conf.d/default.conf` | File contains a `server {}` block, not a full `nginx.conf`. Must go to `conf.d/`. |
-| `.dockerignore` excludes `QUARANTINE/`, `backend/`, etc. | Keeps build context < 300 KB. |
-| SEAL legacy-frontend allowlist | `frontend/Dockerfile`, `frontend/nginx.conf`, `frontend/pnpm-lock.yaml`, `frontend/.dockerignore` are explicitly permitted in the governance gate. All other `frontend/` files (outside `apps/os-shell/`) are blocked. Removing these from the allowlist re-breaks the pipeline. |
+## Quarantine Rule
 
-## Tags
-
-| Tag | Commit | Purpose |
-|-----|--------|---------|
-| `pre-cleanup-20260211` | Before quarantine | Rollback anchor |
-| `soul-fixed-20260211` | After deterministic build fix | Known-good forward anchor |
-
-## Quarantine
-
-`QUARANTINE/` holds ~160 directories and ~750 files moved during the 2026-02-11 cleanup.
-Contents are preserved (not deleted) for archaeology. Safety tag: `pre-cleanup-20260211`.
-
-Anything resurrected from QUARANTINE must return under an allowed top-level subtree
-(`ops/`, `tools/`, `packages/`, `docs/`) via an intentional PR. No silent moves.
+`QUARANTINE/` is preserved history. Do not silently move content back into the
+active tree. If something must return, do it deliberately through a reviewed PR.

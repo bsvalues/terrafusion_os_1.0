@@ -3,6 +3,9 @@ contact_links:
   - name: Private security disclosure
     url: mailto:security@bsvalues.com
     about: Report live vulnerabilities or credential exposure privately
+  - name: TerraFusion Wiki
+    url: https://github.com/bsvalues/terrafusion_os_1.0/blob/main/docs/TERRAFUSION_WIKI.md
+    about: Start from the repo-hosted documentation index
   - name: Contribution guide
     url: https://github.com/bsvalues/terrafusion_os_1.0/blob/main/CONTRIBUTING.md
     about: Read the current branch, PR, and verification rules
