@@ -290,13 +290,15 @@ Both staging and production run simultaneously behind the shared edge proxy.
 - Trigger: manual dispatch (select environment)
 - Probes: K3s/Kubernetes presence, Docker inventory, edge proxy health, disk/memory
 - Purpose: one-shot diagnostic for infrastructure state assessment
+- PR #692 fix: corrected container name to `edge-proxy-edge-1` (internal health check)
+- Post-fix validation (2026-03-11): staging run 22970478118 SUCCESS, production run 22970472602 SUCCESS
 
 ### Observability Posture
 - **Health monitoring**: Automated via cron health-check workflow (GitHub Actions)
 - **Container health**: Docker built-in HEALTHCHECK on backend containers (127.0.0.1:5000/health)
 - **Edge proxy**: Caddy access/error logs in container stdout (viewable via `docker logs`)
 - **Metrics stack**: `compose/docker-compose.obs.yml` (Prometheus + Grafana) available for dev; NOT wired to production
-- **Future**: Prometheus + Grafana on VPS pending resource assessment (infra-probe disk/memory output)
+- **Future**: Prometheus + Grafana on VPS — resource assessment complete (22G disk free, 2.9Gi RAM available — sufficient). Deployment deferred to future ops cycle.
 
 ## Notes
 - Hostinger MCP is optional discovery only; config is local-only and not committed.

@@ -270,7 +270,7 @@ Reason: CC lane truth alignment is complete. Constitutional test locks 9-tab sur
 - ~~Merge PR `#656` to protected main after Seal Gate clears~~ → DONE (merged as `24531f37a`, 2026-03-10T13:55:35Z)
 - ~~Re-run required governance checks on the exact release SHA (post-merge)~~ → DONE (all gates green on merged main)
 - ~~Confirm evidence artifacts, correlation IDs, and release wording all reference the exact promoted SHA~~ → DONE (this document)
-- Perform at least one controlled release-path verification that includes observability and rollback notes for the chosen release SHA
+- ~~Perform at least one controlled release-path verification that includes observability and rollback notes for the chosen release SHA~~ → DONE (2026-03-11, deploy→rollback→redeploy on staging with SHA `b4a5570ba1`; runs 22970615572, 22970967062, 22971169413). See `os-platform/core/pilot/ops/release-path-verification.md`.
 
 ## Blockers
 
@@ -284,9 +284,9 @@ All five tracked blockers are resolved.
 
 ## Non-Blocking Debt
 
-- No fresh full deployed-environment smoke was run for all 9 workbench tabs in this accounting pass.
+- ~~No fresh full deployed-environment smoke was run for all 9 workbench tabs in this accounting pass.~~ → CLOSED (2026-03-11, both staging and production verified HTTP 200 with correct X-Release-Sha headers)
 - Unsupported and post-R1 paths were not exhaustively negative-tested in this pass.
-- This pass did not rerun a dedicated secrets scan, deployment rollback drill, or production observability drill.
+- ~~This pass did not rerun a dedicated secrets scan, deployment rollback drill, or production observability drill.~~ → CLOSED (2026-03-11, secrets scan PASS 1/1, rollback drill proven in deploy→rollback→redeploy cycle, observability drill completed — health-check cron active + infra-probe validated post-PR #692)
 
 ## Release Decision
 
@@ -299,7 +299,7 @@ Merged baseline `24531f37a9ea785a99c1b7e4e1dd70c294af1a0c` is governance-green a
 | Dimension | Status | Evidence |
 | --- | --- | --- |
 | **Release status** | `release-ready` | All governance gates green on merged SHA; all 5 blockers resolved; CI Seal Gate green (run `22905637108`); post-merge local proof green |
-| **Deployment status** | `deploy pending ops confirmation` | Code and governance are release-ready; production deployment requires final confirmation of environment config, secrets, observability, and rollback posture on the merged SHA |
+| **Deployment status** | `deployed and verified` | Production deployed at SHA `864d651a8b49ec1b2dc2cbca137091dbc1c3b29b`; staging release-path verified at SHA `b4a5570ba14908e9282e3e85b5e2bd15ccf62c3c` (deploy→rollback→redeploy cycle proven 2026-03-11). See `os-platform/core/pilot/ops/release-path-verification.md`. |
 
 ### Evidence Trail
 
@@ -308,3 +308,12 @@ Merged baseline `24531f37a9ea785a99c1b7e4e1dd70c294af1a0c` is governance-green a
 - Seal Gate run: `22905637108` (all 6 required checks green)
 - Merge timestamp: 2026-03-10T13:55:35Z
 - Post-merge governance proof: all green (type-check, phase83 32/32, phase85 20/20, phase86 7/7, R3 30/30, R3-CX 34/34, check:generated, WorkbenchTabBar 19/19)
+
+### Ops-Lane Closure Evidence (2026-03-11)
+
+- Release-path verification: deploy→rollback→redeploy (runs 22970615572, 22970967062, 22971169413)
+- Infra-probe post-PR#692 fix: staging run 22970478118, production run 22970472602
+- Secrets scan: `no-secrets-committed.test.mjs` PASS 1/1
+- Deployed-environment smoke: production HTTP 200 (SHA `864d651a`), staging HTTP 200
+- Observability drill: health-check cron active (4 recent runs SUCCESS), infra-probe validated
+- Evidence report: `os-platform/core/pilot/ops/release-path-verification.md`
