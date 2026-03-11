@@ -8,5 +8,11 @@ terrafusionmarket.com {
 }
 
 staging.terrafusionmarket.com {
+	# Use internal CA (self-signed) until staging DNS A record is restored.
+	# ACME HTTP-01 requires DNS to resolve; without it Caddy won't serve HTTPS.
+	# The health check uses curl -k (skip TLS verify) for the --resolve fallback
+	# so self-signed certs work fine for automated verification.
+	# TODO: Remove 'tls internal' once staging.terrafusionmarket.com DNS is live.
+	tls internal
 	reverse_proxy terrafusion-staging-proxy-1:80
 }
