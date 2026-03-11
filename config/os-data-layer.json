@@ -1,4 +1,4 @@
 {
-  "IP": "172.22.51.95",
-  "DATABASE_URL": "postgresql://terrafusion_os:terrafusion_dev_secret@172.22.51.95:5432/terrafusion_os"
+  "IP": "127.0.0.1",
+  "DATABASE_URL": "postgresql://REPLACE_ME:REPLACE_ME@127.0.0.1:5432/terrafusion_os"
 }

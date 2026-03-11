@@ -23,7 +23,9 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  PROD_API_IMAGE: ghcr.io/bsvalues/terrafusion-os-prod-api-internal
+  PROD_FRONTEND_IMAGE: ghcr.io/bsvalues/terrafusion-os-prod-frontend-internal
+  PROD_AI_SWARM_IMAGE: ghcr.io/bsvalues/terrafusion-os-prod-ai-swarm-internal
   NODE_VERSION: '20'
   DOTNET_VERSION: '8.0.x'
   PYTHON_VERSION: '3.11'
@@ -352,7 +354,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.PROD_API_IMAGE }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -391,7 +393,7 @@ jobs:
           context: .
           file: ./infrastructure/docker/Dockerfile.frontend
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ steps.meta.outputs.version }}
+          tags: ${{ env.PROD_FRONTEND_IMAGE }}:${{ steps.meta.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -402,7 +404,7 @@ jobs:
           context: .
           file: ./infrastructure/docker/Dockerfile.ai-swarm
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ai-swarm:${{ steps.meta.outputs.version }}
+          tags: ${{ env.PROD_AI_SWARM_IMAGE }}:${{ steps.meta.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

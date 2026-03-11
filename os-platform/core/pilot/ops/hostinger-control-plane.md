@@ -74,6 +74,46 @@ Variables:
 Secrets:
 - DEPLOY_SSH_KEY = (stored in GitHub only)
 
+## Public-Exposure Remediation Status (2026-03-11)
+
+### GitHub Containment
+- Repository visibility: private as of 2026-03-11
+- Existing public fork remains unretractable: `startgis/terrafusion_os_1.0`
+- Secret scanning: unavailable on current repo/account plan
+
+### GHCR Cutover Contract
+- Old public package families must be deleted only after private reseed succeeds:
+  - `ghcr.io/bsvalues/terrafusion-os-backend`
+  - `ghcr.io/bsvalues/terrafusion-os-frontend`
+  - `ghcr.io/bsvalues/terrafusion_os_1.0-frontend`
+  - inspect for `ghcr.io/bsvalues/terrafusion_os_1.0-backend` and delete if present
+- New internal package families wired in workflows:
+  - `ghcr.io/bsvalues/terrafusion-os-backend-internal`
+  - `ghcr.io/bsvalues/terrafusion-os-frontend-internal`
+  - `ghcr.io/bsvalues/terrafusion-os-slsa-backend-internal`
+  - `ghcr.io/bsvalues/terrafusion-os-slsa-frontend-internal`
+  - `ghcr.io/bsvalues/terrafusion-api-internal`
+  - `ghcr.io/bsvalues/terrafusion-os-prod-api-internal`
+  - `ghcr.io/bsvalues/terrafusion-os-prod-frontend-internal`
+  - `ghcr.io/bsvalues/terrafusion-os-prod-ai-swarm-internal`
+
+### Required Operational Sequence
+1. Merge the workflow-only cutover PR so no workflow publishes to old public package names.
+2. Reseed staging on the new internal packages:
+   - `release-lane` staging @ `24531f37a9ea785a99c1b7e4e1dd70c294af1a0c`
+   - `release-lane` staging @ `864d651a8b49ec1b2dc2cbca137091dbc1c3b29b`
+   - `rollback-staging`
+   - `release-lane` staging @ `864d651a8b49ec1b2dc2cbca137091dbc1c3b29b`
+3. Confirm new packages are private and accessible to Actions plus the VPS `deploy` user.
+4. Delete the old public GHCR packages and confirm anonymous pull now fails.
+5. Replace `DEPLOY_SSH_KEY` for both `staging` and `production` with one fresh unencrypted `ed25519` key for `deploy@72.60.126.11`.
+6. Prove the same four-run sequence against `production`.
+
+### Active Blockers
+- Production SSH currently fails before deploy with `Load key \"/home/runner/.ssh/id_ed25519\": error in libcrypto`
+- GHCR package administration still requires UI or a token with package admin scope
+- K3s-style kubeconfig material was removed from the repo tree, but cluster trust rotation remains an external infra task if `terrafusion-k8s-api` is still live
+
 ## Lane Closure Evidence Index
 
 ### Staging (proven 2026-03-11)
