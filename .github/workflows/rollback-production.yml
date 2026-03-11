@@ -1,0 +1,276 @@
+name: rollback-production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: rollback-production
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    name: Roll back production to previous SHA
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      TARGET_ENV: production
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      PUBLIC_URL: ${{ vars.PUBLIC_URL }}
+      APP_ROOT: ${{ vars.APP_ROOT }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+    steps:
+      - name: Validate environment configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          APP_ROOT="${APP_ROOT:-/opt/terrafusion/${TARGET_ENV}}"
+          PUBLIC_URL="${PUBLIC_URL%/}"
+
+          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY; do
+            if [ -z "${!required:-}" ]; then
+              echo "Missing required environment configuration: ${required}"
+              exit 1
+            fi
+          done
+
+          PUBLIC_HOST="$(node -e "const url = new URL(process.env.PUBLIC_URL); process.stdout.write(url.hostname);")"
+          OWNER="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          DEPLOYED_AT="$(date -u +%FT%TZ)"
+
+          {
+            printf 'DEPLOY_PORT=%s\n' "$DEPLOY_PORT"
+            printf 'APP_ROOT=%s\n' "$APP_ROOT"
+            printf 'PUBLIC_URL=%s\n' "$PUBLIC_URL"
+            printf 'PUBLIC_HOST=%s\n' "$PUBLIC_HOST"
+            printf 'OWNER=%s\n' "$OWNER"
+            printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
+          } >> "$GITHUB_ENV"
+
+      - name: Configure SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          for i in 1 2 3; do
+            ssh-keyscan -T 10 -t ed25519,rsa -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null && break
+            echo "ssh-keyscan attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
+
+          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
+            echo "WARNING: ssh-keyscan returned no keys; using StrictHostKeyChecking=accept-new"
+            printf 'Host %s\n  StrictHostKeyChecking accept-new\n' "$DEPLOY_HOST" >> ~/.ssh/config
+            chmod 600 ~/.ssh/config
+          fi
+
+      - name: Preflight - remote host access
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          set -euo pipefail
+          command -v docker >/dev/null
+          docker compose version >/dev/null
+          test -d "$APP_ROOT"
+          test -f "$APP_ROOT/app.env"
+          test -f "$APP_ROOT/runtime-compose.yml"
+          test -f "$APP_ROOT/release.env"
+          test -f "$APP_ROOT/current.sha"
+          test -f "$APP_ROOT/previous.sha"
+          SSH
+
+      - name: Read rollback SHAs
+        id: shas
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURRENT_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/current.sha'")"
+          ROLLBACK_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/previous.sha'")"
+          BACKEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-backend:${ROLLBACK_SHA}"
+          FRONTEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-frontend:${ROLLBACK_SHA}"
+
+          {
+            printf 'current_sha=%s\n' "$CURRENT_SHA"
+            printf 'rollback_sha=%s\n' "$ROLLBACK_SHA"
+            printf 'backend_image=%s\n' "$BACKEND_IMAGE"
+            printf 'frontend_image=%s\n' "$FRONTEND_IMAGE"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            printf 'CURRENT_SHA=%s\n' "$CURRENT_SHA"
+            printf 'ROLLBACK_SHA=%s\n' "$ROLLBACK_SHA"
+            printf 'BACKEND_IMAGE=%s\n' "$BACKEND_IMAGE"
+            printf 'FRONTEND_IMAGE=%s\n' "$FRONTEND_IMAGE"
+          } >> "$GITHUB_ENV"
+
+      - name: Prove GHCR pull on VPS
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$GHCR_TOKEN" | ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "docker login ghcr.io -u ${{ github.actor }} --password-stdin" >/dev/null 2>&1
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
+          set -euo pipefail
+          echo "Pulling backend image..."
+          docker pull "$BACKEND_IMAGE"
+          echo "Pulling frontend image..."
+          docker pull "$FRONTEND_IMAGE"
+          SSH
+
+      - name: Roll back runtime bundle on VPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' ROLLBACK_SHA='$ROLLBACK_SHA' TARGET_ENV='$TARGET_ENV' PUBLIC_URL='$PUBLIC_URL' PUBLIC_HOST='$PUBLIC_HOST' BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' DEPLOYED_AT='$DEPLOYED_AT' bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+
+          printf '%s\n' "$ROLLBACK_SHA" > requested.sha
+          cat > release.env <<EOF
+          COMPOSE_PROJECT_NAME=terrafusion-${TARGET_ENV}
+          TF_RELEASE_SHA=${ROLLBACK_SHA}
+          TF_RELEASE_ENV=${TARGET_ENV}
+          TF_RELEASE_DEPLOYED_AT=${DEPLOYED_AT}
+          TF_PUBLIC_URL=${PUBLIC_URL}
+          TF_PUBLIC_HOST=${PUBLIC_HOST}
+          TF_BACKEND_IMAGE=${BACKEND_IMAGE}
+          TF_FRONTEND_IMAGE=${FRONTEND_IMAGE}
+          EOF
+
+          docker compose -f runtime-compose.yml --env-file release.env config >/dev/null
+          docker compose -f runtime-compose.yml --env-file release.env pull
+          docker compose -f runtime-compose.yml --env-file release.env up -d
+          SSH
+
+      - name: Verify public health and release header
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="${PUBLIC_URL}/health"
+          success=0
+
+          for attempt in $(seq 1 18); do
+            if curl -fsS -o /dev/null -D curl_headers.txt "$URL"; then
+              HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
+              if [ "$HEADER_SHA" = "$ROLLBACK_SHA" ]; then
+                success=1
+                break
+              fi
+            fi
+
+            echo "Waiting for $URL to report X-Release-Sha=$ROLLBACK_SHA (attempt $attempt/18)"
+            sleep 10
+          done
+
+          if [ "$success" -ne 1 ]; then
+            echo "Rollback health endpoint never reported the rollback SHA."
+            exit 1
+          fi
+
+          grep -iE '^HTTP/.* 200' curl_headers.txt
+
+      - name: Finalize rollback SHA on VPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' CURRENT_SHA='$CURRENT_SHA' ROLLBACK_SHA='$ROLLBACK_SHA' bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          test "$(cat requested.sha)" = "$ROLLBACK_SHA"
+          printf '%s\n' "$ROLLBACK_SHA" > current.sha
+          printf '%s\n' "$CURRENT_SHA" > previous.sha
+          SSH
+
+      - name: Verify requested/current/header invariant
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
+          REQUESTED_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/requested.sha'")"
+          FINAL_CURRENT_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/current.sha'")"
+
+          test "$REQUESTED_SHA" = "$ROLLBACK_SHA"
+          test "$FINAL_CURRENT_SHA" = "$ROLLBACK_SHA"
+          test "$HEADER_SHA" = "$ROLLBACK_SHA"
+
+          {
+            printf 'REQUESTED_SHA=%s\n' "$REQUESTED_SHA"
+            printf 'FINAL_CURRENT_SHA=%s\n' "$FINAL_CURRENT_SHA"
+            printf 'HEADER_SHA=%s\n' "$HEADER_SHA"
+          } >> "$GITHUB_ENV"
+
+      - name: Collect rollback evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          cp curl_headers.txt evidence/curl_headers.txt
+
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml --env-file release.env ps" > evidence/compose_ps.txt
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "uptime" > evidence/uptime.txt
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml --env-file release.env logs --no-color --tail=200 backend" > evidence/logs_backend.txt
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml --env-file release.env logs --no-color --tail=200 proxy" > evidence/logs_proxy.txt
+
+          cat > evidence/evidence.txt <<EOF
+          operation=rollback
+          target_env=${TARGET_ENV}
+          public_url=${PUBLIC_URL}
+          rollback_sha=${ROLLBACK_SHA}
+          pre_rollback_current_sha=${CURRENT_SHA}
+          requested_sha=${REQUESTED_SHA}
+          current_sha=${FINAL_CURRENT_SHA}
+          header_sha=${HEADER_SHA}
+          backend_image=${BACKEND_IMAGE}
+          frontend_image=${FRONTEND_IMAGE}
+          workflow_run_id=${GITHUB_RUN_ID}
+          workflow_run_attempt=${GITHUB_RUN_ATTEMPT}
+          deployed_at_utc=${DEPLOYED_AT}
+          EOF
+
+          cat > evidence/evidence.json <<EOF
+          {
+            "operation": "rollback",
+            "targetEnv": "${TARGET_ENV}",
+            "publicUrl": "${PUBLIC_URL}",
+            "rollbackSha": "${ROLLBACK_SHA}",
+            "preRollbackCurrentSha": "${CURRENT_SHA}",
+            "requestedSha": "${REQUESTED_SHA}",
+            "currentSha": "${FINAL_CURRENT_SHA}",
+            "headerSha": "${HEADER_SHA}",
+            "backendImage": "${BACKEND_IMAGE}",
+            "frontendImage": "${FRONTEND_IMAGE}",
+            "workflowRunId": "${GITHUB_RUN_ID}",
+            "workflowRunAttempt": "${GITHUB_RUN_ATTEMPT}",
+            "deployedAtUtc": "${DEPLOYED_AT}"
+          }
+          EOF
+
+      - name: Validate evidence schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          for required in evidence.json evidence.txt curl_headers.txt compose_ps.txt uptime.txt logs_backend.txt logs_proxy.txt; do
+            test -s "evidence/$required"
+          done
+
+      - name: Upload rollback evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: rollback-evidence-production-${{ steps.shas.outputs.rollback_sha }}
+          path: evidence/
+          if-no-files-found: error
