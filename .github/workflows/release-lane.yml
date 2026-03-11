@@ -291,10 +291,10 @@ jobs:
           mkdir -p evidence
           cp curl_headers.txt evidence/curl_headers.txt
 
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml ps" > evidence/compose_ps.txt
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml --env-file release.env ps" > evidence/compose_ps.txt
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "uptime" > evidence/uptime.txt
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml logs --no-color --tail=200 backend" > evidence/logs_backend.txt
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml logs --no-color --tail=200 proxy" > evidence/logs_proxy.txt
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml --env-file release.env logs --no-color --tail=200 backend" > evidence/logs_backend.txt
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cd '$APP_ROOT' && docker compose -f runtime-compose.yml --env-file release.env logs --no-color --tail=200 proxy" > evidence/logs_proxy.txt
 
           cat > evidence/evidence.txt <<EOF
           operation=deploy
