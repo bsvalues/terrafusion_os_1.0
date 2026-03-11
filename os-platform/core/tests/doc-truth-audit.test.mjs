@@ -75,19 +75,21 @@ test("doc truth audit: production-approval-memo.md must scope release-path verif
   const file = repoPath("os-platform", "core", "pilot", "ops", "production-approval-memo.md");
   const md = readUtf8(file);
 
-  // Guardrail 2: if it claims release-path verification complete, it must say "staging"
-  // (This avoids ambiguous readers inferring production unless explicitly stated.)
-  //
-  // Disallow: "Release-path verification complete" without a nearby "staging" qualifier
-  // (check both before and after the phrase within 80 chars each direction).
-  const unscopedClaim =
-    /(?<!\bstaging\b[\s\S]{0,80})Release-path verification complete(?![\s\S]{0,80}\bstaging\b)/i;
+  // Guardrail 2: every occurrence of "release-path verification complete" must have
+  // "staging" within an 80-char window on either side. Uses matchAll instead of
+  // variable-length lookbehind for portability across Node versions.
+  const matches = [...md.matchAll(/release-path verification complete/gi)];
+  assert.ok(matches.length > 0, "Expected at least one 'release-path verification complete' occurrence.");
 
-  mustNotMatch(
-    md,
-    unscopedClaim,
-    "Unscoped claim detected: 'Release-path verification complete' appears without explicit 'staging' qualifier nearby."
-  );
+  for (const m of matches) {
+    const start = Math.max(0, m.index - 80);
+    const end = Math.min(md.length, m.index + m[0].length + 80);
+    const window = md.slice(start, end);
+    assert.ok(
+      /\bstaging\b/i.test(window),
+      `Unscoped claim detected near: "${window.replace(/\s+/g, " ").slice(0, 160)}..."`
+    );
+  }
 
   // Positive expectation: staging is explicitly named in the proven-claims area.
   mustMatch(
