@@ -302,6 +302,6 @@ Both staging and production run simultaneously behind the shared edge proxy.
 
 ## Notes
 - Hostinger MCP is optional discovery only; config is local-only and not committed.
-- Production is not approved until the same live proof sequence is completed against the production target.
+- Production 4-dispatch proof completed 2026-03-11 (see `production-approval-memo.md` Section 3). Staging release-path re-verified 2026-03-11 (PR #693).
 - Any credential or secret ever pasted into chat is compromised and must be rotated before use.
 - Provider firewall (Hostinger) allows only ports 22, 80, 443. Port 65002 is blocked at provider level.
