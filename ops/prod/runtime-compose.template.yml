@@ -2,9 +2,8 @@ services:
   proxy:
     image: caddy:2.8-alpine
     restart: unless-stopped
-    ports:
-      - '80:80'
-      - '443:443'
+    # No host port binding — the shared edge proxy owns 80/443 and
+    # routes to this container by name over the terrafusion-edge network.
     env_file:
       - ./release.env
     volumes:
@@ -16,6 +15,9 @@ services:
         condition: service_healthy
       frontend:
         condition: service_healthy
+    networks:
+      - default
+      - terrafusion-edge
 
   backend:
     image: ${TF_BACKEND_IMAGE}
@@ -41,6 +43,10 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+
+networks:
+  terrafusion-edge:
+    external: true
 
 volumes:
   caddy_data:

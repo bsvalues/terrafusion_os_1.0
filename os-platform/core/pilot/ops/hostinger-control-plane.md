@@ -114,7 +114,7 @@ Secrets:
 - ~~Production SSH fails~~ RESOLVED: v4 key generated on VPS, set via pipe
 - ~~GHCR old public package deletion~~ RESOLVED: 4 packages deleted via `gh api -X DELETE` (2026-03-11)
 - K3s-style kubeconfig material was removed from the repo tree, but cluster trust rotation remains an external infra task if `terrafusion-k8s-api` is still live
-- Staging and production cannot run simultaneously on the same VPS (port 80/443 conflict)
+- ~~Staging and production cannot run simultaneously on the same VPS (port 80/443 conflict)~~ RESOLVED: shared edge proxy routes by hostname (PR #684)
 - `staging.terrafusionmarket.com` DNS A record missing (NXDOMAIN); needs restoration at Hostinger
 
 ## Lane Closure Evidence Index
@@ -185,10 +185,39 @@ Proven claims:
 Remaining items:
 - ~~Delete old public GHCR packages~~ DONE (2026-03-11, anonymous pull confirmed denied)
 - Restore `staging.terrafusionmarket.com` DNS A record at Hostinger
-- Implement port differentiation or shared proxy for staging/production coexistence
+- ~~Implement port differentiation or shared proxy for staging/production coexistence~~ DONE (PR #684, shared edge proxy)
 - K3s trust rotation if cluster is live
 - Production observability validation
 - Final approval memo from production artifacts
+
+## Shared Edge Proxy Architecture (PR #684)
+
+Staging and production coexist on the same VPS via a shared Caddy edge proxy
+that owns host ports 80/443 and routes by hostname.
+
+```
+┌─────────────────────────────────────── VPS 72.60.126.11 ──────────────────────────────────┐
+│                                                                                           │
+│   ┌── Edge Proxy (Caddy) ── ports 80/443 ──┐                                             │
+│   │  terrafusionmarket.com        → terrafusion-production-proxy-1:80                     │
+│   │  staging.terrafusionmarket.com → terrafusion-staging-proxy-1:80                       │
+│   └────────────────────────────────────────┘                                              │
+│              │ terrafusion-edge network │                                                  │
+│   ┌─────────┴───────────┐   ┌──────────┴──────────┐                                      │
+│   │ terrafusion-production │  │ terrafusion-staging  │                                     │
+│   │  proxy → backend:5000 │  │  proxy → backend:5000 │                                     │
+│   │         frontend:80   │  │         frontend:80   │                                     │
+│   └───────────────────────┘  └───────────────────────┘                                    │
+│                                                                                           │
+└───────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+- Edge proxy config: `ops/edge-proxy/Caddyfile` + `ops/edge-proxy/docker-compose.yml`
+- Per-env proxy: `ops/proxy/Caddyfile` (listens `:80`, no TLS — edge handles ACME)
+- Runtime compose: `ops/prod/runtime-compose.template.yml` (no host ports, joins `terrafusion-edge` network)
+- Deployed to: `/opt/terrafusion/edge-proxy/` on VPS
+- TLS: Edge Caddy handles ACME for both domains automatically
+- Graceful degradation: If one env is down, its route returns 502; the other keeps serving
 
 ## Infrastructure Fixes (PRs #660–#671)
 

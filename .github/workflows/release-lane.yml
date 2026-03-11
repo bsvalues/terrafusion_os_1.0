@@ -53,7 +53,7 @@ jobs:
           # headers, etc.).  Always overlay from main — old release SHAs may have
           # incompatible versions (e.g. wrong service names in Caddyfile).
           git fetch origin main --no-tags --depth=1 2>/dev/null || true
-          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml frontend/Dockerfile backend/Dockerfile; do
+          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml frontend/Dockerfile backend/Dockerfile; do
             dir="$(dirname "$path")"
             mkdir -p "$dir"
             echo "Overlaying $path from origin/main"
@@ -196,11 +196,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf runtime evidence curl_headers.txt
+          rm -rf runtime edge-proxy evidence curl_headers.txt
           mkdir -p runtime/docs/spec-lock
           cp ops/proxy/Caddyfile runtime/Caddyfile
           cp ops/prod/runtime-compose.template.yml runtime/runtime-compose.yml
           cp -R docs/spec-lock/. runtime/docs/spec-lock/
+
+          # Edge proxy bundle (shared across environments)
+          mkdir -p edge-proxy
+          cp ops/edge-proxy/Caddyfile edge-proxy/Caddyfile
+          cp ops/edge-proxy/docker-compose.yml edge-proxy/docker-compose.yml
 
           cat > runtime/release.env <<EOF
           COMPOSE_PROJECT_NAME=terrafusion-${TARGET_ENV}
@@ -218,6 +223,20 @@ jobs:
         run: |
           set -euo pipefail
           scp -P "$DEPLOY_PORT" -r runtime/* "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/"
+
+      - name: Bootstrap shared edge proxy
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Ensure shared Docker network exists
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "docker network inspect terrafusion-edge >/dev/null 2>&1 || docker network create terrafusion-edge"
+
+          # Deploy/update edge proxy (owns host 80/443, routes by hostname)
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p /opt/terrafusion/edge-proxy"
+          scp -P "$DEPLOY_PORT" edge-proxy/* "$DEPLOY_USER@$DEPLOY_HOST:/opt/terrafusion/edge-proxy/"
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd /opt/terrafusion/edge-proxy && docker compose up -d"
 
       - name: Preflight - GHCR pull on VPS
         shell: bash
