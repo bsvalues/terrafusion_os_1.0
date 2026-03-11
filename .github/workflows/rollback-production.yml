@@ -87,10 +87,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          SSH_OPTS="-o ConnectTimeout=30 -o ServerAliveInterval=15"
           for attempt in 1 2 3; do
             echo "SSH preflight attempt $attempt/3..."
-            if ssh $SSH_OPTS -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+            set +e
+            ssh -o ConnectTimeout=30 -o ServerAliveInterval=15 \
+                -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+                "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
           set -euo pipefail
           command -v docker >/dev/null
           docker compose version >/dev/null
@@ -101,11 +103,13 @@ jobs:
           test -f "$APP_ROOT/current.sha"
           test -f "$APP_ROOT/previous.sha"
           SSH
-            then
+            rc=$?
+            set -e
+            if [ $rc -eq 0 ]; then
               echo "SSH preflight succeeded on attempt $attempt"
               exit 0
             fi
-            echo "SSH attempt $attempt failed (exit $?), waiting 15s..."
+            echo "SSH attempt $attempt failed (exit $rc), waiting 15s..."
             sleep 15
           done
           echo "ERROR: SSH preflight failed after 3 attempts"
