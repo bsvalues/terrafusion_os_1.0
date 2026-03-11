@@ -232,6 +232,18 @@ jobs:
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
             "docker network inspect terrafusion-edge >/dev/null 2>&1 || docker network create terrafusion-edge"
 
+          # Stop the current per-env stack gracefully so the edge proxy can
+          # claim host ports 80/443.  On the very first edge-proxy deploy the
+          # old stack still has host port bindings; after that this is a no-op
+          # because per-env stacks no longer bind host ports.
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          if [ -f runtime-compose.yml ] && [ -f release.env ]; then
+            docker compose -f runtime-compose.yml --env-file release.env down --timeout 30 || true
+          fi
+          SSH
+
           # Deploy/update edge proxy (owns host 80/443, routes by hostname)
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p /opt/terrafusion/edge-proxy"
           scp -P "$DEPLOY_PORT" edge-proxy/* "$DEPLOY_USER@$DEPLOY_HOST:/opt/terrafusion/edge-proxy/"
