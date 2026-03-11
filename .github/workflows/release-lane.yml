@@ -117,12 +117,20 @@ jobs:
             sleep 5
           done
 
+          # Global SSH options: faster timeout + keepalive for Hostinger VPS
+          cat > ~/.ssh/config <<SSHCFG
+          Host $DEPLOY_HOST
+            ConnectTimeout 30
+            ServerAliveInterval 15
+            ServerAliveCountMax 3
+          SSHCFG
+
           # Fallback: if keyscan still failed, accept new keys on first connect
           if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
             echo "WARNING: ssh-keyscan returned no keys; using StrictHostKeyChecking=accept-new"
-            printf 'Host %s\n  StrictHostKeyChecking accept-new\n' "$DEPLOY_HOST" >> ~/.ssh/config
-            chmod 600 ~/.ssh/config
+            printf '  StrictHostKeyChecking accept-new\n' >> ~/.ssh/config
           fi
+          chmod 600 ~/.ssh/config
 
       - name: Preflight - public DNS resolution
         shell: bash
@@ -134,7 +142,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          SSH_OPTS="-o ConnectTimeout=30 -o ServerAliveInterval=15"
+          for attempt in 1 2 3; do
+            echo "SSH preflight attempt $attempt/3..."
+            if ssh $SSH_OPTS -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
           set -euo pipefail
           command -v docker >/dev/null
           docker compose version >/dev/null
@@ -142,6 +153,15 @@ jobs:
           test -w "$APP_ROOT"
           test -f "$APP_ROOT/app.env"
           SSH
+            then
+              echo "SSH preflight succeeded on attempt $attempt"
+              exit 0
+            fi
+            echo "SSH attempt $attempt failed (exit $?), waiting 15s..."
+            sleep 15
+          done
+          echo "ERROR: SSH preflight failed after 3 attempts"
+          exit 1
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
