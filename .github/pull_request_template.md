@@ -1,119 +1,87 @@
-# TerraFusion Government Service Pull Request
+## Summary
 
-## 🏛️ Summary
+What changed?
 
-**What changed:**
-<!-- Describe the change and which subsystem it touches (backend / frontend / county config / AI) -->
+Why was it needed?
 
-**Why:**
-<!-- Business/technical justification and government impact -->
+## Scope
 
-## ✅ Verification Checklist
+- [ ] core governance surface
+- [ ] workflow / GitHub automation
+- [ ] backend
+- [ ] frontend
+- [ ] operations / deployment docs
+- [ ] documentation only
 
-### Build & Test
+## Verification
 
-- [ ] Builds locally: `dotnet build` (backend) / `npm run build` (frontend)
-- [ ] `/health` responds locally or in CI
-- [ ] Tests pass: `make test` / `dotnet test` / `npm test`
-- [ ] No secrets committed
-- [ ] If `.github/workflows/` changed: ran `node scripts/governance/workflow-inventory.mjs --write` and committed snapshot
+List the exact commands, workflow runs, screenshots, or artifacts used to verify
+this change.
 
-### Database (if applicable)
-
-- [ ] EF migration included (name: `_______________`)
-- [ ] Audit fields preserved (CreatedAt/UpdatedAt/CreatedBy/UpdatedBy)
-- [ ] `make migrate && make seed` runs successfully
-
-### Government Compliance
-
-- [ ] FISMA-High security requirements met
-- [ ] No production county data modified
-- [ ] Section 508 accessibility validated (WCAG 2.2 AA)
-- [ ] Performance targets met (<100ms P95)
-- [ ] Security/vulnerability scan passed
-
-### Accessibility (Section 508 / WCAG 2.2 AA)
-
-- [ ] Screen reader compatible
-- [ ] Keyboard navigation functional
-- [ ] Color contrast >= 4.5:1
-- [ ] Focus indicators visible
-- [ ] Form labels properly associated
-
-### Documentation
-
-- [ ] Code documented (JSDoc/XML comments)
-- [ ] API docs updated if public surface changed
-- [ ] README updated if needed
-
-## 🧪 Testing Performed
-
-**Local Verification:**
-
-```bash
-make up
-make migrate && make seed
-make test
+```text
+- pnpm run type-check
+- node --test os-platform/core/tests/phase83-tools.test.mjs
+- gh workflow run ...
+- evidence artifact: ...
 ```
 
-**Manual Testing:**
-<!-- Steps and expected outcomes -->
+If you did not run something relevant, say so explicitly.
 
-**Screenshots/URLs:**
-<!-- If UI changes -->
+## Required Checks Awareness
 
-## 📋 Tier-1 UI/UX Evidence (if applicable)
+This PR targets `main`, which currently requires:
 
-<!--
-  Complete this section for any PR that changes Tier-1 UI/UX behavior.
-  Delete this section if this PR does not touch Tier-1 UI.
-  See: docs/governance/TIER1_UI_UX_DOD_CHECKLIST.md
--->
+- `governed-spine`
+- `phase85-tools`
+- `phase86-toolrunner`
+- `🔒 TerraFusion Seal Gate`
+- `🧪 Tier-1 UI Harness Validation`
 
-- [ ] **This PR changes Tier-1 UI/UX behavior**
-- **Flow tested:** `<scene> → <action> → <result>`
-- **CID(s):** `<paste a real CID from your test run>`
-- **Trace evidence:** `<screenshot or trace link showing CID>`
-- **Latency:** `<action> took <N>ms`
-- **Error evidence:** `<error state screenshot or "no console errors">`
-- **Receipt evidence (if write/commit):** `<screenshot + payload>`
-- **UI screenshot/gif:** `<at least one state transition>`
+## Risk and Rollback
 
-## 🔒 Security & Risk
+Risk level:
 
-**Security Considerations:**
-<!-- Any security implications -->
+- [ ] low
+- [ ] medium
+- [ ] high
 
-**Risk Level:** [ ] Low [ ] Medium [ ] High
+Rollback plan:
 
-**Rollback Plan:**
-
-```bash
-make down && make clean
-# or revert to previous image tags
+```text
+Describe how to back this out if needed.
 ```
 
-**Secrets/Env Changes:**
-<!-- List any new environment variables or secret changes -->
+## Security
 
-## 👥 Review Requirements
+- [ ] no secrets committed
+- [ ] no new hardcoded credentials or private endpoints added
+- [ ] any required secret/env changes are documented below
 
-**Focused Review Areas:**
-<!-- e.g., "check audit interceptor", "verify SignalR hub registration", "AI swarm coordination safety" -->
+Secrets or environment changes:
 
-**Approvals Required:**
+```text
+None / list them here
+```
 
-- [ ] Technical Lead
-- [ ] Security Team (if Medium/High risk)
-- [ ] Compliance Officer (if government-facing)
+## Deployment / Ops Notes
 
-## 📊 Performance Impact
+- [ ] no deploy impact
+- [ ] staging impact
+- [ ] production impact
 
-**Metrics:**
-<!-- Before/after performance benchmarks, resource usage -->
+If deployment behavior changed, note whether you also updated:
 
----
+- [ ] `.github` workflow docs
+- [ ] `os-platform/core/pilot/ops/hostinger-control-plane.md`
 
-**AI-Swarm Changes:** If this PR touches AI coordination, add `AI-SWARM` label and include safety plan.
+## UI Evidence
 
-**Government Service Standards:** This change meets federal accessibility, security, and performance requirements for citizen services.
+If UI behavior changed, include:
+
+- screenshot or recording
+- affected route or screen
+- correlationId if debugging an error path
+
+## Additional Context
+
+Anything reviewers should focus on:

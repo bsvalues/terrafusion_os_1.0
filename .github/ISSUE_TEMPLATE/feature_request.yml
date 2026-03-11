@@ -1,118 +1,81 @@
-name: ✨ Feature Request
-description: Suggest a new feature for TerraFusion OS 1.0
-title: "[FEATURE] "
-labels: ["enhancement", "needs-review"]
+name: Feature request
+description: Propose a change to product behavior, repo workflow, or operations
+title: '[FEATURE] '
+labels: ['enhancement', 'needs-review']
 assignees: []
 
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for suggesting a new feature for TerraFusion OS 1.0! Please provide detailed information about your request.
+        Use this template for concrete, reviewable requests. Tie the request to a
+        real repo surface or operational need.
 
   - type: dropdown
-    id: category
+    id: type
     attributes:
-      label: Feature Category
-      description: Which area does this feature relate to?
+      label: Request type
       options:
-        - AI/Machine Learning
-        - Performance Optimization
-        - User Interface
-        - API/Integration
-        - Security/Compliance
-        - DevOps/Deployment
-        - Analytics/Reporting
-        - Government Workflow
+        - Core governance / pilot tools
+        - GitHub workflows / release automation
+        - Backend API
+        - Frontend / OS Shell
+        - Operations / deployment
+        - Documentation
         - Other
-    validations:
-      required: true
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority
-      description: How important is this feature?
-      options:
-        - Critical (Blocking Government Operations)
-        - High (Significant Value Add)
-        - Medium (Nice to Have)
-        - Low (Future Enhancement)
     validations:
       required: true
 
   - type: textarea
     id: problem
     attributes:
-      label: Problem Statement
-      description: What problem does this feature solve?
-      placeholder: Describe the current limitation or challenge...
+      label: Problem statement
+      placeholder: What is missing or painful today?
     validations:
       required: true
 
   - type: textarea
-    id: solution
+    id: proposal
     attributes:
-      label: Proposed Solution
-      description: Describe your proposed solution
-      placeholder: How should this feature work?
+      label: Proposed change
+      placeholder: What should happen instead?
     validations:
       required: true
 
   - type: textarea
-    id: alternatives
+    id: acceptance
     attributes:
-      label: Alternative Solutions
-      description: Have you considered any alternative approaches?
-    validations:
-      required: false
-
-  - type: textarea
-    id: use_cases
-    attributes:
-      label: Use Cases
-      description: Specific scenarios where this feature would be valuable
+      label: Acceptance criteria
       placeholder: |
-        1. Government user needs to...
-        2. Administrator wants to...
-        3. System should automatically...
+        - [ ] ...
+        - [ ] ...
     validations:
       required: true
 
   - type: textarea
-    id: acceptance_criteria
-    attributes:
-      label: Acceptance Criteria
-      description: How will we know this feature is complete?
-      placeholder: |
-        - [ ] User can...
-        - [ ] System validates...
-        - [ ] Performance meets...
-    validations:
-      required: false
-
-  - type: checkboxes
     id: impact
     attributes:
-      label: Impact Areas
-      description: Which areas might be affected by this feature?
+      label: Impact and risk
+      placeholder: Which systems, workflows, or environments would this affect?
+
+  - type: checkboxes
+    id: surfaces
+    attributes:
+      label: Potentially affected surfaces
       options:
-        - label: User Experience
-        - label: Performance
-        - label: Security
-        - label: Compliance
-        - label: Database Schema
-        - label: API Changes
-        - label: Documentation
+        - label: 'Protected `main` branch rules'
+        - label: '`.github/workflows/**`'
+        - label: '`os-platform/core/**`'
+        - label: Deployment runbook
+        - label: Staging environment
+        - label: Production environment
 
   - type: checkboxes
     id: checklist
     attributes:
-      label: Pre-submission Checklist
+      label: Before submitting
       options:
-        - label: I have searched existing issues to ensure this is not a duplicate
+        - label: I searched for duplicates
           required: true
-        - label: This feature aligns with government requirements
-          required: true
-        - label: I have provided clear use cases and acceptance criteria
+        - label: I described the desired outcome, not just the implementation
           required: true

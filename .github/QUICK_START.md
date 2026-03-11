@@ -1,138 +1,101 @@
-# Two-Lane CI Quick Start
+# GitHub Maintainer Quick Start
 
-**Unblock PR #258 in 5 minutes. Full implementation in 30 minutes.**
+This is the shortest current path for contributors and maintainers working
+through GitHub.
 
----
-
-## Immediate Unblock (RIGHT NOW)
-
-### Step 1: Configure Branch Protection (2 min)
+## 1. Sync and Branch
 
 ```bash
-# Run the branch protection script
-cd c:/Users/bsval/terrafusion_os_1.0/.github/scripts
-bash configure-branch-protection.sh
+git checkout main
+git pull origin main
+git checkout -b docs/update-github-frontpage
 ```
 
-**What this does:**
-- Sets `🔒 SEAL` as ONLY required check
-- Removes all 200+ optional checks from blocking merge
-- Keeps safety (SEAL still must pass)
+## 2. Run the Minimum Local Checks
 
-### Step 2: Verify SEAL Status (1 min)
+For governance-surface changes:
 
 ```bash
-# Check if SEAL is passing on PR #258
-gh pr checks 258 --watch
+pnpm run type-check
+node --test os-platform/core/tests/phase83-tools.test.mjs
 ```
 
-**Expected:** `🔒 SEAL` shows ✅ green (3-8 min if running)
-
-### Step 3: Merge (1 min)
+For a broader governed/core pass:
 
 ```bash
-gh pr merge 258 --squash --delete-branch
+pnpm run governance:check
 ```
 
-**Done.** PR #258 unblocked and merged.
-
----
-
-## Full Implementation (30 min)
-
-### Phase 0: Already Done ✅
-- ✅ SBOM moved off PR trigger (now main/tag only)
-- ✅ SLSA provenance moved off PR trigger (now main/tag only)
-- ✅ Branch protection script created
-- ✅ Documentation written
-
-### Phase 1: Snyk Cleanup (10 min)
+## 3. Open a PR to `main`
 
 ```bash
-# Close 22 Snyk PRs
-cd .github/scripts
-bash consolidate-snyk-prs.sh
-
-# Then configure Snyk dashboard:
-# 1. Go to https://app.snyk.io/
-# 2. Settings > Integrations > GitHub
-# 3. Enable "Group PRs" + Set max to 1
+git push -u origin <branch-name>
+gh pr create --base main --fill
 ```
 
-### Phase 2: Verify (5 min)
+Watch required checks:
 
 ```bash
-# Verify SBOM runs on main (not PR)
-gh run list --workflow=sbom.yml --limit 1
-
-# Verify SLSA runs on main (not PR)
-gh run list --workflow=slsa-provenance.yml --limit 1
-
-# Verify only 1 required check
-gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection | jq '.required_status_checks.contexts'
-# Expected: ["🔒 SEAL"]
+gh pr checks --watch
 ```
 
----
+## 4. Know What Must Pass
 
-## What Changed
+Current required checks on `main`:
 
-### Before (Blocking Velocity)
-- ❌ 200+ status checks creating noise
-- ❌ SBOM/SLSA running on every PR (slow, unnecessary)
-- ❌ 22 Snyk PRs open
-- ❌ PR merge time: ~45 minutes
+- `governed-spine`
+- `phase85-tools`
+- `phase86-toolrunner`
+- `🔒 TerraFusion Seal Gate`
+- `🧪 Tier-1 UI Harness Validation`
 
-### After (Velocity + Safety)
-- ✅ 1 required check: SEAL (3-8 min)
-- ✅ SBOM/SLSA only on main/tags (release assurance)
-- ✅ 0-1 Snyk PRs (Critical-Only mode)
-- ✅ PR merge time: 3-8 minutes
+## 5. Run the Release Lane
 
-### Safety Unchanged
-- ✅ Governed-spine still enforced
-- ✅ SBOM coverage: 100%
-- ✅ SLSA Level 3: ✅
-- ✅ Security scanning: ✅ (moved to release boundary)
-
----
-
-## Next Actions
-
-### Today
-1. ✅ **Merge PR #258** (Control Plane v1)
-2. ⏭️ **Ship Slice 24.3** (diff viewer)
-
-### Tomorrow
-1. ⏭️ **Close Snyk PRs** (22 → 0-1)
-2. ⏭️ **Configure Snyk dashboard** (Critical-Only)
-
-### This Week
-1. ⏭️ **Monitor velocity metrics** (weekly reviews)
-2. ⏭️ **Tag v1.0.0** (verify release lane)
-
----
-
-## Documentation
-
-- **Architecture:** [.github/TWO_LANE_CI_ARCHITECTURE.md](.github/TWO_LANE_CI_ARCHITECTURE.md)
-- **Implementation:** [.github/IMPLEMENTATION_PLAN.md](.github/IMPLEMENTATION_PLAN.md)
-- **Governance:** [AGENTS.md](../../AGENTS.md)
-
----
-
-## Emergency Rollback
+Dispatch a specific SHA to staging:
 
 ```bash
-# If things go wrong, restore previous state
-gh api --method PUT \
-  "/repos/bsvalues/terrafusion_os_1.0/branches/main/protection" \
-  --input .github/backups/branch-protection-main-*.json
+gh workflow run release-lane.yml \
+  -f target_env=staging \
+  -f release_sha=<full-sha>
 ```
 
----
+Rollback staging:
 
-**Status:** ✅ Ready to execute  
-**Time to unblock:** 5 minutes  
-**Time to full implementation:** 30 minutes  
-**Risk:** Low (rollback available)
+```bash
+gh workflow run rollback-staging.yml
+```
+
+Dispatch to production:
+
+```bash
+gh workflow run release-lane.yml \
+  -f target_env=production \
+  -f release_sha=<full-sha>
+```
+
+Rollback production:
+
+```bash
+gh workflow run rollback-production.yml
+```
+
+## 6. Current Operational Reality
+
+As of 2026-03-11:
+
+- staging proof sequence is complete
+- production proof sequence is still pending
+- production SSH is blocked until `DEPLOY_SSH_KEY` is replaced with a valid
+  unencrypted `ed25519` key
+- GHCR has been cut over in workflows to internal package names
+
+Operational truth lives here:
+
+- [hostinger-control-plane.md](../os-platform/core/pilot/ops/hostinger-control-plane.md)
+
+## 7. Verify Repo Features
+
+```bash
+gh api repos/bsvalues/terrafusion_os_1.0 --jq \
+  "{default_branch: .default_branch, private: .private, has_issues: .has_issues, has_wiki: .has_wiki, has_discussions: .has_discussions}"
+```

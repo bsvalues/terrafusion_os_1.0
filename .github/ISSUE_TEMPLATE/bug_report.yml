@@ -1,112 +1,101 @@
-name: 🐛 Bug Report
-description: Report a bug in TerraFusion OS 1.0
-title: "[BUG] "
-labels: ["bug", "needs-triage"]
+name: Bug report
+description: Report a defect in the current TerraFusion OS repo or release lane
+title: '[BUG] '
+labels: ['bug', 'needs-triage']
 assignees: []
 
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for reporting a bug in TerraFusion OS 1.0! Please fill out the following information to help us resolve the issue quickly.
+        Use this template for normal defects. Do not paste live secrets, private
+        keys, or exploitable details here. Use the security route for that.
 
   - type: dropdown
-    id: component
+    id: area
     attributes:
-      label: Component
-      description: Which component is affected?
+      label: Affected area
       options:
-        - AI Swarm Intelligence
-        - Quantum Performance Engine
-        - Probabilistic Computing
-        - Frontend UI
+        - Core governance / pilot tools
+        - GitHub workflows / CI
+        - Release lane / rollback
         - Backend API
-        - Database Layer
-        - DevOps/Deployment
-        - Documentation
+        - Frontend / OS Shell
+        - Operations runbook / docs
         - Other
     validations:
       required: true
 
   - type: dropdown
-    id: severity
+    id: environment
     attributes:
-      label: Severity
-      description: How severe is this bug?
+      label: Environment
       options:
-        - Critical (System Down)
-        - High (Major Feature Broken)
-        - Medium (Feature Partially Working)
-        - Low (Minor Issue)
+        - Local development
+        - GitHub Actions
+        - Staging
+        - Production
+        - Documentation only
     validations:
       required: true
 
   - type: textarea
-    id: description
+    id: summary
     attributes:
-      label: Bug Description
-      description: A clear and concise description of the bug
-      placeholder: Describe what happened...
+      label: Problem summary
+      placeholder: What is broken?
     validations:
       required: true
 
   - type: textarea
-    id: reproduction
+    id: reproduce
     attributes:
-      label: Steps to Reproduce
-      description: Steps to reproduce the behavior
+      label: Steps to reproduce
       placeholder: |
-        1. Go to '...'
-        2. Click on '...'
-        3. Scroll down to '...'
-        4. See error
+        1. Run or open ...
+        2. Trigger ...
+        3. Observe ...
     validations:
       required: true
 
   - type: textarea
     id: expected
     attributes:
-      label: Expected Behavior
-      description: What you expected to happen
+      label: Expected result
     validations:
       required: true
 
   - type: textarea
     id: actual
     attributes:
-      label: Actual Behavior
-      description: What actually happened
+      label: Actual result
     validations:
       required: true
 
-  - type: textarea
-    id: environment
+  - type: input
+    id: sha
     attributes:
-      label: Environment
-      description: System information
-      placeholder: |
-        - OS: [e.g. Windows 11, Ubuntu 22.04]
-        - Browser: [e.g. Chrome 120, Firefox 121]
-        - TerraFusion Version: [e.g. 1.0.0]
-        - Deployment: [e.g. Local, Docker, Kubernetes]
-    validations:
-      required: true
+      label: Commit SHA or branch
+      placeholder: 864d651a8b49ec1b2dc2cbca137091dbc1c3b29b
+
+  - type: input
+    id: correlation
+    attributes:
+      label: correlationId (if available)
+      placeholder: corr-..., net-..., ebnd-...
 
   - type: textarea
-    id: logs
+    id: evidence
     attributes:
-      label: Logs/Screenshots
-      description: Add any relevant logs, error messages, or screenshots
-      placeholder: Paste logs here or drag and drop screenshots
+      label: Logs, screenshots, workflow runs, or evidence artifact
+      placeholder: Paste the relevant error text, run URL, or artifact name
 
   - type: checkboxes
-    id: checklist
+    id: checks
     attributes:
-      label: Pre-submission Checklist
+      label: Before submitting
       options:
-        - label: I have searched existing issues to ensure this is not a duplicate
+        - label: I searched for duplicates
           required: true
-        - label: I have provided all required information above
+        - label: I did not include live secrets or private keys
           required: true
-        - label: This issue affects government operations or compliance
-          required: false
