@@ -110,9 +110,11 @@ Secrets:
 6. Prove the same four-run sequence against `production`.
 
 ### Active Blockers
-- Production SSH currently fails before deploy with `Load key \"/home/runner/.ssh/id_ed25519\": error in libcrypto`
-- GHCR package administration still requires UI or a token with package admin scope
+- ~~Production SSH fails~~ RESOLVED: v4 key generated on VPS, set via pipe
+- GHCR old public package deletion still requires UI or package-admin token
 - K3s-style kubeconfig material was removed from the repo tree, but cluster trust rotation remains an external infra task if `terrafusion-k8s-api` is still live
+- Staging and production cannot run simultaneously on the same VPS (port 80/443 conflict)
+- `staging.terrafusionmarket.com` DNS A record missing (NXDOMAIN); needs restoration at Hostinger
 
 ## Lane Closure Evidence Index
 
@@ -134,30 +136,58 @@ PR #671 (evidence env-file fix) merged at 2026-03-11T00:50:36Z.
 All 4 successful runs occurred after that merge (E1 created at 00:53:49Z).
 Evidence collection succeeded in all runs.
 
-### Production (pending)
-- Production deploy 864d651a8... artifact: (not yet dispatched)
-- Production rollback artifact: (not yet dispatched)
+### Staging — Reseed on Internal GHCR (proven 2026-03-11)
 
-## Staging Readiness Posture (2026-03-11)
+| Dispatch | Workflow | SHA | Run ID | Result |
+|----------|----------|-----|--------|--------|
+| E1 seed deploy | release-lane | 24531f37a9ea785a99c1b7e4e1dd70c294af1a0c | 22949967718 | SUCCESS |
+| E2 release deploy | release-lane | 864d651a8b49ec1b2dc2cbca137091dbc1c3b29b | 22950463468 | SUCCESS |
+| E3 rollback | rollback-staging | (auto: previous.sha) | 22951371572 | SUCCESS |
+| E4 redeploy | release-lane | 864d651a8b49ec1b2dc2cbca137091dbc1c3b29b | 22951590126 | SUCCESS |
 
-TerraFusion on protected `main` is engineering-ready, governance-ready, and now
-staging-proven through live deploy, rollback, and redeploy evidence.
+Notes:
+- All images pulled from `-internal` GHCR packages (PR #676 cutover)
+- Health verified via IP-resolve fallback (staging DNS NXDOMAIN, PR #680)
+- Rollback health fix applied via PR #681
+
+### Production (proven 2026-03-11)
+
+| Dispatch | Workflow | SHA | Run ID | Result |
+|----------|----------|-----|--------|--------|
+| E1 seed deploy | release-lane | 24531f37a9ea785a99c1b7e4e1dd70c294af1a0c | 22952476204 | SUCCESS |
+| E2 release deploy | release-lane | 864d651a8b49ec1b2dc2cbca137091dbc1c3b29b | 22953010096 | SUCCESS |
+| E3 rollback | rollback-production | (auto: previous.sha) | 22953429826 | SUCCESS |
+| E4 redeploy | release-lane | 864d651a8b49ec1b2dc2cbca137091dbc1c3b29b | 22953654896 | SUCCESS |
+
+Notes:
+- Staging stopped before production E1 to free ports 80/443 (shared VPS)
+- Health verified via IP-resolve fallback
+- All images pulled from `-internal` GHCR packages
+
+## Production Readiness Posture (2026-03-11)
+
+TerraFusion OS is now **staging-proven AND production-proven** through live
+deploy, rollback, and redeploy evidence on internal GHCR packages.
+
+All 8 dispatches (4 staging + 4 production) completed successfully.
 
 Proven claims:
-- GitHub Actions can reach the staging host over SSH (port 22)
-- GHCR auth and image pull work from the VPS (workflow-injected token)
+- GitHub Actions can reach the VPS over SSH (v4 key, port 22)
+- GHCR auth and image pull work from VPS (internal packages, workflow-injected token)
 - Runtime bundle deployment works (compose up with env-file)
-- Health verification works (GET /health, X-Release-Sha header)
+- Health verification works (GET /health, X-Release-Sha header; --resolve fallback for DNS)
 - SHA finalization and invariant verification work
 - Rollback workflow can restore the prior state
 - Redeploy can re-establish the target release after rollback
+- Both staging and production environments pass the complete 4-dispatch proof
 
-Remaining blockers are **production-only**:
-- Production VPS not yet provisioned/verified
-- Production secrets/config not yet wired
-- Production observability not yet validated
-- Production rollback not yet validated
-- Final approval memo not yet reissued from production artifacts
+Remaining items:
+- Delete old public GHCR packages (requires UI or package-admin token)
+- Restore `staging.terrafusionmarket.com` DNS A record at Hostinger
+- Implement port differentiation or shared proxy for staging/production coexistence
+- K3s trust rotation if cluster is live
+- Production observability validation
+- Final approval memo from production artifacts
 
 ## Infrastructure Fixes (PRs #660–#671)
 
