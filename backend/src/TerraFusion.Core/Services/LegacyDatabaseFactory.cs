@@ -10,6 +10,7 @@ namespace TerraFusion.Core.Services
     /// Factory for creating appropriate legacy database service implementations
     /// Maps counties to their specific legacy systems while maintaining abstraction
     /// </summary>
+    [Obsolete("Non-canonical utility. Active Benton runtime must use the PACS adapter + TerraFusionSync conversion spine.", false)]
     public class LegacyDatabaseFactory
     {
         private readonly IServiceProvider _serviceProvider;
@@ -41,7 +42,8 @@ namespace TerraFusion.Core.Services
 
                 return legacySystemType switch
                 {
-                    "HARRIS_PACS" => _serviceProvider.GetRequiredService<HarrisPacsLegacyService>(),
+                    "HARRIS_PACS" => throw new InvalidOperationException(
+                        "HARRIS_PACS legacy runtime path is non-canonical. Use the PACS adapter + TerraFusionSync conversion spine."),
                     "TYLER_TECH" => _serviceProvider.GetRequiredService<TylerTechLegacyService>(),
                     "CAMA_PLUS" => _serviceProvider.GetRequiredService<CamaPlusLegacyService>(),
                     "GENERIC" => _serviceProvider.GetRequiredService<GenericLegacyService>(),
@@ -107,12 +109,12 @@ namespace TerraFusion.Core.Services
     /// <summary>
     /// Extension methods for dependency injection setup
     /// </summary>
+    [Obsolete("Non-canonical registration helper. Do not use for active Benton runtime wiring.", false)]
     public static class LegacyDatabaseServiceExtensions
     {
         public static IServiceCollection AddLegacyDatabaseServices(this IServiceCollection services)
         {
             // Register all legacy database service implementations
-            services.AddScoped<HarrisPacsLegacyService>();
             services.AddScoped<TylerTechLegacyService>();
             services.AddScoped<CamaPlusLegacyService>();
             services.AddScoped<GenericLegacyService>();

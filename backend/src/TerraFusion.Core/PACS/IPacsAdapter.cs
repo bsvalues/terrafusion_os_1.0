@@ -75,6 +75,13 @@ namespace TerraFusion.Core.PACS
         /// </summary>
         Task<PacsPropertyOwnership?> GetOwnershipAsync(int propId, CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Gets ownership information for multiple properties in a single round-trip.
+        /// </summary>
+        Task<IReadOnlyList<PacsPropertyOwnership>> GetOwnershipByIdsAsync(
+            IEnumerable<int> propIds,
+            CancellationToken cancellationToken = default);
+
         // ═══════════════════════════════════════════════════════════════
         // ASSESSMENT QUERIES (via vw_TerraFusion_Assessment_History)
         // ═══════════════════════════════════════════════════════════════
@@ -92,6 +99,19 @@ namespace TerraFusion.Core.PACS
         /// Gets the current year assessment for a property.
         /// </summary>
         Task<PacsAssessmentHistory?> GetCurrentAssessmentAsync(int propId, CancellationToken cancellationToken = default);
+
+        // ═══════════════════════════════════════════════════════════════
+        // COMPARABLE SALES QUERIES (via vw_TerraFusion_Comparable_Sales)
+        // ═══════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Gets comparable sales with pagination from vw_TerraFusion_Comparable_Sales.
+        /// This is raw PACS sales truth to be converted by TerraFusionSync into operational comparable sales.
+        /// </summary>
+        Task<PacsPagedResult<PacsComparableSale>> GetComparableSalesAsync(
+            int page = 1,
+            int pageSize = 500,
+            CancellationToken cancellationToken = default);
 
         // ═══════════════════════════════════════════════════════════════
         // BATCH OPERATIONS
@@ -312,6 +332,24 @@ namespace TerraFusion.Core.PACS
 
         /// <summary>Appraisal date (appraisal_dt).</summary>
         public DateTime? AppraisalDt { get; init; }
+    }
+
+    /// <summary>
+    /// Raw PACS sale/change-of-owner data projected for TerraFusionSync conversion.
+    /// </summary>
+    public sealed record PacsComparableSale
+    {
+        public int PropId { get; init; }
+        public string GeoId { get; init; } = string.Empty;
+        public DateTime SaleDate { get; init; }
+        public decimal SalePrice { get; init; }
+        public string? PropTypeCd { get; init; }
+        public string? SitusAddr { get; init; }
+        public string? Neighborhood { get; init; }
+        public string? SaleRatioTypeCd { get; init; }
+        public string? DeedTypeCd { get; init; }
+        public string? Consideration { get; init; }
+        public DateTime? LastModified { get; init; }
     }
 
     /// <summary>

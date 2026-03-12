@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
 using TerraFusion.API.Services;
 using System.Collections.Concurrent;
@@ -228,31 +229,31 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
             _logger.LogInformation("🔄 Starting legacy data sync for {County}",
                 specificCounty ?? "all counties");
 
-            // Get legacy database service
+            // The active operational path is TerraFusionSync, not the fake legacy importer.
             using var scope = _serviceProvider.CreateScope();
-            var legacyService = scope.ServiceProvider.GetService<LegacyDatabaseService>();
+            var terraFusionSyncService = scope.ServiceProvider.GetService<ITerraFusionSyncService>();
 
-            if (legacyService != null)
+            if (terraFusionSyncService != null)
             {
-                if (string.IsNullOrEmpty(specificCounty))
+                var syncResult = await terraFusionSyncService.StartSynchronizationAsync(specificCounty);
+
+                if (syncResult.Success)
                 {
-                    // Sync all known counties
-                    var counties = new[] { "Benton", "Franklin", "Walla Walla" }; // Example
-                    foreach (var county in counties)
-                    {
-                        await legacyService.ImportPropertyData(county);
-                    }
+                    _logger.LogInformation("✅ Legacy data sync completed through TerraFusionSync. Processed: {Processed}, Updated: {Updated}, Added: {Added}",
+                        syncResult.RecordsProcessed,
+                        syncResult.RecordsUpdated,
+                        syncResult.RecordsAdded);
                 }
                 else
                 {
-                    await legacyService.ImportPropertyData(specificCounty);
+                    _logger.LogWarning("⚠️ Legacy data sync completed with errors through TerraFusionSync. ErrorCount: {ErrorCount}",
+                        syncResult.ErrorCount);
                 }
 
-                _logger.LogInformation("✅ Legacy data sync completed");
-                return true;
+                return syncResult.Success;
             }
 
-            _logger.LogError("❌ Legacy database service not available");
+            _logger.LogError("❌ TerraFusionSync service not available");
             return false;
         }
         catch (Exception ex)
@@ -304,20 +305,20 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
         try
         {
-            // Initialize TerraFusionSync and legacy adapters
+            // TerraFusionSync is the active integration surface for legacy systems.
             using var scope = _serviceProvider.CreateScope();
-            var legacyService = scope.ServiceProvider.GetService<LegacyDatabaseService>();
+            var terraFusionSyncService = scope.ServiceProvider.GetService<ITerraFusionSyncService>();
 
             // Government-grade: Ensure async operation with proper await pattern
             await Task.Run(() =>
             {
-                if (legacyService != null)
+                if (terraFusionSyncService != null)
                 {
-                    _logger.LogInformation("✅ Legacy integration initialized");
+                    _logger.LogInformation("✅ Legacy integration initialized through TerraFusionSync");
                 }
                 else
                 {
-                    _logger.LogWarning("⚠️ Legacy database service not registered");
+                    _logger.LogWarning("⚠️ TerraFusionSync service not registered");
                 }
             });
         }
@@ -380,13 +381,17 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task<bool> CheckLegacyIntegrationHealthAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
             using var scope = _serviceProvider.CreateScope();
-            var legacyService = scope.ServiceProvider.GetService<LegacyDatabaseService>();
-            return legacyService != null;
+            var terraFusionSyncService = scope.ServiceProvider.GetService<ITerraFusionSyncService>();
+            if (terraFusionSyncService is null)
+            {
+                return false;
+            }
+
+            var status = await terraFusionSyncService.GetSyncStatusAsync();
+            return status is not null;
         }
         catch
         {

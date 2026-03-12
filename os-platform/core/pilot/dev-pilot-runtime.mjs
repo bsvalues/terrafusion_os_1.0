@@ -30,18 +30,18 @@ const SAFE_ENV_KEYS = [
 
 const DEFAULT_COMPARE_INPUT = {
   county: "benton",
-  parcelId: "P-300",
-  years: [2024, 2022, 2023],
+  parcelId: "1-0531-100-0001-000",
+  years: [2025, 2024, 2023],
   includeBreakdown: false,
 };
 const DEFAULT_EXPLAIN_INPUT = {
   county: "benton",
-  modelId: "res_avm_v3",
+  modelId: "cost-approach",
   asOfYear: 2025,
 };
 const DEFAULT_SALES_COMPS_INPUT = {
   county: "benton",
-  subjectId: "P-300",
+  subjectId: "1-0531-100-0001-000",
   compIds: ["C-101", "C-102", "C-103"],
   adjustments: true,
 };
@@ -445,12 +445,14 @@ function normalizeSalesCompsInput(body) {
 }
 
 let compareRunnerPromise = null;
+let sharedRegistry = null;
 
 async function getCompareRunner() {
   if (!compareRunnerPromise) {
     compareRunnerPromise = (async () => {
       const registry = new ToolRegistry();
       await registry.initialize(path.resolve(REPO_ROOT, "tools/registry/terrapilot.tools.json"));
+      sharedRegistry = registry;
       const runner = new ToolRunner({ registry });
       registerPhase84Handlers(runner);
       // Register R1 real handlers when backend is available.
@@ -736,13 +738,246 @@ const server = createServer(async (req, res) => {
 
   try {
     if (method === "GET" && pathname === "/pilot/health") {
+      await getCompareRunner();
+      const toolCount = sharedRegistry ? sharedRegistry.listTools().length : 0;
       writeJson(res, 200, {
         status: "operational",
         service: "terrafusion-pilot-runtime",
+        registryVersion: "R1",
+        toolCount,
+        traceEventCount: traceService ? traceService.getEventCount() : 0,
         timestamp: nowIso(),
       });
       return;
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PILOT API ENDPOINTS (pilotApi.ts contract)
+    // These are the endpoints the frontend calls via pilotApi.ts
+    // ═══════════════════════════════════════════════════════════════
+
+    // GET /pilot/tools — list available tools (pilotApi.listPilotTools)
+    if (method === "GET" && pathname === "/pilot/tools") {
+      const mode = requestUrl.searchParams.get("mode") || undefined;
+      await getCompareRunner();
+      const allTools = sharedRegistry.listTools();
+      const tools = mode
+        ? allTools.filter((t) => t.mode === mode || !t.mode)
+        : allTools;
+      writeJson(res, 200, {
+        count: tools.length,
+        tools: tools.map((t) => ({
+          toolId: t.toolId,
+          displayName: t.displayName || t.toolId,
+          suite: t.suite,
+          mode: t.mode || "pilot",
+          risk: t.risk,
+          description: t.description || "",
+          requiresConfirmation: t.requiresConfirmation || false,
+          reasonCodes: t.reasonCodes || [],
+          requiresSupervisorApproval: t.requiresSupervisorApproval || false,
+          supervisorRoles: t.supervisorRoles || [],
+        })),
+      });
+      return;
+    }
+
+    // GET /pilot/tools/:toolId — get single tool (pilotApi.getPilotTool)
+    if (method === "GET" && pathname.startsWith("/pilot/tools/") && pathname.split("/").length === 4) {
+      const toolId = decodeURIComponent(pathname.split("/")[3]);
+      await getCompareRunner();
+      const tool = sharedRegistry.getTool(toolId);
+      if (!tool) {
+        writeJson(res, 404, { error: "NOT_FOUND", message: `Tool not found: ${toolId}` });
+        return;
+      }
+      writeJson(res, 200, tool);
+      return;
+    }
+
+    // POST /pilot/invoke — invoke a tool (pilotApi.invokePilotTool)
+    if (method === "POST" && pathname === "/pilot/invoke") {
+      const body = await readJsonBody(req);
+      const { toolId, params, mode, confirmation, reasonCode, supervisorApproval, parcelId, dossierId } = body;
+
+      if (!toolId || typeof toolId !== "string") {
+        writeJson(res, 400, { ok: false, correlationId: `err-${Date.now()}`, error: "toolId is required", errorCode: "VALIDATION" });
+        return;
+      }
+
+      const runner = await getCompareRunner();
+      const tool = sharedRegistry.getTool(toolId);
+
+      if (!tool) {
+        writeJson(res, 404, { ok: false, correlationId: `err-${Date.now()}`, error: `Tool not found: ${toolId}`, errorCode: "NOT_FOUND" });
+        return;
+      }
+
+      // Build execution context from headers
+      const userId = req.headers["x-user-id"] || "dev-user";
+      const countyId = req.headers["x-county-id"] || "benton";
+      const userRole = req.headers["x-role"] || "appraiser";
+      const userMode = mode || req.headers["x-mode"] || "pilot";
+
+      // Confirmation gate enforcement
+      if (tool.requiresConfirmation && !confirmation) {
+        writeJson(res, 200, {
+          ok: false,
+          correlationId: `gate-${Date.now()}`,
+          error: `Tool ${toolId} requires confirmation (risk: ${tool.risk})`,
+          errorCode: "CONFIRMATION_REQUIRED",
+        });
+        return;
+      }
+
+      if (tool.reasonCodeRequired && !reasonCode) {
+        writeJson(res, 200, {
+          ok: false,
+          correlationId: `gate-${Date.now()}`,
+          error: `Tool ${toolId} requires a reason code`,
+          errorCode: "REASON_CODE_REQUIRED",
+        });
+        return;
+      }
+
+      try {
+        const result = await runner.execute({
+          toolId,
+          params: params || {},
+          context: {
+            countyId,
+            userId,
+            roles: [userRole],
+            mode: userMode,
+            parcelId: parcelId || params?.parcelId,
+            dossierId,
+            confirmation: !!confirmation,
+            reasonCode: reasonCode || undefined,
+          },
+        });
+
+        writeJson(res, 200, {
+          ok: result.ok !== false,
+          correlationId: result.correlationId || `corr-${Date.now()}`,
+          result: result.result || result,
+          error: result.error || undefined,
+          errorCode: result.errorCode || undefined,
+          traceEventId: result.traceEventId || undefined,
+        });
+      } catch (err) {
+        writeJson(res, 200, {
+          ok: false,
+          correlationId: `err-${Date.now()}`,
+          error: err?.message ?? String(err),
+          errorCode: "EXECUTION_FAILED",
+        });
+      }
+      return;
+    }
+
+    // POST /pilot/validate — validate a tool invocation (pilotApi.validatePilotTool)
+    if (method === "POST" && pathname === "/pilot/validate") {
+      const body = await readJsonBody(req);
+      const { toolId, params, mode, confirmation, reasonCode } = body;
+
+      if (!toolId) {
+        writeJson(res, 400, { valid: false, violations: ["toolId is required"] });
+        return;
+      }
+
+      await getCompareRunner();
+      const tool = sharedRegistry.getTool(toolId);
+
+      if (!tool) {
+        writeJson(res, 404, { valid: false, violations: [`Tool not found: ${toolId}`] });
+        return;
+      }
+
+      const violations = [];
+      const confirmationRequired = tool.requiresConfirmation || false;
+      const reasonCodeRequired = tool.reasonCodeRequired || false;
+      const supervisorRequired = tool.requiresSupervisorApproval || false;
+
+      if (confirmationRequired && !confirmation) {
+        violations.push("Confirmation required for this tool");
+      }
+      if (reasonCodeRequired && !reasonCode) {
+        violations.push("Reason code required for this tool");
+      }
+
+      writeJson(res, 200, {
+        valid: violations.length === 0,
+        violations,
+        tool: {
+          toolId: tool.toolId,
+          suite: tool.suite,
+          risk: tool.risk,
+          requiresConfirmation: confirmationRequired,
+          reasonCodes: tool.reasonCodes || [],
+          requiresSupervisorApproval: supervisorRequired,
+          supervisorRoles: tool.supervisorRoles || [],
+        },
+        preflight: {
+          confirmationRequired,
+          confirmationProvided: !!confirmation,
+          reasonCodeRequired,
+          reasonCodeProvided: !!reasonCode,
+          supervisorRequired,
+          supervisorProvided: false,
+        },
+      });
+      return;
+    }
+
+    // GET /pilot/trace/:correlationId — get trace events (pilotApi.getPilotTrace)
+    if (method === "GET" && pathname.startsWith("/pilot/trace/") && pathname.split("/").length === 4) {
+      const correlationId = decodeURIComponent(pathname.split("/")[3]);
+      if (traceService && typeof traceService.getByCorrelationId === "function") {
+        const events = traceService.getByCorrelationId(correlationId);
+        writeJson(res, 200, { events: events || [] });
+      } else {
+        writeJson(res, 200, { events: [] });
+      }
+      return;
+    }
+
+    // GET /pilot/trace — list trace events for a parcel (pilotApi.listPilotTraceEvents)
+    if (method === "GET" && pathname === "/pilot/trace") {
+      const parcelId = requestUrl.searchParams.get("parcelId");
+      const toolId = requestUrl.searchParams.get("toolId");
+      const limit = parseInt(requestUrl.searchParams.get("limit") || "50", 10);
+      const offset = parseInt(requestUrl.searchParams.get("offset") || "0", 10);
+
+      if (traceService && typeof traceService.query === "function") {
+        const allEvents = traceService.query({ parcelId, toolId });
+        const events = allEvents.slice(offset, offset + limit);
+        writeJson(res, 200, {
+          events,
+          pagination: { offset, limit, returned: events.length },
+        });
+      } else {
+        writeJson(res, 200, { events: [], pagination: { offset, limit, returned: 0 } });
+      }
+      return;
+    }
+
+    // GET /pilot/trace/stats — trace store diagnostics (pilotApi.getPilotTraceStats)
+    if (method === "GET" && pathname === "/pilot/trace/stats") {
+      if (traceService && typeof traceService.stats === "function") {
+        writeJson(res, 200, traceService.stats());
+      } else {
+        writeJson(res, 200, {
+          totalEvents: 0,
+          oldestTimestamp: null,
+          newestTimestamp: null,
+        });
+      }
+      return;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // CANON ENDPOINTS (existing)
+    // ═══════════════════════════════════════════════════════════════
 
     if (method === "POST" && pathname === "/pilot/canon/ping") {
       const body = await readJsonBody(req);

@@ -149,6 +149,48 @@ WHERE
 GO
 
 -- ─────────────────────────────────────────────────────────────────────────────
+-- VIEW 4: vw_TerraFusion_Comparable_Sales
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Raw PACS sale/change-of-owner data for TerraFusionSync conversion:
+--   PropId, GeoId, SaleDate, SalePrice, PropTypeCd, SitusAddr, Neighborhood,
+--   SaleRatioTypeCd, DeedTypeCd, Consideration, LastModified
+-- TerraFusionSync converts this raw legacy shape into operational ComparableSales.
+-- ─────────────────────────────────────────────────────────────────────────────
+CREATE OR ALTER VIEW [dbo].[vw_TerraFusion_Comparable_Sales]
+AS
+SELECT
+    p.prop_id                                                           AS prop_id,
+    p.geo_id                                                            AS geo_id,
+    COALESCE(s.sl_dt, coo.deed_dt, coo.recorded_dt)                     AS sale_date,
+    COALESCE(NULLIF(s.adjusted_sl_price, 0), NULLIF(s.sl_price, 0))     AS sale_price,
+    p.prop_type_cd                                                      AS prop_type_cd,
+    LTRIM(RTRIM(
+        ISNULL(si.situs_num, '') + ' ' +
+        ISNULL(si.situs_street_prefx, '') + ' ' +
+        ISNULL(si.situs_street, '') + ' ' +
+        ISNULL(si.situs_street_sufix, '')
+    ))                                                                  AS situs_addr,
+    si.situs_city                                                       AS neighborhood,
+    s.sl_ratio_type_cd                                                  AS sale_ratio_type_cd,
+    coo.deed_type_cd                                                    AS deed_type_cd,
+    coo.consideration                                                   AS consideration,
+    COALESCE(s.sl_dt, coo.deed_dt, coo.recorded_dt)                     AS last_modified
+FROM dbo.property p
+INNER JOIN dbo.chg_of_owner_prop_assoc coopa ON coopa.prop_id = p.prop_id
+INNER JOIN dbo.chg_of_owner coo ON coopa.chg_of_owner_id = coo.chg_of_owner_id
+LEFT JOIN dbo.sale s ON coopa.chg_of_owner_id = s.chg_of_owner_id
+OUTER APPLY (
+    SELECT TOP 1 *
+    FROM dbo.situs sx
+    WHERE sx.prop_id = p.prop_id
+      AND sx.primary_situs = 'Y'
+) si
+WHERE
+    COALESCE(NULLIF(s.adjusted_sl_price, 0), NULLIF(s.sl_price, 0)) > 0
+    AND COALESCE(s.sl_dt, coo.deed_dt, coo.recorded_dt) IS NOT NULL;
+GO
+
+-- ─────────────────────────────────────────────────────────────────────────────
 -- STORED PROCEDURE: sp_TerraFusion_HealthCheck
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Returns a single row with database health metrics.
@@ -221,9 +263,10 @@ DECLARE @v INT;
 SELECT @v = COUNT(*) FROM sys.views WHERE name IN (
     'vw_TerraFusion_Property_Core',
     'vw_TerraFusion_Property_Ownership',
-    'vw_TerraFusion_Assessment_History'
+    'vw_TerraFusion_Assessment_History',
+    'vw_TerraFusion_Comparable_Sales'
 );
-PRINT 'Views created: ' + CAST(@v AS VARCHAR) + '/3';
+PRINT 'Views created: ' + CAST(@v AS VARCHAR) + '/4';
 
 -- Procedure
 DECLARE @p INT;
@@ -243,11 +286,14 @@ PRINT 'Indexes created: ' + CAST(@i AS VARCHAR) + '/3';
 DECLARE @coreCount INT, @ownCount INT, @histCount INT;
 SELECT @coreCount = COUNT(*) FROM vw_TerraFusion_Property_Core;
 SELECT @ownCount = COUNT(*) FROM vw_TerraFusion_Property_Ownership;
+DECLARE @salesCount INT;
 SELECT @histCount = COUNT(*) FROM vw_TerraFusion_Assessment_History;
+SELECT @salesCount = COUNT(*) FROM vw_TerraFusion_Comparable_Sales;
 PRINT '';
 PRINT 'vw_TerraFusion_Property_Core rows:       ' + CAST(@coreCount AS VARCHAR);
 PRINT 'vw_TerraFusion_Property_Ownership rows:   ' + CAST(@ownCount AS VARCHAR);
 PRINT 'vw_TerraFusion_Assessment_History rows:    ' + CAST(@histCount AS VARCHAR);
+PRINT 'vw_TerraFusion_Comparable_Sales rows:      ' + CAST(@salesCount AS VARCHAR);
 PRINT '';
 PRINT '=== Deployment complete ===';
 GO

@@ -1,5 +1,21 @@
 # Production Readiness Accounting
 
+Scope note as of 2026-03-12:
+
+This file is historical governed-spine / release-lane accounting.
+It is not the authoritative truth source for the Benton recovery spine completed under `docs/recovery/`.
+It must not be used by itself to claim:
+- full Benton data-spine readiness
+- full Benton operator-surface readiness
+- full county production readiness after the Phase 1–5 recovery work
+
+For current Benton recovery truth, use:
+- `docs/recovery/BENTON_DATA_SPINE_EXECUTION_CHECKLIST.md`
+- `docs/recovery/BENTON_CONVERSION_LEDGER.md`
+- `docs/recovery/PHASE3_COSTFORGE_PROOF.md`
+- `docs/recovery/PHASE4_WORKBENCH_PROOF.md`
+- `docs/recovery/PHASE5_TRUTH_CLASSIFICATION.md`
+
 Date: 2026-03-10 (final pass — PR #656 merged, post-merge governance proof complete)
 
 This document is a synchronized production-readiness accounting for the CP, CX, and CC lanes based on repository state, local gate runs, and protected-branch governance state. It separates four states that were previously drifting together:

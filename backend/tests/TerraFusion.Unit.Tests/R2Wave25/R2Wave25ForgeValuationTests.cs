@@ -329,35 +329,54 @@ public sealed class R2Wave25ForgeValuationTests
     using var db = CreateDbContext(nameof(SearchComparableSales_FiltersCorrectly));
     await SeedCounty(db, BentonCountyId);
 
+    db.Properties.Add(new Property
+    {
+      Id = Guid.NewGuid(),
+      CountyId = BentonCountyId,
+      PropertyId = "PACS-SUBJECT-001",
+      ParcelId = "SUBJECT-001",
+      ParcelNumber = "SUBJECT-001",
+      Address = "100 Main St, Kennewick, WA 99336",
+      PropertyType = "residential",
+      AssessedValue = 315000m,
+      LandValue = 100000m,
+      ImprovementValue = 215000m,
+      MarketValue = 315000m,
+      AssessmentDate = DateTime.UtcNow,
+      LastUpdated = DateTime.UtcNow,
+      TaxYear = 2026
+    });
+
     db.ComparableSales.AddRange(
-      new ComparableSale { ParcelId = "S-010", SaleDate = DateTime.UtcNow.AddMonths(-3), SalePrice = 300_000, PropertyType = "residential", Neighborhood = "Kennewick", GrossLivingArea = 1800, CountyId = BentonCountyId, IngestedBy = "test" },
-      new ComparableSale { ParcelId = "S-011", SaleDate = DateTime.UtcNow.AddMonths(-6), SalePrice = 340_000, PropertyType = "residential", Neighborhood = "Richland", GrossLivingArea = 2200, CountyId = BentonCountyId, IngestedBy = "test" },
-      new ComparableSale { ParcelId = "S-012", SaleDate = DateTime.UtcNow.AddMonths(-30), SalePrice = 280_000, PropertyType = "commercial", Neighborhood = "Kennewick", GrossLivingArea = 3000, CountyId = BentonCountyId, IngestedBy = "test" }
+      new ComparableSale { ParcelId = "S-010", SaleDate = DateTime.UtcNow.AddMonths(-3), SalePrice = 300_000, PropertyType = "residential", Neighborhood = "Kennewick", GrossLivingArea = 1800, SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
+      new ComparableSale { ParcelId = "S-011", SaleDate = DateTime.UtcNow.AddMonths(-6), SalePrice = 340_000, PropertyType = "residential", Neighborhood = "Richland", GrossLivingArea = 2200, SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
+      new ComparableSale { ParcelId = "S-012", SaleDate = DateTime.UtcNow.AddMonths(-30), SalePrice = 280_000, PropertyType = "commercial", Neighborhood = "Kennewick", GrossLivingArea = 3000, SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" }
     );
     await db.SaveChangesAsync();
 
     var controller = CreateController(db);
 
-    // Search all within default 24 months
+    // Subject-aware defaults use the subject's property type and neighborhood.
     var result = await controller.SearchComparableSales("SUBJECT-001");
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     var value = ok.Value!;
     var count = (int)value.GetType().GetProperty("count")!.GetValue(value)!;
-    count.Should().Be(2); // Only 2 within 24 months
+    count.Should().Be(1);
+    value.GetType().GetProperty("selectionMethod")!.GetValue(value)!.Should().NotBeNull();
 
-    // Filter by property type
+    // Explicit property type still keeps subject neighborhood defaults.
     var result2 = await controller.SearchComparableSales("SUBJECT-001", propertyType: "residential");
     var ok2 = result2.Should().BeOfType<OkObjectResult>().Subject;
     var value2 = ok2.Value!;
     var count2 = (int)value2.GetType().GetProperty("count")!.GetValue(value2)!;
-    count2.Should().Be(2);
+    count2.Should().Be(1);
 
-    // Filter by GLA range
+    // GLA range still honors the subject neighborhood default, so no comp remains here.
     var result3 = await controller.SearchComparableSales("SUBJECT-001", minGla: 2000, maxGla: 2500);
     var ok3 = result3.Should().BeOfType<OkObjectResult>().Subject;
     var value3 = ok3.Value!;
     var count3 = (int)value3.GetType().GetProperty("count")!.GetValue(value3)!;
-    count3.Should().Be(1);
+    count3.Should().Be(0);
 
     // Filter by neighborhood
     var result4 = await controller.SearchComparableSales("SUBJECT-001", neighborhood: "Kennewick");
@@ -373,9 +392,27 @@ public sealed class R2Wave25ForgeValuationTests
     using var db = CreateDbContext(nameof(SearchComparableSales_ExcludesSubjectParcel));
     await SeedCounty(db, BentonCountyId);
 
+    db.Properties.Add(new Property
+    {
+      Id = Guid.NewGuid(),
+      CountyId = BentonCountyId,
+      PropertyId = "PACS-SUBJ",
+      ParcelId = "SUBJ",
+      ParcelNumber = "SUBJ",
+      Address = "101 Main St, Kennewick, WA 99336",
+      PropertyType = "residential",
+      AssessedValue = 200000m,
+      LandValue = 80000m,
+      ImprovementValue = 120000m,
+      MarketValue = 200000m,
+      AssessmentDate = DateTime.UtcNow,
+      LastUpdated = DateTime.UtcNow,
+      TaxYear = 2026
+    });
+
     db.ComparableSales.AddRange(
-      new ComparableSale { ParcelId = "SUBJ", SaleDate = DateTime.UtcNow.AddMonths(-1), SalePrice = 200_000, PropertyType = "residential", CountyId = BentonCountyId, IngestedBy = "test" },
-      new ComparableSale { ParcelId = "COMP-1", SaleDate = DateTime.UtcNow.AddMonths(-2), SalePrice = 210_000, PropertyType = "residential", CountyId = BentonCountyId, IngestedBy = "test" }
+      new ComparableSale { ParcelId = "SUBJ", SaleDate = DateTime.UtcNow.AddMonths(-1), SalePrice = 200_000, PropertyType = "residential", Neighborhood = "KENNEWICK", SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
+      new ComparableSale { ParcelId = "COMP-1", SaleDate = DateTime.UtcNow.AddMonths(-2), SalePrice = 210_000, PropertyType = "residential", Neighborhood = "KENNEWICK", SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" }
     );
     await db.SaveChangesAsync();
 
@@ -385,6 +422,198 @@ public sealed class R2Wave25ForgeValuationTests
     var value = ok.Value!;
     var count = (int)value.GetType().GetProperty("count")!.GetValue(value)!;
     count.Should().Be(1); // Subject excluded
+  }
+
+  [Fact]
+  public async Task SearchComparableSales_SubjectAwareRanking_PrefersNeighborhoodAndPhysicalSimilarity()
+  {
+    using var db = CreateDbContext(nameof(SearchComparableSales_SubjectAwareRanking_PrefersNeighborhoodAndPhysicalSimilarity));
+    await SeedCounty(db, BentonCountyId);
+
+    db.Properties.Add(new Property
+    {
+      Id = Guid.NewGuid(),
+      CountyId = BentonCountyId,
+      PropertyId = "PACS-SUBJECT-RANK",
+      ParcelId = "SUBJECT-RANK",
+      ParcelNumber = "SUBJECT-RANK",
+      Address = "100 Main St, Kennewick, WA 99336",
+      PropertyType = "residential",
+      AssessedValue = 320000m,
+      LandValue = 100000m,
+      ImprovementValue = 220000m,
+      MarketValue = 320000m,
+      AssessmentDate = DateTime.UtcNow,
+      LastUpdated = DateTime.UtcNow,
+      TaxYear = 2026
+    });
+    db.CamaCharacteristics.Add(new CamaCharacteristic
+    {
+      Id = Guid.NewGuid(),
+      CountyId = BentonCountyId,
+      ParcelId = "SUBJECT-RANK",
+      TaxYear = 2026,
+      BuildingType = "R1",
+      SquareFeet = 2000m,
+      LandAreaSqft = 8000m,
+      YearBuilt = 2005,
+      UpdatedBy = "test"
+    });
+    db.ComparableSales.AddRange(
+      new ComparableSale
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = "COMP-BEST",
+        SaleDate = DateTime.UtcNow.AddMonths(-2),
+        SalePrice = 318000m,
+        PropertyType = "residential",
+        Neighborhood = "KENNEWICK",
+        GrossLivingArea = 1980m,
+        LotSizeSqft = 7900m,
+        YearBuilt = 2004,
+        SaleQualification = "qualified",
+        CountyId = BentonCountyId,
+        IngestedBy = "test"
+      },
+      new ComparableSale
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = "COMP-WORSE",
+        SaleDate = DateTime.UtcNow.AddMonths(-1),
+        SalePrice = 318000m,
+        PropertyType = "commercial",
+        Neighborhood = "RICHLAND",
+        GrossLivingArea = 4200m,
+        LotSizeSqft = 25000m,
+        YearBuilt = 1980,
+        SaleQualification = "qualified",
+        CountyId = BentonCountyId,
+        IngestedBy = "test"
+      });
+    await db.SaveChangesAsync();
+
+    var controller = CreateController(db);
+    var result = await controller.SearchComparableSales("SUBJECT-RANK", limit: 2);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var comparables = (ok.Value!.GetType().GetProperty("comparables")!.GetValue(ok.Value) as System.Collections.IEnumerable)!
+      .Cast<object>()
+      .ToList();
+
+    comparables.Should().HaveCount(1);
+    comparables[0].GetType().GetProperty("ParcelId")!.GetValue(comparables[0])!.Should().Be("COMP-BEST");
+  }
+
+  [Fact]
+  public async Task SearchComparableSales_ExcludesNonArmsLengthByDefault()
+  {
+    using var db = CreateDbContext(nameof(SearchComparableSales_ExcludesNonArmsLengthByDefault));
+    await SeedCounty(db, BentonCountyId);
+
+    db.Properties.Add(new Property
+    {
+      Id = Guid.NewGuid(),
+      CountyId = BentonCountyId,
+      PropertyId = "PACS-SUBJECT-QUAL",
+      ParcelId = "SUBJECT-QUAL",
+      ParcelNumber = "SUBJECT-QUAL",
+      Address = "100 Main St, Kennewick, WA 99336",
+      PropertyType = "residential",
+      AssessedValue = 250000m,
+      LandValue = 90000m,
+      ImprovementValue = 160000m,
+      MarketValue = 250000m,
+      AssessmentDate = DateTime.UtcNow,
+      LastUpdated = DateTime.UtcNow,
+      TaxYear = 2026
+    });
+
+    db.ComparableSales.AddRange(
+      new ComparableSale
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = "QUAL-1",
+        SaleDate = DateTime.UtcNow.AddMonths(-2),
+        SalePrice = 255000m,
+        PropertyType = "residential",
+        Neighborhood = "KENNEWICK",
+        SaleQualification = "qualified",
+        CountyId = BentonCountyId,
+        IngestedBy = "test"
+      },
+      new ComparableSale
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = "NONARM-1",
+        SaleDate = DateTime.UtcNow.AddMonths(-1),
+        SalePrice = 260000m,
+        PropertyType = "residential",
+        Neighborhood = "KENNEWICK",
+        SaleQualification = "non-arms-length",
+        CountyId = BentonCountyId,
+        IngestedBy = "test"
+      });
+    await db.SaveChangesAsync();
+
+    var controller = CreateController(db);
+    var result = await controller.SearchComparableSales("SUBJECT-QUAL", limit: 10);
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var comparables = (ok.Value!.GetType().GetProperty("comparables")!.GetValue(ok.Value) as System.Collections.IEnumerable)!
+      .Cast<object>()
+      .ToList();
+
+    comparables.Should().HaveCount(1);
+    comparables[0].GetType().GetProperty("ParcelId")!.GetValue(comparables[0])!.Should().Be("QUAL-1");
+  }
+
+  [Fact]
+  public async Task SearchComparableSales_IncludesHistoricalCompUntilMonthsBackIsExplicit()
+  {
+    using var db = CreateDbContext(nameof(SearchComparableSales_IncludesHistoricalCompUntilMonthsBackIsExplicit));
+    await SeedCounty(db, BentonCountyId);
+
+    db.Properties.Add(new Property
+    {
+      Id = Guid.NewGuid(),
+      CountyId = BentonCountyId,
+      PropertyId = "PACS-SUBJECT-HIST",
+      ParcelId = "SUBJECT-HIST",
+      ParcelNumber = "SUBJECT-HIST",
+      Address = "100 Main St, Kennewick, WA 99336",
+      PropertyType = "residential",
+      AssessedValue = 275000m,
+      LandValue = 90000m,
+      ImprovementValue = 185000m,
+      MarketValue = 275000m,
+      AssessmentDate = DateTime.UtcNow,
+      LastUpdated = DateTime.UtcNow,
+      TaxYear = 2026
+    });
+
+    db.ComparableSales.Add(new ComparableSale
+    {
+      Id = Guid.NewGuid(),
+      ParcelId = "HIST-1",
+      SaleDate = DateTime.UtcNow.AddMonths(-48),
+      SalePrice = 280000m,
+      PropertyType = "residential",
+      Neighborhood = "KENNEWICK",
+      SaleQualification = "qualified",
+      CountyId = BentonCountyId,
+      IngestedBy = "test"
+    });
+    await db.SaveChangesAsync();
+
+    var controller = CreateController(db);
+
+    var defaultResult = await controller.SearchComparableSales("SUBJECT-HIST");
+    var defaultOk = defaultResult.Should().BeOfType<OkObjectResult>().Subject;
+    var defaultCount = (int)defaultOk.Value!.GetType().GetProperty("count")!.GetValue(defaultOk.Value)!;
+    defaultCount.Should().Be(1);
+
+    var filteredResult = await controller.SearchComparableSales("SUBJECT-HIST", monthsBack: 24);
+    var filteredOk = filteredResult.Should().BeOfType<OkObjectResult>().Subject;
+    var filteredCount = (int)filteredOk.Value!.GetType().GetProperty("count")!.GetValue(filteredOk.Value)!;
+    filteredCount.Should().Be(0);
   }
 
   // ═══════════════════════════════════════════════════════════════

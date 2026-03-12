@@ -15,6 +15,7 @@ namespace TerraFusion.Sync.Services
     /// Centralized hub for all legacy county system integrations (Harris PACS v12.4.7, Tyler, Aumentum)
     /// Elite multi-system coordination for all 39 Washington State counties with quantum-synchronized data flows
     /// </summary>
+    [Obsolete("Non-canonical runtime path. Use explicit TerraFusionSync invocation through the PACS adapter conversion spine.", false)]
     public class TerraFusionSyncAdvancedIntegrator : BackgroundService
     {
         private readonly ILogger<TerraFusionSyncAdvancedIntegrator> _logger;
