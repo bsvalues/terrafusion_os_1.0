@@ -168,6 +168,7 @@ eggs/
 .eggs/
 lib/
 !tools/tdc/src/lib/
+!tools/bin/lib/
 lib64/
 parts/
 sdist/
@@ -372,6 +373,8 @@ out/
 .next/
 target/
 bin/
+# Force include TF CLI (not compiled binaries)
+!tools/bin/
 obj/
 
 # CRITICAL: Never commit logs
