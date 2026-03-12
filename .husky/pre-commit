@@ -51,10 +51,27 @@ TOPLEVEL_CANON="$(canon_path "$TOPLEVEL_RAW")"
 EXPECTED_CANON="$(canon_path "$EXPECTED_RAW")"
 
 if [ -n "$TOPLEVEL_RAW" ] && [ "$TOPLEVEL_CANON" != "$EXPECTED_CANON" ]; then
-  echo "❌ Lane violation: committing from wrong worktree."
-  echo "   git toplevel: $TOPLEVEL_RAW"
-  echo "   expected:     $EXPECTED_RAW"
-  exit 1
+  # Worktree fallback: check if this worktree belongs to the same repo
+  # by verifying git-common-dir points to EXPECTED_RAW/.git
+  GIT_COMMON_RAW="$(git rev-parse --git-common-dir 2>/dev/null || true)"
+  if [ -n "$GIT_COMMON_RAW" ]; then
+    GIT_COMMON_CANON="$(canon_path "$GIT_COMMON_RAW")"
+    EXPECTED_GIT_CANON="$(canon_path "$EXPECTED_RAW/.git")"
+    if [ "$GIT_COMMON_CANON" = "$EXPECTED_GIT_CANON" ]; then
+      :  # legitimate worktree of this repo — allow
+    else
+      echo "❌ Lane violation: committing from wrong worktree."
+      echo "   git toplevel:  $TOPLEVEL_RAW"
+      echo "   git-common-dir: $GIT_COMMON_RAW"
+      echo "   expected:       $EXPECTED_RAW"
+      exit 1
+    fi
+  else
+    echo "❌ Lane violation: committing from wrong worktree."
+    echo "   git toplevel: $TOPLEVEL_RAW"
+    echo "   expected:     $EXPECTED_RAW"
+    exit 1
+  fi
 fi
 # Gate 0b: Untracked-file guard — no mystery files in governed paths
 # Prevents "Claude branch-switching" contamination of the evidence record
