@@ -6,6 +6,9 @@
   "homepage": "./",
   "private": true,
   "type": "module",
+  "bin": {
+    "tf": "tools/bin/tf.mjs"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bsvalues/terrafusion_os_1.0.git"
@@ -45,7 +48,7 @@
     "r1:verify-evidence": "node tools/r1/verify-evidence.mjs",
     "r1:finalize-manifest": "node tools/r1/generate-final-manifest.mjs",
     "prepare": "husky install",
-    "tf": "node tools/tf.js",
+    "tf": "node tools/bin/tf.mjs",
     "tf:ship": "node tools/dev/tf-ship.mjs",
     "tf:slice": "node tools/dev/tf-slice.mjs",
     "tf:scope": "pnpm -C tools/scope-classifier scope -- --repoRoot=../..",
@@ -58,13 +61,13 @@
     "ci:governance-proof:log": "node scripts/ci/run_with_log.mjs pnpm run ci:governance-proof > ci_governance_proof.log 2>&1",
     "registry:generate": "tsx tools/registry/generate-modules.ts",
     "registry:check": "tsx tools/registry/generate-modules.ts --out frontend/apps/os-shell/src/config/generatedModules.ts && git diff --exit-code frontend/apps/os-shell/src/config/generatedModules.ts",
-    "tdc": "node tools/tf.js",
+    "tdc": "node tools/bin/tf.mjs",
     "tdc:build": "tsc -p tools/tdc/tsconfig.json",
     "tdc:ui:tokens": "tsx tools/tdc/src/index.ts ui audit --tokens --out ui-token-compliance.contract.json --baseline ui-token-baseline.json",
     "tdc:ui:tokens:full": "tsx tools/tdc/src/index.ts ui audit --tokens --all --out ui-token-compliance.full.contract.json",
     "lint:ui": "pnpm -r --filter \"./frontend/apps/**\" --filter \"./packages/**\" lint",
     "ci:ui": "pnpm tdc:ui:tokens && pnpm lint:ui",
-    "console": "node tools/tf.js",
+    "console": "node tools/bin/tf.mjs",
     "ai-agent-info": "echo 'TERRAFUSION OS - Complete Government Operating System with 50,000+ AI Agents. NOT a web app. Read AI_AGENT_START_HERE.md first!'",
     "dev:os:shell": "pnpm -C frontend run dev -- --open",
     "dev:os:modules": "node tools/dev/dev-os.mjs",
@@ -95,6 +98,8 @@
     "test:governance:ui": "vitest run tests/governance/noNewRawColors.contract.test.ts tests/governance/uiTokenBaseline.contract.test.ts tests/governance/ratchetGuardScope.contract.test.ts tests/governance/tfHsAnchorsDefined.contract.test.ts",
     "lint:platform": "node scripts/platform-lint.mjs",
     "doctor": "node scripts/doctor.mjs",
+    "tf": "node tools/bin/tf.mjs",
+    "tf:cli": "node tools/bin/tf.mjs",
     "canon": "node tools/canon/canon.mjs",
     "canon:doctor": "node tools/canon/canon.mjs doctor",
     "canon:gatefast": "node tools/canon/canon.mjs gatefast",
