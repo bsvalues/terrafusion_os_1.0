@@ -84,6 +84,18 @@ const COMMANDS = {
     desc: "Interactive CLI session",
     load: () => import("./commands/repl.mjs"),
   },
+  format: {
+    desc: "Run formatters",
+    load: () => import("./commands/format.mjs"),
+  },
+  lint: {
+    desc: "Run linters",
+    load: () => import("./commands/lint.mjs"),
+  },
+  metrics: {
+    desc: "Show workspace metrics",
+    load: () => import("./commands/metrics.mjs"),
+  },
 };
 
 // ── Help ─────────────────────────────────────────────────────
