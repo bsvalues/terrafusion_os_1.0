@@ -19,10 +19,11 @@
 .canon-ide {
   display: grid;
   grid-template-columns: 240px 1fr 280px;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 1fr auto auto;
   grid-template-areas:
     'explorer  editor    agents'
-    'tasks     tasks     tasks';
+    'tasks     tasks     tasks'
+    'statusbar statusbar statusbar';
   gap: 0;
   height: 100%;
   min-height: 0;
@@ -179,6 +180,59 @@
 
 .canon-ide__tab--dirty {
   font-style: italic;
+}
+
+/* ── Breadcrumb Bar ──────────────────────────────────────────── */
+
+.canon-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.25rem var(--canon-space-3, 0.75rem);
+  border-bottom: 1px solid var(--canon-border, hsl(var(--tf-text) / 0.04));
+  min-height: 1.375rem;
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: var(--canon-text-muted, hsl(var(--tf-text) / 0.45));
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.canon-breadcrumb::-webkit-scrollbar {
+  display: none;
+}
+
+.canon-breadcrumb__sep {
+  color: hsl(var(--tf-text) / 0.2);
+  margin: 0 0.125rem;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.canon-breadcrumb__segment {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.canon-breadcrumb__segment--dir {
+  background: none;
+  border: none;
+  color: hsl(var(--tf-text) / 0.45);
+  cursor: pointer;
+  padding: 0.0625rem 0.25rem;
+  border-radius: 3px;
+  font: inherit;
+  transition: background 0.12s ease-out, color 0.12s ease-out;
+}
+
+.canon-breadcrumb__segment--dir:hover {
+  background: hsl(var(--tf-text) / 0.06);
+  color: hsl(var(--tf-text) / 0.7);
+}
+
+.canon-breadcrumb__segment--active {
+  color: var(--canon-text, hsl(var(--tf-text) / 0.87));
+  font-weight: 600;
 }
 
 /* ── File content (read-only) ────────────────────────────────── */
@@ -948,4 +1002,312 @@
 
 .canon-terminal__input::placeholder {
   color: hsl(var(--tf-text) / 0.25);
+}
+
+/* ============================================================================
+   Status Bar
+   ============================================================================ */
+
+.canon-statusbar {
+  grid-area: statusbar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 1.5rem;
+  padding: 0 0.75rem;
+  background: hsl(var(--tf-bg) / 0.95);
+  border-top: 1px solid hsl(var(--tf-text) / 0.06);
+  font-size: 0.6875rem;
+  color: hsl(var(--tf-text) / 0.45);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.canon-statusbar__left,
+.canon-statusbar__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.canon-statusbar__item {
+  white-space: nowrap;
+}
+
+.canon-statusbar__item--clickable {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.canon-statusbar__item--clickable:hover {
+  color: hsl(var(--tf-text) / 0.7);
+}
+
+.canon-statusbar__item--language {
+  text-transform: capitalize;
+}
+
+.canon-statusbar__status {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.canon-statusbar__status-dot {
+  font-size: 0.5rem;
+}
+
+.canon-statusbar__status--connected {
+  color: hsl(var(--tf-success));
+}
+
+.canon-statusbar__status--connecting {
+  color: hsl(var(--tf-warning));
+}
+
+.canon-statusbar__status--disconnected {
+  color: hsl(var(--tf-error));
+}
+
+/* ============================================================================
+   Go to Line Dialog
+   ============================================================================ */
+
+.canon-goto-line {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 20vh;
+}
+
+.canon-goto-line__backdrop {
+  position: absolute;
+  inset: 0;
+  background: hsl(0 0% 0% / 0.4);
+}
+
+.canon-goto-line__dialog {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: hsl(var(--tf-bg));
+  border: 1px solid hsl(var(--tf-text) / 0.12);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5);
+  min-width: 260px;
+}
+
+.canon-goto-line__label {
+  font-size: 0.75rem;
+  color: hsl(var(--tf-text) / 0.5);
+  white-space: nowrap;
+}
+
+.canon-goto-line__input {
+  flex: 1;
+  background: hsl(var(--tf-text) / 0.06);
+  border: 1px solid hsl(var(--tf-text) / 0.1);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  color: hsl(var(--tf-text) / 0.87);
+  outline: none;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+}
+
+.canon-goto-line__input:focus {
+  border-color: hsl(var(--tf-accent) / 0.5);
+}
+
+/* Hide number input spinners */
+.canon-goto-line__input::-webkit-inner-spin-button,
+.canon-goto-line__input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.canon-goto-line__input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* ============================================================================
+   Notification Toasts
+   ============================================================================ */
+
+.canon-notification-host {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+  max-width: 360px;
+}
+
+.canon-notification {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: hsl(var(--tf-text) / 0.87);
+  background: hsl(var(--tf-bg));
+  border: 1px solid hsl(var(--tf-text) / 0.12);
+  box-shadow: 0 4px 16px hsl(var(--tf-bg) / 0.4);
+  animation: canon-notif-enter 0.2s ease-out;
+}
+
+.canon-notification--success {
+  border-color: hsl(var(--tf-success) / 0.5);
+  background: hsl(var(--tf-success) / 0.15);
+}
+
+.canon-notification--error {
+  border-color: hsl(var(--tf-error) / 0.5);
+  background: hsl(var(--tf-error) / 0.15);
+}
+
+.canon-notification--info {
+  border-color: hsl(var(--tf-accent) / 0.4);
+}
+
+.canon-notification__message {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.canon-notification__dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: hsl(var(--tf-text) / 0.5);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+}
+
+.canon-notification__dismiss:hover {
+  color: hsl(var(--tf-text) / 0.87);
+}
+
+@keyframes canon-notif-enter {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================================
+   New File Dialog
+   ============================================================================ */
+
+.canon-new-file {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 20vh;
+}
+
+.canon-new-file__backdrop {
+  position: absolute;
+  inset: 0;
+  background: hsl(0 0% 0% / 0.4);
+}
+
+.canon-new-file__dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: hsl(var(--tf-bg));
+  border: 1px solid hsl(var(--tf-text) / 0.12);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5);
+  min-width: 400px;
+  max-width: 90vw;
+}
+
+.canon-new-file__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: hsl(var(--tf-text) / 0.7);
+}
+
+.canon-new-file__input {
+  background: hsl(var(--tf-text) / 0.06);
+  border: 1px solid hsl(var(--tf-text) / 0.1);
+  border-radius: 4px;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.8125rem;
+  color: hsl(var(--tf-text) / 0.87);
+  outline: none;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.canon-new-file__input:focus {
+  border-color: hsl(var(--tf-accent) / 0.5);
+}
+
+.canon-new-file__hint {
+  font-size: 0.6875rem;
+  color: hsl(var(--tf-text) / 0.4);
+}
+
+.canon-new-file__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.canon-new-file__btn {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border: 1px solid hsl(var(--tf-text) / 0.1);
+}
+
+.canon-new-file__btn--cancel {
+  background: transparent;
+  color: hsl(var(--tf-text) / 0.6);
+}
+
+.canon-new-file__btn--cancel:hover {
+  background: hsl(var(--tf-text) / 0.06);
+}
+
+.canon-new-file__btn--create {
+  background: hsl(var(--tf-accent) / 0.3);
+  color: hsl(var(--tf-text) / 0.87);
+  border-color: hsl(var(--tf-accent) / 0.4);
+}
+
+.canon-new-file__btn--create:hover {
+  background: hsl(var(--tf-accent) / 0.5);
+}
+
+.canon-new-file__btn--create:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

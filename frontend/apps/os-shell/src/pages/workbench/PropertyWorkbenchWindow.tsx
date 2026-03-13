@@ -46,6 +46,15 @@ const PropertyAtlas = lazy(() =>
 const PropertyDais = lazy(() =>
   import('./tabs/PropertyDais').then((m) => ({ default: m.PropertyDais }))
 );
+const PropertyClerk = lazy(() =>
+  import('./tabs/PropertyClerk').then((m) => ({ default: m.PropertyClerk }))
+);
+const PropertyTreasury = lazy(() =>
+  import('./tabs/PropertyTreasury').then((m) => ({ default: m.PropertyTreasury }))
+);
+const PropertyAudit = lazy(() =>
+  import('./tabs/PropertyAudit').then((m) => ({ default: m.PropertyAudit }))
+);
 const PropertyDossier = lazy(() =>
   import('./tabs/PropertyDossier').then((m) => ({ default: m.PropertyDossier }))
 );
@@ -62,6 +71,9 @@ const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.F
   forge: PropertyForge,
   atlas: PropertyAtlas,
   dais: PropertyDais,
+  clerk: PropertyClerk,
+  treasury: PropertyTreasury,
+  audit: PropertyAudit,
   dossier: PropertyDossier,
   pilot: PropertyPilot,
 };
@@ -90,6 +102,9 @@ const TABS: readonly TabDef[] = [
   { id: 'forge', label: 'Forge', icon: '🔨' },
   { id: 'atlas', label: 'Atlas', icon: '🗺️' },
   { id: 'dais', label: 'Dais', icon: '⚖️' },
+  { id: 'clerk', label: 'Clerk', icon: '📜' },
+  { id: 'treasury', label: 'Treasury', icon: '💰' },
+  { id: 'audit', label: 'Audit', icon: '🔍' },
   { id: 'dossier', label: 'Dossier', icon: '📋' },
   { id: 'pilot', label: 'Pilot', icon: '🤖' },
 ] as const;
