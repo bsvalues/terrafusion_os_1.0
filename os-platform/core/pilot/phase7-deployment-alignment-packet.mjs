@@ -131,39 +131,27 @@ async function main() {
     if (!ok && blocker) blockers.push(blocker);
   };
 
-  const evaluateCanonicalSyncTruth = (statusJson, systemsJson, countiesJson) => {
+  const evaluateSnapshotRuntimeTruth = (statusJson, systemsJson, countiesJson) => {
     const totalSystems = Number(statusJson?.metrics?.TotalSystems ?? 0);
     const activeCounties = Number(statusJson?.metrics?.ActiveCounties ?? 0);
     const systems = Array.isArray(systemsJson) ? systemsJson : [];
     const counties = Array.isArray(countiesJson) ? countiesJson : [];
 
-    const canonicalSystem = systems.find(
-      (system) =>
-        system?.systemId === "harris_pacs_canonical" &&
-        system?.systemType === "harris_pacs"
-    );
-
     const hasLegacyFakeDefaults = systems.some((system) =>
       ["harris_pacs_12_4_7", "tyler_iasworld", "aumentum_cama"].includes(system?.systemId)
-    );
-
-    const bentonCounty = counties.find(
-      (county) =>
-        county?.countyName === "Benton" &&
-        county?.legacySystemId === "harris_pacs_canonical"
     );
 
     return {
       totalSystems,
       activeCounties,
-      canonicalSystemPresent: !!canonicalSystem,
-      bentonCountyPresent: !!bentonCounty,
+      systemsCount: systems.length,
+      countiesCount: counties.length,
       hasLegacyFakeDefaults,
       ok:
-        totalSystems > 0 &&
-        activeCounties > 0 &&
-        !!canonicalSystem &&
-        !!bentonCounty &&
+        totalSystems === 0 &&
+        activeCounties === 0 &&
+        systems.length === 0 &&
+        counties.length === 0 &&
         !hasLegacyFakeDefaults,
     };
   };
@@ -184,22 +172,25 @@ async function main() {
     runtimeTruth.code === 0 ? null : "Phase 7 runtime-truth tests failed"
   );
 
-  const prodTemplate = await readFileText("ops/prod/secrets.prod.template.env");
   const localTemplate = await readFileText("ops/prod/secrets_template.env");
-  const requiredKeys = [
-    "ConnectionStrings__PacsConnection",
-    "ConnectionStrings__PacsSalesConnection",
-    "HarrisPACS__Enabled",
+  const requiredSnapshotLines = [
+    "ConnectionStrings__PacsConnection=",
+    "ConnectionStrings__PacsSalesConnection=",
+    "HarrisPACS__Enabled=false",
   ];
-  const missingKeys = requiredKeys.filter(
-    (key) => !prodTemplate.includes(key) || !localTemplate.includes(key)
+  const missingSnapshotLines = requiredSnapshotLines.filter(
+    (line) => !localTemplate.includes(line)
   );
   record(
     "local.phase7.deploy_contract",
-    missingKeys.length === 0,
-    missingKeys.length === 0 ? "prod templates declare PACS deployment contract" : `missing keys: ${missingKeys.join(", ")}`,
-    { requiredKeys, missingKeys },
-    missingKeys.length === 0 ? null : "Phase 7 deploy contract does not declare canonical Benton PACS settings"
+    missingSnapshotLines.length === 0,
+    missingSnapshotLines.length === 0
+      ? "Hostinger deploy template declares Benton operational-snapshot mode"
+      : `missing snapshot lines: ${missingSnapshotLines.join(", ")}`,
+    { requiredSnapshotLines, missingSnapshotLines },
+    missingSnapshotLines.length === 0
+      ? null
+      : "Phase 7 deploy contract does not declare Hostinger snapshot-runtime settings"
   );
 
   const stagingLogin = await login(STAGING_BASE_URL);
@@ -216,23 +207,29 @@ async function main() {
     const stagingStatus = await curlRequest(`${STAGING_BASE_URL}/api/TerraFusionSync/status`, { headers: stagingHeaders });
     const stagingSystems = await curlRequest(`${STAGING_BASE_URL}/api/TerraFusionSync/systems`, { headers: stagingHeaders });
     const stagingCounties = await curlRequest(`${STAGING_BASE_URL}/api/TerraFusionSync/counties`, { headers: stagingHeaders });
-    const evaluation = evaluateCanonicalSyncTruth(
+    const evaluation = evaluateSnapshotRuntimeTruth(
       stagingStatus.json,
       stagingSystems.json,
       stagingCounties.json
     );
     record(
       "staging.sync.truth",
-      stagingStatus.status === 200 && evaluation.ok,
-      `systems=${evaluation.totalSystems}, counties=${evaluation.activeCounties}, canonicalSystem=${evaluation.canonicalSystemPresent}, bentonCounty=${evaluation.bentonCountyPresent}, fakeDefaults=${evaluation.hasLegacyFakeDefaults}`,
+      stagingStatus.status === 200 &&
+        stagingSystems.status === 200 &&
+        stagingCounties.status === 200 &&
+        evaluation.ok,
+      `systems=${evaluation.totalSystems}, counties=${evaluation.activeCounties}, systemRows=${evaluation.systemsCount}, countyRows=${evaluation.countiesCount}, fakeDefaults=${evaluation.hasLegacyFakeDefaults}`,
       {
         status: stagingStatus.json,
         systems: stagingSystems.json,
         counties: stagingCounties.json,
       },
-      stagingStatus.status === 200 && evaluation.ok
+      stagingStatus.status === 200 &&
+        stagingSystems.status === 200 &&
+        stagingCounties.status === 200 &&
+        evaluation.ok
         ? null
-        : "Staging deployed runtime is not advertising the canonical Benton sync spine"
+        : "Staging deployed runtime is not advertising the expected Benton operational-snapshot sync state"
     );
   }
 
@@ -263,29 +260,35 @@ async function main() {
       headers: productionHeaders,
       resolveHost,
     });
-    const evaluation = evaluateCanonicalSyncTruth(
+    const evaluation = evaluateSnapshotRuntimeTruth(
       productionStatus.json,
       productionSystems.json,
       productionCounties.json
     );
     record(
       "production.sync.truth",
-      productionStatus.status === 200 && evaluation.ok,
-      `systems=${evaluation.totalSystems}, counties=${evaluation.activeCounties}, canonicalSystem=${evaluation.canonicalSystemPresent}, bentonCounty=${evaluation.bentonCountyPresent}, fakeDefaults=${evaluation.hasLegacyFakeDefaults}`,
+      productionStatus.status === 200 &&
+        productionSystems.status === 200 &&
+        productionCounties.status === 200 &&
+        evaluation.ok,
+      `systems=${evaluation.totalSystems}, counties=${evaluation.activeCounties}, systemRows=${evaluation.systemsCount}, countyRows=${evaluation.countiesCount}, fakeDefaults=${evaluation.hasLegacyFakeDefaults}`,
       {
         status: productionStatus.json,
         systems: productionSystems.json,
         counties: productionCounties.json,
       },
-      productionStatus.status === 200 && evaluation.ok
+      productionStatus.status === 200 &&
+        productionSystems.status === 200 &&
+        productionCounties.status === 200 &&
+        evaluation.ok
         ? null
-        : "Production deployed runtime is not advertising the canonical Benton sync spine"
+        : "Production deployed runtime is not advertising the expected Benton operational-snapshot sync state"
     );
   }
 
   const packet = {
     generatedAt: new Date().toISOString(),
-    scope: "Phase 7 deployment alignment packet for Benton sync/runtime truth",
+    scope: "Phase 7 deployment alignment packet for Benton Hostinger operational-snapshot runtime truth",
     decision: blockers.length === 0 ? "GO" : "NO_GO",
     checks,
     summary: {
@@ -307,7 +310,7 @@ main().catch(async (error) => {
   const outPath = parseArgs(process.argv).outPath;
   const packet = {
     generatedAt: new Date().toISOString(),
-    scope: "Phase 7 deployment alignment packet for Benton sync/runtime truth",
+    scope: "Phase 7 deployment alignment packet for Benton Hostinger operational-snapshot runtime truth",
     decision: "NO_GO",
     checks: [
       {

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Interfaces;
@@ -100,6 +101,35 @@ public class TerraFusionSyncRuntimeStateTests
         var events = state.GetRecentEvents(10).ToList();
         events.Should().Contain(evt => evt.EventType == "Completed" && evt.CountyName == "Benton");
         events.Should().Contain(evt => evt.EventType == "OrchestrationStarted");
+    }
+
+    [Fact]
+    public async Task IntegrationService_WithoutCanonicalPacsConfig_ExposesSnapshotModeWithoutAdapterResolution()
+    {
+        var configuration = BuildConfiguration(new Dictionary<string, string?>());
+        var state = new TerraFusionSyncRuntimeState(
+            configuration,
+            NullLogger<TerraFusionSyncRuntimeState>.Instance);
+        using var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+        var service = new TerraFusionSyncIntegrationService(
+            NullLogger<TerraFusionSyncIntegrationService>.Instance,
+            serviceProvider,
+            state);
+
+        var status = await service.GetSyncStatusAsync();
+        var systems = (await service.GetAvailableLegacySystemsAsync()).ToList();
+        var counties = (await service.GetConfiguredCountiesAsync()).ToList();
+        var syncResult = await service.SyncCountyDataAsync("Benton");
+
+        status.ActiveConnections.Should().Be(0);
+        status.Metrics["TotalSystems"].Should().Be(0);
+        status.Metrics["ActiveCounties"].Should().Be(0);
+        systems.Should().BeEmpty();
+        counties.Should().BeEmpty();
+        syncResult.Success.Should().BeFalse();
+        syncResult.Status.Should().Be("snapshot_mode");
+        syncResult.Errors.Should().ContainSingle(error => error.Contains("PACS sync is disabled", StringComparison.OrdinalIgnoreCase));
     }
 
     private static IConfiguration BuildConfiguration(Dictionary<string, string?> values) =>

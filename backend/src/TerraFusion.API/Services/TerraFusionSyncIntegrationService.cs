@@ -12,16 +12,16 @@ namespace TerraFusion.API.Services;
 public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
 {
     private readonly ILogger<TerraFusionSyncIntegrationService> _logger;
-    private readonly PacsToTerraFusionSyncService _pacsSyncService;
+    private readonly IServiceProvider _serviceProvider;
     private readonly TerraFusionSyncRuntimeState _runtimeState;
 
     public TerraFusionSyncIntegrationService(
         ILogger<TerraFusionSyncIntegrationService> logger,
-        PacsToTerraFusionSyncService pacsSyncService,
+        IServiceProvider serviceProvider,
         TerraFusionSyncRuntimeState runtimeState)
     {
         _logger = logger;
-        _pacsSyncService = pacsSyncService;
+        _serviceProvider = serviceProvider;
         _runtimeState = runtimeState;
     }
 
@@ -245,9 +245,33 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
 
         try
         {
-            var configuredCounty = _runtimeState.GetConfiguredCounty(countyName);
+            if (!_runtimeState.GetRegisteredSystems().Any())
+            {
+                _logger.LogWarning(
+                    "Skipping Benton sync for {County} because this host is running in operational-snapshot mode without PACS connectivity.",
+                    countyName);
 
-            var result = await _pacsSyncService.SyncCountyDataAsync(
+                return new CountySyncResult
+                {
+                    CountyName = countyName,
+                    Timestamp = DateTime.UtcNow,
+                    Success = false,
+                    Status = "snapshot_mode",
+                    Message = "This host is running in Benton operational-snapshot mode. PACS sync is not available here.",
+                    Errors = new List<string>
+                    {
+                        "PACS sync is disabled on this host. Use the canonical local PACS-connected runtime for sync operations."
+                    },
+                    ErrorCount = 1,
+                    Duration = TimeSpan.Zero
+                };
+            }
+
+            var configuredCounty = _runtimeState.GetConfiguredCounty(countyName);
+            using var scope = _serviceProvider.CreateScope();
+            var pacsSyncService = scope.ServiceProvider.GetRequiredService<PacsToTerraFusionSyncService>();
+
+            var result = await pacsSyncService.SyncCountyDataAsync(
                 countyName,
                 configuredCounty?.State,
                 options);
