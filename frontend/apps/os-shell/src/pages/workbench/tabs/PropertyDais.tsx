@@ -39,6 +39,7 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 
@@ -183,6 +184,7 @@ interface EscalateResult { taskId: string; escalatedTo: string; status: string; 
 
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const appeals = usePropertyStore((s) => s.appeals);
 
   const [workflowType, setWorkflowType] = useState<WorkflowType>('certification');
   const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
@@ -821,6 +823,27 @@ export const PropertyDais: React.FC = () => {
         parcelId={parcelId}
         subtitle={`Workflow orchestration for ${parcelId}`}
       />
+
+      {/* Active Appeals from Store */}
+      {appeals.length > 0 && (
+        <BentoGrid columns={3} gap={0.75} padding={0}>
+          <BentoCard variant="stat" title="Active Appeals">
+            <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
+              {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
+            </p>
+          </BentoCard>
+          {appeals.slice(0, 2).map((a) => (
+            <BentoCard key={a.appealId} variant="stat" title={`Appeal ${a.appealId.slice(0, 8)}`}>
+              <p className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                {a.status} — {a.appealType}
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                Filed: {new Date(a.filingDate).toLocaleDateString()}
+              </p>
+            </BentoCard>
+          ))}
+        </BentoGrid>
+      )}
 
       {/* Main Content Grid */}
       <BentoGrid columns={3} gap={1.5} padding={0}>

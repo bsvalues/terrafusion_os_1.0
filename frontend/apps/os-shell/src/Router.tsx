@@ -92,7 +92,7 @@ const PilotApiDemo = lazy(() => import('./pages/PilotApiDemo'));
 const ErrorDisplayDemo = lazy(() => import('./pages/ErrorDisplayDemo'));
 
 // Phase 2: Pilot Tool Invocation Demo (read-only vertical slice)
-const PilotDemo = lazy(() => import('./pages/PilotDemo'));
+const PilotDemo = lazy(() => import('./pages/PilotDemo').then((m) => ({ default: m.PilotDemo })));
 
 // Phase 7: Dev-only Legacy Burn-Down Viewer
 const LegacyMetricsViewer = lazy(() => import('./pages/dev/LegacyMetricsViewer'));

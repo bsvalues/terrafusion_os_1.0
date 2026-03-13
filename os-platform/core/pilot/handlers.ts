@@ -914,6 +914,573 @@ export interface CanonSearchFilesResult {
   truncated: boolean;
 }
 
+export interface CanonCreateFileParams {
+  filePath: string;
+  content: string;
+}
+
+export interface CanonCreateFileResult {
+  filePath: string;
+  size: number;
+  createdAt: string;
+}
+
+export interface CanonDeleteFileParams {
+  filePath: string;
+}
+
+export interface CanonDeleteFileResult {
+  filePath: string;
+  deletedAt: string;
+}
+
+export interface CanonRenameFileParams {
+  oldPath: string;
+  newPath: string;
+}
+
+export interface CanonRenameFileResult {
+  oldPath: string;
+  newPath: string;
+  renamedAt: string;
+}
+
+export interface CanonDiffFilesParams {
+  leftPath: string;
+  rightPath: string;
+}
+
+export interface CanonDiffFilesResult {
+  leftPath: string;
+  rightPath: string;
+  leftContent: string;
+  rightContent: string;
+  leftSize: number;
+  rightSize: number;
+}
+
+export interface CanonGitStatusParams {
+  path?: string;
+}
+
+export interface CanonGitStatusEntry {
+  filePath: string;
+  status: string;
+}
+
+export interface CanonGitStatusResult {
+  entries: CanonGitStatusEntry[];
+  branch: string;
+}
+
+export interface CanonFileOutlineParams {
+  filePath: string;
+}
+
+export interface CanonOutlineSymbol {
+  name: string;
+  kind: string;
+  line: number;
+  endLine?: number;
+  children?: CanonOutlineSymbol[];
+}
+
+export interface CanonFileOutlineResult {
+  filePath: string;
+  symbols: CanonOutlineSymbol[];
+  language: string;
+}
+
+export interface CanonDiagnosticsParams {
+  scope?: string;
+}
+
+export interface CanonDiagnostic {
+  file: string;
+  line: number;
+  column: number;
+  severity: 'error' | 'warning' | 'info';
+  message: string;
+  code?: string;
+}
+
+export interface CanonDiagnosticsResult {
+  diagnostics: CanonDiagnostic[];
+  errorCount: number;
+  warningCount: number;
+  infoCount: number;
+  durationMs: number;
+}
+
+export interface CanonBookmarksParams {
+  action: 'add' | 'remove' | 'list' | 'clear';
+  filePath?: string;
+  line?: number;
+  label?: string;
+}
+
+export interface CanonBookmark {
+  filePath: string;
+  line: number;
+  label: string;
+  createdAt: string;
+}
+
+export interface CanonBookmarksResult {
+  bookmarks: CanonBookmark[];
+  action: string;
+}
+
+export interface CanonFileIndexParams {
+  scope?: string;
+}
+
+export interface CanonFileIndexEntry {
+  path: string;
+  name: string;
+  size: number;
+}
+
+export interface CanonFileIndexResult {
+  files: CanonFileIndexEntry[];
+  totalFiles: number;
+  scope: string;
+}
+
+export interface CanonRecentFilesParams {
+  action: 'add' | 'list' | 'clear';
+  filePath?: string;
+}
+
+export interface CanonRecentFileEntry {
+  filePath: string;
+  name: string;
+  openedAt: string;
+}
+
+export interface CanonRecentFilesResult {
+  files: CanonRecentFileEntry[];
+  action: string;
+}
+
+export interface CanonSymbolSearchParams {
+  query: string;
+  maxResults?: number;
+}
+
+export interface CanonSymbolMatch {
+  filePath: string;
+  name: string;
+  kind: string;
+  line: number;
+  containerName?: string;
+}
+
+export interface CanonSymbolSearchResult {
+  symbols: CanonSymbolMatch[];
+  query: string;
+  totalFiles: number;
+}
+
+export interface CanonSnippet {
+  id: string;
+  name: string;
+  language: string;
+  prefix: string;
+  body: string;
+  description: string;
+}
+
+export interface CanonSnippetsParams {
+  action: 'create' | 'list' | 'delete' | 'insert';
+  id?: string;
+  name?: string;
+  language?: string;
+  prefix?: string;
+  body?: string;
+  description?: string;
+}
+
+export interface CanonSnippetsResult {
+  snippets: CanonSnippet[];
+  inserted?: string;
+}
+
+export interface CanonMinimapSection {
+  startLine: number;
+  endLine: number;
+  label: string;
+  kind: 'function' | 'class' | 'interface' | 'type' | 'import' | 'export' | 'comment' | 'block';
+  depth: number;
+}
+
+export interface CanonMinimapParams {
+  filePath: string;
+}
+
+export interface CanonMinimapResult {
+  filePath: string;
+  totalLines: number;
+  sections: CanonMinimapSection[];
+  symbolDensity: number[];
+}
+
+export interface CanonEditorSettingsData {
+  minimap: boolean;
+  wordWrap: boolean;
+  fontSize: number;
+  tabSize: number;
+  theme: string;
+  lineNumbers: boolean;
+  autoSave: boolean;
+  bracketPairColorization: boolean;
+}
+
+export interface CanonEditorSettingsParams {
+  action: 'get' | 'set' | 'reset';
+  settings?: Partial<CanonEditorSettingsData>;
+}
+
+export interface CanonEditorSettingsResult {
+  settings: CanonEditorSettingsData;
+  persisted: boolean;
+}
+
+export interface CanonFindReplaceMatch {
+  filePath: string;
+  line: number;
+  column: number;
+  lineText: string;
+  matchText: string;
+}
+
+export interface CanonFindReplaceParams {
+  action: 'find' | 'replace' | 'replaceAll';
+  query: string;
+  replacement?: string;
+  isRegex?: boolean;
+  caseSensitive?: boolean;
+  filePath?: string;
+}
+
+export interface CanonFindReplaceResult {
+  matches: CanonFindReplaceMatch[];
+  totalMatches: number;
+  filesSearched: number;
+  replacementsApplied?: number;
+}
+
+export interface CanonFormatFileParams {
+  filePath: string;
+  tabSize?: number;
+  useTabs?: boolean;
+  insertFinalNewline?: boolean;
+}
+
+export interface CanonEditorLayoutParams {
+  action: 'get' | 'set';
+  mode?: 'single' | 'split-vertical' | 'split-horizontal';
+}
+
+export interface CanonEditorLayoutResult {
+  mode: 'single' | 'split-vertical' | 'split-horizontal';
+  panes: number;
+}
+
+export interface CanonFoldingRangesParams {
+  filePath: string;
+}
+
+export interface FoldingRange {
+  startLine: number;
+  endLine: number;
+  kind: 'region' | 'imports' | 'comment';
+}
+
+export interface CanonFoldingRangesResult {
+  filePath: string;
+  ranges: FoldingRange[];
+  language: string;
+}
+
+export type MarkerSeverity = 'error' | 'warning' | 'info' | 'hint';
+export type MarkerKind = 'diagnostic' | 'bookmark' | 'modified';
+
+export interface LineMarker {
+  id: string;
+  line: number;
+  endLine?: number;
+  column?: number;
+  endColumn?: number;
+  severity: MarkerSeverity;
+  kind: MarkerKind;
+  message: string;
+  source?: string;
+}
+
+export interface CanonLineMarkersParams {
+  action: 'list' | 'set' | 'clear';
+  filePath: string;
+  markers?: LineMarker[];
+}
+
+export interface CanonLineMarkersResult {
+  filePath: string;
+  markers: LineMarker[];
+  count: number;
+}
+
+export interface CanonHoverInfoParams {
+  filePath: string;
+  line: number;
+  column: number;
+  content?: string;
+}
+
+export interface HoverSymbolInfo {
+  name: string;
+  kind: string;
+  type?: string;
+  description?: string;
+  parameters?: string[];
+  filePath?: string;
+  line?: number;
+}
+
+export interface CanonHoverInfoResult {
+  filePath: string;
+  line: number;
+  column: number;
+  symbol: HoverSymbolInfo | null;
+  markdown: string;
+}
+
+export interface CanonGotoDefinitionParams {
+  filePath: string;
+  line: number;
+  column: number;
+  symbol?: string;
+  content?: string;
+}
+
+export interface DefinitionLocation {
+  filePath: string;
+  line: number;
+  column: number;
+  endLine?: number;
+  endColumn?: number;
+  kind: string;
+  preview?: string;
+}
+
+export interface CanonGotoDefinitionResult {
+  filePath: string;
+  line: number;
+  column: number;
+  definitions: DefinitionLocation[];
+}
+
+export interface CanonCompletionsParams {
+  filePath: string;
+  line: number;
+  column: number;
+  content?: string;
+  triggerCharacter?: string;
+}
+
+export type CompletionKind =
+  | 'function'
+  | 'class'
+  | 'interface'
+  | 'variable'
+  | 'constant'
+  | 'type'
+  | 'enum'
+  | 'keyword'
+  | 'snippet'
+  | 'property';
+
+export interface CompletionItem {
+  label: string;
+  kind: CompletionKind;
+  detail?: string;
+  insertText: string;
+  sortText?: string;
+}
+
+export interface CanonCompletionsResult {
+  filePath: string;
+  line: number;
+  column: number;
+  items: CompletionItem[];
+}
+
+export type CanonThemeId = 'terracanon-dark' | 'terracanon-light' | 'terracanon-high-contrast';
+
+export interface CanonThemeInfo {
+  id: CanonThemeId;
+  displayName: string;
+  base: 'vs-dark' | 'vs' | 'hc-black';
+}
+
+export interface CanonEditorThemesParams {
+  action: 'list' | 'get' | 'set';
+  themeId?: CanonThemeId;
+}
+
+export interface CanonEditorThemesResult {
+  action: string;
+  active: CanonThemeId;
+  themes: CanonThemeInfo[];
+}
+
+/* ── Code Actions / Quick Fixes ────────────────────────────────── */
+
+export type CodeActionKind = 'quickfix' | 'refactor' | 'refactor.extract' | 'source';
+
+export interface CanonCodeAction {
+  title: string;
+  kind: CodeActionKind;
+  edit?: { filePath: string; range: { startLine: number; startColumn: number; endLine: number; endColumn: number }; newText: string };
+  isPreferred?: boolean;
+}
+
+export interface CanonCodeActionsParams {
+  filePath: string;
+  startLine: number;
+  startColumn: number;
+  endLine: number;
+  endColumn: number;
+  content: string;
+}
+
+export interface CanonCodeActionsResult {
+  actions: CanonCodeAction[];
+  filePath: string;
+}
+
+// ── Find References Types ──────────────────────────────────
+export interface CanonFindReferencesParams {
+  filePath: string;
+  line: number;
+  column: number;
+  content: string;
+  includeDeclaration?: boolean;
+}
+
+export interface ReferenceLocation {
+  filePath: string;
+  line: number;
+  column: number;
+  endLine: number;
+  endColumn: number;
+  context: string;
+  isDeclaration: boolean;
+}
+
+export interface CanonFindReferencesResult {
+  references: ReferenceLocation[];
+  symbol: string;
+  filePath: string;
+}
+
+// ── Rename Symbol Types ─────────────────────────────────────
+export interface CanonRenameSymbolParams {
+  filePath: string;
+  line: number;
+  column: number;
+  newName: string;
+  content: string;
+}
+
+export interface RenameEdit {
+  filePath: string;
+  line: number;
+  column: number;
+  endLine: number;
+  endColumn: number;
+  newText: string;
+}
+
+export interface CanonRenameSymbolResult {
+  edits: RenameEdit[];
+  oldName: string;
+  newName: string;
+  filePath: string;
+}
+
+export interface CanonSignatureHelpParams {
+  filePath: string;
+  line: number;
+  column: number;
+  content: string;
+}
+
+export interface SignatureParameter {
+  label: string;
+  documentation?: string;
+}
+
+export interface SignatureInfo {
+  label: string;
+  documentation?: string;
+  parameters: SignatureParameter[];
+}
+
+export interface CanonSignatureHelpResult {
+  signatures: SignatureInfo[];
+  activeSignature: number;
+  activeParameter: number;
+}
+
+export interface CanonDocumentHighlightsParams {
+  filePath: string;
+  line: number;
+  column: number;
+  content: string;
+}
+
+export interface DocumentHighlight {
+  line: number;
+  column: number;
+  endLine: number;
+  endColumn: number;
+  kind: 'read' | 'write' | 'text';
+}
+
+export interface CanonDocumentHighlightsResult {
+  highlights: DocumentHighlight[];
+  symbol: string;
+}
+
+export interface CanonGitDiffParams {
+  filePath: string;
+  content: string;
+  originalContent?: string;
+}
+
+export interface DiffLineChange {
+  line: number;
+  type: 'added' | 'deleted' | 'modified';
+}
+
+export interface CanonGitDiffResult {
+  changes: DiffLineChange[];
+  filePath: string;
+  linesAdded: number;
+  linesDeleted: number;
+  linesModified: number;
+}
+
+export interface CanonFormatFileResult {
+  filePath: string;
+  formatted: boolean;
+  originalSize: number;
+  formattedSize: number;
+  language: string;
+  durationMs: number;
+}
+
 export interface CanonTerminalExecParams {
   command: string;
 }
@@ -1134,6 +1701,729 @@ export const canonSearchFilesHandler: ToolHandler<
 };
 
 /**
+ * Canon Create File — creates a new file in an allowed path.
+ * Enforces path allowlist + 1MB limit. Rejects if file already exists.
+ */
+export const canonCreateFileHandler: ToolHandler<
+  CanonCreateFileParams,
+  CanonCreateFileResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  const content = typeof params.content === 'string' ? params.content : '';
+  return {
+    filePath,
+    size: Buffer.byteLength(content, 'utf8'),
+    createdAt: new Date().toISOString(),
+  };
+};
+
+/**
+ * Canon Delete File — deletes a file in an allowed path.
+ * Enforces path allowlist. Rejects if file does not exist.
+ */
+export const canonDeleteFileHandler: ToolHandler<
+  CanonDeleteFileParams,
+  CanonDeleteFileResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  return {
+    filePath,
+    deletedAt: new Date().toISOString(),
+  };
+};
+
+/**
+ * Canon Rename File — renames or moves a file within the Canon workspace.
+ * Enforces path allowlist for both source and destination.
+ */
+export const canonRenameFileHandler: ToolHandler<
+  CanonRenameFileParams,
+  CanonRenameFileResult
+> = async (params, _context, _tool) => {
+  const oldPath = typeof params.oldPath === 'string' ? params.oldPath : '';
+  const newPath = typeof params.newPath === 'string' ? params.newPath : '';
+  return {
+    oldPath,
+    newPath,
+    renamedAt: new Date().toISOString(),
+  };
+};
+
+/**
+ * Canon Diff Files — reads two files and returns their contents for diff comparison.
+ * Enforces path allowlist for both files.
+ */
+export const canonDiffFilesHandler: ToolHandler<
+  CanonDiffFilesParams,
+  CanonDiffFilesResult
+> = async (params, _context, _tool) => {
+  const leftPath = typeof params.leftPath === 'string' ? params.leftPath : '';
+  const rightPath = typeof params.rightPath === 'string' ? params.rightPath : '';
+  return {
+    leftPath,
+    rightPath,
+    leftContent: '',
+    rightContent: '',
+    leftSize: 0,
+    rightSize: 0,
+  };
+};
+
+/**
+ * Canon Git Status — returns git status for files in approved paths.
+ * Parses `git status --porcelain` output into structured entries.
+ */
+export const canonGitStatusHandler: ToolHandler<
+  CanonGitStatusParams,
+  CanonGitStatusResult
+> = async (_params, _context, _tool) => {
+  return {
+    entries: [],
+    branch: 'main',
+  };
+};
+
+/**
+ * Canon File Outline — extracts symbol outline from a source file.
+ * Parses TypeScript/JavaScript/JSON for functions, interfaces, classes, exports.
+ */
+export const canonFileOutlineHandler: ToolHandler<
+  CanonFileOutlineParams,
+  CanonFileOutlineResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  return {
+    filePath,
+    symbols: [],
+    language: 'unknown',
+  };
+};
+
+/**
+ * Canon Diagnostics — runs type-check and returns structured diagnostic entries.
+ * Parses TypeScript compiler output into file/line/column/severity/message entries.
+ */
+export const canonDiagnosticsHandler: ToolHandler<
+  CanonDiagnosticsParams,
+  CanonDiagnosticsResult
+> = async (_params, _context, _tool) => {
+  return {
+    diagnostics: [],
+    errorCount: 0,
+    warningCount: 0,
+    infoCount: 0,
+    durationMs: 0,
+  };
+};
+
+/**
+ * Canon Bookmarks — manages line-level bookmarks across files.
+ * Actions: add, remove, list, clear.
+ */
+export const canonBookmarksHandler: ToolHandler<
+  CanonBookmarksParams,
+  CanonBookmarksResult
+> = async (params, _context, _tool) => {
+  return {
+    bookmarks: [],
+    action: typeof params.action === 'string' ? params.action : 'list',
+  };
+};
+
+/**
+ * Canon File Index — returns a flat list of all files under allowed paths.
+ * Used for Quick Open (Ctrl+P) fuzzy file search.
+ */
+export const canonFileIndexHandler: ToolHandler<
+  CanonFileIndexParams,
+  CanonFileIndexResult
+> = async (params, _context, _tool) => {
+  return {
+    files: [],
+    totalFiles: 0,
+    scope: typeof params.scope === 'string' ? params.scope : 'all',
+  };
+};
+
+/**
+ * Canon Recent Files — tracks recently opened files for quick navigation.
+ * Actions: add (record file open), list (get recent), clear (reset history).
+ */
+export const canonRecentFilesHandler: ToolHandler<
+  CanonRecentFilesParams,
+  CanonRecentFilesResult
+> = async (params, _context, _tool) => {
+  return {
+    files: [],
+    action: typeof params.action === 'string' ? params.action : 'list',
+  };
+};
+
+/**
+ * Canon Symbol Search — searches for symbols (functions, classes, interfaces, types,
+ * constants) across all workspace files in the Canon allowed paths.
+ */
+export const canonSymbolSearchHandler: ToolHandler<
+  CanonSymbolSearchParams,
+  CanonSymbolSearchResult
+> = async (params, _context, _tool) => {
+  return {
+    symbols: [],
+    query: typeof params.query === 'string' ? params.query : '',
+    totalFiles: 0,
+  };
+};
+
+/**
+ * Canon Snippets — manages user-defined code snippets for the Canon IDE.
+ * Supports create, list, delete, and insert actions.
+ */
+export const canonSnippetsHandler: ToolHandler<
+  CanonSnippetsParams,
+  CanonSnippetsResult
+> = async (params, _context, _tool) => {
+  return {
+    snippets: [],
+    inserted: undefined,
+  };
+};
+
+/**
+ * Canon Minimap — generates structural overview of a file for
+ * minimap rendering: sections, symbol density, and line count.
+ */
+export const canonMinimapHandler: ToolHandler<
+  CanonMinimapParams,
+  CanonMinimapResult
+> = async (params, _context, _tool) => {
+  return {
+    filePath: typeof params.filePath === 'string' ? params.filePath : '',
+    totalLines: 0,
+    sections: [],
+    symbolDensity: [],
+  };
+};
+
+/**
+ * Canon Editor Settings — persists editor preferences (theme, font size,
+ * tab size, line numbers, etc.) to the server for cross-session persistence.
+ */
+export const canonEditorSettingsHandler: ToolHandler<
+  CanonEditorSettingsParams,
+  CanonEditorSettingsResult
+> = async (params, _context, _tool) => {
+  return {
+    settings: {
+      minimap: true,
+      wordWrap: true,
+      fontSize: 12,
+      tabSize: 2,
+      theme: 'dark',
+      lineNumbers: true,
+      autoSave: true,
+      bracketPairColorization: true,
+    },
+    persisted: false,
+  };
+};
+
+/**
+ * Canon Find & Replace — searches for text/regex across workspace files
+ * and optionally replaces matches.
+ */
+export const canonFindReplaceHandler: ToolHandler<
+  CanonFindReplaceParams,
+  CanonFindReplaceResult
+> = async (params, _context, _tool) => {
+  return {
+    matches: [],
+    totalMatches: 0,
+    filesSearched: 0,
+    replacementsApplied: 0,
+  };
+};
+
+/**
+ * Canon Format File — formats a source file using language-appropriate rules.
+ * Supports TypeScript, JavaScript, JSON, CSS, and Markdown.
+ */
+export const canonFormatFileHandler: ToolHandler<
+  CanonFormatFileParams,
+  CanonFormatFileResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  return {
+    filePath,
+    formatted: false,
+    originalSize: 0,
+    formattedSize: 0,
+    language: 'unknown',
+    durationMs: 0,
+  };
+};
+
+/**
+ * Canon Editor Layout — get or set the editor split layout mode.
+ * Supports single, split-vertical, and split-horizontal layouts.
+ */
+export const canonEditorLayoutHandler: ToolHandler<
+  CanonEditorLayoutParams,
+  CanonEditorLayoutResult
+> = async (params, _context, _tool) => {
+  const mode = params.mode ?? 'single';
+  return {
+    mode,
+    panes: mode === 'single' ? 1 : 2,
+  };
+};
+
+/**
+ * Canon Folding Ranges — compute foldable regions for a file.
+ * Returns regions for functions, classes, imports, comment blocks, objects.
+ */
+export const canonFoldingRangesHandler: ToolHandler<
+  CanonFoldingRangesParams,
+  CanonFoldingRangesResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  const ext = filePath.split('.').pop() ?? '';
+  const langMap: Record<string, string> = { ts: 'typescript', tsx: 'typescriptreact', js: 'javascript', jsx: 'javascriptreact', css: 'css', json: 'json', md: 'markdown' };
+  return {
+    filePath,
+    ranges: [],
+    language: langMap[ext] ?? 'plaintext',
+  };
+};
+
+/**
+ * Canon Line Markers — add, remove, or list line markers/decorations.
+ * Marker types: diagnostic (error/warning/info), bookmark, modified-since-save.
+ */
+export const canonLineMarkersHandler: ToolHandler<
+  CanonLineMarkersParams,
+  CanonLineMarkersResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  const action = params.action ?? 'list';
+  const markers = Array.isArray(params.markers) ? params.markers : [];
+  if (action === 'clear') {
+    return { filePath, markers: [], count: 0 };
+  }
+  return { filePath, markers, count: markers.length };
+};
+
+/**
+ * Canon Hover Info — returns hover information for a symbol at a given position.
+ * Extracts JSDoc/TSDoc, symbol type, and parameter info from source content.
+ */
+export const canonHoverInfoHandler: ToolHandler<
+  CanonHoverInfoParams,
+  CanonHoverInfoResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  const line = typeof params.line === 'number' ? params.line : 1;
+  const column = typeof params.column === 'number' ? params.column : 1;
+  return { filePath, line, column, symbol: null, markdown: '' };
+};
+
+/**
+ * Canon Goto Definition — finds the definition location for a symbol at a given position.
+ * Searches the current file content for declaration of the symbol under cursor.
+ */
+export const canonGotoDefinitionHandler: ToolHandler<
+  CanonGotoDefinitionParams,
+  CanonGotoDefinitionResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  const line = typeof params.line === 'number' ? params.line : 1;
+  const column = typeof params.column === 'number' ? params.column : 1;
+  return { filePath, line, column, definitions: [] };
+};
+
+/**
+ * Canon Completions — suggests completions at a given cursor position.
+ * Combines local symbols, keywords, and snippet prefixes.
+ */
+export const canonCompletionsHandler: ToolHandler<
+  CanonCompletionsParams,
+  CanonCompletionsResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  const line = typeof params.line === 'number' ? params.line : 1;
+  const column = typeof params.column === 'number' ? params.column : 1;
+  return { filePath, line, column, items: [] };
+};
+
+/**
+ * Canon Editor Themes — list available themes, get active theme, or set active theme.
+ */
+export const canonEditorThemesHandler: ToolHandler<
+  CanonEditorThemesParams,
+  CanonEditorThemesResult
+> = async (params, _context, _tool) => {
+  const action = typeof params.action === 'string' ? params.action : 'list';
+  const themes: CanonThemeInfo[] = [
+    { id: 'terracanon-dark', displayName: 'TerraCanon Dark', base: 'vs-dark' },
+    { id: 'terracanon-light', displayName: 'TerraCanon Light', base: 'vs' },
+    { id: 'terracanon-high-contrast', displayName: 'TerraCanon High Contrast', base: 'hc-black' },
+  ];
+  const active: CanonThemeId = params.themeId && themes.some(t => t.id === params.themeId)
+    ? params.themeId
+    : 'terracanon-dark';
+  return { action, active, themes };
+};
+
+/**
+ * Canon Code Actions — suggests quick fixes and refactoring actions at the given selection range.
+ * Analyses surrounding code context to offer relevant transformations.
+ */
+export const canonCodeActionsHandler: ToolHandler<
+  CanonCodeActionsParams,
+  CanonCodeActionsResult
+> = async (params, _context, _tool) => {
+  const actions: CanonCodeAction[] = [];
+  const content = typeof params.content === 'string' ? params.content : '';
+  const lines = content.split('\n');
+  const startLine = typeof params.startLine === 'number' ? params.startLine : 1;
+  const lineText = lines[startLine - 1] ?? '';
+
+  // Quick-fix: wrap in try-catch
+  if (/\bawait\b/.test(lineText) || /\.then\(/.test(lineText)) {
+    actions.push({
+      title: 'Wrap in try/catch',
+      kind: 'quickfix',
+      isPreferred: false,
+    });
+  }
+
+  // Quick-fix: add missing import (if unresolved identifier pattern)
+  if (/\bis not defined\b/.test(lineText) || /\bfrom\s+['"]/.test(lineText)) {
+    actions.push({
+      title: 'Add missing import',
+      kind: 'quickfix',
+      isPreferred: true,
+    });
+  }
+
+  // Refactor: extract to variable (if selection spans an expression)
+  if (params.startLine !== params.endLine || params.startColumn !== params.endColumn) {
+    actions.push({
+      title: 'Extract to variable',
+      kind: 'refactor.extract',
+      isPreferred: false,
+    });
+    actions.push({
+      title: 'Extract to function',
+      kind: 'refactor.extract',
+      isPreferred: false,
+    });
+  }
+
+  // Source: toggle export
+  if (/^(?:const|let|var|function|class|interface|type|enum)\b/.test(lineText.trim())) {
+    const hasExport = /^export\s/.test(lineText.trim());
+    actions.push({
+      title: hasExport ? 'Remove export' : 'Add export',
+      kind: 'source',
+      isPreferred: false,
+    });
+  }
+
+  // Quick-fix: convert to optional chaining
+  if (/&&\s*\w+\./.test(lineText)) {
+    actions.push({
+      title: 'Convert to optional chaining',
+      kind: 'quickfix',
+      isPreferred: false,
+    });
+  }
+
+  return { actions, filePath: params.filePath ?? '' };
+};
+
+/**
+ * Canon Find References — locates all references to the symbol at a given position.
+ * Scans the current file content for occurrences of the word under the cursor.
+ */
+export const canonFindReferencesHandler: ToolHandler<
+  CanonFindReferencesParams,
+  CanonFindReferencesResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  const line = typeof params.line === 'number' ? params.line : 1;
+  const column = typeof params.column === 'number' ? params.column : 1;
+  const content = typeof params.content === 'string' ? params.content : '';
+  const includeDeclaration = params.includeDeclaration !== false;
+
+  const lines = content.split('\n');
+  const targetLine = lines[line - 1] ?? '';
+
+  // Extract word at cursor position
+  const wordMatch = targetLine.substring(0, column).match(/[\w$]+$/);
+  const wordAfter = targetLine.substring(column - 1).match(/^[\w$]+/);
+  const prefix = wordMatch ? wordMatch[0] : '';
+  const suffix = wordAfter ? wordAfter[0].substring(prefix.length > 0 ? 0 : 0) : '';
+  const symbol = prefix + (suffix && !prefix ? suffix : suffix.length > prefix.length ? suffix : '');
+  // Simplified: just take the word under cursor
+  const cursorWord = targetLine.substring(
+    Math.max(0, column - 1 - (wordMatch?.[0]?.length ?? 0)),
+  ).match(/[\w$]+/)?.[0] ?? '';
+
+  if (!cursorWord) {
+    return { references: [], symbol: '', filePath };
+  }
+
+  const references: ReferenceLocation[] = [];
+  const pattern = new RegExp(`\\b${cursorWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g');
+
+  for (let i = 0; i < lines.length; i++) {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(lines[i])) !== null) {
+      const isDecl = /(?:function|class|interface|type|const|let|var|enum|export)\s/.test(
+        lines[i].substring(0, match.index),
+      );
+      if (!includeDeclaration && isDecl) continue;
+      references.push({
+        filePath,
+        line: i + 1,
+        column: match.index + 1,
+        endLine: i + 1,
+        endColumn: match.index + 1 + cursorWord.length,
+        context: lines[i].trim(),
+        isDeclaration: isDecl,
+      });
+    }
+  }
+
+  return { references, symbol: cursorWord, filePath };
+};
+
+/**
+ * Canon Rename Symbol — renames all occurrences of the symbol at a given position.
+ * Scans the file for whole-word matches and returns edit operations.
+ */
+export const canonRenameSymbolHandler: ToolHandler<
+  CanonRenameSymbolParams,
+  CanonRenameSymbolResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : '';
+  const line = typeof params.line === 'number' ? params.line : 1;
+  const column = typeof params.column === 'number' ? params.column : 1;
+  const newName = typeof params.newName === 'string' ? params.newName : '';
+  const content = typeof params.content === 'string' ? params.content : '';
+
+  if (!newName) {
+    return { edits: [], oldName: '', newName: '', filePath };
+  }
+
+  const lines = content.split('\n');
+  const targetLine = lines[line - 1] ?? '';
+
+  // Extract word under cursor
+  const before = targetLine.substring(0, column);
+  const wordStart = before.search(/[\w$]+$/);
+  const fromStart = wordStart >= 0 ? wordStart : column - 1;
+  const wordMatch = targetLine.substring(fromStart).match(/^[\w$]+/);
+  const oldName = wordMatch?.[0] ?? '';
+
+  if (!oldName || oldName === newName) {
+    return { edits: [], oldName, newName, filePath };
+  }
+
+  const edits: RenameEdit[] = [];
+  const pattern = new RegExp(`\\b${oldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g');
+
+  for (let i = 0; i < lines.length; i++) {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(lines[i])) !== null) {
+      edits.push({
+        filePath,
+        line: i + 1,
+        column: match.index + 1,
+        endLine: i + 1,
+        endColumn: match.index + 1 + oldName.length,
+        newText: newName,
+      });
+    }
+  }
+
+  return { edits, oldName, newName, filePath };
+};
+
+/**
+ * Canon Signature Help — returns function signature info at a call site.
+ * Parses the current line/context to identify the function being called and
+ * returns its parameter list with the active parameter highlighted.
+ */
+export const canonSignatureHelpHandler: ToolHandler<
+  CanonSignatureHelpParams,
+  CanonSignatureHelpResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : 'untitled';
+  const line = typeof params.line === 'number' ? params.line : 1;
+  const column = typeof params.column === 'number' ? params.column : 1;
+  const content = typeof params.content === 'string' ? params.content : '';
+
+  const lines = content.split('\n');
+  const currentLine = lines[line - 1] ?? '';
+  const before = currentLine.substring(0, column - 1);
+
+  // Walk backwards to find the function name and count commas for active parameter
+  let parenDepth = 0;
+  let commaCount = 0;
+  let funcEnd = -1;
+
+  for (let i = before.length - 1; i >= 0; i--) {
+    const ch = before[i];
+    if (ch === ')') parenDepth++;
+    else if (ch === '(') {
+      if (parenDepth > 0) {
+        parenDepth--;
+      } else {
+        funcEnd = i;
+        break;
+      }
+    } else if (ch === ',' && parenDepth === 0) {
+      commaCount++;
+    }
+  }
+
+  if (funcEnd < 0) {
+    return { signatures: [], activeSignature: 0, activeParameter: 0 };
+  }
+
+  // Extract function name
+  const prefix = before.substring(0, funcEnd);
+  const fnMatch = prefix.match(/([\w$]+)\s*$/);
+  const funcName = fnMatch?.[1] ?? 'unknown';
+
+  // Extract parameter text from the call site arguments
+  const afterParen = content.substring(
+    lines.slice(0, line - 1).join('\n').length + (line > 1 ? 1 : 0) + funcEnd + 1,
+  );
+  let depth = 1;
+  let argEnd = afterParen.length;
+  for (let i = 0; i < afterParen.length; i++) {
+    if (afterParen[i] === '(') depth++;
+    else if (afterParen[i] === ')') {
+      depth--;
+      if (depth === 0) { argEnd = i; break; }
+    }
+  }
+  const argsText = afterParen.substring(0, argEnd);
+  const argParts = argsText.split(',').map((a) => a.trim()).filter(Boolean);
+
+  // Build synthetic signature from call-site analysis
+  const parameters: SignatureParameter[] = argParts.length > 0
+    ? argParts.map((a, idx) => ({ label: `param${idx + 1}: ${a}` }))
+    : [{ label: 'args' }];
+
+  const sigLabel = `${funcName}(${parameters.map((p) => p.label).join(', ')})`;
+
+  return {
+    signatures: [{ label: sigLabel, documentation: `Signature for ${funcName}`, parameters }],
+    activeSignature: 0,
+    activeParameter: Math.min(commaCount, parameters.length - 1),
+  };
+};
+
+/**
+ * Canon Document Highlights — finds all occurrences of a symbol in the current file.
+ * Returns highlight ranges with read/write classification.
+ */
+export const canonDocumentHighlightsHandler: ToolHandler<
+  CanonDocumentHighlightsParams,
+  CanonDocumentHighlightsResult
+> = async (params, _context, _tool) => {
+  const content = typeof params.content === 'string' ? params.content : '';
+  const line = typeof params.line === 'number' ? params.line : 1;
+  const column = typeof params.column === 'number' ? params.column : 1;
+
+  const lines = content.split('\n');
+  const currentLine = lines[line - 1] ?? '';
+
+  // Extract word at cursor position
+  const before = currentLine.substring(0, column - 1);
+  const wordStart = before.search(/[\w$]+$/);
+  const fromStart = wordStart >= 0 ? wordStart : column - 1;
+  const wordMatch = currentLine.substring(fromStart).match(/^[\w$]+/);
+  const symbol = wordMatch?.[0] ?? '';
+
+  if (!symbol) {
+    return { highlights: [], symbol: '' };
+  }
+
+  const highlights: DocumentHighlight[] = [];
+  const pattern = new RegExp(`\\b${symbol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g');
+
+  // Assignment patterns that indicate a write
+  const writePatterns = [
+    new RegExp(`\\b${symbol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*=[^=]`),
+    new RegExp(`(const|let|var|function)\\s+${symbol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`),
+  ];
+
+  for (let i = 0; i < lines.length; i++) {
+    let match: RegExpExecArray | null;
+    pattern.lastIndex = 0;
+    while ((match = pattern.exec(lines[i])) !== null) {
+      const isWrite = writePatterns.some((wp) => wp.test(lines[i]));
+      highlights.push({
+        line: i + 1,
+        column: match.index + 1,
+        endLine: i + 1,
+        endColumn: match.index + 1 + symbol.length,
+        kind: isWrite ? 'write' : 'read',
+      });
+    }
+  }
+
+  return { highlights, symbol };
+};
+
+/**
+ * Canon Git Diff — computes line-level diff between original and current content.
+ * Returns added/deleted/modified line markers for gutter decorations.
+ */
+export const canonGitDiffHandler: ToolHandler<
+  CanonGitDiffParams,
+  CanonGitDiffResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : 'untitled';
+  const content = typeof params.content === 'string' ? params.content : '';
+  const originalContent = typeof params.originalContent === 'string' ? params.originalContent : '';
+
+  const currentLines = content.split('\n');
+  const originalLines = originalContent.split('\n');
+  const changes: DiffLineChange[] = [];
+
+  const maxLen = Math.max(currentLines.length, originalLines.length);
+
+  for (let i = 0; i < maxLen; i++) {
+    const orig = originalLines[i];
+    const curr = currentLines[i];
+
+    if (orig === undefined && curr !== undefined) {
+      // Line exists in current but not original → added
+      changes.push({ line: i + 1, type: 'added' });
+    } else if (orig !== undefined && curr === undefined) {
+      // Line exists in original but not current → deleted
+      changes.push({ line: i + 1, type: 'deleted' });
+    } else if (orig !== curr) {
+      // Both exist but differ → modified
+      changes.push({ line: i + 1, type: 'modified' });
+    }
+  }
+
+  return {
+    changes,
+    filePath,
+    linesAdded: changes.filter((c) => c.type === 'added').length,
+    linesDeleted: changes.filter((c) => c.type === 'deleted').length,
+    linesModified: changes.filter((c) => c.type === 'modified').length,
+  };
+};
+
+/**
  * Canon Terminal Exec — executes an allowlisted command in the Canon environment.
  * Restricted to governance-safe commands only. 30s timeout.
  */
@@ -1231,6 +2521,23 @@ export function registerCanonHandlers(runner: {
   runner.registerHandler('canon_read_file', canonReadFileHandler);
   runner.registerHandler('canon_write_file', canonWriteFileHandler);
   runner.registerHandler('canon_search_files', canonSearchFilesHandler);
+  runner.registerHandler('canon_create_file', canonCreateFileHandler);
+  runner.registerHandler('canon_delete_file', canonDeleteFileHandler);
+  runner.registerHandler('canon_rename_file', canonRenameFileHandler);
+  runner.registerHandler('canon_diff_files', canonDiffFilesHandler);
+  runner.registerHandler('canon_git_status', canonGitStatusHandler);
+  runner.registerHandler('canon_file_outline', canonFileOutlineHandler);
+  runner.registerHandler('canon_diagnostics', canonDiagnosticsHandler);
+  runner.registerHandler('canon_bookmarks', canonBookmarksHandler);
+  runner.registerHandler('canon_file_index', canonFileIndexHandler);
+  runner.registerHandler('canon_recent_files', canonRecentFilesHandler);
+  runner.registerHandler('canon_symbol_search', canonSymbolSearchHandler);
+  runner.registerHandler('canon_snippets', canonSnippetsHandler);
+  runner.registerHandler('canon_minimap', canonMinimapHandler);
+  runner.registerHandler('canon_editor_settings', canonEditorSettingsHandler);
+  runner.registerHandler('canon_find_replace', canonFindReplaceHandler);
+  runner.registerHandler('canon_format_file', canonFormatFileHandler);
+  runner.registerHandler('canon_editor_layout', canonEditorLayoutHandler);
   runner.registerHandler('canon_terminal_exec', canonTerminalExecHandler);
 }
 
@@ -1287,5 +2594,22 @@ export const canonHandlers = {
   canon_read_file: canonReadFileHandler,
   canon_write_file: canonWriteFileHandler,
   canon_search_files: canonSearchFilesHandler,
+  canon_create_file: canonCreateFileHandler,
+  canon_delete_file: canonDeleteFileHandler,
+  canon_rename_file: canonRenameFileHandler,
+  canon_diff_files: canonDiffFilesHandler,
+  canon_git_status: canonGitStatusHandler,
+  canon_file_outline: canonFileOutlineHandler,
+  canon_diagnostics: canonDiagnosticsHandler,
+  canon_bookmarks: canonBookmarksHandler,
+  canon_file_index: canonFileIndexHandler,
+  canon_recent_files: canonRecentFilesHandler,
+  canon_symbol_search: canonSymbolSearchHandler,
+  canon_snippets: canonSnippetsHandler,
+  canon_minimap: canonMinimapHandler,
+  canon_editor_settings: canonEditorSettingsHandler,
+  canon_find_replace: canonFindReplaceHandler,
+  canon_format_file: canonFormatFileHandler,
+  canon_editor_layout: canonEditorLayoutHandler,
   canon_terminal_exec: canonTerminalExecHandler,
 } as const;

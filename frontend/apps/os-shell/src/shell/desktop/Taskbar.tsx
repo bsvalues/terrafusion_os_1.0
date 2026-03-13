@@ -30,6 +30,7 @@ import { useDesktopStore } from '../../stores/desktopStore';
 import { Z } from './zIndex';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+import { useDataMode } from '../../hooks/useDataMode';
 import { TerraSphere } from '../../ui/brand/TerraSphere';
 import { LiquidPanel } from '../../ui/materials';
 import { activateModule } from '../../orchestration/moduleActivation';
@@ -300,6 +301,47 @@ const DockDivider: React.FC = () => (
 );
 
 // ============================================================================
+// Data Mode Indicator — MOCK (amber) or LIVE (green)
+// ============================================================================
+
+const DataModeIndicator: React.FC = () => {
+  const { mode, connected } = useDataMode();
+  const isLive = mode === 'live' && connected;
+
+  return (
+    <div
+      title={isLive ? 'Connected to live backend' : 'Using local mock data'}
+      className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg cursor-default select-none'
+      style={{
+        background: isLive
+          ? 'hsl(142 71% 45% / 0.15)'
+          : 'hsl(38 92% 50% / 0.15)',
+      }}
+    >
+      <div
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          background: isLive ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
+          boxShadow: isLive
+            ? '0 0 6px hsl(142 71% 45% / 0.6)'
+            : '0 0 6px hsl(38 92% 50% / 0.6)',
+        }}
+      />
+      <span
+        className='text-[10px] font-semibold tracking-wider'
+        style={{
+          color: isLive ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
+        }}
+      >
+        {isLive ? 'LIVE' : 'MOCK'}
+      </span>
+    </div>
+  );
+};
+
+// ============================================================================
 // Main Dock Component
 // ============================================================================
 
@@ -340,6 +382,11 @@ export const Taskbar: React.FC<TaskbarProps> = ({
 
         {/* Running apps that aren't constitutional suites */}
         <RunningApps />
+
+        <DockDivider />
+
+        {/* Data mode indicator */}
+        <DataModeIndicator />
       </LiquidPanel>
     </>
   );

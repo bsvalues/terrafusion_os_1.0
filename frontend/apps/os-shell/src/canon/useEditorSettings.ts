@@ -12,12 +12,16 @@ export interface EditorSettings {
   minimap: boolean;
   wordWrap: boolean;
   fontSize: number;
+  theme: string;
+  stickyScroll: boolean;
 }
 
 const DEFAULTS: EditorSettings = {
   minimap: true,
   wordWrap: true,
   fontSize: 12,
+  theme: 'dark',
+  stickyScroll: true,
 };
 
 const FONT_MIN = 8;
@@ -34,6 +38,8 @@ function loadSettings(): EditorSettings {
       fontSize: typeof parsed.fontSize === 'number'
         ? Math.max(FONT_MIN, Math.min(FONT_MAX, parsed.fontSize))
         : DEFAULTS.fontSize,
+      theme: typeof parsed.theme === 'string' ? parsed.theme : DEFAULTS.theme,
+      stickyScroll: typeof parsed.stickyScroll === 'boolean' ? parsed.stickyScroll : DEFAULTS.stickyScroll,
     };
   } catch {
     return { ...DEFAULTS };
@@ -48,8 +54,10 @@ export interface UseEditorSettingsReturn {
   settings: EditorSettings;
   toggleMinimap: () => void;
   toggleWordWrap: () => void;
+  toggleStickyScroll: () => void;
   increaseFontSize: () => void;
   decreaseFontSize: () => void;
+  setTheme: (theme: string) => void;
 }
 
 export function useEditorSettings(): UseEditorSettingsReturn {
@@ -65,6 +73,7 @@ export function useEditorSettings(): UseEditorSettingsReturn {
 
   const toggleMinimap = useCallback(() => update({ minimap: !settings.minimap }), [settings.minimap, update]);
   const toggleWordWrap = useCallback(() => update({ wordWrap: !settings.wordWrap }), [settings.wordWrap, update]);
+  const toggleStickyScroll = useCallback(() => update({ stickyScroll: !settings.stickyScroll }), [settings.stickyScroll, update]);
   const increaseFontSize = useCallback(
     () => update({ fontSize: Math.min(FONT_MAX, settings.fontSize + 1) }),
     [settings.fontSize, update],
@@ -73,6 +82,10 @@ export function useEditorSettings(): UseEditorSettingsReturn {
     () => update({ fontSize: Math.max(FONT_MIN, settings.fontSize - 1) }),
     [settings.fontSize, update],
   );
+  const setTheme = useCallback(
+    (theme: string) => update({ theme }),
+    [update],
+  );
 
-  return { settings, toggleMinimap, toggleWordWrap, increaseFontSize, decreaseFontSize };
+  return { settings, toggleMinimap, toggleWordWrap, toggleStickyScroll, increaseFontSize, decreaseFontSize, setTheme };
 }

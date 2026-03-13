@@ -20,6 +20,12 @@ import {
   isValidTransition,
   SHELL_SURFACE_POLICY,
 } from '../contracts/shellMode';
+import {
+  MODULE_OBJECT_TYPES,
+  PLACEMENT_POLICY,
+  type TerraFusionObjectType,
+  type ObjectClassification,
+} from '../contracts/objectPlacement';
 
 // ============================================================================
 // Types
@@ -164,15 +170,35 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
 
-  // Property Workbench = Tier-0 surface → opens maximized
+  // Use MODULE_OBJECT_TYPES classification when available
+  const classification = MODULE_OBJECT_TYPES[moduleId];
+  if (classification) {
+    const { objectType } = classification;
+
+    // Tier-0 workbench → opens maximized
+    if (objectType === 'tier0-workbench') {
+      return {
+        size: { width: vw, height: vh - TASKBAR_HEIGHT },
+        maximized: true,
+      };
+    }
+
+    // Suite workspaces and OS feature windows → near-full-stage
+    if (objectType === 'suite-workspace' || objectType === 'os-feature-window') {
+      return {
+        size: { width: vw - 40, height: vh - 120 },
+        maximized: false,
+      };
+    }
+  }
+
+  // Prefix-matching fallback for unclassified modules
   if (moduleId === 'property-workbench') {
     return {
       size: { width: vw, height: vh - TASKBAR_HEIGHT },
       maximized: true,
     };
   }
-
-  // Suite workspaces and OS features → near-full-stage
   if (moduleId.startsWith('suite-') || moduleId.startsWith('os-')) {
     return {
       size: { width: vw - 40, height: vh - 120 },
@@ -181,6 +207,114 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   }
 
   return { size: { ...DEFAULT_WINDOW_SIZE }, maximized: false };
+}
+
+// ============================================================================
+// Launcher Routing Enforcement (Phase 6 + Phase 9)
+// ============================================================================
+
+/**
+ * Spawn decision returned by the codex-aware launcher.
+ *
+ *   'open'       — spawn as standalone window (suites, workbench, os-features, cross-parcel)
+ *   'route-to-workbench' — must route through property workbench (parcel-scoped-app)
+ *   'reject'     — cannot spawn a window (headless, toast, always-visible, overlay w/o host)
+ */
+export type SpawnDecision = 'open' | 'route-to-workbench' | 'reject';
+
+export interface SpawnVerdict {
+  decision: SpawnDecision;
+  reason: string;
+  classification?: ObjectClassification;
+  objectType?: TerraFusionObjectType;
+}
+
+/**
+ * Consult the 3-6-9 Object Placement Codex to determine how a module
+ * should be launched. This is the constitutional front door — no object
+ * may open a window without passing through this check.
+ */
+export function evaluateSpawnIntent(moduleId: string): SpawnVerdict {
+  const classification = MODULE_OBJECT_TYPES[moduleId];
+
+  // Unclassified modules: allow (graceful degradation for dev/extension modules)
+  if (!classification) {
+    return { decision: 'open', reason: 'unclassified-module-allowed' };
+  }
+
+  const { objectType } = classification;
+  const policy = PLACEMENT_POLICY[objectType];
+  if (!policy) {
+    return { decision: 'open', reason: 'no-policy-found', classification, objectType };
+  }
+
+  // Phase 9 hard fail-safe: headless services MUST NOT spawn windows
+  if (policy.layer === 'no-direct-ui' || policy.renderMode === 'headless') {
+    return {
+      decision: 'reject',
+      reason: `headless-object-cannot-spawn: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Toast-ephemeral objects cannot become persistent windows
+  if (policy.renderMode === 'toast-ephemeral') {
+    return {
+      decision: 'reject',
+      reason: `toast-cannot-persist: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Always-visible shell chrome cannot be spawned as windows
+  if (policy.renderMode === 'always-visible') {
+    return {
+      decision: 'reject',
+      reason: `shell-chrome-not-spawnable: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Overlay objects (audit-evidence-surface) need workbench host context
+  if (policy.renderMode === 'overlay' && policy.hostSurface) {
+    return {
+      decision: 'route-to-workbench',
+      reason: `overlay-requires-host: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Parcel-scoped apps must route through workbench, never standalone
+  if (policy.hostSurface === 'tier0-workbench') {
+    return {
+      decision: 'route-to-workbench',
+      reason: `parcel-scoped-routes-through-workbench: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Route-activated objects (home-scene, domain-router) are not window-spawned
+  if (policy.renderMode === 'route-activated') {
+    return {
+      decision: 'reject',
+      reason: `route-activated-not-window-spawnable: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // All window-spawned objects without a host surface → standalone open
+  if (policy.renderMode === 'window-spawned' && !policy.hostSurface) {
+    return { decision: 'open', reason: 'lawful-window-spawn', classification, objectType };
+  }
+
+  // Fallback: allow (should not reach here for classified objects)
+  return { decision: 'open', reason: 'fallback-allow', classification, objectType };
 }
 
 // ============================================================================
@@ -312,6 +446,58 @@ export const useDesktopStore = create<DesktopState>()(
         icon: string,
         metadata?: Record<string, any>
       ): string => {
+        // ── Phase 6: Launcher Routing Enforcement ──────────────────────
+        // Consult the 3-6-9 Codex before spawning any window.
+        const verdict = evaluateSpawnIntent(moduleId);
+
+        if (verdict.decision === 'reject') {
+          // Object type is not allowed to spawn a window.
+          if (typeof console !== 'undefined') {
+            console.warn(
+              `[Codex] openWindow REJECTED for "${moduleId}": ${verdict.reason}`
+            );
+          }
+          return '';
+        }
+
+        if (verdict.decision === 'route-to-workbench') {
+          // Parcel-scoped apps and overlays must route through workbench.
+          // Open the workbench instead, injecting the requested tab into metadata.
+          const workbenchModuleId = 'property-workbench';
+          const routedMetadata = {
+            ...metadata,
+            _routedTab: moduleId,
+            _routeReason: verdict.reason,
+          };
+
+          // Check if workbench is already open — focus it and switch tab
+          const { windows } = get();
+          const existingWorkbench = windows.find(
+            (w) => w.moduleId === workbenchModuleId
+          );
+          if (existingWorkbench) {
+            // Update metadata to switch tabs, then focus
+            set({
+              windows: windows.map((w) =>
+                w.id === existingWorkbench.id
+                  ? { ...w, metadata: { ...w.metadata, ...routedMetadata } }
+                  : w
+              ),
+            });
+            get().focusWindow(existingWorkbench.id);
+            return existingWorkbench.id;
+          }
+
+          // No workbench open — spawn it with the routed tab
+          return get().openWindow(
+            workbenchModuleId,
+            'Property Workbench',
+            'workbench',
+            routedMetadata
+          );
+        }
+
+        // ── Phase 9: Window Spawn — lawful open ────────────────────────
         const id = generateWindowId();
         const { windows, nextZIndex, currentDesktopId } = get();
 
@@ -328,7 +514,7 @@ export const useDesktopStore = create<DesktopState>()(
           size: moduleSize,
           state: maximized ? 'maximized' : 'normal',
           zIndex: nextZIndex,
-          metadata, // INJECTED
+          metadata,
         };
 
         set({

@@ -69,3 +69,37 @@ export {
   isSurfaceVisible,
   isValidTransition,
 } from './shellMode';
+
+export type {
+  CompletionMetadata,
+  CompletionReport,
+  CompletionReportEntry,
+  DriftViolation,
+  ObjectClassification,
+  PlacementRule,
+  PlacementViolation,
+  RenderMode,
+  SuiteBoundaryViolation,
+  TerraFusionLayer,
+  TerraFusionObjectType,
+  WorkbenchHostViolation,
+} from './objectPlacement';
+
+export {
+  LAYERS,
+  MODULE_OBJECT_TYPES,
+  OBJECT_TYPES,
+  PLACEMENT_POLICY,
+  RENDER_MODES,
+  detectDrift,
+  generateCompletionReport,
+  getAllowedRenderMode,
+  getObjectClassification,
+  isParcelScoped,
+  isStandaloneAllowed,
+  requiresWorkbenchHost,
+  validateCompletion,
+  validatePlacement,
+  validateSuiteRendering,
+  validateWorkbenchHost,
+} from './objectPlacement';

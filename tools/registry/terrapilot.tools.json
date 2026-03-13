@@ -1826,6 +1826,970 @@
         },
         "required": ["command"]
       }
+    },
+    {
+      "toolId": "canon_create_file",
+      "displayName": "Canon Create File",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "os",
+      "touches": [],
+      "description": "Creates a new file in an allowed Canon IDE path — rejects if the file already exists to prevent accidental overwrites",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["file_create", "scaffold", "workspace_setup"],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Relative path within the repo (must match an allowed prefix)"
+          },
+          "content": {
+            "type": "string",
+            "description": "Initial file content (max 1 MB)"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "toolId": "canon_delete_file",
+      "displayName": "Canon Delete File",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "os",
+      "touches": [],
+      "description": "Deletes an existing file in an allowed Canon IDE path — requires confirmation since deletion is irreversible",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "file_cleanup",
+        "workspace_refactor",
+        "operator_correction"
+      ],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Relative path within the repo (must match an allowed prefix)"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "toolId": "canon_rename_file",
+      "displayName": "Canon Rename/Move File",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "os",
+      "touches": [],
+      "description": "Renames or moves a file within allowed Canon IDE paths — both source and destination must be in the allowlist",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "file_rename",
+        "workspace_refactor",
+        "operator_correction"
+      ],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "oldPath": {
+            "type": "string",
+            "description": "Current relative path of the file (must match an allowed prefix)"
+          },
+          "newPath": {
+            "type": "string",
+            "description": "New relative path for the file (must match an allowed prefix)"
+          }
+        },
+        "required": ["oldPath", "newPath"]
+      }
+    },
+    {
+      "toolId": "canon_diff_files",
+      "displayName": "Canon Diff/Compare Files",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Reads two files and returns their contents for side-by-side diff comparison within the Canon IDE",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "leftPath": {
+            "type": "string",
+            "description": "Relative path of the left (original) file to compare"
+          },
+          "rightPath": {
+            "type": "string",
+            "description": "Relative path of the right (modified) file to compare"
+          }
+        },
+        "required": ["leftPath", "rightPath"]
+      }
+    },
+    {
+      "toolId": "canon_git_status",
+      "displayName": "Canon Git Status",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Returns git status (modified, untracked, staged, deleted) for files within Canon IDE approved paths",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Optional subdirectory to scope git status (must match an allowed prefix)"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "toolId": "canon_file_outline",
+      "displayName": "Canon File Outline",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Extracts a symbol outline (functions, classes, interfaces, exports) from a source file for code navigation",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Relative path of the file to extract symbols from (must match an allowed prefix)"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "toolId": "canon_diagnostics",
+      "displayName": "Canon Diagnostics",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Runs type-check and returns structured diagnostics (file, line, column, severity, message) for the Canon IDE Problems panel",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "description": "Optional scope for diagnostics: 'typecheck' (default), 'lint'"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "toolId": "canon_bookmarks",
+      "displayName": "Canon Bookmarks",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "os",
+      "touches": [],
+      "description": "Manages line-level bookmarks across files in the Canon IDE for quick navigation",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["bookmark_add", "bookmark_remove", "bookmark_clear"],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Action to perform: 'add', 'remove', 'list', or 'clear'",
+            "enum": ["add", "remove", "list", "clear"]
+          },
+          "filePath": {
+            "type": "string",
+            "description": "File path for add/remove actions"
+          },
+          "line": {
+            "type": "number",
+            "description": "Line number for add/remove actions"
+          },
+          "label": {
+            "type": "string",
+            "description": "Optional label for the bookmark"
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "toolId": "canon_file_index",
+      "displayName": "Canon File Index",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Returns a flat index of all files under allowed Canon paths for Quick Open fuzzy search",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "description": "Optional scope prefix to limit results (e.g. 'os-platform/core/pilot/')"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "toolId": "canon_recent_files",
+      "displayName": "Canon Recent Files",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "os",
+      "touches": [],
+      "description": "Tracks recently opened files in the Canon IDE for quick navigation and history",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["recent_add", "recent_clear"],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Action to perform: 'add', 'list', or 'clear'",
+            "enum": ["add", "list", "clear"]
+          },
+          "filePath": {
+            "type": "string",
+            "description": "File path to record for 'add' action"
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "toolId": "canon_symbol_search",
+      "displayName": "Canon Symbol Search",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Searches for symbols (functions, classes, interfaces, types, constants) across all workspace files in the Canon IDE",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query to match against symbol names"
+          },
+          "maxResults": {
+            "type": "number",
+            "description": "Maximum results to return (default 50)"
+          }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "toolId": "canon_snippets",
+      "displayName": "Canon Snippets",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Manages user-defined code snippets in the Canon IDE. Supports create, list, delete, and insert actions for reusable code fragments.",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Action to perform: create, list, delete, or insert",
+            "enum": ["create", "list", "delete", "insert"]
+          },
+          "id": {
+            "type": "string",
+            "description": "Snippet ID (required for delete/insert)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Snippet name (required for create)"
+          },
+          "language": {
+            "type": "string",
+            "description": "Language identifier (e.g. typescript, python)"
+          },
+          "prefix": {
+            "type": "string",
+            "description": "Trigger prefix for the snippet"
+          },
+          "body": {
+            "type": "string",
+            "description": "Snippet body content (required for create)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of the snippet"
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "toolId": "canon_minimap",
+      "displayName": "Canon Minimap",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Generates a structural overview of a file for minimap rendering: sections, symbol density per line range, and total line count.",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the file to analyze for minimap data"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "toolId": "canon_editor_settings",
+      "displayName": "Canon Editor Settings",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Persist and retrieve TerraCanon editor settings (theme, font size, tab size, word wrap, minimap, line numbers, etc.) for cross-session persistence",
+      "piiHandling": "none",
+      "tracePolicy": "none",
+      "requiresConfirmation": false,
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["get", "set", "reset"],
+            "description": "Action to perform: get current settings, set (merge) new values, or reset to defaults"
+          },
+          "settings": {
+            "type": "object",
+            "description": "Partial settings object to merge (only for set action)"
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "toolId": "canon_find_replace",
+      "displayName": "Canon Find & Replace",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "os",
+      "touches": [],
+      "description": "Search for text or regex patterns across workspace files and optionally replace matches with preview support",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["find_replace", "refactor", "bulk_rename"],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["find", "replace", "replaceAll"],
+            "description": "Action: find (search only), replace (single match), replaceAll (all matches)"
+          },
+          "query": {
+            "type": "string",
+            "description": "Search text or regex pattern"
+          },
+          "replacement": {
+            "type": "string",
+            "description": "Replacement text (required for replace/replaceAll actions)"
+          },
+          "isRegex": {
+            "type": "boolean",
+            "description": "Whether query is a regex pattern"
+          },
+          "caseSensitive": {
+            "type": "boolean",
+            "description": "Whether search is case-sensitive"
+          },
+          "filePath": {
+            "type": "string",
+            "description": "Optional: limit search to a single file"
+          }
+        },
+        "required": ["action", "query"]
+      }
+    },
+    {
+      "toolId": "canon_format_file",
+      "displayName": "Canon Format File",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "os",
+      "touches": [],
+      "description": "Format a source file using language-appropriate formatting rules (indentation, trailing whitespace, final newline, JSON pretty-print)",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["format_file", "code_style", "cleanup"],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Relative path of the file to format"
+          },
+          "tabSize": {
+            "type": "number",
+            "description": "Number of spaces per indent level (default: 2)"
+          },
+          "useTabs": {
+            "type": "boolean",
+            "description": "Use tabs instead of spaces (default: false)"
+          },
+          "insertFinalNewline": {
+            "type": "boolean",
+            "description": "Ensure file ends with a newline (default: true)"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "toolId": "canon_editor_layout",
+      "displayName": "Canon Editor Layout",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "description": "Get or set the editor split layout mode (single, split-vertical, split-horizontal)",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["get", "set"],
+            "description": "Action to perform: get current layout or set new layout"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["single", "split-vertical", "split-horizontal"],
+            "description": "Editor layout mode (required for set action)"
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "toolId": "canon_folding_ranges",
+      "displayName": "Canon Folding Ranges",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "description": "Compute foldable code regions for a file (functions, classes, imports, comment blocks)",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the file to compute folding ranges for"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "toolId": "canon_line_markers",
+      "displayName": "Canon Line Markers",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "description": "Add, remove, or list line markers and decorations (diagnostics, bookmarks, modified indicators)",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "set", "clear"],
+            "description": "Action to perform: list current markers, set markers, or clear all markers"
+          },
+          "filePath": {
+            "type": "string",
+            "description": "Path to the file to manage markers for"
+          },
+          "markers": {
+            "type": "array",
+            "description": "Array of line markers to set (required for set action)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "line": { "type": "number" },
+                "severity": {
+                  "type": "string",
+                  "enum": ["error", "warning", "info", "hint"]
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": ["diagnostic", "bookmark", "modified"]
+                },
+                "message": { "type": "string" }
+              },
+              "required": ["id", "line", "severity", "kind", "message"]
+            }
+          }
+        },
+        "required": ["action", "filePath"]
+      }
+    },
+    {
+      "toolId": "canon_hover_info",
+      "displayName": "Canon Hover Info",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "description": "Get hover information for a symbol at a given file position (type, JSDoc, parameters)",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the file containing the symbol"
+          },
+          "line": {
+            "type": "number",
+            "description": "1-based line number of the symbol"
+          },
+          "column": {
+            "type": "number",
+            "description": "1-based column number of the symbol"
+          },
+          "content": {
+            "type": "string",
+            "description": "Optional file content (sent to avoid re-reading)"
+          }
+        },
+        "required": ["filePath", "line", "column"]
+      }
+    },
+    {
+      "toolId": "canon_goto_definition",
+      "displayName": "Canon Goto Definition",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "description": "Find the definition location for a symbol at a given file position (F12 / Ctrl+Click)",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the file containing the symbol reference"
+          },
+          "line": {
+            "type": "number",
+            "description": "1-based line number of the symbol"
+          },
+          "column": {
+            "type": "number",
+            "description": "1-based column number of the symbol"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Optional explicit symbol name to search for"
+          },
+          "content": {
+            "type": "string",
+            "description": "Optional file content (sent to avoid re-reading)"
+          }
+        },
+        "required": ["filePath", "line", "column"]
+      }
+    },
+    {
+      "toolId": "canon_completions",
+      "displayName": "Canon Completions",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "description": "Suggest completions at a given cursor position (local symbols, keywords, snippets)",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the file being edited"
+          },
+          "line": {
+            "type": "number",
+            "description": "1-based line number of the cursor"
+          },
+          "column": {
+            "type": "number",
+            "description": "1-based column number of the cursor"
+          },
+          "content": {
+            "type": "string",
+            "description": "Optional file content (sent to avoid re-reading)"
+          },
+          "triggerCharacter": {
+            "type": "string",
+            "description": "Character that triggered completion (e.g. '.', ':', '<')"
+          }
+        },
+        "required": ["filePath", "line", "column"]
+      }
+    },
+    {
+      "toolId": "canon_editor_themes",
+      "displayName": "Canon Editor Themes",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "description": "List available editor themes, get the active theme, or set the active theme",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Action to perform: list, get, or set"
+          },
+          "themeId": {
+            "type": "string",
+            "description": "Theme ID to activate (required for 'set' action)"
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "toolId": "canon_code_actions",
+      "displayName": "Canon Code Actions",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "officeScope": "assessor",
+      "description": "Suggest quick fixes and refactoring actions (code actions) at a given selection range in the Canon IDE",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Relative path of the file"
+          },
+          "startLine": {
+            "type": "number",
+            "description": "1-based start line of the selection"
+          },
+          "startColumn": {
+            "type": "number",
+            "description": "1-based start column of the selection"
+          },
+          "endLine": {
+            "type": "number",
+            "description": "1-based end line of the selection"
+          },
+          "endColumn": {
+            "type": "number",
+            "description": "1-based end column of the selection"
+          },
+          "content": {
+            "type": "string",
+            "description": "Full content of the file for contextual analysis"
+          }
+        },
+        "required": [
+          "filePath",
+          "startLine",
+          "startColumn",
+          "endLine",
+          "endColumn",
+          "content"
+        ]
+      }
+    },
+    {
+      "toolId": "canon_find_references",
+      "displayName": "Canon Find References",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "officeScope": "assessor",
+      "description": "Find all references to the symbol at a given position within a Canon IDE file",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the file being analyzed"
+          },
+          "line": {
+            "type": "number",
+            "description": "1-based line number of the symbol"
+          },
+          "column": {
+            "type": "number",
+            "description": "1-based column number of the symbol"
+          },
+          "content": {
+            "type": "string",
+            "description": "Full content of the file for reference scanning"
+          },
+          "includeDeclaration": {
+            "type": "boolean",
+            "description": "Whether to include the declaration in results (default: true)"
+          }
+        },
+        "required": ["filePath", "line", "column", "content"]
+      }
+    },
+    {
+      "toolId": "canon_rename_symbol",
+      "displayName": "Canon Rename Symbol",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "pilot",
+      "touches": ["canon"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["refactor", "naming_convention", "clarity"],
+      "officeScope": "assessor",
+      "description": "Rename all occurrences of a symbol at a given position within a Canon IDE file",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the file being edited"
+          },
+          "line": {
+            "type": "number",
+            "description": "1-based line number of the symbol to rename"
+          },
+          "column": {
+            "type": "number",
+            "description": "1-based column number of the symbol to rename"
+          },
+          "newName": {
+            "type": "string",
+            "description": "The new name to replace the symbol with"
+          },
+          "content": {
+            "type": "string",
+            "description": "Full content of the file for rename scanning"
+          }
+        },
+        "required": ["filePath", "line", "column", "newName", "content"]
+      }
+    },
+    {
+      "toolId": "canon_signature_help",
+      "displayName": "Canon Signature Help",
+      "description": "Returns function signature information at a call site, including parameter names, types, and the currently active parameter.",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Virtual file path in Canon workspace"
+          },
+          "line": {
+            "type": "integer",
+            "description": "1-based line number of cursor"
+          },
+          "column": {
+            "type": "integer",
+            "description": "1-based column number of cursor"
+          },
+          "content": { "type": "string", "description": "Full file content" }
+        },
+        "required": ["filePath", "line", "column", "content"]
+      }
+    },
+    {
+      "toolId": "canon_document_highlights",
+      "displayName": "Canon Document Highlights",
+      "description": "Finds all occurrences of the symbol at a given position within the current file, with read/write classification.",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Virtual file path in Canon workspace"
+          },
+          "line": {
+            "type": "integer",
+            "description": "1-based line number of cursor"
+          },
+          "column": {
+            "type": "integer",
+            "description": "1-based column number of cursor"
+          },
+          "content": { "type": "string", "description": "Full file content" }
+        },
+        "required": ["filePath", "line", "column", "content"]
+      }
+    },
+    {
+      "toolId": "canon_git_diff",
+      "displayName": "Canon Git Diff",
+      "description": "Computes line-level diff between original and current file content, returning added/deleted/modified line markers for gutter decorations.",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Virtual file path in Canon workspace"
+          },
+          "content": {
+            "type": "string",
+            "description": "Current file content"
+          },
+          "originalContent": {
+            "type": "string",
+            "description": "Original (baseline) file content for diff comparison"
+          }
+        },
+        "required": ["filePath", "content"]
+      }
     }
   ]
 }

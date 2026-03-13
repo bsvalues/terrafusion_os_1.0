@@ -25,8 +25,11 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
+
+const fmtCurrency = (v: number) => (v ? `$${v.toLocaleString()}` : '—');
 
 /** Current year for default selection */
 const CURRENT_YEAR = new Date().getFullYear();
@@ -131,6 +134,8 @@ const VALUATION_REASON_CODES = [
 
 export const PropertyForge: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const assessments = usePropertyStore((s) => s.assessments);
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
 
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [audience, setAudience] = useState<AudienceType>('internal');
@@ -471,6 +476,36 @@ export const PropertyForge: React.FC = () => {
         parcelId={parcelId}
         subtitle={`AI-powered valuation analysis for ${parcelId}`}
       />
+
+      {/* Valuation Context from Store */}
+      {(activeParcel || assessments.length > 0) && (
+        <BentoGrid columns={4} gap={0.75} padding={0}>
+          {activeParcel && (
+            <BentoCard variant="stat" title="Current Market Value">
+              <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
+                {fmtCurrency(activeParcel.marketValue)}
+              </p>
+            </BentoCard>
+          )}
+          {activeParcel && (
+            <BentoCard variant="stat" title="Current Assessed">
+              <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-success))' }}>
+                {fmtCurrency(activeParcel.totalAssessedValue)}
+              </p>
+            </BentoCard>
+          )}
+          {assessments.slice(0, 2).map((a) => (
+            <BentoCard key={a.assessmentId} variant="stat" title={`${a.assessmentYear} Assessed`}>
+              <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                {fmtCurrency(a.totalAssessedValue)}
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                Land: {fmtCurrency(a.landValue)} | Impr: {fmtCurrency(a.improvementValue)}
+              </p>
+            </BentoCard>
+          ))}
+        </BentoGrid>
+      )}
 
       {/* Main Content Grid */}
       <BentoGrid columns={3} gap={1.5} padding={0}>

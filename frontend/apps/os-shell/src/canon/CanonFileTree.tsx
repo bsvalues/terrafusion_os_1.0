@@ -9,7 +9,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { fetchListDir, type DirEntry } from '../api/canonFs';
+import { fetchListDir, type DirEntry, type GitStatusEntry } from '../api/canonFs';
 
 /** Top-level roots visible in the explorer. */
 const ROOTS = [
@@ -27,7 +27,22 @@ interface FileSelectPayload {
 
 interface Props {
   onFileSelect?: (payload: FileSelectPayload) => void;
+  onDeleteRequest?: (filePath: string) => void;
+  onCompareRequest?: (filePath: string) => void;
+  gitStatus?: GitStatusEntry[];
+  gitBranch?: string;
 }
+
+/** Map git status to CSS class and label. */
+const GIT_STATUS_MAP: Record<string, { className: string; label: string }> = {
+  modified: { className: 'canon-git--modified', label: 'M' },
+  added: { className: 'canon-git--added', label: 'A' },
+  deleted: { className: 'canon-git--deleted', label: 'D' },
+  untracked: { className: 'canon-git--untracked', label: 'U' },
+  renamed: { className: 'canon-git--renamed', label: 'R' },
+  copied: { className: 'canon-git--copied', label: 'C' },
+  conflict: { className: 'canon-git--conflict', label: '!' },
+};
 
 interface TreeNodeState {
   loaded: boolean;
@@ -86,11 +101,19 @@ function DirNode({
   label,
   depth,
   onFileSelect,
+  onDeleteRequest,
+  onRenameRequest,
+  onCompareRequest,
+  gitStatusMap,
 }: {
   dirPath: string;
   label: string;
   depth: number;
   onFileSelect?: (payload: FileSelectPayload) => void;
+  onDeleteRequest?: (filePath: string) => void;
+  onRenameRequest?: (filePath: string) => void;
+  onCompareRequest?: (filePath: string) => void;
+  gitStatusMap?: Map<string, string>;
 }) {
   const [state, setState] = useState<TreeNodeState>({
     loaded: false,
@@ -158,6 +181,10 @@ function DirNode({
               label={`${entry.name}/`}
               depth={depth + 1}
               onFileSelect={onFileSelect}
+              onDeleteRequest={onDeleteRequest}
+              onRenameRequest={onRenameRequest}
+              onCompareRequest={onCompareRequest}
+              gitStatusMap={gitStatusMap}
             />
           ) : (
             <div
@@ -182,12 +209,58 @@ function DirNode({
             >
               <span className='text-xs text-gray-400'>
                 {getExtIcon(entry.name)} {entry.name}
+                {(() => {
+                  const fullPath = `${dirPath}/${entry.name}`;
+                  const status = gitStatusMap?.get(fullPath);
+                  if (!status) return null;
+                  const info = GIT_STATUS_MAP[status];
+                  if (!info) return null;
+                  return <span className={`canon-git-badge ${info.className}`} title={`git: ${status}`}>{info.label}</span>;
+                })()}
               </span>
-              {entry.size !== undefined && (
-                <span className='text-xs text-gray-600' style={{ fontSize: '0.6rem', fontFamily: 'monospace' }}>
-                  {formatSize(entry.size)}
-                </span>
-              )}
+              <span className='canon-filetree__file-actions'>
+                {entry.size !== undefined && (
+                  <span className='text-xs text-gray-600' style={{ fontSize: '0.6rem', fontFamily: 'monospace' }}>
+                    {formatSize(entry.size)}
+                  </span>
+                )}
+                {onDeleteRequest && (
+                  <button
+                    className='canon-filetree__delete-btn'
+                    title={`Delete ${entry.name}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteRequest(`${dirPath}/${entry.name}`);
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+                {onRenameRequest && (
+                  <button
+                    className='canon-filetree__rename-btn'
+                    title={`Rename ${entry.name}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRenameRequest(`${dirPath}/${entry.name}`);
+                    }}
+                  >
+                    ✎
+                  </button>
+                )}
+                {onCompareRequest && (
+                  <button
+                    className='canon-filetree__compare-btn'
+                    title={`Compare ${entry.name}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCompareRequest(`${dirPath}/${entry.name}`);
+                    }}
+                  >
+                    ⇔
+                  </button>
+                )}
+              </span>
             </div>
           ),
         )}
@@ -195,14 +268,27 @@ function DirNode({
   );
 }
 
-export function CanonFileTree({ onFileSelect }: Props): React.ReactElement {
+export function CanonFileTree({ onFileSelect, onDeleteRequest, onRenameRequest, onCompareRequest, gitStatus, gitBranch }: Props): React.ReactElement {
+  // Build a lookup map from filePath → status for O(1) lookups in tree nodes
+  const gitStatusMap = React.useMemo(() => {
+    if (!gitStatus || gitStatus.length === 0) return undefined;
+    const map = new Map<string, string>();
+    for (const entry of gitStatus) {
+      map.set(entry.filePath, entry.status);
+    }
+    return map;
+  }, [gitStatus]);
+
   return (
     <div className='canon-filetree' data-testid='canon-file-tree'>
       <div
         className='text-xs font-semibold text-gray-300 uppercase tracking-wider'
-        style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid hsl(var(--tf-text) / 0.06)' }}
+        style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid hsl(var(--tf-text) / 0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
-        Explorer
+        <span>Explorer</span>
+        {gitBranch && (
+          <span className='canon-git-branch' title={`Branch: ${gitBranch}`}>⎇ {gitBranch}</span>
+        )}
       </div>
       {ROOTS.map(root => (
         <DirNode
@@ -211,6 +297,10 @@ export function CanonFileTree({ onFileSelect }: Props): React.ReactElement {
           label={root.label}
           depth={0}
           onFileSelect={onFileSelect}
+          onDeleteRequest={onDeleteRequest}
+          onRenameRequest={onRenameRequest}
+          onCompareRequest={onCompareRequest}
+          gitStatusMap={gitStatusMap}
         />
       ))}
     </div>

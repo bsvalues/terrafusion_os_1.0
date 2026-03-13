@@ -21,6 +21,7 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 
@@ -226,6 +227,7 @@ function ParcelMapVisualization({
 
 export const PropertyAtlas: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
 
   const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set());
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
@@ -370,6 +372,37 @@ export const PropertyAtlas: React.FC = () => {
         parcelId={parcelId}
         subtitle={`Geospatial analysis for ${parcelId}`}
       />
+
+      {/* Parcel Context from Store */}
+      {activeParcel && (
+        <BentoGrid columns={4} gap={0.75} padding={0}>
+          <BentoCard variant="stat" title="Address">
+            <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+              {activeParcel.address || '—'}
+            </p>
+            {activeParcel.city && (
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                {activeParcel.city}{activeParcel.zip ? `, ${activeParcel.zip}` : ''}
+              </p>
+            )}
+          </BentoCard>
+          <BentoCard variant="stat" title="Land Acreage">
+            <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+              {activeParcel.landAcreage ? activeParcel.landAcreage.toFixed(2) : '—'}
+            </p>
+          </BentoCard>
+          <BentoCard variant="stat" title="Tax District">
+            <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+              {activeParcel.taxDistrictName || activeParcel.taxDistrictCode || '—'}
+            </p>
+          </BentoCard>
+          <BentoCard variant="stat" title="Zoning">
+            <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+              {activeParcel.landUseDescription || activeParcel.propertyType || '—'}
+            </p>
+          </BentoCard>
+        </BentoGrid>
+      )}
 
       {/* Main Content Grid */}
       <BentoGrid columns={3} gap={1.5} padding={0}>

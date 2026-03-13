@@ -25,8 +25,11 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
+
+const fmtCurrency = (v: number) => (v ? `$${v.toLocaleString()}` : '—');
 
 // ============================================================================
 // Types
@@ -109,6 +112,7 @@ interface TaxSaleResult {
 
 export const PropertyTreasury: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const taxStatements = usePropertyStore((s) => s.taxStatements);
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
@@ -287,6 +291,22 @@ export const PropertyTreasury: React.FC = () => {
   return (
     <div className='tf-suite-treasury space-y-6'>
       <ParcelContextHeader icon='💰' title='TerraTreasury' parcelId={parcelId} subtitle={`Tax & collection services for ${parcelId}`} />
+
+      {/* Tax History from Store */}
+      {taxStatements.length > 0 && (
+        <BentoGrid columns={4} gap={0.75} padding={0}>
+          {taxStatements.slice(0, 4).map((ts) => (
+            <BentoCard key={ts.statementId} variant="stat" title={`${ts.taxYear} Tax`}>
+              <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
+                {fmtCurrency(ts.totalTaxDue)}
+              </p>
+              <p className="text-xs mt-1" style={{ color: ts.delinquent ? 'hsl(var(--tf-error, 0 80% 60%))' : 'hsl(var(--tf-text) / 0.5)' }}>
+                {ts.delinquent ? 'DELINQUENT' : `Paid: ${fmtCurrency(ts.totalPaid)}`}
+              </p>
+            </BentoCard>
+          ))}
+        </BentoGrid>
+      )}
 
       <BentoGrid columns={3} gap={1.5}>
 
