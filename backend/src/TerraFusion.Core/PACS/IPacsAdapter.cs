@@ -113,6 +113,24 @@ namespace TerraFusion.Core.PACS
             int pageSize = 500,
             CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Gets PACS-backed CAMA characteristics with pagination from vw_TerraFusion_Cama_Characteristics.
+        /// This is raw PACS improvement/profile truth to be converted by TerraFusionSync into operational CAMA data.
+        /// </summary>
+        Task<PacsPagedResult<PacsCamaCharacteristic>> GetCamaCharacteristicsAsync(
+            int page = 1,
+            int pageSize = 500,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets PACS improvement-level cost matrices with pagination from vw_TerraFusion_Improvement_Cost_Matrices.
+        /// This is raw PACS matrix truth to be converted by TerraFusionSync into operational CostMatrices.
+        /// </summary>
+        Task<PacsPagedResult<PacsImprovementCostMatrix>> GetImprovementCostMatricesAsync(
+            int page = 1,
+            int pageSize = 500,
+            CancellationToken cancellationToken = default);
+
         // ═══════════════════════════════════════════════════════════════
         // BATCH OPERATIONS
         // ═══════════════════════════════════════════════════════════════
@@ -350,6 +368,74 @@ namespace TerraFusion.Core.PACS
         public string? DeedTypeCd { get; init; }
         public string? Consideration { get; init; }
         public DateTime? LastModified { get; init; }
+    }
+
+    /// <summary>
+    /// Raw PACS improvement/profile data projected for TerraFusionSync conversion into operational CAMA.
+    /// </summary>
+    public sealed record PacsCamaCharacteristic
+    {
+        public int PropId { get; init; }
+        public string GeoId { get; init; } = string.Empty;
+        public int TaxYear { get; init; }
+        public string? BuildingType { get; init; }
+        public string? BuildingTypeDescription { get; init; }
+        public string? Region { get; init; }
+        public decimal? SquareFeet { get; init; }
+        public decimal? Stories { get; init; }
+        public decimal? BasementSqft { get; init; }
+        public decimal? GarageSqft { get; init; }
+        public string? QualityGrade { get; init; }
+        public string? ConditionGrade { get; init; }
+        public string? ComplexityGrade { get; init; }
+        public string? ExteriorWall { get; init; }
+        public string? RoofType { get; init; }
+        public string? Foundation { get; init; }
+        public string? HvacType { get; init; }
+        public string? InteriorFinish { get; init; }
+        public int? YearBuilt { get; init; }
+        public int? EffectiveAge { get; init; }
+        public int? EconomicLife { get; init; }
+        public decimal? LandAreaSqft { get; init; }
+        public string? LandZone { get; init; }
+        public decimal? LandAdjustmentFactor { get; init; }
+        public int? Bedrooms { get; init; }
+        public int? Bathrooms { get; init; }
+        public int? Fireplaces { get; init; }
+        public bool? HasPool { get; init; }
+        public decimal? FunctionalObsolescence { get; init; }
+        public decimal? ExternalObsolescence { get; init; }
+        public string? Neighborhood { get; init; }
+        public string? PropertyTypeCd { get; init; }
+        public DateTime? LastModified { get; init; }
+    }
+
+    /// <summary>
+    /// Raw PACS improvement-matrix data projected for TerraFusionSync conversion into operational CostMatrices.
+    /// </summary>
+    public sealed record PacsImprovementCostMatrix
+    {
+        public int SourceMatrixId { get; init; }
+        public int MatrixYear { get; init; }
+        public string? MatrixType { get; init; }
+        public decimal? BaseRate { get; init; }
+        public decimal? Multiplier { get; init; }
+        public string? Region { get; init; }
+        public string? BuildingType { get; init; }
+        public string? BuildingTypeDescription { get; init; }
+        public decimal? BaseCost { get; init; }
+        public string? MatrixDescription { get; init; }
+        public int DataPoints { get; init; }
+        public decimal? MinCost { get; init; }
+        public decimal? MaxCost { get; init; }
+        public string? Grade { get; init; }
+        public string? Condition { get; init; }
+        public int? YearBuilt { get; init; }
+        public decimal? DepreciationRate { get; init; }
+        public string? Axis1 { get; init; }
+        public string? Axis2 { get; init; }
+        public decimal? AdjustmentFactorRaw { get; init; }
+        public string? MatrixLabel { get; init; }
     }
 
     /// <summary>

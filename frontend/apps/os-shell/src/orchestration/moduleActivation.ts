@@ -111,6 +111,10 @@ function getModuleDisplayName(moduleId: string): string {
     'suite-dais': 'TerraDais',
     'suite-dossier': 'TerraDossier',
     'suite-gpt': 'TerraGPT',
+    // OS Features
+    'os-pilot': 'TerraPilot',
+    'os-trace': 'TerraTrace',
+    'os-canon': 'TerraCanon',
   };
 
   return displayNames[moduleId] ?? moduleId;
@@ -147,6 +151,10 @@ function getModuleIcon(moduleId: string): string {
     'suite-dais': '⚖️',
     'suite-dossier': '📋',
     'suite-gpt': '🧠',
+    // OS Features
+    'os-pilot': '🧭',
+    'os-trace': '📡',
+    'os-canon': '⚙️',
   };
 
   return icons[moduleId] ?? '📦';

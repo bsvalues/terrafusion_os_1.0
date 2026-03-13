@@ -1620,6 +1620,212 @@
         "required": ["county", "taxYear"]
       },
       "officeScope": "auditor"
+    },
+    {
+      "toolId": "canon_ping",
+      "displayName": "Canon Ping",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Health-check echo for TerraCanon IDE surface",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "echo": {
+            "type": "string",
+            "description": "Echo payload (max 160 chars)",
+            "maxLength": 160
+          }
+        },
+        "required": ["echo"]
+      }
+    },
+    {
+      "toolId": "canon_doctor",
+      "displayName": "Canon Doctor",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Run TerraCanon system diagnostics — checks workspace health, governance gates, and service connectivity",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "toolId": "canon_gatefast",
+      "displayName": "Canon Gate Fast",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Quick governance gate validation — runs type-check and Phase 83 tool tests without full CI",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "toolId": "canon_corpus_status",
+      "displayName": "Canon Corpus Status",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Returns the Golden Corpus lock status — artifact inventory, SHA256 hashes, release tag, and ledger state",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "toolId": "canon_list_dir",
+      "displayName": "Canon List Directory",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Lists files and directories within an allowed path — enforces path allowlist, rejects traversal",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "dirPath": {
+            "type": "string",
+            "description": "Relative directory path within the repository"
+          }
+        },
+        "required": ["dirPath"]
+      }
+    },
+    {
+      "toolId": "canon_read_file",
+      "displayName": "Canon Read File",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Reads file content from an allowed path — enforces path allowlist, 512KB limit, rejects traversal",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Relative file path within the repository"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "toolId": "canon_write_file",
+      "displayName": "Canon Write File",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "os",
+      "touches": ["canon_file"],
+      "description": "Writes file content to an allowed path — enforces path allowlist, 1MB limit, rejects traversal",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["canon_edit", "canon_save", "canon_refactor"],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Relative file path within the repository"
+          },
+          "content": {
+            "type": "string",
+            "description": "File content to write"
+          }
+        },
+        "required": ["filePath", "content"]
+      }
+    },
+    {
+      "toolId": "canon_search_files",
+      "displayName": "Canon Search Files",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [],
+      "description": "Searches for text across files in allowed paths — case-insensitive, optional regex, returns matching lines with context",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query text or regex pattern"
+          },
+          "path": {
+            "type": "string",
+            "description": "Optional directory prefix to scope search"
+          },
+          "isRegex": {
+            "type": "boolean",
+            "description": "Treat query as a regex pattern"
+          },
+          "maxResults": {
+            "type": "number",
+            "description": "Maximum results to return (default 100)"
+          }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "toolId": "canon_terminal_exec",
+      "displayName": "Canon Terminal Exec",
+      "suite": "os",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "os",
+      "touches": [],
+      "description": "Executes an allowlisted command in the Canon IDE terminal — governance gates, type-check, build, and test commands only",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["governance_gate", "build_verify", "test_run"],
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Allowlisted command to execute (e.g. type-check, build:core-js)"
+          }
+        },
+        "required": ["command"]
+      }
     }
   ]
 }

@@ -6,7 +6,7 @@ import APIConnectionTest from '@/components/test/APIConnectionTest';
 import { Store } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import './styles/terrafusion-brand.css';
+
 
 // TerraFusion Quantum Logo Component
 const TerraSphereLogo = ({

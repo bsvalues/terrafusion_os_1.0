@@ -99,6 +99,8 @@ public sealed class PacsToTerraFusionSyncService
             var importOwners = ShouldImport(syncOptions, "Owners");
             var importAssessments = ShouldImport(syncOptions, "Assessments");
             var importSales = ShouldImport(syncOptions, "Sales");
+            var importCama = ShouldImportAny(syncOptions, "CamaCharacteristics", "Cama");
+            var importCostMatrices = ShouldImportAny(syncOptions, "CostMatrices", "Matrices");
             var importProperties = ShouldImport(syncOptions, "Properties");
             var needsPropertyPass = importProperties || importOwners || importAssessments;
             var useIncremental = !syncOptions.FullSync && syncOptions.StartDate.HasValue;
@@ -175,14 +177,25 @@ public sealed class PacsToTerraFusionSyncService
                     string.Join(",", syncOptions.DataTypes));
             }
 
+            if (importCama)
+            {
+                await ImportCamaCharacteristicsAsync(county.Id, syncOptions, counters, cancellationToken);
+                await RefreshComparableSalesFromCamaAsync(county.Id, counters, cancellationToken);
+            }
+
             if (importSales)
             {
                 await ImportComparableSalesAsync(county.Id, syncOptions, counters, cancellationToken);
             }
 
+            if (importCostMatrices)
+            {
+                await ImportCostMatricesAsync(county.Id, county.Name, county.State, syncOptions, counters, cancellationToken);
+            }
+
             result.Success = true;
             result.Status = "completed";
-            result.Message = $"Imported {counters.PropertiesProcessed} PACS parcels into TerraFusion.";
+            result.Message = "Imported Benton PACS operational data into TerraFusion.";
             result.RecordsProcessed = counters.PropertiesProcessed;
             result.RecordsUpdated = counters.PropertiesUpdated + counters.AssessmentsUpdated;
             result.RecordsAdded = counters.PropertiesAdded + counters.AssessmentsAdded;
@@ -194,7 +207,9 @@ public sealed class PacsToTerraFusionSyncService
                 ["Properties"] = counters.PropertiesProcessed,
                 ["Assessments"] = counters.AssessmentsAdded + counters.AssessmentsUpdated,
                 ["Owners"] = counters.OwnersImported,
-                ["Sales"] = counters.SalesAdded + counters.SalesUpdated
+                ["Sales"] = counters.SalesAdded + counters.SalesUpdated,
+                ["CamaCharacteristics"] = counters.CamaAdded + counters.CamaUpdated,
+                ["CostMatrices"] = counters.CostMatricesAdded + counters.CostMatricesUpdated
             };
             result.Metadata["totalSourceRecords"] = counters.TotalRecords;
             result.Metadata["propertiesAdded"] = counters.PropertiesAdded;
@@ -203,10 +218,14 @@ public sealed class PacsToTerraFusionSyncService
             result.Metadata["assessmentsAdded"] = counters.AssessmentsAdded;
             result.Metadata["assessmentsUpdated"] = counters.AssessmentsUpdated;
             result.Metadata["ownersImported"] = counters.OwnersImported;
+            result.Metadata["camaAdded"] = counters.CamaAdded;
+            result.Metadata["camaUpdated"] = counters.CamaUpdated;
             result.Metadata["salesAdded"] = counters.SalesAdded;
             result.Metadata["salesUpdated"] = counters.SalesUpdated;
             result.Metadata["salesSkipped"] = counters.SalesSkipped;
             result.Metadata["salesImported"] = counters.SalesAdded + counters.SalesUpdated;
+            result.Metadata["costMatricesAdded"] = counters.CostMatricesAdded;
+            result.Metadata["costMatricesUpdated"] = counters.CostMatricesUpdated;
             result.Metadata["currentAssessmentMode"] = "vw_TerraFusion_Property_Core snapshot";
 
             await CompleteJobAsync(jobId, county.Id, result, stopwatch.Elapsed, cancellationToken);
@@ -503,7 +522,7 @@ public sealed class PacsToTerraFusionSyncService
     {
         var requestedDataTypes = options.DataTypes.Count > 0
             ? options.DataTypes
-            : new List<string> { "Properties", "Assessments", "Owners", "Sales" };
+            : new List<string> { "Properties", "Assessments", "Owners", "CamaCharacteristics", "Sales", "CostMatrices" };
 
         var job = new EtlSyncJob
         {
@@ -611,6 +630,12 @@ public sealed class PacsToTerraFusionSyncService
     {
         return options.DataTypes.Count == 0 ||
                options.DataTypes.Contains(dataType, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static bool ShouldImportAny(SyncOptions options, params string[] dataTypes)
+    {
+        return options.DataTypes.Count == 0 ||
+               dataTypes.Any(dataType => options.DataTypes.Contains(dataType, StringComparer.OrdinalIgnoreCase));
     }
 
     private static bool MatchesFilters(PacsPropertyCore property, SyncOptions options)
@@ -828,6 +853,11 @@ public sealed class PacsToTerraFusionSyncService
             .Where(sale => sale.CountyId == countyId && parcelIds.Contains(sale.ParcelId))
             .ToListAsync(cancellationToken);
 
+        var existingCamaRows = await _db.CamaCharacteristics
+            .Where(cama => cama.CountyId == countyId && parcelIds.Contains(cama.ParcelId))
+            .OrderByDescending(cama => cama.TaxYear)
+            .ToListAsync(cancellationToken);
+
         _logger.LogInformation(
             "Comparable sales batch lookup: distinctParcels={ParcelCount}, existingMatches={ExistingCount}",
             parcelIds.Count,
@@ -846,6 +876,10 @@ public sealed class PacsToTerraFusionSyncService
                 property => property.Address,
                 StringComparer.OrdinalIgnoreCase,
                 cancellationToken);
+
+        var camaByParcelId = existingCamaRows
+            .GroupBy(cama => cama.ParcelId, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
 
         foreach (var sourceSale in filtered)
         {
@@ -868,6 +902,7 @@ public sealed class PacsToTerraFusionSyncService
                 ApplyComparableSaleValues(
                     comparableSale,
                     sourceSale,
+                    camaByParcelId.TryGetValue(normalizedParcelId, out var cama) ? cama : null,
                     propertyAddressByParcelId.TryGetValue(normalizedParcelId, out var propertyAddress)
                         ? propertyAddress
                         : null);
@@ -878,6 +913,7 @@ public sealed class PacsToTerraFusionSyncService
             else if (ApplyComparableSaleValues(
                 comparableSale,
                 sourceSale,
+                camaByParcelId.TryGetValue(normalizedParcelId, out var cama) ? cama : null,
                 propertyAddressByParcelId.TryGetValue(normalizedParcelId, out var propertyAddress)
                     ? propertyAddress
                     : null))
@@ -887,6 +923,227 @@ public sealed class PacsToTerraFusionSyncService
             else
             {
                 counters.SalesSkipped++;
+            }
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+        _db.ChangeTracker.Clear();
+    }
+
+    private async Task ImportCamaCharacteristicsAsync(
+        Guid countyId,
+        SyncOptions options,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var batchSize = Math.Clamp(options.BatchSize <= 0 ? 500 : options.BatchSize, 1, 1000);
+        var page = 1;
+
+        while (true)
+        {
+            var paged = await _pacsAdapter.GetCamaCharacteristicsAsync(page, batchSize, cancellationToken);
+            if (paged.Items.Count == 0)
+            {
+                break;
+            }
+
+            await ProcessCamaCharacteristicsBatchAsync(countyId, paged.Items, counters, cancellationToken);
+
+            if (!paged.HasMore)
+            {
+                break;
+            }
+
+            page++;
+        }
+    }
+
+    private async Task ProcessCamaCharacteristicsBatchAsync(
+        Guid countyId,
+        IReadOnlyList<PacsCamaCharacteristic> sourceRows,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var filtered = sourceRows
+            .Where(row => !string.IsNullOrWhiteSpace(row.GeoId))
+            .ToList();
+
+        if (filtered.Count == 0)
+        {
+            return;
+        }
+
+        var parcelIds = filtered
+            .Select(row => Normalize(row.GeoId))
+            .Where(parcelId => !string.IsNullOrWhiteSpace(parcelId))
+            .Cast<string>()
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var years = filtered.Select(row => row.TaxYear).Distinct().ToList();
+
+        var existingRows = await _db.CamaCharacteristics
+            .Where(cama => cama.CountyId == countyId && parcelIds.Contains(cama.ParcelId) && years.Contains(cama.TaxYear))
+            .ToListAsync(cancellationToken);
+
+        var existingByKey = existingRows.ToDictionary(
+            row => BuildCamaKey(countyId, row.ParcelId, row.TaxYear),
+            row => row,
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var sourceRow in filtered)
+        {
+            var normalizedParcelId = Normalize(sourceRow.GeoId) ?? $"PACS-{sourceRow.PropId.ToString(CultureInfo.InvariantCulture)}";
+            var key = BuildCamaKey(countyId, normalizedParcelId, sourceRow.TaxYear);
+
+            if (!existingByKey.TryGetValue(key, out var cama))
+            {
+                cama = new CamaCharacteristic
+                {
+                    Id = Guid.NewGuid(),
+                    CountyId = countyId,
+                    ParcelId = normalizedParcelId,
+                    TaxYear = sourceRow.TaxYear,
+                    UpdatedBy = "terrafusionsync",
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                ApplyCamaCharacteristicValues(cama, sourceRow);
+                _db.CamaCharacteristics.Add(cama);
+                existingByKey[key] = cama;
+                counters.CamaAdded++;
+            }
+            else if (ApplyCamaCharacteristicValues(cama, sourceRow))
+            {
+                counters.CamaUpdated++;
+            }
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+        _db.ChangeTracker.Clear();
+    }
+
+    private async Task RefreshComparableSalesFromCamaAsync(
+        Guid countyId,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var camaRows = await _db.CamaCharacteristics
+            .Where(cama => cama.CountyId == countyId)
+            .OrderByDescending(cama => cama.TaxYear)
+            .ToListAsync(cancellationToken);
+
+        if (camaRows.Count == 0)
+        {
+            return;
+        }
+
+        var camaByParcelId = camaRows
+            .GroupBy(cama => cama.ParcelId, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+
+        var comparables = await _db.ComparableSales
+            .Where(sale => sale.CountyId == countyId)
+            .ToListAsync(cancellationToken);
+
+        var changed = 0;
+        foreach (var comparable in comparables)
+        {
+            if (!camaByParcelId.TryGetValue(comparable.ParcelId, out var cama))
+            {
+                continue;
+            }
+
+            if (ApplyComparableSaleEnrichment(comparable, cama))
+            {
+                changed++;
+            }
+        }
+
+        if (changed > 0)
+        {
+            counters.SalesUpdated += changed;
+            await _db.SaveChangesAsync(cancellationToken);
+            _db.ChangeTracker.Clear();
+        }
+    }
+
+    private async Task ImportCostMatricesAsync(
+        Guid countyId,
+        string countyName,
+        string state,
+        SyncOptions options,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var batchSize = Math.Clamp(options.BatchSize <= 0 ? 500 : options.BatchSize, 1, 1000);
+        var page = 1;
+
+        while (true)
+        {
+            var paged = await _pacsAdapter.GetImprovementCostMatricesAsync(page, batchSize, cancellationToken);
+            if (paged.Items.Count == 0)
+            {
+                break;
+            }
+
+            await ProcessCostMatricesBatchAsync(countyId, countyName, state, paged.Items, counters, cancellationToken);
+
+            if (!paged.HasMore)
+            {
+                break;
+            }
+
+            page++;
+        }
+    }
+
+    private async Task ProcessCostMatricesBatchAsync(
+        Guid countyId,
+        string countyName,
+        string state,
+        IReadOnlyList<PacsImprovementCostMatrix> sourceRows,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        if (sourceRows.Count == 0)
+        {
+            return;
+        }
+
+        var sourceMatrixIds = sourceRows.Select(row => row.SourceMatrixId).Distinct().ToList();
+        var years = sourceRows.Select(row => row.MatrixYear).Distinct().ToList();
+
+        var existingRows = await _db.CostMatrices
+            .Where(matrix => matrix.CountyId == countyId && sourceMatrixIds.Contains(matrix.SourceMatrixId) && years.Contains(matrix.MatrixYear))
+            .ToListAsync(cancellationToken);
+
+        var existingByKey = existingRows.ToDictionary(
+            BuildCostMatrixKey,
+            row => row,
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var sourceRow in sourceRows)
+        {
+            var key = BuildCostMatrixKey(countyId, sourceRow.SourceMatrixId, sourceRow.MatrixYear, sourceRow.BuildingType, sourceRow.Region);
+            if (!existingByKey.TryGetValue(key, out var matrix))
+            {
+                matrix = new CostMatrix
+                {
+                    CountyId = countyId,
+                    County = countyName,
+                    State = state,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                ApplyCostMatrixValues(matrix, sourceRow);
+                _db.CostMatrices.Add(matrix);
+                existingByKey[key] = matrix;
+                counters.CostMatricesAdded++;
+            }
+            else if (ApplyCostMatrixValues(matrix, sourceRow))
+            {
+                counters.CostMatricesUpdated++;
             }
         }
 
@@ -912,6 +1169,7 @@ public sealed class PacsToTerraFusionSyncService
     private static bool ApplyComparableSaleValues(
         CoreComparableSale target,
         PacsComparableSale sourceSale,
+        CamaCharacteristic? cama,
         string? operationalPropertyAddress)
     {
         var changed = false;
@@ -927,6 +1185,135 @@ public sealed class PacsToTerraFusionSyncService
         ApplyString(target.SaleQualification, ClassifySaleQualification(sourceSale), value => target.SaleQualification = value ?? target.SaleQualification, ref changed);
         ApplyValue(target.IsVerified, true, value => target.IsVerified = value, ref changed);
         ApplyString(target.VerificationSource, BuildVerificationSource(sourceSale), value => target.VerificationSource = value, ref changed);
+        changed |= ApplyComparableSaleEnrichment(target, cama);
+
+        return changed;
+    }
+
+    private static bool ApplyComparableSaleEnrichment(
+        CoreComparableSale target,
+        CamaCharacteristic? cama)
+    {
+        if (cama is null)
+        {
+            return false;
+        }
+
+        var changed = false;
+        ApplyNullableValue(target.GrossLivingArea, cama.SquareFeet, value => target.GrossLivingArea = value, ref changed);
+        ApplyNullableValue(target.LotSizeSqft, cama.LandAreaSqft, value => target.LotSizeSqft = value, ref changed);
+        ApplyNullableValue(target.YearBuilt, cama.YearBuilt, value => target.YearBuilt = value, ref changed);
+        ApplyNullableValue(target.Bedrooms, cama.Bedrooms, value => target.Bedrooms = value, ref changed);
+        ApplyNullableValue(target.Bathrooms, cama.Bathrooms, value => target.Bathrooms = value, ref changed);
+        ApplyString(target.Condition, NormalizeCondition(cama.ConditionGrade), value => target.Condition = value, ref changed);
+        ApplyString(target.QualityGrade, NormalizeQualityGrade(cama.QualityGrade), value => target.QualityGrade = value, ref changed);
+        return changed;
+    }
+
+    private static string BuildCamaKey(Guid countyId, string parcelId, int taxYear)
+    {
+        return $"{countyId:N}:{parcelId.Trim().ToUpperInvariant()}:{taxYear}";
+    }
+
+    private static bool ApplyCamaCharacteristicValues(
+        CamaCharacteristic target,
+        PacsCamaCharacteristic source)
+    {
+        var changed = false;
+        var normalizedParcelId = Normalize(source.GeoId) ?? target.ParcelId;
+        ApplyString(target.ParcelId, normalizedParcelId, value => target.ParcelId = value ?? target.ParcelId, ref changed);
+        ApplyValue(target.TaxYear, source.TaxYear, value => target.TaxYear = value, ref changed);
+        ApplyString(target.BuildingType, NormalizeBuildingType(source.BuildingType, source.PropertyTypeCd), value => target.BuildingType = value ?? target.BuildingType, ref changed);
+        ApplyString(target.BuildingTypeDescription, NormalizeText(source.BuildingTypeDescription, 50), value => target.BuildingTypeDescription = value, ref changed);
+        ApplyString(target.Region, NormalizeText(source.Region ?? source.Neighborhood, 30) ?? "PACS", value => target.Region = value, ref changed);
+        ApplyValue(target.SquareFeet, source.SquareFeet ?? 0m, value => target.SquareFeet = value, ref changed);
+        ApplyNullableValue(target.Stories, source.Stories, value => target.Stories = value, ref changed);
+        ApplyNullableValue(target.BasementSqft, source.BasementSqft, value => target.BasementSqft = value, ref changed);
+        ApplyNullableValue(target.GarageSqft, source.GarageSqft, value => target.GarageSqft = value, ref changed);
+        ApplyString(target.QualityGrade, NormalizeQualityGrade(source.QualityGrade), value => target.QualityGrade = value, ref changed);
+        ApplyString(target.ConditionGrade, NormalizeCondition(source.ConditionGrade), value => target.ConditionGrade = value, ref changed);
+        ApplyString(target.ComplexityGrade, NormalizeText(source.ComplexityGrade, 20), value => target.ComplexityGrade = value, ref changed);
+        ApplyString(target.ExteriorWall, NormalizeText(source.ExteriorWall, 30), value => target.ExteriorWall = value, ref changed);
+        ApplyString(target.RoofType, NormalizeText(source.RoofType, 30), value => target.RoofType = value, ref changed);
+        ApplyString(target.Foundation, NormalizeText(source.Foundation, 30), value => target.Foundation = value, ref changed);
+        ApplyString(target.HvacType, NormalizeText(source.HvacType, 30), value => target.HvacType = value, ref changed);
+        ApplyString(target.InteriorFinish, NormalizeText(source.InteriorFinish, 30), value => target.InteriorFinish = value, ref changed);
+        ApplyNullableValue(target.YearBuilt, source.YearBuilt, value => target.YearBuilt = value, ref changed);
+        ApplyNullableValue(target.EffectiveAge, source.EffectiveAge, value => target.EffectiveAge = value, ref changed);
+        ApplyNullableValue(target.EconomicLife, source.EconomicLife, value => target.EconomicLife = value, ref changed);
+        ApplyNullableValue(target.LandAreaSqft, source.LandAreaSqft, value => target.LandAreaSqft = value, ref changed);
+        ApplyString(target.LandZone, NormalizeText(source.LandZone, 50), value => target.LandZone = value, ref changed);
+        ApplyNullableValue(target.LandAdjustmentFactor, source.LandAdjustmentFactor, value => target.LandAdjustmentFactor = value, ref changed);
+        ApplyNullableValue(target.Bedrooms, source.Bedrooms, value => target.Bedrooms = value, ref changed);
+        ApplyNullableValue(target.Bathrooms, source.Bathrooms, value => target.Bathrooms = value, ref changed);
+        ApplyNullableValue(target.Fireplaces, source.Fireplaces, value => target.Fireplaces = value, ref changed);
+        ApplyNullableValue(target.HasPool, source.HasPool, value => target.HasPool = value, ref changed);
+        ApplyNullableValue(target.FunctionalObsolescence, source.FunctionalObsolescence, value => target.FunctionalObsolescence = value, ref changed);
+        ApplyNullableValue(target.ExternalObsolescence, source.ExternalObsolescence, value => target.ExternalObsolescence = value, ref changed);
+
+        if (changed)
+        {
+            target.UpdatedBy = "terrafusionsync";
+            target.UpdatedAt = DateTime.UtcNow;
+        }
+
+        return changed;
+    }
+
+    private static string BuildCostMatrixKey(CostMatrix matrix)
+    {
+        return BuildCostMatrixKey(matrix.CountyId, matrix.SourceMatrixId, matrix.MatrixYear, matrix.BuildingType, matrix.Region);
+    }
+
+    private static string BuildCostMatrixKey(Guid countyId, int sourceMatrixId, int matrixYear, string? buildingType, string? region)
+    {
+        return $"{countyId:N}:{sourceMatrixId}:{matrixYear}:{Normalize(buildingType)?.ToUpperInvariant()}:{Normalize(region)?.ToUpperInvariant()}";
+    }
+
+    private static bool ApplyCostMatrixValues(
+        CostMatrix target,
+        PacsImprovementCostMatrix source)
+    {
+        var changed = false;
+        var region = NormalizeText(source.Region, 100) ?? "PACS";
+        var buildingType = NormalizeBuildingType(source.BuildingType, null);
+        var buildingTypeDescription = NormalizeText(source.BuildingTypeDescription ?? source.MatrixDescription, 100) ?? "PACS improvement matrix";
+        var matrixType = NormalizeText(source.MatrixType, 50) ?? "PACS";
+        var averageCost = source.BaseCost ?? source.BaseRate ?? 0m;
+        var multiplier = source.Multiplier ?? 1.0m;
+        var adjustmentFactors = JsonSerializer.Serialize(new
+        {
+            axis1 = source.Axis1,
+            axis2 = source.Axis2,
+            rawAdjustmentFactor = source.AdjustmentFactorRaw
+        });
+
+        ApplyString(target.MatrixType, matrixType, value => target.MatrixType = value ?? target.MatrixType, ref changed);
+        ApplyValue(target.BaseRate, source.BaseRate ?? averageCost, value => target.BaseRate = value, ref changed);
+        ApplyValue(target.Multiplier, multiplier, value => target.Multiplier = value, ref changed);
+        ApplyString(target.Region, region, value => target.Region = value ?? target.Region, ref changed);
+        ApplyString(target.BuildingType, buildingType, value => target.BuildingType = value ?? target.BuildingType, ref changed);
+        ApplyString(target.BuildingTypeDescription, buildingTypeDescription, value => target.BuildingTypeDescription = value ?? target.BuildingTypeDescription, ref changed);
+        ApplyValue(target.BaseCost, averageCost, value => target.BaseCost = value, ref changed);
+        ApplyValue(target.MatrixYear, source.MatrixYear, value => target.MatrixYear = value, ref changed);
+        ApplyValue(target.SourceMatrixId, source.SourceMatrixId, value => target.SourceMatrixId = value, ref changed);
+        ApplyString(target.MatrixDescription, NormalizeText(source.MatrixDescription, 500) ?? buildingTypeDescription, value => target.MatrixDescription = value ?? target.MatrixDescription, ref changed);
+        ApplyValue(target.DataPoints, source.DataPoints, value => target.DataPoints = value, ref changed);
+        ApplyValue(target.MinCost, source.MinCost ?? averageCost, value => target.MinCost = value, ref changed);
+        ApplyValue(target.MaxCost, source.MaxCost ?? averageCost, value => target.MaxCost = value, ref changed);
+        ApplyString(target.AdjustmentFactors, adjustmentFactors, value => target.AdjustmentFactors = value ?? target.AdjustmentFactors, ref changed);
+        ApplyValue(target.CostPerSqFt, averageCost, value => target.CostPerSqFt = value, ref changed);
+        ApplyValue(target.AdjustmentFactor, multiplier, value => target.AdjustmentFactor = value, ref changed);
+        ApplyString(target.Grade, NormalizeText(source.Grade, 50), value => target.Grade = value, ref changed);
+        ApplyString(target.Condition, NormalizeText(source.Condition, 50), value => target.Condition = value, ref changed);
+        ApplyNullableValue(target.YearBuilt, source.YearBuilt, value => target.YearBuilt = value, ref changed);
+        ApplyNullableValue(target.DepreciationRate, source.DepreciationRate, value => target.DepreciationRate = value, ref changed);
+        ApplyNullableValue(target.EffectiveDate, source.MatrixYear > 0 ? new DateTime(source.MatrixYear, 1, 1) : null, value => target.EffectiveDate = value, ref changed);
+
+        if (changed)
+        {
+            target.UpdatedAt = DateTime.UtcNow;
+        }
 
         return changed;
     }
@@ -992,6 +1379,50 @@ public sealed class PacsToTerraFusionSyncService
             "KENENWICK" => "KENNEWICK",
             "W RICHLAND" => "WEST RICHLAND",
             "BENTON COUNTY" => null,
+            _ => normalized
+        };
+    }
+
+    private static string NormalizeBuildingType(string? buildingType, string? fallback)
+    {
+        var normalized = Normalize(buildingType) ?? Normalize(fallback) ?? "UNKNOWN";
+        return normalized.Length <= 10 ? normalized : normalized[..10];
+    }
+
+    private static string? NormalizeText(string? value, int maxLength)
+    {
+        var normalized = Normalize(value);
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            return null;
+        }
+
+        return normalized.Length <= maxLength ? normalized : normalized[..maxLength];
+    }
+
+    private static string? NormalizeCondition(string? value)
+    {
+        var normalized = Normalize(value)?.ToUpperInvariant();
+        return normalized switch
+        {
+            null or "" => null,
+            "VP" or "POOR" => "POOR",
+            "F" or "FAIR" => "FAIR",
+            "AVG" or "AVERAGE" => "AVERAGE",
+            "G" or "GOOD" => "GOOD",
+            "VG" or "VERY GOOD" => "VERY GOOD",
+            "EX" or "EXCELLENT" => "EXCELLENT",
+            _ => normalized
+        };
+    }
+
+    private static string? NormalizeQualityGrade(string? value)
+    {
+        var normalized = Normalize(value)?.ToUpperInvariant();
+        return normalized switch
+        {
+            null or "" => null,
+            "*" => null,
             _ => normalized
         };
     }
@@ -1157,6 +1588,16 @@ public sealed class PacsToTerraFusionSyncService
         }
     }
 
+    private static void ApplyNullableValue<T>(T? currentValue, T? nextValue, Action<T?> setter, ref bool changed)
+        where T : struct
+    {
+        if (!Nullable.Equals(currentValue, nextValue))
+        {
+            setter(nextValue);
+            changed = true;
+        }
+    }
+
     private static bool IsMissingTable(Exception exception, string tableName)
     {
         return exception.ToString().Contains($"no such table: {tableName}", StringComparison.OrdinalIgnoreCase);
@@ -1174,8 +1615,12 @@ public sealed class PacsToTerraFusionSyncService
         public int AssessmentsAdded { get; set; }
         public int AssessmentsUpdated { get; set; }
         public int OwnersImported { get; set; }
+        public int CamaAdded { get; set; }
+        public int CamaUpdated { get; set; }
         public int SalesAdded { get; set; }
         public int SalesUpdated { get; set; }
         public int SalesSkipped { get; set; }
+        public int CostMatricesAdded { get; set; }
+        public int CostMatricesUpdated { get; set; }
     }
 }

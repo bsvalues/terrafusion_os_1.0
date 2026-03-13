@@ -1,0 +1,28 @@
+{
+  "artifactId": "benton-snapshot-20260313T115953Z",
+  "artifactKind": "benton-operational-snapshot",
+  "promotionMode": "parity_confirmed_no_replace",
+  "promotedAt": "2026-03-13T12:02:19.422Z",
+  "snapshotSha256": "ef3f43d1bbcfe811c7d6f192cab14465140755c660162b0ae9030a50f6eee1a0",
+  "manifestStableContract": {
+    "Properties": 112059,
+    "PropertyAssessments": 112057,
+    "ComparableSales": 76775,
+    "ComparableSalesDistinctParcels": 44045,
+    "ComparableSalesFingerprint": [
+      ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+      ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+      ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+      ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+      ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+    ],
+    "CamaCharacteristics": 79454,
+    "CostMatrices": 793
+  },
+  "remoteCatalog": "/opt/terrafusion/promotion-artifacts/benton-snapshot-20260313T115953Z",
+  "manifestPath": "/opt/terrafusion/promotion-artifacts/benton-snapshot-20260313T115953Z/phase19-promotion-manifest.latest.json",
+  "signaturePath": "/opt/terrafusion/promotion-artifacts/benton-snapshot-20260313T115953Z/phase19-promotion-signature.latest.json",
+  "note": "Live Benton runtimes already matched the promoted stable snapshot contract, so Phase 19 recorded a no-replace promotion receipt.",
+  "targetEnvironment": "production",
+  "targetReceiptPath": "/opt/terrafusion/production/current-benton-snapshot-promotion.json"
+}

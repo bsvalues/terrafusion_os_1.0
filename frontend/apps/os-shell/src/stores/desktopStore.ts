@@ -140,6 +140,35 @@ const BASE_POSITION: Position = { x: 100, y: 50 };
 const SNAP_THRESHOLD = 20; // Pixels from edge to trigger snap
 const TASKBAR_HEIGHT = 48;
 
+/**
+ * Returns the correct window size for a module based on its type.
+ * - Suite windows (suite-*) and OS features (os-*) → near-full-stage
+ * - Property Workbench → maximized (full viewport minus chrome)
+ * - Everything else → DEFAULT_WINDOW_SIZE
+ */
+function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean } {
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+
+  // Property Workbench = Tier-0 surface → opens maximized
+  if (moduleId === 'property-workbench') {
+    return {
+      size: { width: vw, height: vh - TASKBAR_HEIGHT },
+      maximized: true,
+    };
+  }
+
+  // Suite workspaces and OS features → near-full-stage
+  if (moduleId.startsWith('suite-') || moduleId.startsWith('os-')) {
+    return {
+      size: { width: vw - 40, height: vh - 120 },
+      maximized: false,
+    };
+  }
+
+  return { size: { ...DEFAULT_WINDOW_SIZE }, maximized: false };
+}
+
 // ============================================================================
 // Utility Functions
 // ============================================================================
@@ -250,15 +279,18 @@ export const useDesktopStore = create<DesktopState>()(
         const id = generateWindowId();
         const { windows, nextZIndex, currentDesktopId } = get();
 
+        // Use module-aware sizing (suites → near-full-stage, workbench → maximized)
+        const { size: moduleSize, maximized } = getModuleWindowSize(moduleId);
+
         const newWindow: DesktopWindow = {
           id,
           moduleId,
           title,
           icon,
           desktopId: currentDesktopId,
-          position: calculateNewWindowPosition(windows.length),
-          size: { ...DEFAULT_WINDOW_SIZE },
-          state: 'normal',
+          position: maximized ? { x: 0, y: 0 } : calculateNewWindowPosition(windows.length),
+          size: moduleSize,
+          state: maximized ? 'maximized' : 'normal',
           zIndex: nextZIndex,
           metadata, // INJECTED
         };

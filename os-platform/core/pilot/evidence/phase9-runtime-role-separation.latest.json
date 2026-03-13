@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-03-13T11:56:50.419Z",
+  "scope": "Phase 9 runtime role separation and production truth packet",
+  "decision": "GO",
+  "checks": [
+    {
+      "name": "phase7.snapshot_runtime_alignment",
+      "ok": true,
+      "detail": "exit=0",
+      "payload": {
+        "stdout": "\n> terrafusion-os@1.0.0 proof:phase7 C:\\Users\\bsval\\terrafusion_os_1.0\n> cross-env TF_API_PORT=5000 node os-platform/core/pilot/phase7-deployment-alignment-packet.mjs\n\n  Determining projects to restore...\r\n  All projects are up-to-date for restore.\r\n  Building TerraFusion Elite Operational Excellence - Championship Level Government Technology\r\n  TerraFusion.Abstractions -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Abstractions\\bin\\Debug\\net8.0\\TerraFusion.Abstractions.dll\r\n  TerraFusion.Levy -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Levy\\bin\\Debug\\net8.0\\TerraFusion.Levy.dll\r\n  TerraFusion.CiHints -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\tools\\TerraFusion.CiHints\\bin\\Debug\\net8.0\\TerraFusion.CiHints.dll\r\n  TerraFusion.Core -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Core\\bin\\Debug\\net8.0\\TerraFusion.Core.dll\r\n  TerraFusion.Data -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Data\\bin\\Debug\\net8.0\\TerraFusion.Data.dll\r\n  TerraFusion.Sync -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Sync\\bin\\Debug\\net8.0\\TerraFusion.Sync.dll\r\n  TerraFusion.Consciousness -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Consciousness\\bin\\Debug\\net8.0\\TerraFusion.Consciousness.dll\r\n  TerraFusion.AI -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.AI\\bin\\Debug\\net8.0\\TerraFusion.AI.dll\r\n  TerraFusion.CostForge -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.CostForge\\bin\\Debug\\net8.0\\TerraFusion.CostForge.dll\r\n  TerraFusion.Operations -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Operations\\bin\\Debug\\net8.0\\TerraFusion.Operations.dll\r\n  TerraFusion Elite Operational Excellence build completed - Government. Transcended.\r\n  TerraFusion.API -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.API\\bin\\Debug\\net8.0\\TerraFusion.API.dll\r\n  TerraFusion.Unit.Tests -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\tests\\TerraFusion.Unit.Tests\\bin\\Debug\\net8.0\\TerraFusion.Unit.Tests.dll\r\nTest run for C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\tests\\TerraFusion.Unit.Tests\\bin\\Debug\\net8.0\\TerraFusion.Unit.Tests.dll (.NETCoreApp,Version=v8.0)\r\nVSTest version 17.11.1 (x64)\r\n\r\nStarting test execution, please wait...\r\nA total of 1 test files matched the specified pattern.\r\n\r\nPassed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 26 ms - TerraFusion.Unit.Tests.dll (net8.0)\r\n{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJkYjJkMzhmMC0xNTYzLTQ1Y2MtYTBlYy1lODYwZWJiOWMwMjUiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6IjZkMTNmOWMwLTRkNTUtNDFkZi1iNDhiLWZjMWY1N2I4ODhlMSIsImlhdCI6MTc3MzQwMzAwMywidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzAwMywiZXhwIjoxNzczNDA2NjAzLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.uFUANPZQD71v0zSKz108AZ5e1act9tU0ULB2ALc2S8A\",\"email\":\"admin@terrafusionmarket.com\",\"roles\":[\"GovernmentUser\",\"Administrator\"],\"expiresAt\":\"2026-03-13T19:56:43.9883573Z\",\"refreshToken\":null}\n__STATUS__:200{\"isActive\":false,\"currentOperation\":\"Idle\",\"lastSyncTime\":null,\"nextScheduledSync\":null,\"activeConnections\":0,\"metrics\":{\"TotalSystems\":0,\"ActiveCounties\":0,\"UptimeSeconds\":0}}\n__STATUS__:200[]\n__STATUS__:200[]\n__STATUS__:200{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJjNTE5MGE5Mi00MGRhLTRlZDUtYTdkNi0zMjZlYWRkMzZjY2EiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6Ijk4OGZjNTAzLTdkZjEtNDQ1Yi05NmMxLTQyMGZlNjlkMzdhNyIsImlhdCI6MTc3MzQwMzAwNSwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzAwNSwiZXhwIjoxNzczNDA2NjA1LCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.W6fuQJlYwxrMDdj5YsymZ2NrdfbCremaihLCf_p1Jpc\",\"email\":\"admin@terrafusionmarket.com\",\"roles\":[\"GovernmentUser\",\"Administrator\"],\"expiresAt\":\"2026-03-13T19:56:45.7966468Z\",\"refreshToken\":null}\n__STATUS__:200{\"isActive\":false,\"currentOperation\":\"Idle\",\"lastSyncTime\":null,\"nextScheduledSync\":null,\"activeConnections\":0,\"metrics\":{\"TotalSystems\":0,\"ActiveCounties\":0,\"UptimeSeconds\":0}}\n__STATUS__:200[]\n__STATUS__:200[]\n__STATUS__:200",
+        "stderr": ""
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase8.deployed_operator_parity",
+      "ok": true,
+      "detail": "exit=0",
+      "payload": {
+        "stdout": "\n> terrafusion-os@1.0.0 proof:phase8 C:\\Users\\bsval\\terrafusion_os_1.0\n> node os-platform/core/pilot/phase8-deployed-operator-parity-packet.mjs\n\n",
+        "stderr": ""
+      },
+      "blocker": null
+    },
+    {
+      "name": "hostinger.runtime_role_canon",
+      "ok": true,
+      "detail": "Hostinger control-plane canon declares snapshot-only runtime role",
+      "payload": {
+        "missingCanonLines": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "hostinger.snapshot_contract",
+      "ok": true,
+      "detail": "Production secrets template encodes snapshot-runtime contract",
+      "payload": {
+        "missingSnapshotLines": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "public_dns.staging",
+      "ok": true,
+      "detail": "answers=72.60.126.11",
+      "payload": {
+        "Status": 0,
+        "TC": false,
+        "RD": true,
+        "RA": true,
+        "AD": false,
+        "CD": false,
+        "Question": [
+          {
+            "name": "staging.terrafusionmarket.com.",
+            "type": 1
+          }
+        ],
+        "Answer": [
+          {
+            "name": "staging.terrafusionmarket.com.",
+            "type": 1,
+            "TTL": 14400,
+            "data": "72.60.126.11"
+          }
+        ],
+        "Comment": "Response from 162.159.24.201."
+      },
+      "blocker": null
+    },
+    {
+      "name": "public_dns.production_apex",
+      "ok": true,
+      "detail": "answers=72.60.126.11",
+      "payload": {
+        "Status": 0,
+        "TC": false,
+        "RD": true,
+        "RA": true,
+        "AD": false,
+        "CD": false,
+        "Question": [
+          {
+            "name": "terrafusionmarket.com.",
+            "type": 1
+          }
+        ],
+        "Answer": [
+          {
+            "name": "terrafusionmarket.com.",
+            "type": 1,
+            "TTL": 14143,
+            "data": "72.60.126.11"
+          }
+        ]
+      },
+      "blocker": null
+    },
+    {
+      "name": "public_health.staging",
+      "ok": true,
+      "detail": "status=200",
+      "payload": {
+        "body": "{\"status\":\"Healthy\",\"timestamp\":\"2026-03-13T11:56:51.6132068Z\",\"environment\":\"Staging\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\"}",
+        "stderr": ""
+      },
+      "blocker": null
+    },
+    {
+      "name": "public_health.production_apex",
+      "ok": true,
+      "detail": "status=200",
+      "payload": {
+        "body": "{\"status\":\"Healthy\",\"timestamp\":\"2026-03-13T11:56:52.1929898Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\"}",
+        "stderr": ""
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": [],
+    "runtimeRoleDecision": "Hostinger staging/production are Benton operational-snapshot runtimes; PACS-connected sync is a separate runtime role."
+  }
+}

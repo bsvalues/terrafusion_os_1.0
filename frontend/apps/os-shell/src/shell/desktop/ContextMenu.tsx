@@ -14,6 +14,7 @@
 
 import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef } from 'react';
+import { Z } from './zIndex';
 
 // ============================================================================
 // Types
@@ -181,7 +182,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       role='menu'
       className={cn(
         // Base styles
-        'fixed z-[1020]',
+        'fixed',
         'min-w-[200px]',
 
         // Glass morphism
@@ -201,6 +202,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
         className
       )}
       style={{
+        zIndex: Z.dockContextMenu,
         left: `${adjustedPosition.x}px`,
         top: `${adjustedPosition.y}px`,
       }}

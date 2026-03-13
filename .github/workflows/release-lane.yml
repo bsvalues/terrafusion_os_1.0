@@ -89,6 +89,14 @@ jobs:
           BACKEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-backend-internal:${RELEASE_SHA}"
           FRONTEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-frontend-internal:${RELEASE_SHA}"
           DEPLOYED_AT="$(date -u +%FT%TZ)"
+          case "$TARGET_ENV" in
+            staging) ASPNETCORE_ENV_LABEL="Staging" ;;
+            production) ASPNETCORE_ENV_LABEL="Production" ;;
+            *)
+              echo "Unsupported TARGET_ENV for ASPNETCORE_ENV_LABEL: $TARGET_ENV"
+              exit 1
+              ;;
+          esac
 
           {
             printf 'DEPLOY_PORT=%s\n' "$DEPLOY_PORT"
@@ -99,6 +107,7 @@ jobs:
             printf 'BACKEND_IMAGE=%s\n' "$BACKEND_IMAGE"
             printf 'FRONTEND_IMAGE=%s\n' "$FRONTEND_IMAGE"
             printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
+            printf 'ASPNETCORE_ENV_LABEL=%s\n' "$ASPNETCORE_ENV_LABEL"
           } >> "$GITHUB_ENV"
 
       - name: Configure SSH key
@@ -136,11 +145,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if nslookup "$PUBLIC_HOST"; then
-            echo "DNS resolved OK"
-          else
-            echo "::warning::DNS lookup for $PUBLIC_HOST failed (may be propagating). Deploy continues using IP."
-          fi
+          nslookup "$PUBLIC_HOST"
+          echo "DNS resolved OK"
 
       - name: Preflight - remote host access
         shell: bash
@@ -197,10 +203,17 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf runtime edge-proxy evidence curl_headers.txt
-          mkdir -p runtime/docs/spec-lock
+          mkdir -p runtime/docs/spec-lock runtime/config
           cp ops/proxy/Caddyfile runtime/Caddyfile
           cp ops/prod/runtime-compose.template.yml runtime/runtime-compose.yml
           cp -R docs/spec-lock/. runtime/docs/spec-lock/
+          sed -i "s/ASPNETCORE_ENVIRONMENT: Production/ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENV_LABEL}/" runtime/runtime-compose.yml
+          if [ "$TARGET_ENV" = "staging" ]; then
+            cat > runtime/config/appsettings.Staging.json <<'EOF'
+          {}
+          EOF
+            sed -i '/- \.\/docs\/spec-lock:\/app\/docs\/spec-lock:ro/a\      - ./config/appsettings.Staging.json:/app/appsettings.Staging.json:ro' runtime/runtime-compose.yml
+          fi
 
           # Edge proxy bundle (shared across environments)
           mkdir -p edge-proxy
@@ -293,10 +306,8 @@ jobs:
           set -euo pipefail
           URL="${PUBLIC_URL}/health"
           success=0
-          health_mode="public"
 
           for attempt in $(seq 1 18); do
-            # Try public URL directly first
             if curl -fsS -o /dev/null -D curl_headers.txt "$URL" 2>/dev/null; then
               HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
               if [ "$HEADER_SHA" = "$RELEASE_SHA" ]; then
@@ -305,33 +316,15 @@ jobs:
               fi
             fi
 
-            # DNS fallback: resolve domain to DEPLOY_HOST IP, skip TLS verify
-            if curl -fsS -k \
-              --resolve "${PUBLIC_HOST}:443:${DEPLOY_HOST}" \
-              --resolve "${PUBLIC_HOST}:80:${DEPLOY_HOST}" \
-              -o /dev/null -D curl_headers.txt "$URL" 2>/dev/null; then
-              HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
-              if [ "$HEADER_SHA" = "$RELEASE_SHA" ]; then
-                health_mode="resolve"
-                success=1
-                break
-              fi
-            fi
-
-            # Show verbose curl output on first failure to help diagnose connectivity issues
             if [ "$attempt" -eq 1 ]; then
-              echo "--- Diagnostic: verbose resolve curl ---"
-              curl -vk --resolve "${PUBLIC_HOST}:443:${DEPLOY_HOST}" --resolve "${PUBLIC_HOST}:80:${DEPLOY_HOST}" "$URL" 2>&1 | head -40 || true
+              echo "--- Diagnostic: verbose public curl ---"
+              curl -vk "$URL" 2>&1 | head -40 || true
               echo "--- End diagnostic ---"
             fi
 
             echo "Waiting for $URL to report X-Release-Sha=$RELEASE_SHA (attempt $attempt/18)"
             sleep 10
           done
-
-          if [ "$health_mode" = "resolve" ]; then
-            echo "::warning::Health verified via IP-resolve fallback (DNS not configured for $PUBLIC_HOST)"
-          fi
 
           if [ "$success" -ne 1 ]; then
             echo "Health endpoint never reported the requested release SHA."
@@ -384,6 +377,7 @@ jobs:
           cat > evidence/evidence.txt <<EOF
           operation=deploy
           target_env=${TARGET_ENV}
+          aspnetcore_environment=${ASPNETCORE_ENV_LABEL}
           public_url=${PUBLIC_URL}
           release_sha=${RELEASE_SHA}
           requested_sha=${REQUESTED_SHA}
@@ -400,6 +394,7 @@ jobs:
           {
             "operation": "deploy",
             "targetEnv": "${TARGET_ENV}",
+            "aspnetcoreEnvironment": "${ASPNETCORE_ENV_LABEL}",
             "publicUrl": "${PUBLIC_URL}",
             "releaseSha": "${RELEASE_SHA}",
             "requestedSha": "${REQUESTED_SHA}",

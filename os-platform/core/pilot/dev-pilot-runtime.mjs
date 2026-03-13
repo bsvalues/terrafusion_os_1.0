@@ -3,6 +3,7 @@
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import path from "node:path";
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
 import { traceService } from "../trace/index.js";
@@ -982,34 +983,614 @@ const server = createServer(async (req, res) => {
     if (method === "POST" && pathname === "/pilot/canon/ping") {
       const body = await readJsonBody(req);
       const echo = normalizeEcho(body.echo);
+      const correlationId = `canon-${Date.now()}`;
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_ping",
+        correlationId,
+        summary: `Canon ping invoked (echo=${echo})`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
       const result = await runCanonCommand("canon:ping", ["--json", "--echo", echo]);
-      writeJson(
-        res,
-        200,
-        parseCanonResponse("canon:ping", result.stdout, result.stderr, result.exitCode, {
-          echoFallback: echo,
-        })
-      );
+      const parsed = parseCanonResponse("canon:ping", result.stdout, result.stderr, result.exitCode, {
+        echoFallback: echo,
+      });
+      traceService.emit({
+        type: parsed.overallOk ? "tool_succeeded" : "tool_failed",
+        toolId: "canon_ping",
+        correlationId,
+        summary: parsed.overallOk ? "Canon ping succeeded" : `Canon ping failed: ${parsed.error ?? "unknown"}`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+      writeJson(res, 200, parsed);
       return;
     }
 
     if (method === "POST" && pathname === "/pilot/canon/doctor") {
+      const correlationId = `canon-${Date.now()}`;
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_doctor",
+        correlationId,
+        summary: "Canon doctor invoked",
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
       const result = await runCanonCommand("canon:doctor", ["--json"]);
-      writeJson(
-        res,
-        200,
-        parseCanonResponse("canon:doctor", result.stdout, result.stderr, result.exitCode)
-      );
+      const parsed = parseCanonResponse("canon:doctor", result.stdout, result.stderr, result.exitCode);
+      traceService.emit({
+        type: parsed.overallOk ? "tool_succeeded" : "tool_failed",
+        toolId: "canon_doctor",
+        correlationId,
+        summary: parsed.overallOk ? "Canon doctor passed" : `Canon doctor failed: ${parsed.error ?? "unknown"}`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+      writeJson(res, 200, parsed);
       return;
     }
 
     if (method === "POST" && pathname === "/pilot/canon/gatefast") {
+      const correlationId = `canon-${Date.now()}`;
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_gatefast",
+        correlationId,
+        summary: "Canon gatefast invoked",
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
       const result = await runCanonCommand("canon:gatefast", ["--json"]);
-      writeJson(
-        res,
-        200,
-        parseCanonResponse("canon:gatefast", result.stdout, result.stderr, result.exitCode)
+      const parsed = parseCanonResponse("canon:gatefast", result.stdout, result.stderr, result.exitCode);
+      traceService.emit({
+        type: parsed.overallOk ? "tool_succeeded" : "tool_failed",
+        toolId: "canon_gatefast",
+        correlationId,
+        summary: parsed.overallOk ? "Canon gatefast passed" : `Canon gatefast failed: ${parsed.error ?? "unknown"}`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+      writeJson(res, 200, parsed);
+      return;
+    }
+
+    // POST /pilot/canon/corpus — Golden Corpus status
+    if (method === "POST" && pathname === "/pilot/canon/corpus") {
+      const correlationId = `canon-${Date.now()}`;
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_corpus_status",
+        correlationId,
+        summary: "Canon corpus status invoked",
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+      try {
+        const lockPath = path.join(REPO_ROOT, "golden", "GOLDEN_CORPUS.lock.json");
+        const raw = fs.readFileSync(lockPath, "utf8");
+        const corpus = JSON.parse(raw);
+        const result = {
+          ok: true,
+          ts: nowIso(),
+          version: corpus.version || "unknown",
+          releaseTag: corpus.releaseTag || "unknown",
+          artifactCount: Array.isArray(corpus.artifacts) ? corpus.artifacts.length : 0,
+          artifacts: Array.isArray(corpus.artifacts) ? corpus.artifacts : [],
+          ledgerHeadSha256: corpus.ledgerState?.ledgerHeadSha256 || "",
+          sequenceNumber: corpus.ledgerState?.sequenceNumber ?? -1,
+        };
+        traceService.emit({
+          type: "tool_succeeded",
+          toolId: "canon_corpus_status",
+          correlationId,
+          summary: `Golden Corpus: ${result.artifactCount} artifacts, release ${result.releaseTag}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 200, result);
+      } catch (err) {
+        traceService.emit({
+          type: "tool_failed",
+          toolId: "canon_corpus_status",
+          correlationId,
+          summary: `Canon corpus status failed: ${err?.message ?? String(err)}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 200, {
+          ok: false,
+          ts: nowIso(),
+          error: err?.message ?? String(err),
+          artifactCount: 0,
+          artifacts: [],
+        });
+      }
+      return;
+    }
+
+    // POST /pilot/canon/ls — List directory (read-only, allowlisted)
+    if (method === "POST" && pathname === "/pilot/canon/ls") {
+      const body = await readJsonBody(req);
+      const dirPath = typeof body.dirPath === "string" ? body.dirPath : "";
+      const correlationId = `canon-${Date.now()}`;
+
+      // Security: allowlist + traversal rejection
+      const ALLOWED_PREFIXES = [
+        "os-platform/core/pilot/",
+        "os-platform/core/types/",
+        "tools/registry/",
+        "frontend/apps/os-shell/src/canon/",
+        "golden/",
+      ];
+
+      const normalized = dirPath.replace(/\\/g, "/").replace(/\/+$/, "");
+      if (normalized.includes("..") || path.isAbsolute(dirPath)) {
+        writeJson(res, 403, { error: "FORBIDDEN", message: "Path traversal rejected" });
+        return;
+      }
+
+      const allowed = ALLOWED_PREFIXES.some(
+        (prefix) => normalized === prefix.replace(/\/$/, "") || normalized.startsWith(prefix)
       );
+      if (!allowed) {
+        writeJson(res, 403, { error: "FORBIDDEN", message: `Path not in allowlist: ${normalized}` });
+        return;
+      }
+
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_list_dir",
+        correlationId,
+        summary: `Canon ls invoked: ${normalized}`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+
+      try {
+        const absPath = path.join(REPO_ROOT, normalized);
+        const entries = fs.readdirSync(absPath, { withFileTypes: true });
+        const result = entries
+          .filter((e) => e.isFile() || e.isDirectory())
+          .map((e) => ({
+            name: e.name,
+            type: e.isDirectory() ? "directory" : "file",
+            ...(e.isFile() ? { size: fs.statSync(path.join(absPath, e.name)).size } : {}),
+          }))
+          .sort((a, b) => {
+            if (a.type !== b.type) return a.type === "directory" ? -1 : 1;
+            return a.name.localeCompare(b.name);
+          });
+
+        traceService.emit({
+          type: "tool_succeeded",
+          toolId: "canon_list_dir",
+          correlationId,
+          summary: `Listed ${result.length} entries in ${normalized}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 200, { dirPath: normalized, entries: result });
+      } catch (err) {
+        traceService.emit({
+          type: "tool_failed",
+          toolId: "canon_list_dir",
+          correlationId,
+          summary: `Canon ls failed: ${err?.message ?? String(err)}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 200, { dirPath: normalized, entries: [], error: err?.message ?? String(err) });
+      }
+      return;
+    }
+
+    // POST /pilot/canon/read — Read file (read-only, allowlisted, 512KB limit)
+    if (method === "POST" && pathname === "/pilot/canon/read") {
+      const body = await readJsonBody(req);
+      const filePath = typeof body.filePath === "string" ? body.filePath : "";
+      const correlationId = `canon-${Date.now()}`;
+      const MAX_FILE_BYTES = 512 * 1024;
+
+      const ALLOWED_PREFIXES = [
+        "os-platform/core/pilot/",
+        "os-platform/core/types/",
+        "tools/registry/",
+        "frontend/apps/os-shell/src/canon/",
+        "golden/",
+      ];
+
+      const normalized = filePath.replace(/\\/g, "/");
+      if (normalized.includes("..") || path.isAbsolute(filePath)) {
+        writeJson(res, 403, { error: "FORBIDDEN", message: "Path traversal rejected" });
+        return;
+      }
+
+      const allowed = ALLOWED_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+      if (!allowed) {
+        writeJson(res, 403, { error: "FORBIDDEN", message: `Path not in allowlist: ${normalized}` });
+        return;
+      }
+
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_read_file",
+        correlationId,
+        summary: `Canon read invoked: ${normalized}`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+
+      try {
+        const absPath = path.join(REPO_ROOT, normalized);
+        const stat = fs.statSync(absPath);
+        if (!stat.isFile()) {
+          throw new Error("Not a file");
+        }
+        if (stat.size > MAX_FILE_BYTES) {
+          throw new Error(`File exceeds 512KB limit (${stat.size} bytes)`);
+        }
+        const content = fs.readFileSync(absPath, "utf8");
+
+        // Detect language from extension
+        const ext = path.extname(normalized).toLowerCase();
+        const LANG_MAP = {
+          ".ts": "typescript", ".tsx": "typescriptreact",
+          ".js": "javascript", ".jsx": "javascriptreact",
+          ".mjs": "javascript", ".json": "json",
+          ".css": "css", ".html": "html",
+          ".md": "markdown", ".yml": "yaml", ".yaml": "yaml",
+        };
+        const language = LANG_MAP[ext] || "plaintext";
+
+        traceService.emit({
+          type: "tool_succeeded",
+          toolId: "canon_read_file",
+          correlationId,
+          summary: `Read ${normalized} (${stat.size} bytes, ${language})`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 200, { filePath: normalized, content, size: stat.size, language });
+      } catch (err) {
+        traceService.emit({
+          type: "tool_failed",
+          toolId: "canon_read_file",
+          correlationId,
+          summary: `Canon read failed: ${err?.message ?? String(err)}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 200, { filePath: normalized, content: "", size: 0, language: "plaintext", error: err?.message ?? String(err) });
+      }
+      return;
+    }
+
+    // POST /pilot/canon/write — Write file (allowlisted, 1MB limit)
+    if (method === "POST" && pathname === "/pilot/canon/write") {
+      const body = await readJsonBody(req);
+      const filePath = typeof body.filePath === "string" ? body.filePath : "";
+      const content = typeof body.content === "string" ? body.content : "";
+      const correlationId = `canon-${Date.now()}`;
+      const MAX_WRITE_BYTES = 1024 * 1024;
+
+      const ALLOWED_PREFIXES = [
+        "os-platform/core/pilot/",
+        "os-platform/core/types/",
+        "tools/registry/",
+        "frontend/apps/os-shell/src/canon/",
+        "golden/",
+      ];
+
+      const normalized = filePath.replace(/\\/g, "/");
+      if (normalized.includes("..") || path.isAbsolute(filePath)) {
+        writeJson(res, 403, { error: "FORBIDDEN", message: "Path traversal rejected" });
+        return;
+      }
+
+      const allowed = ALLOWED_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+      if (!allowed) {
+        writeJson(res, 403, { error: "FORBIDDEN", message: `Path not in allowlist: ${normalized}` });
+        return;
+      }
+
+      const byteLen = Buffer.byteLength(content, "utf8");
+      if (byteLen > MAX_WRITE_BYTES) {
+        writeJson(res, 413, { error: "TOO_LARGE", message: `Content exceeds 1MB limit (${byteLen} bytes)` });
+        return;
+      }
+
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_write_file",
+        correlationId,
+        summary: `Canon write invoked: ${normalized} (${byteLen} bytes)`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+
+      try {
+        const absPath = path.join(REPO_ROOT, normalized);
+        // Ensure parent directory exists
+        const parentDir = path.dirname(absPath);
+        if (!fs.existsSync(parentDir)) {
+          fs.mkdirSync(parentDir, { recursive: true });
+        }
+
+        fs.writeFileSync(absPath, content, "utf8");
+        const stat = fs.statSync(absPath);
+
+        traceService.emit({
+          type: "tool_succeeded",
+          toolId: "canon_write_file",
+          correlationId,
+          summary: `Wrote ${normalized} (${stat.size} bytes)`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 200, { filePath: normalized, size: stat.size, writtenAt: new Date().toISOString() });
+      } catch (err) {
+        traceService.emit({
+          type: "tool_failed",
+          toolId: "canon_write_file",
+          correlationId,
+          summary: `Canon write failed: ${err?.message ?? String(err)}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 500, { error: "WRITE_FAILED", message: err?.message ?? String(err) });
+      }
+      return;
+    }
+
+    // POST /pilot/canon/search — Search files (read-only, allowlisted)
+    if (method === "POST" && pathname === "/pilot/canon/search") {
+      const body = await readJsonBody(req);
+      const query = typeof body.query === "string" ? body.query : "";
+      const scopePath = typeof body.path === "string" ? body.path : "";
+      const isRegex = body.isRegex === true;
+      const maxResults = Math.min(Math.max(Number(body.maxResults) || 100, 1), 500);
+      const correlationId = `canon-${Date.now()}`;
+
+      if (!query) {
+        writeJson(res, 400, { error: "BAD_REQUEST", message: "query is required" });
+        return;
+      }
+
+      const ALLOWED_PREFIXES = [
+        "os-platform/core/pilot/",
+        "os-platform/core/types/",
+        "tools/registry/",
+        "frontend/apps/os-shell/src/canon/",
+        "golden/",
+      ];
+
+      // If a scope path is given, validate it
+      const normalizedScope = scopePath.replace(/\\/g, "/").replace(/\/+$/, "");
+      if (normalizedScope) {
+        if (normalizedScope.includes("..") || path.isAbsolute(scopePath)) {
+          writeJson(res, 403, { error: "FORBIDDEN", message: "Path traversal rejected" });
+          return;
+        }
+        const scopeAllowed = ALLOWED_PREFIXES.some(
+          (prefix) => normalizedScope === prefix.replace(/\/$/, "") || normalizedScope.startsWith(prefix)
+        );
+        if (!scopeAllowed) {
+          writeJson(res, 403, { error: "FORBIDDEN", message: `Path not in allowlist: ${normalizedScope}` });
+          return;
+        }
+      }
+
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_search_files",
+        correlationId,
+        summary: `Canon search invoked: "${query}" ${normalizedScope ? `in ${normalizedScope}` : "(all allowed)"}`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+
+      try {
+        // Build regex from query
+        let pattern;
+        try {
+          pattern = isRegex ? new RegExp(query, "gi") : new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+        } catch {
+          writeJson(res, 400, { error: "BAD_REQUEST", message: "Invalid regex pattern" });
+          return;
+        }
+
+        const matches = [];
+        const searchPrefixes = normalizedScope
+          ? [normalizedScope.endsWith("/") ? normalizedScope : normalizedScope + "/"]
+          : ALLOWED_PREFIXES;
+
+        // Recursively collect files
+        function collectFiles(dir, fileList) {
+          try {
+            const entries = fs.readdirSync(path.join(REPO_ROOT, dir), { withFileTypes: true });
+            for (const entry of entries) {
+              const rel = dir + "/" + entry.name;
+              if (entry.isDirectory()) {
+                collectFiles(rel, fileList);
+              } else if (entry.isFile()) {
+                fileList.push(rel);
+              }
+            }
+          } catch {
+            // Skip unreadable directories
+          }
+          return fileList;
+        }
+
+        const allFiles = [];
+        for (const prefix of searchPrefixes) {
+          const trimmed = prefix.replace(/\/$/, "");
+          collectFiles(trimmed, allFiles);
+        }
+
+        // Search through files
+        const MAX_FILE_SIZE = 512 * 1024;
+        let truncated = false;
+
+        for (const filePath of allFiles) {
+          if (matches.length >= maxResults) {
+            truncated = true;
+            break;
+          }
+
+          try {
+            const absPath = path.join(REPO_ROOT, filePath);
+            const stat = fs.statSync(absPath);
+            if (stat.size > MAX_FILE_SIZE) continue; // skip large files
+            if (stat.size === 0) continue;
+
+            const content = fs.readFileSync(absPath, "utf8");
+            const lines = content.split("\n");
+
+            for (let i = 0; i < lines.length; i++) {
+              if (matches.length >= maxResults) {
+                truncated = true;
+                break;
+              }
+              pattern.lastIndex = 0;
+              const m = pattern.exec(lines[i]);
+              if (m) {
+                matches.push({
+                  filePath,
+                  line: i + 1,
+                  column: m.index + 1,
+                  text: lines[i].length > 200 ? lines[i].slice(0, 200) + "…" : lines[i],
+                });
+              }
+            }
+          } catch {
+            // Skip unreadable files
+          }
+        }
+
+        traceService.emit({
+          type: "tool_succeeded",
+          toolId: "canon_search_files",
+          correlationId,
+          summary: `Found ${matches.length} matches for "${query}"${truncated ? " (truncated)" : ""}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 200, { query, matches, totalMatches: matches.length, truncated });
+      } catch (err) {
+        traceService.emit({
+          type: "tool_failed",
+          toolId: "canon_search_files",
+          correlationId,
+          summary: `Canon search failed: ${err?.message ?? String(err)}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 500, { error: "SEARCH_FAILED", message: err?.message ?? String(err) });
+      }
+      return;
+    }
+
+    // POST /pilot/canon/exec — Execute allowlisted command in Canon terminal
+    if (method === "POST" && pathname === "/pilot/canon/exec") {
+      const body = await readJsonBody(req);
+      const command = typeof body.command === "string" ? body.command.trim() : "";
+      const correlationId = `canon-${Date.now()}`;
+
+      if (!command) {
+        writeJson(res, 400, { error: "BAD_REQUEST", message: "command is required" });
+        return;
+      }
+
+      // Command allowlist — only governance-safe commands permitted
+      const COMMAND_ALLOWLIST = {
+        "type-check": { bin: "pnpm", args: ["run", "type-check"] },
+        "build:core-js": { bin: "pnpm", args: ["run", "build:core-js"] },
+        "check:generated": { bin: "pnpm", args: ["run", "check:generated"] },
+        "test:phase83": { bin: process.execPath, args: ["--test", "os-platform/core/tests/phase83-tools.test.mjs"] },
+        "lint": { bin: "pnpm", args: ["run", "lint"] },
+        "canon:doctor": { bin: process.execPath, args: ["tools/canon/canon.mjs", "doctor"] },
+        "canon:gatefast": { bin: process.execPath, args: ["tools/canon/canon.mjs", "gatefast"] },
+        "canon:corpus-status": { bin: process.execPath, args: ["tools/canon/canon.mjs", "corpus-status"] },
+      };
+
+      const entry = COMMAND_ALLOWLIST[command];
+      if (!entry) {
+        const allowed = Object.keys(COMMAND_ALLOWLIST).join(", ");
+        writeJson(res, 403, {
+          error: "FORBIDDEN",
+          message: `Command not in allowlist. Allowed: ${allowed}`,
+        });
+        return;
+      }
+
+      traceService.emit({
+        type: "tool_invoked",
+        toolId: "canon_terminal_exec",
+        correlationId,
+        summary: `Canon terminal exec: ${command}`,
+        context: { countyId: "system", userId: "canon", mode: "pilot" },
+      });
+
+      const startTime = Date.now();
+
+      try {
+        const result = await new Promise((resolve) => {
+          const safeEnv = {};
+          for (const key of SAFE_ENV_KEYS) {
+            const value = process.env[key];
+            if (typeof value === "string") safeEnv[key] = value;
+          }
+          safeEnv.TF_CANON_ADAPTER = "1";
+
+          const child = spawn(entry.bin, entry.args, {
+            cwd: REPO_ROOT,
+            stdio: ["ignore", "pipe", "pipe"],
+            env: safeEnv,
+          });
+
+          let stdout = "";
+          let stderr = "";
+          let done = false;
+          const EXEC_TIMEOUT = 60_000; // 60s for build commands
+
+          const timer = setTimeout(() => {
+            if (done) return;
+            done = true;
+            child.kill();
+            resolve({
+              exitCode: 1,
+              stdout,
+              stderr: `${stderr}\nCommand timed out after ${EXEC_TIMEOUT}ms`,
+            });
+          }, EXEC_TIMEOUT);
+
+          child.stdout.on("data", (chunk) => { stdout += chunk.toString(); });
+          child.stderr.on("data", (chunk) => { stderr += chunk.toString(); });
+
+          child.on("error", (err) => {
+            if (done) return;
+            done = true;
+            clearTimeout(timer);
+            resolve({ exitCode: 1, stdout: "", stderr: err.message });
+          });
+
+          child.on("close", (code) => {
+            if (done) return;
+            done = true;
+            clearTimeout(timer);
+            resolve({ exitCode: code ?? 1, stdout, stderr });
+          });
+        });
+
+        const durationMs = Date.now() - startTime;
+
+        traceService.emit({
+          type: result.exitCode === 0 ? "tool_succeeded" : "tool_failed",
+          toolId: "canon_terminal_exec",
+          correlationId,
+          summary: `Canon exec ${command}: exit ${result.exitCode} (${durationMs}ms)`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+
+        writeJson(res, 200, {
+          command,
+          exitCode: result.exitCode,
+          stdout: result.stdout,
+          stderr: result.stderr,
+          durationMs,
+        });
+      } catch (err) {
+        traceService.emit({
+          type: "tool_failed",
+          toolId: "canon_terminal_exec",
+          correlationId,
+          summary: `Canon exec failed: ${err?.message ?? String(err)}`,
+          context: { countyId: "system", userId: "canon", mode: "pilot" },
+        });
+        writeJson(res, 500, { error: "EXEC_FAILED", message: err?.message ?? String(err) });
+      }
       return;
     }
 

@@ -1,0 +1,38 @@
+{
+  "artifactId": "benton-snapshot-20260313T115953Z",
+  "generatedAt": "2026-03-13T11:59:55.626Z",
+  "artifactKind": "benton-operational-snapshot",
+  "runtimeRole": "canonical_pacs_connected_benton_runtime",
+  "promotionMode": "parity_confirmed_no_replace_if_already_serving_same_stable_contract",
+  "sourceDb": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.API\\terrafusion-dev.db",
+  "snapshotFileName": "benton-snapshot-20260313T115953Z.db",
+  "snapshotSha256": "ef3f43d1bbcfe811c7d6f192cab14465140755c660162b0ae9030a50f6eee1a0",
+  "snapshotSize": 359325696,
+  "stableContract": {
+    "Properties": 112059,
+    "PropertyAssessments": 112057,
+    "ComparableSales": 76775,
+    "ComparableSalesDistinctParcels": 44045,
+    "ComparableSalesFingerprint": [
+      ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+      ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+      ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+      ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+      ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+    ],
+    "CamaCharacteristics": 79454,
+    "CostMatrices": 793
+  },
+  "latestBentonSync": {
+    "CountyId": "19190019-1919-1919-1919-191919191919",
+    "SourceSystem": "harris_pacs",
+    "EntityType": "Sales",
+    "Status": "completed",
+    "CompletedAt": "2026-03-13 11:58:29.2572158"
+  },
+  "notes": [
+    "Hostinger runtimes are snapshot-only.",
+    "This artifact is the promoted Benton logical operational snapshot contract.",
+    "Phase 19 uses a local promotion-attestation signature. Authority hardening is deferred to Phase 22."
+  ]
+}

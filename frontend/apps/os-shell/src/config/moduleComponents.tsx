@@ -57,6 +57,14 @@ export const MODULE_ALIASES: Record<string, string> = {
   workbench: 'property-workbench',
   'property-workbench-window': 'property-workbench',
 
+  // OS Feature aliases (desktop icons use these short IDs)
+  pilot: 'os-pilot',
+  trace: 'os-trace',
+  canon: 'os-canon',
+  terrapilot: 'os-pilot',
+  terratrace: 'os-trace',
+  terracanon: 'os-canon',
+
   // Constitutional Suite Home aliases (desktop icons use these)
   forge: 'suite-forge',
   atlas: 'suite-atlas',
@@ -113,6 +121,10 @@ export const MODULE_REGISTRY = new Set<string>([
   'suite-dais',
   'suite-dossier',
   'suite-gpt',
+  // OS Features (open as in-shell windows, not full-page routes)
+  'os-pilot',
+  'os-trace',
+  'os-canon',
 ]);
 
 /**
@@ -206,6 +218,13 @@ const PropertyWorkbenchWindow = lazy(
 );
 
 // ============================================================================
+// OS Feature Home Pages (open as in-shell windows)
+// ============================================================================
+const PilotHome = lazy(() => import('../pages/PilotHome'));
+const TraceHome = lazy(() => import('../pages/TraceHome'));
+const CanonHome = lazy(() => import('../pages/CanonHome'));
+
+// ============================================================================
 // Constitutional Suite Home Pages (render inside Desktop windows)
 // ============================================================================
 const ForgeSuiteHome = lazy(() => import('../pages/suites/ForgeSuiteHome'));
@@ -244,6 +263,10 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'suite-dais': { Component: DaisSuiteHome },
   'suite-dossier': { Component: DossierSuiteHome },
   'suite-gpt': { Component: GptSuiteHome },
+  // OS Features (in-shell windows)
+  'os-pilot': { Component: PilotHome },
+  'os-trace': { Component: TraceHome },
+  'os-canon': { Component: CanonHome },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
@@ -584,6 +607,31 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <GptSuiteHome />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // OS FEATURES (open as in-shell windows, not full-page routes)
+    // ========================================================================
+
+    case 'os-pilot':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <PilotHome />
+        </Suspense>
+      );
+
+    case 'os-trace':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TraceHome />
+        </Suspense>
+      );
+
+    case 'os-canon':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CanonHome />
         </Suspense>
       );
 

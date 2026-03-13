@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getLucideIcon } from '../../config/iconMap';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
+import { Z } from './zIndex';
 
 // ============================================================================
 // Types
@@ -187,9 +188,9 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
       ref={menuRef}
       role='menu'
       aria-label={`Context menu for ${module.name}`}
-      style={{ left: `${position.x}px`, top: `${position.y}px` }}
+      style={{ left: `${position.x}px`, top: `${position.y}px`, zIndex: Z.dockContextMenu }}
       className={cn(
-        'fixed z-[1020]',
+        'fixed',
         'min-w-[180px]',
         'bg-[var(--tf-bg-surface)]/98 backdrop-blur-xl',
         'border border-white/10 rounded-lg',

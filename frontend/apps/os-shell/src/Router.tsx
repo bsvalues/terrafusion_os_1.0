@@ -9,7 +9,7 @@ import { getViteEnv } from './env/getViteEnv';
 
 // CSS imports — design tokens must load for ShellHome route
 import './styles/terrafusion-tokens.css';
-import './styles/terrafusion-brand.css';
+
 import './styles/terrafusion-os.css';
 import './App.css';
 

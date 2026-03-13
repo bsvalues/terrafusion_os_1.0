@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAgentFeed } from './useAgentFeed';
 import { useSentinel } from './useSentinel';
+import { Z } from '../shell/desktop/zIndex';
 
 type SentinelPanelProps = {
   open: boolean;
@@ -121,9 +122,10 @@ export function SentinelPanel({ open, onClose }: SentinelPanelProps) {
   return (
     <>
       <div
-        className={`fixed inset-0 z-[9998] transition-opacity ${
+        className={`fixed inset-0 transition-opacity ${
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
+        style={{ zIndex: Z.sentinel }}
         onClick={onClose}
         aria-hidden='true'
       >
@@ -132,14 +134,15 @@ export function SentinelPanel({ open, onClose }: SentinelPanelProps) {
 
       <aside
         data-testid='system-health-panel'
-        className={`fixed top-0 right-0 z-[9999] h-screen w-96 max-w-[90vw] border-l border-white/10 bg-slate-950/80 backdrop-blur-2xl shadow-2xl shadow-black/30 transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 h-screen w-96 max-w-[90vw] border-l border-[hsl(var(--tf-text)/0.1)] bg-[hsl(var(--tf-bg)/0.8)] backdrop-blur-2xl shadow-2xl shadow-[hsl(var(--tf-bg)/0.3)] transition-transform duration-300 ease-out ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
+        style={{ zIndex: Z.sentinelPanel }}
         role='dialog'
         aria-modal='false'
         aria-label='Sentinel Console'
       >
-        <div className='flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/5'>
+        <div className='flex items-center justify-between px-5 py-4 border-b border-[hsl(var(--tf-text)/0.1)] bg-[hsl(var(--tf-text)/0.05)]'>
           <div className='flex items-center gap-2'>
             <span className='text-sm font-bold tracking-wider text-slate-200'>
               SENTINEL CONSOLE

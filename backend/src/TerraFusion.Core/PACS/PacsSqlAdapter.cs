@@ -42,6 +42,8 @@ namespace TerraFusion.Core.PACS
         private const string ViewPropertyOwnership = "vw_TerraFusion_Property_Ownership";
         private const string ViewAssessmentHistory = "vw_TerraFusion_Assessment_History";
         private const string ViewComparableSales = "vw_TerraFusion_Comparable_Sales";
+        private const string ViewCamaCharacteristics = "vw_TerraFusion_Cama_Characteristics";
+        private const string ViewImprovementCostMatrices = "vw_TerraFusion_Improvement_Cost_Matrices";
         private const string ProcHealthCheck = "sp_TerraFusion_HealthCheck";
 
         // Contract-defined indexes (warning only)
@@ -235,13 +237,16 @@ namespace TerraFusion.Core.PACS
                 {
                     await salesConnection.OpenAsync(cancellationToken);
 
-                    var exists = await salesConnection.ExecuteScalarAsync<int>(
-                        "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
-                        new { ViewName = ViewComparableSales });
-
-                    if (exists == 0)
+                    foreach (var view in new[] { ViewComparableSales, ViewCamaCharacteristics, ViewImprovementCostMatrices })
                     {
-                        missingViews.Add($"{salesConnection.Database}.{ViewComparableSales}");
+                        var exists = await salesConnection.ExecuteScalarAsync<int>(
+                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                            new { ViewName = view });
+
+                        if (exists == 0)
+                        {
+                            missingViews.Add($"{salesConnection.Database}.{view}");
+                        }
                     }
                 }
 
@@ -261,7 +266,7 @@ namespace TerraFusion.Core.PACS
                     Name = "RequiredViews",
                     Passed = true,
                     Severity = "error",
-                    Details = $"Core views present in pacs_oltp; comparable sales view present in {GetDatabaseName(_salesConnectionString)}"
+                    Details = $"Core views present in pacs_oltp; sales/CAMA/matrix views present in {GetDatabaseName(_salesConnectionString)}"
                 };
             }
             catch (Exception ex)
@@ -761,6 +766,148 @@ namespace TerraFusion.Core.PACS
                     commandTimeout: _commandTimeout);
 
                 return new PacsPagedResult<PacsComparableSale>
+                {
+                    Items = items.ToList(),
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
+        public async Task<PacsPagedResult<PacsCamaCharacteristic>> GetCamaCharacteristicsAsync(
+            int page = 1,
+            int pageSize = 500,
+            CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 1000) pageSize = 500;
+
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken);
+
+                var totalCount = await connection.ExecuteScalarAsync<int>(
+                    $"SELECT COUNT(*) FROM {ViewCamaCharacteristics}");
+
+                var offset = (page - 1) * pageSize;
+                var sql = $@"
+                    SELECT
+                        prop_id AS PropId,
+                        geo_id AS GeoId,
+                        tax_year AS TaxYear,
+                        building_type AS BuildingType,
+                        building_type_description AS BuildingTypeDescription,
+                        region AS Region,
+                        square_feet AS SquareFeet,
+                        stories AS Stories,
+                        basement_sqft AS BasementSqft,
+                        garage_sqft AS GarageSqft,
+                        quality_grade AS QualityGrade,
+                        condition_grade AS ConditionGrade,
+                        complexity_grade AS ComplexityGrade,
+                        exterior_wall AS ExteriorWall,
+                        roof_type AS RoofType,
+                        foundation AS Foundation,
+                        hvac_type AS HvacType,
+                        interior_finish AS InteriorFinish,
+                        year_built AS YearBuilt,
+                        effective_age AS EffectiveAge,
+                        economic_life AS EconomicLife,
+                        land_area_sqft AS LandAreaSqft,
+                        land_zone AS LandZone,
+                        land_adjustment_factor AS LandAdjustmentFactor,
+                        bedrooms AS Bedrooms,
+                        bathrooms AS Bathrooms,
+                        fireplaces AS Fireplaces,
+                        has_pool AS HasPool,
+                        functional_obsolescence AS FunctionalObsolescence,
+                        external_obsolescence AS ExternalObsolescence,
+                        neighborhood AS Neighborhood,
+                        property_type_cd AS PropertyTypeCd,
+                        last_modified AS LastModified
+                    FROM {ViewCamaCharacteristics}
+                    ORDER BY prop_id
+                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+                var items = await connection.QueryAsync<PacsCamaCharacteristic>(
+                    sql,
+                    new { Offset = offset, PageSize = pageSize },
+                    commandTimeout: _commandTimeout);
+
+                return new PacsPagedResult<PacsCamaCharacteristic>
+                {
+                    Items = items.ToList(),
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
+        public async Task<PacsPagedResult<PacsImprovementCostMatrix>> GetImprovementCostMatricesAsync(
+            int page = 1,
+            int pageSize = 500,
+            CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 1000) pageSize = 500;
+
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken);
+
+                var totalCount = await connection.ExecuteScalarAsync<int>(
+                    $"SELECT COUNT(*) FROM {ViewImprovementCostMatrices}");
+
+                var offset = (page - 1) * pageSize;
+                var sql = $@"
+                    SELECT
+                        source_matrix_id AS SourceMatrixId,
+                        matrix_year AS MatrixYear,
+                        matrix_type AS MatrixType,
+                        base_rate AS BaseRate,
+                        multiplier AS Multiplier,
+                        region AS Region,
+                        building_type AS BuildingType,
+                        building_type_description AS BuildingTypeDescription,
+                        base_cost AS BaseCost,
+                        matrix_description AS MatrixDescription,
+                        data_points AS DataPoints,
+                        min_cost AS MinCost,
+                        max_cost AS MaxCost,
+                        grade AS Grade,
+                        condition AS Condition,
+                        year_built AS YearBuilt,
+                        depreciation_rate AS DepreciationRate,
+                        axis_1 AS Axis1,
+                        axis_2 AS Axis2,
+                        adjustment_factor_raw AS AdjustmentFactorRaw,
+                        matrix_label AS MatrixLabel
+                    FROM {ViewImprovementCostMatrices}
+                    ORDER BY matrix_year DESC, source_matrix_id
+                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+                var items = await connection.QueryAsync<PacsImprovementCostMatrix>(
+                    sql,
+                    new { Offset = offset, PageSize = pageSize },
+                    commandTimeout: _commandTimeout);
+
+                return new PacsPagedResult<PacsImprovementCostMatrix>
                 {
                     Items = items.ToList(),
                     Page = page,

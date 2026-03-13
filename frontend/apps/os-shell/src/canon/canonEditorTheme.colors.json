@@ -1,0 +1,22 @@
+{
+  "editor.background": "#0d1117",
+  "editor.foreground": "#c9d1d9",
+  "editor.selectionBackground": "#1f6feb44",
+  "editor.inactiveSelectionBackground": "#1f6feb22",
+  "editor.lineHighlightBackground": "#161b22",
+  "editor.lineHighlightBorder": "#00000000",
+  "editorCursor.foreground": "#56d4dd",
+  "editorLineNumber.foreground": "#484f58",
+  "editorLineNumber.activeForeground": "#8b949e",
+  "editorGutter.background": "#0d1117",
+  "editorIndentGuide.background": "#21262d",
+  "editorIndentGuide.activeBackground": "#30363d",
+  "editorBracketMatch.background": "#1f6feb33",
+  "editorBracketMatch.border": "#1f6feb88",
+  "scrollbarSlider.background": "#484f5833",
+  "scrollbarSlider.hoverBackground": "#484f5855",
+  "scrollbarSlider.activeBackground": "#484f5877",
+  "editorWidget.background": "#161b22",
+  "editorWidget.border": "#30363d",
+  "minimap.background": "#0d1117"
+}

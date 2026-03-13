@@ -11,7 +11,6 @@
 import React, { useCallback } from 'react';
 import type { Category } from '../../config/generatedModules';
 import { getLucideIcon } from '../../config/iconMap';
-import { TerraSphereIcon, type TerraSphereIconVariant } from '../../ui/brand/TerraSphereIcon';
 
 // ============================================================================
 // Types
@@ -37,7 +36,7 @@ export interface DesktopIconProps {
   name: string;
   /** Lucide icon name */
   iconName: string;
-  /** Module category (maps to TerraSphere variant) */
+  /** Module category (maps to tile color) */
   category?: Category;
   /** Wiring status for honest UX */
   wiringStatus?: WiringStatus;
@@ -49,15 +48,43 @@ export interface DesktopIconProps {
   onLaunch?: (id: string) => void;
 }
 
-// Category → TerraSphereIcon variant mapping
-const categoryToVariant: Record<Category, TerraSphereIconVariant> = {
-  assessment: 'assessment',
-  records: 'records',
-  tax: 'tax',
-  mapping: 'mapping',
-  analytics: 'analytics',
-  ai: 'ai',
-  system: 'system',
+// Category → tile color mapping (solid translucent tiles, not wireframe spheres)
+const CATEGORY_TILE: Record<Category, { bg: string; glow: string; iconColor: string }> = {
+  assessment: {
+    bg: 'hsl(var(--tf-info-hs) 50% / 0.18)',
+    glow: 'hsl(var(--tf-info-hs) 50% / 0.35)',
+    iconColor: 'hsl(var(--tf-info-hs) 85%)',
+  },
+  records: {
+    bg: 'hsl(var(--tf-transcend-cyan-hs) 40% / 0.18)',
+    glow: 'hsl(var(--tf-transcend-cyan-hs) 40% / 0.35)',
+    iconColor: 'hsl(var(--tf-transcend-cyan-hs) 80%)',
+  },
+  tax: {
+    bg: 'hsl(var(--tf-success-hs) 42% / 0.18)',
+    glow: 'hsl(var(--tf-success-hs) 42% / 0.35)',
+    iconColor: 'hsl(var(--tf-success-hs) 80%)',
+  },
+  mapping: {
+    bg: 'hsl(var(--tf-network-blue-hs) 50% / 0.18)',
+    glow: 'hsl(var(--tf-network-blue-hs) 50% / 0.35)',
+    iconColor: 'hsl(var(--tf-network-blue-hs) 85%)',
+  },
+  analytics: {
+    bg: 'hsl(var(--tf-warning-hs) 45% / 0.18)',
+    glow: 'hsl(var(--tf-warning-hs) 45% / 0.35)',
+    iconColor: 'hsl(var(--tf-warning-hs) 80%)',
+  },
+  ai: {
+    bg: 'hsl(var(--tf-info-hs) 55% / 0.18)',
+    glow: 'hsl(var(--tf-info-hs) 55% / 0.35)',
+    iconColor: 'hsl(var(--tf-info-hs) 85%)',
+  },
+  system: {
+    bg: 'hsl(var(--tf-neutral-hs) 50% / 0.14)',
+    glow: 'hsl(var(--tf-neutral-hs) 50% / 0.25)',
+    iconColor: 'hsl(var(--tf-neutral-hs) 92%)',
+  },
 };
 
 // ============================================================================
@@ -107,7 +134,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
   onLaunch,
 }) => {
   const Icon = getLucideIcon(iconName);
-  const variant = categoryToVariant[category] ?? 'default';
+  const tile = CATEGORY_TILE[category] ?? CATEGORY_TILE.system;
   const badge = wiringStatus ? wiringBadgeStyles[wiringStatus] : null;
 
   // Handle single click (select)
@@ -148,20 +175,55 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       aria-pressed={isSelected}
       aria-selected={isSelected}
       className={`
-        group flex flex-col items-center justify-center
-        w-[76px] h-[90px] p-1.5 rounded-xl cursor-pointer
+        group flex flex-col items-center justify-start
+        w-[96px] py-3 px-2 rounded-2xl cursor-pointer
         select-none transition-all duration-200
         ${isSelected
-          ? 'bg-white/20 shadow-[inset_0_0_0_1.5px_hsl(var(--tf-text)_/_0.25)]'
+          ? 'bg-[hsl(var(--tf-text)/0.15)] shadow-[inset_0_0_0_1.5px_hsl(var(--tf-text)_/_0.2)]'
           : 'hover:bg-white/8'}
       `.trim()}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
     >
-      {/* TerraSphere Icon with embedded glyph */}
-      <div className='mb-1.5 relative' aria-hidden='true'>
-        <TerraSphereIcon size={56} variant={variant} glyph={<Icon className='h-5 w-5' />} />
+      {/* Solid tile icon — category-colored rounded square with large glyph */}
+      <div className='relative mb-2' aria-hidden='true'>
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: 14,
+            background: tile.bg,
+            border: `1px solid ${tile.glow}`,
+            boxShadow: `0 4px 16px ${tile.glow}, inset 0 1px 0 hsl(var(--tf-text) / 0.08)`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Subtle inner highlight at top */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: '10%',
+              right: '10%',
+              height: '40%',
+              background: 'linear-gradient(to bottom, hsl(var(--tf-text) / 0.06), transparent)',
+              borderRadius: '14px 14px 50% 50%',
+            }}
+          />
+          {/* Large glyph — the primary visual element */}
+          <Icon
+            className='h-7 w-7 relative'
+            style={{
+              color: tile.iconColor,
+              filter: `drop-shadow(0 0 6px ${tile.glow})`,
+            }}
+          />
+        </div>
         {/* Wiring Status Badge - subtle, only visible on hover */}
         {badge && (
           <span
@@ -174,10 +236,10 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
         )}
       </div>
 
-      {/* Label */}
+      {/* Label — larger, bolder, with shadow for readability */}
       <span
-        className='text-[11px] text-white/90 text-center leading-tight line-clamp-2 font-medium'
-        style={{ textShadow: '0 1px 3px hsl(var(--tf-bg) / 0.6)' }}
+        className='text-[13px] text-[hsl(var(--tf-text)/0.95)] text-center leading-tight line-clamp-2 font-semibold tracking-wide'
+        style={{ textShadow: '0 1px 6px hsl(var(--tf-bg) / 0.9), 0 0 2px hsl(var(--tf-bg))' }}
       >
         {name}
       </span>

@@ -11,6 +11,7 @@
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { getSnapDimensions, type SnapZone } from './snapUtils';
+import { Z } from './zIndex';
 
 // Re-export SnapZone for test imports
 export type { SnapZone } from './snapUtils';
@@ -67,7 +68,7 @@ export const SnapPreview: React.FC<SnapPreviewProps> = ({
       className={cn(
         // Base styles
         'fixed pointer-events-none',
-        'z-[1040]', // Above windows, below system bar
+        // z-index via style prop
 
         // TerraFusion brand styling
         'border-2 border-[var(--tf-transcend-highlight)]/60',
@@ -85,6 +86,7 @@ export const SnapPreview: React.FC<SnapPreviewProps> = ({
         className
       )}
       style={{
+        zIndex: Z.snapPreview,
         left: `${dimensions.x}px`,
         top: `${dimensions.y}px`,
         width: `${dimensions.width}px`,

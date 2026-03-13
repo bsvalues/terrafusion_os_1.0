@@ -1,0 +1,323 @@
+{
+  "generatedAt": "2026-03-13T11:58:32.231Z",
+  "scope": "Phase 12 PACS-connected runtime track packet",
+  "decision": "GO",
+  "checks": [
+    {
+      "name": "local.benton_sync_proof",
+      "ok": true,
+      "detail": "exit=0",
+      "payload": {
+        "stdout": "\n> terrafusion-os@1.0.0 proof:benton:sync C:\\Users\\bsval\\terrafusion_os_1.0\n> cross-env TF_API_PORT=5000 node os-platform/core/pilot/benton-sync-proof.mjs\n\nPASS auth.login - admin@gov.\nPASS backend.health - Healthy\nPASS sync.status.before - status available\nPASS sync.county.benton - recordsProcessed=0, salesAdded=0, salesUpdated=288, salesSkipped=77001\nPASS sync.status.after - status available\nEvidence written to C:\\Users\\bsval\\terrafusion_os_1.0\\os-platform\\core\\pilot\\evidence\\benton-sync-proof.latest.json\n",
+        "stderr": ""
+      },
+      "blocker": null
+    },
+    {
+      "name": "local.benton_sync_evidence",
+      "ok": true,
+      "detail": "Benton sync evidence reports success",
+      "payload": {
+        "generatedAt": "2026-03-13T11:56:57.837Z",
+        "apiBaseUrl": "http://localhost:5000",
+        "checks": [
+          {
+            "name": "auth.login",
+            "ok": true,
+            "detail": "admin@gov.",
+            "payload": {
+              "roles": ["GovernmentUser", "Administrator"],
+              "expiresAt": "2026-03-13T19:56:58.058Z"
+            }
+          },
+          {
+            "name": "backend.health",
+            "ok": true,
+            "detail": "Healthy",
+            "payload": {
+              "status": "Healthy",
+              "timestamp": "2026-03-13T11:56:58.0691323Z",
+              "environment": "Development",
+              "version": "1.0.0",
+              "service": "TerraFusion OS API - Basic Mode"
+            }
+          },
+          {
+            "name": "sync.status.before",
+            "ok": true,
+            "detail": "status available",
+            "payload": {
+              "ok": true,
+              "status": 200,
+              "data": {
+                "isActive": false,
+                "currentOperation": "Idle",
+                "lastSyncTime": "2026-03-13T11:52:40.9466853Z",
+                "nextScheduledSync": "2026-03-13T12:07:40.9466853Z",
+                "activeConnections": 1,
+                "metrics": {
+                  "TotalSystems": 1,
+                  "ActiveCounties": 1,
+                  "UptimeSeconds": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "sync.county.benton",
+            "ok": true,
+            "detail": "recordsProcessed=0, salesAdded=0, salesUpdated=288, salesSkipped=77001",
+            "payload": {
+              "countyName": "Benton",
+              "legacySystemType": "harris_pacs",
+              "totalParcels": 0,
+              "recordTypes": {
+                "Properties": 0,
+                "Assessments": 0,
+                "Owners": 0,
+                "Sales": 288,
+                "CamaCharacteristics": 0,
+                "CostMatrices": 0
+              },
+              "success": true,
+              "message": "Imported Benton PACS operational data into TerraFusion.",
+              "status": "completed",
+              "timestamp": "2026-03-13T11:56:58.0788174Z",
+              "startTime": "2026-03-13T11:56:58.0788174Z",
+              "endTime": "2026-03-13T11:58:29.2627147Z",
+              "syncTime": "2026-03-13T11:58:29.2627147Z",
+              "syncTimestamp": "2026-03-13T11:58:29.2627147Z",
+              "duration": "00:01:31.1838973",
+              "syncDuration": "00:01:31.1838973",
+              "recordsProcessed": 0,
+              "recordsInserted": 0,
+              "recordsUpdated": 0,
+              "recordsAdded": 0,
+              "recordsSynced": 0,
+              "recordsSkipped": 0,
+              "recordsFailed": 0,
+              "errorCount": 0,
+              "totalRecordsSynced": 0,
+              "errors": [],
+              "syncOperations": [],
+              "syncId": "",
+              "aiTrainingDataUpdated": false,
+              "metadata": {
+                "source": "pacscontract.v1",
+                "mode": "full",
+                "contractValidatedAt": "2026-03-13T11:57:50.654409Z",
+                "propertyPassSkipped": true,
+                "totalSourceRecords": 0,
+                "propertiesAdded": 0,
+                "propertiesUpdated": 0,
+                "propertiesSkipped": 0,
+                "assessmentsAdded": 0,
+                "assessmentsUpdated": 0,
+                "ownersImported": 0,
+                "camaAdded": 0,
+                "camaUpdated": 0,
+                "salesAdded": 0,
+                "salesUpdated": 288,
+                "salesSkipped": 77001,
+                "salesImported": 288,
+                "costMatricesAdded": 0,
+                "costMatricesUpdated": 0,
+                "currentAssessmentMode": "vw_TerraFusion_Property_Core snapshot"
+              }
+            }
+          },
+          {
+            "name": "sync.status.after",
+            "ok": true,
+            "detail": "status available",
+            "payload": {
+              "ok": true,
+              "status": 200,
+              "data": {
+                "isActive": false,
+                "currentOperation": "Idle",
+                "lastSyncTime": "2026-03-13T11:56:58.0788174Z",
+                "nextScheduledSync": "2026-03-13T12:11:58.0788174Z",
+                "activeConnections": 1,
+                "metrics": {
+                  "TotalSystems": 1,
+                  "ActiveCounties": 1,
+                  "UptimeSeconds": 0
+                }
+              }
+            }
+          }
+        ],
+        "summary": {
+          "ok": true,
+          "failures": 0
+        },
+        "scope": "Benton sync proof for the canonical TerraFusionSync conversion lane"
+      },
+      "blocker": null
+    },
+    {
+      "name": "local.runtime.connections",
+      "ok": true,
+      "detail": "Development runtime points parcel truth to pacs_oltp and sales truth to pacs_golive",
+      "payload": {
+        "missingDevelopmentConnections": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "local.runtime.login",
+      "ok": true,
+      "detail": "local PACS-connected runtime login succeeded",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJlNTAxNTk2Yi0xMzcxLTRkMDctYmRmZC1iYTBhMmQ3NzcxZjAiLCJlbWFpbCI6ImFkbWluQGdvdi4iLCJqdGkiOiJlZWNmMzczNy02Nzg1LTRmN2YtYTc5ZS0zYjRjNWQ1NGQ3OTAiLCJpYXQiOjE3NzM0MDMxMDksInRlcnJhZnVzaW9uX3ZlcnNpb24iOiIxLjAiLCJhaV9hZ2VudHMiOlsiMjAxNiIsIjIwMTYiXSwibW9kdWxlcyI6IjMyIiwicm9sZSI6WyJHb3Zlcm5tZW50VXNlciIsIkFkbWluaXN0cmF0b3IiXSwiY291bnR5X3N5c3RlbSI6IlRlcnJhRnVzaW9uIiwidmVyc2lvbiI6IjEuMCIsIm1vZHVsZXNfYWNjZXNzIjoiMzIiLCJzZWN1cml0eV9sZXZlbCI6ImdvdmVybm1lbnQiLCJwZXJtIjpbInJlYWQ6ZG9zc2llciIsInJlYWQ6cHJvcGVydGllcyIsInJlYWQ6cGFyY2VsIiwicmVhZDpjb3N0LWJyZWFrZG93biIsInJlYWQ6Y29zdC1jb21wYXJpc29uIiwicmVhZDpjb3N0LWZhY3RvcnMiLCJyZWFkOmNvc3QtbWF0cml4IiwicmVhZDpzeXN0ZW0tc3RhdHVzIiwicmVhZDpwZXJmb3JtYW5jZS1tZXRyaWNzIiwiZWNvc3lzdGVtOnZpZXciLCJ3cml0ZTpkb3NzaWVyIiwiYWNjZXNzOmNvc3Rmb3JnZSIsImNhbGN1bGF0ZTpwcm9wZXJ0eS1jb3N0IiwiY2FsY3VsYXRlOmJhdGNoLXZhbHVhdGlvbiIsInJlYWQ6Y29zdC1mb3JlY2FzdCIsInJlYWQ6YWktYWdlbnRzIiwibWFuYWdlOmFpLWFnZW50cyIsInN5bmM6ZXh0ZXJuYWwtc3lzdGVtcyIsImVjb3N5c3RlbTptYW5hZ2UiXSwiY291bnR5SWQiOiIxOTE5MDAxOS0xOTE5LTE5MTktMTkxOS0xOTE5MTkxOTE5MTkiLCJjb3VudHlDb2RlIjoiYmVudG9uIiwibmJmIjoxNzczNDAzMTA5LCJleHAiOjE3NzM0MTAzMDksImlzcyI6IlRlcnJhRnVzaW9uLkFQSSIsImF1ZCI6IlRlcnJhRnVzaW9uLkNsaWVudCJ9.-sqETLWilly_cT9Rv5RiD6jlJyTl2fSsuaIdaBnvnIs",
+        "email": "admin@gov.",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T19:58:29.6242274Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "local.runtime.health",
+      "ok": true,
+      "detail": "status=200, environment=Development",
+      "payload": {
+        "status": "Healthy",
+        "timestamp": "2026-03-13T11:58:29.6431613Z",
+        "environment": "Development",
+        "version": "1.0.0",
+        "service": "TerraFusion OS API - Basic Mode"
+      },
+      "blocker": null
+    },
+    {
+      "name": "local.runtime.sync_status",
+      "ok": true,
+      "detail": "status=200, systems=1, counties=1",
+      "payload": {
+        "isActive": false,
+        "currentOperation": "Idle",
+        "lastSyncTime": "2026-03-13T11:56:58.0788174Z",
+        "nextScheduledSync": "2026-03-13T12:11:58.0788174Z",
+        "activeConnections": 1,
+        "metrics": {
+          "TotalSystems": 1,
+          "ActiveCounties": 1,
+          "UptimeSeconds": 0
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.runtime.login",
+      "ok": true,
+      "detail": "login succeeded",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJjMGYzY2FhYy1lNmZmLTQ3ZGMtODVlZS0wZDNlN2JmYzJiODQiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6IjIxYTVkMmMwLTA0ZDgtNGZkNC04YWZiLWZmMzE2Njg5OGVlNSIsImlhdCI6MTc3MzQwMzExMiwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzExMiwiZXhwIjoxNzczNDA2NzEyLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.DY9z2fUK4Ksd2xuTr2Xn9Nmx3rYJSIFP-FvIZLpdw7o",
+        "email": "admin@terrafusionmarket.com",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T19:58:32.0448891Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.runtime.snapshot_status",
+      "ok": true,
+      "detail": "status=200, systems=0, counties=0",
+      "payload": {
+        "isActive": false,
+        "currentOperation": "Idle",
+        "lastSyncTime": null,
+        "nextScheduledSync": null,
+        "activeConnections": 0,
+        "metrics": {
+          "TotalSystems": 0,
+          "ActiveCounties": 0,
+          "UptimeSeconds": 0
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.runtime.snapshot_lists",
+      "ok": true,
+      "detail": "systems=0, counties=0",
+      "payload": {
+        "systemsStatus": 200,
+        "countiesStatus": 200,
+        "systems": [],
+        "counties": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.runtime.login",
+      "ok": true,
+      "detail": "login succeeded",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODY1ODU0OS1lYjY5LTQyMWItOGM0YS1mZWQ0MjBhZjRhYTkiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6IjIwZTUwNjU4LWQxMmYtNDJkOC05ZGQ5LTkyYWM1NDI2YTE0ZiIsImlhdCI6MTc3MzQwMzExMywidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzExMywiZXhwIjoxNzczNDA2NzEzLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ._Wv0EU6OzB5_38XYtvVm8owB3OrtdgU_EkefRv1D5mU",
+        "email": "admin@terrafusionmarket.com",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T19:58:33.2401741Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.runtime.snapshot_status",
+      "ok": true,
+      "detail": "status=200, systems=0, counties=0",
+      "payload": {
+        "isActive": false,
+        "currentOperation": "Idle",
+        "lastSyncTime": null,
+        "nextScheduledSync": null,
+        "activeConnections": 0,
+        "metrics": {
+          "TotalSystems": 0,
+          "ActiveCounties": 0,
+          "UptimeSeconds": 0
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.runtime.snapshot_lists",
+      "ok": true,
+      "detail": "systems=0, counties=0",
+      "payload": {
+        "systemsStatus": 200,
+        "countiesStatus": 200,
+        "systems": [],
+        "counties": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "hostinger.phase12_runtime_role_canon",
+      "ok": true,
+      "detail": "Hostinger control-plane canon records the PACS-connected runtime split",
+      "payload": {
+        "missingHostingerCanon": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase12.doc.runtime_track",
+      "ok": true,
+      "detail": "Phase 12 doc records the PACS-connected runtime track and boundaries",
+      "payload": {
+        "missingPhase12Doc": []
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": [],
+    "runtimeTrackDecision": "Local/canonical Benton runtime is PACS-connected for sync/conversion; Hostinger staging and production remain snapshot-only operator runtimes."
+  }
+}

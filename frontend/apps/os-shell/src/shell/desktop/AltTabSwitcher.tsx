@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useDesktopStore } from '../../stores/desktopStore';
+import { Z } from './zIndex';
 
 /**
  * Window Card Component - Single window in the Alt+Tab switcher
@@ -87,7 +88,8 @@ export const AltTabSwitcher: React.FC = () => {
     <>
       {/* Backdrop */}
       <div
-        className='fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]'
+        className='fixed inset-0 bg-[hsl(var(--tf-bg)/0.6)] backdrop-blur-sm'
+        style={{ zIndex: Z.altTabBackdrop }}
         data-testid='alttab-backdrop'
       />
 
@@ -97,9 +99,10 @@ export const AltTabSwitcher: React.FC = () => {
         role='listbox'
         aria-label='Window Switcher'
         aria-activedescendant={`alttab-option-${selectedWindowId}`}
+        style={{ zIndex: Z.altTab }}
         className={cn(
           // Position
-          'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]',
+          'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
           // Glass effect
           'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
           'border border-[var(--tf-transcend-highlight)]/30',

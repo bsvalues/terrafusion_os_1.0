@@ -1,10 +1,13 @@
 /**
  * TerraFusion OS Dock
  *
- * macOS Tahoe-inspired floating centered dock with glass effect.
- * Replaces the Windows 11-style full-width taskbar.
+ * Primary launcher and switcher for constitutional suites and active work.
  *
- * Layout: [TerraSphere home] | [Running apps] | [System tray]
+ * Layout: [TerraSphere] | [Forge] [Atlas] [Dais] [Dossier] [GPT] | (Running)
+ *
+ * Zone A: Home (TerraSphere → Launchpad)
+ * Zone B: Constitutional suites (from suiteRegistry, centered, visually dominant)
+ * Zone B overflow: Running app windows not matching a pinned suite
  *
  * @module shell/desktop/Taskbar
  */
@@ -12,30 +15,46 @@
 import { cn } from '@/lib/utils';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ParcelContextIndicator } from '../../components/ParcelContext';
+import {
+  Hammer,
+  Globe,
+  LayoutDashboard,
+  FileStack,
+  Bot,
+} from 'lucide-react';
 import { getLucideIcon } from '../../config/iconMap';
+import { CONSTITUTIONAL_SUITES, type SuiteDefinition } from '../../config/suiteRegistry';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useWindowPeek } from '../../hooks/useWindowPeek';
-import { SentinelChip } from '../../sentinel/SentinelChip';
 import { useDesktopStore } from '../../stores/desktopStore';
+import { Z } from './zIndex';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { TerraSphere } from '../../ui/brand/TerraSphere';
-import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
 import { LiquidPanel } from '../../ui/materials';
-import { AIStatusIndicator, defaultAIStatus, type AIStatus } from './AIStatusPanel';
-import { Clock } from './Clock';
-import { NotificationBell, type Notification } from './NotificationBell';
+import { activateModule } from '../../orchestration/moduleActivation';
 import { TaskbarContextMenu } from './TaskbarContextMenu';
 import { VirtualDesktopSwitcher } from './VirtualDesktopSwitcher';
 
 // ============================================================================
-// Default notification state (empty — populated by real events at runtime)
+// Icon resolver — maps registry iconName to actual Lucide component.
+// FileStack and Bot are NOT in the shared LUCIDE_ICON_MAP, so we map directly.
 // ============================================================================
 
-const defaultNotifications: Notification[] = [];
+const SUITE_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Hammer,
+  Globe,
+  LayoutDashboard,
+  FileStack,
+  Bot,
+};
+
+function getSuiteIcon(iconName: string): React.ComponentType<{ className?: string }> {
+  return SUITE_ICON_MAP[iconName] ?? Hammer;
+}
 
 // ============================================================================
-// Dock Home Button (TerraSphere)
+// Zone A: Home Button (TerraSphere)
 // ============================================================================
 
 const DockHomeButton: React.FC = () => {
@@ -51,20 +70,94 @@ const DockHomeButton: React.FC = () => {
       aria-haspopup='menu'
       className={cn(
         'flex items-center justify-center',
-        'w-10 h-10 rounded-lg',
+        'w-16 h-16 rounded-2xl',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
-        'hover:bg-white/8',
-        isOpen && 'bg-white/12'
+        'hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)]',
+        isOpen && 'bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.12)]'
       )}
     >
-      <TerraSphere size={28} state={isOpen ? 'processing' : 'idle'} />
+      <TerraSphere size={56} state={isOpen ? 'processing' : 'idle'} />
     </button>
   );
 };
 
 // ============================================================================
-// Dock App Button (running windows)
+// Zone B: Pinned Suite Button (Constitutional)
+// ============================================================================
+
+const DockSuiteButton: React.FC<{
+  suite: SuiteDefinition;
+  isRunning: boolean;
+  isActive: boolean;
+}> = ({ suite, isRunning, isActive }) => {
+  const Icon = getSuiteIcon(suite.iconName);
+
+  const handleClick = () => {
+    activateModule(suite.id, { source: 'dock' });
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      aria-label={suite.displayName}
+      title={suite.displayName}
+      className={cn(
+        'relative flex flex-col items-center justify-center gap-0.5',
+        'w-14 h-14 rounded-2xl',
+        'transition-all duration-150',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
+        'hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.10)]',
+        isActive && 'bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.12)]'
+      )}
+    >
+      <Icon className='h-5 w-5' style={{ color: 'hsl(var(--tf-text-primary-hs) 90%)' }} />
+      <span
+        className='text-[9px] font-medium leading-none'
+        style={{ color: 'hsl(var(--tf-text-primary-hs) 60%)' }}
+      >
+        {suite.shortName}
+      </span>
+      {/* Running indicator */}
+      {isRunning && (
+        <div
+          className='absolute bottom-0.5 left-1/2 -translate-x-1/2'
+          style={{
+            width: isActive ? 6 : 4,
+            height: isActive ? 6 : 4,
+            borderRadius: '50%',
+            background: isActive
+              ? 'hsl(var(--tf-transcend-cyan-hs) 50%)'
+              : 'hsl(var(--tf-neutral-hs) 60%)',
+            boxShadow: isActive ? '0 0 6px hsl(var(--tf-transcend-cyan-hs) 50% / 0.6)' : 'none',
+          }}
+        />
+      )}
+    </button>
+  );
+};
+
+// ============================================================================
+// Zone B: Core Suite Zone (pinned suites)
+// ============================================================================
+
+const CoreSuiteZone: React.FC = () => {
+  const { windows, activeWindowId, currentDesktopId } = useDesktopStore();
+  const visibleWindows = windows.filter((w) => w.desktopId === currentDesktopId);
+
+  return (
+    <div className='flex items-center gap-1' role='group' aria-label='Core suites'>
+      {CONSTITUTIONAL_SUITES.map((suite) => {
+        const isRunning = visibleWindows.some((w) => w.moduleId === suite.id);
+        const isActive = visibleWindows.some((w) => w.moduleId === suite.id && w.id === activeWindowId);
+        return <DockSuiteButton key={suite.id} suite={suite} isRunning={isRunning} isActive={isActive} />;
+      })}
+    </div>
+  );
+};
+
+// ============================================================================
+// Zone B (overflow): Running Apps not matching pinned suites
 // ============================================================================
 
 interface DockAppButtonProps {
@@ -108,47 +201,30 @@ const DockAppButton: React.FC<DockAppButtonProps> = ({
       title={title}
       className={cn(
         'relative flex items-center justify-center',
-        'w-10 h-10 rounded-lg',
+        'w-12 h-12 rounded-xl',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
-        'hover:bg-white/8',
-        isActive && 'bg-white/10',
+        'hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)]',
+        isActive && 'bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.10)]',
         isMinimized && !isActive && 'opacity-50'
       )}
     >
-      <TerraSphereIcon size={28} variant='default' glyph={<Icon className='h-3 w-3' />} />
-      {/* Active indicator dot */}
+      <Icon className='h-5 w-5' style={{ color: 'hsl(var(--tf-text-primary-hs) 85%)' }} />
       {isActive && (
         <div
           className='absolute -bottom-0.5 left-1/2 -translate-x-1/2'
           style={{
-            width: 4,
-            height: 4,
+            width: 5,
+            height: 5,
             borderRadius: '50%',
             background: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
             boxShadow: '0 0 6px hsl(var(--tf-transcend-cyan-hs) 50% / 0.6)',
           }}
         />
       )}
-      {/* Running indicator dot (not active) */}
-      {!isActive && !isMinimized && (
-        <div
-          className='absolute -bottom-0.5 left-1/2 -translate-x-1/2'
-          style={{
-            width: 3,
-            height: 3,
-            borderRadius: '50%',
-            background: 'hsl(var(--tf-neutral-hs) 60%)',
-          }}
-        />
-      )}
     </button>
   );
 };
-
-// ============================================================================
-// Running Apps
-// ============================================================================
 
 const RunningApps: React.FC = () => {
   const { t } = useTranslation();
@@ -162,7 +238,11 @@ const RunningApps: React.FC = () => {
   } = useContextMenu();
   const [contextMenuWindow, setContextMenuWindow] = useState<(typeof windows)[0] | null>(null);
 
-  const visibleWindows = windows.filter((w) => w.desktopId === currentDesktopId);
+  // Only show windows that DON'T match a constitutional suite (those are in CoreSuiteZone)
+  const pinnedIds = new Set(CONSTITUTIONAL_SUITES.map((s) => s.id));
+  const visibleWindows = windows.filter(
+    (w) => w.desktopId === currentDesktopId && !pinnedIds.has(w.moduleId ?? '')
+  );
 
   if (visibleWindows.length === 0) return null;
 
@@ -170,7 +250,7 @@ const RunningApps: React.FC = () => {
     <>
       <div
         data-testid='running-apps'
-        className='flex items-center gap-0.5'
+        className='flex items-center gap-1'
         role='group'
         aria-label={t('taskbar.runningApps')}
       >
@@ -205,65 +285,29 @@ const RunningApps: React.FC = () => {
 };
 
 // ============================================================================
-// System Tray (compact)
+// Dock Divider
 // ============================================================================
 
-interface SystemTrayProps {
-  aiStatus?: AIStatus;
-  notifications?: Notification[];
-  onNotificationClick?: (notification: Notification) => void;
-  onNotificationDismiss?: (id: string) => void;
-  onNotificationClearAll?: () => void;
-}
-
-const SystemTray: React.FC<SystemTrayProps> = ({
-  aiStatus = defaultAIStatus,
-  notifications = defaultNotifications,
-  onNotificationClick,
-  onNotificationDismiss,
-  onNotificationClearAll,
-}) => {
-  const { t } = useTranslation();
-  return (
-    <div
-      data-testid='system-tray'
-      className='flex items-center gap-1'
-      role='group'
-      aria-label={t('taskbar.systemTray')}
-    >
-      <ParcelContextIndicator compact />
-      <SentinelChip variant='tray' />
-      <AIStatusIndicator status={aiStatus} />
-      <NotificationBell
-        notifications={notifications}
-        onNotificationClick={onNotificationClick}
-        onDismiss={onNotificationDismiss}
-        onClearAll={onNotificationClearAll}
-      />
-      <Clock />
-    </div>
-  );
-};
+const DockDivider: React.FC = () => (
+  <div
+    style={{
+      width: 1,
+      height: 36,
+      background: 'hsl(var(--tf-border) / 0.2)',
+      flexShrink: 0,
+    }}
+  />
+);
 
 // ============================================================================
 // Main Dock Component
 // ============================================================================
 
 export interface TaskbarProps {
-  aiStatus?: AIStatus;
-  notifications?: Notification[];
-  onNotificationClick?: (notification: Notification) => void;
-  onNotificationDismiss?: (id: string) => void;
-  onNotificationClearAll?: () => void;
   className?: string;
 }
 
 export const Taskbar: React.FC<TaskbarProps> = ({
-  aiStatus,
-  notifications,
-  onNotificationClick,
-  onNotificationDismiss,
-  onNotificationClearAll,
   className,
 }) => {
   const { t } = useTranslation();
@@ -279,33 +323,23 @@ export const Taskbar: React.FC<TaskbarProps> = ({
         aria-label={t('taskbar.ariaLabel')}
         className={cn(
           // Floating centered dock
-          'fixed bottom-2 left-1/2 -translate-x-1/2 z-[1000]',
+          'fixed bottom-4 left-1/2 -translate-x-1/2',
           // Layout
-          'flex items-center gap-1 px-2 h-12',
+          'flex items-center gap-2 px-3 h-[68px]',
           className
         )}
-        style={{ maxWidth: 'calc(100vw - 2rem)' }}
+        style={{ maxWidth: 'calc(100vw - 2rem)', zIndex: Z.dock }}
       >
-        {/* Home button */}
+        {/* Zone A: Home */}
         <DockHomeButton />
 
-        {/* Divider */}
-        <div style={{ width: 1, height: 24, background: 'hsl(var(--tf-border) / 0.3)', flexShrink: 0 }} />
+        <DockDivider />
 
-        {/* Running apps */}
+        {/* Zone B: Core Suites (centered, dominant) */}
+        <CoreSuiteZone />
+
+        {/* Running apps that aren't constitutional suites */}
         <RunningApps />
-
-        {/* Divider (only if running apps exist) */}
-        <div style={{ width: 1, height: 24, background: 'hsl(var(--tf-border) / 0.3)', flexShrink: 0 }} />
-
-        {/* System tray */}
-        <SystemTray
-          aiStatus={aiStatus}
-          notifications={notifications}
-          onNotificationClick={onNotificationClick}
-          onNotificationDismiss={onNotificationDismiss}
-          onNotificationClearAll={onNotificationClearAll}
-        />
       </LiquidPanel>
     </>
   );

@@ -368,7 +368,7 @@ public sealed class TerraFusionSyncRuntimeState
             },
             DefaultSyncOptions = new SyncOptions
             {
-                DataTypes = new List<string> { "Properties", "Assessments", "Sales", "Owners" },
+                DataTypes = new List<string> { "Properties", "Assessments", "Owners", "CamaCharacteristics", "Sales", "CostMatrices" },
                 ValidateData = true,
                 BatchSize = 1000
             }
