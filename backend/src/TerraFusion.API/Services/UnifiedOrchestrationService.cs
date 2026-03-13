@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
 using TerraFusion.API.Services;
@@ -27,6 +28,7 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
     private readonly ILogger<UnifiedOrchestrationService> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IModuleLoaderService _moduleLoader;
+    private readonly IConfiguration _configuration;
     private readonly ConcurrentDictionary<string, ModuleHealthStatus> _moduleStatuses = new();
     private bool _isSystemRunning = false;
     private const int HealthCheckIntervalSeconds = 30; // Check system health every 30 seconds
@@ -34,11 +36,13 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
     public UnifiedOrchestrationService(
         ILogger<UnifiedOrchestrationService> logger,
         IServiceProvider serviceProvider,
-        IModuleLoaderService moduleLoader)
+        IModuleLoaderService moduleLoader,
+        IConfiguration configuration)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
         _moduleLoader = moduleLoader;
+        _configuration = configuration;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -305,6 +309,13 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
         try
         {
+            if (!HasConfiguredPacsRuntime())
+            {
+                _logger.LogWarning(
+                    "⚠️ PACS runtime not configured. Host is running in Benton operational-snapshot mode; legacy integration startup is intentionally skipped.");
+                return;
+            }
+
             // TerraFusionSync is the active integration surface for legacy systems.
             using var scope = _serviceProvider.CreateScope();
             var terraFusionSyncService = scope.ServiceProvider.GetService<ITerraFusionSyncService>();
@@ -381,6 +392,11 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task<bool> CheckLegacyIntegrationHealthAsync()
     {
+        if (!HasConfiguredPacsRuntime())
+        {
+            return true;
+        }
+
         try
         {
             using var scope = _serviceProvider.CreateScope();
@@ -446,6 +462,12 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task StartLegacyIntegrationAsync()
     {
+        if (!HasConfiguredPacsRuntime())
+        {
+            _logger.LogInformation("⏭️ Legacy integration start skipped; PACS runtime is not configured on this host.");
+            return;
+        }
+
         _logger.LogInformation("🔄 Starting legacy integration...");
         await Task.Delay(200);
         _logger.LogInformation("✅ Legacy integration started");
@@ -453,9 +475,21 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task StopLegacyIntegrationAsync()
     {
+        if (!HasConfiguredPacsRuntime())
+        {
+            _logger.LogInformation("⏭️ Legacy integration stop skipped; PACS runtime is not configured on this host.");
+            return;
+        }
+
         _logger.LogInformation("🔄 Stopping legacy integration...");
         await Task.Delay(100);
         _logger.LogInformation("✅ Legacy integration stopped");
+    }
+
+    private bool HasConfiguredPacsRuntime()
+    {
+        return !string.IsNullOrWhiteSpace(_configuration.GetConnectionString("PacsConnection")) ||
+               !string.IsNullOrWhiteSpace(_configuration["PACS:ConnectionString"]);
     }
 
     private async Task StartAIServicesAsync()
