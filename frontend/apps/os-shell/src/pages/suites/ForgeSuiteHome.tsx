@@ -2,25 +2,17 @@
  * TerraForge Suite Home -- Property Valuation & Cost Analysis
  * ===================================================================
  * Constitutional Suite: forge (Article I)
- * Standalone route: /forge
+ * Layer 3: Domain router + cross-parcel operational workspace
  *
- * Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge → TerraForge
- *
- * Layout: Stage Tabs (horizontal) + BentoGrid content area
- * Phase 3 Design Manifesto: replaces sidebar navigation with Stage Tabs
- *
- * Modules (ALL 6 ACTIVE):
- *   - CostForge: Benton County Cost Approach calculator
- *   - CompsForge: Sales comparison analysis
- *   - IncomeForge: Income approach (direct capitalization)
- *   - AppealForge: BOE appeal preparation & defense
- *   - Reconciliation: Three-approach value reconciliation
- *   - Value Audit: FISMA-compliant valuation audit trail
+ * Shows: county stats, module launcher grid, recent parcel queue.
+ * Does NOT host parcel execution — that lives in the Property Workbench.
  */
 
-import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
+import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
+import { OperationalQueue } from '../../components/suites/OperationalQueue';
+import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   ArrowLeft,
   Hammer,
@@ -31,226 +23,75 @@ import {
   FileSearch,
   Gavel,
   ShieldCheck,
+  LineChart,
+  PieChart,
+  MapPin,
+  DollarSign,
+  Search,
 } from 'lucide-react';
 
-const CostForgeModule = lazy(() => import('./modules/CostForgeModule'));
-const CompsForgeModule = lazy(() => import('./modules/CompsForgeModule'));
-const IncomeForgeModule = lazy(() => import('./modules/IncomeForgeModule'));
-const AppealForgeModule = lazy(() => import('./modules/AppealForgeModule'));
-const ReconciliationModule = lazy(() => import('./modules/ReconciliationModule'));
-const ValueAuditModule = lazy(() => import('./modules/ValueAuditModule'));
-const ForgeExecutionPanel = lazy(() => import('./modules/ForgeExecutionPanel'));
-
-interface ForgeModuleDef {
-  id: string;
-  label: string;
-  icon: typeof Calculator;
-  status: 'active' | 'planned';
-  description: string;
-}
-
-const FORGE_MODULES: ForgeModuleDef[] = [
-  {
-    id: 'costforge',
-    label: 'CostForge',
-    icon: Calculator,
-    status: 'active',
-    description: 'Benton County Cost Approach — replacement cost calculator',
-  },
-  {
-    id: 'comps',
-    label: 'CompsForge',
-    icon: BarChart3,
-    status: 'active',
-    description: 'Sales comparison approach with paired adjustments',
-  },
-  {
-    id: 'income',
-    label: 'IncomeForge',
-    icon: TrendingUp,
-    status: 'active',
-    description: 'Income approach — direct capitalization for commercial properties',
-  },
-  {
-    id: 'appeal',
-    label: 'AppealForge',
-    icon: Gavel,
-    status: 'active',
-    description: 'BOE appeal preparation, evidence packets, and defense builder',
-  },
-  {
-    id: 'reconcile',
-    label: 'Reconciliation',
-    icon: Scale,
-    status: 'active',
-    description: 'Three-approach reconciliation and final opinion of value',
-  },
-  {
-    id: 'audit',
-    label: 'Value Audit',
-    icon: FileSearch,
-    status: 'active',
-    description: 'FISMA-compliant audit trail for valuation changes',
-  },
-  {
-    id: 'governed',
-    label: 'Governed Run',
-    icon: ShieldCheck,
-    status: 'active',
-    description: 'Execute run_valuation_model through the governed path with full trace visibility',
-  },
+const FORGE_MODULES: SuiteModuleDef[] = [
+  // Workbench-mode (parcel-scoped, opens Property Workbench)
+  { id: 'costforge', label: 'CostForge', icon: Calculator, description: 'Benton County Cost Approach — replacement cost calculator', launchMode: 'workbench', workbenchTab: 'forge' },
+  { id: 'comps', label: 'CompsForge', icon: BarChart3, description: 'Sales comparison approach with paired adjustments', launchMode: 'workbench', workbenchTab: 'forge' },
+  { id: 'income-val', label: 'Income Valuation', icon: DollarSign, description: 'Income approach — direct capitalization & GRM for commercial properties', launchMode: 'workbench', workbenchTab: 'forge' },
+  { id: 'comparable-sales', label: 'Comparable Sales', icon: Search, description: 'Parcel-scoped comp selection with paired sale adjustments', launchMode: 'workbench', workbenchTab: 'forge' },
+  { id: 'appeal', label: 'AppealForge', icon: Gavel, description: 'BOE appeal preparation, evidence packets, and defense builder', launchMode: 'workbench', workbenchTab: 'dais' },
+  { id: 'reconcile', label: 'Reconciliation', icon: Scale, description: 'Three-approach reconciliation and final opinion of value', launchMode: 'workbench', workbenchTab: 'forge' },
+  { id: 'audit', label: 'Value Audit', icon: FileSearch, description: 'FISMA-compliant audit trail for valuation changes', launchMode: 'workbench', workbenchTab: 'audit' },
+  { id: 'governed', label: 'Governed Run', icon: ShieldCheck, description: 'Execute run_valuation_model through the governed path', launchMode: 'workbench', workbenchTab: 'forge' },
+  // Standalone-mode (county-wide, opens standalone window)
+  { id: 'regression-studio', label: 'Regression Studio', icon: LineChart, description: 'County-wide MRA regression models & IAAO compliance', launchMode: 'standalone', moduleId: 'regression-studio' },
+  { id: 'statistics-studio', label: 'Statistics Studio', icon: PieChart, description: 'Ratio studies, COD/PRD/PRB & statistical diagnostics', launchMode: 'standalone', moduleId: 'statistics-studio' },
+  { id: 'terra-gama', label: 'TerraGAMA', icon: MapPin, description: 'Geographic Area Market Analysis — neighborhood delineation', launchMode: 'standalone', moduleId: 'terra-gama' },
 ];
 
-function ModuleLoading() {
-  return (
-    <div className='flex items-center justify-center min-h-[400px]'>
-      <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading module...</p>
-    </div>
-  );
-}
+const fmtNum = (n: number) => n.toLocaleString();
+const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
 
 export default function ForgeSuiteHome() {
   const navigate = useNavigate();
-  const [activeModule, setActiveModule] = useState('costforge');
+  const { stats } = useCountyStats();
 
   return (
-    <div data-testid="suite-forge-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div data-testid="suite-forge-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Parcel Context Banner — shows when parcel is active */}
       <ParcelContextBanner suiteTabId="forge" />
-      {/* Header + Stage Tabs */}
+
+      {/* Stats Strip */}
+      {stats && (
+        <div className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.totalParcels)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Avg Assessed</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(stats.averageAssessedValue)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Assessed This Year</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.assessedThisYear)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Pending</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-suite-forge))' }}>{fmtNum(stats.pendingAssessments)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Completion</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{stats.assessmentCompletionPercent.toFixed(1)}%</span></div>
+        </div>
+      )}
+
+      {/* Header */}
       <header
-        style={{
-          borderBottom: '1px solid hsl(var(--tf-border))',
-          background: 'hsl(var(--tf-card-bg) / 0.5)',
-        }}
-        className='backdrop-blur-xl shrink-0'
+        style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }}
+        className="backdrop-blur-xl shrink-0"
       >
-        <div className='max-w-[1600px] mx-auto px-6 pt-4 pb-0 flex items-center gap-4'>
-          <button
-            onClick={() => navigate('/')}
-            className='p-2 rounded-lg hover:bg-white/5 transition-colors'
-          >
+        <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4">
+          <button onClick={() => navigate('/')} className="p-2 rounded-lg hover:bg-white/5 transition-colors">
             <ArrowLeft size={20} style={{ color: 'hsl(var(--tf-muted))' }} />
           </button>
-          <div
-            className='p-2 rounded-lg'
-            style={{ background: 'hsl(var(--tf-suite-forge) / 0.15)' }}
-          >
+          <div className="p-2 rounded-lg" style={{ background: 'hsl(var(--tf-suite-forge) / 0.15)' }}>
             <Hammer size={24} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
           </div>
           <div>
-            <h1 className='text-xl font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
-              TerraForge
-            </h1>
-            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-              Property Valuation & Cost Analysis Engine
-            </p>
+            <h1 className="text-xl font-medium" style={{ color: 'hsl(var(--tf-fg))' }}>TerraForge</h1>
+            <p className="text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Property Valuation & Cost Analysis Engine</p>
           </div>
         </div>
-
-        {/* Stage Tabs */}
-        <nav
-          role='tablist'
-          aria-label='TerraForge modules'
-          className='max-w-[1600px] mx-auto px-6 flex gap-1 mt-3 overflow-x-auto'
-        >
-          {FORGE_MODULES.map((mod) => {
-            const Icon = mod.icon;
-            const isActive = mod.id === activeModule;
-            const isPlanned = mod.status === 'planned';
-            return (
-              <button
-                key={mod.id}
-                role='tab'
-                aria-selected={isActive}
-                aria-controls={`forge-panel-${mod.id}`}
-                onClick={() => !isPlanned && setActiveModule(mod.id)}
-                disabled={isPlanned}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
-                  isActive
-                    ? 'bg-white/10'
-                    : isPlanned
-                      ? 'opacity-40 cursor-not-allowed'
-                      : 'hover:bg-white/5'
-                }`}
-                style={{
-                  color: isActive
-                    ? 'hsl(var(--tf-fg))'
-                    : 'hsl(var(--tf-muted))',
-                  borderBottom: isActive
-                    ? '2px solid hsl(var(--tf-suite-forge))'
-                    : '2px solid transparent',
-                }}
-              >
-                <Icon
-                  size={16}
-                  style={{
-                    color: isActive
-                      ? 'hsl(var(--tf-suite-forge))'
-                      : 'hsl(var(--tf-muted))',
-                  }}
-                />
-                {mod.label}
-              </button>
-            );
-          })}
-        </nav>
       </header>
 
-      {/* Module Content */}
-      <main className='flex-1 min-h-0 overflow-y-auto'>
-        <Suspense fallback={<ModuleLoading />}>
-          {activeModule === 'costforge' && (
-            <div role='tabpanel' id='forge-panel-costforge'>
-              <CostForgeModule />
-            </div>
-          )}
-          {activeModule === 'comps' && (
-            <div role='tabpanel' id='forge-panel-comps'>
-              <CompsForgeModule />
-            </div>
-          )}
-          {activeModule === 'income' && (
-            <div role='tabpanel' id='forge-panel-income'>
-              <IncomeForgeModule />
-            </div>
-          )}
-          {activeModule === 'appeal' && (
-            <div role='tabpanel' id='forge-panel-appeal'>
-              <AppealForgeModule />
-            </div>
-          )}
-          {activeModule === 'reconcile' && (
-            <div role='tabpanel' id='forge-panel-reconcile'>
-              <ReconciliationModule />
-            </div>
-          )}
-          {activeModule === 'audit' && (
-            <div role='tabpanel' id='forge-panel-audit'>
-              <ValueAuditModule />
-            </div>
-          )}
-          {activeModule === 'governed' && (
-            <div role='tabpanel' id='forge-panel-governed' className='p-6'>
-              <ForgeExecutionPanel />
-            </div>
-          )}
-          {!FORGE_MODULES.some((m) => m.id === activeModule) && (
-            <div className='p-6 flex items-center justify-center min-h-[400px]'>
-              <div className='text-center space-y-3'>
-                <Hammer
-                  size={48}
-                  className='mx-auto'
-                  style={{ color: 'hsl(var(--tf-suite-forge) / 0.3)' }}
-                />
-                <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                  {FORGE_MODULES.find((m) => m.id === activeModule)?.label} is under
-                  development
-                </p>
-              </div>
-            </div>
-          )}
-        </Suspense>
+      {/* Module Grid + Operational Queue */}
+      <main className="flex-1 min-h-0 overflow-y-auto">
+        <SuiteModuleGrid modules={FORGE_MODULES} accentVar="--tf-suite-forge" />
+        <OperationalQueue title="Recent Assessments" accentVar="--tf-suite-forge" emptyMessage="No recent assessment activity" />
       </main>
     </div>
   );

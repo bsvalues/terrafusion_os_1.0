@@ -374,28 +374,229 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "$schema": "../../tools/registry/terrafusion.app.schema.json",
     "id": "income-valuation",
     "displayName": "Income Valuation",
-    "description": "Income Approach Property Valuation Analysis",
+    "description": "Income approach property valuation — direct capitalization, GRM, and AI-assisted NOI analysis. Legacy: BSIncomeValuation (React/Express/Drizzle).",
     "iconName": "TrendingUp",
     "category": "assessment",
-    "tier": 2,
-    "status": "legacy",
-    "pinned": false,
-    "version": "1.0.0",
-    "intent": "legacy",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "2.0.0",
+    "intent": "gen2",
     "runnable": false,
     "entry": {
-      "type": "url",
-      "url": "http://localhost:5180/"
+      "type": "route",
+      "route": "/placeholder"
     },
     "tags": [
       "assessment",
       "income",
       "valuation",
-      "legacy"
+      "gen2",
+      "parcel-scoped"
     ],
     "permissions": [
       "county:read",
       "property:read"
+    ]
+  },
+  {
+    "id": "regression-studio",
+    "displayName": "Regression Studio",
+    "description": "County-wide MRA regression models for mass appraisal — multiple regression analysis, model diagnostics, IAAO compliance. Legacy: Bsbcintelligentvalues (FastAPI/scikit-learn).",
+    "iconName": "LineChart",
+    "category": "assessment",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "assessment",
+      "regression",
+      "mra",
+      "gen2",
+      "county-wide"
+    ],
+    "permissions": [
+      "county:read",
+      "property:read"
+    ]
+  },
+  {
+    "id": "statistics-studio",
+    "displayName": "Statistics Studio",
+    "description": "County-wide ratio studies — COD, COV, PRD, weighted mean ratios, IAAO Standard on Ratio Studies compliance. Legacy: assessment workflow tools.",
+    "iconName": "PieChart",
+    "category": "analytics",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "analytics",
+      "statistics",
+      "ratio-studies",
+      "gen2",
+      "county-wide"
+    ],
+    "permissions": [
+      "county:read",
+      "property:read"
+    ]
+  },
+  {
+    "id": "comparable-sales",
+    "displayName": "Comparable Sales",
+    "description": "Parcel-scoped sales comparison approach — neighborhood comps, paired adjustments, Leaflet mapping, USPAP-compliant exports. Legacy: GeospatialAnalyzerBS.",
+    "iconName": "Home",
+    "category": "assessment",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "assessment",
+      "comps",
+      "sales-comparison",
+      "gen2",
+      "parcel-scoped"
+    ],
+    "permissions": [
+      "county:read",
+      "property:read",
+      "gis:read"
+    ]
+  },
+  {
+    "id": "vei",
+    "displayName": "VEI",
+    "description": "Vertical Equality Index — measures assessment progressivity/regressivity across value ranges, PRB analysis, IAAO equity compliance.",
+    "iconName": "Search",
+    "category": "assessment",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "assessment",
+      "equity",
+      "vertical-equality",
+      "prb",
+      "gen2",
+      "county-wide"
+    ],
+    "permissions": [
+      "county:read",
+      "property:read"
+    ]
+  },
+  {
+    "id": "property-tax-ai",
+    "displayName": "PropertyTax AI",
+    "description": "AI-powered assessment assistant — LangChain agents for valuation analysis, appeal preparation, and automated property review. Legacy: PropertyTaxAI.",
+    "iconName": "Bot",
+    "category": "ai",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "ai",
+      "assessment",
+      "langchain",
+      "gen2",
+      "county-wide"
+    ],
+    "permissions": [
+      "county:read",
+      "property:read"
+    ]
+  },
+  {
+    "id": "pacs-bridge",
+    "displayName": "PACS DataBridge",
+    "description": "System/admin — import/export bridge for Harris PACS TrueAutomation, data sync, and field mapping. Legacy: PACS-DataBridge.",
+    "iconName": "Cable",
+    "category": "system",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "system",
+      "pacs",
+      "integration",
+      "gen2",
+      "admin"
+    ],
+    "permissions": [
+      "system:admin",
+      "county:read",
+      "property:read",
+      "property:write"
+    ]
+  },
+  {
+    "id": "terra-sync",
+    "displayName": "TerraSync",
+    "description": "System/admin — county data synchronization & ETL pipelines, multi-source ingestion, conflict resolution. Legacy: TerraFusionSync, CountyDataSync.",
+    "iconName": "RefreshCw",
+    "category": "system",
+    "tier": 1,
+    "status": "active",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "system",
+      "sync",
+      "etl",
+      "gen2",
+      "admin"
+    ],
+    "permissions": [
+      "system:admin",
+      "county:read"
     ]
   },
   {

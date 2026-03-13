@@ -90,8 +90,11 @@ function getModuleDisplayName(moduleId: string): string {
     'costforge': 'CostForge',
     'terra-gaia': 'TerraGaia',
     'federation-dashboard': 'Federation Dashboard',
-    'levy-calculator': 'Levy Calculator',
-    'gis-viewer': 'GIS Viewer',
+    'levy-calculator': 'TerraLevy',
+    'terra-levy': 'TerraLevy',
+    'gis-viewer': 'TerraGIS Pro',
+    'terra-gis': 'TerraGIS Pro',
+    'gis-pro': 'TerraGIS Pro',
     'document-manager': 'Documents',
     'reporting': 'Analytics',
     'atlas-ai': 'ATLAS',
@@ -115,6 +118,19 @@ function getModuleDisplayName(moduleId: string): string {
     'os-pilot': 'TerraPilot',
     'os-trace': 'TerraTrace',
     'os-canon': 'TerraCanon',
+    // Application Constellation (Gen2 catalog)
+    'income-valuation': 'Income Valuation',
+    'regression-studio': 'Regression Studio',
+    'statistics-studio': 'Statistics Studio',
+    'comparable-sales': 'Comparable Sales',
+    'vei': 'VEI',
+    'terra-gama': 'TerraGAMA',
+    'terra-pilt': 'TerraPILT',
+    'property-tax-ai': 'PropertyTax AI',
+    'pacs-bridge': 'PACS DataBridge',
+    'terra-sync': 'TerraSync',
+    'terra-flow': 'TerraFlow',
+    'terra-permit': 'TerraPermit',
   };
 
   return displayNames[moduleId] ?? moduleId;
@@ -130,8 +146,11 @@ function getModuleIcon(moduleId: string): string {
     'costforge': '💎',
     'terra-gaia': '🌍',
     'federation-dashboard': '🏛️',
-    'levy-calculator': '📊',
+    'levy-calculator': '🧮',
+    'terra-levy': '🧮',
     'gis-viewer': '🗺️',
+    'terra-gis': '🗺️',
+    'gis-pro': '🗺️',
     'document-manager': '📁',
     'reporting': '📈',
     'atlas-ai': '🤖',
@@ -155,6 +174,19 @@ function getModuleIcon(moduleId: string): string {
     'os-pilot': '🧭',
     'os-trace': '📡',
     'os-canon': '⚙️',
+    // Application Constellation (Gen2 catalog)
+    'income-valuation': '💰',
+    'regression-studio': '📈',
+    'statistics-studio': '📊',
+    'comparable-sales': '🏘️',
+    'vei': '🔍',
+    'terra-gama': '📍',
+    'terra-pilt': '🏛️',
+    'property-tax-ai': '🤖',
+    'pacs-bridge': '🔗',
+    'terra-sync': '🔄',
+    'terra-flow': '⚡',
+    'terra-permit': '🏗️',
   };
 
   return icons[moduleId] ?? '📦';
@@ -254,7 +286,8 @@ export async function activateModule(
   openWindow(
     canonicalId,
     displayName,
-    getModuleIcon(canonicalId)
+    getModuleIcon(canonicalId),
+    metadata
   );
 
   // -------------------------------------------------------------------------
