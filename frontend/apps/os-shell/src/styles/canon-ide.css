@@ -1311,3 +1311,249 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* ── Phase L: Confirm Dialog ── */
+
+.canon-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canon-confirm__backdrop {
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--tf-bg) / 0.55);
+}
+
+.canon-confirm__dialog {
+  position: relative;
+  background: hsl(var(--tf-chrome));
+  border: 1px solid hsl(var(--tf-text) / 0.12);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  min-width: 340px;
+  max-width: 440px;
+  box-shadow: 0 8px 32px hsl(var(--tf-bg) / 0.4);
+}
+
+.canon-confirm__title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: hsl(var(--tf-text));
+  margin: 0 0 0.5rem;
+}
+
+.canon-confirm__message {
+  font-size: 0.8rem;
+  color: hsl(var(--tf-text) / 0.65);
+  line-height: 1.45;
+  margin: 0 0 1rem;
+  word-break: break-all;
+}
+
+.canon-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.canon-confirm__btn {
+  padding: 0.35rem 0.85rem;
+  border-radius: 0.35rem;
+  border: none;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.canon-confirm__btn--cancel {
+  background: transparent;
+  color: hsl(var(--tf-text) / 0.65);
+  border: 1px solid hsl(var(--tf-text) / 0.12);
+}
+
+.canon-confirm__btn--cancel:hover {
+  background: hsl(var(--tf-text) / 0.06);
+}
+
+.canon-confirm__btn--danger {
+  background: hsl(var(--tf-error));
+  color: var(--tf-light);
+}
+
+.canon-confirm__btn--danger:hover {
+  background: hsl(var(--tf-error) / 0.85);
+}
+
+.canon-confirm__btn--default {
+  background: hsl(var(--tf-accent));
+  color: var(--tf-light);
+}
+
+.canon-confirm__btn--default:hover {
+  opacity: 0.85;
+}
+
+/* ── Phase L: File Tree Delete Button ── */
+
+.canon-filetree__file-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.canon-filetree__delete-btn {
+  display: none;
+  padding: 0;
+  width: 1rem;
+  height: 1rem;
+  border: none;
+  border-radius: 0.2rem;
+  background: transparent;
+  color: hsl(var(--tf-error));
+  font-size: 0.65rem;
+  line-height: 1;
+  cursor: pointer;
+  text-align: center;
+}
+
+.canon-filetree__file:hover .canon-filetree__delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canon-filetree__delete-btn:hover {
+  background: hsl(var(--tf-error) / 0.2);
+  color: hsl(var(--tf-error) / 0.8);
+}
+
+.canon-filetree__rename-btn {
+  display: none;
+  padding: 0;
+  width: 1rem;
+  height: 1rem;
+  border: none;
+  border-radius: 0.2rem;
+  background: transparent;
+  color: hsl(var(--tf-text) / 0.45);
+  font-size: 0.65rem;
+  line-height: 1;
+  cursor: pointer;
+  text-align: center;
+}
+
+.canon-filetree__file:hover .canon-filetree__rename-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canon-filetree__rename-btn:hover {
+  background: hsl(var(--tf-accent) / 0.15);
+  color: hsl(var(--tf-accent));
+}
+
+/* ── Phase M: Rename Dialog ── */
+
+.canon-rename {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canon-rename__backdrop {
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--tf-bg) / 0.55);
+}
+
+.canon-rename__dialog {
+  position: relative;
+  background: hsl(var(--tf-chrome));
+  border: 1px solid hsl(var(--tf-text) / 0.12);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  min-width: 420px;
+  max-width: 560px;
+  box-shadow: 0 8px 32px hsl(var(--tf-bg) / 0.4);
+}
+
+.canon-rename__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: hsl(var(--tf-text));
+  margin-bottom: 0.5rem;
+}
+
+.canon-rename__input {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid hsl(var(--tf-text) / 0.15);
+  border-radius: 0.35rem;
+  background: hsl(var(--tf-chrome));
+  color: hsl(var(--tf-text));
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.8rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.canon-rename__input:focus {
+  border-color: hsl(var(--tf-accent));
+}
+
+.canon-rename__hint {
+  font-size: 0.7rem;
+  color: hsl(var(--tf-text) / 0.4);
+  margin-top: 0.35rem;
+}
+
+.canon-rename__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.canon-rename__btn {
+  padding: 0.35rem 0.85rem;
+  border-radius: 0.35rem;
+  border: none;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.canon-rename__btn--cancel {
+  background: transparent;
+  color: hsl(var(--tf-text) / 0.65);
+  border: 1px solid hsl(var(--tf-text) / 0.12);
+}
+
+.canon-rename__btn--cancel:hover {
+  background: hsl(var(--tf-text) / 0.06);
+}
+
+.canon-rename__btn--rename {
+  background: hsl(var(--tf-accent));
+  color: var(--tf-light);
+}
+
+.canon-rename__btn--rename:hover {
+  opacity: 0.85;
+}
+
+.canon-rename__btn--rename:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

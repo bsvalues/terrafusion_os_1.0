@@ -51,3 +51,21 @@ export type {
   DossierValuationCategory,
   DossierValuationSignals,
 } from './dossierDetails';
+
+export type {
+  ShellModeTruth,
+  ShellSurfaces,
+  SurfaceVisibility,
+  TerraFusionShellMode,
+} from './shellMode';
+
+export {
+  INITIAL_SHELL_MODE,
+  SHELL_MODE_TRUTHS,
+  SHELL_MODES,
+  SHELL_SURFACE_POLICY,
+  VALID_TRANSITIONS,
+  getSurfacePolicy,
+  isSurfaceVisible,
+  isValidTransition,
+} from './shellMode';

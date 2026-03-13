@@ -14,6 +14,12 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import type { TerraFusionShellMode } from '../contracts/shellMode';
+import {
+  INITIAL_SHELL_MODE,
+  isValidTransition,
+  SHELL_SURFACE_POLICY,
+} from '../contracts/shellMode';
 
 // ============================================================================
 // Types
@@ -75,6 +81,8 @@ export interface DesktopWindow {
 
 export interface DesktopState {
   // State
+  shellMode: TerraFusionShellMode;
+  previousShellMode: TerraFusionShellMode | null;
   windows: DesktopWindow[];
   activeWindowId: string | null;
   nextZIndex: number;
@@ -82,7 +90,13 @@ export interface DesktopState {
   currentDesktopId: string;
   desktops: VirtualDesktop[];
 
-  // Actions
+  // Shell Mode Actions
+  setShellMode: (mode: TerraFusionShellMode) => void;
+  enterDesktop: () => void;
+  enterHome: () => void;
+  enterApplication: () => void;
+
+  // Window Actions
   openWindow: (
     moduleId: string,
     title: string,
@@ -257,6 +271,8 @@ export const useDesktopStore = create<DesktopState>()(
   devtools(
     (set, get) => ({
       // Initial State
+      shellMode: INITIAL_SHELL_MODE,
+      previousShellMode: null,
       windows: [],
       activeWindowId: null,
       nextZIndex: 1,
@@ -269,7 +285,27 @@ export const useDesktopStore = create<DesktopState>()(
         { id: 'desktop-4', name: 'Desktop 4' },
       ],
 
-      // Actions
+      // Shell Mode Actions
+      setShellMode: (mode: TerraFusionShellMode) => {
+        const { shellMode } = get();
+        if (mode === shellMode) return;
+        if (!isValidTransition(shellMode, mode)) return;
+        set({ previousShellMode: shellMode, shellMode: mode });
+      },
+
+      enterDesktop: () => {
+        get().setShellMode('desktop');
+      },
+
+      enterHome: () => {
+        get().setShellMode('home');
+      },
+
+      enterApplication: () => {
+        get().setShellMode('application');
+      },
+
+      // Window Actions
       openWindow: (
         moduleId: string,
         title: string,
@@ -301,6 +337,9 @@ export const useDesktopStore = create<DesktopState>()(
           nextZIndex: nextZIndex + 1,
         });
 
+        // Shell mode: opening a window enters application mode
+        get().enterApplication();
+
         return id;
       },
 
@@ -325,6 +364,13 @@ export const useDesktopStore = create<DesktopState>()(
           windows: newWindows,
           activeWindowId: newActiveId,
         });
+
+        // Shell mode: when last window closes, restore prior mode (or home)
+        if (newWindows.length === 0) {
+          const { previousShellMode } = get();
+          const restoreTo = previousShellMode === 'application' ? 'home' : (previousShellMode ?? 'home');
+          get().setShellMode(restoreTo);
+        }
       },
 
       minimizeWindow: (windowId: string) => {
@@ -734,5 +780,29 @@ export const useVirtualDesktops = () =>
     switchDesktop: state.switchDesktop,
     moveWindowToDesktop: state.moveWindowToDesktop,
   }));
+
+/**
+ * Hook to get the current shell mode
+ */
+export const useShellMode = () => useDesktopStore((state) => state.shellMode);
+
+/**
+ * Hook to get shell mode actions
+ */
+export const useShellModeActions = () =>
+  useDesktopStore((state) => ({
+    setShellMode: state.setShellMode,
+    enterDesktop: state.enterDesktop,
+    enterHome: state.enterHome,
+    enterApplication: state.enterApplication,
+  }));
+
+/**
+ * Hook to get surface visibility for the current shell mode
+ */
+export const useShellSurfaces = () => {
+  const shellMode = useDesktopStore((state) => state.shellMode);
+  return SHELL_SURFACE_POLICY[shellMode];
+};
 
 export default useDesktopStore;

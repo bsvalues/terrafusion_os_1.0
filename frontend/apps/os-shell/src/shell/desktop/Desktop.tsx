@@ -22,6 +22,7 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useControlCenterStore } from '../../stores/controlCenterStore';
 import { useDesktopStore } from '../../stores/desktopStore';
+import { useShellMode, useShellModeActions, useShellSurfaces } from '../../stores/desktopStore';
 import { useNotificationStore, useNotifications } from '../../stores/notificationStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { LiquidPanel } from '../../ui/materials';
@@ -214,6 +215,11 @@ const DesktopTopSystemBar: React.FC<{
 export function Desktop({ className = '' }: DesktopProps) {
   // Install IPC bridge for app ↔ shell communication (Phase 6)
   useIpcBridge();
+
+  // Shell Mode — contract-driven surface visibility
+  const shellMode = useShellMode();
+  const surfaces = useShellSurfaces();
+  const { enterDesktop: transitionToDesktop } = useShellModeActions();
 
   // Scene Selector state (Phase 8)
   const [isSceneSelectorOpen, setSceneSelectorOpen] = useState(false);
@@ -434,12 +440,20 @@ export function Desktop({ className = '' }: DesktopProps) {
 
   const handleDesktopClick = useCallback(
     (event: React.MouseEvent) => {
-      // Only close if Start Menu is open and click is on the desktop itself
-      if (isStartMenuOpen && event.target === event.currentTarget) {
+      // Only act when clicking on the desktop surface itself (not children)
+      if (event.target !== event.currentTarget) return;
+
+      // Close Start Menu if open
+      if (isStartMenuOpen) {
         closeStartMenu();
       }
+
+      // Home → Desktop: clicking the desktop background enters desktop mode
+      if (shellMode === 'home') {
+        transitionToDesktop();
+      }
     },
-    [isStartMenuOpen, closeStartMenu]
+    [isStartMenuOpen, closeStartMenu, shellMode, transitionToDesktop]
   );
 
   // ============================================================================
@@ -478,11 +492,15 @@ export function Desktop({ className = '' }: DesktopProps) {
         onToggleSceneSelector={toggleSceneSelector}
       />
 
-      {/* Layer 0.3: Desktop Icons (launch suites + OS features) */}
-      <DesktopIconGrid className='absolute top-12 left-4' />
+      {/* Layer 0.3: Desktop Icons — only interactive when desktop surface is visible */}
+      {surfaces.desktop !== 'hidden' && (
+        <DesktopIconGrid className='absolute top-12 left-4' />
+      )}
 
-      {/* Layer 0.5: Stage Zero-State (when no windows active) */}
-      <StageZeroState id='desktop-main-content' />
+      {/* Layer 0.5: Stage Zero-State — gated by shell mode surface policy */}
+      {surfaces.recentWork !== 'hidden' && (
+        <StageZeroState id='desktop-main-content' />
+      )}
 
       {/* Layer 1-999: Windows */}
       <WindowManager />
