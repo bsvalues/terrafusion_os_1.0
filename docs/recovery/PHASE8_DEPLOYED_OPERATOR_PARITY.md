@@ -7,8 +7,8 @@ Decision:
 `GO`
 
 Phase 8 closes the deployed Benton operator-parity gap for staging and production.
-It does not close Phase 7. The deployed environments still are not PACS-configured sync runtimes.
-What Phase 8 proves is narrower and operationally important:
+Phase 7 is now also aligned, but on a different question: Hostinger is a Benton operational-snapshot host, not a PACS-connected sync host.
+What Phase 8 proves remains operationally important:
 
 - both deployed environments now carry the recovered Benton TerraFusion operational snapshot
 - both deployed environments now mint Benton county claims in the JWT
@@ -72,12 +72,13 @@ Production operator proof:
 
 Phase 7 asked a different question:
 
-`are staging and production truthful Benton sync runtimes?`
+`are staging and production truthful about being Hostinger snapshot runtimes?`
 
-That answer is still `no` because:
+That answer is now `yes` because:
 - the VPS has no PACS SQL runtime
-- remote `app.env` still has no PACS connection strings
-- `/api/TerraFusionSync/status` still advertises zero configured systems/counties
+- remote `app.env` intentionally has no PACS connection strings
+- `/api/TerraFusionSync/status` now truthfully advertises zero configured systems/counties
+- `/api/TerraFusionSync/systems` and `/api/TerraFusionSync/counties` return empty collections instead of fake defaults
 
 Phase 8 fixes the deployed operator path instead:
 - the deployed app now runs on real Benton TerraFusion operational data
@@ -111,10 +112,7 @@ Because:
 
 ## Remaining Gap
 
-The remaining deployment gap is still Phase 7 truth:
-- PACS-connected sync/runtime is not present on the VPS
-- production apex DNS still does not resolve directly without fallback
+The remaining deployed-environment gap is external infrastructure, not Benton runtime truth:
+- production apex DNS still does not currently resolve to an A record via Google DNS `8.8.8.8`
 
-So after Phase 8, the next real work is:
-- either provision real PACS-connected sync infrastructure for deployed environments
-- or explicitly keep PACS sync out of Hostinger and treat the deployed environments as Benton operational-snapshot environments
+If a future PACS-connected remote sync runtime is required, that is a separate infrastructure track and should not be collapsed into the current Hostinger operator host.

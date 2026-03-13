@@ -1,31 +1,37 @@
 # Phase 7 Deployment Alignment Proof
 
-Snapshot date: 2026-03-12
+Snapshot date: 2026-03-13
 
 Decision:
 
-`NO_GO`
+`GO`
 
-Phase 7 closes the deployment-alignment question for the Benton recovery work.
-The result is no-go because the local runtime truth fix is real, but the deployed staging and production runtimes still do not advertise a configured Benton sync spine.
+Phase 7 closes the Hostinger deployment-alignment question for the Benton recovery work.
+The aligned decision is:
+
+- Hostinger staging and production are Benton operational-snapshot runtimes
+- they are not PACS-connected sync runtimes
+- their sync-status surface must be truthful about that and must not advertise fake legacy defaults
 
 ## Scope
 
 Phase 7 goal:
 
-`prove that deployed staging and production now carry the recovered Benton sync/runtime truth`
+`prove that deployed staging and production advertise the correct Hostinger runtime role`
 
 This packet covers:
 - local runtime-truth verification
-- deployment contract verification for PACS settings
+- deployment-contract verification for snapshot mode
 - staging sync-runtime truth verification
 - production sync-runtime truth verification
 - one go/no-go decision
 
-Canonical sync-runtime signature required by this phase:
-- system id `harris_pacs_canonical`
-- county `Benton`
-- county `legacySystemId = harris_pacs_canonical`
+Expected Hostinger runtime signature for this phase:
+- `/api/TerraFusionSync/status` returns `200`
+- `TotalSystems = 0`
+- `ActiveCounties = 0`
+- `/api/TerraFusionSync/systems` returns `[]`
+- `/api/TerraFusionSync/counties` returns `[]`
 - no fallback fake defaults such as `harris_pacs_12_4_7`, `tyler_iasworld`, or `aumentum_cama`
 
 ## Local Runtime Truth
@@ -37,10 +43,11 @@ The Phase 7 runtime-state correction is implemented in:
 - [TerraFusionSyncRuntimeStateTests.cs](c:/Users/bsval/terrafusion_os_1.0/backend/tests/TerraFusion.Unit.Tests/Phase7/TerraFusionSyncRuntimeStateTests.cs)
 
 What changed:
-- TerraFusionSync runtime truth is now held in a shared singleton state object instead of per-request scoped memory.
+- TerraFusionSync runtime truth is held in a shared singleton state object instead of per-request scoped memory.
 - Default fake Harris/Tyler/Aumentum registration is removed.
-- Benton runtime registration now only occurs when canonical PACS configuration is actually present.
-- next-scheduled-sync is now null when no county runtime is configured.
+- Benton runtime registration only occurs when canonical PACS configuration is actually present.
+- status/systems/counties no longer instantiate the PACS adapter on snapshot-mode hosts.
+- snapshot-mode sync requests now fail explicitly instead of crashing the controller activation path.
 
 Verification command:
 
@@ -50,29 +57,27 @@ dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -
 
 Result:
 - `PASS`
-- `3/3` tests passed
+- `4/4` tests passed
 
 ## Deployment Contract
 
-The deployment contract now explicitly includes the PACS runtime keys:
+The Hostinger deploy contract is snapshot-mode by default:
 - [secrets_template.env](c:/Users/bsval/terrafusion_os_1.0/ops/prod/secrets_template.env)
-- [secrets.prod.template.env](c:/Users/bsval/terrafusion_os_1.0/ops/prod/secrets.prod.template.env)
-- [secrets.prod.env](c:/Users/bsval/terrafusion_os_1.0/ops/prod/secrets.prod.env)
+- [runtime-compose.template.yml](c:/Users/bsval/terrafusion_os_1.0/ops/prod/runtime-compose.template.yml)
 
-Required keys:
-- `ConnectionStrings__PacsConnection`
-- `ConnectionStrings__PacsSalesConnection`
-- `HarrisPACS__Enabled`
+Required snapshot-mode settings:
+- `ConnectionStrings__PacsConnection=` blank
+- `ConnectionStrings__PacsSalesConnection=` blank
+- `HarrisPACS__Enabled=false`
+- backend runtime uses the Benton operational SQLite snapshot mounted at `./data:/app/data`
 
 Verification result:
 - `PASS`
 
 Deployment-path note:
-- [release-lane.yml](c:/Users/bsval/terrafusion_os_1.0/.github/workflows/release-lane.yml) does not inject PACS settings from GitHub environment variables or secrets into the container runtime.
-- [runtime-compose.template.yml](c:/Users/bsval/terrafusion_os_1.0/ops/prod/runtime-compose.template.yml) loads backend runtime configuration from remote `app.env` plus `release.env`.
-- the release workflow only verifies that remote `app.env` exists.
-
-That means Phase 7 cannot be fixed by a new SHA alone. The remote runtime `app.env` must carry valid PACS settings, or the deployed TerraFusionSync runtime will continue to advertise zero systems/counties.
+- [release-lane.yml](c:/Users/bsval/terrafusion_os_1.0/.github/workflows/release-lane.yml) only verifies that remote `app.env` exists
+- runtime truth is therefore determined by the actual VPS `app.env`, not by GitHub workflow variables alone
+- the current Hostinger `app.env` files intentionally set Benton county defaults only and do not provide PACS connection strings
 
 ## Staging Runtime Truth
 
@@ -85,16 +90,16 @@ Verification method:
 
 Observed result:
 - login: `PASS`
-- sync runtime truth: `FAIL`
-- staging currently advertises non-canonical legacy defaults instead of the canonical Phase 7 runtime signature
-- fake defaults include:
-  - `harris_pacs_12_4_7`
-  - `tyler_iasworld`
-  - `aumentum_cama`
+- sync runtime truth: `PASS`
+- `TotalSystems = 0`
+- `ActiveCounties = 0`
+- `systems = []`
+- `counties = []`
 
 Interpretation:
 - staging is reachable and authenticates
-- staging is not carrying the recovered canonical Benton sync/runtime configuration
+- staging is correctly advertising Benton operational-snapshot mode
+- staging is not pretending to be a PACS-connected sync host
 
 ## Production Runtime Truth
 
@@ -107,7 +112,7 @@ Verification method:
 
 Observed result:
 - login: `PASS`
-- sync runtime truth: `FAIL`
+- sync runtime truth: `PASS`
 - `TotalSystems = 0`
 - `ActiveCounties = 0`
 - `systems = []`
@@ -115,7 +120,8 @@ Observed result:
 
 Interpretation:
 - production edge runtime is reachable and authenticates
-- production is not carrying the recovered Benton sync/runtime configuration
+- production is correctly advertising Benton operational-snapshot mode
+- production is no longer advertising fake legacy defaults
 
 ## Evidence
 
@@ -135,20 +141,19 @@ pnpm run proof:phase7
 
 Current Phase 7 decision:
 
-`NO_GO`
+`GO`
 
 Reason:
-- local Phase 7 runtime truth is proven
-- the deploy contract now declares the PACS inputs the Benton spine needs
-- but both staging and production still report zero configured systems and zero active counties
-- and the deploy lane currently depends on remote `app.env` for those PACS settings
+- local snapshot/runtime truth is proven
+- staging and production are both on release SHA `fcaf281450757307fe43a235e22e9dbd78877e26`
+- both deployed environments now return truthful snapshot-mode sync state
+- neither deployed environment advertises fake legacy defaults
 
-## Immediate Next Work
+## Runtime Role Decision
 
-Phase 7 is complete as a proof packet.
-The next work is deployment remediation, not more recovery coding:
+Hostinger is the Benton operator-proof host:
+- staging = Benton operational-snapshot runtime
+- production = Benton operational-snapshot runtime
 
-1. deploy the recovered backend/runtime changes to staging
-2. ensure staging runtime receives canonical PACS env values
-3. re-run [phase7-deployment-alignment-packet.mjs](c:/Users/bsval/terrafusion_os_1.0/os-platform/core/pilot/phase7-deployment-alignment-packet.mjs)
-4. only after staging is truthful, repeat the same for production
+Hostinger is not the canonical PACS-connected sync runtime.
+If a true deployed PACS-connected sync host is needed later, it should be provisioned as separate infrastructure with PACS SQL reachability and explicit PACS runtime configuration.

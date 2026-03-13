@@ -23,7 +23,7 @@ This document contains **no secrets**. Store secrets only in:
 
 ### Required DNS Records
 - A: staging -> 72.60.126.11 ✅ verified
-- A: @ (root) -> 72.60.126.11 ✅ verified (2026-03-11, Google DNS 8.8.8.8 confirms single A record)
+- A: @ (root) -> 72.60.126.11 ❌ not currently present (2026-03-13, Google DNS 8.8.8.8 returns SOA only for `terrafusionmarket.com`)
 
 ## Staging VPS (Hostinger)
 - VPS name/id: srv1479342
@@ -40,6 +40,22 @@ This document contains **no secrets**. Store secrets only in:
 - Provider firewall open: 22/tcp, 80/tcp, 443/tcp
 - Server firewall (ufw) open: 22/tcp, 80/tcp, 443/tcp
 - APP_ROOT: /opt/terrafusion/production
+
+## Runtime Role Decision (2026-03-13)
+- Hostinger staging is a Benton operational-snapshot runtime
+- Hostinger production is a Benton operational-snapshot runtime
+- Neither environment is a PACS-connected sync runtime
+- PACS SQL connectivity and PACS-backed sync remain local/canonical or separate infrastructure concerns
+
+Current aligned release on both environments:
+- SHA: `fcaf281450757307fe43a235e22e9dbd78877e26`
+- Backend image: `ghcr.io/bsvalues/terrafusion-os-backend-internal:fcaf281450757307fe43a235e22e9dbd78877e26`
+- Frontend image: `ghcr.io/bsvalues/terrafusion-os-frontend-internal:fcaf281450757307fe43a235e22e9dbd78877e26`
+
+Expected sync-runtime truth on Hostinger:
+- `/api/TerraFusionSync/status` -> `TotalSystems = 0`, `ActiveCounties = 0`
+- `/api/TerraFusionSync/systems` -> `[]`
+- `/api/TerraFusionSync/counties` -> `[]`
 
 ## GHCR Pull Auth (Staging)
 - Configured on VPS (deploy user): yes (workflow-injected per-run token)
