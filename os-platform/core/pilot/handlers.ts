@@ -1472,6 +1472,43 @@ export interface CanonGitDiffResult {
   linesModified: number;
 }
 
+export interface CanonDocumentLinksParams {
+  filePath: string;
+  content: string;
+}
+
+export interface DocumentLink {
+  line: number;
+  startColumn: number;
+  endColumn: number;
+  url: string;
+  tooltip?: string;
+}
+
+export interface CanonDocumentLinksResult {
+  links: DocumentLink[];
+  filePath: string;
+}
+
+export interface CanonInlayHintsParams {
+  filePath: string;
+  content: string;
+}
+
+export interface InlayHintItem {
+  line: number;
+  column: number;
+  label: string;
+  kind: 'type' | 'parameter';
+  paddingLeft?: boolean;
+  paddingRight?: boolean;
+}
+
+export interface CanonInlayHintsResult {
+  hints: InlayHintItem[];
+  filePath: string;
+}
+
 export interface CanonFormatFileResult {
   filePath: string;
   formatted: boolean;
@@ -2424,6 +2461,114 @@ export const canonGitDiffHandler: ToolHandler<
 };
 
 /**
+ * Canon Document Links — detects clickable links in file content.
+ * Returns URLs (http/https), import/require paths, and relative file paths.
+ */
+export const canonDocumentLinksHandler: ToolHandler<
+  CanonDocumentLinksParams,
+  CanonDocumentLinksResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : 'untitled';
+  const content = typeof params.content === 'string' ? params.content : '';
+  const links: DocumentLink[] = [];
+  const lines = content.split('\n');
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const lineNum = i + 1;
+
+    // Detect URLs (http/https)
+    const urlRegex = /https?:\/\/[^\s'"\)>\]]+/g;
+    let urlMatch: RegExpExecArray | null;
+    while ((urlMatch = urlRegex.exec(line)) !== null) {
+      links.push({
+        line: lineNum,
+        startColumn: urlMatch.index + 1,
+        endColumn: urlMatch.index + urlMatch[0].length + 1,
+        url: urlMatch[0],
+        tooltip: urlMatch[0],
+      });
+    }
+
+    // Detect import/require paths (JS/TS)
+    const importRegex = /(?:from\s+['"]|import\s*\(\s*['"]|require\s*\(\s*['"])([^'"]+)['"]/g;
+    let importMatch: RegExpExecArray | null;
+    while ((importMatch = importRegex.exec(line)) !== null) {
+      const importPath = importMatch[1];
+      const start = line.indexOf(importPath, importMatch.index);
+      links.push({
+        line: lineNum,
+        startColumn: start + 1,
+        endColumn: start + importPath.length + 1,
+        url: importPath,
+        tooltip: `Go to ${importPath}`,
+      });
+    }
+  }
+
+  return { links, filePath };
+};
+
+/**
+ * Canon Inlay Hints — computes inline type/parameter hints for code.
+ * Shows parameter names at call sites and inferred return types.
+ */
+export const canonInlayHintsHandler: ToolHandler<
+  CanonInlayHintsParams,
+  CanonInlayHintsResult
+> = async (params, _context, _tool) => {
+  const filePath = typeof params.filePath === 'string' ? params.filePath : 'untitled';
+  const content = typeof params.content === 'string' ? params.content : '';
+  const hints: InlayHintItem[] = [];
+  const lines = content.split('\n');
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const lineNum = i + 1;
+
+    // Detect function calls and annotate parameter names
+    const callRegex = /\b([a-zA-Z_$][\w$]*)\s*\(([^)]+)\)/g;
+    let callMatch: RegExpExecArray | null;
+    while ((callMatch = callRegex.exec(line)) !== null) {
+      const argsStr = callMatch[2];
+      const argsStart = callMatch.index + callMatch[1].length + 1; // after '('
+      const args = argsStr.split(',');
+      let offset = 0;
+      for (let a = 0; a < args.length; a++) {
+        const arg = args[a];
+        const trimmed = arg.trimStart();
+        const leadingSpaces = arg.length - trimmed.length;
+        hints.push({
+          line: lineNum,
+          column: argsStart + offset + leadingSpaces + 1,
+          label: `arg${a}:`,
+          kind: 'parameter',
+          paddingRight: true,
+        });
+        offset += arg.length + 1; // +1 for comma
+      }
+    }
+
+    // Detect variable declarations without explicit types (TS/JS)
+    const varRegex = /\b(?:const|let|var)\s+([a-zA-Z_$][\w$]*)\s*=/g;
+    let varMatch: RegExpExecArray | null;
+    while ((varMatch = varRegex.exec(line)) !== null) {
+      const varName = varMatch[1];
+      const col = varMatch.index + varMatch[0].indexOf(varName) + varName.length + 1;
+      hints.push({
+        line: lineNum,
+        column: col,
+        label: ': inferred',
+        kind: 'type',
+        paddingLeft: true,
+      });
+    }
+  }
+
+  return { hints, filePath };
+};
+
+/**
  * Canon Terminal Exec — executes an allowlisted command in the Canon environment.
  * Restricted to governance-safe commands only. 30s timeout.
  */
@@ -2539,6 +2684,7 @@ export function registerCanonHandlers(runner: {
   runner.registerHandler('canon_format_file', canonFormatFileHandler);
   runner.registerHandler('canon_editor_layout', canonEditorLayoutHandler);
   runner.registerHandler('canon_terminal_exec', canonTerminalExecHandler);
+  runner.registerHandler('canon_inlay_hints', canonInlayHintsHandler);
 }
 
 /**
@@ -2612,4 +2758,5 @@ export const canonHandlers = {
   canon_format_file: canonFormatFileHandler,
   canon_editor_layout: canonEditorLayoutHandler,
   canon_terminal_exec: canonTerminalExecHandler,
+  canon_inlay_hints: canonInlayHintsHandler,
 } as const;

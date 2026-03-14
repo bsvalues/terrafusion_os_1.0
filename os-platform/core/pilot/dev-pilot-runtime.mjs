@@ -8,6 +8,9 @@ import { fileURLToPath } from "node:url";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
 import { traceService } from "../trace/index.js";
 
+/** Alias for traceService.emit — used by Canon tool routes */
+const traceEvent = traceService?.emit?.bind(traceService);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..", "..", "..");
@@ -4378,6 +4381,170 @@ const server = createServer(async (req, res) => {
         });
         writeJson(res, 500, { error: "GIT_DIFF_FAILED", message: err?.message ?? String(err) });
       }
+      return;
+    }
+
+    // ── canon_document_links ──────────────────────────────────
+    if (method === "POST" && pathname === "/pilot/canon/document-links") {
+      const correlationId = `corr-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      try {
+        const body = await readJsonBody(req);
+        const filePath = typeof body.filePath === "string" ? body.filePath : "untitled";
+        const content = typeof body.content === "string" ? body.content : "";
+
+        traceService.emit({
+          type: "tool_invoked",
+          toolId: "canon_document_links",
+          correlationId,
+          summary: `Document links for ${filePath}`,
+        });
+
+        const links = [];
+        const lines = content.split("\n");
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const lineNum = i + 1;
+
+          // Detect URLs (http/https)
+          const urlRegex = /https?:\/\/[^\s'"\)>\]]+/g;
+          let urlMatch;
+          while ((urlMatch = urlRegex.exec(line)) !== null) {
+            links.push({
+              line: lineNum,
+              startColumn: urlMatch.index + 1,
+              endColumn: urlMatch.index + urlMatch[0].length + 1,
+              url: urlMatch[0],
+              tooltip: urlMatch[0],
+            });
+          }
+
+          // Detect import/require paths
+          const importRegex = /(?:from\s+['"]|import\s*\(\s*['"]|require\s*\(\s*['"])([^'"]+)['"]/g;
+          let importMatch;
+          while ((importMatch = importRegex.exec(line)) !== null) {
+            const importPath = importMatch[1];
+            const start = line.indexOf(importPath, importMatch.index);
+            links.push({
+              line: lineNum,
+              startColumn: start + 1,
+              endColumn: start + importPath.length + 1,
+              url: importPath,
+              tooltip: `Go to ${importPath}`,
+            });
+          }
+        }
+
+        traceService.emit({
+          type: "tool_succeeded",
+          toolId: "canon_document_links",
+          correlationId,
+          summary: `Found ${links.length} links in ${filePath}`,
+        });
+        writeJson(res, 200, { links, filePath });
+      } catch (err) {
+        traceService.emit({
+          type: "tool_failed",
+          toolId: "canon_document_links",
+          correlationId,
+          summary: err?.message ?? String(err),
+        });
+        writeJson(res, 500, { error: "DOCUMENT_LINKS_FAILED", message: err?.message ?? String(err) });
+      }
+      return;
+    }
+
+    // ── Canon Inlay Hints ───────────────────────────────────────
+    if (method === "POST" && pathname === "/pilot/canon/inlay-hints") {
+      const correlationId = `corr-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      try {
+        const body = await readJsonBody(req);
+        const filePath = typeof body.filePath === "string" ? body.filePath : "untitled";
+        const content = typeof body.content === "string" ? body.content : "";
+
+        traceService.emit({
+          type: "tool_invoked",
+          toolId: "canon_inlay_hints",
+          correlationId,
+          summary: `Inlay hints for ${filePath}`,
+        });
+
+        const hints = [];
+        const lines = content.split("\n");
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const lineNum = i + 1;
+
+          // Detect function calls and annotate parameter names
+          const callRegex = /\b([a-zA-Z_$][\w$]*)\s*\(([^)]+)\)/g;
+          let callMatch;
+          while ((callMatch = callRegex.exec(line)) !== null) {
+            const argsStr = callMatch[2];
+            const argsStart = callMatch.index + callMatch[1].length + 1;
+            const args = argsStr.split(",");
+            let offset = 0;
+            for (let a = 0; a < args.length; a++) {
+              const arg = args[a];
+              const trimmed = arg.trimStart();
+              const leadingSpaces = arg.length - trimmed.length;
+              hints.push({
+                line: lineNum,
+                column: argsStart + offset + leadingSpaces + 1,
+                label: `arg${a}:`,
+                kind: "parameter",
+                paddingRight: true,
+              });
+              offset += arg.length + 1;
+            }
+          }
+
+          // Detect variable declarations without explicit types
+          const varRegex = /\b(?:const|let|var)\s+([a-zA-Z_$][\w$]*)\s*=/g;
+          let varMatch;
+          while ((varMatch = varRegex.exec(line)) !== null) {
+            const varName = varMatch[1];
+            const col = varMatch.index + varMatch[0].indexOf(varName) + varName.length + 1;
+            hints.push({
+              line: lineNum,
+              column: col,
+              label: ": inferred",
+              kind: "type",
+              paddingLeft: true,
+            });
+          }
+        }
+
+        traceService.emit({
+          type: "tool_succeeded",
+          toolId: "canon_inlay_hints",
+          correlationId,
+          summary: `Found ${hints.length} hints in ${filePath}`,
+        });
+        writeJson(res, 200, { hints, filePath });
+      } catch (err) {
+        traceService.emit({
+          type: "tool_failed",
+          toolId: "canon_inlay_hints",
+          correlationId,
+          summary: err?.message ?? String(err),
+        });
+        writeJson(res, 500, { error: "INLAY_HINTS_FAILED", message: err?.message ?? String(err) });
+      }
+      return;
+    }
+
+    // ── Temporary: Catch ErrorBoundary reports ──────────────────
+    if (method === "POST" && pathname === "/api/errors/boundary") {
+      const parsed = await readJsonBody(req).catch(() => ({}));
+      if (!globalThis.__capturedErrors) globalThis.__capturedErrors = [];
+      globalThis.__capturedErrors.push({ ts: new Date().toISOString(), ...parsed });
+      console.error("\n🚨 [ErrorBoundary Report]", JSON.stringify(parsed, null, 2));
+      writeJson(res, 200, { captured: true });
+      return;
+    }
+    if (method === "GET" && pathname === "/api/errors/boundary") {
+      writeJson(res, 200, { errors: globalThis.__capturedErrors || [] });
       return;
     }
 

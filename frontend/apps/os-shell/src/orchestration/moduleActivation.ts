@@ -131,6 +131,16 @@ function getModuleDisplayName(moduleId: string): string {
     'terra-sync': 'TerraSync',
     'terra-flow': 'TerraFlow',
     'terra-permit': 'TerraPermit',
+    // Phase B audit additions
+    'terra-miner': 'TerraMiner',
+    'legislative-pulse': 'Legislative Pulse',
+    // GPT Suite namespaced modules
+    'gpt-studio': 'GPT Studio',
+    'gpt-marketplace': 'GPT Marketplace',
+    'gpt-management': 'GPT Management',
+    'gpt-builder': 'GPT Builder',
+    'gpt-analytics': 'GPT Analytics',
+    'gpt-rag': 'GPT RAG',
   };
 
   return displayNames[moduleId] ?? moduleId;
@@ -187,6 +197,16 @@ function getModuleIcon(moduleId: string): string {
     'terra-sync': '🔄',
     'terra-flow': '⚡',
     'terra-permit': '🏗️',
+    // Phase B audit additions
+    'terra-miner': '⛏️',
+    'legislative-pulse': '📢',
+    // GPT Suite namespaced modules
+    'gpt-studio': '🧪',
+    'gpt-marketplace': '🏪',
+    'gpt-management': '⚙️',
+    'gpt-builder': '🔨',
+    'gpt-analytics': '📊',
+    'gpt-rag': '📚',
   };
 
   return icons[moduleId] ?? '📦';

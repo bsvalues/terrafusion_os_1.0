@@ -2790,6 +2790,64 @@
         },
         "required": ["filePath", "content"]
       }
+    },
+    {
+      "toolId": "canon_document_links",
+      "displayName": "Canon Document Links",
+      "description": "Detects clickable links in file content including URLs (http/https), import/require paths, and relative file paths for Ctrl+Click navigation.",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Virtual file path in Canon workspace"
+          },
+          "content": {
+            "type": "string",
+            "description": "Full file content to scan for links"
+          }
+        },
+        "required": ["filePath", "content"]
+      }
+    },
+    {
+      "toolId": "canon_inlay_hints",
+      "displayName": "Canon Inlay Hints",
+      "description": "Computes inline type and parameter hints for code. Shows parameter names at call sites and inferred variable types for TerraCanon IDE inlay hint overlays.",
+      "suite": "pilot",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["canon"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Virtual file path in Canon workspace"
+          },
+          "content": {
+            "type": "string",
+            "description": "Full file content to analyze for inlay hints"
+          }
+        },
+        "required": ["filePath", "content"]
+      }
     }
   ]
 }

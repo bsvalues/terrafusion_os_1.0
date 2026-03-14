@@ -21,9 +21,11 @@ import { getSession } from '../auth/session';
 import { ErrorInfo } from '../hooks/useErrorHandler';
 import { getViteEnv } from '../shared/viteEnv';
 
-// Pilot API Base URL (Pilot subsystem, port 5000 - NOT TerraFusion core telemetry API)
+// Pilot API Base URL — always relative so requests go through the Vite dev proxy.
+// The Vite `/pilot` proxy forwards to the pilot runtime (port 4317 by default).
+// VITE_API_URL points at the .NET backend, NOT the pilot runtime.
 const env = getViteEnv();
-const API_BASE_URL = env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = '';
 
 /**
  * Build standard Pilot API headers including identity from current session.

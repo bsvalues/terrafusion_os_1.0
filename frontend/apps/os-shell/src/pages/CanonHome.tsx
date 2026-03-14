@@ -754,6 +754,14 @@ function CanonContent(): React.ReactElement {
     });
   }, [notify]);
 
+  // Extract file path from browse file IDs (format: "wsId:browse:path/to/file")
+  const activeFilePath = useMemo(() => {
+    if (!activeFileId) return null;
+    const browseIdx = activeFileId.indexOf(':browse:');
+    if (browseIdx !== -1) return activeFileId.slice(browseIdx + ':browse:'.length);
+    return null;
+  }, [activeFileId]);
+
   /** Format the currently active file via the pilot runtime. */
   const formatActiveFile = useCallback(async () => {
     if (!activeFilePath) {
@@ -1060,14 +1068,6 @@ function CanonContent(): React.ReactElement {
     .map((id) => activeFiles.find((f) => f.id === id))
     .filter((f): f is WorkspaceFile => f != null);
   const activeFileName = resolvedOpenTabs.find((f) => f.id === activeFileId)?.name ?? null;
-
-  // Extract file path from browse file IDs (format: "wsId:browse:path/to/file")
-  const activeFilePath = useMemo(() => {
-    if (!activeFileId) return null;
-    const browseIdx = activeFileId.indexOf(':browse:');
-    if (browseIdx !== -1) return activeFileId.slice(browseIdx + ':browse:'.length);
-    return null;
-  }, [activeFileId]);
 
   const openEmptyWorkspace = () => {
     if (workspaces.length === 0) {

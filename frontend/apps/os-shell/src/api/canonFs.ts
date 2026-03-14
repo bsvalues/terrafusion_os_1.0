@@ -1,6 +1,13 @@
-import { getViteEnv } from '@/env/getViteEnv';
+/**
+ * Pilot base URL – always relative so it routes through the Vite dev proxy.
+ * VITE_API_URL points at the .NET backend (port 5000/5001), NOT the pilot
+ * runtime (port 4317).  Using a relative path lets the Vite `/pilot` proxy
+ * forward requests to the correct service.
+ */
+const PILOT_BASE = '/pilot';
 
-const API_BASE_URL = getViteEnv().VITE_API_URL || '';
+/** Shared JSON request headers */
+const JSON_HEADERS: Record<string, string> = { 'Content-Type': 'application/json' };
 
 // ── Golden Corpus ────────────────────────────────────────────────
 
@@ -24,7 +31,7 @@ export interface CorpusStatusResponse {
 
 export async function fetchCorpusStatus(): Promise<CorpusStatusResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/corpus`, {
+    const res = await fetch(`${PILOT_BASE}/canon/corpus`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: '{}',
@@ -65,7 +72,7 @@ export interface ReadFileResponse {
 
 export async function fetchListDir(dirPath: string): Promise<ListDirResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/ls`, {
+    const res = await fetch(`${PILOT_BASE}/canon/ls`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dirPath }),
@@ -86,7 +93,7 @@ export async function fetchListDir(dirPath: string): Promise<ListDirResponse> {
 
 export async function fetchReadFile(filePath: string): Promise<ReadFileResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/read`, {
+    const res = await fetch(`${PILOT_BASE}/canon/read`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filePath }),
@@ -118,7 +125,7 @@ export interface WriteFileResponse {
 
 export async function writeCanonFile(filePath: string, content: string): Promise<WriteFileResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/write`, {
+    const res = await fetch(`${PILOT_BASE}/canon/write`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filePath, content }),
@@ -153,7 +160,7 @@ export interface CreateFileResponse {
 
 export async function createCanonFile(filePath: string, content: string = ''): Promise<CreateFileResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/create`, {
+    const res = await fetch(`${PILOT_BASE}/canon/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filePath, content }),
@@ -191,7 +198,7 @@ export interface DeleteFileResponse {
 
 export async function deleteCanonFile(filePath: string): Promise<DeleteFileResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/delete`, {
+    const res = await fetch(`${PILOT_BASE}/canon/delete`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filePath }),
@@ -229,7 +236,7 @@ export interface RenameFileResponse {
 
 export async function renameCanonFile(oldPath: string, newPath: string): Promise<RenameFileResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/rename`, {
+    const res = await fetch(`${PILOT_BASE}/canon/rename`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ oldPath, newPath }),
@@ -283,7 +290,7 @@ export async function searchCanonFiles(
   options?: { path?: string; isRegex?: boolean; maxResults?: number },
 ): Promise<SearchFilesResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/search`, {
+    const res = await fetch(`${PILOT_BASE}/canon/search`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query, ...options }),
@@ -321,7 +328,7 @@ export interface TerminalExecResponse {
 
 export async function execCanonCommand(command: string): Promise<TerminalExecResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/exec`, {
+    const res = await fetch(`${PILOT_BASE}/canon/exec`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ command }),
@@ -357,7 +364,7 @@ export interface DiffFilesResponse {
 
 export async function diffCanonFiles(leftPath: string, rightPath: string): Promise<DiffFilesResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/diff`, {
+    const res = await fetch(`${PILOT_BASE}/canon/diff`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ leftPath, rightPath }),
@@ -405,7 +412,7 @@ export async function fetchGitStatus(scopePath?: string): Promise<GitStatusRespo
   try {
     const body: Record<string, string> = {};
     if (scopePath) body.path = scopePath;
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/git-status`, {
+    const res = await fetch(`${PILOT_BASE}/canon/git-status`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -443,7 +450,7 @@ export interface FileOutlineResponse {
 
 export async function fetchFileOutline(filePath: string): Promise<FileOutlineResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/outline`, {
+    const res = await fetch(`${PILOT_BASE}/canon/outline`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filePath }),
@@ -499,7 +506,7 @@ export interface DiagnosticsResponse {
 
 export async function fetchDiagnostics(scope?: string): Promise<DiagnosticsResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/diagnostics`, {
+    const res = await fetch(`${PILOT_BASE}/canon/diagnostics`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ scope: scope || 'typecheck' }),
@@ -548,7 +555,7 @@ export async function fetchBookmarks(
   opts?: { filePath?: string; line?: number; label?: string },
 ): Promise<BookmarksResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/bookmarks`, {
+    const res = await fetch(`${PILOT_BASE}/canon/bookmarks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, ...opts }),
@@ -584,7 +591,7 @@ export interface FileIndexResponse {
 
 export async function fetchFileIndex(scope?: string): Promise<FileIndexResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/file-index`, {
+    const res = await fetch(`${PILOT_BASE}/canon/file-index`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ scope: scope ?? '' }),
@@ -625,7 +632,7 @@ export async function fetchRecentFiles(
   try {
     const body: Record<string, string> = { action };
     if (filePath) body.filePath = filePath;
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/recent-files`, {
+    const res = await fetch(`${PILOT_BASE}/canon/recent-files`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -668,7 +675,7 @@ export async function fetchSymbolSearch(
   try {
     const body: Record<string, unknown> = { query };
     if (maxResults != null) body.maxResults = maxResults;
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/symbol-search`, {
+    const res = await fetch(`${PILOT_BASE}/canon/symbol-search`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -711,7 +718,7 @@ export async function fetchSnippets(
 ): Promise<SnippetsResponse> {
   try {
     const body: Record<string, unknown> = { action, ...params };
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/snippets`, {
+    const res = await fetch(`${PILOT_BASE}/canon/snippets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -749,7 +756,7 @@ export interface MinimapResponse {
 
 export async function fetchMinimap(filePath: string): Promise<MinimapResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/pilot/canon/minimap`, {
+    const res = await fetch(`${PILOT_BASE}/canon/minimap`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filePath }),
@@ -1449,5 +1456,74 @@ export async function fetchGitDiff(
     return (await res.json()) as GitDiffResponse;
   } catch (err) {
     return { changes: [], filePath, linesAdded: 0, linesDeleted: 0, linesModified: 0, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+/* ── Document Links ──────────────────────────────────────── */
+
+export interface DocumentLinkItem {
+  line: number;
+  startColumn: number;
+  endColumn: number;
+  url: string;
+  tooltip?: string;
+}
+
+export interface DocumentLinksResponse {
+  links: DocumentLinkItem[];
+  filePath: string;
+  error?: string;
+}
+
+export async function fetchDocumentLinks(
+  filePath: string,
+  content: string,
+): Promise<DocumentLinksResponse> {
+  try {
+    const res = await fetch(`${PILOT_BASE}/canon/document-links`, {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ filePath, content }),
+    });
+    if (!res.ok) {
+      return { links: [], filePath, error: `HTTP ${res.status}` };
+    }
+    return (await res.json()) as DocumentLinksResponse;
+  } catch (err) {
+    return { links: [], filePath, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+/* ── Inlay Hints ─────────────────────────────────────────── */
+
+export interface InlayHintItem {
+  line: number;
+  column: number;
+  label: string;
+  kind: 'type' | 'parameter';
+  paddingLeft?: boolean;
+  paddingRight?: boolean;
+}
+
+export interface InlayHintsResponse {
+  hints: InlayHintItem[];
+  filePath: string;
+  error?: string;
+}
+
+export async function fetchInlayHints(
+  filePath: string,
+  content: string,
+): Promise<InlayHintsResponse> {
+  try {
+    const res = await fetch(`${PILOT_BASE}/canon/inlay-hints`, {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ filePath, content }),
+    });
+    if (!res.ok) {
+      return { hints: [], filePath, error: `HTTP ${res.status}` };
+    }
+    return (await res.json()) as InlayHintsResponse;
+  } catch (err) {
+    return { hints: [], filePath, error: err instanceof Error ? err.message : String(err) };
   }
 }

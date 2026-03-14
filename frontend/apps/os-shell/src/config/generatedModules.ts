@@ -222,7 +222,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "$schema": "../../tools/registry/terrafusion.app.schema.json",
     "id": "terra-levy",
     "displayName": "TerraLevy",
-    "description": "Gen2 Tax Levy Management & Rate Calculations",
+    "description": "Gen2 Tax Levy Management & Rate Calculations. Phase C rehosted: 2D levy dashboard with domain types, AI insights, budget tracking. 3D immersive dashboard available pending @react-three install. Legacy: BCBSLevyMaster, BCBSLevy.",
     "iconName": "Calculator",
     "category": "tax",
     "tier": 1,
@@ -378,7 +378,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "iconName": "TrendingUp",
     "category": "assessment",
     "tier": 1,
-    "status": "active",
+    "status": "alpha",
     "pinned": true,
     "version": "2.0.0",
     "intent": "gen2",
@@ -406,7 +406,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "iconName": "LineChart",
     "category": "assessment",
     "tier": 1,
-    "status": "active",
+    "status": "alpha",
     "pinned": true,
     "version": "1.0.0",
     "intent": "gen2",
@@ -434,7 +434,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "iconName": "PieChart",
     "category": "analytics",
     "tier": 1,
-    "status": "active",
+    "status": "alpha",
     "pinned": true,
     "version": "1.0.0",
     "intent": "gen2",
@@ -462,7 +462,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "iconName": "Home",
     "category": "assessment",
     "tier": 1,
-    "status": "active",
+    "status": "alpha",
     "pinned": true,
     "version": "1.0.0",
     "intent": "gen2",
@@ -491,7 +491,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "iconName": "Search",
     "category": "assessment",
     "tier": 1,
-    "status": "active",
+    "status": "alpha",
     "pinned": true,
     "version": "1.0.0",
     "intent": "gen2",
@@ -520,7 +520,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "iconName": "Bot",
     "category": "ai",
     "tier": 1,
-    "status": "active",
+    "status": "alpha",
     "pinned": true,
     "version": "1.0.0",
     "intent": "gen2",
@@ -548,7 +548,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "iconName": "Cable",
     "category": "system",
     "tier": 1,
-    "status": "active",
+    "status": "alpha",
     "pinned": true,
     "version": "1.0.0",
     "intent": "gen2",
@@ -578,7 +578,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "iconName": "RefreshCw",
     "category": "system",
     "tier": 1,
-    "status": "active",
+    "status": "alpha",
     "pinned": true,
     "version": "1.0.0",
     "intent": "gen2",
@@ -596,6 +596,61 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     ],
     "permissions": [
       "system:admin",
+      "county:read"
+    ]
+  },
+  {
+    "id": "terra-miner",
+    "displayName": "TerraMiner",
+    "description": "Property research & outside data mining — aggregates external data sources (MLS, permits, assessor feeds) for parcel enrichment. Legacy: TerraMiner (Private).",
+    "iconName": "Search",
+    "category": "assessment",
+    "tier": 1,
+    "status": "alpha",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "assessment",
+      "research",
+      "data-mining",
+      "gen2",
+      "county-wide"
+    ],
+    "permissions": [
+      "county:read",
+      "property:read"
+    ]
+  },
+  {
+    "id": "legislative-pulse",
+    "displayName": "Legislative Pulse",
+    "description": "Legislative research & tracking — monitors WA state bills, fiscal notes, and policy impacts on county assessment/taxation. Legacy: legislative-pulse-beacon (Private).",
+    "iconName": "Megaphone",
+    "category": "policy",
+    "tier": 2,
+    "status": "alpha",
+    "pinned": true,
+    "version": "1.0.0",
+    "intent": "gen2",
+    "runnable": false,
+    "entry": {
+      "type": "route",
+      "route": "/placeholder"
+    },
+    "tags": [
+      "policy",
+      "legislative",
+      "research",
+      "gen2",
+      "county-wide"
+    ],
+    "permissions": [
       "county:read"
     ]
   },

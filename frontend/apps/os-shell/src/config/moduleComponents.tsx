@@ -68,6 +68,20 @@ export const MODULE_ALIASES: Record<string, string> = {
   'property-tax': 'property-tax-ai',
   primeview: 'terra-primeview',
 
+  // New constellation modules
+  miner: 'terra-miner',
+  terraminer: 'terra-miner',
+  legislative: 'legislative-pulse',
+  'legislative-beacon': 'legislative-pulse',
+
+  // GPT Suite namespaced modules
+  'gpt-studio': 'gpt-studio',
+  'gpt-marketplace': 'gpt-marketplace',
+  'gpt-management': 'gpt-management',
+  'gpt-builder': 'gpt-builder',
+  'gpt-analytics': 'gpt-analytics',
+  'gpt-rag': 'gpt-rag',
+
   // Phase C3: Sovereign Dashboard aliases
   dashboard: 'sovereign-dashboard',
   'doc-viewer': 'sovereign-dashboard',
@@ -148,6 +162,15 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-pilt',
   'terra-permit',
   'terra-flow',
+  'terra-miner',
+  'legislative-pulse',
+  // GPT Suite namespaced modules
+  'gpt-studio',
+  'gpt-marketplace',
+  'gpt-management',
+  'gpt-builder',
+  'gpt-analytics',
+  'gpt-rag',
   // Property Workbench (Tier-0 OS Surface — opens in window)
   'property-workbench',
   // Constitutional Suite Homes (render inside Desktop windows)
@@ -243,6 +266,16 @@ const SovereignDashboardWindow = lazy(() =>
   import('../modules/dashboard/SovereignDashboardWindow').then((module) => ({
     default: module.SovereignDashboardWindow,
   }))
+);
+
+// ============================================================================
+// Phase C: Rehosted Module Components
+// ============================================================================
+const TerraFlowCommandCenter = lazy(
+  () => import('../components/terra-flow/QuantumCommandCenter')
+);
+const TerraLevyDashboard = lazy(
+  () => import('../applications/terra-levy/TerraLevyDashboard')
 );
 
 // ============================================================================
@@ -561,16 +594,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'levy-calculator':
     case 'terra-levy':
       return (
-        <PlaceholderModule
-          name='TerraLevy'
-          icon='🧮'
-          description='County-wide levy rates, compliance, AI forecasting, and tax district management.'
-          status='placeholder'
-          legacySource='BCBSLevyMaster, BCBSLevy'
-          domain='tax'
-          scope='county-wide'
-          launchSurface='Standalone window'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TerraLevyDashboard />
+        </Suspense>
       );
 
     case 'gis-viewer':
@@ -747,16 +773,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-flow':
       return (
-        <PlaceholderModule
-          name='TerraFlow'
-          icon='⚡'
-          description='Workflow & process automation — task routing, approval chains, and deadline tracking.'
-          status='placeholder'
-          legacySource='TerraFlow'
-          domain='system'
-          scope='system'
-          launchSurface='Standalone window'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TerraFlowCommandCenter />
+        </Suspense>
       );
 
     case 'terra-permit':
@@ -930,6 +949,120 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         <Suspense fallback={<ModuleLoadingFallback />}>
           <CanonHome />
         </Suspense>
+      );
+
+    // ========================================================================
+    // NEW CONSTELLATION MODULES (Phase B audit additions)
+    // ========================================================================
+
+    case 'terra-miner':
+      return (
+        <PlaceholderModule
+          name='TerraMiner'
+          icon='⛏️'
+          description='Property research & outside data mining — aggregates external data sources (MLS, permits, assessor feeds) for parcel enrichment.'
+          status='placeholder'
+          legacySource='TerraMiner (Private)'
+          domain='assessment'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'legislative-pulse':
+      return (
+        <PlaceholderModule
+          name='Legislative Pulse'
+          icon='📢'
+          description='Legislative research & tracking — monitors WA state bills, fiscal notes, and policy impacts on county assessment/taxation.'
+          status='placeholder'
+          legacySource='legislative-pulse-beacon (Private)'
+          domain='policy'
+          scope='county-wide'
+          launchSurface='Dais suite → Standalone window'
+        />
+      );
+
+    // ========================================================================
+    // GPT SUITE NAMESPACED MODULES
+    // ========================================================================
+
+    case 'gpt-studio':
+      return (
+        <PlaceholderModule
+          name='GPT Studio'
+          icon='🧪'
+          description='Interactive GPT prompt studio — prompt engineering, template management, and AI workflow design.'
+          status='placeholder'
+          domain='ai'
+          scope='county-wide'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-marketplace':
+      return (
+        <PlaceholderModule
+          name='GPT Marketplace'
+          icon='🏪'
+          description='GPT model & prompt marketplace — browse, install, and manage AI models and prompt templates.'
+          status='placeholder'
+          domain='ai'
+          scope='system'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-management':
+      return (
+        <PlaceholderModule
+          name='GPT Management'
+          icon='⚙️'
+          description='GPT administration — API key management, usage quotas, model configuration, and access control.'
+          status='placeholder'
+          domain='ai'
+          scope='system'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-builder':
+      return (
+        <PlaceholderModule
+          name='GPT Builder'
+          icon='🔨'
+          description='Custom GPT builder — create domain-specific AI agents for county workflows with no-code configuration.'
+          status='placeholder'
+          domain='ai'
+          scope='county-wide'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-analytics':
+      return (
+        <PlaceholderModule
+          name='GPT Analytics'
+          icon='📊'
+          description='GPT usage analytics — token consumption, model performance, cost tracking, and ROI metrics.'
+          status='placeholder'
+          domain='ai'
+          scope='system'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-rag':
+      return (
+        <PlaceholderModule
+          name='GPT RAG'
+          icon='📚'
+          description='Retrieval-Augmented Generation — document indexing, vector search, and context-aware AI responses over county data.'
+          status='placeholder'
+          domain='ai'
+          scope='county-wide'
+          launchSurface='GPT suite → Standalone window'
+        />
       );
 
     // ========================================================================

@@ -15,7 +15,7 @@ import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { fetchCodeActions, fetchCompletions, fetchDocumentHighlights, fetchFindReferences, fetchFoldingRanges, fetchGitDiff, fetchGotoDefinition, fetchHoverInfo, fetchRenameSymbol, fetchSignatureHelp, type CodeActionKind, type CompletionKind, type LineMarker } from '../api/canonFs';
+import { fetchCodeActions, fetchCompletions, fetchDocumentHighlights, fetchDocumentLinks, fetchFindReferences, fetchFoldingRanges, fetchGitDiff, fetchGotoDefinition, fetchHoverInfo, fetchInlayHints, fetchRenameSymbol, fetchSignatureHelp, type CodeActionKind, type CompletionKind, type LineMarker } from '../api/canonFs';
 import { CANON_THEME_NAME, CANON_THEMES, type CanonThemeId } from './canonEditorTheme';
 
 // Configure Monaco workers for local (non-CDN) operation
@@ -641,6 +641,59 @@ export const CanonEditor: React.FC<CanonEditorProps> = React.memo(function Canon
         },
       });
 
+      const linkDisposable = monaco.languages.registerLinkProvider('*', {
+        provideLinks: async (model) => {
+          const content = model.getValue();
+          const uri = model.uri.toString();
+          const fName = uri.split('/').pop() ?? fileName;
+          try {
+            const resp = await fetchDocumentLinks(fName, content);
+            if (resp.error || !resp.links.length) {
+              return { links: [] };
+            }
+            return {
+              links: resp.links.map((l) => ({
+                range: new monaco.Range(l.line, l.startColumn, l.line, l.endColumn),
+                url: l.url,
+                tooltip: l.tooltip,
+              })),
+            };
+          } catch {
+            return { links: [] };
+          }
+        },
+      });
+
+      const inlayHintsDisposable = monaco.languages.registerInlayHintsProvider('*', {
+        provideInlayHints: async (model, range) => {
+          const content = model.getValue();
+          const uri = model.uri.toString();
+          const fName = uri.split('/').pop() ?? fileName;
+          try {
+            const resp = await fetchInlayHints(fName, content);
+            if (resp.error || !resp.hints.length) {
+              return { hints: [], dispose: () => {} };
+            }
+            return {
+              hints: resp.hints
+                .filter((h) => h.line >= range.startLineNumber && h.line <= range.endLineNumber)
+                .map((h) => ({
+                  kind: h.kind === 'type'
+                    ? monaco.languages.InlayHintKind.Type
+                    : monaco.languages.InlayHintKind.Parameter,
+                  position: { lineNumber: h.line, column: h.column },
+                  label: h.label,
+                  paddingLeft: h.paddingLeft ?? false,
+                  paddingRight: h.paddingRight ?? false,
+                })),
+              dispose: () => {},
+            };
+          } catch {
+            return { hints: [], dispose: () => {} };
+          }
+        },
+      });
+
       // Cleanup providers on unmount
       return () => {
         foldingDisposable.dispose();
@@ -652,6 +705,8 @@ export const CanonEditor: React.FC<CanonEditorProps> = React.memo(function Canon
         renameDisposable.dispose();
         signatureHelpDisposable.dispose();
         documentHighlightDisposable.dispose();
+        linkDisposable.dispose();
+        inlayHintsDisposable.dispose();
       };
     },
     [onCursorChange],
@@ -664,6 +719,57 @@ export const CanonEditor: React.FC<CanonEditorProps> = React.memo(function Canon
       mon.editor.setTheme(themeName);
     }
   }, [themeName]);
+
+  // Git diff gutter decorations (green=added, red=deleted, blue=modified)
+  useEffect(() => {
+    const editor = editorInstanceRef.current;
+    const mon = monacoRef.current;
+    if (!editor || !mon) return;
+
+    let decorationIds: string[] = [];
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const resp = await fetchGitDiff(fileName, value);
+        if (cancelled || resp.error || !resp.changes.length) return;
+
+        const newDecorations = resp.changes.map((c) => {
+          let className: string;
+          let glyphMarginClassName: string;
+          if (c.type === 'added') {
+            className = 'canon-diff-added';
+            glyphMarginClassName = 'canon-diff-glyph-added';
+          } else if (c.type === 'deleted') {
+            className = 'canon-diff-deleted';
+            glyphMarginClassName = 'canon-diff-glyph-deleted';
+          } else {
+            className = 'canon-diff-modified';
+            glyphMarginClassName = 'canon-diff-glyph-modified';
+          }
+          return {
+            range: new mon.Range(c.line, 1, c.endLine, 1),
+            options: {
+              isWholeLine: true,
+              linesDecorationsClassName: className,
+              glyphMarginClassName,
+            },
+          };
+        });
+
+        decorationIds = editor.deltaDecorations(decorationIds, newDecorations);
+      } catch {
+        // Silently ignore diff fetch failures
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (decorationIds.length && editorInstanceRef.current) {
+        editorInstanceRef.current.deltaDecorations(decorationIds, []);
+      }
+    };
+  }, [fileName, value]);
 
   const handleChange = useCallback(
     (val: string | undefined) => {
