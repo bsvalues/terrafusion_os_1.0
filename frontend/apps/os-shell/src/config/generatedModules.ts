@@ -374,14 +374,14 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
     "$schema": "../../tools/registry/terrafusion.app.schema.json",
     "id": "income-valuation",
     "displayName": "Income Valuation",
-    "description": "Income approach property valuation — direct capitalization, GRM, and AI-assisted NOI analysis. Legacy: BSIncomeValuation (React/Express/Drizzle).",
+    "description": "Income approach property valuation — direct capitalization, GRM, and AI-assisted NOI analysis. Legacy: BSIncomeValuation (React/Express/Drizzle). ARCHIVED: Capability absorbed into Forge → Income sub-tab via IncomeValuationPanel + incomeValuationService.ts.",
     "iconName": "TrendingUp",
     "category": "assessment",
     "tier": 1,
     "status": "alpha",
-    "pinned": true,
+    "pinned": false,
     "version": "2.0.0",
-    "intent": "gen2",
+    "intent": "archive",
     "runnable": false,
     "entry": {
       "type": "route",
@@ -458,25 +458,26 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
   {
     "id": "comparable-sales",
     "displayName": "Comparable Sales",
-    "description": "Parcel-scoped sales comparison approach — neighborhood comps, paired adjustments, Leaflet mapping, USPAP-compliant exports. Legacy: GeospatialAnalyzerBS.",
+    "description": "Parcel-scoped sales comparison approach — neighborhood comps, paired adjustments, Leaflet mapping, USPAP-compliant exports. Legacy: GeospatialAnalyzerBS. ARCHIVED: Capability absorbed into Forge → Sales sub-tab via ComparableSalesPanel + comparableSalesService.ts.",
     "iconName": "Home",
     "category": "assessment",
     "tier": 1,
-    "status": "alpha",
-    "pinned": true,
-    "version": "1.0.0",
-    "intent": "gen2",
-    "runnable": false,
+    "status": "beta",
+    "pinned": false,
+    "version": "1.1.0",
+    "intent": "archive",
+    "runnable": true,
     "entry": {
-      "type": "route",
-      "route": "/placeholder"
+      "type": "component",
+      "route": "/workbench/forge"
     },
     "tags": [
       "assessment",
       "comps",
       "sales-comparison",
       "gen2",
-      "parcel-scoped"
+      "parcel-scoped",
+      "rehosted"
     ],
     "permissions": [
       "county:read",

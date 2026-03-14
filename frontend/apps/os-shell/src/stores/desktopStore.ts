@@ -162,8 +162,7 @@ const TASKBAR_HEIGHT = 48;
 
 /**
  * Returns the correct window size for a module based on its type.
- * - Suite windows (suite-*) and OS features (os-*) → near-full-stage
- * - Property Workbench → maximized (full viewport minus chrome)
+ * - All suites, workbench, and OS features → near-full-stage
  * - Everything else → DEFAULT_WINDOW_SIZE
  */
 function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean } {
@@ -175,11 +174,11 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   if (classification) {
     const { objectType } = classification;
 
-    // Tier-0 workbench → opens maximized
+    // Tier-0 workbench → near-full-stage (same as suites, not maximized)
     if (objectType === 'tier0-workbench') {
       return {
-        size: { width: vw, height: vh - TASKBAR_HEIGHT },
-        maximized: true,
+        size: { width: vw - 40, height: vh - 120 },
+        maximized: false,
       };
     }
 
@@ -195,8 +194,8 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   // Prefix-matching fallback for unclassified modules
   if (moduleId === 'property-workbench') {
     return {
-      size: { width: vw, height: vh - TASKBAR_HEIGHT },
-      maximized: true,
+      size: { width: vw - 40, height: vh - 120 },
+      maximized: false,
     };
   }
   if (moduleId.startsWith('suite-') || moduleId.startsWith('os-')) {
