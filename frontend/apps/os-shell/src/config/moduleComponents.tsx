@@ -74,14 +74,6 @@ export const MODULE_ALIASES: Record<string, string> = {
   legislative: 'legislative-pulse',
   'legislative-beacon': 'legislative-pulse',
 
-  // GPT Suite namespaced modules
-  'gpt-studio': 'gpt-studio',
-  'gpt-marketplace': 'gpt-marketplace',
-  'gpt-management': 'gpt-management',
-  'gpt-builder': 'gpt-builder',
-  'gpt-analytics': 'gpt-analytics',
-  'gpt-rag': 'gpt-rag',
-
   // Phase C3: Sovereign Dashboard aliases
   dashboard: 'sovereign-dashboard',
   'doc-viewer': 'sovereign-dashboard',

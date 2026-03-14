@@ -77,45 +77,126 @@ Every module below opens a `PlaceholderModule` window with truthful metadata. No
 | `statistics-studio` | COD/PRD/PRB ratio studies |
 | `terra-gama` | Geographic neighborhood delineation |
 | `terra-gis` | Full GIS platform (rehost from BCBSGISPRO) |
-| `terra-levy` | Levy rate management (rehost from BCBSLevyMaster) |
 | `terra-pilt` | Payment In Lieu of Taxes (rehost from TerraPILT) |
 | `terra-permit` | Building permit workflow (rehost from TerraFUsionPermit) |
 | `vei` | Vertical Equality Index with PRB analysis |
 | `property-tax-ai` | AI-driven tax analysis (rehost from PropertyTaxAI) |
 | `pacs-bridge` | Harris PACS import/export (rehost from PACS-DataBridge) |
 | `terra-sync` | Multi-source ETL (rehost from TerraFusionSync) |
-| `terra-flow` | Workflow automation (rehost from TerraFlow) |
+| `terra-miner` | Property research & outside data mining |
+| `legislative-pulse` | WA state legislative tracking & fiscal note monitoring |
+
+**Rehosted (beta)**: `terra-flow` → QuantumCommandCenter, `terra-levy` → TerraLevyDashboard
 
 Additionally:
 - Workbench tabs have store wiring but display mock/snapshot data (no live PACS connection in dev)
 - Canon IDE edits virtual filesystem, not production source
-- GPT suite not yet audited for constellation alignment
+---
+
+## Phase B Audit — Suite-by-Suite Verdicts
+
+Produced during post-merge truth triage (2026-03-13). The original merge agent performed informal status corrections but did not produce the disciplined audit artifact. This section fills that gap.
+
+### Forge Suite (Assessment & Valuation)
+
+| Module ID | Legacy Source | Scope | Launch | Status | Verdict |
+|-----------|-------------|-------|--------|--------|---------|
+| `cost-forge` (costforge) | CostForge internal | Parcel | Workbench / Standalone | live internal | CORRECT |
+| `income-valuation` | BSIncomeValuation | Parcel | Workbench → forge | alpha (placeholder) | CORRECT |
+| `comparable-sales` | GeospatialAnalyzerBS | Parcel | Workbench → forge | alpha (placeholder) | CORRECT |
+| `regression-studio` | Bsbcintelligentvalues | County-wide | Standalone | alpha (placeholder) | CORRECT |
+| `statistics-studio` | Assessment workflow tools | County-wide | Standalone | alpha (placeholder) | CORRECT |
+| `terra-gama` | TerraGama, TerraFusionGama | County-wide | Standalone | alpha (placeholder) | STATUS-WRONG → fixed (was `active`, now `alpha`) |
+
+### Dais Suite (Tax, Levy, Permits, Policy)
+
+| Module ID | Legacy Source | Scope | Launch | Status | Verdict |
+|-----------|-------------|-------|--------|--------|---------|
+| `terra-levy` | BCBSLevyMaster, BCBSLevy | County-wide | Standalone | beta (rehosted 2D dashboard) | STATUS-WRONG → fixed (was `active`, now `beta`) |
+| `terra-pilt` | TerraPILT | County-wide | Standalone | alpha (placeholder) | STATUS-WRONG → fixed (was `active`, now `alpha`) |
+| `terra-permit` | TerraFUsionPermit | County-wide | Standalone | alpha (placeholder) | STATUS-WRONG → fixed (was `active`, now `alpha`) |
+| `vei` | — | County-wide | Standalone | alpha (placeholder) | CORRECT |
+| `property-tax-ai` | PropertyTaxAI | County-wide | Standalone | alpha (placeholder) | CORRECT |
+| `legislative-pulse` | legislative-pulse-beacon (Private) | County-wide | Dais → Standalone | alpha (placeholder) | MISSING → added |
+
+### Atlas Suite (GIS & Mapping)
+
+| Module ID | Legacy Source | Scope | Launch | Status | Verdict |
+|-----------|-------------|-------|--------|--------|---------|
+| `terra-gis` | BCBSGISPRO, bcbspacsmapping | County-wide | Standalone | placeholder | CORRECT |
+| `gis-viewer` | alias → `terra-gis` | — | — | — | CORRECT (alias) |
+| `gis-pro` | alias → `terra-gis` | — | — | — | CORRECT (alias) |
+
+### Dossier Suite (Data, Integration, System/Admin)
+
+| Module ID | Legacy Source | Scope | Launch | Status | Verdict |
+|-----------|-------------|-------|--------|--------|---------|
+| `pacs-bridge` | PACS-DataBridge | System/admin | Standalone | alpha (placeholder) | CORRECT |
+| `terra-sync` | TerraFusionSync, CountyDataSync | System/admin | Standalone | alpha (placeholder) | CORRECT |
+| `terra-flow` | TerraFlow | System/admin | Standalone | beta (QuantumCommandCenter) | STATUS-WRONG → fixed (was `active`, now `beta`) |
+| `canon-ide` (os-canon) | Internal | System | OS Feature window | live internal | CORRECT |
+| `terra-pilot` (os-pilot) | Internal | System | OS Feature window | live internal | CORRECT |
+| `terra-miner` | TerraMiner (Private) | County-wide | Standalone | alpha (placeholder) | MISSING → added |
+
+### GPT Suite (AI Tools)
+
+| Module ID | Legacy Source | Scope | Launch | Status | Verdict |
+|-----------|-------------|-------|--------|--------|---------|
+| `gpt-studio` | — | County-wide | GPT → Standalone | placeholder | CORRECT |
+| `gpt-marketplace` | — | System | GPT → Standalone | placeholder | CORRECT |
+| `gpt-management` | — | System | GPT → Standalone | placeholder | CORRECT |
+| `gpt-builder` | — | County-wide | GPT → Standalone | placeholder | CORRECT |
+| `gpt-analytics` | — | System | GPT → Standalone | placeholder | CORRECT |
+| `gpt-rag` | — | County-wide | GPT → Standalone | placeholder | CORRECT |
+
+### Audit Summary
+
+- **CORRECT**: 22 modules
+- **STATUS-WRONG → fixed**: 5 modules (terra-gama, terra-levy, terra-pilt, terra-permit, terra-flow)
+- **MISSING → added**: 2 modules (terra-miner, legislative-pulse)
+- **MISPLACED**: 0
 
 ---
 
-## What the Next Phase Is
+## Phase C Rehost Results
 
-### Option A: Merge/Stabilize Checkpoint
+Two modules were rehosted from PlaceholderModule to real components:
 
-If this branch is the new truth, merge it as a formal architectural checkpoint:
-- PR into main with this memo as evidence
-- Sets new baseline for all downstream work
+| Module ID | Component | What It Renders | Data Source |
+|-----------|-----------|----------------|-------------|
+| `terra-flow` | `QuantumCommandCenter` (lazy) | 4-panel hub: AnalyticsWorkbench, WorkflowDesigner, HypothesisTestingLab, SwarmVisualization3D | Internal state |
+| `terra-levy` | `TerraLevyDashboard` (lazy, 532 lines) | 4-tab dashboard: Overview, Levies, Budget, AI Insights. Benton County sample data. | Dev sample data (SnapshotDataProvider path available for production) |
 
-### Option B: Suite-by-Suite Assimilation Audit
+Both use CSS custom properties (ratchet-safe). TerraLevyDashboard has zero raw hex violations.
 
-For every registered module across all 5 suites, verify:
-1. Correct placement (suite affiliation matches domain)
-2. Correct launch behavior (workbench vs standalone fires correctly)
-3. Correct placeholder/live status (no false claims)
-4. Correct relationship to workbench vs standalone
-5. GPT suite alignment (not yet touched in constellation pass)
+---
 
-### Option C: Rehosting Pass
+## Post-Merge Truth Triage Outcome (2026-03-13)
 
-Pick highest-value placeholder modules and begin rehosting real logic from legacy GitHub repos:
-- CostForge (already partially live)
-- TerraLevy (BCBSLevyMaster has working code)
-- Comparable Sales (GeospatialAnalyzerBS has comp logic)
+The merge of `feat/tf-cli-phase2` into `main` (commit `91155c2f6`) was performed by a prior agent that collapsed audit, rehost, and merge into one rushed pass. A post-merge truth triage was conducted to verify the merge before pushing to origin.
+
+### What was lawful and retained
+- Module registry/aliases/launch wiring in moduleComponents.tsx
+- TerraLevyDashboard and TerraFlowCommandCenter component wiring
+- terra-miner and legislative-pulse additions
+- GPT suite module registrations
+- Atlas/Dossier/Forge suite placements
+
+### What was corrected
+- 5 module statuses in generatedModules.ts (terra-flow, terra-levy → beta; terra-gama, terra-pilt, terra-permit → alpha)
+- terra-levy manifest description cleaned (removed implementation narration)
+- GPT self-referencing aliases removed (identity mappings served no purpose)
+- UI token baseline set to actual violation count (231)
+- This audit artifact produced (was missing from original merge)
+
+### What remains deferred
+- Workbench tabs show mock/snapshot data (no live PACS connection in dev)
+- Canon IDE edits virtual filesystem, not production source
+- 3D ImmersiveDashboard for terra-levy requires @react-three/fiber installation
+- costforge-ai government-edition module (44 files) not yet wired
+
+### Why fix-forward was chosen
+The merge content was architecturally sound — module placements were correct, rehosted components were real, and TypeScript was clean. The issues were truth-label drift (5 wrong statuses) and missing proof artifacts, not structural damage. A revert would have destroyed lawful work to fix labeling problems.
 
 ---
 
