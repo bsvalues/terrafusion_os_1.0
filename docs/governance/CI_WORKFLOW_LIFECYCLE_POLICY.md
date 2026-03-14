@@ -173,10 +173,10 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 |-------|-------|
 | REQUIRED | 3 |
 | PUSH-OPTIONAL | 39 |
-| SCHEDULED | 17 |
-| MANUAL | 21 |
+| SCHEDULED | 18 |
+| MANUAL | 23 |
 | DEPRECATED | 2 |
-| **Total** | 82 |
+| **Total** | 85 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
@@ -224,7 +224,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `ui-governance.yml`
 - `yaml-sanity.yml`
 
-**SCHEDULED** (17):
+**SCHEDULED** (18):
 - `accessibility-audit.yml`
 - `accreditation-oracle-health.yml`
 - `autonomy-pr-lane.yml`
@@ -233,6 +233,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `external-verify.yml`
 - `governance-audit.yml`
 - `governance-import-hygiene-nightly.yml`
+- `health-check.yml`
 - `nightly.yml`
 - `oracle-health.yml`
 - `perf-skill-audit.yml`
@@ -243,7 +244,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `security.yml`
 - `terraforge-ci.yml`
 
-**MANUAL** (21):
+**MANUAL** (23):
 - `autonomy-incident-triage.yml`
 - `baseline-guard.yml`
 - `ci-cd-main.yml`
@@ -252,11 +253,13 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `e2e-smoke.yml`
 - `frontend-ci-isolated.yml`
 - `grfe-ci.yaml`
+- `infra-probe.yml`
 - `infrastructure-cicd.yml`
 - `kubernetes-infrastructure-ci.yml`
 - `manifest-contract-guard.yml`
 - `performance-regression.yml`
 - `release-lane.yml`
+- `rollback-production.yml`
 - `rollback-staging.yml`
 - `scope-drift-guard.yml`
 - `tag-lint.yml`

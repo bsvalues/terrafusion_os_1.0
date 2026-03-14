@@ -24,7 +24,7 @@ import {
   BarChart3,
   FlaskConical,
   Workflow,
-  Cube,
+  Box,
   Signal,
   AlertCircle,
   CheckCircle2,
@@ -90,7 +90,7 @@ export function QuantumCommandCenter() {
             {/* Logo and Title */}
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
-                <Cube className="w-7 h-7 text-white" />
+                <Box className="w-7 h-7 text-white" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
@@ -155,7 +155,7 @@ export function QuantumCommandCenter() {
               value="visualization"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-600 data-[state=active]:to-blue-600"
             >
-              <Cube className="w-4 h-4 mr-2" />
+              <Box className="w-4 h-4 mr-2" />
               3D Visualization
             </TabsTrigger>
             <TabsTrigger
@@ -186,7 +186,7 @@ export function QuantumCommandCenter() {
             <Card className="bg-slate-800 border-slate-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Cube className="w-5 h-5 text-cyan-400" />
+                  <Box className="w-5 h-5 text-cyan-400" />
                   3D Agent Swarm Visualization
                 </CardTitle>
               </CardHeader>
