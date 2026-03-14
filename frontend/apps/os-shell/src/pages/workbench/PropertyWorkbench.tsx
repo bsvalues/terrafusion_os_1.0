@@ -38,7 +38,7 @@ import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
-import { usePropertyLookup } from '../../hooks/usePropertyLookup';
+import { usePropertyStore } from '../../stores/propertyStore';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 
 // ============================================================================
@@ -239,22 +239,32 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     [location.pathname, parcelId]
   );
 
-  // Real PACS property data (falls back to parcelId-only stub while loading)
-  const { data: pacsData, loading: propertyLoading } = usePropertyLookup(parcelId);
+  // Property data from store (backed by DataProvider → snapshot/live/fixtures)
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const propertyLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const selectParcel = usePropertyStore((s) => s.selectParcel);
+
+  // Load parcel via store when parcelId changes (if not already loaded)
+  useEffect(() => {
+    if (parcelId && activeParcel?.parcelId !== parcelId) {
+      selectParcel(parcelId);
+    }
+  }, [parcelId, activeParcel?.parcelId, selectParcel]);
+
   const propertyData = useMemo(
     () => ({
-      parcelId: pacsData?.geoId || parcelId || 'Unknown',
-      address: pacsData?.address || '',
-      owner: pacsData?.ownerName || '',
-      assessedValue: pacsData?.assessedValue ?? 0,
-      marketValue: pacsData?.marketValue ?? 0,
-      landValue: pacsData?.landValue ?? 0,
-      improvementValue: pacsData?.improvementValue ?? 0,
-      propertyType: pacsData?.propertyType || '',
-      legalDescription: pacsData?.legalDescription || '',
-      source: pacsData?.source || '',
+      parcelId: activeParcel?.parcelId || parcelId || 'Unknown',
+      address: activeParcel?.address || '',
+      owner: activeParcel?.ownerName || '',
+      assessedValue: activeParcel?.totalAssessedValue ?? 0,
+      marketValue: activeParcel?.marketValue ?? 0,
+      landValue: activeParcel?.landValue ?? 0,
+      improvementValue: activeParcel?.improvementValue ?? 0,
+      propertyType: activeParcel?.propertyType || '',
+      legalDescription: activeParcel?.legalDescription || '',
+      source: activeParcel?.dataSource || '',
     }),
-    [pacsData, parcelId]
+    [activeParcel, parcelId]
   );
 
   // ── Work Mode state ──

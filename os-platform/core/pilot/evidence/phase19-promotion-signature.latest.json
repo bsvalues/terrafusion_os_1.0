@@ -1,0 +1,9 @@
+{
+  "algorithm": "ed25519",
+  "scope": "phase19_local_promotion_attestation",
+  "generatedAt": "2026-03-13T11:59:56.058Z",
+  "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAzmPB0DuSkEv7h/i6FDHapAvHUjaaHKTD9UHslF5/7Yw=\n-----END PUBLIC KEY-----\n",
+  "signatureBase64": "uN46EBIUw1HlNADUIygOqO7GxOPxxrhIys5Vctlm3zmYqtIlChO+9taB6xzjJPFYjlBBXQ4L7BasJHBC/j++DQ==",
+  "verified": true,
+  "note": "This is a local automation attestation signature, not a hardened promotion authority credential."
+}

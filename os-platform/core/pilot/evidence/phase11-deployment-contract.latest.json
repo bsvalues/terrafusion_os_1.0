@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-03-13T11:56:53.276Z",
+  "scope": "Phase 11 deployment contract hardening packet",
+  "decision": "GO",
+  "checks": [
+    {
+      "name": "workflows.no_resolve_fallback",
+      "ok": true,
+      "detail": "release and rollback workflows no longer accept IP-resolve fallback",
+      "payload": {
+        "workflowResolveViolations": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "workflows.require_public_dns",
+      "ok": true,
+      "detail": "release and rollback workflows require public DNS preflight",
+      "payload": {
+        "dnsPreflightMissing": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "release_lane.evidence_fields",
+      "ok": true,
+      "detail": "release-lane evidence records ASPNETCORE environment identity",
+      "payload": {
+        "missing": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "release_lane.staging_overlay",
+      "ok": true,
+      "detail": "release-lane mounts a valid staging config overlay",
+      "payload": {
+        "missing": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "rollback_staging.staging_overlay",
+      "ok": true,
+      "detail": "rollback-staging recreates and mounts the staging config overlay",
+      "payload": {
+        "missing": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase11.doc_truth",
+      "ok": true,
+      "detail": "Phase 11 doc records the hardened deploy contract",
+      "payload": {
+        "missing": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "hostinger.phase10_truth_canon",
+      "ok": true,
+      "detail": "Hostinger control-plane canon records environment identity truth",
+      "payload": {
+        "missing": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "public_health.direct_dns",
+      "ok": true,
+      "detail": "staging=200, production=200",
+      "payload": {
+        "staging": {
+          "status": "Healthy",
+          "timestamp": "2026-03-13T11:56:54.6974368Z",
+          "environment": "Staging",
+          "version": "1.0.0",
+          "service": "TerraFusion OS API - Basic Mode"
+        },
+        "production": {
+          "status": "Healthy",
+          "timestamp": "2026-03-13T11:56:55.0628825Z",
+          "environment": "Production",
+          "version": "1.0.0",
+          "service": "TerraFusion OS API - Basic Mode"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "public_release_headers.present",
+      "ok": true,
+      "detail": "stagingEnv=staging, productionEnv=production",
+      "payload": {
+        "stagingHeaders": {
+          "alt-svc": "h3=\":443\"; ma=2592000",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Fri, 13 Mar 2026 11:56:54 GMT",
+          "server": "Caddy, Caddy, Kestrel",
+          "transfer-encoding": "chunked",
+          "x-correlation-id": "tf-927ada2f79e1433f80b01973c69d4903",
+          "x-release-deployed-at": "2026-03-11T19:43:30Z",
+          "x-release-environment": "staging",
+          "x-release-sha": "fcaf281450757307fe43a235e22e9dbd78877e26"
+        },
+        "productionHeaders": {
+          "alt-svc": "h3=\":443\"; ma=2592000",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Fri, 13 Mar 2026 11:56:54 GMT",
+          "server": "Caddy, Caddy, Kestrel",
+          "transfer-encoding": "chunked",
+          "x-correlation-id": "tf-9a7ab778a1254051b97821de54469e8b",
+          "x-release-deployed-at": "2026-03-11T15:32:14Z",
+          "x-release-environment": "production",
+          "x-release-sha": "fcaf281450757307fe43a235e22e9dbd78877e26"
+        }
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": [],
+    "deploymentContract": "Deploy and rollback workflows must require public DNS truth, forbid resolve fallback, preserve environment identity, and keep staging config overlays valid."
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "generatedAt": "2026-03-13T11:56:51.886Z",
+  "scope": "Phase 10 environment identity truth packet",
+  "decision": "GO",
+  "checks": [
+    {
+      "name": "staging.public_health",
+      "ok": true,
+      "detail": "status=200",
+      "payload": {
+        "headers": {
+          "alt-svc": "h3=\":443\"; ma=2592000",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Fri, 13 Mar 2026 11:56:52 GMT",
+          "server": "Caddy, Caddy, Kestrel",
+          "transfer-encoding": "chunked",
+          "x-correlation-id": "tf-220eb70fe0f24d6e89eb45d66c74519f",
+          "x-release-deployed-at": "2026-03-11T19:43:30Z",
+          "x-release-environment": "staging",
+          "x-release-sha": "fcaf281450757307fe43a235e22e9dbd78877e26"
+        },
+        "body": {
+          "status": "Healthy",
+          "timestamp": "2026-03-13T11:56:53.136688Z",
+          "environment": "Staging",
+          "version": "1.0.0",
+          "service": "TerraFusion OS API - Basic Mode"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.environment_identity",
+      "ok": true,
+      "detail": "environment=Staging",
+      "payload": {
+        "expected": "Staging",
+        "actual": "Staging",
+        "body": {
+          "status": "Healthy",
+          "timestamp": "2026-03-13T11:56:53.136688Z",
+          "environment": "Staging",
+          "version": "1.0.0",
+          "service": "TerraFusion OS API - Basic Mode"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.release_header",
+      "ok": true,
+      "detail": "x-release-sha=fcaf281450757307fe43a235e22e9dbd78877e26",
+      "payload": {
+        "alt-svc": "h3=\":443\"; ma=2592000",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Fri, 13 Mar 2026 11:56:52 GMT",
+        "server": "Caddy, Caddy, Kestrel",
+        "transfer-encoding": "chunked",
+        "x-correlation-id": "tf-220eb70fe0f24d6e89eb45d66c74519f",
+        "x-release-deployed-at": "2026-03-11T19:43:30Z",
+        "x-release-environment": "staging",
+        "x-release-sha": "fcaf281450757307fe43a235e22e9dbd78877e26"
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.public_health",
+      "ok": true,
+      "detail": "status=200",
+      "payload": {
+        "headers": {
+          "alt-svc": "h3=\":443\"; ma=2592000",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Fri, 13 Mar 2026 11:56:53 GMT",
+          "server": "Caddy, Caddy, Kestrel",
+          "transfer-encoding": "chunked",
+          "x-correlation-id": "tf-37a7dd0598b54a9b8aecfd6a7a4814a6",
+          "x-release-deployed-at": "2026-03-11T15:32:14Z",
+          "x-release-environment": "production",
+          "x-release-sha": "fcaf281450757307fe43a235e22e9dbd78877e26"
+        },
+        "body": {
+          "status": "Healthy",
+          "timestamp": "2026-03-13T11:56:53.6721342Z",
+          "environment": "Production",
+          "version": "1.0.0",
+          "service": "TerraFusion OS API - Basic Mode"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.environment_identity",
+      "ok": true,
+      "detail": "environment=Production",
+      "payload": {
+        "expected": "Production",
+        "actual": "Production",
+        "body": {
+          "status": "Healthy",
+          "timestamp": "2026-03-13T11:56:53.6721342Z",
+          "environment": "Production",
+          "version": "1.0.0",
+          "service": "TerraFusion OS API - Basic Mode"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.release_header",
+      "ok": true,
+      "detail": "x-release-sha=fcaf281450757307fe43a235e22e9dbd78877e26",
+      "payload": {
+        "alt-svc": "h3=\":443\"; ma=2592000",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Fri, 13 Mar 2026 11:56:53 GMT",
+        "server": "Caddy, Caddy, Kestrel",
+        "transfer-encoding": "chunked",
+        "x-correlation-id": "tf-37a7dd0598b54a9b8aecfd6a7a4814a6",
+        "x-release-deployed-at": "2026-03-11T15:32:14Z",
+        "x-release-environment": "production",
+        "x-release-sha": "fcaf281450757307fe43a235e22e9dbd78877e26"
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": [],
+    "environmentIdentityTruth": "Staging and production must identify themselves truthfully in the public /health response body and release header surface."
+  }
+}

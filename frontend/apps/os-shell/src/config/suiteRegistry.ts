@@ -79,6 +79,10 @@ export interface SuiteDefinition {
    * Defines which tab to activate in Property Workbench.
    */
   workbenchTarget?: WorkbenchTarget;
+  /** Object Placement Codex: canonical object type classification */
+  objectType?: 'suite-workspace';
+  /** Object Placement Codex: owning layer */
+  layer?: 'layer-3-suite';
 }
 
 /**
@@ -132,6 +136,10 @@ export interface OsFeatureDefinition {
   label?: string;
   /** Icon override for standalone context */
   icon?: string;
+  /** Object Placement Codex: canonical object type classification */
+  objectType?: 'os-feature-window';
+  /** Object Placement Codex: owning layer */
+  layer?: 'layer-5-application';
 }
 
 export interface OsSurfaceDefinition {
@@ -141,6 +149,10 @@ export interface OsSurfaceDefinition {
   iconName: string;
   route: string;
   status: 'live' | 'wip' | 'planned';
+  /** Object Placement Codex: canonical object type classification */
+  objectType?: 'tier0-workbench';
+  /** Object Placement Codex: owning layer */
+  layer?: 'layer-4-workbench';
 }
 
 /**
@@ -159,6 +171,8 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'forge' },
+    objectType: 'suite-workspace',
+    layer: 'layer-3-suite',
   },
   {
     id: 'atlas',
@@ -171,6 +185,8 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'atlas' },
+    objectType: 'suite-workspace',
+    layer: 'layer-3-suite',
   },
   {
     id: 'dais',
@@ -183,6 +199,8 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'dais' },
+    objectType: 'suite-workspace',
+    layer: 'layer-3-suite',
   },
   {
     id: 'dossier',
@@ -195,6 +213,8 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'dossier' },
+    objectType: 'suite-workspace',
+    layer: 'layer-3-suite',
   },
   {
     id: 'gpt',
@@ -207,6 +227,8 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     status: 'live',
     workbenchTab: true,
     workbenchTarget: { tabId: 'pilot' }, // TerraGPT uses Pilot tab
+    objectType: 'suite-workspace',
+    layer: 'layer-3-suite',
   },
 ] as const;
 
@@ -258,6 +280,8 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
         },
       ],
     },
+    objectType: 'os-feature-window',
+    layer: 'layer-5-application',
   },
   {
     id: 'trace',
@@ -303,6 +327,8 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
         },
       ],
     },
+    objectType: 'os-feature-window',
+    layer: 'layer-5-application',
   },
   {
     id: 'canon',
@@ -327,6 +353,8 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
       ],
       showWorkbenchCta: false,
     },
+    objectType: 'os-feature-window',
+    layer: 'layer-5-application',
   },
 ] as const;
 
@@ -341,6 +369,8 @@ export const OS_SURFACES: readonly OsSurfaceDefinition[] = [
     iconName: 'Building',
     route: '/property',
     status: 'live',
+    objectType: 'tier0-workbench',
+    layer: 'layer-4-workbench',
   },
 ] as const;
 

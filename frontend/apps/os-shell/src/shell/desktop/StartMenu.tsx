@@ -20,9 +20,11 @@ import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useStartMenuStore, type Module } from '../../stores/startMenuStore';
+import { TerraSphere } from '../../ui/brand/TerraSphere';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
 import { LiquidPanel } from '../../ui/materials';
 import { RecentAppsSection } from './RecentAppsSection';
+import { Z } from './zIndex';
 
 // ============================================================================
 // Hooks
@@ -591,9 +593,10 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
       data-testid='start-menu'
       role='menu'
       aria-label='Start Menu'
+      style={{ zIndex: Z.startMenu }}
       className={cn(
         // Position - bottom left, above taskbar dock
-        'fixed bottom-16 left-4 z-[1010]',
+        'fixed bottom-[86px] left-4',
         // Size
         'w-[380px] h-[540px]',
         // Layout
@@ -603,8 +606,19 @@ export const StartMenu: React.FC<StartMenuProps> = ({ className }) => {
         className
       )}
     >
+      {/* Branded Header */}
+      <div className='flex items-center gap-3 px-4 py-3 border-b border-[hsl(var(--tf-text)/0.1)]'>
+        <div style={{ flexShrink: 0 }}>
+          <TerraSphere size={36} state='idle' />
+        </div>
+        <span className='text-sm font-semibold tracking-wide'
+              style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+          TerraFusion OS
+        </span>
+      </div>
+
       {/* Search Section */}
-      <div className='p-3 border-b border-white/10'>
+      <div className='p-3'>
         <SearchInput />
       </div>
 

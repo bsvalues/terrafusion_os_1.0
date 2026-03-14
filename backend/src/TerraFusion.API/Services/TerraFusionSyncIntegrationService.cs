@@ -1,10 +1,6 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Interfaces;
-using TerraFusion.Core.Services;
 using SyncResult = TerraFusion.Abstractions.DTOs.Responses.SyncResult;
-using System.Text.Json;
-using System.Diagnostics;
 
 namespace TerraFusion.API.Services;
 
@@ -16,24 +12,17 @@ namespace TerraFusion.API.Services;
 public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
 {
     private readonly ILogger<TerraFusionSyncIntegrationService> _logger;
-    private readonly IConfiguration _configuration;
-    private readonly LegacyDatabaseService _legacyDatabaseService;
-    private readonly Dictionary<string, LegacySystemInfo> _registeredSystems = new();
-    private readonly Dictionary<string, CountyInfo> _configuredCounties = new();
-    private bool _isOrchestrationActive = false;
-    private DateTime _orchestrationStartTime;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly TerraFusionSyncRuntimeState _runtimeState;
 
     public TerraFusionSyncIntegrationService(
         ILogger<TerraFusionSyncIntegrationService> logger,
-        IConfiguration configuration,
-        LegacyDatabaseService legacyDatabaseService)
+        IServiceProvider serviceProvider,
+        TerraFusionSyncRuntimeState runtimeState)
     {
         _logger = logger;
-        _configuration = configuration;
-        _legacyDatabaseService = legacyDatabaseService;
-
-        InitializeDefaultSystems();
-        InitializeDefaultCounties();
+        _serviceProvider = serviceProvider;
+        _runtimeState = runtimeState;
     }
 
     public async Task<SyncResult> StartSynchronizationAsync(string? specificCounty = null)
@@ -49,8 +38,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
 
         try
         {
-            _isOrchestrationActive = true;
-            _orchestrationStartTime = DateTime.UtcNow;
+            _runtimeState.SetOrchestrationActive(true);
 
             if (!string.IsNullOrEmpty(specificCounty))
             {
@@ -73,7 +61,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
                 var allErrors = new List<string>();
                 var allSuccess = true;
 
-                foreach (var county in _configuredCounties.Values.Where(c => c.IsActive))
+                foreach (var county in _runtimeState.GetConfiguredCounties().Where(c => c.IsActive))
                 {
                     try
                     {
@@ -139,7 +127,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
     {
         _logger.LogInformation("🛑 Stopping TerraFusionSync synchronization");
 
-        _isOrchestrationActive = false;
+        _runtimeState.SetOrchestrationActive(false);
 
         return await Task.FromResult(new SyncResult
         {
@@ -153,29 +141,30 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
     {
         return await Task.FromResult(new SyncStatus
         {
-            IsActive = _isOrchestrationActive,
-            CurrentOperation = _isOrchestrationActive ? "Real-time synchronization active" : "Idle",
-            LastSyncTime = DateTime.UtcNow.AddMinutes(-5), // Simulated
-            NextScheduledSync = DateTime.UtcNow.AddMinutes(10), // Simulated
-            ActiveConnections = _registeredSystems.Count(s => s.Value.IsAvailable),
+            IsActive = _runtimeState.IsOrchestrationActive,
+            CurrentOperation = _runtimeState.IsOrchestrationActive ? "Real-time synchronization active" : "Idle",
+            LastSyncTime = _runtimeState.LastSyncTime,
+            NextScheduledSync = _runtimeState.GetNextScheduledSync(),
+            ActiveConnections = _runtimeState.GetRegisteredSystems().Count(s => s.IsAvailable),
             Metrics = new Dictionary<string, object>
             {
-                ["TotalSystems"] = _registeredSystems.Count,
-                ["ActiveCounties"] = _configuredCounties.Count(c => c.Value.IsActive),
-                ["UptimeSeconds"] = _isOrchestrationActive ?
-                    (DateTime.UtcNow - _orchestrationStartTime).TotalSeconds : 0
+                ["TotalSystems"] = _runtimeState.GetRegisteredSystems().Count(),
+                ["ActiveCounties"] = _runtimeState.GetConfiguredCounties().Count(c => c.IsActive),
+                ["UptimeSeconds"] = _runtimeState.IsOrchestrationActive && _runtimeState.OrchestrationStartTime.HasValue
+                    ? (DateTime.UtcNow - _runtimeState.OrchestrationStartTime.Value).TotalSeconds
+                    : 0
             }
         });
     }
 
     public async Task<bool> IsSyncActiveAsync()
     {
-        return await Task.FromResult(_isOrchestrationActive);
+        return await Task.FromResult(_runtimeState.IsOrchestrationActive);
     }
 
     public async Task<IEnumerable<LegacySystemInfo>> GetAvailableLegacySystemsAsync()
     {
-        return await Task.FromResult(_registeredSystems.Values.ToList());
+        return await Task.FromResult(_runtimeState.GetRegisteredSystems());
     }
 
     public async Task<bool> RegisterLegacySystemAsync(LegacySystemConfig config)
@@ -185,24 +174,8 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
             _logger.LogInformation("📝 Registering legacy system: {SystemName} ({SystemType})",
                 config.SystemName, config.SystemType);
 
-            var systemInfo = new LegacySystemInfo
-            {
-                SystemId = config.SystemId,
-                SystemName = config.SystemName,
-                SystemType = config.SystemType,
-                Version = "Unknown",
-                IsAvailable = true, // Would test connection in real implementation
-                IsConfigured = true,
-                LastHealthCheck = DateTime.UtcNow,
-                Capabilities = new Dictionary<string, object>
-                {
-                    ["AutoSync"] = config.EnableAutoSync,
-                    ["SyncInterval"] = config.SyncInterval.TotalMinutes,
-                    ["HasApiEndpoint"] = !string.IsNullOrEmpty(config.ApiEndpoint)
-                }
-            };
-
-            _registeredSystems[config.SystemId] = systemInfo;
+            var isAvailable = !string.IsNullOrWhiteSpace(config.ConnectionString) || !string.IsNullOrWhiteSpace(config.ApiEndpoint);
+            _runtimeState.RegisterLegacySystem(config, isAvailable);
 
             _logger.LogInformation("✅ Legacy system {SystemName} registered successfully", config.SystemName);
             return await Task.FromResult(true);
@@ -218,7 +191,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
     {
         try
         {
-            if (_registeredSystems.Remove(systemId))
+            if (_runtimeState.UnregisterLegacySystem(systemId))
             {
                 _logger.LogInformation("✅ Legacy system {SystemId} unregistered", systemId);
                 return await Task.FromResult(true);
@@ -236,7 +209,8 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
 
     public async Task<LegacySystemHealth> GetLegacySystemHealthAsync(string systemId)
     {
-        if (_registeredSystems.TryGetValue(systemId, out var systemInfo))
+        var systemInfo = _runtimeState.GetRegisteredSystem(systemId);
+        if (systemInfo is not null)
         {
             return await Task.FromResult(new LegacySystemHealth
             {
@@ -269,54 +243,46 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
     {
         _logger.LogInformation("🔄 Syncing data for {County} county", countyName);
 
-        var result = new CountySyncResult
-        {
-            CountyName = countyName,
-            Timestamp = DateTime.UtcNow
-        };
-
         try
         {
-            // Use the existing LegacyDatabaseService for actual data import
-            var importResult = await _legacyDatabaseService.ImportPropertyData(countyName, new LegacyImportOptions
+            if (!_runtimeState.GetRegisteredSystems().Any())
             {
-                StartDate = options?.StartDate,
-                EndDate = options?.EndDate,
-                PropertyTypes = options?.PropertyTypes ?? new List<string>(),
-                ImportSales = options?.DataTypes?.Contains("Sales") ?? true,
-                ImportOwners = options?.DataTypes?.Contains("Owners") ?? true,
-                BatchSize = options?.BatchSize ?? 1000
-            });
+                _logger.LogWarning(
+                    "Skipping Benton sync for {County} because this host is running in operational-snapshot mode without PACS connectivity.",
+                    countyName);
 
-            // Map results
-            result.Success = importResult.Success;
-            result.RecordsProcessed = importResult.Properties.Count + importResult.Assessments.Count;
-            result.RecordsUpdated = importResult.Properties.Count;
-            result.RecordsAdded = importResult.Assessments.Count;
-            result.TotalParcels = importResult.Properties.Count;
-            result.LegacySystemType = importResult.AdapterType;
-            result.RecordTypes = new Dictionary<string, int>
-            {
-                ["Properties"] = importResult.Properties.Count,
-                ["Assessments"] = importResult.Assessments.Count,
-                ["Owners"] = importResult.Owners.Count,
-                ["Sales"] = importResult.Sales.Count
-            };
-
-            if (!string.IsNullOrEmpty(importResult.Error))
-            {
-                result.Errors.Add(importResult.Error);
-                result.Success = false;
+                return new CountySyncResult
+                {
+                    CountyName = countyName,
+                    Timestamp = DateTime.UtcNow,
+                    Success = false,
+                    Status = "snapshot_mode",
+                    Message = "This host is running in Benton operational-snapshot mode. PACS sync is not available here.",
+                    Errors = new List<string>
+                    {
+                        "PACS sync is disabled on this host. Use the canonical local PACS-connected runtime for sync operations."
+                    },
+                    ErrorCount = 1,
+                    Duration = TimeSpan.Zero
+                };
             }
 
-            result.Duration = (importResult.EndTime ?? DateTime.UtcNow) - importResult.StartTime;
-            result.ErrorCount = result.Errors.Count;
+            var configuredCounty = _runtimeState.GetConfiguredCounty(countyName);
+            using var scope = _serviceProvider.CreateScope();
+            var pacsSyncService = scope.ServiceProvider.GetRequiredService<PacsToTerraFusionSyncService>();
 
-            // Update county info
-            if (_configuredCounties.TryGetValue(countyName, out var countyInfo))
+            var result = await pacsSyncService.SyncCountyDataAsync(
+                countyName,
+                configuredCounty?.State,
+                options);
+
+            if (configuredCounty is not null)
             {
-                countyInfo.LastSync = DateTime.UtcNow;
-                countyInfo.TotalParcels = result.TotalParcels;
+                _runtimeState.RecordSyncCompletion(result);
+            }
+            else
+            {
+                _runtimeState.RecordSyncCompletion(result);
             }
 
             _logger.LogInformation("✅ County {County} sync completed. Records: {Records}, Duration: {Duration}",
@@ -328,18 +294,23 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
         {
             _logger.LogError(ex, "❌ Failed to sync county {County}", countyName);
 
-            result.Success = false;
-            result.Errors.Add(ex.Message);
-            result.ErrorCount = 1;
-            result.Duration = DateTime.UtcNow - result.Timestamp;
-
-            return result;
+            return new CountySyncResult
+            {
+                CountyName = countyName,
+                Timestamp = DateTime.UtcNow,
+                Success = false,
+                Status = "failed",
+                Message = "County sync failed.",
+                Errors = new List<string> { ex.Message },
+                ErrorCount = 1,
+                Duration = TimeSpan.Zero
+            };
         }
     }
 
     public async Task<IEnumerable<CountyInfo>> GetConfiguredCountiesAsync()
     {
-        return await Task.FromResult(_configuredCounties.Values.ToList());
+        return await Task.FromResult(_runtimeState.GetConfiguredCounties());
     }
 
     public async Task<bool> ConfigureCountyAsync(CountyConfig config)
@@ -348,24 +319,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
         {
             _logger.LogInformation("⚙️ Configuring county: {County}, {State}", config.CountyName, config.State);
 
-            var countyInfo = new CountyInfo
-            {
-                CountyName = config.CountyName,
-                State = config.State,
-                LegacySystemId = config.LegacySystemId,
-                LegacySystemType = _registeredSystems.TryGetValue(config.LegacySystemId, out var system) ?
-                    system.SystemType : "Unknown",
-                IsConfigured = true,
-                IsActive = config.EnableAutoSync,
-                Configuration = new Dictionary<string, object>
-                {
-                    ["SyncInterval"] = config.SyncInterval.TotalMinutes,
-                    ["EnableAutoSync"] = config.EnableAutoSync,
-                    ["ConnectionSettings"] = config.ConnectionSettings
-                }
-            };
-
-            _configuredCounties[config.CountyName] = countyInfo;
+            _runtimeState.ConfigureCounty(config);
 
             _logger.LogInformation("✅ County {County} configured successfully", config.CountyName);
             return await Task.FromResult(true);
@@ -379,79 +333,17 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
 
     public async Task<SyncMetrics> GetSyncMetricsAsync()
     {
-        return await Task.FromResult(new SyncMetrics
-        {
-            Timestamp = DateTime.UtcNow,
-            TotalSyncOperations = 150, // Simulated
-            SuccessfulSyncs = 147, // Simulated
-            FailedSyncs = 3, // Simulated
-            AverageResponseTime = 1250.5, // Simulated milliseconds
-            TotalRecordsProcessed = 89247, // Benton County property count
-            CountyMetrics = _configuredCounties.ToDictionary(
-                c => c.Key,
-                c => c.Value.TotalParcels
-            ),
-            SystemMetrics = _registeredSystems.ToDictionary(
-                s => s.Key,
-                s => s.Value.IsAvailable ? 1 : 0
-            ),
-            RecentErrors = new List<string>
-            {
-                "Connection timeout to legacy system (resolved)",
-                "Data validation warning for 3 records",
-                "Rate limit exceeded (auto-retry successful)"
-            }
-        });
+        return await Task.FromResult(_runtimeState.CreateMetricsSnapshot());
     }
 
     public async Task<IEnumerable<SyncEvent>> GetRecentSyncEventsAsync(int count = 50)
     {
-        var events = new List<SyncEvent>();
-
-        // Generate sample events - would be from actual event log in real implementation
-        for (int i = 0; i < Math.Min(count, 10); i++)
-        {
-            events.Add(new SyncEvent
-            {
-                Timestamp = DateTime.UtcNow.AddMinutes(-i * 15),
-                EventType = i % 4 == 0 ? "Error" : (i % 3 == 0 ? "Warning" : "Completed"),
-                CountyName = i % 2 == 0 ? "Benton" : "Franklin",
-                LegacySystem = "Harris PACS v12.4.7",
-                Message = i % 4 == 0 ? "Connection retry succeeded" :
-                         i % 3 == 0 ? "Slow response detected" :
-                         "Sync completed successfully",
-                Details = new Dictionary<string, object>
-                {
-                    ["Duration"] = TimeSpan.FromSeconds(30 + i * 10).ToString(),
-                    ["RecordsProcessed"] = 1000 + i * 100,
-                    ["BatchNumber"] = i + 1
-                }
-            });
-        }
-
-        return await Task.FromResult(events);
+        return await Task.FromResult(_runtimeState.GetRecentEvents(count));
     }
 
     public async Task<OrchestrationStatus> GetOrchestrationStatusAsync()
     {
-        return await Task.FromResult(new OrchestrationStatus
-        {
-            IsRunning = _isOrchestrationActive,
-            StartTime = _orchestrationStartTime,
-            ActiveSyncOperations = _isOrchestrationActive ? 2 : 0,
-            QueuedOperations = 0,
-            SystemStatus = _registeredSystems.ToDictionary(
-                s => s.Key,
-                s => s.Value.IsAvailable
-            ),
-            PerformanceMetrics = new Dictionary<string, object>
-            {
-                ["ThroughputPerSecond"] = 125.5,
-                ["AverageLatency"] = "45ms",
-                ["MemoryUsage"] = "156MB",
-                ["CacheHitRate"] = "94.2%"
-            }
-        });
+        return await Task.FromResult(_runtimeState.CreateOrchestrationStatus());
     }
 
     public async Task<bool> RestartOrchestrationAsync()
@@ -460,11 +352,10 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
         {
             _logger.LogInformation("🔄 Restarting TerraFusionSync orchestration");
 
-            _isOrchestrationActive = false;
+            _runtimeState.SetOrchestrationActive(false);
             await Task.Delay(1000); // Simulate shutdown
 
-            _isOrchestrationActive = true;
-            _orchestrationStartTime = DateTime.UtcNow;
+            _runtimeState.SetOrchestrationActive(true);
 
             _logger.LogInformation("✅ TerraFusionSync orchestration restarted");
             return true;
@@ -473,90 +364,6 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
         {
             _logger.LogError(ex, "❌ Failed to restart orchestration");
             return false;
-        }
-    }
-
-    // Private initialization methods
-    private void InitializeDefaultSystems()
-    {
-        // Register default legacy systems
-        var defaultSystems = new[]
-        {
-            new LegacySystemConfig
-            {
-                SystemId = "harris_pacs_12_4_7",
-                SystemName = "Harris PACS v12.4.7",
-                SystemType = "harris_pacs",
-                ConnectionString = "Data Source=harris_pacs.db",
-                EnableAutoSync = true,
-                SyncInterval = TimeSpan.FromMinutes(15)
-            },
-            new LegacySystemConfig
-            {
-                SystemId = "tyler_iasworld",
-                SystemName = "Tyler iasWorld",
-                SystemType = "tyler_iasworld",
-                ConnectionString = "Data Source=tyler.db",
-                EnableAutoSync = false,
-                SyncInterval = TimeSpan.FromHours(1)
-            },
-            new LegacySystemConfig
-            {
-                SystemId = "aumentum_cama",
-                SystemName = "Aumentum CAMA",
-                SystemType = "aumentum_cama",
-                ConnectionString = "Data Source=aumentum.db",
-                EnableAutoSync = false,
-                SyncInterval = TimeSpan.FromHours(2)
-            }
-        };
-
-        // Phase 10: Fire-and-forget async init to avoid sync-over-async deadlocks
-        foreach (var system in defaultSystems)
-        {
-            _ = Task.Run(async () =>
-            {
-                try { await RegisterLegacySystemAsync(system); }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning(ex, "Failed to register legacy system {SystemId}", system.SystemId);
-                }
-            });
-        }
-    }
-
-    private void InitializeDefaultCounties()
-    {
-        // Configure default counties
-        var defaultCounties = new[]
-        {
-            new CountyConfig
-            {
-                CountyName = "Benton",
-                State = "WA",
-                LegacySystemId = "harris_pacs_12_4_7",
-                EnableAutoSync = true,
-                SyncInterval = TimeSpan.FromMinutes(15),
-                DefaultSyncOptions = new SyncOptions
-                {
-                    DataTypes = new List<string> { "Properties", "Assessments", "Sales", "Owners" },
-                    ValidateData = true,
-                    BatchSize = 1000
-                }
-            }
-        };
-
-        // Phase 10: Fire-and-forget async init to avoid sync-over-async deadlocks
-        foreach (var county in defaultCounties)
-        {
-            _ = Task.Run(async () =>
-            {
-                try { await ConfigureCountyAsync(county); }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning(ex, "Failed to configure county {CountyName}", county.CountyName);
-                }
-            });
         }
     }
 }

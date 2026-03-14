@@ -1,0 +1,29 @@
+{
+  "name": "@terrafusion/cli",
+  "version": "1.0.0",
+  "description": "TerraFusion OS unified CLI – workspace automation for government platforms",
+  "type": "module",
+  "bin": {
+    "tf": "tf.mjs"
+  },
+  "files": [
+    "tf.mjs",
+    "commands/",
+    "lib/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "terrafusion",
+    "cli",
+    "government",
+    "devtools"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bsvalues/terrafusion_os_1.0",
+    "directory": "tools/bin"
+  }
+}

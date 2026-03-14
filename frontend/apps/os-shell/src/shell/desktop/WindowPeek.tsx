@@ -14,6 +14,7 @@ import { createPortal } from 'react-dom';
 import { getLucideIcon } from '../../config/iconMap';
 import { useWindowPeek } from '../../hooks/useWindowPeek';
 import { useDesktopStore } from '../../stores/desktopStore';
+import { Z } from './zIndex';
 import {
   useWindowPeekPosition,
   useWindowPeekStore,
@@ -118,7 +119,7 @@ export const WindowPeek: React.FC<WindowPeekProps> = ({ className }) => {
       aria-label={`Preview of ${targetWindow.title}`}
       className={cn(
         // Position
-        'fixed z-[9999]',
+        'fixed',
         // Size
         'w-64',
         // Background with glass effect
@@ -133,6 +134,7 @@ export const WindowPeek: React.FC<WindowPeekProps> = ({ className }) => {
       )}
       style={{
         ...popupStyle,
+        zIndex: Z.peek,
         boxShadow: '0 0 30px hsl(var(--tf-accent) / 0.2), 0 10px 40px hsl(var(--tf-bg) / 0.6)',
       }}
       onClick={handleClick}

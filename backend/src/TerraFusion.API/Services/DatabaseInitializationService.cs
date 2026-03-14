@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TerraFusion.Data;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Enums;
+using System.Data.Common;
 
 namespace TerraFusion.API.Services;
 
@@ -70,6 +71,15 @@ public class DatabaseInitializationService : IDatabaseInitializationService
             {
                 _logger.LogWarning(dbEx, "Database creation/migration failed: {Error}. Using existing database structure.", dbEx.Message);
                 // Continue with existing database structure
+            }
+
+            try
+            {
+                await EnsureOperationalTablesAsync(dbContext);
+            }
+            catch (Exception schemaEx)
+            {
+                _logger.LogWarning(schemaEx, "Operational table self-heal failed: {Error}", schemaEx.Message);
             }
 
             // DISABLED: TerraFusion OS doesn't use modules
@@ -403,6 +413,190 @@ public class DatabaseInitializationService : IDatabaseInitializationService
             }
         };
         */
+    }
+
+    private async System.Threading.Tasks.Task EnsureOperationalTablesAsync(TerraFusionDbContext dbContext)
+    {
+        var provider = dbContext.Database.ProviderName ?? string.Empty;
+        if (!provider.Contains("Sqlite", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        await using var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != System.Data.ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        var existingTables = await LoadExistingTableNamesAsync(connection);
+
+        var requiredStatements = new Dictionary<string, string[]>
+        {
+            ["ComparableSales"] = new[]
+            {
+                """
+                CREATE TABLE IF NOT EXISTS "ComparableSales" (
+                    "Id" TEXT NOT NULL CONSTRAINT "PK_ComparableSales" PRIMARY KEY,
+                    "ParcelId" TEXT NOT NULL,
+                    "SaleDate" TEXT NOT NULL,
+                    "SalePrice" TEXT NOT NULL,
+                    "PropertyType" TEXT NOT NULL,
+                    "Address" TEXT NULL,
+                    "Neighborhood" TEXT NULL,
+                    "GrossLivingArea" TEXT NULL,
+                    "LotSizeSqft" TEXT NULL,
+                    "YearBuilt" INTEGER NULL,
+                    "Bedrooms" INTEGER NULL,
+                    "Bathrooms" INTEGER NULL,
+                    "Condition" TEXT NULL,
+                    "QualityGrade" TEXT NULL,
+                    "SaleQualification" TEXT NOT NULL,
+                    "IsVerified" INTEGER NOT NULL,
+                    "VerificationSource" TEXT NULL,
+                    "CountyId" TEXT NOT NULL,
+                    "IngestedBy" TEXT NOT NULL,
+                    "IngestedAt" TEXT NOT NULL
+                );
+                """,
+                """CREATE INDEX IF NOT EXISTS "IX_ComparableSales_CountyId_PropertyType_SaleDate" ON "ComparableSales" ("CountyId", "PropertyType", "SaleDate");""",
+                """CREATE INDEX IF NOT EXISTS "IX_ComparableSales_CountyId_Neighborhood" ON "ComparableSales" ("CountyId", "Neighborhood");""",
+                """CREATE INDEX IF NOT EXISTS "IX_ComparableSales_CountyId_ParcelId" ON "ComparableSales" ("CountyId", "ParcelId");"""
+            },
+            ["CamaCharacteristics"] = new[]
+            {
+                """
+                CREATE TABLE IF NOT EXISTS "CamaCharacteristics" (
+                    "Id" TEXT NOT NULL CONSTRAINT "PK_CamaCharacteristics" PRIMARY KEY,
+                    "ParcelId" TEXT NOT NULL,
+                    "TaxYear" INTEGER NOT NULL,
+                    "BuildingType" TEXT NOT NULL,
+                    "BuildingTypeDescription" TEXT NULL,
+                    "Region" TEXT NULL,
+                    "SquareFeet" TEXT NOT NULL,
+                    "Stories" TEXT NULL,
+                    "BasementSqft" TEXT NULL,
+                    "GarageSqft" TEXT NULL,
+                    "QualityGrade" TEXT NULL,
+                    "ConditionGrade" TEXT NULL,
+                    "ComplexityGrade" TEXT NULL,
+                    "ExteriorWall" TEXT NULL,
+                    "RoofType" TEXT NULL,
+                    "Foundation" TEXT NULL,
+                    "HvacType" TEXT NULL,
+                    "InteriorFinish" TEXT NULL,
+                    "YearBuilt" INTEGER NULL,
+                    "EffectiveAge" INTEGER NULL,
+                    "EconomicLife" INTEGER NULL,
+                    "LandAreaSqft" TEXT NULL,
+                    "LandZone" TEXT NULL,
+                    "LandAdjustmentFactor" TEXT NULL,
+                    "Bedrooms" INTEGER NULL,
+                    "Bathrooms" INTEGER NULL,
+                    "Fireplaces" INTEGER NULL,
+                    "HasPool" INTEGER NULL,
+                    "FunctionalObsolescence" TEXT NULL,
+                    "ExternalObsolescence" TEXT NULL,
+                    "CountyId" TEXT NOT NULL,
+                    "UpdatedBy" TEXT NOT NULL,
+                    "UpdatedAt" TEXT NOT NULL
+                );
+                """,
+                """CREATE UNIQUE INDEX IF NOT EXISTS "IX_CamaCharacteristics_CountyId_ParcelId_TaxYear" ON "CamaCharacteristics" ("CountyId", "ParcelId", "TaxYear");"""
+            },
+            ["CostMatrices"] = new[]
+            {
+                """
+                CREATE TABLE IF NOT EXISTS "CostMatrices" (
+                    "Id" INTEGER NOT NULL CONSTRAINT "PK_CostMatrices" PRIMARY KEY AUTOINCREMENT,
+                    "CountyId" TEXT NOT NULL,
+                    "MatrixType" TEXT NOT NULL,
+                    "BaseRate" TEXT NOT NULL,
+                    "Multiplier" TEXT NOT NULL,
+                    "Region" TEXT NOT NULL,
+                    "BuildingType" TEXT NOT NULL,
+                    "BuildingTypeDescription" TEXT NOT NULL,
+                    "BaseCost" TEXT NOT NULL,
+                    "MatrixYear" INTEGER NOT NULL,
+                    "SourceMatrixId" INTEGER NOT NULL,
+                    "MatrixDescription" TEXT NOT NULL,
+                    "DataPoints" INTEGER NOT NULL,
+                    "MinCost" TEXT NOT NULL,
+                    "MaxCost" TEXT NOT NULL,
+                    "County" TEXT NOT NULL,
+                    "State" TEXT NOT NULL,
+                    "AdjustmentFactors" TEXT NOT NULL,
+                    "CostPerSqFt" TEXT NOT NULL,
+                    "AdjustmentFactor" TEXT NOT NULL,
+                    "Grade" TEXT NULL,
+                    "Condition" TEXT NULL,
+                    "YearBuilt" INTEGER NULL,
+                    "DepreciationRate" TEXT NULL,
+                    "CreatedAt" TEXT NOT NULL,
+                    "UpdatedAt" TEXT NOT NULL,
+                    "EffectiveDate" TEXT NULL
+                );
+                """,
+                """CREATE INDEX IF NOT EXISTS "IX_CostMatrices_CountyId_BuildingType_Region_MatrixYear" ON "CostMatrices" ("CountyId", "BuildingType", "Region", "MatrixYear");"""
+            },
+            ["EtlSyncJobs"] = new[]
+            {
+                """
+                CREATE TABLE IF NOT EXISTS "EtlSyncJobs" (
+                    "Id" INTEGER NOT NULL CONSTRAINT "PK_EtlSyncJobs" PRIMARY KEY AUTOINCREMENT,
+                    "CountyId" TEXT NOT NULL,
+                    "SourceSystem" TEXT NOT NULL,
+                    "EntityType" TEXT NOT NULL,
+                    "Direction" TEXT NOT NULL,
+                    "Status" TEXT NOT NULL,
+                    "TotalRecords" INTEGER NOT NULL,
+                    "ProcessedRecords" INTEGER NOT NULL,
+                    "FailedRecords" INTEGER NOT NULL,
+                    "SkippedRecords" INTEGER NOT NULL,
+                    "DurationMs" INTEGER NOT NULL,
+                    "RecordsPerSecond" REAL NOT NULL,
+                    "Errors" TEXT NULL,
+                    "Details" TEXT NULL,
+                    "Watermark" TEXT NULL,
+                    "CreatedBy" TEXT NOT NULL,
+                    "StartedAt" TEXT NOT NULL,
+                    "CompletedAt" TEXT NULL
+                );
+                """
+            }
+        };
+
+        foreach (var (tableName, statements) in requiredStatements)
+        {
+            if (existingTables.Contains(tableName))
+            {
+                continue;
+            }
+
+            _logger.LogInformation("Creating missing SQLite operational table {TableName}", tableName);
+            foreach (var statement in statements)
+            {
+                await dbContext.Database.ExecuteSqlRawAsync(statement);
+            }
+        }
+    }
+
+    private static async System.Threading.Tasks.Task<HashSet<string>> LoadExistingTableNamesAsync(DbConnection connection)
+    {
+        var tables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table'";
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            if (!reader.IsDBNull(0))
+            {
+                tables.Add(reader.GetString(0));
+            }
+        }
+
+        return tables;
     }
 }
 

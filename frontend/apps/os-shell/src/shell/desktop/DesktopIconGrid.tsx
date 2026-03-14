@@ -13,7 +13,6 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { getDesktopIcons } from '../../config/desktopManifest';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { DesktopIcon } from './DesktopIcon';
@@ -70,8 +69,6 @@ export interface DesktopIconGridProps {
  * ```
  */
 export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ id, className = '' }) => {
-  const navigate = useNavigate();
-
   // Track selected icon
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -80,10 +77,10 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ id, className 
     setSelectedId(id);
   }, []);
 
-  // Handle icon launch (double click) - Open suite home or OS feature.
+  // Handle icon launch (double click) - Open suite home, OS feature, or surface.
   // Suite icons (forge, atlas, dais, dossier, gpt) open suite HOME PAGES as windows.
   // Surface icons (surface-workbench) open the Property Workbench window.
-  // OS feature icons (pilot, trace, canon) navigate to standalone pages.
+  // OS feature icons (pilot, trace, canon) open as in-shell windows via activateModule.
   const handleLaunch = useCallback(
     (id: string) => {
       // Surface: Property Workbench opens as a desktop window
@@ -94,18 +91,11 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ id, className 
         return;
       }
 
-      // Suite IDs open their full suite home inside a Desktop window
-      const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
-      if (SUITE_IDS.has(id)) {
-        // activateModule will normalize 'forge' → 'suite-forge' via MODULE_ALIASES
-        activateModule(id, { source: 'desktop' });
-        return;
-      }
-      // OS features → navigate to their standalone page
-      const icon = DESKTOP_ICONS.find((i) => i.id === id);
-      if (icon?.route) navigate(icon.route);
+      // All other icons (suites + OS features) → activateModule stays in-shell.
+      // activateModule normalizes aliases: 'forge' → 'suite-forge', 'pilot' → 'os-pilot', etc.
+      activateModule(id, { source: 'desktop' });
     },
-    [navigate]
+    []
   );
 
   // Handle click on grid background (deselect)
@@ -121,7 +111,7 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ id, className 
       id={id}
       data-testid='desktop-icon-grid'
       className={`
-        grid grid-cols-3 gap-3 p-3
+        grid grid-cols-2 gap-2 p-3
         ${className}
       `.trim()}
       onClick={handleBackgroundClick}

@@ -10,33 +10,39 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Building2, Command, Layers, Settings2 } from 'lucide-react';
+import { Layers, Search, Settings2, User } from 'lucide-react';
 import { Launcher } from '../../components/launcher';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useIpcBridge } from '../../ipc/useIpcBridge';
+import { SentinelChip } from '../../sentinel/SentinelChip';
 import { SentinelPanel } from '../../sentinel/SentinelPanel';
 import { useSentinelStore } from '../../sentinel/sentinelStore';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useControlCenterStore } from '../../stores/controlCenterStore';
 import { useDesktopStore } from '../../stores/desktopStore';
+import { useShellMode, useShellModeActions, useShellSurfaces } from '../../stores/desktopStore';
+import { useNotificationStore, useNotifications } from '../../stores/notificationStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
-import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
-import { LiquidPanel, NeonSignal, TactileButton } from '../../ui/materials';
+import { LiquidPanel } from '../../ui/materials';
 import { AmbientCompositor } from '../ambient/AmbientCompositor';
 import { CommandPalette } from '../command-palette/CommandPalette';
 import { ToastContainer } from '../notifications/ToastContainer';
 import { AltTabSwitcher } from './AltTabSwitcher';
+import { Clock } from './Clock';
 import { ControlCenter } from './ControlCenter';
 import SceneSelector from './SceneSelector';
 import { DesktopContextMenu } from './DesktopContextMenu';
+import { NotificationBell } from './NotificationBell';
 import { DesktopErrorBoundary } from './DesktopErrorBoundary';
-import { DesktopIconGrid } from './DesktopIconGrid';
 import { StartMenu } from './StartMenu';
+import { StageZeroState } from './StageZeroState';
+import { DesktopIconGrid } from './DesktopIconGrid';
 import { TaskbarWithNotifications } from './TaskbarWithNotifications';
 import { WindowManager } from './WindowManager';
 import { WindowPeek } from './WindowPeek';
+import { Z } from './zIndex';
 
 // ============================================================================
 // Types
@@ -47,6 +53,20 @@ export interface DesktopProps {
   className?: string;
 }
 
+/** NotificationBell connected to the notification store (used in top bar) */
+const TopBarNotifications: React.FC = () => {
+  const notifications = useNotifications();
+  const { dismissNotification, markAsRead, clearAll } = useNotificationStore();
+  return (
+    <NotificationBell
+      notifications={notifications}
+      onNotificationClick={(n) => markAsRead(n.id)}
+      onDismiss={dismissNotification}
+      onClearAll={clearAll}
+    />
+  );
+};
+
 const DesktopTopSystemBar: React.FC<{
   onOpenCommandPalette: () => void;
   onToggleControlCenter: () => void;
@@ -56,14 +76,15 @@ const DesktopTopSystemBar: React.FC<{
   onToggleControlCenter,
   onToggleSceneSelector,
 }) => (
-  <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 z-[1050] pointer-events-none'>
+  <div data-testid='desktop-top-system-bar' className='absolute top-0 left-0 right-0 pointer-events-none'
+      style={{ zIndex: Z.topbar }}>
     <LiquidPanel
       variant='shell'
       radius='none'
-      className='pointer-events-auto flex items-center justify-between px-4 py-1'
+      className='pointer-events-auto flex items-center justify-between px-4 py-1.5'
     >
-      <div className='flex items-center gap-2.5'>
-        <TerraSphereIcon size={20} variant='system' glyph={<Building2 className='h-2.5 w-2.5' />} />
+      {/* Zone A: OS Identity (left) */}
+      <div className='flex items-center gap-3'>
         <span
           style={{
             fontSize: '0.8125rem',
@@ -74,38 +95,84 @@ const DesktopTopSystemBar: React.FC<{
         >
           TerraFusion OS
         </span>
-        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text-primary-hs) 50%)' }}>
-          Benton County · Tax Year 2026
+      </div>
+
+      {/* Zone B: County + Department Context (center) */}
+      <div className='absolute left-1/2 -translate-x-1/2 flex items-center gap-2'>
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text-primary-hs) 60%)', fontWeight: 500 }}>
+          Benton County
+        </span>
+        <div
+          style={{
+            width: 1,
+            height: 12,
+            background: 'hsl(var(--tf-border) / 0.2)',
+          }}
+        />
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text-primary-hs) 45%)', fontWeight: 500 }}>
+          Assessment
+        </span>
+        <span style={{ fontSize: '0.6875rem', color: 'hsl(var(--tf-text-primary-hs) 35%)' }}>
+          Tax Year 2026
         </span>
       </div>
-      <div className='flex items-center gap-2'>
-        <NeonSignal status='healthy' size='xs' pulse>SYSTEM</NeonSignal>
+
+      {/* Zone C: Global Actions + Utilities (right) */}
+      <div className='flex items-center gap-2' role='group' aria-label='System utilities'>
+        {/* ⌘K Search */}
+        <button
+          onClick={onOpenCommandPalette}
+          className='flex items-center gap-1 px-2 py-0.5 rounded-md opacity-50 hover:opacity-90 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.06)] transition-all text-xs'
+          aria-label='Search (Ctrl+K)'
+          title='Search (Ctrl+K)'
+        >
+          <Search className='h-3 w-3' />
+          <span className='text-[11px]'>⌘K</span>
+        </button>
+
+        {/* Scenes */}
         <button
           onClick={onToggleSceneSelector}
-          className='flex items-center opacity-60 hover:opacity-100 transition-opacity'
-          aria-label='Toggle Scene Selector (Ctrl+,)'
-          title='Scenes (Ctrl+,)'
+          className='flex items-center opacity-50 hover:opacity-90 transition-opacity'
+          aria-label='Scenes (Ctrl+,)'
+          title='Scenes'
         >
           <Layers className='h-3.5 w-3.5' />
         </button>
+
+        {/* Divider */}
+        <div style={{ width: 1, height: 14, background: 'hsl(var(--tf-border) / 0.15)' }} />
+
+        {/* Sentinel (system health) */}
+        <SentinelChip variant='tray' />
+
+        {/* Notifications */}
+        <TopBarNotifications />
+
+        {/* Clock */}
+        <Clock />
+
+        {/* Divider */}
+        <div style={{ width: 1, height: 14, background: 'hsl(var(--tf-border) / 0.15)' }} />
+
+        {/* Control Center */}
         <button
           onClick={onToggleControlCenter}
-          className='flex items-center opacity-60 hover:opacity-100 transition-opacity'
-          aria-label='Toggle Control Center (Ctrl+.)'
-          title='Control Center (Ctrl+.)'
+          className='flex items-center opacity-50 hover:opacity-90 transition-opacity'
+          aria-label='Control Center (Ctrl+.)'
+          title='Control Center'
         >
           <Settings2 className='h-3.5 w-3.5' />
         </button>
-        <TactileButton
-        variant='ghost'
-        size='sm'
-        onClick={onOpenCommandPalette}
-        aria-label='Open command palette'
-        leftIcon={<Command className='h-3 w-3' />}
-        style={{ fontSize: '0.75rem', opacity: 0.7 }}
-      >
-        Search
-      </TactileButton>
+
+        {/* Profile */}
+        <button
+          className='flex items-center opacity-40 hover:opacity-80 transition-opacity'
+          aria-label='Profile'
+          title='Profile'
+        >
+          <User className='h-3.5 w-3.5' />
+        </button>
       </div>
     </LiquidPanel>
   </div>
@@ -148,6 +215,11 @@ const DesktopTopSystemBar: React.FC<{
 export function Desktop({ className = '' }: DesktopProps) {
   // Install IPC bridge for app ↔ shell communication (Phase 6)
   useIpcBridge();
+
+  // Shell Mode — contract-driven surface visibility
+  const shellMode = useShellMode();
+  const surfaces = useShellSurfaces();
+  const { enterDesktop: transitionToDesktop } = useShellModeActions();
 
   // Scene Selector state (Phase 8)
   const [isSceneSelectorOpen, setSceneSelectorOpen] = useState(false);
@@ -368,12 +440,20 @@ export function Desktop({ className = '' }: DesktopProps) {
 
   const handleDesktopClick = useCallback(
     (event: React.MouseEvent) => {
-      // Only close if Start Menu is open and click is on the desktop itself
-      if (isStartMenuOpen && event.target === event.currentTarget) {
+      // Only act when clicking on the desktop surface itself (not children)
+      if (event.target !== event.currentTarget) return;
+
+      // Close Start Menu if open
+      if (isStartMenuOpen) {
         closeStartMenu();
       }
+
+      // Home → Desktop: clicking the desktop background enters desktop mode
+      if (shellMode === 'home') {
+        transitionToDesktop();
+      }
     },
-    [isStartMenuOpen, closeStartMenu]
+    [isStartMenuOpen, closeStartMenu, shellMode, transitionToDesktop]
   );
 
   // ============================================================================
@@ -396,7 +476,8 @@ export function Desktop({ className = '' }: DesktopProps) {
       {/* WCAG 2.1 AA: Skip-to-content link for keyboard users */}
       <a
         href='#desktop-main-content'
-        className='sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[99999] focus:px-4 focus:py-2 focus:rounded-md focus:bg-[hsl(var(--tf-surface-dark-hs)_12%)] focus:text-white focus:ring-2 focus:ring-[var(--tf-transcend-highlight)]'
+        style={{ zIndex: Z.skipNav }}
+        className='sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:rounded-md focus:bg-[hsl(var(--tf-surface-dark-hs)_12%)] focus:text-[hsl(var(--tf-text))] focus:ring-2 focus:ring-[var(--tf-transcend-highlight)]'
       >
         Skip to desktop content
       </a>
@@ -411,8 +492,15 @@ export function Desktop({ className = '' }: DesktopProps) {
         onToggleSceneSelector={toggleSceneSelector}
       />
 
-      {/* Layer 0.5: Desktop Icons (Priority 3) */}
-      <DesktopIconGrid id='desktop-main-content' className='absolute top-10 left-3 z-[1]' />
+      {/* Layer 0.3: Desktop Icons — only interactive when desktop surface is visible */}
+      {surfaces.desktop !== 'hidden' && (
+        <DesktopIconGrid className='absolute top-12 left-4' />
+      )}
+
+      {/* Layer 0.5: Stage Zero-State — gated by shell mode surface policy */}
+      {surfaces.recentWork !== 'hidden' && (
+        <StageZeroState id='desktop-main-content' />
+      )}
 
       {/* Layer 1-999: Windows */}
       <WindowManager />

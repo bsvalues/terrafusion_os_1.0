@@ -32,6 +32,7 @@ namespace TerraFusion.Core.PACS
     {
         private readonly ILogger<PacsSqlAdapter> _logger;
         private readonly string _connectionString;
+        private readonly string _salesConnectionString;
         private readonly int _commandTimeout;
         private DateTime? _lastConnectedAt;
         private bool _disposed;
@@ -40,6 +41,9 @@ namespace TerraFusion.Core.PACS
         private const string ViewPropertyCore = "vw_TerraFusion_Property_Core";
         private const string ViewPropertyOwnership = "vw_TerraFusion_Property_Ownership";
         private const string ViewAssessmentHistory = "vw_TerraFusion_Assessment_History";
+        private const string ViewComparableSales = "vw_TerraFusion_Comparable_Sales";
+        private const string ViewCamaCharacteristics = "vw_TerraFusion_Cama_Characteristics";
+        private const string ViewImprovementCostMatrices = "vw_TerraFusion_Improvement_Cost_Matrices";
         private const string ProcHealthCheck = "sp_TerraFusion_HealthCheck";
 
         // Contract-defined indexes (warning only)
@@ -63,8 +67,13 @@ namespace TerraFusion.Core.PACS
                     PacsErrorCodes.ConnectionFailed,
                     "PACS connection string not configured. Set 'ConnectionStrings:PacsConnection' or 'PACS:ConnectionString'.");
 
+            _salesConnectionString = configuration.GetConnectionString("PacsSalesConnection")
+                ?? configuration["PACS:SalesConnectionString"]
+                ?? _connectionString;
+
             // Validate connection string has required properties per pacscontract.v1
             ValidateConnectionString(_connectionString);
+            ValidateConnectionString(_salesConnectionString);
 
             _commandTimeout = configuration.GetValue("PACS:CommandTimeoutSeconds", 30);
         }
@@ -160,7 +169,7 @@ namespace TerraFusion.Core.PACS
         {
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 var sw = Stopwatch.StartNew();
                 await connection.OpenAsync(cancellationToken);
                 sw.Stop();
@@ -205,21 +214,39 @@ namespace TerraFusion.Core.PACS
         {
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
-                await connection.OpenAsync(cancellationToken);
-
-                var requiredViews = new[] { ViewPropertyCore, ViewPropertyOwnership, ViewAssessmentHistory };
                 var missingViews = new List<string>();
 
-                foreach (var view in requiredViews)
+                await using (var connection = CreatePrimaryConnection())
                 {
-                    var exists = await connection.ExecuteScalarAsync<int>(
-                        "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
-                        new { ViewName = view });
+                    await connection.OpenAsync(cancellationToken);
 
-                    if (exists == 0)
+                    foreach (var view in new[] { ViewPropertyCore, ViewPropertyOwnership, ViewAssessmentHistory })
                     {
-                        missingViews.Add(view);
+                        var exists = await connection.ExecuteScalarAsync<int>(
+                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                            new { ViewName = view });
+
+                        if (exists == 0)
+                        {
+                            missingViews.Add($"pacs_oltp.{view}");
+                        }
+                    }
+                }
+
+                await using (var salesConnection = CreateSalesConnection())
+                {
+                    await salesConnection.OpenAsync(cancellationToken);
+
+                    foreach (var view in new[] { ViewComparableSales, ViewCamaCharacteristics, ViewImprovementCostMatrices })
+                    {
+                        var exists = await salesConnection.ExecuteScalarAsync<int>(
+                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                            new { ViewName = view });
+
+                        if (exists == 0)
+                        {
+                            missingViews.Add($"{salesConnection.Database}.{view}");
+                        }
                     }
                 }
 
@@ -239,7 +266,7 @@ namespace TerraFusion.Core.PACS
                     Name = "RequiredViews",
                     Passed = true,
                     Severity = "error",
-                    Details = "All 3 required views present"
+                    Details = $"Core views present in pacs_oltp; sales/CAMA/matrix views present in {GetDatabaseName(_salesConnectionString)}"
                 };
             }
             catch (Exception ex)
@@ -258,7 +285,7 @@ namespace TerraFusion.Core.PACS
         {
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var missingIndexes = new List<string>();
@@ -310,7 +337,7 @@ namespace TerraFusion.Core.PACS
         {
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var exists = await connection.ExecuteScalarAsync<int>(
@@ -341,7 +368,7 @@ namespace TerraFusion.Core.PACS
         {
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var result = await connection.QueryFirstOrDefaultAsync<dynamic>(
@@ -373,7 +400,7 @@ namespace TerraFusion.Core.PACS
         {
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 var sw = Stopwatch.StartNew();
                 await connection.OpenAsync(cancellationToken);
                 sw.Stop();
@@ -420,7 +447,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var sql = $@"
@@ -456,7 +483,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var sql = $@"
@@ -499,7 +526,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var offset = (page - 1) * pageSize;
@@ -553,7 +580,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var sql = $@"
@@ -579,6 +606,55 @@ namespace TerraFusion.Core.PACS
             }
         }
 
+        public async Task<IReadOnlyList<PacsPropertyOwnership>> GetOwnershipByIdsAsync(
+            IEnumerable<int> propIds,
+            CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            var idList = propIds.Distinct().ToList();
+            if (idList.Count == 0)
+            {
+                return Array.Empty<PacsPropertyOwnership>();
+            }
+
+            if (idList.Count > 1000)
+            {
+                throw new ArgumentException("Cannot query more than 1000 property ownership records at once", nameof(propIds));
+            }
+
+            try
+            {
+                await using var connection = CreatePrimaryConnection();
+                await connection.OpenAsync(cancellationToken);
+
+                var sql = $@"
+                    SELECT
+                        prop_id AS PropId,
+                        owner_name AS OwnerName,
+                        mail_addr_1 AS MailAddr1,
+                        mail_addr_2 AS MailAddr2,
+                        mail_city AS MailCity,
+                        mail_state AS MailState,
+                        mail_zip AS MailZip,
+                        pct_ownership AS PctOwnership,
+                        deed_date AS DeedDate
+                    FROM {ViewPropertyOwnership}
+                    WHERE prop_id IN @PropIds";
+
+                var ownership = await connection.QueryAsync<PacsPropertyOwnership>(
+                    sql,
+                    new { PropIds = idList },
+                    commandTimeout: _commandTimeout);
+
+                return ownership.ToList();
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
         // ═══════════════════════════════════════════════════════════════
         // ASSESSMENT QUERIES
         // ═══════════════════════════════════════════════════════════════
@@ -593,7 +669,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreateSalesConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var sql = $@"
@@ -632,6 +708,220 @@ namespace TerraFusion.Core.PACS
         }
 
         // ═══════════════════════════════════════════════════════════════
+        // COMPARABLE SALES QUERIES
+        // ═══════════════════════════════════════════════════════════════
+
+        public async Task<PacsPagedResult<PacsComparableSale>> GetComparableSalesAsync(
+            int page = 1,
+            int pageSize = 500,
+            CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 1000) pageSize = 500;
+
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken);
+
+                _logger.LogInformation(
+                    "PACS sales connection opened: configuredDb={ConfiguredDatabase}, actualDb={ActualDatabase}",
+                    GetDatabaseName(_salesConnectionString),
+                    connection.Database);
+
+                var totalCount = await connection.ExecuteScalarAsync<int>(
+                    $"SELECT COUNT(*) FROM {ViewComparableSales}");
+
+                var rawSaleCount = await connection.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(*) FROM sale WHERE COALESCE(NULLIF(adjusted_sl_price, 0), NULLIF(sl_price, 0)) > 0");
+
+                _logger.LogInformation(
+                    "PACS comparable sales source counts: comparableView={ComparableViewCount}, rawPositiveSales={RawSaleCount}",
+                    totalCount,
+                    rawSaleCount);
+
+                var offset = (page - 1) * pageSize;
+                var sql = $@"
+                    SELECT
+                        prop_id AS PropId,
+                        geo_id AS GeoId,
+                        sale_date AS SaleDate,
+                        sale_price AS SalePrice,
+                        prop_type_cd AS PropTypeCd,
+                        situs_addr AS SitusAddr,
+                        neighborhood AS Neighborhood,
+                        sale_ratio_type_cd AS SaleRatioTypeCd,
+                        deed_type_cd AS DeedTypeCd,
+                        consideration AS Consideration,
+                        last_modified AS LastModified
+                    FROM {ViewComparableSales}
+                    ORDER BY sale_date DESC, prop_id
+                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+                var items = await connection.QueryAsync<PacsComparableSale>(
+                    sql,
+                    new { Offset = offset, PageSize = pageSize },
+                    commandTimeout: _commandTimeout);
+
+                return new PacsPagedResult<PacsComparableSale>
+                {
+                    Items = items.ToList(),
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
+        public async Task<PacsPagedResult<PacsCamaCharacteristic>> GetCamaCharacteristicsAsync(
+            int page = 1,
+            int pageSize = 500,
+            CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 1000) pageSize = 500;
+
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken);
+
+                var totalCount = await connection.ExecuteScalarAsync<int>(
+                    $"SELECT COUNT(*) FROM {ViewCamaCharacteristics}");
+
+                var offset = (page - 1) * pageSize;
+                var sql = $@"
+                    SELECT
+                        prop_id AS PropId,
+                        geo_id AS GeoId,
+                        tax_year AS TaxYear,
+                        building_type AS BuildingType,
+                        building_type_description AS BuildingTypeDescription,
+                        region AS Region,
+                        square_feet AS SquareFeet,
+                        stories AS Stories,
+                        basement_sqft AS BasementSqft,
+                        garage_sqft AS GarageSqft,
+                        quality_grade AS QualityGrade,
+                        condition_grade AS ConditionGrade,
+                        complexity_grade AS ComplexityGrade,
+                        exterior_wall AS ExteriorWall,
+                        roof_type AS RoofType,
+                        foundation AS Foundation,
+                        hvac_type AS HvacType,
+                        interior_finish AS InteriorFinish,
+                        year_built AS YearBuilt,
+                        effective_age AS EffectiveAge,
+                        economic_life AS EconomicLife,
+                        land_area_sqft AS LandAreaSqft,
+                        land_zone AS LandZone,
+                        land_adjustment_factor AS LandAdjustmentFactor,
+                        bedrooms AS Bedrooms,
+                        bathrooms AS Bathrooms,
+                        fireplaces AS Fireplaces,
+                        has_pool AS HasPool,
+                        functional_obsolescence AS FunctionalObsolescence,
+                        external_obsolescence AS ExternalObsolescence,
+                        neighborhood AS Neighborhood,
+                        property_type_cd AS PropertyTypeCd,
+                        last_modified AS LastModified
+                    FROM {ViewCamaCharacteristics}
+                    ORDER BY prop_id
+                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+                var items = await connection.QueryAsync<PacsCamaCharacteristic>(
+                    sql,
+                    new { Offset = offset, PageSize = pageSize },
+                    commandTimeout: _commandTimeout);
+
+                return new PacsPagedResult<PacsCamaCharacteristic>
+                {
+                    Items = items.ToList(),
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
+        public async Task<PacsPagedResult<PacsImprovementCostMatrix>> GetImprovementCostMatricesAsync(
+            int page = 1,
+            int pageSize = 500,
+            CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 1000) pageSize = 500;
+
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken);
+
+                var totalCount = await connection.ExecuteScalarAsync<int>(
+                    $"SELECT COUNT(*) FROM {ViewImprovementCostMatrices}");
+
+                var offset = (page - 1) * pageSize;
+                var sql = $@"
+                    SELECT
+                        source_matrix_id AS SourceMatrixId,
+                        matrix_year AS MatrixYear,
+                        matrix_type AS MatrixType,
+                        base_rate AS BaseRate,
+                        multiplier AS Multiplier,
+                        region AS Region,
+                        building_type AS BuildingType,
+                        building_type_description AS BuildingTypeDescription,
+                        base_cost AS BaseCost,
+                        matrix_description AS MatrixDescription,
+                        data_points AS DataPoints,
+                        min_cost AS MinCost,
+                        max_cost AS MaxCost,
+                        grade AS Grade,
+                        condition AS Condition,
+                        year_built AS YearBuilt,
+                        depreciation_rate AS DepreciationRate,
+                        axis_1 AS Axis1,
+                        axis_2 AS Axis2,
+                        adjustment_factor_raw AS AdjustmentFactorRaw,
+                        matrix_label AS MatrixLabel
+                    FROM {ViewImprovementCostMatrices}
+                    ORDER BY matrix_year DESC, source_matrix_id
+                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+                var items = await connection.QueryAsync<PacsImprovementCostMatrix>(
+                    sql,
+                    new { Offset = offset, PageSize = pageSize },
+                    commandTimeout: _commandTimeout);
+
+                return new PacsPagedResult<PacsImprovementCostMatrix>
+                {
+                    Items = items.ToList(),
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
         // BATCH OPERATIONS
         // ═══════════════════════════════════════════════════════════════
 
@@ -650,7 +940,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var sql = $@"
@@ -693,7 +983,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = new SqlConnection(_connectionString);
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var sql = $@"
@@ -772,6 +1062,16 @@ namespace TerraFusion.Core.PACS
                 208 => new PacsContractViolationException(PacsErrorCodes.ViewMissing, $"PACS object not found: {ex.Message}", ex),
                 _ => new PacsContractViolationException(PacsErrorCodes.ConnectionFailed, $"PACS SQL error: {ex.Message}", ex)
             };
+        }
+
+        private SqlConnection CreatePrimaryConnection() => new(_connectionString);
+
+        private SqlConnection CreateSalesConnection() => new(_salesConnectionString);
+
+        private static string GetDatabaseName(string connectionString)
+        {
+            var builder = new SqlConnectionStringBuilder(connectionString);
+            return string.IsNullOrWhiteSpace(builder.InitialCatalog) ? "<unknown>" : builder.InitialCatalog;
         }
 
         public void Dispose()

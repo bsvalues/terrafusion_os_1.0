@@ -418,6 +418,11 @@ export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
   setContext({ parcelId, source: 'selection' });
   recordRecent(parcelId);
 
+  // Pre-load parcel data via property store (DataProvider-backed)
+  import('../stores/propertyStore').then(({ usePropertyStore }) => {
+    usePropertyStore.getState().selectParcel(parcelId!);
+  });
+
   // Open new workbench window
   const truncatedId = parcelId.length > 20 ? parcelId.slice(0, 20) + '…' : parcelId;
   openWindow(

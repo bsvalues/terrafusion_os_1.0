@@ -4,7 +4,7 @@
   /* Official TerraFusion Quantum Brand Colors */
   --tf-primary: var(--tf-quantum-cyan); /* Terra-Cyan - The Consciousness Color */
   --tf-primary-dark: var(--tf-accent-cyan); /* Terra-Cyan Dark Variant */
-  --tf-accent: hsl(var(--tf-success-hs) var(--tf-l-50)); /* Quantum Growth & Success */
+  --tf-accent: 152 100% 50%; /* Quantum Growth & Success  (raw HSL — consumed as hsl(var(--tf-accent))) */
   --tf-accent-dark: hsl(var(--tf-success-hs) var(--tf-l-40)); /* Accent Dark Variant */
   --tf-transcend: var(--tf-transcend-highlight); /* Transcendence & Innovation */
   --tf-dark: var(--tf-void-black); /* Terra-Midnight - The Void */
@@ -13,10 +13,10 @@
   --tf-gray: var(--gray-400); /* Neutral Gray */
   --tf-gray-light: var(--gray-300); /* Light Gray */
 
-  /* Semantic Colors */
-  --tf-success: var(--success-green); /* Achievement */
-  --tf-error: hsl(var(--tf-error-hs) var(--tf-l-60)); /* Attention */
-  --tf-warning: var(--warning-amber); /* Caution */
+  /* Semantic Colors (Lumin Bridge — raw HSL triplets, no hsl() wrapper) */
+  --tf-success: 152 100% 50%; /* Achievement */
+  --tf-error: 0 100% 60%; /* Attention */
+  --tf-warning: 40 100% 50%; /* Caution */
   --tf-clarity: hsl(var(--tf-network-blue-hs) 94%); /* Understanding */
 
   /* Quantum Design Tokens */
@@ -110,7 +110,7 @@ body::before {
     135deg,
     var(--tf-primary) 0%,
     var(--tf-transcend) 50%,
-    var(--tf-accent) 100%
+    hsl(var(--tf-accent)) 100%
   );
 }
 
@@ -119,7 +119,7 @@ body::before {
     135deg,
     var(--tf-primary) 0%,
     var(--tf-transcend) 50%,
-    var(--tf-accent) 100%
+    hsl(var(--tf-accent)) 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -228,7 +228,7 @@ body::before {
     45deg,
     var(--tf-primary),
     var(--tf-transcend),
-    var(--tf-accent),
+    hsl(var(--tf-accent)),
     var(--tf-transcend),
     var(--tf-primary)
   );
@@ -442,7 +442,7 @@ select:focus {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--tf-transcend) 0%, var(--tf-accent) 100%);
+  background: linear-gradient(180deg, var(--tf-transcend) 0%, hsl(var(--tf-accent)) 100%);
 }
 
 /* TerraFusion OS Quantum Extensions */

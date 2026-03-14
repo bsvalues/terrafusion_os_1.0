@@ -12,6 +12,7 @@
 import React, { lazy, Suspense } from 'react';
 import { GenericModuleHost } from '../shell/desktop/GenericModuleHost';
 import { MODULES, type ModuleDefinition } from './modules';
+import { validateSuiteRendering } from '../contracts/objectPlacement';
 
 // ============================================================================
 // Module Aliases - Maps legacy/short IDs to canonical IDs (Phase 2)
@@ -36,9 +37,12 @@ export const MODULE_ALIASES: Record<string, string> = {
   ai: 'atlas-ai',
   analytics: 'reporting',
   reports: 'reporting',
-  levy: 'levy-calculator',
-  gis: 'gis-viewer',
-  map: 'gis-viewer',
+  levy: 'terra-levy',
+  'levy-calculator': 'terra-levy',
+  gis: 'terra-gis',
+  'gis-viewer': 'terra-gis',
+  'gis-pro': 'terra-gis',
+  map: 'terra-gis',
   docs: 'document-manager',
   documents: 'document-manager',
   store: 'marketplace',
@@ -48,6 +52,36 @@ export const MODULE_ALIASES: Record<string, string> = {
   help: 'shortcuts-help',
   shortcuts: 'shortcuts-help',
 
+  // Application Constellation aliases (Gen2 catalog)
+  income: 'income-valuation',
+  regression: 'regression-studio',
+  stats: 'statistics-studio',
+  statistics: 'statistics-studio',
+  comps: 'comparable-sales',
+  comparables: 'comparable-sales',
+  permit: 'terra-permit',
+  pilt: 'terra-pilt',
+  sync: 'terra-sync',
+  flow: 'terra-flow',
+  pacs: 'pacs-bridge',
+  gama: 'terra-gama',
+  'property-tax': 'property-tax-ai',
+  primeview: 'terra-primeview',
+
+  // New constellation modules
+  miner: 'terra-miner',
+  terraminer: 'terra-miner',
+  legislative: 'legislative-pulse',
+  'legislative-beacon': 'legislative-pulse',
+
+  // GPT Suite namespaced modules
+  'gpt-studio': 'gpt-studio',
+  'gpt-marketplace': 'gpt-marketplace',
+  'gpt-management': 'gpt-management',
+  'gpt-builder': 'gpt-builder',
+  'gpt-analytics': 'gpt-analytics',
+  'gpt-rag': 'gpt-rag',
+
   // Phase C3: Sovereign Dashboard aliases
   dashboard: 'sovereign-dashboard',
   'doc-viewer': 'sovereign-dashboard',
@@ -56,6 +90,14 @@ export const MODULE_ALIASES: Record<string, string> = {
   // Property Workbench (desktop window adapter)
   workbench: 'property-workbench',
   'property-workbench-window': 'property-workbench',
+
+  // OS Feature aliases (desktop icons use these short IDs)
+  pilot: 'os-pilot',
+  trace: 'os-trace',
+  canon: 'os-canon',
+  terrapilot: 'os-pilot',
+  terratrace: 'os-trace',
+  terracanon: 'os-canon',
 
   // Constitutional Suite Home aliases (desktop icons use these)
   forge: 'suite-forge',
@@ -105,6 +147,30 @@ export const MODULE_REGISTRY = new Set<string>([
   'plugin-manager',
   'axiom-fs',
   'sovereign-dashboard', // Phase C3: Sovereign Dashboard
+  // Application Constellation (Gen2 catalog — truthful placeholders)
+  'income-valuation',
+  'regression-studio',
+  'statistics-studio',
+  'comparable-sales',
+  'vei',
+  'property-tax-ai',
+  'pacs-bridge',
+  'terra-sync',
+  'terra-gis',
+  'terra-gama',
+  'terra-levy',
+  'terra-pilt',
+  'terra-permit',
+  'terra-flow',
+  'terra-miner',
+  'legislative-pulse',
+  // GPT Suite namespaced modules
+  'gpt-studio',
+  'gpt-marketplace',
+  'gpt-management',
+  'gpt-builder',
+  'gpt-analytics',
+  'gpt-rag',
   // Property Workbench (Tier-0 OS Surface — opens in window)
   'property-workbench',
   // Constitutional Suite Homes (render inside Desktop windows)
@@ -113,6 +179,10 @@ export const MODULE_REGISTRY = new Set<string>([
   'suite-dais',
   'suite-dossier',
   'suite-gpt',
+  // OS Features (open as in-shell windows, not full-page routes)
+  'os-pilot',
+  'os-trace',
+  'os-canon',
 ]);
 
 /**
@@ -199,11 +269,28 @@ const SovereignDashboardWindow = lazy(() =>
 );
 
 // ============================================================================
+// Phase C: Rehosted Module Components
+// ============================================================================
+const TerraFlowCommandCenter = lazy(
+  () => import('../components/terra-flow/QuantumCommandCenter')
+);
+const TerraLevyDashboard = lazy(
+  () => import('../applications/terra-levy/TerraLevyDashboard')
+);
+
+// ============================================================================
 // Property Workbench Window (Tier-0 OS Surface — Phase A)
 // ============================================================================
 const PropertyWorkbenchWindow = lazy(
   () => import('../pages/workbench/PropertyWorkbenchWindow')
 );
+
+// ============================================================================
+// OS Feature Home Pages (open as in-shell windows)
+// ============================================================================
+const PilotHome = lazy(() => import('../pages/PilotHome'));
+const TraceHome = lazy(() => import('../pages/TraceHome'));
+const CanonHome = lazy(() => import('../pages/CanonHome'));
 
 // ============================================================================
 // Constitutional Suite Home Pages (render inside Desktop windows)
@@ -244,6 +331,10 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'suite-dais': { Component: DaisSuiteHome },
   'suite-dossier': { Component: DossierSuiteHome },
   'suite-gpt': { Component: GptSuiteHome },
+  // OS Features (in-shell windows)
+  'os-pilot': { Component: PilotHome },
+  'os-trace': { Component: TraceHome },
+  'os-canon': { Component: CanonHome },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
@@ -254,20 +345,38 @@ export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
 // Placeholder for modules under development
 // ============================================================================
 
+type PlaceholderStatus = 'placeholder' | 'partial' | 'rehosting' | 'live' | 'coming-soon' | 'in-development' | 'beta';
+
 interface PlaceholderModuleProps {
   name: string;
   icon: string;
   description?: string;
-  status?: 'coming-soon' | 'in-development' | 'beta';
+  status?: PlaceholderStatus;
+  /** Legacy GitHub repo(s) this module consolidates */
+  legacySource?: string;
+  /** Domain classification */
+  domain?: 'assessment' | 'tax' | 'mapping' | 'records' | 'analytics' | 'system' | 'ai';
+  /** Scope of this module */
+  scope?: 'parcel' | 'county-wide' | 'system';
+  /** Intended launch surface */
+  launchSurface?: string;
 }
 
 const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
   name,
   icon,
   description = 'This module is under development.',
-  status = 'coming-soon',
+  status = 'placeholder',
+  legacySource,
+  domain,
+  scope,
+  launchSurface,
 }) => {
-  const statusConfig = {
+  const statusConfig: Record<PlaceholderStatus, { color: string; label: string }> = {
+    placeholder: { color: 'hsl(var(--tf-warning))', label: 'Placeholder' },
+    partial: { color: 'hsl(var(--tf-info))', label: 'Partial' },
+    rehosting: { color: 'hsl(var(--tf-accent-2))', label: 'Rehosting' },
+    live: { color: 'hsl(120 60% 50%)', label: 'Live' },
     'coming-soon': { color: 'hsl(var(--tf-warning))', label: 'Coming Soon' },
     'in-development': { color: 'hsl(var(--tf-info))', label: 'In Development' },
     beta: { color: 'hsl(var(--tf-accent-2))', label: 'Beta' },
@@ -326,7 +435,43 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
       </h2>
 
       {/* Description */}
-      <p className='text-white/60 text-center max-w-md mb-6'>{description}</p>
+      <p className='text-white/60 text-center max-w-md mb-4'>{description}</p>
+
+      {/* Metadata grid — truthful catalog info */}
+      {(legacySource || domain || scope || launchSurface) && (
+        <div
+          className='grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs mb-6 px-6 py-3 rounded-lg max-w-md'
+          style={{
+            background: 'hsl(var(--tf-accent) / 0.05)',
+            border: '1px solid hsl(var(--tf-accent) / 0.1)',
+          }}
+        >
+          {legacySource && (
+            <>
+              <span className='text-white/40 text-right'>Legacy Source</span>
+              <span className='text-white/70'>{legacySource}</span>
+            </>
+          )}
+          {domain && (
+            <>
+              <span className='text-white/40 text-right'>Domain</span>
+              <span className='text-white/70 capitalize'>{domain}</span>
+            </>
+          )}
+          {scope && (
+            <>
+              <span className='text-white/40 text-right'>Scope</span>
+              <span className='text-white/70 capitalize'>{scope}</span>
+            </>
+          )}
+          {launchSurface && (
+            <>
+              <span className='text-white/40 text-right'>Launch</span>
+              <span className='text-white/70'>{launchSurface}</span>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Status badge */}
       <div
@@ -376,6 +521,32 @@ const ModuleLoadingFallback: React.FC = () => (
 // Module Renderer
 // ============================================================================
 
+// ============================================================================
+// Suite Boundary Violation Notice (Phase 8 Codex Enforcement)
+// ============================================================================
+
+const SuiteBoundaryViolationNotice: React.FC<{
+  moduleId: string;
+  objectType: string;
+  reason: string;
+}> = ({ moduleId, objectType, reason }) => (
+  <div
+    className="w-full h-full flex flex-col items-center justify-center p-8"
+    style={{
+      background: 'linear-gradient(135deg, hsl(var(--tf-bg) / 0.95) 0%, hsl(0 60% 10% / 0.95) 100%)',
+    }}
+  >
+    <div className="text-4xl mb-4">🛡️</div>
+    <h2 className="text-xl font-semibold text-red-400 mb-2">Suite Boundary Violation</h2>
+    <p className="text-white/70 text-center max-w-md mb-4">
+      Module <code className="text-red-300">'{moduleId}'</code> is classified as{' '}
+      <code className="text-red-300">'{objectType}'</code> but suite homes must be{' '}
+      <code className="text-green-300">'suite-workspace'</code>.
+    </p>
+    <p className="text-white/40 text-sm text-center max-w-md">{reason}</p>
+  </div>
+);
+
 interface ModuleRendererProps {
   module: ModuleDefinition;
   /** Optional metadata passed to module (e.g., objectId for sovereign-dashboard) */
@@ -421,22 +592,26 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     // ========================================================================
 
     case 'levy-calculator':
+    case 'terra-levy':
       return (
-        <PlaceholderModule
-          name='Levy Calculator'
-          icon='📊'
-          description='Tax Levy Management & Calculations. Components exist - integration in progress.'
-          status='in-development'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TerraLevyDashboard />
+        </Suspense>
       );
 
     case 'gis-viewer':
+    case 'terra-gis':
+    case 'gis-pro':
       return (
         <PlaceholderModule
-          name='GIS Viewer'
+          name='TerraGIS Pro'
           icon='🗺️'
-          description='Geographic Information System & Parcel Mapping. Plugin architecture ready.'
-          status='in-development'
+          description='Full GIS with parcel boundaries, zoning overlays, aerial imagery, and measurement tools.'
+          status='placeholder'
+          legacySource='BCBSGISPRO, bcbspacsmapping'
+          domain='mapping'
+          scope='county-wide'
+          launchSurface='Standalone window'
         />
       );
 
@@ -445,8 +620,175 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         <PlaceholderModule
           name='Document Manager'
           icon='📁'
-          description='County Document Repository & Records. Backend integration required.'
+          description='County document repository, records management, and chain-of-custody tracking.'
           status='in-development'
+          domain='records'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    // ========================================================================
+    // APPLICATION CONSTELLATION (Gen2 truthful catalog)
+    // ========================================================================
+
+    case 'income-valuation':
+      return (
+        <PlaceholderModule
+          name='Income Valuation'
+          icon='💰'
+          description='Income approach — direct capitalization, GRM, and AI-assisted NOI analysis for commercial properties.'
+          status='placeholder'
+          legacySource='BSIncomeValuation'
+          domain='assessment'
+          scope='parcel'
+          launchSurface='Workbench → Forge tab'
+        />
+      );
+
+    case 'regression-studio':
+      return (
+        <PlaceholderModule
+          name='Regression Studio'
+          icon='📈'
+          description='County-wide MRA regression models — multiple regression analysis, model diagnostics, IAAO compliance.'
+          status='placeholder'
+          legacySource='Bsbcintelligentvalues'
+          domain='assessment'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'statistics-studio':
+      return (
+        <PlaceholderModule
+          name='Statistics Studio'
+          icon='📊'
+          description='Ratio studies — COD, COV, PRD, weighted mean ratios, IAAO Standard on Ratio Studies compliance.'
+          status='placeholder'
+          legacySource='Assessment workflow tools'
+          domain='analytics'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'comparable-sales':
+      return (
+        <PlaceholderModule
+          name='Comparable Sales'
+          icon='🏘️'
+          description='Sales comparison approach — neighborhood comps, paired adjustments, Leaflet mapping, USPAP exports.'
+          status='placeholder'
+          legacySource='GeospatialAnalyzerBS'
+          domain='assessment'
+          scope='parcel'
+          launchSurface='Workbench → Forge tab'
+        />
+      );
+
+    case 'vei':
+      return (
+        <PlaceholderModule
+          name='Vertical Equality Index'
+          icon='🔍'
+          description='Vertical Equality Index — measures assessment progressivity/regressivity across value ranges, PRB analysis, IAAO equity compliance.'
+          status='placeholder'
+          domain='assessment'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'terra-gama':
+      return (
+        <PlaceholderModule
+          name='TerraGAMA'
+          icon='📍'
+          description='Geographic Area Market Analysis — neighborhood delineation, market trend analysis, and area-based valuation.'
+          status='placeholder'
+          legacySource='TerraGama, TerraFusionGama'
+          domain='assessment'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'terra-pilt':
+      return (
+        <PlaceholderModule
+          name='TerraPILT'
+          icon='🏛️'
+          description='Payment in Lieu of Taxes — federal property calculations, PILT reporting, and compliance tracking.'
+          status='placeholder'
+          legacySource='TerraPILT'
+          domain='tax'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'property-tax-ai':
+      return (
+        <PlaceholderModule
+          name='PropertyTax AI'
+          icon='🤖'
+          description='AI-powered assessment assistant — LangChain agents for valuation analysis and appeal preparation.'
+          status='placeholder'
+          legacySource='PropertyTaxAI'
+          domain='ai'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'pacs-bridge':
+      return (
+        <PlaceholderModule
+          name='PACS DataBridge'
+          icon='🔗'
+          description='Import/export bridge for Harris PACS TrueAutomation — data sync, field mapping, and batch operations.'
+          status='placeholder'
+          legacySource='PACS-DataBridge'
+          domain='system'
+          scope='system'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'terra-sync':
+      return (
+        <PlaceholderModule
+          name='TerraSync'
+          icon='🔄'
+          description='County data synchronization & ETL — multi-source ingestion, conflict resolution, and audit trails.'
+          status='placeholder'
+          legacySource='TerraFusionSync, CountyDataSync'
+          domain='system'
+          scope='system'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'terra-flow':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TerraFlowCommandCenter />
+        </Suspense>
+      );
+
+    case 'terra-permit':
+      return (
+        <PlaceholderModule
+          name='TerraPermit'
+          icon='🏗️'
+          description='Building permit tracking — permit intake, inspection scheduling, and valuation impact updates.'
+          status='placeholder'
+          legacySource='TerraFUsionPermit'
+          domain='assessment'
+          scope='county-wide'
+          launchSurface='Standalone window'
         />
       );
 
@@ -550,41 +892,177 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     // ========================================================================
     // CONSTITUTIONAL SUITE HOMES (render full suite inside Desktop window)
+    // Phase 8: Suite Boundary Enforcement — validates suite classification
     // ========================================================================
 
     case 'suite-forge':
-      return (
-        <Suspense fallback={<ModuleLoadingFallback />}>
-          <ForgeSuiteHome />
-        </Suspense>
-      );
-
     case 'suite-atlas':
-      return (
-        <Suspense fallback={<ModuleLoadingFallback />}>
-          <AtlasSuiteHome />
-        </Suspense>
-      );
-
     case 'suite-dais':
-      return (
-        <Suspense fallback={<ModuleLoadingFallback />}>
-          <DaisSuiteHome />
-        </Suspense>
-      );
-
     case 'suite-dossier':
+    case 'suite-gpt': {
+      const suiteViolation = validateSuiteRendering(module.id);
+      if (suiteViolation) {
+        console.warn('[Codex] Suite boundary violation:', suiteViolation);
+        return (
+          <SuiteBoundaryViolationNotice
+            moduleId={suiteViolation.moduleId}
+            objectType={suiteViolation.objectType}
+            reason={suiteViolation.reason}
+          />
+        );
+      }
+      const SuiteComponent = {
+        'suite-forge': ForgeSuiteHome,
+        'suite-atlas': AtlasSuiteHome,
+        'suite-dais': DaisSuiteHome,
+        'suite-dossier': DossierSuiteHome,
+        'suite-gpt': GptSuiteHome,
+      }[module.id]!;
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
-          <DossierSuiteHome />
+          <SuiteComponent />
+        </Suspense>
+      );
+    }
+
+
+    // ========================================================================
+    // OS FEATURES (open as in-shell windows, not full-page routes)
+    // ========================================================================
+
+    case 'os-pilot':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <PilotHome />
         </Suspense>
       );
 
-    case 'suite-gpt':
+    case 'os-trace':
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
-          <GptSuiteHome />
+          <TraceHome />
         </Suspense>
+      );
+
+    case 'os-canon':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CanonHome />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // NEW CONSTELLATION MODULES (Phase B audit additions)
+    // ========================================================================
+
+    case 'terra-miner':
+      return (
+        <PlaceholderModule
+          name='TerraMiner'
+          icon='⛏️'
+          description='Property research & outside data mining — aggregates external data sources (MLS, permits, assessor feeds) for parcel enrichment.'
+          status='placeholder'
+          legacySource='TerraMiner (Private)'
+          domain='assessment'
+          scope='county-wide'
+          launchSurface='Standalone window'
+        />
+      );
+
+    case 'legislative-pulse':
+      return (
+        <PlaceholderModule
+          name='Legislative Pulse'
+          icon='📢'
+          description='Legislative research & tracking — monitors WA state bills, fiscal notes, and policy impacts on county assessment/taxation.'
+          status='placeholder'
+          legacySource='legislative-pulse-beacon (Private)'
+          domain='policy'
+          scope='county-wide'
+          launchSurface='Dais suite → Standalone window'
+        />
+      );
+
+    // ========================================================================
+    // GPT SUITE NAMESPACED MODULES
+    // ========================================================================
+
+    case 'gpt-studio':
+      return (
+        <PlaceholderModule
+          name='GPT Studio'
+          icon='🧪'
+          description='Interactive GPT prompt studio — prompt engineering, template management, and AI workflow design.'
+          status='placeholder'
+          domain='ai'
+          scope='county-wide'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-marketplace':
+      return (
+        <PlaceholderModule
+          name='GPT Marketplace'
+          icon='🏪'
+          description='GPT model & prompt marketplace — browse, install, and manage AI models and prompt templates.'
+          status='placeholder'
+          domain='ai'
+          scope='system'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-management':
+      return (
+        <PlaceholderModule
+          name='GPT Management'
+          icon='⚙️'
+          description='GPT administration — API key management, usage quotas, model configuration, and access control.'
+          status='placeholder'
+          domain='ai'
+          scope='system'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-builder':
+      return (
+        <PlaceholderModule
+          name='GPT Builder'
+          icon='🔨'
+          description='Custom GPT builder — create domain-specific AI agents for county workflows with no-code configuration.'
+          status='placeholder'
+          domain='ai'
+          scope='county-wide'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-analytics':
+      return (
+        <PlaceholderModule
+          name='GPT Analytics'
+          icon='📊'
+          description='GPT usage analytics — token consumption, model performance, cost tracking, and ROI metrics.'
+          status='placeholder'
+          domain='ai'
+          scope='system'
+          launchSurface='GPT suite → Standalone window'
+        />
+      );
+
+    case 'gpt-rag':
+      return (
+        <PlaceholderModule
+          name='GPT RAG'
+          icon='📚'
+          description='Retrieval-Augmented Generation — document indexing, vector search, and context-aware AI responses over county data.'
+          status='placeholder'
+          domain='ai'
+          scope='county-wide'
+          launchSurface='GPT suite → Standalone window'
+        />
       );
 
     // ========================================================================

@@ -20,6 +20,7 @@ import { LiquidPanel } from '../../ui/materials';
 import { getLucideIcon } from '../../config/iconMap';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { SCENE_LIBRARY } from '../../stores/sceneStore';
+import { Z } from '../desktop/zIndex';
 import {
   useCommandPaletteStore,
   useCommandPaletteOpen,
@@ -632,7 +633,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
       {/* Backdrop */}
       <div
         data-testid='command-palette-backdrop'
-        className='fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]'
+        className='fixed inset-0 bg-[hsl(var(--tf-bg)/0.5)] backdrop-blur-sm'
+        style={{ zIndex: Z.commandBackdrop }}
         onClick={close}
         aria-hidden='true'
       />
@@ -646,11 +648,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ className }) => 
         role='dialog'
         aria-label='Command Palette'
         aria-modal='true'
+        style={{ zIndex: Z.commandPalette }}
         className={cn(
           'fixed top-[15%] left-1/2 -translate-x-1/2',
           'w-full max-w-xl',
           'overflow-hidden',
-          'z-[10000]',
           className
         )}
         onKeyDown={handleKeyDown}

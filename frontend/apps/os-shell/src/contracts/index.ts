@@ -51,3 +51,55 @@ export type {
   DossierValuationCategory,
   DossierValuationSignals,
 } from './dossierDetails';
+
+export type {
+  ShellModeTruth,
+  ShellSurfaces,
+  SurfaceVisibility,
+  TerraFusionShellMode,
+} from './shellMode';
+
+export {
+  INITIAL_SHELL_MODE,
+  SHELL_MODE_TRUTHS,
+  SHELL_MODES,
+  SHELL_SURFACE_POLICY,
+  VALID_TRANSITIONS,
+  getSurfacePolicy,
+  isSurfaceVisible,
+  isValidTransition,
+} from './shellMode';
+
+export type {
+  CompletionMetadata,
+  CompletionReport,
+  CompletionReportEntry,
+  DriftViolation,
+  ObjectClassification,
+  PlacementRule,
+  PlacementViolation,
+  RenderMode,
+  SuiteBoundaryViolation,
+  TerraFusionLayer,
+  TerraFusionObjectType,
+  WorkbenchHostViolation,
+} from './objectPlacement';
+
+export {
+  LAYERS,
+  MODULE_OBJECT_TYPES,
+  OBJECT_TYPES,
+  PLACEMENT_POLICY,
+  RENDER_MODES,
+  detectDrift,
+  generateCompletionReport,
+  getAllowedRenderMode,
+  getObjectClassification,
+  isParcelScoped,
+  isStandaloneAllowed,
+  requiresWorkbenchHost,
+  validateCompletion,
+  validatePlacement,
+  validateSuiteRendering,
+  validateWorkbenchHost,
+} from './objectPlacement';

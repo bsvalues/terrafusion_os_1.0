@@ -30,44 +30,44 @@ interface TerraSphereIconProps {
 const VARIANT_COLORS: Record<TerraSphereIconVariant, { ring: string; core: string; glow: string }> =
   {
     assessment: {
-      ring: 'hsl(var(--tf-info-hs) 72% / 0.4)',
+      ring: 'hsl(var(--tf-info-hs) 72% / 0.5)',
       core: 'hsl(var(--tf-info-hs) 72%)',
       glow: 'hsl(var(--tf-info-hs) 72% / 0.6)',
     },
     records: {
-      ring: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.4)',
+      ring: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)',
       core: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
       glow: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.6)',
     },
     tax: {
-      ring: 'hsl(var(--tf-success-hs) 52% / 0.4)',
+      ring: 'hsl(var(--tf-success-hs) 52% / 0.5)',
       core: 'hsl(var(--tf-success-hs) 52%)',
       glow: 'hsl(var(--tf-success-hs) 52% / 0.6)',
     },
     mapping: {
-      ring: 'hsl(var(--tf-network-blue-hs) 60% / 0.4)',
+      ring: 'hsl(var(--tf-network-blue-hs) 60% / 0.5)',
       core: 'hsl(var(--tf-network-blue-hs) 60%)',
       glow: 'hsl(var(--tf-network-blue-hs) 60% / 0.6)',
     },
     analytics: {
-      ring: 'hsl(var(--tf-warning-hs) 57% / 0.4)',
+      ring: 'hsl(var(--tf-warning-hs) 57% / 0.5)',
       core: 'hsl(var(--tf-warning-hs) 57%)',
       glow: 'hsl(var(--tf-warning-hs) 57% / 0.6)',
     },
     ai: {
-      ring: 'hsl(var(--tf-info-hs) 68% / 0.4)',
+      ring: 'hsl(var(--tf-info-hs) 68% / 0.5)',
       core: 'hsl(var(--tf-info-hs) 68%)',
       glow: 'hsl(var(--tf-info-hs) 68% / 0.6)',
     },
     system: {
       ring: 'hsl(var(--tf-neutral-hs) 92% / 0.25)',
       core: 'hsl(var(--tf-neutral-hs) 92%)',
-      glow: 'hsl(var(--tf-neutral-hs) 92% / 0.4)',
+      glow: 'hsl(var(--tf-neutral-hs) 92% / 0.5)',
     },
     default: {
-      ring: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
+      ring: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)',
       core: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
-      glow: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)',
+      glow: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.6)',
     },
   };
 
@@ -79,8 +79,8 @@ export const TerraSphereIcon: React.FC<TerraSphereIconProps> = ({
 }) => {
   const colors = VARIANT_COLORS[variant];
   const sphereSize = size * 0.85;
-  const coreSize = size * 0.35;
-  const ringCount = 5;
+  const coreSize = size * 0.45;
+  const ringCount = 4;
 
   return (
     <div

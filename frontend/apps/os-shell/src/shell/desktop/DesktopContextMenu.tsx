@@ -19,6 +19,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Panel } from '@terrafusion/ui';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { type ContextMenuPosition } from '../../hooks/useContextMenu';
+import { Z } from './zIndex';
 
 // ============================================================================
 // Types
@@ -246,9 +247,9 @@ export const DesktopContextMenu: React.FC<DesktopContextMenuProps> = ({
       ref={menuRef}
       role='menu'
       aria-label='Desktop context menu'
-      style={{ left: `${position.x}px`, top: `${position.y}px` }}
+      style={{ left: `${position.x}px`, top: `${position.y}px`, zIndex: Z.dockContextMenu }}
       className={cn(
-        'fixed z-[1020]',
+        'fixed',
         'min-w-[200px]',
         '!p-0 !rounded-lg py-1',
         'animate-in fade-in-0 zoom-in-95 duration-100'

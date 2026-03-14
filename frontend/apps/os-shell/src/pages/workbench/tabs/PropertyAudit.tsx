@@ -23,6 +23,7 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 
@@ -92,6 +93,7 @@ interface ComplianceReportResult {
 
 export const PropertyAudit: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const auditTrail = usePropertyStore((s) => s.auditTrail);
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
@@ -228,6 +230,34 @@ export const PropertyAudit: React.FC = () => {
   return (
     <div className='tf-suite-audit space-y-6'>
       <ParcelContextHeader icon='🔍' title='TerraAudit' parcelId={parcelId} subtitle={`Financial compliance & audit for ${parcelId}`} />
+
+      {/* Audit Trail from Store */}
+      {auditTrail.length > 0 && (
+        <BentoCard variant="table" title={`Audit Trail (${auditTrail.length} entries)`}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
+                  <th className="text-left py-2 px-3 font-medium">Action</th>
+                  <th className="text-left py-2 px-3 font-medium">User</th>
+                  <th className="text-left py-2 px-3 font-medium">Field</th>
+                  <th className="text-right py-2 px-3 font-medium">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {auditTrail.slice(0, 5).map((e) => (
+                  <tr key={e.auditId} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.08)' }}>
+                    <td className="py-2 px-3 font-medium">{e.action}</td>
+                    <td className="py-2 px-3">{e.userId}</td>
+                    <td className="py-2 px-3">{e.fieldName || '—'}</td>
+                    <td className="py-2 px-3 text-right">{new Date(e.timestamp).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </BentoCard>
+      )}
 
       <BentoGrid columns={3} gap={1.5}>
 

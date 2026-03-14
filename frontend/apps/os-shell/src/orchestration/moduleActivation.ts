@@ -90,8 +90,11 @@ function getModuleDisplayName(moduleId: string): string {
     'costforge': 'CostForge',
     'terra-gaia': 'TerraGaia',
     'federation-dashboard': 'Federation Dashboard',
-    'levy-calculator': 'Levy Calculator',
-    'gis-viewer': 'GIS Viewer',
+    'levy-calculator': 'TerraLevy',
+    'terra-levy': 'TerraLevy',
+    'gis-viewer': 'TerraGIS Pro',
+    'terra-gis': 'TerraGIS Pro',
+    'gis-pro': 'TerraGIS Pro',
     'document-manager': 'Documents',
     'reporting': 'Analytics',
     'atlas-ai': 'ATLAS',
@@ -111,6 +114,33 @@ function getModuleDisplayName(moduleId: string): string {
     'suite-dais': 'TerraDais',
     'suite-dossier': 'TerraDossier',
     'suite-gpt': 'TerraGPT',
+    // OS Features
+    'os-pilot': 'TerraPilot',
+    'os-trace': 'TerraTrace',
+    'os-canon': 'TerraCanon',
+    // Application Constellation (Gen2 catalog)
+    'income-valuation': 'Income Valuation',
+    'regression-studio': 'Regression Studio',
+    'statistics-studio': 'Statistics Studio',
+    'comparable-sales': 'Comparable Sales',
+    'vei': 'VEI',
+    'terra-gama': 'TerraGAMA',
+    'terra-pilt': 'TerraPILT',
+    'property-tax-ai': 'PropertyTax AI',
+    'pacs-bridge': 'PACS DataBridge',
+    'terra-sync': 'TerraSync',
+    'terra-flow': 'TerraFlow',
+    'terra-permit': 'TerraPermit',
+    // Phase B audit additions
+    'terra-miner': 'TerraMiner',
+    'legislative-pulse': 'Legislative Pulse',
+    // GPT Suite namespaced modules
+    'gpt-studio': 'GPT Studio',
+    'gpt-marketplace': 'GPT Marketplace',
+    'gpt-management': 'GPT Management',
+    'gpt-builder': 'GPT Builder',
+    'gpt-analytics': 'GPT Analytics',
+    'gpt-rag': 'GPT RAG',
   };
 
   return displayNames[moduleId] ?? moduleId;
@@ -126,8 +156,11 @@ function getModuleIcon(moduleId: string): string {
     'costforge': '💎',
     'terra-gaia': '🌍',
     'federation-dashboard': '🏛️',
-    'levy-calculator': '📊',
+    'levy-calculator': '🧮',
+    'terra-levy': '🧮',
     'gis-viewer': '🗺️',
+    'terra-gis': '🗺️',
+    'gis-pro': '🗺️',
     'document-manager': '📁',
     'reporting': '📈',
     'atlas-ai': '🤖',
@@ -147,6 +180,33 @@ function getModuleIcon(moduleId: string): string {
     'suite-dais': '⚖️',
     'suite-dossier': '📋',
     'suite-gpt': '🧠',
+    // OS Features
+    'os-pilot': '🧭',
+    'os-trace': '📡',
+    'os-canon': '⚙️',
+    // Application Constellation (Gen2 catalog)
+    'income-valuation': '💰',
+    'regression-studio': '📈',
+    'statistics-studio': '📊',
+    'comparable-sales': '🏘️',
+    'vei': '🔍',
+    'terra-gama': '📍',
+    'terra-pilt': '🏛️',
+    'property-tax-ai': '🤖',
+    'pacs-bridge': '🔗',
+    'terra-sync': '🔄',
+    'terra-flow': '⚡',
+    'terra-permit': '🏗️',
+    // Phase B audit additions
+    'terra-miner': '⛏️',
+    'legislative-pulse': '📢',
+    // GPT Suite namespaced modules
+    'gpt-studio': '🧪',
+    'gpt-marketplace': '🏪',
+    'gpt-management': '⚙️',
+    'gpt-builder': '🔨',
+    'gpt-analytics': '📊',
+    'gpt-rag': '📚',
   };
 
   return icons[moduleId] ?? '📦';
@@ -246,7 +306,8 @@ export async function activateModule(
   openWindow(
     canonicalId,
     displayName,
-    getModuleIcon(canonicalId)
+    getModuleIcon(canonicalId),
+    metadata
   );
 
   // -------------------------------------------------------------------------

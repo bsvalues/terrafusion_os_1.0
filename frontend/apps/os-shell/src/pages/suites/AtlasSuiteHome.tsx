@@ -1,165 +1,86 @@
 /**
  * TerraAtlas Suite Home -- Geographic Intelligence & Mapping
  * ===================================================================
- * Constitutional Suite: atlas (Article I)
- * Standalone route: /atlas
+ * Constitutional Suite: atlas (Article II)
+ * Layer 3: Domain router + cross-parcel operational workspace
  *
- * Layout: Stage Tabs (horizontal) + content area
- * Phase 7 Design Manifesto: replaces sidebar navigation with Stage Tabs
- *   - TerraGIS: Parcel boundaries, aerial, zoning overlays
- *   - ParcelLens: Detailed parcel inspection with measurement tools
- *   - LayerWorks: Advanced layer management & spatial analysis
- *   - TerraSketch: Parcel geometry editing tools
- *   - TerraPrint: Map printing & PDF export
- *   - TerraExport: GIS data export (Shapefile, GeoJSON, KML)
- *   - TerraQuery: SQL-like spatial queries across county data
+ * Shows: county stats, module launcher grid, recent parcel queue.
+ * Does NOT host parcel execution — that lives in the Property Workbench.
  */
 
-import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
-import { ArrowLeft, Globe, Map, Search, Layers, Crosshair, Printer, Download, Database } from 'lucide-react';
+import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
+import { OperationalQueue } from '../../components/suites/OperationalQueue';
+import { useCountyStats } from '../../hooks/useCountyStats';
+import {
+  ArrowLeft,
+  Map,
+  Search,
+  Layers,
+  Crosshair,
+  Printer,
+  Download,
+  Database,
+} from 'lucide-react';
 
-const GISModule = lazy(() => import('./modules/GISModule'));
-const ParcelLensModule = lazy(() => import('./modules/ParcelLensModule'));
-const LayerWorksModule = lazy(() => import('./modules/LayerWorksModule'));
-const TerraSketchModule = lazy(() => import('./modules/TerraSketchModule'));
-const TerraPrintModule = lazy(() => import('./modules/TerraPrintModule'));
-const TerraExportModule = lazy(() => import('./modules/TerraExportModule'));
-const TerraQueryModule = lazy(() => import('./modules/TerraQueryModule'));
-
-interface AtlasModuleDef {
-  id: string;
-  label: string;
-  icon: typeof Map;
-  status: 'active' | 'planned';
-  description: string;
-}
-
-const ATLAS_MODULES: AtlasModuleDef[] = [
-  { id: 'gis', label: 'TerraGIS', icon: Map, status: 'active', description: 'Full GIS viewer with parcel boundaries, aerial imagery, and overlays' },
-  { id: 'parcel-lens', label: 'ParcelLens', icon: Search, status: 'active', description: 'Detailed parcel inspection with measurement tools' },
-  { id: 'layer-works', label: 'LayerWorks', icon: Layers, status: 'active', description: 'Advanced layer management and spatial analysis' },
-  { id: 'terra-sketch', label: 'TerraSketch', icon: Crosshair, status: 'active', description: 'Parcel sketch and geometry editing tools' },
-  { id: 'terra-print', label: 'TerraPrint', icon: Printer, status: 'active', description: 'Map printing and PDF export for field work' },
-  { id: 'terra-export', label: 'TerraExport', icon: Download, status: 'active', description: 'GIS data export (Shapefile, GeoJSON, KML)' },
-  { id: 'terra-query', label: 'TerraQuery', icon: Database, status: 'active', description: 'SQL-like spatial queries across county data' },
+const ATLAS_MODULES: SuiteModuleDef[] = [
+  // Workbench-mode (parcel-scoped, opens Property Workbench)
+  { id: 'gis', label: 'TerraGIS', icon: Map, description: 'Full GIS viewer with parcel boundaries, aerial imagery, and overlays', launchMode: 'workbench', workbenchTab: 'atlas' },
+  { id: 'parcel-lens', label: 'ParcelLens', icon: Search, description: 'Detailed parcel inspection with measurement tools', launchMode: 'workbench', workbenchTab: 'atlas' },
+  { id: 'layer-works', label: 'LayerWorks', icon: Layers, description: 'Advanced layer management and spatial analysis', launchMode: 'workbench', workbenchTab: 'atlas' },
+  { id: 'terra-sketch', label: 'TerraSketch', icon: Crosshair, description: 'Parcel sketch and geometry editing tools', launchMode: 'workbench', workbenchTab: 'atlas' },
+  { id: 'terra-print', label: 'TerraPrint', icon: Printer, description: 'Map printing and PDF export for field work', launchMode: 'workbench', workbenchTab: 'atlas' },
+  { id: 'terra-export', label: 'TerraExport', icon: Download, description: 'GIS data export (Shapefile, GeoJSON, KML)', launchMode: 'workbench', workbenchTab: 'atlas' },
+  { id: 'terra-query', label: 'TerraQuery', icon: Database, description: 'SQL-like spatial queries across county data', launchMode: 'workbench', workbenchTab: 'atlas' },
+  // Standalone-mode (county-wide, opens standalone window)
+  { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Full county-wide GIS platform — advanced cartography & spatial analysis', launchMode: 'standalone', moduleId: 'terra-gis' },
 ];
 
-function ModuleLoading() {
-  return (
-    <div className='flex items-center justify-center min-h-[400px]'>
-      <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading module...</p>
-    </div>
-  );
-}
+const fmtNum = (n: number) => n.toLocaleString();
 
 export default function AtlasSuiteHome() {
   const navigate = useNavigate();
-  const [activeModule, setActiveModule] = useState('gis');
+  const { stats } = useCountyStats();
 
   return (
-    <div data-testid="suite-atlas-root" className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
-      {/* Parcel Context Banner — shows when parcel is active */}
+    <div data-testid="suite-atlas-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="atlas" />
-      {/* Header + Stage Tabs */}
+
+      {/* Stats Strip */}
+      {stats && (
+        <div className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.totalParcels)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>By City</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{Object.keys(stats.parcelsByCity).length} cities</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Property Types</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{Object.keys(stats.parcelsByType).length} types</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Residential</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.parcelsByType.residential ?? 0)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Commercial</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.parcelsByType.commercial ?? 0)}</span></div>
+        </div>
+      )}
+
+      {/* Header */}
       <header
-        style={{
-          borderBottom: '1px solid hsl(var(--tf-border))',
-          background: 'hsl(var(--tf-card-bg) / 0.5)',
-        }}
-        className='backdrop-blur-xl shrink-0'
+        style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }}
+        className="backdrop-blur-xl shrink-0"
       >
-        <div className='max-w-[1600px] mx-auto px-6 pt-4 pb-0 flex items-center gap-4'>
-          <button
-            onClick={() => navigate('/')}
-            className='p-2 rounded-lg hover:bg-white/5 transition-colors'
-          >
+        <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4">
+          <button onClick={() => navigate('/')} className="p-2 rounded-lg hover:bg-white/5 transition-colors">
             <ArrowLeft size={20} style={{ color: 'hsl(var(--tf-muted))' }} />
           </button>
-          <div className='p-2 rounded-lg' style={{ background: 'hsl(var(--tf-suite-atlas) / 0.15)' }}>
-            <Globe size={24} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+          <div className="p-2 rounded-lg" style={{ background: 'hsl(var(--tf-suite-atlas) / 0.15)' }}>
+            <Map size={24} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
           </div>
           <div>
-            <h1 className='text-xl font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>TerraAtlas</h1>
-            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Geographic Intelligence & Parcel Mapping</p>
+            <h1 className="text-xl font-medium" style={{ color: 'hsl(var(--tf-fg))' }}>TerraAtlas</h1>
+            <p className="text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Geographic Intelligence & Spatial Analysis</p>
           </div>
         </div>
-
-        {/* Stage Tabs */}
-        <nav
-          role='tablist'
-          aria-label='TerraAtlas modules'
-          className='max-w-[1600px] mx-auto px-6 flex gap-1 mt-3 overflow-x-auto'
-        >
-          {ATLAS_MODULES.map((mod) => {
-            const Icon = mod.icon;
-            const isActive = mod.id === activeModule;
-            const isPlanned = mod.status === 'planned';
-            return (
-              <button
-                key={mod.id}
-                role='tab'
-                aria-selected={isActive}
-                aria-controls={`atlas-panel-${mod.id}`}
-                onClick={() => !isPlanned && setActiveModule(mod.id)}
-                disabled={isPlanned}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
-                  isActive
-                    ? 'bg-white/10'
-                    : isPlanned
-                      ? 'opacity-40 cursor-not-allowed'
-                      : 'hover:bg-white/5'
-                }`}
-                style={{
-                  color: isActive
-                    ? 'hsl(var(--tf-fg))'
-                    : 'hsl(var(--tf-muted))',
-                  borderBottom: isActive
-                    ? '2px solid hsl(var(--tf-suite-atlas))'
-                    : '2px solid transparent',
-                }}
-              >
-                <Icon
-                  size={16}
-                  style={{
-                    color: isActive
-                      ? 'hsl(var(--tf-suite-atlas))'
-                      : 'hsl(var(--tf-muted))',
-                  }}
-                />
-                {mod.label}
-              </button>
-            );
-          })}
-        </nav>
       </header>
 
-      {/* Module Content */}
-      <main className='flex-1 min-h-0 overflow-y-auto'>
-        <Suspense fallback={<ModuleLoading />}>
-          {activeModule === 'gis' && (
-            <div role='tabpanel' id='atlas-panel-gis'><GISModule /></div>
-          )}
-          {activeModule === 'parcel-lens' && (
-            <div role='tabpanel' id='atlas-panel-parcel-lens'><ParcelLensModule /></div>
-          )}
-          {activeModule === 'layer-works' && (
-            <div role='tabpanel' id='atlas-panel-layer-works'><LayerWorksModule /></div>
-          )}
-          {activeModule === 'terra-sketch' && (
-            <div role='tabpanel' id='atlas-panel-terra-sketch'><TerraSketchModule /></div>
-          )}
-          {activeModule === 'terra-print' && (
-            <div role='tabpanel' id='atlas-panel-terra-print'><TerraPrintModule /></div>
-          )}
-          {activeModule === 'terra-export' && (
-            <div role='tabpanel' id='atlas-panel-terra-export'><TerraExportModule /></div>
-          )}
-          {activeModule === 'terra-query' && (
-            <div role='tabpanel' id='atlas-panel-terra-query'><TerraQueryModule /></div>
-          )}
-        </Suspense>
+      {/* Module Grid + Operational Queue */}
+      <main className="flex-1 min-h-0 overflow-y-auto">
+        <SuiteModuleGrid modules={ATLAS_MODULES} accentVar="--tf-suite-atlas" />
+        <OperationalQueue title="Recent GIS Queries" accentVar="--tf-suite-atlas" emptyMessage="No recent spatial queries" />
       </main>
     </div>
   );

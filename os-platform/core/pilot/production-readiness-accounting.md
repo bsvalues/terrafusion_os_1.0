@@ -1,5 +1,21 @@
 # Production Readiness Accounting
 
+Scope note as of 2026-03-12:
+
+This file is historical governed-spine / release-lane accounting.
+It is not the authoritative truth source for the Benton recovery spine completed under `docs/recovery/`.
+It must not be used by itself to claim:
+- full Benton data-spine readiness
+- full Benton operator-surface readiness
+- full county production readiness after the Phase 1–5 recovery work
+
+For current Benton recovery truth, use:
+- `docs/recovery/BENTON_DATA_SPINE_EXECUTION_CHECKLIST.md`
+- `docs/recovery/BENTON_CONVERSION_LEDGER.md`
+- `docs/recovery/PHASE3_COSTFORGE_PROOF.md`
+- `docs/recovery/PHASE4_WORKBENCH_PROOF.md`
+- `docs/recovery/PHASE5_TRUTH_CLASSIFICATION.md`
+
 Date: 2026-03-10 (final pass — PR #656 merged, post-merge governance proof complete)
 
 This document is a synchronized production-readiness accounting for the CP, CX, and CC lanes based on repository state, local gate runs, and protected-branch governance state. It separates four states that were previously drifting together:
@@ -284,7 +300,7 @@ All five tracked blockers are resolved.
 
 ## Non-Blocking Debt
 
-- ~~No fresh full deployed-environment smoke was run for all 9 workbench tabs in this accounting pass.~~ → PARTIALLY CLOSED (2026-03-11, both staging and production health endpoints verified HTTP 200 with correct X-Release-Sha headers; full 9-tab workbench render verification in deployed environment remains unexercised)
+- ~~No fresh full deployed-environment smoke was run for all 9 workbench tabs in this accounting pass.~~ → CLOSED (2026-03-12, authenticated staging browser smoke complete: login accepted on `staging.terrafusionmarket.com`, click-nav PASS `9/9`, deep-link PASS `9/9`, SHA `b4a5570ba1`. Evidence: `os-platform/core/pilot/ops/deployed-ui-smoke-workbench.md`)
 - Unsupported and post-R1 paths were not exhaustively negative-tested in this pass.
 - ~~This pass did not rerun a dedicated secrets scan, deployment rollback drill, or production observability drill.~~ → CLOSED (2026-03-11, secrets scan PASS 1/1, rollback drill proven in deploy→rollback→redeploy cycle, observability drill completed — health-check cron active + infra-probe validated post-PR #692)
 

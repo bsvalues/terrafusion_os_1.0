@@ -105,6 +105,57 @@
   font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
 }
 
+.canon-header__status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.canon-header__status--connected {
+  background: hsl(var(--tf-canon-pass-hs) / 0.8);
+  box-shadow: 0 0 4px hsl(var(--tf-canon-pass-hs) / 0.4);
+}
+
+.canon-header__status--disconnected {
+  background: hsl(var(--tf-canon-fail-hs) / 0.8);
+  box-shadow: 0 0 4px hsl(var(--tf-canon-fail-hs) / 0.4);
+}
+
+.canon-header__status--connecting {
+  background: hsl(var(--tf-canon-warn-hs) / 0.6);
+}
+
+/* ── File Tree ──────────────────────────────────────────────────────── */
+
+.canon-filetree {
+  border-top: 1px solid hsl(var(--tf-text) / 0.06);
+  margin-top: 0.25rem;
+}
+
+.canon-filetree__node {
+  transition: background 0.1s ease;
+}
+
+.canon-filetree__dir:hover {
+  background: hsl(var(--tf-text) / 0.04);
+}
+
+.canon-filetree__file:hover {
+  background: hsl(var(--tf-accent) / 0.06);
+}
+
+/* ── Golden Corpus Panel ─────────────────────────────────────────── */
+
+.canon-corpus {
+  border-top: 1px solid hsl(var(--tf-text) / 0.06);
+  margin-top: 0.25rem;
+}
+
+.canon-corpus__header:hover {
+  background: hsl(var(--tf-text) / 0.03);
+}
+
 /* ============================================================================
    Dev Cockpit — primary surface (Tasks, Pipeline, AuditEnvelopes, RealityBoard)
    ============================================================================ */

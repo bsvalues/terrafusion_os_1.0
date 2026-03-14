@@ -44,6 +44,7 @@ jobs:
           PUBLIC_HOST="$(node -e "const url = new URL(process.env.PUBLIC_URL); process.stdout.write(url.hostname);")"
           OWNER="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
           DEPLOYED_AT="$(date -u +%FT%TZ)"
+          ASPNETCORE_ENV_LABEL="Production"
 
           {
             printf 'DEPLOY_PORT=%s\n' "$DEPLOY_PORT"
@@ -52,6 +53,7 @@ jobs:
             printf 'PUBLIC_HOST=%s\n' "$PUBLIC_HOST"
             printf 'OWNER=%s\n' "$OWNER"
             printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
+            printf 'ASPNETCORE_ENV_LABEL=%s\n' "$ASPNETCORE_ENV_LABEL"
           } >> "$GITHUB_ENV"
 
       - name: Configure SSH key
@@ -82,6 +84,13 @@ jobs:
             printf '  StrictHostKeyChecking accept-new\n' >> ~/.ssh/config
           fi
           chmod 600 ~/.ssh/config
+
+      - name: Preflight - public DNS resolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          nslookup "$PUBLIC_HOST"
+          echo "DNS resolved OK"
 
       - name: Preflight - remote host access
         shell: bash
@@ -189,6 +198,7 @@ jobs:
           TF_FRONTEND_IMAGE=${FRONTEND_IMAGE}
           EOF
 
+          sed -i -E "s/ASPNETCORE_ENVIRONMENT: .*/ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENV_LABEL}/" runtime-compose.yml
           docker compose -f runtime-compose.yml --env-file release.env config >/dev/null
           docker compose -f runtime-compose.yml --env-file release.env pull
           docker compose -f runtime-compose.yml --env-file release.env up -d
@@ -200,10 +210,8 @@ jobs:
           set -euo pipefail
           URL="${PUBLIC_URL}/health"
           success=0
-          health_mode="public"
 
           for attempt in $(seq 1 18); do
-            # Try public URL directly first
             if curl -fsS -o /dev/null -D curl_headers.txt "$URL" 2>/dev/null; then
               HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
               if [ "$HEADER_SHA" = "$ROLLBACK_SHA" ]; then
@@ -212,26 +220,9 @@ jobs:
               fi
             fi
 
-            # DNS fallback: resolve domain to DEPLOY_HOST IP, skip TLS verify
-            if curl -fsS -k \
-              --resolve "${PUBLIC_HOST}:443:${DEPLOY_HOST}" \
-              --resolve "${PUBLIC_HOST}:80:${DEPLOY_HOST}" \
-              -o /dev/null -D curl_headers.txt "$URL" 2>/dev/null; then
-              HEADER_SHA="$(awk 'BEGIN{IGNORECASE=1} /^x-release-sha:/ {print $2}' curl_headers.txt | tr -d '\r')"
-              if [ "$HEADER_SHA" = "$ROLLBACK_SHA" ]; then
-                health_mode="resolve"
-                success=1
-                break
-              fi
-            fi
-
             echo "Waiting for $URL to report X-Release-Sha=$ROLLBACK_SHA (attempt $attempt/18)"
             sleep 10
           done
-
-          if [ "$health_mode" = "resolve" ]; then
-            echo "::warning::Health verified via IP-resolve fallback (DNS not configured for $PUBLIC_HOST)"
-          fi
 
           if [ "$success" -ne 1 ]; then
             echo "Rollback health endpoint never reported the rollback SHA."
@@ -286,6 +277,7 @@ jobs:
           cat > evidence/evidence.txt <<EOF
           operation=rollback
           target_env=${TARGET_ENV}
+          aspnetcore_environment=${ASPNETCORE_ENV_LABEL}
           public_url=${PUBLIC_URL}
           rollback_sha=${ROLLBACK_SHA}
           pre_rollback_current_sha=${CURRENT_SHA}
@@ -303,6 +295,7 @@ jobs:
           {
             "operation": "rollback",
             "targetEnv": "${TARGET_ENV}",
+            "aspnetcoreEnvironment": "${ASPNETCORE_ENV_LABEL}",
             "publicUrl": "${PUBLIC_URL}",
             "rollbackSha": "${ROLLBACK_SHA}",
             "preRollbackCurrentSha": "${CURRENT_SHA}",

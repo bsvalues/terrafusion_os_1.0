@@ -12,6 +12,7 @@ namespace TerraFusion.Core.Services
     /// Implements the generic ILegacyDatabaseService interface for Harris PACS systems
     /// Used behind the scenes while presenting generic "Legacy DB" interface to users
     /// </summary>
+    [Obsolete("Non-canonical runtime path. Use the PACS adapter + TerraFusionSync conversion spine for active Benton workflows.", false)]
     public class HarrisPacsLegacyService : ILegacyDatabaseService
     {
         private readonly IConfiguration _configuration;

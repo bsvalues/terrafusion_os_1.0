@@ -304,7 +304,8 @@ const explainModelInputsRealHandler = async (params, context, _tool) => {
 };
 exports.explainModelInputsRealHandler = explainModelInputsRealHandler;
 // ============================================================================
-// Handler 7: compare_assessed_value_history → GET /api/properties/{parcelId}
+// Handler 7: compare_assessed_value_history → GET /api/properties/parcel/{parcelNumber}
+//                                           → GET /api/properties/{id}/valuations
 //
 // Read-only Muse tool. Fetches property valuation history and builds
 // year-over-year comparison with narrative.
@@ -312,9 +313,20 @@ exports.explainModelInputsRealHandler = explainModelInputsRealHandler;
 const compareAssessedValueHistoryRealHandler = async (params, context, _tool) => {
     assertCountyMatch(params.county, context.countyId);
     const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
-    const raw = await (0, backendClient_js_1.backendGet)(`/api/properties/${encodeURIComponent(params.parcelId)}`, { token });
-    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Property history lookup failed');
-    const history = data.valuationHistory ?? [];
+    const propertyRaw = await (0, backendClient_js_1.backendGet)(`/api/properties/parcel/${encodeURIComponent(params.parcelId)}`, { token });
+    const property = (0, backendClient_js_1.unwrapBackend)(propertyRaw, 'Property history lookup failed');
+    let history = [];
+    if (property.id) {
+        const valuationsRaw = await (0, backendClient_js_1.backendGet)(`/api/properties/${encodeURIComponent(property.id)}/valuations`, { token });
+        if (valuationsRaw.ok) {
+            history = (valuationsRaw.data ?? [])
+                .filter((valuation) => valuation.createdAt && typeof valuation.estimatedValue === 'number')
+                .map((valuation) => ({
+                year: new Date(valuation.createdAt).getUTCFullYear(),
+                value: Number(valuation.estimatedValue),
+            }));
+        }
+    }
     const requestedYears = new Set(params.years);
     // Build trend from backend data, filtering to requested years
     const trend = params.years
@@ -337,12 +349,16 @@ const compareAssessedValueHistoryRealHandler = async (params, context, _tool) =>
         drivers.push('market decline');
     if (Math.abs(delta) > firstAv * 0.15)
         drivers.push('significant revaluation');
-    const narrative = `Assessed value across ${trend.length} year(s): $${firstAv.toLocaleString()} → $${lastAv.toLocaleString()} (${pctChange}% change). ${drivers.length > 0 ? `Drivers: ${drivers.join(', ')}.` : 'Stable market conditions.'}`;
+    const narrative = history.length === 0
+        ? `Current assessed value for parcel ${property.parcelNumber ?? params.parcelId} is $${Number(property.assessedValue ?? 0).toLocaleString()}. Historical valuation records were not returned by the backend for requested years ${params.years.join(', ')}.`
+        : `Assessed value across ${trend.length} year(s): $${firstAv.toLocaleString()} → $${lastAv.toLocaleString()} (${pctChange}% change). ${drivers.length > 0 ? `Drivers: ${drivers.join(', ')}.` : 'Stable market conditions.'}`;
     const flags = [];
     if (params.includeBreakdown)
         flags.push('breakdown_included');
     if (trend.some(t => t.av === 0))
         flags.push('missing_years');
+    if (history.length === 0)
+        flags.push('history_unavailable');
     return {
         trend,
         narrative,

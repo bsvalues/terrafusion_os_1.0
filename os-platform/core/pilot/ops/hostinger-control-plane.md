@@ -18,12 +18,14 @@ This document contains **no secrets**. Store secrets only in:
 
 ## DNS Control Plane
 - DNS provider for terrafusionmarket.com: Hostinger
-- Date/time verified: 2026-03-10T19:00Z (nslookup from local machine)
-- Verification method: `nslookup staging.terrafusionmarket.com` → 72.60.126.11
+- Date/time verified: 2026-03-13T03:26Z (Google DNS 8.8.8.8 from local machine)
+- Verification method:
+  - `Resolve-DnsName staging.terrafusionmarket.com -Server 8.8.8.8` → 72.60.126.11
+  - `Resolve-DnsName terrafusionmarket.com -Server 8.8.8.8` → 72.60.126.11
 
 ### Required DNS Records
 - A: staging -> 72.60.126.11 ✅ verified
-- A: @ (root) -> 72.60.126.11 ✅ verified (2026-03-11, Google DNS 8.8.8.8 confirms single A record)
+- A: @ (root) -> 72.60.126.11 ✅ verified
 
 ## Staging VPS (Hostinger)
 - VPS name/id: srv1479342
@@ -40,6 +42,104 @@ This document contains **no secrets**. Store secrets only in:
 - Provider firewall open: 22/tcp, 80/tcp, 443/tcp
 - Server firewall (ufw) open: 22/tcp, 80/tcp, 443/tcp
 - APP_ROOT: /opt/terrafusion/production
+
+## Runtime Role Decision (2026-03-13)
+- Hostinger staging is a Benton operational-snapshot runtime
+- Hostinger production is a Benton operational-snapshot runtime
+- Neither environment is a PACS-connected sync runtime
+- PACS SQL connectivity and PACS-backed sync remain local/canonical or separate infrastructure concerns
+
+## Phase 10 Environment Identity Truth (2026-03-13)
+- Staging public `/health` must report `"environment":"Staging"`
+- Production public `/health` must report `"environment":"Production"`
+- The deploy and rollback workflows are responsible for rewriting the shared runtime compose template so `ASPNETCORE_ENVIRONMENT` matches `TARGET_ENV`
+- Environment identity truth is a separate gate from runtime health; `200 OK` is not sufficient if staging labels itself as production
+- Staging also requires a mounted valid `/app/appsettings.Staging.json` overlay because the current backend image carries an invalid empty staging config file
+- Verified at 2026-03-13T03:42Z:
+  - `https://staging.terrafusionmarket.com/health` -> `"environment":"Staging"`
+  - `https://terrafusionmarket.com/health` -> `"environment":"Production"`
+
+## Phase 11 Deployment Contract Hardening (2026-03-13)
+- Public DNS truth is mandatory for deploy and rollback workflows
+- Public `/health` verification must succeed through the real hostname
+- IP-resolve fallback is no longer an acceptable success mode in release or rollback verification
+- Release and rollback evidence must record `aspnetcoreEnvironment`
+- The staging runtime contract includes a mounted valid `/app/appsettings.Staging.json` overlay
+
+## Phase 12 PACS-Connected Runtime Track (2026-03-13)
+- PACS-connected runtime remains local/canonical or separate SQL-reachable infrastructure.
+- Hostinger staging and production continue to serve Benton operational snapshots only.
+- The PACS-connected runtime is responsible for TerraFusionSync conversion and snapshot-source generation.
+- Hostinger is responsible for serving promoted Benton operational truth, not live PACS connectivity.
+
+## Phase 13 Snapshot Promotion Spine (2026-03-13)
+- The promoted Benton artifact is a logical operational snapshot contract, not raw live PACS state.
+- Hostinger staging and production receive promoted Benton operational truth from the PACS-connected runtime track.
+- Staging and production should match the promoted Benton snapshot contract even if SQLite file hashes diverge after runtime activity.
+- Mutable runtime metadata such as `EtlSyncJobs` is not part of promotion identity.
+
+## Phase 14 Benton Operator Workflow (2026-03-13)
+- Staging and production now have authenticated Benton 9-tab workbench proof on the public operator surface.
+- Phase 14 operator proof depends on the snapshot runtime serving the promoted Benton contract, not live PACS connectivity.
+- The active Benton operator path is validated by local workbench slice tests plus deployed browser proof across the constitutional workbench tabs.
+
+## Phase 15 Data Quality and Operational Completeness (2026-03-13)
+- The Benton snapshot runtimes currently carry the same data-quality profile as the canonical local Benton runtime.
+- ComparableSales remains structurally valid on staging and production, matching the local Benton snapshot on price/date/type/qualification integrity.
+- PACS improvement-level matrices are now converted into TerraFusion `CostMatrices`; Hostinger continues to serve the promoted Benton snapshot rather than talking to PACS directly.
+- Phase 15 reached `GO` after the canonical Benton snapshot carried non-empty `CamaCharacteristics` and `CostMatrices`, and comparable sales retained subject-aware enrichment coverage.
+
+## Phase 16 Monitoring, Backup, and Recovery Truth (2026-03-13)
+- Snapshot freshness is bounded by the latest completed full Benton sync marker (`CamaCharacteristics,Sales,CostMatrices`) on the canonical local runtime.
+- Hostinger staging and production each carry a verified backup-and-restore drill for the promoted Benton snapshot contract.
+- Public Benton health remains truthful only when staging reports `Staging`, production reports `Production`, and both surfaces emit a release SHA.
+- Phase 16 reaches `GO` only when public health, bounded freshness, and backup/restore truth all pass together.
+
+## Phase 17 Benton Go-Live Decision (2026-03-13)
+- The approved go-live scope is the Benton operational-snapshot runtime served from Hostinger staging and production.
+- This go-live scope excludes live PACS-connected sync on Hostinger; PACS-connected sync remains a separate canonical runtime role.
+- Phase 17 reached `GO` only after Phase 9 through Phase 16 evidence remained green on the active Benton runtime.
+- The final go-live packet proves operator workflow, promoted snapshot truth, deployment contract, environment identity, and recovery posture for the current Hostinger runtime role.
+
+## Phase 18 PACS-Connected Runtime Productization (2026-03-13)
+- The current productized PACS-connected Benton runtime is the canonical secured workstation/runtime, not Hostinger.
+- This runtime remains the source Benton sync and conversion host until a separate PACS-reachable sync host is commissioned.
+- Hostinger staging and production remain excluded from live PACS-connected sync responsibilities.
+
+## Phase 19 Snapshot Promotion Automation (2026-03-13)
+- The Benton promotion artifact is published to `/opt/terrafusion/promotion-artifacts/<artifactId>/` on the Hostinger VPS.
+- The artifact contains the promoted Benton snapshot copy, manifest, manifest checksum, snapshot checksum, and detached local promotion-attestation signature.
+- Current automation mode is parity-confirmed no-replace promotion when staging and production already serve the promoted stable contract.
+- Promotion receipts are written to `/opt/terrafusion/staging/current-benton-snapshot-promotion.json` and `/opt/terrafusion/production/current-benton-snapshot-promotion.json`.
+- Phase 22 will harden signer authority and promotion credentials; Phase 19 establishes the truthful repeatable automation path.
+
+## Phase 20 Benton Acceptance / UAT Packet (2026-03-13)
+- The Benton UAT packet is derived from the current technical go-live baseline plus the promoted snapshot contract.
+- Technical UAT readiness is automated and must remain reproducible from the current Phase 17 and Phase 19 packets.
+- Final Phase 20 `GO` requires an explicit Benton assessor/operator signoff artifact; automation must not infer acceptance from technical evidence alone.
+- Until that signoff artifact exists, Phase 20 remains `READY_FOR_SIGNOFF` even when the technical UAT matrix is green.
+
+Current aligned release on both environments:
+- SHA: `fcaf281450757307fe43a235e22e9dbd78877e26`
+- Backend image: `ghcr.io/bsvalues/terrafusion-os-backend-internal:fcaf281450757307fe43a235e22e9dbd78877e26`
+- Frontend image: `ghcr.io/bsvalues/terrafusion-os-frontend-internal:fcaf281450757307fe43a235e22e9dbd78877e26`
+
+Expected sync-runtime truth on Hostinger:
+- `/api/TerraFusionSync/status` -> `TotalSystems = 0`, `ActiveCounties = 0`
+- `/api/TerraFusionSync/systems` -> `[]`
+- `/api/TerraFusionSync/counties` -> `[]`
+
+## Phase 9 Runtime Role Separation Gate (2026-03-12)
+- Hostinger remains snapshot-only for both staging and production.
+- PACS-connected sync/conversion is not a Hostinger responsibility.
+- The canonical PACS-connected runtime remains local/canonical or separate SQL-reachable infrastructure.
+- Phase 9 reached `GO` after all of these became true:
+  - `proof:phase7` passes
+  - `proof:phase8` passes
+  - `staging.terrafusionmarket.com` resolves publicly
+  - `terrafusionmarket.com` apex resolves publicly
+  - production `/health` works without `--resolve`
+- Evidence: `os-platform/core/pilot/evidence/phase9-runtime-role-separation.latest.json`
 
 ## GHCR Pull Auth (Staging)
 - Configured on VPS (deploy user): yes (workflow-injected per-run token)

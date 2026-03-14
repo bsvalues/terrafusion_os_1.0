@@ -1,0 +1,150 @@
+{
+  "generatedAt": "2026-03-12T14:56:03.258Z",
+  "kernelUrl": "http://localhost:5000",
+  "pilotUrl": "http://localhost:4317",
+  "checks": [
+    {
+      "name": "kernel.health",
+      "ok": true,
+      "detail": "Healthy",
+      "payload": {
+        "status": "Healthy",
+        "timestamp": "2026-03-12T14:56:03.3072066Z",
+        "environment": "Development",
+        "version": "1.0.0",
+        "service": "TerraFusion OS API - Basic Mode"
+      }
+    },
+    {
+      "name": "pilot.health",
+      "ok": true,
+      "detail": "operational",
+      "payload": {
+        "status": "operational",
+        "service": "terrafusion-pilot-runtime",
+        "registryVersion": "R1",
+        "toolCount": 53,
+        "traceEventCount": 6,
+        "timestamp": "2026-03-12T14:56:03.316Z"
+      }
+    },
+    {
+      "name": "pilot.tools.run_valuation_model",
+      "ok": true,
+      "detail": "toolCount=53",
+      "payload": {
+        "toolId": "run_valuation_model",
+        "displayName": "Run Valuation Model",
+        "suite": "forge",
+        "mode": "pilot",
+        "risk": "write_high",
+        "description": "Execute valuation model and persist results",
+        "requiresConfirmation": true,
+        "reasonCodes": [
+          "annual_certification",
+          "market_adjustment",
+          "new_construction",
+          "correction"
+        ],
+        "requiresSupervisorApproval": false,
+        "supervisorRoles": []
+      }
+    },
+    {
+      "name": "pilot.invoke.confirmation_gate",
+      "ok": true,
+      "detail": "CONFIRMATION_REQUIRED",
+      "payload": {
+        "ok": false,
+        "correlationId": "gate-1773327363323",
+        "error": "Tool run_valuation_model requires confirmation (risk: write_high)",
+        "errorCode": "CONFIRMATION_REQUIRED"
+      }
+    },
+    {
+      "name": "pilot.invoke.reason_code_gate",
+      "ok": true,
+      "detail": "REASON_CODE_REQUIRED",
+      "payload": {
+        "ok": false,
+        "correlationId": "gate-1773327363325",
+        "error": "Tool run_valuation_model requires a reason code",
+        "errorCode": "REASON_CODE_REQUIRED"
+      }
+    },
+    {
+      "name": "pilot.invoke.run_valuation_model",
+      "ok": true,
+      "detail": "correlationId=b960e32b-07d8-468c-8d92-08daa19ef036",
+      "payload": {
+        "ok": true,
+        "correlationId": "b960e32b-07d8-468c-8d92-08daa19ef036",
+        "result": {
+          "parcelId": "1-0531-100-0001-000",
+          "taxYear": 2025,
+          "modelType": "cost",
+          "estimatedValue": 291972.65625,
+          "confidence": 0.99,
+          "components": {
+            "Base Construction Cost": 262500,
+            "Quality Adjustment": 39375,
+            "Regional Adjustment": 45281.25,
+            "Age Depreciation": -130183.59375,
+            "Land Value": 75000
+          }
+        },
+        "traceEventId": "5e97a087-36f2-4aac-8437-b4638e80f354"
+      }
+    },
+    {
+      "name": "pilot.trace.run_valuation_model",
+      "ok": true,
+      "detail": "tool_completed,tool_invoked",
+      "payload": {
+        "events": [
+          {
+            "type": "tool_completed",
+            "toolId": "run_valuation_model",
+            "correlationId": "b960e32b-07d8-468c-8d92-08daa19ef036",
+            "context": {
+              "countyId": "benton",
+              "userId": "dev-user",
+              "roles": ["appraiser"],
+              "mode": "pilot",
+              "parcelId": "BENTON-001",
+              "confirmation": true,
+              "reasonCode": "annual_certification"
+            },
+            "summary": "Completed run_valuation_model",
+            "eventId": "5e97a087-36f2-4aac-8437-b4638e80f354",
+            "timestamp": "2026-03-12T14:56:03.462Z",
+            "schemaVersion": "1.0.0"
+          },
+          {
+            "type": "tool_invoked",
+            "toolId": "run_valuation_model",
+            "correlationId": "b960e32b-07d8-468c-8d92-08daa19ef036",
+            "context": {
+              "countyId": "benton",
+              "userId": "dev-user",
+              "roles": ["appraiser"],
+              "mode": "pilot",
+              "parcelId": "BENTON-001",
+              "confirmation": true,
+              "reasonCode": "annual_certification"
+            },
+            "summary": "Invoking run_valuation_model (risk: write_high)",
+            "eventId": "654f78c0-71a2-4463-9049-5d3bb93f2bee",
+            "timestamp": "2026-03-12T14:56:03.327Z",
+            "schemaVersion": "1.0.0"
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0
+  },
+  "note": "Local governed-path proof only. Does not claim PACS or Benton production data truth."
+}

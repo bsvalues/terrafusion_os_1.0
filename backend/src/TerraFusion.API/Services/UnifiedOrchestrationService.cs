@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
 using TerraFusion.API.Services;
 using System.Collections.Concurrent;
@@ -26,6 +28,7 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
     private readonly ILogger<UnifiedOrchestrationService> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IModuleLoaderService _moduleLoader;
+    private readonly IConfiguration _configuration;
     private readonly ConcurrentDictionary<string, ModuleHealthStatus> _moduleStatuses = new();
     private bool _isSystemRunning = false;
     private const int HealthCheckIntervalSeconds = 30; // Check system health every 30 seconds
@@ -33,11 +36,13 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
     public UnifiedOrchestrationService(
         ILogger<UnifiedOrchestrationService> logger,
         IServiceProvider serviceProvider,
-        IModuleLoaderService moduleLoader)
+        IModuleLoaderService moduleLoader,
+        IConfiguration configuration)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
         _moduleLoader = moduleLoader;
+        _configuration = configuration;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -228,31 +233,31 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
             _logger.LogInformation("🔄 Starting legacy data sync for {County}",
                 specificCounty ?? "all counties");
 
-            // Get legacy database service
+            // The active operational path is TerraFusionSync, not the fake legacy importer.
             using var scope = _serviceProvider.CreateScope();
-            var legacyService = scope.ServiceProvider.GetService<LegacyDatabaseService>();
+            var terraFusionSyncService = scope.ServiceProvider.GetService<ITerraFusionSyncService>();
 
-            if (legacyService != null)
+            if (terraFusionSyncService != null)
             {
-                if (string.IsNullOrEmpty(specificCounty))
+                var syncResult = await terraFusionSyncService.StartSynchronizationAsync(specificCounty);
+
+                if (syncResult.Success)
                 {
-                    // Sync all known counties
-                    var counties = new[] { "Benton", "Franklin", "Walla Walla" }; // Example
-                    foreach (var county in counties)
-                    {
-                        await legacyService.ImportPropertyData(county);
-                    }
+                    _logger.LogInformation("✅ Legacy data sync completed through TerraFusionSync. Processed: {Processed}, Updated: {Updated}, Added: {Added}",
+                        syncResult.RecordsProcessed,
+                        syncResult.RecordsUpdated,
+                        syncResult.RecordsAdded);
                 }
                 else
                 {
-                    await legacyService.ImportPropertyData(specificCounty);
+                    _logger.LogWarning("⚠️ Legacy data sync completed with errors through TerraFusionSync. ErrorCount: {ErrorCount}",
+                        syncResult.ErrorCount);
                 }
 
-                _logger.LogInformation("✅ Legacy data sync completed");
-                return true;
+                return syncResult.Success;
             }
 
-            _logger.LogError("❌ Legacy database service not available");
+            _logger.LogError("❌ TerraFusionSync service not available");
             return false;
         }
         catch (Exception ex)
@@ -304,20 +309,27 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
         try
         {
-            // Initialize TerraFusionSync and legacy adapters
+            if (!HasConfiguredPacsRuntime())
+            {
+                _logger.LogWarning(
+                    "⚠️ PACS runtime not configured. Host is running in Benton operational-snapshot mode; legacy integration startup is intentionally skipped.");
+                return;
+            }
+
+            // TerraFusionSync is the active integration surface for legacy systems.
             using var scope = _serviceProvider.CreateScope();
-            var legacyService = scope.ServiceProvider.GetService<LegacyDatabaseService>();
+            var terraFusionSyncService = scope.ServiceProvider.GetService<ITerraFusionSyncService>();
 
             // Government-grade: Ensure async operation with proper await pattern
             await Task.Run(() =>
             {
-                if (legacyService != null)
+                if (terraFusionSyncService != null)
                 {
-                    _logger.LogInformation("✅ Legacy integration initialized");
+                    _logger.LogInformation("✅ Legacy integration initialized through TerraFusionSync");
                 }
                 else
                 {
-                    _logger.LogWarning("⚠️ Legacy database service not registered");
+                    _logger.LogWarning("⚠️ TerraFusionSync service not registered");
                 }
             });
         }
@@ -380,13 +392,22 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task<bool> CheckLegacyIntegrationHealthAsync()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
+        if (!HasConfiguredPacsRuntime())
+        {
+            return true;
+        }
+
         try
         {
             using var scope = _serviceProvider.CreateScope();
-            var legacyService = scope.ServiceProvider.GetService<LegacyDatabaseService>();
-            return legacyService != null;
+            var terraFusionSyncService = scope.ServiceProvider.GetService<ITerraFusionSyncService>();
+            if (terraFusionSyncService is null)
+            {
+                return false;
+            }
+
+            var status = await terraFusionSyncService.GetSyncStatusAsync();
+            return status is not null;
         }
         catch
         {
@@ -441,6 +462,12 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task StartLegacyIntegrationAsync()
     {
+        if (!HasConfiguredPacsRuntime())
+        {
+            _logger.LogInformation("⏭️ Legacy integration start skipped; PACS runtime is not configured on this host.");
+            return;
+        }
+
         _logger.LogInformation("🔄 Starting legacy integration...");
         await Task.Delay(200);
         _logger.LogInformation("✅ Legacy integration started");
@@ -448,9 +475,21 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     private async Task StopLegacyIntegrationAsync()
     {
+        if (!HasConfiguredPacsRuntime())
+        {
+            _logger.LogInformation("⏭️ Legacy integration stop skipped; PACS runtime is not configured on this host.");
+            return;
+        }
+
         _logger.LogInformation("🔄 Stopping legacy integration...");
         await Task.Delay(100);
         _logger.LogInformation("✅ Legacy integration stopped");
+    }
+
+    private bool HasConfiguredPacsRuntime()
+    {
+        return !string.IsNullOrWhiteSpace(_configuration.GetConnectionString("PacsConnection")) ||
+               !string.IsNullOrWhiteSpace(_configuration["PACS:ConnectionString"]);
     }
 
     private async Task StartAIServicesAsync()

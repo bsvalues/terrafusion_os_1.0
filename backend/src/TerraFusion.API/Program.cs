@@ -40,6 +40,28 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+static string ResolveSqliteConnectionString(string connectionString, string contentRootPath)
+{
+    if (string.IsNullOrWhiteSpace(connectionString) ||
+        !connectionString.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+    {
+        return connectionString;
+    }
+
+    var sqliteBuilder = new SqliteConnectionStringBuilder(connectionString);
+    if (string.IsNullOrWhiteSpace(sqliteBuilder.DataSource) ||
+        Path.IsPathRooted(sqliteBuilder.DataSource) ||
+        sqliteBuilder.DataSource == ":memory:")
+    {
+        return sqliteBuilder.ToString();
+    }
+
+    sqliteBuilder.DataSource = Path.GetFullPath(
+        Path.Combine(contentRootPath, sqliteBuilder.DataSource));
+
+    return sqliteBuilder.ToString();
+}
+
 static bool TryReadBoolean(string? value, out bool parsed)
 {
     if (bool.TryParse(value, out parsed))
@@ -203,9 +225,12 @@ builder.Services.AddHostedService<EliteEndpointValidationService>();
 // 🛡️ Elite Signal Handling Service - Government-grade shutdown management
 builder.Services.AddHostedService<EliteSignalHandlingService>();
 
-// 🔄 Harris PACS Real-Time Sync Service - Championship-level property data synchronization
-// Automatically syncs property data every 15 minutes with quantum-enhanced error handling
-builder.Services.AddHostedService<TerraFusion.Core.Services.HarrisPACSSyncBackgroundService>();
+// 🔄 Legacy Harris PACS background sync is disabled by default.
+// The canonical path is explicit TerraFusionSync invocation through the PACS adapter boundary.
+if (IsFeatureEnabled(builder.Configuration, "HarrisPACS:BackgroundSync:Enabled", "TF_ENABLE_HARRIS_PACS_BACKGROUND_SYNC", false))
+{
+    builder.Services.AddHostedService<TerraFusion.Core.Services.HarrisPACSSyncBackgroundService>();
+}
 
 // TIER 4+ Services - Advanced AI Excellence
 builder.Services.AddScoped<IAISwarmIntelligenceOrchestrator, AISwarmIntelligenceOrchestrator>();
@@ -262,10 +287,7 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, TerraFusion
 builder.Services.AddScoped<IEnhancementOrchestrationService, EnhancementOrchestrationService>();
 builder.Services.AddScoped<IEnhancementModuleRegistrationService, EnhancementModuleRegistrationService>();
 
-// Register legacy database services
-builder.Services.AddScoped<TerraFusion.Core.Services.LegacyDatabaseService>();
-builder.Services.AddScoped<TerraFusion.Core.Services.HarrisPacsLegacyService>();
-// Register Dynamic Property Service (REQUIRED by HarrisPacsLegacyService)
+// Register Dynamic Property Service
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
 // Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
 builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
@@ -316,6 +338,8 @@ builder.Services.AddScoped<TerraFusion.Core.Interfaces.IPropertyValuationAIEnhan
 builder.Services.AddScoped<TerraFusion.Core.Services.IAIEngineService, TerraFusion.AI.Services.AIEngineService>();
 
 // Register TerraFusionSync integration service
+builder.Services.AddSingleton<TerraFusionSyncRuntimeState>();
+builder.Services.AddScoped<PacsToTerraFusionSyncService>();
 builder.Services.AddScoped<ITerraFusionSyncService, TerraFusionSyncIntegrationService>();
 
 // RE-ENABLED: Required by MarketplaceController and TerraFusionMarketplaceController
@@ -363,7 +387,7 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
     else
     {
         // SQLite for development
-        options.UseSqlite(connectionString);
+        options.UseSqlite(ResolveSqliteConnectionString(connectionString, builder.Environment.ContentRootPath));
     }
 });
 
@@ -383,7 +407,7 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
     }
     else
     {
-        options.UseSqlite(connectionString);
+        options.UseSqlite(ResolveSqliteConnectionString(connectionString, builder.Environment.ContentRootPath));
     }
 });
 
@@ -412,7 +436,8 @@ builder.Services.AddScoped<IDbConnection>(sp =>
     }
     else
     {
-        return new SqliteConnection(connStr);
+        return new SqliteConnection(
+            ResolveSqliteConnectionString(connStr, builder.Environment.ContentRootPath));
     }
 });
 
@@ -685,11 +710,11 @@ using (var scope = app.Services.CreateScope())
 {
     try
     {
+        var databaseInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializationService>();
+        await databaseInitializer.InitializeAsync();
+
         var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
-
-        // Ensure database is created
-        await dbContext.Database.EnsureCreatedAsync();
 
         var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
             scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());

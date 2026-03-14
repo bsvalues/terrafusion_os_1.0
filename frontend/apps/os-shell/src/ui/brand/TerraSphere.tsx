@@ -65,14 +65,14 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
         return {
           sphereAnimation: 'sphereRotate 10s linear infinite, breathe 6s ease-in-out infinite',
           coreColor: 'hsl(var(--tf-accent))',
-          coreShadow: '0 0 40px hsl(var(--tf-accent)), inset 0 0 20px hsl(var(--tf-accent))',
+          coreShadow: '0 0 50px hsl(var(--tf-accent)), 0 0 20px hsl(var(--tf-accent)), inset 0 0 25px hsl(var(--tf-accent))',
           ringAnimation: undefined,
         };
     }
   };
 
   const styles = getStateStyles();
-  const ringColor = (styles as any).ringColor || 'hsl(var(--tf-accent) / 0.3)';
+  const ringColor = (styles as any).ringColor || 'hsl(var(--tf-accent) / 0.5)';
 
   return (
     <div
