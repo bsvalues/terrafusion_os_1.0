@@ -22,6 +22,7 @@ import { ExecutionConsole } from '../../../components/pilot/ExecutionConsole';
 import { EvidenceRail } from '../../../components/pilot/EvidenceRail';
 import { useToolInvocation } from '../../../hooks/useToolInvocation';
 import { usePilotTraceList } from '../../../hooks/usePilotTraceList';
+import { usePropertyStore } from '../../../stores/propertyStore';
 
 // ============================================================================
 // Risk level display helpers
@@ -54,6 +55,7 @@ const RISK_BADGE_CLASS: Record<Risk, string> = {
 
 export const PropertyPilot: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const operations = usePropertyStore((s) => s.operations);
   const invocation = useToolInvocation();
 
   // Dynamic tool list from manifest
@@ -150,6 +152,38 @@ export const PropertyPilot: React.FC = () => {
           </button>
         }
       />
+
+      {/* Recent Operations from Store */}
+      {operations.length > 0 && (
+        <BentoCard variant="table" title={`Recent Operations (${operations.length})`}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
+                  <th className="text-left py-2 px-3 font-medium">Tool</th>
+                  <th className="text-left py-2 px-3 font-medium">Status</th>
+                  <th className="text-right py-2 px-3 font-medium">Duration</th>
+                  <th className="text-right py-2 px-3 font-medium">Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {operations.slice(0, 5).map((op) => (
+                  <tr key={op.traceId} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.08)' }}>
+                    <td className="py-2 px-3 font-medium">{op.toolId}</td>
+                    <td className="py-2 px-3">
+                      <span style={{ color: op.status === 'success' ? 'hsl(var(--tf-success))' : op.status === 'error' ? 'hsl(var(--tf-error, 0 80% 60%))' : 'hsl(var(--tf-text) / 0.5)' }}>
+                        {op.status}
+                      </span>
+                    </td>
+                    <td className="py-2 px-3 text-right">{op.durationMs ? `${op.durationMs}ms` : '—'}</td>
+                    <td className="py-2 px-3 text-right">{new Date(op.startedAt).toLocaleTimeString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </BentoCard>
+      )}
 
       {/* Tool loading states */}
       {toolsLoading && (

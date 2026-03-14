@@ -1,9 +1,52 @@
 {
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
-  "ok": true,
-  "scannedFileCount": 799,
-  "violationCount": 0,
-  "violations": [],
-  "generatedAtIso": "2026-03-06T09:19:06.254Z"
+  "ok": false,
+  "scannedFileCount": 813,
+  "violationCount": 6,
+  "violations": [
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DesktopIcon.tsx",
+      "line": 198,
+      "column": 64,
+      "excerpt": "hsl(0 0% 100% / 0.08)`,"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DesktopIcon.tsx",
+      "line": 214,
+      "column": 55,
+      "excerpt": "hsl(0 0% 100% / 0.06), transparent)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 750,
+      "column": 15,
+      "excerpt": "hsl(40 100% 50% / 0.25);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 751,
+      "column": 10,
+      "excerpt": "hsl(40 100% 75%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 894,
+      "column": 10,
+      "excerpt": "hsl(0 70% 60%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 898,
+      "column": 10,
+      "excerpt": "hsl(0 70% 65%);"
+    }
+  ],
+  "generatedAtIso": "2026-03-13T14:48:45.990Z"
 }

@@ -18,7 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Activity,
-  Cube,
+  Box,
   Zap,
   TrendingUp,
   AlertCircle,
@@ -265,7 +265,7 @@ export function SwarmVisualization3D({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Cube className="w-5 h-5 text-cyan-400" />
+                <Box className="w-5 h-5 text-cyan-400" />
                 Agent Swarm Visualization
               </CardTitle>
               <CardDescription>

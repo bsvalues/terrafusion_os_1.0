@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
 
 
 namespace TerraFusion.Core.Services;
@@ -15,6 +16,7 @@ namespace TerraFusion.Core.Services;
 /// - Vision Appraisal
 /// - And 50+ other legacy systems
 /// </summary>
+[Obsolete("Non-canonical runtime path. Use the PACS adapter + TerraFusionSync conversion spine for active Benton workflows.", false)]
 public class LegacyDatabaseService
 {
     private readonly ILogger<LegacyDatabaseService> _logger;

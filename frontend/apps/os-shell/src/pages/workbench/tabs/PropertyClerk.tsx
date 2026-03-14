@@ -24,6 +24,7 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
+import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 
@@ -82,6 +83,7 @@ interface RecordingSummaryResult {
 
 export const PropertyClerk: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const recordings = usePropertyStore((s) => s.recordings);
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
@@ -240,6 +242,34 @@ export const PropertyClerk: React.FC = () => {
   return (
     <div className='tf-suite-clerk space-y-6'>
       <ParcelContextHeader icon='📜' title='TerraClerk' parcelId={parcelId} subtitle={`Recording & title services for ${parcelId}`} />
+
+      {/* Recent Recordings from Store */}
+      {recordings.length > 0 && (
+        <BentoCard variant="table" title={`Recent Recordings (${recordings.length})`}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
+                  <th className="text-left py-2 px-3 font-medium">Type</th>
+                  <th className="text-left py-2 px-3 font-medium">Grantor</th>
+                  <th className="text-left py-2 px-3 font-medium">Grantee</th>
+                  <th className="text-right py-2 px-3 font-medium">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recordings.slice(0, 5).map((r) => (
+                  <tr key={r.recordingId} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.08)' }}>
+                    <td className="py-2 px-3 font-medium">{r.documentType}</td>
+                    <td className="py-2 px-3">{r.grantor || '—'}</td>
+                    <td className="py-2 px-3">{r.grantee || '—'}</td>
+                    <td className="py-2 px-3 text-right">{new Date(r.recordingDate).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </BentoCard>
+      )}
 
       <BentoGrid columns={3} gap={1.5}>
 

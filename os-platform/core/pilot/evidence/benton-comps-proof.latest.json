@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-03-12T21:26:46.084Z",
+  "apiBaseUrl": "http://localhost:5000",
+  "parcelId": "100984010001008",
+  "checks": [
+    {
+      "name": "benton.comps.proof",
+      "ok": false,
+      "detail": "Pilot auth failed: Backend unreachable: fetch failed",
+      "payload": {
+        "error": "Pilot auth failed: Backend unreachable: fetch failed"
+      }
+    }
+  ],
+  "summary": {
+    "ok": false,
+    "failures": 1
+  },
+  "scope": "Benton comparable-sales proof for TerraFusion operational CostForge endpoints"
+}

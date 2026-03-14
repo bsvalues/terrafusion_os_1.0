@@ -13,6 +13,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { colors } from '../../design-system/tokens/colors';
 import { useDesktopStore, useVirtualDesktops } from '../../stores/desktopStore';
+import { Z } from './zIndex';
 
 interface VirtualDesktopSwitcherProps {
   isOpen: boolean;
@@ -195,7 +196,8 @@ export const VirtualDesktopSwitcher: React.FC<VirtualDesktopSwitcherProps> = ({
     <>
       {/* Backdrop */}
       <div
-        className='fixed inset-0 bg-black/60 backdrop-blur-sm z-[1010]'
+        className='fixed inset-0 bg-[hsl(var(--tf-bg)/0.6)] backdrop-blur-sm'
+        style={{ zIndex: Z.startMenu }}
         onClick={onClose}
         data-testid='desktop-switcher-backdrop'
       />
@@ -208,7 +210,7 @@ export const VirtualDesktopSwitcher: React.FC<VirtualDesktopSwitcherProps> = ({
         aria-modal='true'
         className={cn(
           // Position
-          'fixed bottom-16 left-1/2 -translate-x-1/2 z-[70]',
+          'fixed bottom-16 left-1/2 -translate-x-1/2',
           // Size
           'w-[700px] max-w-[90vw]',
           // Glass effect
@@ -219,6 +221,7 @@ export const VirtualDesktopSwitcher: React.FC<VirtualDesktopSwitcherProps> = ({
           'p-6'
         )}
         style={{
+          zIndex: Z.startMenu + 1,
           backgroundColor: colors.utils.withOpacity(colors.semantic.background.void, 0.95),
           borderColor: colors.utils.withOpacity(colors.brand.transcend[500], 0.3),
           boxShadow: `0 8px 32px ${colors.utils.withOpacity(colors.semantic.background.void, 0.5)}, 0 0 60px ${colors.utils.withOpacity(colors.brand.transcend[500], 0.2)}`,

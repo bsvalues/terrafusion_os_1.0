@@ -23,6 +23,7 @@ import {
   type InvocationRecord,
 } from '../../../components/workbench';
 import { useEvidenceSnapshot } from '../../../hooks/useEvidenceSnapshot';
+import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 import { useDossierDetails } from '../../../hooks/useDossierDetails';
@@ -282,6 +283,7 @@ const NotesSection: React.FC<{ data: NonNullable<import('../../../contracts/doss
 
 export const PropertyDossier: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const documents = usePropertyStore((s) => s.documents);
 
   // CX-25: Real dossier details from backend
   const dossierDetails = useDossierDetails(parcelId);
@@ -576,6 +578,27 @@ export const PropertyDossier: React.FC = () => {
         parcelId={parcelId}
         subtitle={`Documents for parcel ${parcelId}`}
       />
+
+      {/* Documents on File from Store */}
+      {documents.length > 0 && (
+        <BentoGrid columns={3} gap={0.75} padding={0}>
+          <BentoCard variant="stat" title="Documents on File">
+            <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
+              {documents.length}
+            </p>
+          </BentoCard>
+          {documents.slice(0, 2).map((d) => (
+            <BentoCard key={d.documentId} variant="stat" title={d.documentType}>
+              <p className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                {d.title}
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                {new Date(d.uploadedAt).toLocaleDateString()} — {d.mimeType}
+              </p>
+            </BentoCard>
+          ))}
+        </BentoGrid>
+      )}
 
       {/* ================================================================ */}
       {/* CX-25: Parcel Details — real backend data                        */}

@@ -3,6 +3,7 @@
  * Minimal component to verify React is working
  */
 import { useState } from 'react';
+import { Z } from '../../shell/desktop/zIndex';
 
 export function EmergencyMountTest() {
   const [counter, setCounter] = useState(0);
@@ -22,7 +23,7 @@ export function EmergencyMountTest() {
         alignItems: 'center',
         justifyContent: 'center',
         fontFamily: 'Arial, sans-serif',
-        zIndex: 9999,
+        zIndex: Z.overlay,
       }}
     >
       <h1 style={{ fontSize: '3rem', marginBottom: '2rem' }}>🏛️ TERRAFUSION OS EMERGENCY TEST</h1>

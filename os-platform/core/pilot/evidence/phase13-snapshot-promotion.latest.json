@@ -1,0 +1,884 @@
+{
+  "generatedAt": "2026-03-13T11:58:41.937Z",
+  "scope": "Phase 13 snapshot promotion spine packet",
+  "decision": "GO",
+  "checks": [
+    {
+      "name": "phase12.runtime_track",
+      "ok": true,
+      "detail": "exit=0",
+      "payload": {
+        "stdout": "\n> terrafusion-os@1.0.0 proof:phase12 C:\\Users\\bsval\\terrafusion_os_1.0\n> cross-env TF_API_PORT=5000 node os-platform/core/pilot/phase12-pacs-connected-runtime-packet.mjs\n\n\n> terrafusion-os@1.0.0 proof:benton:sync C:\\Users\\bsval\\terrafusion_os_1.0\n> cross-env TF_API_PORT=5000 node os-platform/core/pilot/benton-sync-proof.mjs\n\nPASS auth.login - admin@gov.\nPASS backend.health - Healthy\nPASS sync.status.before - status available\nPASS sync.county.benton - recordsProcessed=0, salesAdded=0, salesUpdated=288, salesSkipped=77001\nPASS sync.status.after - status available\nEvidence written to C:\\Users\\bsval\\terrafusion_os_1.0\\os-platform\\core\\pilot\\evidence\\benton-sync-proof.latest.json\n",
+        "stderr": ""
+      },
+      "blocker": null
+    },
+    {
+      "name": "snapshot.local.canonical_manifest",
+      "ok": true,
+      "detail": "properties=112059, assessments=112057, comps=76775, compParcels=44045",
+      "payload": {
+        "Properties": 112059,
+        "PropertyAssessments": 112057,
+        "ComparableSales": 76775,
+        "EtlSyncJobs": 29,
+        "ComparableSalesDistinctParcels": 44045,
+        "ComparableSalesFingerprint": [
+          ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+          ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+          ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+          ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+          ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+        ],
+        "snapshotSha256": "067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0",
+        "snapshotSize": 359325696,
+        "snapshotPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\phase13-local-promoted-snapshot.db"
+      },
+      "blocker": null
+    },
+    {
+      "name": "snapshot.staging.logical_parity",
+      "ok": true,
+      "detail": "staging stable Benton snapshot fingerprint matches local canonical source",
+      "payload": {
+        "local": {
+          "Properties": 112059,
+          "PropertyAssessments": 112057,
+          "ComparableSales": 76775,
+          "EtlSyncJobs": 29,
+          "ComparableSalesDistinctParcels": 44045,
+          "ComparableSalesFingerprint": [
+            ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+            ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+            ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+            ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+            ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+          ],
+          "snapshotSha256": "067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0",
+          "snapshotSize": 359325696,
+          "snapshotPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\phase13-local-promoted-snapshot.db"
+        },
+        "staging": {
+          "Properties": 112059,
+          "PropertyAssessments": 112057,
+          "ComparableSales": 76775,
+          "EtlSyncJobs": 23,
+          "ComparableSalesDistinctParcels": 44045,
+          "ComparableSalesFingerprint": [
+            ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+            ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+            ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+            ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+            ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+          ],
+          "snapshotSha256": "32cccc74aa39147555e86d155ccbee4b9a4f3ce4ea3c95add5b4f70e2792df54",
+          "snapshotSize": 359514112,
+          "snapshotPath": "/opt/terrafusion/staging/data/terrafusion.db"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "snapshot.production.logical_parity",
+      "ok": true,
+      "detail": "production stable Benton snapshot fingerprint matches local canonical source",
+      "payload": {
+        "local": {
+          "Properties": 112059,
+          "PropertyAssessments": 112057,
+          "ComparableSales": 76775,
+          "EtlSyncJobs": 29,
+          "ComparableSalesDistinctParcels": 44045,
+          "ComparableSalesFingerprint": [
+            ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+            ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+            ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+            ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+            ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+          ],
+          "snapshotSha256": "067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0",
+          "snapshotSize": 359325696,
+          "snapshotPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\phase13-local-promoted-snapshot.db"
+        },
+        "production": {
+          "Properties": 112059,
+          "PropertyAssessments": 112057,
+          "ComparableSales": 76775,
+          "EtlSyncJobs": 23,
+          "ComparableSalesDistinctParcels": 44045,
+          "ComparableSalesFingerprint": [
+            ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+            ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+            ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+            ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+            ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+          ],
+          "snapshotSha256": "3a935db0bd579702ef19a367719e278f2716be10d27a2fc9afda1da54559c0fd",
+          "snapshotSize": 359514112,
+          "snapshotPath": "/opt/terrafusion/production/data/terrafusion.db"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "snapshot.deployed.logical_parity",
+      "ok": true,
+      "detail": "staging and production serve the same stable Benton snapshot contract",
+      "payload": {
+        "staging": {
+          "Properties": 112059,
+          "PropertyAssessments": 112057,
+          "ComparableSales": 76775,
+          "EtlSyncJobs": 23,
+          "ComparableSalesDistinctParcels": 44045,
+          "ComparableSalesFingerprint": [
+            ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+            ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+            ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+            ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+            ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+          ],
+          "snapshotSha256": "32cccc74aa39147555e86d155ccbee4b9a4f3ce4ea3c95add5b4f70e2792df54",
+          "snapshotSize": 359514112,
+          "snapshotPath": "/opt/terrafusion/staging/data/terrafusion.db"
+        },
+        "production": {
+          "Properties": 112059,
+          "PropertyAssessments": 112057,
+          "ComparableSales": 76775,
+          "EtlSyncJobs": 23,
+          "ComparableSalesDistinctParcels": 44045,
+          "ComparableSalesFingerprint": [
+            ["101050000000000", "660000.0", "2006-04-18 00:00:00"],
+            ["101540000000000", "75000000.0", "2010-05-13 00:00:00"],
+            ["101571000002002", "150000.0", "2006-09-25 00:00:00"],
+            ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
+            ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
+          ],
+          "snapshotSha256": "3a935db0bd579702ef19a367719e278f2716be10d27a2fc9afda1da54559c0fd",
+          "snapshotSize": 359514112,
+          "snapshotPath": "/opt/terrafusion/production/data/terrafusion.db"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "snapshot.file_hash.informational",
+      "ok": true,
+      "detail": "local=067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0, staging=32cccc74aa39147555e86d155ccbee4b9a4f3ce4ea3c95add5b4f70e2792df54, production=3a935db0bd579702ef19a367719e278f2716be10d27a2fc9afda1da54559c0fd",
+      "payload": {
+        "localSha256": "067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0",
+        "stagingSha256": "32cccc74aa39147555e86d155ccbee4b9a4f3ce4ea3c95add5b4f70e2792df54",
+        "productionSha256": "3a935db0bd579702ef19a367719e278f2716be10d27a2fc9afda1da54559c0fd",
+        "note": "Raw SQLite file hashes are informational only because mutable runtime metadata tables like EtlSyncJobs can diverge after startup."
+      },
+      "blocker": null
+    },
+    {
+      "name": "hostinger.phase13_snapshot_canon",
+      "ok": true,
+      "detail": "Hostinger control-plane canon records the snapshot promotion contract",
+      "payload": {
+        "missingHostingerCanon": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase13.doc.promotion_spine",
+      "ok": true,
+      "detail": "Phase 13 doc records the snapshot promotion spine and comparison rules",
+      "payload": {
+        "missingPhase13Doc": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.operator.login",
+      "ok": true,
+      "detail": "login succeeded",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJjMzY0MTI1Ny01YzJjLTRjNmYtOTM2Ni1kNzUzMWVlMDI5N2QiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6ImY1M2ZhZjQwLTdmZmEtNDA3My1iOTFiLTVlYjUxNDU3NjI1NSIsImlhdCI6MTc3MzQwMzEyMiwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzEyMiwiZXhwIjoxNzczNDA2NzIyLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.UWB5fm0D9M6I0eF4YAAX9p8BSjQymhO0t6D_A2gnDPc",
+        "email": "admin@terrafusionmarket.com",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T19:58:42.6089177Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.operator.snapshot_surface",
+      "ok": true,
+      "detail": "status=200, comps=10",
+      "payload": {
+        "subjectId": "100984010001008",
+        "county": "Benton",
+        "comps": [
+          {
+            "id": "2149ca40-6704-4c61-b16e-24dcc0cafafa",
+            "salePrice": 489900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 9798
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:2857",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "78a31c66-2919-4971-a679-d6f0fbf0d8ea",
+            "salePrice": 359900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 7198
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:2125",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "86301e27-e7fe-4653-ad61-a4fe2c2989c2",
+            "salePrice": 320000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 6400
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:1775",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "3b6e5021-4585-4f12-8e2a-a91e90c6d46e",
+            "salePrice": 280000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 5600
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:2066",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "1bd0b187-3ea9-4e0e-a60e-bed20271b63e",
+            "salePrice": 242000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 4840
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1903",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "e00d6fe0-796d-477a-80c2-11c0abbbfeaa",
+            "salePrice": 224900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 4498
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1985",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "01146d6e-b469-455d-b48e-743efa3fce91",
+            "salePrice": 160000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 3200
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1388",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "22d435b1-b7b4-4dd6-85b0-562addb3d4c2",
+            "salePrice": 143000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 2860
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:1104",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "f536bd19-f3e9-4a7b-8b05-128ffbccb60d",
+            "salePrice": 135000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 2700
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:813",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "587aa458-b78a-4de1-b991-4661d233ccc6",
+            "salePrice": 89950,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 1799
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:WEST RICHLAND",
+              "gla:655",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          }
+        ],
+        "comparables": [
+          {
+            "compId": "2149ca40-6704-4c61-b16e-24dcc0cafafa",
+            "parcelId": "123881011891001",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 489900,
+            "propertyType": "residential",
+            "grossLivingArea": 2857,
+            "lotSize": 151153.2,
+            "adjustedPrice": 499698,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "78a31c66-2919-4971-a679-d6f0fbf0d8ea",
+            "parcelId": "131992100000029",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 359900,
+            "propertyType": "residential",
+            "grossLivingArea": 2125,
+            "lotSize": 9237,
+            "adjustedPrice": 367098,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "86301e27-e7fe-4653-ad61-a4fe2c2989c2",
+            "parcelId": "127984030000037",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 320000,
+            "propertyType": "residential",
+            "grossLivingArea": 1775,
+            "lotSize": 17947,
+            "adjustedPrice": 326400,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "3b6e5021-4585-4f12-8e2a-a91e90c6d46e",
+            "parcelId": "121982060003005",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 280000,
+            "propertyType": "residential",
+            "grossLivingArea": 2066,
+            "lotSize": 10838,
+            "adjustedPrice": 285600,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "1bd0b187-3ea9-4e0e-a60e-bed20271b63e",
+            "parcelId": "113894040001002",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 242000,
+            "propertyType": "residential",
+            "grossLivingArea": 1903,
+            "lotSize": 14161,
+            "adjustedPrice": 246840,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "e00d6fe0-796d-477a-80c2-11c0abbbfeaa",
+            "parcelId": "114894020000046",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 224900,
+            "propertyType": "residential",
+            "grossLivingArea": 1985,
+            "lotSize": 15015,
+            "adjustedPrice": 229398,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "01146d6e-b469-455d-b48e-743efa3fce91",
+            "parcelId": "106804130002007",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 160000,
+            "propertyType": "residential",
+            "grossLivingArea": 1388,
+            "lotSize": 6528,
+            "adjustedPrice": 163200,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "22d435b1-b7b4-4dd6-85b0-562addb3d4c2",
+            "parcelId": "135083030012010",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 143000,
+            "propertyType": "residential",
+            "grossLivingArea": 1104,
+            "lotSize": 7080,
+            "adjustedPrice": 145860,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "f536bd19-f3e9-4a7b-8b05-128ffbccb60d",
+            "parcelId": "102891012023002",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 135000,
+            "propertyType": "residential",
+            "grossLivingArea": 813,
+            "lotSize": 4708,
+            "adjustedPrice": 137700,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "587aa458-b78a-4de1-b991-4661d233ccc6",
+            "parcelId": "105982120109000",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 89950,
+            "propertyType": "residential",
+            "grossLivingArea": 655,
+            "lotSize": null,
+            "adjustedPrice": 91749,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          }
+        ],
+        "count": 10,
+        "selectionMethod": "subject-missing fallback scoring; qualified only",
+        "subject": null,
+        "summary": {
+          "medianAdjustedPrice": 238119,
+          "meanAdjustedPrice": 249354.3,
+          "range": {
+            "low": 91749,
+            "high": 499698
+          },
+          "coefficient_of_dispersion": 6.2
+        },
+        "includesAdjustments": true,
+        "retrievedAt": "2026-03-13T11:58:42.9172859Z"
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.operator.login",
+      "ok": true,
+      "detail": "login succeeded",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzMTMxYWI2Yy04NTBhLTRiM2UtYTM2My05M2MzZWU2OGRmM2MiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6ImRmNGZjNWY0LWQ5MDQtNDM0Yy1iYmNjLTI4NWU2NzNiMDQ0NiIsImlhdCI6MTc3MzQwMzEyMywidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzEyMywiZXhwIjoxNzczNDA2NzIzLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.q8Cm140KV_zV_m7xBt5euhgFoFG1Jsxh06KTa2qaoFU",
+        "email": "admin@terrafusionmarket.com",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T19:58:43.4478511Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.operator.snapshot_surface",
+      "ok": true,
+      "detail": "status=200, comps=10",
+      "payload": {
+        "subjectId": "100984010001008",
+        "county": "Benton",
+        "comps": [
+          {
+            "id": "2149ca40-6704-4c61-b16e-24dcc0cafafa",
+            "salePrice": 489900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 9798
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:2857",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "78a31c66-2919-4971-a679-d6f0fbf0d8ea",
+            "salePrice": 359900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 7198
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:2125",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "86301e27-e7fe-4653-ad61-a4fe2c2989c2",
+            "salePrice": 320000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 6400
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:1775",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "3b6e5021-4585-4f12-8e2a-a91e90c6d46e",
+            "salePrice": 280000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 5600
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:2066",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "1bd0b187-3ea9-4e0e-a60e-bed20271b63e",
+            "salePrice": 242000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 4840
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1903",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "e00d6fe0-796d-477a-80c2-11c0abbbfeaa",
+            "salePrice": 224900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 4498
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1985",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "01146d6e-b469-455d-b48e-743efa3fce91",
+            "salePrice": 160000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 3200
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1388",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "22d435b1-b7b4-4dd6-85b0-562addb3d4c2",
+            "salePrice": 143000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 2860
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:1104",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "f536bd19-f3e9-4a7b-8b05-128ffbccb60d",
+            "salePrice": 135000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 2700
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:813",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "587aa458-b78a-4de1-b991-4661d233ccc6",
+            "salePrice": 89950,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 1799
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:WEST RICHLAND",
+              "gla:655",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          }
+        ],
+        "comparables": [
+          {
+            "compId": "2149ca40-6704-4c61-b16e-24dcc0cafafa",
+            "parcelId": "123881011891001",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 489900,
+            "propertyType": "residential",
+            "grossLivingArea": 2857,
+            "lotSize": 151153.2,
+            "adjustedPrice": 499698,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "78a31c66-2919-4971-a679-d6f0fbf0d8ea",
+            "parcelId": "131992100000029",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 359900,
+            "propertyType": "residential",
+            "grossLivingArea": 2125,
+            "lotSize": 9237,
+            "adjustedPrice": 367098,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "86301e27-e7fe-4653-ad61-a4fe2c2989c2",
+            "parcelId": "127984030000037",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 320000,
+            "propertyType": "residential",
+            "grossLivingArea": 1775,
+            "lotSize": 17947,
+            "adjustedPrice": 326400,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "3b6e5021-4585-4f12-8e2a-a91e90c6d46e",
+            "parcelId": "121982060003005",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 280000,
+            "propertyType": "residential",
+            "grossLivingArea": 2066,
+            "lotSize": 10838,
+            "adjustedPrice": 285600,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "1bd0b187-3ea9-4e0e-a60e-bed20271b63e",
+            "parcelId": "113894040001002",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 242000,
+            "propertyType": "residential",
+            "grossLivingArea": 1903,
+            "lotSize": 14161,
+            "adjustedPrice": 246840,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "e00d6fe0-796d-477a-80c2-11c0abbbfeaa",
+            "parcelId": "114894020000046",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 224900,
+            "propertyType": "residential",
+            "grossLivingArea": 1985,
+            "lotSize": 15015,
+            "adjustedPrice": 229398,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "01146d6e-b469-455d-b48e-743efa3fce91",
+            "parcelId": "106804130002007",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 160000,
+            "propertyType": "residential",
+            "grossLivingArea": 1388,
+            "lotSize": 6528,
+            "adjustedPrice": 163200,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "22d435b1-b7b4-4dd6-85b0-562addb3d4c2",
+            "parcelId": "135083030012010",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 143000,
+            "propertyType": "residential",
+            "grossLivingArea": 1104,
+            "lotSize": 7080,
+            "adjustedPrice": 145860,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "f536bd19-f3e9-4a7b-8b05-128ffbccb60d",
+            "parcelId": "102891012023002",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 135000,
+            "propertyType": "residential",
+            "grossLivingArea": 813,
+            "lotSize": 4708,
+            "adjustedPrice": 137700,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "587aa458-b78a-4de1-b991-4661d233ccc6",
+            "parcelId": "105982120109000",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 89950,
+            "propertyType": "residential",
+            "grossLivingArea": 655,
+            "lotSize": null,
+            "adjustedPrice": 91749,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          }
+        ],
+        "count": 10,
+        "selectionMethod": "subject-missing fallback scoring; qualified only",
+        "subject": null,
+        "summary": {
+          "medianAdjustedPrice": 238119,
+          "meanAdjustedPrice": 249354.3,
+          "range": {
+            "low": 91749,
+            "high": 499698
+          },
+          "coefficient_of_dispersion": 6.2
+        },
+        "includesAdjustments": true,
+        "retrievedAt": "2026-03-13T11:58:43.7154735Z"
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": [],
+    "promotionContract": "The promoted Benton artifact is a logical operational snapshot contract sourced from the PACS-connected runtime and served by Hostinger snapshot runtimes."
+  }
+}

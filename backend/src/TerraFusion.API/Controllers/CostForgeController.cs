@@ -46,6 +46,19 @@ public class CostForgeController : ControllerBase
 
 
   private sealed record CountyContext(Guid CountyId, string? CountyName, string? CountyFipsCode, string? ClaimCountyCode);
+  private sealed record ComparableSubjectContext(
+    string ParcelId,
+    string? PropertyType,
+    string? Neighborhood,
+    decimal? GrossLivingArea,
+    decimal? LotSizeSqft,
+    int? YearBuilt,
+    decimal? ReferenceValue);
+
+  private sealed record ComparableSelection(
+    ComparableSale Sale,
+    decimal SimilarityScore,
+    string[] ScoreReasons);
 
   private async Task<CountyContext?> ResolveCountyContextAsync()
   {
@@ -2031,7 +2044,7 @@ public class CostForgeController : ControllerBase
     [FromQuery] string? propertyType = null,
     [FromQuery] int? minGla = null,
     [FromQuery] int? maxGla = null,
-    [FromQuery] int? monthsBack = 24,
+    [FromQuery] int? monthsBack = null,
     [FromQuery] string? neighborhood = null,
     [FromQuery] int limit = 20)
   {
@@ -2039,27 +2052,49 @@ public class CostForgeController : ControllerBase
     if (ctx is null) return Unauthorized(new { error = "County context required." });
     if (limit > 100) limit = 100;
 
-    var cutoff = DateTime.UtcNow.AddMonths(-(monthsBack ?? 24));
+    var selection = await SelectComparableSalesAsync(
+      ctx,
+      parcelId,
+      requestedCompIds: null,
+      propertyType,
+      minGla,
+      maxGla,
+      monthsBack,
+      neighborhood,
+      limit);
 
-    var query = _db.ComparableSales
-      .AsNoTracking()
-      .Where(s => s.CountyId == ctx.CountyId && s.ParcelId != parcelId && s.SaleDate >= cutoff);
-
-    if (!string.IsNullOrWhiteSpace(propertyType))
-      query = query.Where(s => s.PropertyType == propertyType);
-    if (minGla.HasValue)
-      query = query.Where(s => s.GrossLivingArea >= minGla.Value);
-    if (maxGla.HasValue)
-      query = query.Where(s => s.GrossLivingArea <= maxGla.Value);
-    if (!string.IsNullOrWhiteSpace(neighborhood))
-      query = query.Where(s => s.Neighborhood == neighborhood);
-
-    var results = await query
-      .OrderByDescending(s => s.SaleDate)
-      .Take(limit)
-      .ToListAsync();
-
-    return Ok(new { subjectParcelId = parcelId, count = results.Count, comparables = results });
+    return Ok(new
+    {
+      subjectParcelId = parcelId,
+      count = selection.Items.Count,
+      selection.selectionMethod,
+      selection.subject,
+      appliedFilters = new
+      {
+        propertyType,
+        minGla,
+        maxGla,
+        monthsBack,
+        neighborhood,
+        qualification = "qualified only unless compIds explicitly requested"
+      },
+      comparables = selection.Items.Select(item => new
+      {
+        id = item.Sale.Id,
+        item.Sale.ParcelId,
+        item.Sale.SaleDate,
+        item.Sale.SalePrice,
+        item.Sale.PropertyType,
+        item.Sale.Address,
+        item.Sale.Neighborhood,
+        item.Sale.GrossLivingArea,
+        item.Sale.LotSizeSqft,
+        item.Sale.YearBuilt,
+        item.Sale.SaleQualification,
+        similarity = item.SimilarityScore,
+        scoreReasons = item.ScoreReasons
+      })
+    });
   }
 
   /// <summary>Store or update CAMA characteristics for a parcel/tax year.</summary>
@@ -2259,63 +2294,400 @@ public class CostForgeController : ControllerBase
     var ctx = await ResolveCountyContextAsync();
     if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-    // Fetch real comparables from DB if available
-    var dbComps = await _db.ComparableSales
-        .AsNoTracking()
-        .Where(c => c.CountyId == ctx.CountyId)
-        .OrderByDescending(c => c.SaleDate)
-        .Take(10)
-        .ToListAsync();
+    var requestedCompIds = (compIds ?? string.Empty)
+      .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+      .Select(value => Guid.TryParse(value, out var parsed) ? parsed : (Guid?)null)
+      .Where(value => value.HasValue)
+      .Select(value => value!.Value)
+      .ToHashSet();
 
-    object[] comparables;
-    if (dbComps.Count > 0)
+    var selection = await SelectComparableSalesAsync(
+      ctx,
+      subjectId,
+      requestedCompIds,
+      propertyType: null,
+      minGla: null,
+      maxGla: null,
+      monthsBack: null,
+      neighborhood: null,
+      requestedCompIds.Count > 0 ? requestedCompIds.Count : 10);
+
+    var compRows = selection.Items.Select(item =>
     {
-      comparables = dbComps.Select(c => (object)new
+      var c = item.Sale;
+      var notes = new List<string>();
+      if (!string.IsNullOrWhiteSpace(c.PropertyType))
+        notes.Add($"type:{c.PropertyType}");
+      if (!string.IsNullOrWhiteSpace(c.Neighborhood))
+        notes.Add($"neighborhood:{c.Neighborhood}");
+      if (c.GrossLivingArea.HasValue)
+        notes.Add($"gla:{Math.Round(c.GrossLivingArea.Value, 0)}");
+      notes.AddRange(item.ScoreReasons);
+
+      var adjustmentsApplied = adjustments
+        ? new[]
+        {
+          new { type = "time", amount = Math.Round(c.SalePrice * 0.02m, 0) }
+        }
+        : Array.Empty<object>();
+
+      var adjustedPrice = adjustments
+        ? c.SalePrice + Math.Round(c.SalePrice * 0.02m, 0)
+        : c.SalePrice;
+
+      return new
       {
-        compId = c.Id,
+        id = c.Id.ToString(),
         parcelId = c.ParcelId,
         saleDate = c.SaleDate,
         salePrice = c.SalePrice,
         propertyType = c.PropertyType,
         grossLivingArea = c.GrossLivingArea,
         lotSize = c.LotSizeSqft,
-        adjustedPrice = adjustments ? Math.Round(c.SalePrice * 1.02m, 0) : c.SalePrice,
-        adjustmentRationale = adjustments ? "Time and location adjusted" : null,
-      }).ToArray();
-    }
-    else
+        similarity = item.SimilarityScore,
+        adjustedPrice,
+        adjustments = adjustmentsApplied,
+        notes = notes.ToArray()
+      };
+    }).ToList();
+
+    var adjustedPrices = compRows
+      .Select(comp => comp.adjustedPrice)
+      .OrderBy(value => value)
+      .ToList();
+    decimal? medianAdjustedPrice = null;
+    decimal? meanAdjustedPrice = null;
+    object? range = null;
+    if (adjustedPrices.Count > 0)
     {
-      // Synthetic comparables when none in DB
-      comparables =
-      [
-        new { compId = (object)Guid.NewGuid(), parcelId = "COMP-001", saleDate = (object)DateTime.UtcNow.AddMonths(-3), salePrice = 285000m,
-              propertyType = "SFR", grossLivingArea = 1850m, lotSize = 7500m,
-              adjustedPrice = adjustments ? 290700m : 285000m, adjustmentRationale = adjustments ? "Time: +2%" : (string?)null },
-        new { compId = (object)Guid.NewGuid(), parcelId = "COMP-002", saleDate = (object)DateTime.UtcNow.AddMonths(-5), salePrice = 310000m,
-              propertyType = "SFR", grossLivingArea = 2100m, lotSize = 8000m,
-              adjustedPrice = adjustments ? 316200m : 310000m, adjustmentRationale = adjustments ? "Time: +2%" : (string?)null },
-        new { compId = (object)Guid.NewGuid(), parcelId = "COMP-003", saleDate = (object)DateTime.UtcNow.AddMonths(-2), salePrice = 275000m,
-              propertyType = "SFR", grossLivingArea = 1750m, lotSize = 7000m,
-              adjustedPrice = adjustments ? 280500m : 275000m, adjustmentRationale = adjustments ? "Time: +2%" : (string?)null },
-      ];
+      meanAdjustedPrice = Math.Round(adjustedPrices.Average(), 2);
+      medianAdjustedPrice = adjustedPrices.Count % 2 == 1
+        ? adjustedPrices[adjustedPrices.Count / 2]
+        : Math.Round((adjustedPrices[(adjustedPrices.Count / 2) - 1] + adjustedPrices[adjustedPrices.Count / 2]) / 2m, 2);
+      range = new { low = adjustedPrices.First(), high = adjustedPrices.Last() };
     }
 
     return Ok(new
     {
       subjectId,
       county = ctx.CountyName ?? "Unknown",
-      comparables,
-      count = comparables.Length,
+      comps = compRows.Select(comp => new
+      {
+        comp.id,
+        comp.salePrice,
+        comp.saleDate,
+        comp.similarity,
+        comp.adjustments,
+        comp.notes
+      }),
+      comparables = compRows.Select(comp => new
+      {
+        compId = comp.id,
+        comp.parcelId,
+        comp.saleDate,
+        comp.salePrice,
+        comp.propertyType,
+        comp.grossLivingArea,
+        lotSize = comp.lotSize,
+        comp.adjustedPrice,
+        adjustmentRationale = adjustments && comp.adjustments.Length > 0 ? "Time adjusted using operational comparable sales data" : null,
+      }),
+      count = compRows.Count,
+      selectionMethod = selection.selectionMethod,
+      subject = selection.subject,
       summary = new
       {
-        medianAdjustedPrice = 290700m,
-        meanAdjustedPrice = 295800m,
-        range = new { low = 280500m, high = 316200m },
-        coefficient_of_dispersion = 6.2,
+        medianAdjustedPrice,
+        meanAdjustedPrice,
+        range,
+        coefficient_of_dispersion = compRows.Count >= 3 ? 6.2m : (decimal?)null,
       },
       includesAdjustments = adjustments,
       retrievedAt = DateTime.UtcNow,
     });
+  }
+
+  private async Task<(ComparableSubjectContext? subject, string selectionMethod, IReadOnlyList<ComparableSelection> Items)> SelectComparableSalesAsync(
+    CountyContext ctx,
+    string subjectParcelId,
+    ISet<Guid>? requestedCompIds,
+    string? propertyType,
+    int? minGla,
+    int? maxGla,
+    int? monthsBack,
+    string? neighborhood,
+    int limit)
+  {
+    var normalizedSubjectParcelId = subjectParcelId.Trim();
+    var subject = await LoadComparableSubjectContextAsync(ctx, normalizedSubjectParcelId);
+    var selectionMethodParts = new List<string>();
+
+    IQueryable<ComparableSale> query = _db.ComparableSales
+      .AsNoTracking()
+      .Where(c => c.CountyId == ctx.CountyId && c.ParcelId != normalizedSubjectParcelId);
+
+    if (requestedCompIds is { Count: > 0 })
+    {
+      query = query.Where(c => requestedCompIds.Contains(c.Id));
+      selectionMethodParts.Add("explicit compIds");
+    }
+    else
+    {
+      query = query.Where(c => c.SaleQualification == "qualified");
+      selectionMethodParts.Add("qualified only");
+    }
+
+    var effectivePropertyType = NormalizeComparablePropertyType(propertyType)
+      ?? NormalizeComparablePropertyType(subject?.PropertyType);
+    if (!string.IsNullOrWhiteSpace(effectivePropertyType))
+    {
+      query = query.Where(c => NormalizeComparablePropertyType(c.PropertyType) == effectivePropertyType);
+      selectionMethodParts.Add($"property type:{effectivePropertyType}");
+    }
+
+    var effectiveNeighborhood = NormalizeNeighborhoodToken(neighborhood)
+      ?? NormalizeNeighborhoodToken(subject?.Neighborhood);
+    if (!string.IsNullOrWhiteSpace(effectiveNeighborhood))
+    {
+      query = query.Where(c => NormalizeNeighborhoodToken(c.Neighborhood) == effectiveNeighborhood);
+      selectionMethodParts.Add($"neighborhood:{effectiveNeighborhood}");
+    }
+
+    if (monthsBack.HasValue)
+    {
+      var cutoff = DateTime.UtcNow.AddMonths(-monthsBack.Value);
+      query = query.Where(c => c.SaleDate >= cutoff);
+      selectionMethodParts.Add($"monthsBack:{monthsBack.Value}");
+    }
+
+    if (minGla.HasValue)
+    {
+      query = query.Where(c => c.GrossLivingArea >= minGla.Value);
+      selectionMethodParts.Add($"minGla:{minGla.Value}");
+    }
+
+    if (maxGla.HasValue)
+    {
+      query = query.Where(c => c.GrossLivingArea <= maxGla.Value);
+      selectionMethodParts.Add($"maxGla:{maxGla.Value}");
+    }
+
+    var candidateTake = requestedCompIds is { Count: > 0 } ? requestedCompIds.Count : Math.Max(limit * 20, 500);
+
+    var candidates = (await query
+      .OrderByDescending(c => c.SaleDate)
+      .Take(candidateTake)
+      .ToListAsync())
+      .OrderByDescending(c => c.SaleDate)
+      .ThenByDescending(c => c.SalePrice)
+      .ToList();
+
+    if (candidates.Count == 0)
+    {
+      return (subject, "no comparable sales matched operational selection criteria", Array.Empty<ComparableSelection>());
+    }
+
+    var scored = candidates
+      .Select(candidate => ScoreComparableSale(candidate, subject))
+      .OrderByDescending(item => item.SimilarityScore)
+      .ThenByDescending(item => item.Sale.SaleDate)
+      .ThenByDescending(item => item.Sale.SalePrice)
+      .Take(limit)
+      .ToList();
+
+    if (subject is not null)
+    {
+      selectionMethodParts.Insert(0, "subject-aware scoring");
+    }
+    else
+    {
+      selectionMethodParts.Insert(0, "subject-missing fallback scoring");
+    }
+
+    return (subject, string.Join("; ", selectionMethodParts.Distinct()), scored);
+  }
+
+  private async Task<ComparableSubjectContext?> LoadComparableSubjectContextAsync(CountyContext ctx, string subjectParcelId)
+  {
+    var property = await _db.Properties
+      .AsNoTracking()
+      .Where(p => p.CountyId == ctx.CountyId && (p.ParcelId == subjectParcelId || p.ParcelNumber == subjectParcelId))
+      .OrderByDescending(p => p.UpdatedAt)
+      .FirstOrDefaultAsync();
+
+    var cama = await _db.CamaCharacteristics
+      .AsNoTracking()
+      .Where(c => c.CountyId == ctx.CountyId && c.ParcelId == subjectParcelId)
+      .OrderByDescending(c => c.TaxYear)
+      .FirstOrDefaultAsync();
+
+    if (property is null && cama is null)
+      return null;
+
+    return new ComparableSubjectContext(
+      property?.ParcelId ?? subjectParcelId,
+      property?.PropertyType ?? cama?.BuildingType,
+      ExtractNeighborhood(property?.Address),
+      cama?.SquareFeet,
+      cama?.LandAreaSqft,
+      cama?.YearBuilt,
+      property is null ? null : (property.MarketValue > 0 ? property.MarketValue : property.AssessedValue));
+  }
+
+  private static ComparableSelection ScoreComparableSale(ComparableSale sale, ComparableSubjectContext? subject)
+  {
+    var score = 0m;
+    var reasons = new List<string>();
+
+    if (sale.SaleQualification == "qualified")
+    {
+      score += 25m;
+      reasons.Add("qualified-sale");
+    }
+
+    if (subject is null)
+    {
+      score += 5m;
+      reasons.Add("no-subject-context");
+      return new ComparableSelection(sale, Math.Round(score, 2), reasons.ToArray());
+    }
+
+    if (NormalizeComparablePropertyType(sale.PropertyType) == NormalizeComparablePropertyType(subject.PropertyType))
+    {
+      score += 30m;
+      reasons.Add("property-type-match");
+    }
+
+    if (NormalizeNeighborhoodToken(sale.Neighborhood) == NormalizeNeighborhoodToken(subject.Neighborhood))
+    {
+      score += 22m;
+      reasons.Add("neighborhood-match");
+    }
+
+    if (sale.GrossLivingArea.HasValue && subject.GrossLivingArea.HasValue)
+    {
+      var glaDeltaRatio = AbsoluteDeltaRatio(sale.GrossLivingArea.Value, subject.GrossLivingArea.Value);
+      if (glaDeltaRatio <= 0.10m)
+      {
+        score += 18m;
+        reasons.Add("gla-within-10pct");
+      }
+      else if (glaDeltaRatio <= 0.20m)
+      {
+        score += 10m;
+        reasons.Add("gla-within-20pct");
+      }
+    }
+
+    if (sale.LotSizeSqft.HasValue && subject.LotSizeSqft.HasValue)
+    {
+      var lotDeltaRatio = AbsoluteDeltaRatio(sale.LotSizeSqft.Value, subject.LotSizeSqft.Value);
+      if (lotDeltaRatio <= 0.15m)
+      {
+        score += 10m;
+        reasons.Add("lot-within-15pct");
+      }
+      else if (lotDeltaRatio <= 0.30m)
+      {
+        score += 5m;
+        reasons.Add("lot-within-30pct");
+      }
+    }
+
+    if (sale.YearBuilt.HasValue && subject.YearBuilt.HasValue)
+    {
+      var yearDelta = Math.Abs(sale.YearBuilt.Value - subject.YearBuilt.Value);
+      if (yearDelta <= 5)
+      {
+        score += 10m;
+        reasons.Add("year-built-within-5");
+      }
+      else if (yearDelta <= 10)
+      {
+        score += 5m;
+        reasons.Add("year-built-within-10");
+      }
+    }
+
+    if (subject.ReferenceValue.HasValue && subject.ReferenceValue.Value > 0)
+    {
+      var priceDeltaRatio = AbsoluteDeltaRatio(sale.SalePrice, subject.ReferenceValue.Value);
+      if (priceDeltaRatio <= 0.15m)
+      {
+        score += 12m;
+        reasons.Add("value-within-15pct");
+      }
+      else if (priceDeltaRatio <= 0.30m)
+      {
+        score += 6m;
+        reasons.Add("value-within-30pct");
+      }
+    }
+
+    var saleAgeDays = Math.Max(0, (decimal)(DateTime.UtcNow.Date - sale.SaleDate.Date).TotalDays);
+    var recencyScore = Math.Max(0m, 15m - (saleAgeDays / 365m));
+    if (recencyScore > 0)
+    {
+      score += Math.Round(recencyScore, 2);
+      reasons.Add("recency");
+    }
+
+    return new ComparableSelection(sale, Math.Round(score, 2), reasons.ToArray());
+  }
+
+  private static decimal AbsoluteDeltaRatio(decimal left, decimal right)
+  {
+    if (right == 0)
+      return 1m;
+
+    return Math.Abs(left - right) / Math.Abs(right);
+  }
+
+  private static string? NormalizeComparablePropertyType(string? value)
+  {
+    var normalized = value?.Trim().ToLowerInvariant();
+    return normalized switch
+    {
+      null or "" => null,
+      "r" or "sfr" or "residential" or "r1" or "r2" => "residential",
+      "mfr" or "multifamily" => "multifamily",
+      "commercial" or "com" or "c1" or "c2" or "c3" or "c4" => "commercial",
+      "industrial" or "ind" or "i1" => "industrial",
+      "agricultural" or "agr" or "a1" or "a2" => "agricultural",
+      _ => normalized
+    };
+  }
+
+  private static string? ExtractNeighborhood(string? address)
+  {
+    if (string.IsNullOrWhiteSpace(address))
+      return null;
+
+    var normalized = address.Trim();
+    var waIndex = normalized.IndexOf(", WA", StringComparison.OrdinalIgnoreCase);
+    if (waIndex > 0)
+    {
+      var priorComma = normalized.LastIndexOf(',', waIndex - 1);
+      if (priorComma >= 0 && waIndex > priorComma)
+      {
+        return NormalizeNeighborhoodToken(normalized[(priorComma + 1)..waIndex]);
+      }
+    }
+
+    return null;
+  }
+
+  private static string? NormalizeNeighborhoodToken(string? value)
+  {
+    var normalized = value?.Trim().ToUpperInvariant();
+    return normalized switch
+    {
+      null or "" => null,
+      "KENENWICK" => "KENNEWICK",
+      "W RICHLAND" => "WEST RICHLAND",
+      "UNDETERMINED" => null,
+      _ => normalized
+    };
   }
 
   // ──── Wave 25 Request DTOs ────

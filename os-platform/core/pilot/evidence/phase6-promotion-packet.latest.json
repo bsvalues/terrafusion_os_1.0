@@ -1,0 +1,245 @@
+{
+  "generatedAt": "2026-03-12T21:37:29.987Z",
+  "scope": "Phase 6 promotion packet for Benton recovery local-to-deployed proof",
+  "decision": "NO_GO",
+  "checks": [
+    {
+      "name": "local.recovery.docs",
+      "ok": true,
+      "detail": "required local Benton recovery artifacts present",
+      "payload": [
+        {
+          "path": "C:\\Users\\bsval\\terrafusion_os_1.0\\docs\\recovery\\BENTON_CONVERSION_LEDGER.md",
+          "exists": true
+        },
+        {
+          "path": "C:\\Users\\bsval\\terrafusion_os_1.0\\docs\\recovery\\PHASE3_COSTFORGE_PROOF.md",
+          "exists": true
+        },
+        {
+          "path": "C:\\Users\\bsval\\terrafusion_os_1.0\\docs\\recovery\\PHASE4_WORKBENCH_PROOF.md",
+          "exists": true
+        },
+        {
+          "path": "C:\\Users\\bsval\\terrafusion_os_1.0\\docs\\recovery\\PHASE5_GOVERNANCE_PROOF.md",
+          "exists": true
+        },
+        {
+          "path": "C:\\Users\\bsval\\terrafusion_os_1.0\\docs\\recovery\\PHASE5_TRUTH_CLASSIFICATION.md",
+          "exists": true
+        }
+      ],
+      "blocker": null
+    },
+    {
+      "name": "local.propertyforge.ui",
+      "ok": true,
+      "detail": "exit=0",
+      "payload": {
+        "stdout": "\n> terrafusion-frontend@0.1.0 test C:\\Users\\bsval\\terrafusion_os_1.0\\frontend\n> jest \"--runInBand\" \"apps/os-shell/src/__tests__/workbench/PropertyForge.test.tsx\"\n\n  console.warn\n    ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.\n\n    \u001b[0m \u001b[90m 368 |\u001b[39m     \u001b[36mif\u001b[39m (shouldSuppressActWarning(args)) \u001b[36mreturn\u001b[39m\u001b[33m;\u001b[39m\n     \u001b[90m 369 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mshowPersistence \u001b[33m&&\u001b[39m shouldSuppressPersistenceNoise(args)) \u001b[36mreturn\u001b[39m\u001b[33m;\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 370 |\u001b[39m     originalConsole\u001b[33m.\u001b[39mwarn\u001b[33m.\u001b[39mcall(console\u001b[33m,\u001b[39m \u001b[33m...\u001b[39margs)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 371 |\u001b[39m   }\u001b[33m;\u001b[39m\n     \u001b[90m 372 |\u001b[39m\n     \u001b[90m 373 |\u001b[39m   console\u001b[33m.\u001b[39minfo \u001b[33m=\u001b[39m (\u001b[33m...\u001b[39margs\u001b[33m:\u001b[39m any[]) \u001b[33m=>\u001b[39m {\u001b[0m\n\n      at console.warn (apps/os-shell/src/setupTests.ts:370:26)\n      at warn (../node_modules/.pnpm/react-router@6.30.2_react@18.3.1/node_modules/react-router/lib/deprecations.ts:9:13)\n      at warnOnce (../node_modules/.pnpm/react-router@6.30.2_react@18.3.1/node_modules/react-router/lib/deprecations.ts:14:3)\n      at logDeprecation (../node_modules/.pnpm/react-router@6.30.2_react@18.3.1/node_modules/react-router/lib/deprecations.ts:26:5)\n      at logV6DeprecationWarnings (../node_modules/.pnpm/react-router@6.30.2_react@18.3.1/node_modules/react-router/lib/components.tsx:257:25)\n      at commitHookEffectListMount (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:23189:26)\n      at commitPassiveMountOnFiber (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24970:11)\n      at commitPassiveMountEffects_complete (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24930:9)\n      at commitPassiveMountEffects_begin (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24917:7)\n      at commitPassiveMountEffects (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24905:3)\n      at flushPassiveEffectsImpl (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27078:3)\n      at flushPassiveEffects (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27023:14)\n      at ../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26808:9\n      at flushActQueue (../node_modules/.pnpm/react@18.3.1/node_modules/react/cjs/react.development.js:2667:24)\n      at act (../node_modules/.pnpm/react@18.3.1/node_modules/react/cjs/react.development.js:2582:11)\n      at actWithWarning (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom-test-utils.development.js:1740:10)\n      at ../node_modules/.pnpm/@testing-library+react@13.4.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/@testing-library/react/dist/act-compat.js:63:25\n      at renderRoot (../node_modules/.pnpm/@testing-library+react@13.4.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/@testing-library/react/dist/pure.js:159:26)\n      at render (../node_modules/.pnpm/@testing-library+react@13.4.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/@testing-library/react/dist/pure.js:246:10)\n      at Object.<anonymous> (apps/os-shell/src/__tests__/workbench/PropertyForge.test.tsx:48:13)\n\n  console.warn\n    ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.\n\n    \u001b[0m \u001b[90m 368 |\u001b[39m     \u001b[36mif\u001b[39m (shouldSuppressActWarning(args)) \u001b[36mreturn\u001b[39m\u001b[33m;\u001b[39m\n     \u001b[90m 369 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mshowPersistence \u001b[33m&&\u001b[39m shouldSuppressPersistenceNoise(args)) \u001b[36mreturn\u001b[39m\u001b[33m;\u001b[39m\n    \u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 370 |\u001b[39m     originalConsole\u001b[33m.\u001b[39mwarn\u001b[33m.\u001b[39mcall(console\u001b[33m,\u001b[39m \u001b[33m...\u001b[39margs)\u001b[33m;\u001b[39m\n     \u001b[90m     |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n     \u001b[90m 371 |\u001b[39m   }\u001b[33m;\u001b[39m\n     \u001b[90m 372 |\u001b[39m\n     \u001b[90m 373 |\u001b[39m   console\u001b[33m.\u001b[39minfo \u001b[33m=\u001b[39m (\u001b[33m...\u001b[39margs\u001b[33m:\u001b[39m any[]) \u001b[33m=>\u001b[39m {\u001b[0m\n\n      at console.warn (apps/os-shell/src/setupTests.ts:370:26)\n      at warn (../node_modules/.pnpm/react-router@6.30.2_react@18.3.1/node_modules/react-router/lib/deprecations.ts:9:13)\n      at warnOnce (../node_modules/.pnpm/react-router@6.30.2_react@18.3.1/node_modules/react-router/lib/deprecations.ts:14:3)\n      at logDeprecation (../node_modules/.pnpm/react-router@6.30.2_react@18.3.1/node_modules/react-router/lib/deprecations.ts:37:5)\n      at logV6DeprecationWarnings (../node_modules/.pnpm/react-router@6.30.2_react@18.3.1/node_modules/react-router/lib/components.tsx:257:25)\n      at commitHookEffectListMount (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:23189:26)\n      at commitPassiveMountOnFiber (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24970:11)\n      at commitPassiveMountEffects_complete (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24930:9)\n      at commitPassiveMountEffects_begin (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24917:7)\n      at commitPassiveMountEffects (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:24905:3)\n      at flushPassiveEffectsImpl (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27078:3)\n      at flushPassiveEffects (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27023:14)\n      at ../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26808:9\n      at flushActQueue (../node_modules/.pnpm/react@18.3.1/node_modules/react/cjs/react.development.js:2667:24)\n      at act (../node_modules/.pnpm/react@18.3.1/node_modules/react/cjs/react.development.js:2582:11)\n      at actWithWarning (../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom-test-utils.development.js:1740:10)\n      at ../node_modules/.pnpm/@testing-library+react@13.4.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/@testing-library/react/dist/act-compat.js:63:25\n      at renderRoot (../node_modules/.pnpm/@testing-library+react@13.4.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/@testing-library/react/dist/pure.js:159:26)\n      at render (../node_modules/.pnpm/@testing-library+react@13.4.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/@testing-library/react/dist/pure.js:246:10)\n      at Object.<anonymous> (apps/os-shell/src/__tests__/workbench/PropertyForge.test.tsx:48:13)\n\n",
+        "stderr": "PASS apps/os-shell/src/__tests__/workbench/PropertyForge.test.tsx (5.071 s)\n  PropertyForge\n    Rendering\n      √ renders with parcel context (334 ms)\n      √ displays valuation controls (209 ms)\n      √ displays audience selector (66 ms)\n    Controls\n      √ allows tax year selection (97 ms)\n      √ allows audience selection (62 ms)\n      √ allows comparison year toggle (75 ms)\n    Tool Invocation\n      √ loads live Benton comparables from the backend and populates selected ids (256 ms)\n      √ invokes explain_model_results tool successfully (117 ms)\n      √ uses loaded live comparable ids when analyzing comp rationale (159 ms)\n      √ runs valuation model after confirmation and shows correlation-bound result (99 ms)\n      √ surfaces tool error with correlationId (97 ms)\n      √ handles network errors gracefully (103 ms)\n    Comparison Mode\n      √ includes compare year in tool invocation when enabled (76 ms)\n    Loading States\n      √ shows loading indicator during explain (71 ms)\n    Explanation History\n      √ tracks explanation history (145 ms)\n    Value Display\n      √ displays value drivers when available (98 ms)\n      √ displays confidence score when available (86 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       17 passed, 17 total\nSnapshots:   0 total\nTime:        7.171 s\nRan all test suites matching /apps\\\\os-shell\\\\src\\\\__tests__\\\\workbench\\\\PropertyForge.test.tsx/i.\n"
+      },
+      "blocker": null
+    },
+    {
+      "name": "policy.pacs.continuity",
+      "ok": true,
+      "detail": "present",
+      "payload": {
+        "path": "C:\\Users\\bsval\\terrafusion_os_1.0\\docs\\recovery\\PHASE6_PACS_CONTINUITY_POLICY.md"
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.health.direct",
+      "ok": true,
+      "detail": "sha=b4a5570ba14908e9282e3e85b5e2bd15ccf62c3c",
+      "payload": {
+        "status": 200,
+        "headers": {
+          "Alt-Svc": "h3=\":443\"; ma=2592000",
+          "Content-Type": "application/json; charset=utf-8",
+          "Date": "Thu, 12 Mar 2026 21:37:42 GMT",
+          "Server": "Kestrel",
+          "X-Correlation-Id": "tf-f74f9a2a9bd8470baced0ebad92ff47d",
+          "X-Release-Deployed-At": "2026-03-11T19:43:30Z",
+          "X-Release-Environment": "staging",
+          "X-Release-Sha": "b4a5570ba14908e9282e3e85b5e2bd15ccf62c3c",
+          "Transfer-Encoding": "chunked"
+        },
+        "body": "HTTP/1.1 200 OK\r\nAlt-Svc: h3=\":443\"; ma=2592000\r\nContent-Type: application/json; charset=utf-8\r\nDate: Thu, 12 Mar 2026 21:37:42 GMT\r\nServer: Caddy\r\nServer: Caddy\r\nServer: Kestrel\r\nX-Correlation-Id: tf-f74f9a2a9bd8470baced0ebad92ff47d\r\nX-Release-Deployed-At: 2026-03-11T19:43:30Z\r\nX-Release-Environment: staging\r\nX-Release-Sha: b4a5570ba14908e9282e3e85b5e2bd15ccf62c3c\r\nTransfer-Encoding: chunked\r\n\r\n{\"status\":\"Healthy\",\"timestamp\":\"2026-03-12T21:37:42.9313722Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\"}"
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.frontend.shell",
+      "ok": true,
+      "detail": "staging frontend served SPA shell",
+      "payload": {
+        "status": 200
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.auth.login",
+      "ok": true,
+      "detail": "admin@terrafusionmarket.com",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI3ZDdiNzU5Mi0wN2M5LTQ3NzYtOGNhYi1mYWE4MDU5NDYwZDYiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6Ijg1NjVhZDBiLTVkMmMtNGUyYS05YWJiLTk0NGFlMGUwMzI1MCIsImlhdCI6MTc3MzM1MTQ2NCwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJuYmYiOjE3NzMzNTE0NjQsImV4cCI6MTc3MzM1NTA2NCwiaXNzIjoiVGVycmFmdXNpb24uQVBJIiwiYXVkIjoiVGVycmFmdXNpb24uQ2xpZW50In0.2_sUaYa0u-xQJAhKwRoFKeAh-z3dr9iRanMazD93bWU",
+        "email": "admin@terrafusionmarket.com",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T05:37:44.5683907Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.sync.configured",
+      "ok": false,
+      "detail": "systems=0, counties=0",
+      "payload": {
+        "isActive": false,
+        "currentOperation": "Idle",
+        "lastSyncTime": "2026-03-12T21:32:45.3878443Z",
+        "nextScheduledSync": "2026-03-12T21:47:45.3878447Z",
+        "activeConnections": 0,
+        "metrics": {
+          "TotalSystems": 0,
+          "ActiveCounties": 0,
+          "UptimeSeconds": 0
+        }
+      },
+      "blocker": "Staging deployed runtime is not configured with the Benton canonical sync/data spine"
+    },
+    {
+      "name": "staging.ui.workbench",
+      "ok": true,
+      "detail": "https://staging.terrafusionmarket.com/property/10001/forge",
+      "payload": {
+        "ok": true,
+        "name": "staging",
+        "url": "https://staging.terrafusionmarket.com/property/10001/forge",
+        "title": "TerraFusion OS - Government. Transcended.",
+        "bodySnippet": "🏠\n10001\nBenton County\n📊\nOverview\n💰\nValuation\n🗺️\nMapping\n⚙️\nAdmin\n📂\nCase\n💬 Ask Pilot\n↗\nSUITE COMPASS\n📊\nSummary\n🔨\nTerraForge\nBuild value\n🗺️\nTerraAtlas\n⚖️\nTerraDais\n📋\nTerraDossier\n🤖\nTerraPilot\n📊\nSummary\n🔥\nForge\n🗺️\nAtlas\n📋\nDais\n📜\nClerk\n💰\nTreasury\n🔍\nAudit\n📁\nDossier\n🎮\nPilot\n🔥\nTerraForge\n\nAI-powered valuation analysis for 10001\n\nVALUATION PARAMETERS\n⚙️\nTax Year\n2026\n2025\n2024\n2023\n2022\nAudience\nInternal Review\nTaxpayer-Friendly\n\nDetailed technical analysis\n\n📈\nYear-over-Year Compar",
+        "loginResponses": [
+          {
+            "url": "https://staging.terrafusionmarket.com/api/auth/login",
+            "status": 200
+          }
+        ],
+        "screenshotPath": "C:\\Users\\bsval\\terrafusion_os_1.0\\os-platform\\core\\pilot\\evidence\\phase6-staging-workbench-smoke.png"
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.health.direct_dns",
+      "ok": false,
+      "detail": "curl: (6) Could not resolve host: terrafusionmarket.com",
+      "payload": {
+        "code": 6,
+        "status": 0,
+        "stderr": "curl: (6) Could not resolve host: terrafusionmarket.com\r\n"
+      },
+      "blocker": "Production apex domain does not currently resolve publicly"
+    },
+    {
+      "name": "production.health.resolve",
+      "ok": true,
+      "detail": "sha=864d651a8b49ec1b2dc2cbca137091dbc1c3b29b",
+      "payload": {
+        "status": 200,
+        "headers": {
+          "Alt-Svc": "h3=\":443\"; ma=2592000",
+          "Content-Type": "application/json; charset=utf-8",
+          "Date": "Thu, 12 Mar 2026 21:37:54 GMT",
+          "Server": "Kestrel",
+          "X-Correlation-Id": "tf-766ede297551477c8aeb4fa64d1483e7",
+          "X-Release-Deployed-At": "2026-03-11T15:32:14Z",
+          "X-Release-Environment": "production",
+          "X-Release-Sha": "864d651a8b49ec1b2dc2cbca137091dbc1c3b29b",
+          "Transfer-Encoding": "chunked"
+        },
+        "body": "HTTP/1.1 200 OK\r\nAlt-Svc: h3=\":443\"; ma=2592000\r\nContent-Type: application/json; charset=utf-8\r\nDate: Thu, 12 Mar 2026 21:37:54 GMT\r\nServer: Caddy\r\nServer: Caddy\r\nServer: Kestrel\r\nX-Correlation-Id: tf-766ede297551477c8aeb4fa64d1483e7\r\nX-Release-Deployed-At: 2026-03-11T15:32:14Z\r\nX-Release-Environment: production\r\nX-Release-Sha: 864d651a8b49ec1b2dc2cbca137091dbc1c3b29b\r\nTransfer-Encoding: chunked\r\n\r\n{\"status\":\"Healthy\",\"timestamp\":\"2026-03-12T21:37:55.3910368Z\",\"environment\":\"Production\",\"version\":\"1.0.0\",\"service\":\"TerraFusion OS API - Basic Mode\"}"
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.frontend.shell",
+      "ok": true,
+      "detail": "production frontend served SPA shell via host resolve",
+      "payload": {
+        "status": 200
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.auth.login",
+      "ok": true,
+      "detail": "admin@terrafusionmarket.com",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJjMjdkOTk4YS1mNzAzLTRhMjEtODQ5YS04NTI5YjdkNDE2MjkiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6ImFkNDY3MWJiLTBlZGItNDM3OC04Y2Y5LWY5NTMxMWUwOTVhNyIsImlhdCI6MTc3MzM1MTQ3NywidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJuYmYiOjE3NzMzNTE0NzcsImV4cCI6MTc3MzM1NTA3NywiaXNzIjoiVGVycmFmdXNpb24uQVBJIiwiYXVkIjoiVGVycmFmdXNpb24uQ2xpZW50In0.G1SfmLAfrTc40_0e4Wdstns2UbqUh00J9BFQ_aUROK4",
+        "email": "admin@terrafusionmarket.com",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T05:37:57.0695336Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.sync.configured",
+      "ok": false,
+      "detail": "systems=0, counties=0",
+      "payload": {
+        "isActive": false,
+        "currentOperation": "Idle",
+        "lastSyncTime": "2026-03-12T21:32:57.8445751Z",
+        "nextScheduledSync": "2026-03-12T21:47:57.8445758Z",
+        "activeConnections": 0,
+        "metrics": {
+          "TotalSystems": 0,
+          "ActiveCounties": 0,
+          "UptimeSeconds": 0
+        }
+      },
+      "blocker": "Production deployed runtime is not configured with the Benton canonical sync/data spine"
+    },
+    {
+      "name": "production.ui.workbench",
+      "ok": true,
+      "detail": "https://terrafusionmarket.com/property/10001/forge",
+      "payload": {
+        "ok": true,
+        "name": "production",
+        "url": "https://terrafusionmarket.com/property/10001/forge",
+        "title": "TerraFusion OS - Government. Transcended.",
+        "bodySnippet": "🏠\n10001\nBenton County\n📊\nOverview\n💰\nValuation\n🗺️\nMapping\n⚙️\nAdmin\n📂\nCase\n💬 Ask Pilot\n↗\nSUITE COMPASS\n📊\nSummary\n🔨\nTerraForge\nBuild value\n🗺️\nTerraAtlas\n⚖️\nTerraDais\n📋\nTerraDossier\n🤖\nTerraPilot\n📊\nSummary\n🔥\nForge\n🗺️\nAtlas\n📋\nDais\n📜\nClerk\n💰\nTreasury\n🔍\nAudit\n📁\nDossier\n🎮\nPilot\n🔥\nTerraForge\n\nAI-powered valuation analysis for 10001\n\nVALUATION PARAMETERS\n⚙️\nTax Year\n2026\n2025\n2024\n2023\n2022\nAudience\nInternal Review\nTaxpayer-Friendly\n\nDetailed technical analysis\n\n📈\nYear-over-Year Compar",
+        "loginResponses": [
+          {
+            "url": "https://terrafusionmarket.com/api/auth/login",
+            "status": 200
+          }
+        ],
+        "screenshotPath": "C:\\Users\\bsval\\terrafusion_os_1.0\\os-platform\\core\\pilot\\evidence\\phase6-production-workbench-smoke.png"
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase6.packet.doc",
+      "ok": true,
+      "detail": "present",
+      "payload": {
+        "path": "C:\\Users\\bsval\\terrafusion_os_1.0\\docs\\recovery\\PHASE6_PROMOTION_PACKET.md"
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": false,
+    "failures": 3,
+    "blockers": [
+      "Staging deployed runtime is not configured with the Benton canonical sync/data spine",
+      "Production apex domain does not currently resolve publicly",
+      "Production deployed runtime is not configured with the Benton canonical sync/data spine"
+    ]
+  }
+}

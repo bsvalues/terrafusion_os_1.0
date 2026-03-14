@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useSentinelStore } from './sentinelStore';
 import { useSentinel } from './useSentinel';
+import { Z } from '../shell/desktop/zIndex';
 import { NeonSignal, type NeonSignalStatus } from '@/ui/materials';
 
 function toNeonStatus(status: 'healthy' | 'degraded' | 'down'): NeonSignalStatus {
@@ -33,8 +34,9 @@ export function SentinelChip({ variant = 'floating' }: SentinelChipProps) {
         type='button'
         data-testid='system-health-indicator'
         className={`${
-          variant === 'floating' ? 'fixed top-4 right-4 z-[100]' : 'relative'
+          variant === 'floating' ? 'fixed top-4 right-4' : 'relative'
         } hover:bg-white/10 transition`}
+        style={variant === 'floating' ? { zIndex: Z.topbar } : undefined}
         onClick={togglePanel}
         title='Sentinel diagnostics (Ctrl+Shift+S)'
       >

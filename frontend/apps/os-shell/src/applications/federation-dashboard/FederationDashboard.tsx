@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FederationNode, SwarmMission } from './types';
+import { useCountyStats } from '../../hooks/useCountyStats';
 
 // Mock Data
 const MOCK_NODES: FederationNode[] = [
@@ -52,6 +53,7 @@ export const FederationDashboard: React.FC = () => {
   const [nodes, setNodes] = useState<FederationNode[]>(MOCK_NODES);
   const [missions, setMissions] = useState<SwarmMission[]>(MOCK_MISSIONS);
   const [selectedNode, setSelectedNode] = useState<FederationNode | null>(null);
+  const { stats } = useCountyStats();
 
   return (
     <div className='flex h-full w-full bg-slate-900 text-white overflow-hidden'>
@@ -79,6 +81,18 @@ export const FederationDashboard: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* Benton County Stats */}
+        {stats && (
+          <div className='mb-4 p-3 bg-slate-700/30 rounded border border-slate-600'>
+            <h3 className='text-xs font-semibold text-slate-400 mb-2 uppercase'>Benton County</h3>
+            <div className='space-y-1 text-xs'>
+              <div className='flex justify-between'><span className='text-slate-400'>Parcels</span><span className='text-cyan-300'>{stats.totalParcels.toLocaleString()}</span></div>
+              <div className='flex justify-between'><span className='text-slate-400'>Assessed</span><span className='text-white'>${stats.totalAssessedValue.toLocaleString()}</span></div>
+              <div className='flex justify-between'><span className='text-slate-400'>Completion</span><span className='text-green-400'>{stats.assessmentCompletionPercent.toFixed(1)}%</span></div>
+            </div>
+          </div>
+        )}
 
         <div className='mt-auto'>
           <div className='text-xs text-slate-500'>

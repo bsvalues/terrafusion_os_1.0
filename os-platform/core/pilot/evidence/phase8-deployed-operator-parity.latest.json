@@ -1,0 +1,856 @@
+{
+  "generatedAt": "2026-03-13T11:56:48.432Z",
+  "scope": "Phase 8 deployed Benton operator parity packet",
+  "decision": "GO",
+  "checks": [
+    {
+      "name": "staging.operator.login",
+      "ok": true,
+      "detail": "admin@terrafusionmarket.com",
+      "payload": {
+        "nameid": "8ea9303e-5f98-4367-bdf7-c0db6e9630c6",
+        "email": "admin@terrafusionmarket.com",
+        "jti": "87fd1780-fc61-4f64-85b2-c0d93c877551",
+        "iat": 1773403008,
+        "terrafusion_version": "1.0",
+        "ai_agents": ["2016", "2016"],
+        "modules": "32",
+        "role": ["GovernmentUser", "Administrator"],
+        "county_system": "TerraFusion",
+        "version": "1.0",
+        "modules_access": "32",
+        "security_level": "government",
+        "perm": [
+          "read:dossier",
+          "read:properties",
+          "read:parcel",
+          "read:cost-breakdown",
+          "read:cost-comparison",
+          "read:cost-factors",
+          "read:cost-matrix",
+          "read:system-status",
+          "read:performance-metrics",
+          "ecosystem:view",
+          "write:dossier",
+          "access:costforge",
+          "calculate:property-cost",
+          "calculate:batch-valuation",
+          "read:cost-forecast",
+          "read:ai-agents",
+          "manage:ai-agents",
+          "sync:external-systems",
+          "ecosystem:manage"
+        ],
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "countyCode": "53005",
+        "nbf": 1773403008,
+        "exp": 1773406608,
+        "iss": "Terrafusion.API",
+        "aud": "Terrafusion.Client"
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.operator.county_claims",
+      "ok": true,
+      "detail": "countyId=19190019-1919-1919-1919-191919191919, countyCode=53005",
+      "payload": {
+        "nameid": "8ea9303e-5f98-4367-bdf7-c0db6e9630c6",
+        "email": "admin@terrafusionmarket.com",
+        "jti": "87fd1780-fc61-4f64-85b2-c0d93c877551",
+        "iat": 1773403008,
+        "terrafusion_version": "1.0",
+        "ai_agents": ["2016", "2016"],
+        "modules": "32",
+        "role": ["GovernmentUser", "Administrator"],
+        "county_system": "TerraFusion",
+        "version": "1.0",
+        "modules_access": "32",
+        "security_level": "government",
+        "perm": [
+          "read:dossier",
+          "read:properties",
+          "read:parcel",
+          "read:cost-breakdown",
+          "read:cost-comparison",
+          "read:cost-factors",
+          "read:cost-matrix",
+          "read:system-status",
+          "read:performance-metrics",
+          "ecosystem:view",
+          "write:dossier",
+          "access:costforge",
+          "calculate:property-cost",
+          "calculate:batch-valuation",
+          "read:cost-forecast",
+          "read:ai-agents",
+          "manage:ai-agents",
+          "sync:external-systems",
+          "ecosystem:manage"
+        ],
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "countyCode": "53005",
+        "nbf": 1773403008,
+        "exp": 1773406608,
+        "iss": "Terrafusion.API",
+        "aud": "Terrafusion.Client"
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.operator.comps",
+      "ok": true,
+      "detail": "status=200, comps=10",
+      "payload": {
+        "subjectId": "100984010001008",
+        "county": "Benton",
+        "comps": [
+          {
+            "id": "2149ca40-6704-4c61-b16e-24dcc0cafafa",
+            "salePrice": 489900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 9798
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:2857",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "78a31c66-2919-4971-a679-d6f0fbf0d8ea",
+            "salePrice": 359900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 7198
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:2125",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "86301e27-e7fe-4653-ad61-a4fe2c2989c2",
+            "salePrice": 320000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 6400
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:1775",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "3b6e5021-4585-4f12-8e2a-a91e90c6d46e",
+            "salePrice": 280000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 5600
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:2066",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "1bd0b187-3ea9-4e0e-a60e-bed20271b63e",
+            "salePrice": 242000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 4840
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1903",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "e00d6fe0-796d-477a-80c2-11c0abbbfeaa",
+            "salePrice": 224900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 4498
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1985",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "01146d6e-b469-455d-b48e-743efa3fce91",
+            "salePrice": 160000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 3200
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1388",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "22d435b1-b7b4-4dd6-85b0-562addb3d4c2",
+            "salePrice": 143000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 2860
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:1104",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "f536bd19-f3e9-4a7b-8b05-128ffbccb60d",
+            "salePrice": 135000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 2700
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:813",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "587aa458-b78a-4de1-b991-4661d233ccc6",
+            "salePrice": 89950,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 1799
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:WEST RICHLAND",
+              "gla:655",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          }
+        ],
+        "comparables": [
+          {
+            "compId": "2149ca40-6704-4c61-b16e-24dcc0cafafa",
+            "parcelId": "123881011891001",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 489900,
+            "propertyType": "residential",
+            "grossLivingArea": 2857,
+            "lotSize": 151153.2,
+            "adjustedPrice": 499698,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "78a31c66-2919-4971-a679-d6f0fbf0d8ea",
+            "parcelId": "131992100000029",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 359900,
+            "propertyType": "residential",
+            "grossLivingArea": 2125,
+            "lotSize": 9237,
+            "adjustedPrice": 367098,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "86301e27-e7fe-4653-ad61-a4fe2c2989c2",
+            "parcelId": "127984030000037",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 320000,
+            "propertyType": "residential",
+            "grossLivingArea": 1775,
+            "lotSize": 17947,
+            "adjustedPrice": 326400,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "3b6e5021-4585-4f12-8e2a-a91e90c6d46e",
+            "parcelId": "121982060003005",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 280000,
+            "propertyType": "residential",
+            "grossLivingArea": 2066,
+            "lotSize": 10838,
+            "adjustedPrice": 285600,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "1bd0b187-3ea9-4e0e-a60e-bed20271b63e",
+            "parcelId": "113894040001002",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 242000,
+            "propertyType": "residential",
+            "grossLivingArea": 1903,
+            "lotSize": 14161,
+            "adjustedPrice": 246840,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "e00d6fe0-796d-477a-80c2-11c0abbbfeaa",
+            "parcelId": "114894020000046",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 224900,
+            "propertyType": "residential",
+            "grossLivingArea": 1985,
+            "lotSize": 15015,
+            "adjustedPrice": 229398,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "01146d6e-b469-455d-b48e-743efa3fce91",
+            "parcelId": "106804130002007",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 160000,
+            "propertyType": "residential",
+            "grossLivingArea": 1388,
+            "lotSize": 6528,
+            "adjustedPrice": 163200,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "22d435b1-b7b4-4dd6-85b0-562addb3d4c2",
+            "parcelId": "135083030012010",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 143000,
+            "propertyType": "residential",
+            "grossLivingArea": 1104,
+            "lotSize": 7080,
+            "adjustedPrice": 145860,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "f536bd19-f3e9-4a7b-8b05-128ffbccb60d",
+            "parcelId": "102891012023002",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 135000,
+            "propertyType": "residential",
+            "grossLivingArea": 813,
+            "lotSize": 4708,
+            "adjustedPrice": 137700,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "587aa458-b78a-4de1-b991-4661d233ccc6",
+            "parcelId": "105982120109000",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 89950,
+            "propertyType": "residential",
+            "grossLivingArea": 655,
+            "lotSize": null,
+            "adjustedPrice": 91749,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          }
+        ],
+        "count": 10,
+        "selectionMethod": "subject-missing fallback scoring; qualified only",
+        "subject": null,
+        "summary": {
+          "medianAdjustedPrice": 238119,
+          "meanAdjustedPrice": 249354.3,
+          "range": {
+            "low": 91749,
+            "high": 499698
+          },
+          "coefficient_of_dispersion": 6.2
+        },
+        "includesAdjustments": true,
+        "retrievedAt": "2026-03-13T11:56:48.9561887Z"
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.operator.login",
+      "ok": true,
+      "detail": "admin@terrafusionmarket.com",
+      "payload": {
+        "nameid": "704cb17a-8d7b-454d-a1d2-ffd04ab095e2",
+        "email": "admin@terrafusionmarket.com",
+        "jti": "07d64c51-94c3-460c-8eb0-c2d593d45e26",
+        "iat": 1773403009,
+        "terrafusion_version": "1.0",
+        "ai_agents": ["2016", "2016"],
+        "modules": "32",
+        "role": ["GovernmentUser", "Administrator"],
+        "county_system": "TerraFusion",
+        "version": "1.0",
+        "modules_access": "32",
+        "security_level": "government",
+        "perm": [
+          "read:dossier",
+          "read:properties",
+          "read:parcel",
+          "read:cost-breakdown",
+          "read:cost-comparison",
+          "read:cost-factors",
+          "read:cost-matrix",
+          "read:system-status",
+          "read:performance-metrics",
+          "ecosystem:view",
+          "write:dossier",
+          "access:costforge",
+          "calculate:property-cost",
+          "calculate:batch-valuation",
+          "read:cost-forecast",
+          "read:ai-agents",
+          "manage:ai-agents",
+          "sync:external-systems",
+          "ecosystem:manage"
+        ],
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "countyCode": "53005",
+        "nbf": 1773403009,
+        "exp": 1773406609,
+        "iss": "Terrafusion.API",
+        "aud": "Terrafusion.Client"
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.operator.county_claims",
+      "ok": true,
+      "detail": "countyId=19190019-1919-1919-1919-191919191919, countyCode=53005",
+      "payload": {
+        "nameid": "704cb17a-8d7b-454d-a1d2-ffd04ab095e2",
+        "email": "admin@terrafusionmarket.com",
+        "jti": "07d64c51-94c3-460c-8eb0-c2d593d45e26",
+        "iat": 1773403009,
+        "terrafusion_version": "1.0",
+        "ai_agents": ["2016", "2016"],
+        "modules": "32",
+        "role": ["GovernmentUser", "Administrator"],
+        "county_system": "TerraFusion",
+        "version": "1.0",
+        "modules_access": "32",
+        "security_level": "government",
+        "perm": [
+          "read:dossier",
+          "read:properties",
+          "read:parcel",
+          "read:cost-breakdown",
+          "read:cost-comparison",
+          "read:cost-factors",
+          "read:cost-matrix",
+          "read:system-status",
+          "read:performance-metrics",
+          "ecosystem:view",
+          "write:dossier",
+          "access:costforge",
+          "calculate:property-cost",
+          "calculate:batch-valuation",
+          "read:cost-forecast",
+          "read:ai-agents",
+          "manage:ai-agents",
+          "sync:external-systems",
+          "ecosystem:manage"
+        ],
+        "countyId": "19190019-1919-1919-1919-191919191919",
+        "countyCode": "53005",
+        "nbf": 1773403009,
+        "exp": 1773406609,
+        "iss": "Terrafusion.API",
+        "aud": "Terrafusion.Client"
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.operator.comps",
+      "ok": true,
+      "detail": "status=200, comps=10",
+      "payload": {
+        "subjectId": "100984010001008",
+        "county": "Benton",
+        "comps": [
+          {
+            "id": "2149ca40-6704-4c61-b16e-24dcc0cafafa",
+            "salePrice": 489900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 9798
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:2857",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "78a31c66-2919-4971-a679-d6f0fbf0d8ea",
+            "salePrice": 359900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 7198
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:2125",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "86301e27-e7fe-4653-ad61-a4fe2c2989c2",
+            "salePrice": 320000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 6400
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:1775",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "3b6e5021-4585-4f12-8e2a-a91e90c6d46e",
+            "salePrice": 280000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 5600
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:2066",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "1bd0b187-3ea9-4e0e-a60e-bed20271b63e",
+            "salePrice": 242000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 4840
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1903",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "e00d6fe0-796d-477a-80c2-11c0abbbfeaa",
+            "salePrice": 224900,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 4498
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1985",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "01146d6e-b469-455d-b48e-743efa3fce91",
+            "salePrice": 160000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 3200
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:1388",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "22d435b1-b7b4-4dd6-85b0-562addb3d4c2",
+            "salePrice": 143000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 2860
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:RICHLAND",
+              "gla:1104",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "f536bd19-f3e9-4a7b-8b05-128ffbccb60d",
+            "salePrice": 135000,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 2700
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:KENNEWICK",
+              "gla:813",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          },
+          {
+            "id": "587aa458-b78a-4de1-b991-4661d233ccc6",
+            "salePrice": 89950,
+            "saleDate": "2016-10-28T00:00:00",
+            "similarity": 30,
+            "adjustments": [
+              {
+                "type": "time",
+                "amount": 1799
+              }
+            ],
+            "notes": [
+              "type:residential",
+              "neighborhood:WEST RICHLAND",
+              "gla:655",
+              "qualified-sale",
+              "no-subject-context"
+            ]
+          }
+        ],
+        "comparables": [
+          {
+            "compId": "2149ca40-6704-4c61-b16e-24dcc0cafafa",
+            "parcelId": "123881011891001",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 489900,
+            "propertyType": "residential",
+            "grossLivingArea": 2857,
+            "lotSize": 151153.2,
+            "adjustedPrice": 499698,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "78a31c66-2919-4971-a679-d6f0fbf0d8ea",
+            "parcelId": "131992100000029",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 359900,
+            "propertyType": "residential",
+            "grossLivingArea": 2125,
+            "lotSize": 9237,
+            "adjustedPrice": 367098,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "86301e27-e7fe-4653-ad61-a4fe2c2989c2",
+            "parcelId": "127984030000037",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 320000,
+            "propertyType": "residential",
+            "grossLivingArea": 1775,
+            "lotSize": 17947,
+            "adjustedPrice": 326400,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "3b6e5021-4585-4f12-8e2a-a91e90c6d46e",
+            "parcelId": "121982060003005",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 280000,
+            "propertyType": "residential",
+            "grossLivingArea": 2066,
+            "lotSize": 10838,
+            "adjustedPrice": 285600,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "1bd0b187-3ea9-4e0e-a60e-bed20271b63e",
+            "parcelId": "113894040001002",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 242000,
+            "propertyType": "residential",
+            "grossLivingArea": 1903,
+            "lotSize": 14161,
+            "adjustedPrice": 246840,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "e00d6fe0-796d-477a-80c2-11c0abbbfeaa",
+            "parcelId": "114894020000046",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 224900,
+            "propertyType": "residential",
+            "grossLivingArea": 1985,
+            "lotSize": 15015,
+            "adjustedPrice": 229398,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "01146d6e-b469-455d-b48e-743efa3fce91",
+            "parcelId": "106804130002007",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 160000,
+            "propertyType": "residential",
+            "grossLivingArea": 1388,
+            "lotSize": 6528,
+            "adjustedPrice": 163200,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "22d435b1-b7b4-4dd6-85b0-562addb3d4c2",
+            "parcelId": "135083030012010",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 143000,
+            "propertyType": "residential",
+            "grossLivingArea": 1104,
+            "lotSize": 7080,
+            "adjustedPrice": 145860,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "f536bd19-f3e9-4a7b-8b05-128ffbccb60d",
+            "parcelId": "102891012023002",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 135000,
+            "propertyType": "residential",
+            "grossLivingArea": 813,
+            "lotSize": 4708,
+            "adjustedPrice": 137700,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          },
+          {
+            "compId": "587aa458-b78a-4de1-b991-4661d233ccc6",
+            "parcelId": "105982120109000",
+            "saleDate": "2016-10-28T00:00:00",
+            "salePrice": 89950,
+            "propertyType": "residential",
+            "grossLivingArea": 655,
+            "lotSize": null,
+            "adjustedPrice": 91749,
+            "adjustmentRationale": "Time adjusted using operational comparable sales data"
+          }
+        ],
+        "count": 10,
+        "selectionMethod": "subject-missing fallback scoring; qualified only",
+        "subject": null,
+        "summary": {
+          "medianAdjustedPrice": 238119,
+          "meanAdjustedPrice": 249354.3,
+          "range": {
+            "low": 91749,
+            "high": 499698
+          },
+          "coefficient_of_dispersion": 6.2
+        },
+        "includesAdjustments": true,
+        "retrievedAt": "2026-03-13T11:56:50.2015072Z"
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": []
+  }
+}

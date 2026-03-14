@@ -1,0 +1,106 @@
+{
+  "generatedAt": "2026-03-13T11:56:45.246Z",
+  "scope": "Phase 7 deployment alignment packet for Benton Hostinger operational-snapshot runtime truth",
+  "decision": "GO",
+  "checks": [
+    {
+      "name": "local.phase7.runtime_truth",
+      "ok": true,
+      "detail": "exit=0",
+      "payload": {
+        "stdout": "  Determining projects to restore...\r\n  All projects are up-to-date for restore.\r\n  Building TerraFusion Elite Operational Excellence - Championship Level Government Technology\r\n  TerraFusion.Abstractions -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Abstractions\\bin\\Debug\\net8.0\\TerraFusion.Abstractions.dll\r\n  TerraFusion.Levy -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Levy\\bin\\Debug\\net8.0\\TerraFusion.Levy.dll\r\n  TerraFusion.CiHints -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\tools\\TerraFusion.CiHints\\bin\\Debug\\net8.0\\TerraFusion.CiHints.dll\r\n  TerraFusion.Core -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Core\\bin\\Debug\\net8.0\\TerraFusion.Core.dll\r\n  TerraFusion.Data -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Data\\bin\\Debug\\net8.0\\TerraFusion.Data.dll\r\n  TerraFusion.Sync -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Sync\\bin\\Debug\\net8.0\\TerraFusion.Sync.dll\r\n  TerraFusion.Consciousness -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Consciousness\\bin\\Debug\\net8.0\\TerraFusion.Consciousness.dll\r\n  TerraFusion.AI -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.AI\\bin\\Debug\\net8.0\\TerraFusion.AI.dll\r\n  TerraFusion.CostForge -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.CostForge\\bin\\Debug\\net8.0\\TerraFusion.CostForge.dll\r\n  TerraFusion.Operations -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.Operations\\bin\\Debug\\net8.0\\TerraFusion.Operations.dll\r\n  TerraFusion Elite Operational Excellence build completed - Government. Transcended.\r\n  TerraFusion.API -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.API\\bin\\Debug\\net8.0\\TerraFusion.API.dll\r\n  TerraFusion.Unit.Tests -> C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\tests\\TerraFusion.Unit.Tests\\bin\\Debug\\net8.0\\TerraFusion.Unit.Tests.dll\r\nTest run for C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\tests\\TerraFusion.Unit.Tests\\bin\\Debug\\net8.0\\TerraFusion.Unit.Tests.dll (.NETCoreApp,Version=v8.0)\r\nVSTest version 17.11.1 (x64)\r\n\r\nStarting test execution, please wait...\r\nA total of 1 test files matched the specified pattern.\r\n\r\nPassed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 26 ms - TerraFusion.Unit.Tests.dll (net8.0)\r\n",
+        "stderr": ""
+      },
+      "blocker": null
+    },
+    {
+      "name": "local.phase7.deploy_contract",
+      "ok": true,
+      "detail": "Hostinger deploy template declares Benton operational-snapshot mode",
+      "payload": {
+        "requiredSnapshotLines": [
+          "ConnectionStrings__PacsConnection=",
+          "ConnectionStrings__PacsSalesConnection=",
+          "HarrisPACS__Enabled=false"
+        ],
+        "missingSnapshotLines": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.auth.login",
+      "ok": true,
+      "detail": "admin@terrafusionmarket.com",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJkYjJkMzhmMC0xNTYzLTQ1Y2MtYTBlYy1lODYwZWJiOWMwMjUiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6IjZkMTNmOWMwLTRkNTUtNDFkZi1iNDhiLWZjMWY1N2I4ODhlMSIsImlhdCI6MTc3MzQwMzAwMywidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzAwMywiZXhwIjoxNzczNDA2NjAzLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.uFUANPZQD71v0zSKz108AZ5e1act9tU0ULB2ALc2S8A",
+        "email": "admin@terrafusionmarket.com",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T19:56:43.9883573Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "staging.sync.truth",
+      "ok": true,
+      "detail": "systems=0, counties=0, systemRows=0, countyRows=0, fakeDefaults=false",
+      "payload": {
+        "status": {
+          "isActive": false,
+          "currentOperation": "Idle",
+          "lastSyncTime": null,
+          "nextScheduledSync": null,
+          "activeConnections": 0,
+          "metrics": {
+            "TotalSystems": 0,
+            "ActiveCounties": 0,
+            "UptimeSeconds": 0
+          }
+        },
+        "systems": [],
+        "counties": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.auth.login",
+      "ok": true,
+      "detail": "admin@terrafusionmarket.com",
+      "payload": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJjNTE5MGE5Mi00MGRhLTRlZDUtYTdkNi0zMjZlYWRkMzZjY2EiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6Ijk4OGZjNTAzLTdkZjEtNDQ1Yi05NmMxLTQyMGZlNjlkMzdhNyIsImlhdCI6MTc3MzQwMzAwNSwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzAwNSwiZXhwIjoxNzczNDA2NjA1LCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.W6fuQJlYwxrMDdj5YsymZ2NrdfbCremaihLCf_p1Jpc",
+        "email": "admin@terrafusionmarket.com",
+        "roles": ["GovernmentUser", "Administrator"],
+        "expiresAt": "2026-03-13T19:56:45.7966468Z",
+        "refreshToken": null
+      },
+      "blocker": null
+    },
+    {
+      "name": "production.sync.truth",
+      "ok": true,
+      "detail": "systems=0, counties=0, systemRows=0, countyRows=0, fakeDefaults=false",
+      "payload": {
+        "status": {
+          "isActive": false,
+          "currentOperation": "Idle",
+          "lastSyncTime": null,
+          "nextScheduledSync": null,
+          "activeConnections": 0,
+          "metrics": {
+            "TotalSystems": 0,
+            "ActiveCounties": 0,
+            "UptimeSeconds": 0
+          }
+        },
+        "systems": [],
+        "counties": []
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": []
+  }
+}

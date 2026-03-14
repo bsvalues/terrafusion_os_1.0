@@ -6,7 +6,7 @@
   --tf-primary: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50)); /* Cyan gradient start */
   --tf-secondary: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-30)); /* Teal gradient end */
   --tf-dark: hsl(var(--tf-surface-dark-hs) var(--tf-l-10)); /* Background navy */
-  --tf-accent: var(--tf-quantum-cyan); /* Glow/highlight */
+  --tf-accent: 180 100% 60%; /* Glow/highlight — raw HSL channels */
   --tf-trust-blue: hsl(var(--tf-network-blue-hs) var(--tf-l-40)); /* Government trust */
   --tf-success-green: hsl(var(--tf-success-hs) var(--tf-l-50)); /* Operational status */
   --tf-transcend-cyan: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60)); /* Transcendence theme */
@@ -89,7 +89,7 @@
   width: 80%;
   height: 80%;
   border-radius: 50%;
-  border: 1px solid var(--tf-accent);
+  border: 1px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60));
   opacity: 0.5;
 }
 
@@ -332,8 +332,8 @@
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   :root {
-    --tf-primary: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
-    --tf-secondary: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
-    --tf-accent: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
+    --tf-primary: 0 0% 100%;
+    --tf-secondary: 0 0% 100%;
+    --tf-accent: 0 0% 100%;
   }
 }

@@ -108,6 +108,12 @@ export default defineConfig(({ mode }) => {
 
       // Proxy API calls to .NET backend
       proxy: {
+        // Capture error boundary reports in pilot runtime (dev diagnostics)
+        '/api/errors': {
+          target: `http://localhost:${process.env.PILOT_PORT || 4317}`,
+          changeOrigin: true,
+          secure: false,
+        },
         '/api': {
           target: backendUrl,
           changeOrigin: true,
@@ -116,6 +122,12 @@ export default defineConfig(({ mode }) => {
         },
         '/ops': {
           target: backendUrl,
+          changeOrigin: true,
+          secure: false,
+        },
+        // Proxy Pilot runtime (TerraCanon dev-pilot-runtime)
+        '/pilot': {
+          target: `http://localhost:${process.env.PILOT_PORT || 4317}`,
           changeOrigin: true,
           secure: false,
         },

@@ -14,6 +14,18 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import type { TerraFusionShellMode } from '../contracts/shellMode';
+import {
+  INITIAL_SHELL_MODE,
+  isValidTransition,
+  SHELL_SURFACE_POLICY,
+} from '../contracts/shellMode';
+import {
+  MODULE_OBJECT_TYPES,
+  PLACEMENT_POLICY,
+  type TerraFusionObjectType,
+  type ObjectClassification,
+} from '../contracts/objectPlacement';
 
 // ============================================================================
 // Types
@@ -75,6 +87,8 @@ export interface DesktopWindow {
 
 export interface DesktopState {
   // State
+  shellMode: TerraFusionShellMode;
+  previousShellMode: TerraFusionShellMode | null;
   windows: DesktopWindow[];
   activeWindowId: string | null;
   nextZIndex: number;
@@ -82,7 +96,13 @@ export interface DesktopState {
   currentDesktopId: string;
   desktops: VirtualDesktop[];
 
-  // Actions
+  // Shell Mode Actions
+  setShellMode: (mode: TerraFusionShellMode) => void;
+  enterDesktop: () => void;
+  enterHome: () => void;
+  enterApplication: () => void;
+
+  // Window Actions
   openWindow: (
     moduleId: string,
     title: string,
@@ -139,6 +159,163 @@ const CASCADE_OFFSET = 30; // Pixels to offset each new window
 const BASE_POSITION: Position = { x: 100, y: 50 };
 const SNAP_THRESHOLD = 20; // Pixels from edge to trigger snap
 const TASKBAR_HEIGHT = 48;
+
+/**
+ * Returns the correct window size for a module based on its type.
+ * - Suite windows (suite-*) and OS features (os-*) → near-full-stage
+ * - Property Workbench → maximized (full viewport minus chrome)
+ * - Everything else → DEFAULT_WINDOW_SIZE
+ */
+function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean } {
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+
+  // Use MODULE_OBJECT_TYPES classification when available
+  const classification = MODULE_OBJECT_TYPES[moduleId];
+  if (classification) {
+    const { objectType } = classification;
+
+    // Tier-0 workbench → opens maximized
+    if (objectType === 'tier0-workbench') {
+      return {
+        size: { width: vw, height: vh - TASKBAR_HEIGHT },
+        maximized: true,
+      };
+    }
+
+    // Suite workspaces and OS feature windows → near-full-stage
+    if (objectType === 'suite-workspace' || objectType === 'os-feature-window') {
+      return {
+        size: { width: vw - 40, height: vh - 120 },
+        maximized: false,
+      };
+    }
+  }
+
+  // Prefix-matching fallback for unclassified modules
+  if (moduleId === 'property-workbench') {
+    return {
+      size: { width: vw, height: vh - TASKBAR_HEIGHT },
+      maximized: true,
+    };
+  }
+  if (moduleId.startsWith('suite-') || moduleId.startsWith('os-')) {
+    return {
+      size: { width: vw - 40, height: vh - 120 },
+      maximized: false,
+    };
+  }
+
+  return { size: { ...DEFAULT_WINDOW_SIZE }, maximized: false };
+}
+
+// ============================================================================
+// Launcher Routing Enforcement (Phase 6 + Phase 9)
+// ============================================================================
+
+/**
+ * Spawn decision returned by the codex-aware launcher.
+ *
+ *   'open'       — spawn as standalone window (suites, workbench, os-features, cross-parcel)
+ *   'route-to-workbench' — must route through property workbench (parcel-scoped-app)
+ *   'reject'     — cannot spawn a window (headless, toast, always-visible, overlay w/o host)
+ */
+export type SpawnDecision = 'open' | 'route-to-workbench' | 'reject';
+
+export interface SpawnVerdict {
+  decision: SpawnDecision;
+  reason: string;
+  classification?: ObjectClassification;
+  objectType?: TerraFusionObjectType;
+}
+
+/**
+ * Consult the 3-6-9 Object Placement Codex to determine how a module
+ * should be launched. This is the constitutional front door — no object
+ * may open a window without passing through this check.
+ */
+export function evaluateSpawnIntent(moduleId: string): SpawnVerdict {
+  const classification = MODULE_OBJECT_TYPES[moduleId];
+
+  // Unclassified modules: allow (graceful degradation for dev/extension modules)
+  if (!classification) {
+    return { decision: 'open', reason: 'unclassified-module-allowed' };
+  }
+
+  const { objectType } = classification;
+  const policy = PLACEMENT_POLICY[objectType];
+  if (!policy) {
+    return { decision: 'open', reason: 'no-policy-found', classification, objectType };
+  }
+
+  // Phase 9 hard fail-safe: headless services MUST NOT spawn windows
+  if (policy.layer === 'no-direct-ui' || policy.renderMode === 'headless') {
+    return {
+      decision: 'reject',
+      reason: `headless-object-cannot-spawn: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Toast-ephemeral objects cannot become persistent windows
+  if (policy.renderMode === 'toast-ephemeral') {
+    return {
+      decision: 'reject',
+      reason: `toast-cannot-persist: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Always-visible shell chrome cannot be spawned as windows
+  if (policy.renderMode === 'always-visible') {
+    return {
+      decision: 'reject',
+      reason: `shell-chrome-not-spawnable: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Overlay objects (audit-evidence-surface) need workbench host context
+  if (policy.renderMode === 'overlay' && policy.hostSurface) {
+    return {
+      decision: 'route-to-workbench',
+      reason: `overlay-requires-host: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Parcel-scoped apps must route through workbench, never standalone
+  if (policy.hostSurface === 'tier0-workbench') {
+    return {
+      decision: 'route-to-workbench',
+      reason: `parcel-scoped-routes-through-workbench: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // Route-activated objects (home-scene, domain-router) are not window-spawned
+  if (policy.renderMode === 'route-activated') {
+    return {
+      decision: 'reject',
+      reason: `route-activated-not-window-spawnable: ${policy.driftForbidden}`,
+      classification,
+      objectType,
+    };
+  }
+
+  // All window-spawned objects without a host surface → standalone open
+  if (policy.renderMode === 'window-spawned' && !policy.hostSurface) {
+    return { decision: 'open', reason: 'lawful-window-spawn', classification, objectType };
+  }
+
+  // Fallback: allow (should not reach here for classified objects)
+  return { decision: 'open', reason: 'fallback-allow', classification, objectType };
+}
 
 // ============================================================================
 // Utility Functions
@@ -228,6 +405,8 @@ export const useDesktopStore = create<DesktopState>()(
   devtools(
     (set, get) => ({
       // Initial State
+      shellMode: INITIAL_SHELL_MODE,
+      previousShellMode: null,
       windows: [],
       activeWindowId: null,
       nextZIndex: 1,
@@ -240,15 +419,90 @@ export const useDesktopStore = create<DesktopState>()(
         { id: 'desktop-4', name: 'Desktop 4' },
       ],
 
-      // Actions
+      // Shell Mode Actions
+      setShellMode: (mode: TerraFusionShellMode) => {
+        const { shellMode } = get();
+        if (mode === shellMode) return;
+        if (!isValidTransition(shellMode, mode)) return;
+        set({ previousShellMode: shellMode, shellMode: mode });
+      },
+
+      enterDesktop: () => {
+        get().setShellMode('desktop');
+      },
+
+      enterHome: () => {
+        get().setShellMode('home');
+      },
+
+      enterApplication: () => {
+        get().setShellMode('application');
+      },
+
+      // Window Actions
       openWindow: (
         moduleId: string,
         title: string,
         icon: string,
         metadata?: Record<string, any>
       ): string => {
+        // ── Phase 6: Launcher Routing Enforcement ──────────────────────
+        // Consult the 3-6-9 Codex before spawning any window.
+        const verdict = evaluateSpawnIntent(moduleId);
+
+        if (verdict.decision === 'reject') {
+          // Object type is not allowed to spawn a window.
+          if (typeof console !== 'undefined') {
+            console.warn(
+              `[Codex] openWindow REJECTED for "${moduleId}": ${verdict.reason}`
+            );
+          }
+          return '';
+        }
+
+        if (verdict.decision === 'route-to-workbench') {
+          // Parcel-scoped apps and overlays must route through workbench.
+          // Open the workbench instead, injecting the requested tab into metadata.
+          const workbenchModuleId = 'property-workbench';
+          const routedMetadata = {
+            ...metadata,
+            _routedTab: moduleId,
+            _routeReason: verdict.reason,
+          };
+
+          // Check if workbench is already open — focus it and switch tab
+          const { windows } = get();
+          const existingWorkbench = windows.find(
+            (w) => w.moduleId === workbenchModuleId
+          );
+          if (existingWorkbench) {
+            // Update metadata to switch tabs, then focus
+            set({
+              windows: windows.map((w) =>
+                w.id === existingWorkbench.id
+                  ? { ...w, metadata: { ...w.metadata, ...routedMetadata } }
+                  : w
+              ),
+            });
+            get().focusWindow(existingWorkbench.id);
+            return existingWorkbench.id;
+          }
+
+          // No workbench open — spawn it with the routed tab
+          return get().openWindow(
+            workbenchModuleId,
+            'Property Workbench',
+            'workbench',
+            routedMetadata
+          );
+        }
+
+        // ── Phase 9: Window Spawn — lawful open ────────────────────────
         const id = generateWindowId();
         const { windows, nextZIndex, currentDesktopId } = get();
+
+        // Use module-aware sizing (suites → near-full-stage, workbench → maximized)
+        const { size: moduleSize, maximized } = getModuleWindowSize(moduleId);
 
         const newWindow: DesktopWindow = {
           id,
@@ -256,11 +510,11 @@ export const useDesktopStore = create<DesktopState>()(
           title,
           icon,
           desktopId: currentDesktopId,
-          position: calculateNewWindowPosition(windows.length),
-          size: { ...DEFAULT_WINDOW_SIZE },
-          state: 'normal',
+          position: maximized ? { x: 0, y: 0 } : calculateNewWindowPosition(windows.length),
+          size: moduleSize,
+          state: maximized ? 'maximized' : 'normal',
           zIndex: nextZIndex,
-          metadata, // INJECTED
+          metadata,
         };
 
         set({
@@ -268,6 +522,9 @@ export const useDesktopStore = create<DesktopState>()(
           activeWindowId: id,
           nextZIndex: nextZIndex + 1,
         });
+
+        // Shell mode: opening a window enters application mode
+        get().enterApplication();
 
         return id;
       },
@@ -293,6 +550,13 @@ export const useDesktopStore = create<DesktopState>()(
           windows: newWindows,
           activeWindowId: newActiveId,
         });
+
+        // Shell mode: when last window closes, restore prior mode (or home)
+        if (newWindows.length === 0) {
+          const { previousShellMode } = get();
+          const restoreTo = previousShellMode === 'application' ? 'home' : (previousShellMode ?? 'home');
+          get().setShellMode(restoreTo);
+        }
       },
 
       minimizeWindow: (windowId: string) => {
@@ -702,5 +966,29 @@ export const useVirtualDesktops = () =>
     switchDesktop: state.switchDesktop,
     moveWindowToDesktop: state.moveWindowToDesktop,
   }));
+
+/**
+ * Hook to get the current shell mode
+ */
+export const useShellMode = () => useDesktopStore((state) => state.shellMode);
+
+/**
+ * Hook to get shell mode actions
+ */
+export const useShellModeActions = () =>
+  useDesktopStore((state) => ({
+    setShellMode: state.setShellMode,
+    enterDesktop: state.enterDesktop,
+    enterHome: state.enterHome,
+    enterApplication: state.enterApplication,
+  }));
+
+/**
+ * Hook to get surface visibility for the current shell mode
+ */
+export const useShellSurfaces = () => {
+  const shellMode = useDesktopStore((state) => state.shellMode);
+  return SHELL_SURFACE_POLICY[shellMode];
+};
 
 export default useDesktopStore;

@@ -11,20 +11,32 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..", "..", "..");
 const READY_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 750;
-const DEFAULT_BACKEND_BASE_URL = "http://localhost:5001";
+const DEFAULT_KERNEL_BASE_URL = "http://localhost:5000";
+const DEFAULT_PILOT_BASE_URL = "http://localhost:4317";
 const DEFAULT_FRONTEND_BASE_URL = "http://localhost:5173";
 
 function parseArgs(argv) {
   const args = argv.slice(2).filter((arg) => arg !== "--");
   const flags = new Set(args);
-  const baseUrlIndex = args.indexOf("--base-url");
-  const baseUrl =
-    baseUrlIndex >= 0 && args[baseUrlIndex + 1]
-      ? args[baseUrlIndex + 1]
-      : process.env.PILOT_PREVIEW_BASE_URL || DEFAULT_BACKEND_BASE_URL;
+  const kernelUrlIndex = args.indexOf("--kernel-url");
+  const pilotUrlIndex = args.indexOf("--pilot-url");
+  const legacyBaseUrlIndex = args.indexOf("--base-url");
+  const legacyBaseUrl =
+    legacyBaseUrlIndex >= 0 && args[legacyBaseUrlIndex + 1]
+      ? args[legacyBaseUrlIndex + 1]
+      : null;
+  const kernelUrl =
+    kernelUrlIndex >= 0 && args[kernelUrlIndex + 1]
+      ? args[kernelUrlIndex + 1]
+      : process.env.PILOT_PREVIEW_KERNEL_URL || legacyBaseUrl || DEFAULT_KERNEL_BASE_URL;
+  const pilotUrl =
+    pilotUrlIndex >= 0 && args[pilotUrlIndex + 1]
+      ? args[pilotUrlIndex + 1]
+      : process.env.PILOT_PREVIEW_PILOT_URL || DEFAULT_PILOT_BASE_URL;
   return {
     once: flags.has("--once"),
-    baseUrl: baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl,
+    kernelUrl: kernelUrl.endsWith("/") ? kernelUrl.slice(0, -1) : kernelUrl,
+    pilotUrl: pilotUrl.endsWith("/") ? pilotUrl.slice(0, -1) : pilotUrl,
   };
 }
 
@@ -123,8 +135,8 @@ async function stopChildren(children) {
   }
 }
 
-async function runPreviewSmoke(baseUrl) {
-  const invocation = getPnpmInvocation(["run", "preview:smoke", "--", "--base-url", baseUrl]);
+async function runPreviewSmoke(pilotUrl) {
+  const invocation = getPnpmInvocation(["run", "preview:smoke", "--", "--base-url", pilotUrl]);
   const smoke = spawn(invocation.command, invocation.args, {
     cwd: REPO_ROOT,
     env: process.env,
@@ -132,6 +144,25 @@ async function runPreviewSmoke(baseUrl) {
     stdio: "inherit",
   });
   return waitForExit(smoke);
+}
+
+async function runLocalR1Proof(kernelUrl, pilotUrl) {
+  const invocation = getPnpmInvocation([
+    "run",
+    "proof:r1:local",
+    "--",
+    "--kernel-url",
+    kernelUrl,
+    "--pilot-url",
+    pilotUrl,
+  ]);
+  const proof = spawn(invocation.command, invocation.args, {
+    cwd: REPO_ROOT,
+    env: process.env,
+    shell: false,
+    stdio: "inherit",
+  });
+  return waitForExit(proof);
 }
 
 async function main() {
@@ -172,9 +203,9 @@ async function main() {
 
   try {
     process.stdout.write("Waiting for backend /health...\n");
-    await waitForUrl(`${args.baseUrl}/health`, "backend health");
+    await waitForUrl(`${args.kernelUrl}/health`, "backend health");
     process.stdout.write("Waiting for pilot /pilot/health...\n");
-    await waitForUrl(`${args.baseUrl}/pilot/health`, "pilot health");
+    await waitForUrl(`${args.pilotUrl}/pilot/health`, "pilot health");
     process.stdout.write("Waiting for frontend :5173...\n");
     await waitForUrl(DEFAULT_FRONTEND_BASE_URL, "frontend dev server");
 
@@ -183,7 +214,7 @@ async function main() {
     );
 
     process.stdout.write("Running preview smoke checks...\n");
-    const smokeExit = await runPreviewSmoke(args.baseUrl);
+    const smokeExit = await runPreviewSmoke(args.pilotUrl);
     if (smokeExit !== 0) {
       process.stderr.write(`preview:smoke failed with exit code ${smokeExit}\n`);
       await shutdown(smokeExit);
@@ -191,6 +222,15 @@ async function main() {
     }
 
     process.stdout.write("preview:smoke passed.\n");
+    process.stdout.write("Running local R1 proof...\n");
+    const proofExit = await runLocalR1Proof(args.kernelUrl, args.pilotUrl);
+    if (proofExit !== 0) {
+      process.stderr.write(`proof:r1:local failed with exit code ${proofExit}\n`);
+      await shutdown(proofExit);
+      return;
+    }
+
+    process.stdout.write("proof:r1:local passed.\n");
     if (args.once) {
       await shutdown(0);
       return;

@@ -9,7 +9,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { atlasService, type ParcelResult } from '../../services/atlasService';
+import { getDataProvider } from '../../services/dataProvider';
 
 // ============================================================================
 // Types
@@ -86,19 +86,20 @@ export function useParcelSearch(query: string, enabled: boolean): UseParcelSearc
       abortRef.current = controller;
 
       try {
-        const response = await atlasService.searchParcels({
-          query: trimmed,
-          limit: PAGE_SIZE,
+        const provider = getDataProvider();
+        const response = await provider.search({
+          text: trimmed,
+          pageSize: PAGE_SIZE,
         });
 
         // If aborted while awaiting, discard result
         if (controller.signal.aborted) return;
 
         setResults(
-          response.results.map((r: ParcelResult) => ({
+          response.items.map((r) => ({
             parcelNumber: r.parcelId,
             address: r.address,
-            ownerName: r.owner,
+            ownerName: r.ownerName,
           }))
         );
         setError(null);

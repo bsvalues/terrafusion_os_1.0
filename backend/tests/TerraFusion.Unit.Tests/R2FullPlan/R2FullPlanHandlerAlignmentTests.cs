@@ -401,13 +401,16 @@ public sealed class R2FullPlanHandlerAlignmentTests
   // Handler #12: summarize_sales_comps_rationale → GET /api/costforge/comps/{subjectId}
   [Fact]
   [Trait("Category", "Handler12")]
-  public async Task Handler12_GetComps_ReturnsSynthetic()
+  public async Task Handler12_GetComps_EmptyStore_ReturnsHonestEmptyResult()
   {
-    using var db = CreateDbContext("handler-12-synthetic");
+    using var db = CreateDbContext("handler-12-empty");
     await SeedCounty(db, BentonCountyId);
     var controller = CreateCostForgeController(db);
     var result = await controller.GetComparableSales("PARCEL-001", null, true);
-    result.Should().BeOfType<OkObjectResult>();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var value = ok.Value!;
+    value.GetType().GetProperty("count")!.GetValue(value).Should().Be(0);
+    value.GetType().GetProperty("selectionMethod")!.GetValue(value)!.Should().Be("no comparable sales matched operational selection criteria");
   }
 
   [Fact]
@@ -426,6 +429,23 @@ public sealed class R2FullPlanHandlerAlignmentTests
   {
     using var db = CreateDbContext("handler-12-real");
     await SeedCounty(db, BentonCountyId);
+    db.Properties.Add(new Property
+    {
+      Id = Guid.NewGuid(),
+      CountyId = BentonCountyId,
+      PropertyId = "PACS-PARCEL-001",
+      ParcelId = "PARCEL-001",
+      ParcelNumber = "PARCEL-001",
+      Address = "100 Main St, Kennewick, WA 99336",
+      PropertyType = "SFR",
+      AssessedValue = 295000m,
+      LandValue = 85000m,
+      ImprovementValue = 210000m,
+      MarketValue = 295000m,
+      AssessmentDate = DateTime.UtcNow,
+      LastUpdated = DateTime.UtcNow,
+      TaxYear = 2026,
+    });
     db.ComparableSales.Add(new ComparableSale
     {
       Id = Guid.NewGuid(),
@@ -436,11 +456,16 @@ public sealed class R2FullPlanHandlerAlignmentTests
       PropertyType = "SFR",
       GrossLivingArea = 2000m,
       LotSizeSqft = 8000m,
+      Neighborhood = "KENNEWICK",
+      SaleQualification = "qualified",
     });
     await db.SaveChangesAsync();
     var controller = CreateCostForgeController(db);
     var result = await controller.GetComparableSales("PARCEL-001", null, true);
-    result.Should().BeOfType<OkObjectResult>();
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var value = ok.Value!;
+    value.GetType().GetProperty("count")!.GetValue(value).Should().Be(1);
+    value.GetType().GetProperty("selectionMethod")!.GetValue(value)!.Should().NotBeNull();
   }
 
   // ══════════════════════════════════════════════════════════════════

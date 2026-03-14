@@ -66,7 +66,30 @@ export {
     type AssembleBoePacketParams,
     type AssembleBoePacketResult,
     type RequestTraceRedactionParams,
-    type RequestTraceRedactionResult
+    type RequestTraceRedactionResult,
+    // TerraCanon handlers
+    canonPingHandler,
+    canonDoctorHandler,
+    canonGateFastHandler,
+    canonCorpusStatusHandler,
+    canonListDirHandler,
+    canonReadFileHandler,
+    canonHandlers,
+    registerCanonHandlers,
+    type CanonPingParams,
+    type CanonPingResult,
+    type CanonDoctorParams,
+    type CanonDoctorResult,
+    type CanonGateFastParams,
+    type CanonGateFastResult,
+    type CanonCorpusStatusParams,
+    type CanonCorpusStatusResult,
+    type CanonCorpusArtifact,
+    type CanonListDirParams,
+    type CanonListDirResult,
+    type CanonListDirEntry,
+    type CanonReadFileParams,
+    type CanonReadFileResult
 } from './handlers.js';
 
 // R1 Real Handlers (override canned stubs when backend is available)

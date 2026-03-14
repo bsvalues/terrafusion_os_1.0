@@ -20,7 +20,7 @@
 
 import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
-import { usePropertyLookup } from '../../hooks/usePropertyLookup';
+import { usePropertyStore } from '../../stores/propertyStore';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
@@ -29,6 +29,8 @@ import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
+import { validateWorkbenchHost } from '../../contracts/objectPlacement';
+import type { WorkbenchHostViolation } from '../../contracts/objectPlacement';
 
 // ============================================================================
 // Lazy-loaded Tab Components (same as Router.tsx)
@@ -46,6 +48,15 @@ const PropertyAtlas = lazy(() =>
 const PropertyDais = lazy(() =>
   import('./tabs/PropertyDais').then((m) => ({ default: m.PropertyDais }))
 );
+const PropertyClerk = lazy(() =>
+  import('./tabs/PropertyClerk').then((m) => ({ default: m.PropertyClerk }))
+);
+const PropertyTreasury = lazy(() =>
+  import('./tabs/PropertyTreasury').then((m) => ({ default: m.PropertyTreasury }))
+);
+const PropertyAudit = lazy(() =>
+  import('./tabs/PropertyAudit').then((m) => ({ default: m.PropertyAudit }))
+);
 const PropertyDossier = lazy(() =>
   import('./tabs/PropertyDossier').then((m) => ({ default: m.PropertyDossier }))
 );
@@ -62,6 +73,9 @@ const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.F
   forge: PropertyForge,
   atlas: PropertyAtlas,
   dais: PropertyDais,
+  clerk: PropertyClerk,
+  treasury: PropertyTreasury,
+  audit: PropertyAudit,
   dossier: PropertyDossier,
   pilot: PropertyPilot,
 };
@@ -90,6 +104,9 @@ const TABS: readonly TabDef[] = [
   { id: 'forge', label: 'Forge', icon: '🔨' },
   { id: 'atlas', label: 'Atlas', icon: '🗺️' },
   { id: 'dais', label: 'Dais', icon: '⚖️' },
+  { id: 'clerk', label: 'Clerk', icon: '📜' },
+  { id: 'treasury', label: 'Treasury', icon: '💰' },
+  { id: 'audit', label: 'Audit', icon: '🔍' },
   { id: 'dossier', label: 'Dossier', icon: '📋' },
   { id: 'pilot', label: 'Pilot', icon: '🤖' },
 ] as const;
@@ -130,6 +147,39 @@ const NoParcelSelected: React.FC = () => (
     </p>
   </div>
 );
+
+// ============================================================================
+// Phase 7: Workbench Host Violation Notice
+// ============================================================================
+
+const WorkbenchHostViolationNotice: React.FC<{ violation: WorkbenchHostViolation }> = ({ violation }) => {
+  // Log the violation to console for governance traceability
+  if (typeof console !== 'undefined') {
+    console.warn(
+      `[Codex] Workbench host violation: tab '${violation.tabId}' ` +
+      `(type: ${violation.objectType}) — ${violation.reason}`
+    );
+  }
+
+  return (
+    <div
+      className="flex flex-col items-center justify-center h-full gap-4 p-8"
+      style={{ color: 'hsl(var(--tf-text) / 0.6)' }}
+    >
+      <span className="text-4xl">⛔</span>
+      <h2 className="text-lg font-medium" style={{ color: 'hsl(var(--tf-text))' }}>
+        Codex Violation — Host Boundary
+      </h2>
+      <p className="text-sm text-center max-w-md">
+        Tab &quot;{violation.tabId}&quot; (type: {violation.objectType}) is not
+        authorized to render inside the Property Workbench.
+      </p>
+      <p className="text-xs text-center max-w-md" style={{ color: 'hsl(var(--tf-text) / 0.4)' }}>
+        {violation.reason}
+      </p>
+    </div>
+  );
+};
 
 // ============================================================================
 // Tab Navigation Bar (state-based, no Router dependency)
@@ -218,23 +268,32 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   // Active tab state
   const [activeTab, setActiveTab] = useState<WorkbenchTabSlug>(resolvedInitialTab);
 
-  // Property data from PACS
-  const { data: pacsData, loading } = usePropertyLookup(parcelId);
+  // Property data from store (backed by DataProvider → snapshot/live/fixtures)
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const loading = usePropertyStore((s) => s.activeParcelLoading);
+  const selectParcel = usePropertyStore((s) => s.selectParcel);
+
+  // Load parcel via store when parcelId changes (if not already loaded)
+  useEffect(() => {
+    if (parcelId && activeParcel?.parcelId !== parcelId) {
+      selectParcel(parcelId);
+    }
+  }, [parcelId, activeParcel?.parcelId, selectParcel]);
 
   const propertyData = useMemo<PropertyData>(
     () => ({
-      parcelId: pacsData?.geoId || parcelId || 'Unknown',
-      address: pacsData?.address || '',
-      owner: pacsData?.ownerName || '',
-      assessedValue: pacsData?.assessedValue ?? 0,
-      marketValue: pacsData?.marketValue ?? 0,
-      landValue: pacsData?.landValue ?? 0,
-      improvementValue: pacsData?.improvementValue ?? 0,
-      propertyType: pacsData?.propertyType || '',
-      legalDescription: pacsData?.legalDescription || '',
-      source: pacsData?.source || '',
+      parcelId: activeParcel?.parcelId || parcelId || 'Unknown',
+      address: activeParcel?.address || '',
+      owner: activeParcel?.ownerName || '',
+      assessedValue: activeParcel?.totalAssessedValue ?? 0,
+      marketValue: activeParcel?.marketValue ?? 0,
+      landValue: activeParcel?.landValue ?? 0,
+      improvementValue: activeParcel?.improvementValue ?? 0,
+      propertyType: activeParcel?.propertyType || '',
+      legalDescription: activeParcel?.legalDescription || '',
+      source: activeParcel?.dataSource || '',
     }),
-    [pacsData, parcelId]
+    [activeParcel, parcelId]
   );
 
   // Work Mode state
@@ -322,6 +381,13 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   const [activityOpen, setActivityOpen] = useState(false);
   const { entries: activityEntries, loading: activityLoading } = useParcelActivity(parcelId);
 
+  // Phase 7: Workbench Host Boundary Check
+  // Validates that the active tab is lawfully hosted inside the workbench.
+  const hostViolation: WorkbenchHostViolation | null = useMemo(
+    () => validateWorkbenchHost(activeTab),
+    [activeTab],
+  );
+
   // Resolve active tab component
   const ActiveTabComponent = TAB_COMPONENTS[activeTab];
 
@@ -357,7 +423,9 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
           <div className="flex flex-col flex-1 min-w-0">
             <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
             <main className="flex-1 overflow-auto">
-              {loading ? (
+              {hostViolation ? (
+                <WorkbenchHostViolationNotice violation={hostViolation} />
+              ) : loading ? (
                 <TabLoader />
               ) : (
                 <ErrorBoundary>

@@ -1,0 +1,6 @@
+[{"propertyType":"R","count":83203,"totalAssessed":20217879694.0,"avgAssessed":242994.6000000000058,"totalLand":6994440775.0,"totalImprovement":14166500009.0},
+{"propertyType":"P","count":21239,"totalAssessed":1038434840.0,"avgAssessed":48892.83000000000174,"totalLand":0.0,"totalImprovement":0.0},
+{"propertyType":"MH","count":7614,"totalAssessed":90478780.0,"avgAssessed":11883.20999999999913,"totalLand":0.0,"totalImprovement":90847220.0},
+{"propertyType":"Residential","count":1,"totalAssessed":285000.0,"avgAssessed":285000.0,"totalLand":75000.0,"totalImprovement":210000.0},
+{"propertyType":"Commercial","count":1,"totalAssessed":1250000.0,"avgAssessed":1250000.0,"totalLand":350000.0,"totalImprovement":900000.0},
+{"propertyType":"Agricultural","count":1,"totalAssessed":520000.0,"avgAssessed":520000.0,"totalLand":420000.0,"totalImprovement":100000.0}]
