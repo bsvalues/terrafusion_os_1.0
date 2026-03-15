@@ -3,7 +3,7 @@
   "wave": "1B",
   "batch": "canon-observability",
   "generated_at": "2026-03-15T05:35:33Z",
-  "execution_status": "planned",
+  "execution_status": "executed",
   "total_assets": 4,
   "by_source_repo": {
     "TerraFusionTheory": 4
@@ -22,10 +22,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terracanon/canon-observability/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.API/Services/. Domain logic preserved."
     },
     {
       "asset_id": "TFT-090",
@@ -37,10 +37,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terracanon/canon-observability/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.API/Middleware/. Domain logic preserved."
     },
     {
       "asset_id": "TFT-093",
@@ -52,10 +52,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terracanon/canon-observability/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.API/Services/. Domain logic preserved."
     },
     {
       "asset_id": "TFT-191",
@@ -67,10 +67,22 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terracanon/canon-observability/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.API/. Domain logic preserved."
     }
-  ]
+  ],
+  "execution_completed_at": "2026-03-15T07:24:47Z",
+  "execution_summary": {
+    "total": 4,
+    "executed": 4,
+    "missing": 0,
+    "parity_rate": "100.0%",
+    "parity_mode_split": {
+      "adapted": 4,
+      "exact": 0,
+      "superseded": 0
+    }
+  }
 }

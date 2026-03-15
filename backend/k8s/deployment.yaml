@@ -1,0 +1,314 @@
+# TFT-190: TerraFusion Kubernetes Deployment Manifest
+# Consolidated deployment for API, Gateway, and Consciousness services.
+# Apply: kubectl apply -f deployment.yaml
+
+---
+# ── ConfigMap ────────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-config
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+data:
+  ASPNETCORE_ENVIRONMENT: 'Production'
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 'false'
+  TZ: 'America/Los_Angeles'
+  Logging__LogLevel__Default: 'Information'
+  Logging__LogLevel__Microsoft: 'Warning'
+  AI__SwarmEnabled: 'true'
+  AI__MaxAgents: '1008'
+
+---
+# ── API Deployment (Kernel) ──────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-api
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: api
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: terrafusion-api
+        app.kubernetes.io/name: terrafusion-os
+        app.kubernetes.io/component: api
+    spec:
+      serviceAccountName: terrafusion-api
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: api
+          image: terrafusion-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: terrafusion-config
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db-secret
+                  key: connection-string
+            - name: JwtSettings__SecretKey
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-jwt-secret
+                  key: secret-key
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: '1'
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12
+
+---
+# ── API Service ──────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-api
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  selector:
+    app: terrafusion-api
+  ports:
+    - name: http
+      port: 5000
+      targetPort: http
+      protocol: TCP
+
+---
+# ── Gateway Deployment (Shell) ───────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-gateway
+  namespace: terrafusion
+  labels:
+    app: terrafusion-gateway
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: gateway
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terrafusion-gateway
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: terrafusion-gateway
+        app.kubernetes.io/name: terrafusion-os
+        app.kubernetes.io/component: gateway
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: gateway
+          image: terrafusion-gateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3002
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: terrafusion-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+---
+# ── Gateway Service ──────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-gateway
+  namespace: terrafusion
+  labels:
+    app: terrafusion-gateway
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: gateway
+spec:
+  type: ClusterIP
+  selector:
+    app: terrafusion-gateway
+  ports:
+    - name: http
+      port: 3002
+      targetPort: http
+      protocol: TCP
+
+---
+# ── Consciousness Deployment (AI Swarm) ──────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-consciousness
+  namespace: terrafusion
+  labels:
+    app: terrafusion-consciousness
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: consciousness
+    tier: ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terrafusion-consciousness
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: terrafusion-consciousness
+        app.kubernetes.io/name: terrafusion-os
+        app.kubernetes.io/component: consciousness
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: consciousness
+          image: terrafusion-agents:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3004
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: terrafusion-config
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-db-secret
+                  key: connection-string
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: '2'
+              memory: 2Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+---
+# ── Consciousness Service ────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-consciousness
+  namespace: terrafusion
+  labels:
+    app: terrafusion-consciousness
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: consciousness
+spec:
+  type: ClusterIP
+  selector:
+    app: terrafusion-consciousness
+  ports:
+    - name: http
+      port: 3004
+      targetPort: http
+      protocol: TCP

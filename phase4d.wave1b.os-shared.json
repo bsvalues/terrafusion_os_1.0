@@ -3,7 +3,7 @@
   "wave": "1B",
   "batch": "os-shared",
   "generated_at": "2026-03-15T05:35:33Z",
-  "execution_status": "planned",
+  "execution_status": "executed",
   "total_assets": 16,
   "by_source_repo": {
     "Bsbcintelligentvalues": 1,
@@ -26,10 +26,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/types/externalData.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-027",
@@ -41,10 +41,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/terraTrace.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-028",
@@ -56,10 +56,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/writeLane.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-029",
@@ -71,10 +71,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/circuitBreaker.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-035",
@@ -86,10 +86,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/exportService.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-037",
@@ -101,10 +101,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/lib/metrics/metricCatalog.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-039",
@@ -116,10 +116,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/os-admin/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/lib/constitutionGuards.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-046",
@@ -131,10 +131,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/dataQualityScoring.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-061",
@@ -146,10 +146,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/lib/changeReceipt.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-069",
@@ -161,10 +161,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/shared/TrustRegistry.tsx. Domain logic preserved."
     },
     {
       "asset_id": "TFR-078",
@@ -176,10 +176,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/tests/services/terraTrace.test.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-079",
@@ -191,10 +191,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/tests/services/writeLane.test.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-094",
@@ -206,10 +206,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/types/parcel360.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFR-106",
@@ -221,10 +221,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/shared/ExportCenter.tsx. Domain logic preserved."
     },
     {
       "asset_id": "TFR-108",
@@ -236,10 +236,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/shared/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/shared/WatchlistPanel.tsx. Domain logic preserved."
     },
     {
       "asset_id": "TFT-117",
@@ -251,10 +251,22 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terradossier/os-shared/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/components/. Domain logic preserved."
     }
-  ]
+  ],
+  "execution_completed_at": "2026-03-15T07:24:47Z",
+  "execution_summary": {
+    "total": 16,
+    "executed": 16,
+    "missing": 0,
+    "parity_rate": "100.0%",
+    "parity_mode_split": {
+      "adapted": 16,
+      "exact": 0,
+      "superseded": 0
+    }
+  }
 }

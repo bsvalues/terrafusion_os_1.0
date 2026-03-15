@@ -1,12 +1,12 @@
-# TFT-186: Multi-stage Dockerfile for TerraFusion API (Kernel)
-# Build: docker build -f Dockerfile.api -t terrafusion-api .
-# Run:   docker run -p 5000:5000 terrafusion-api
+# TFT-189: Dockerfile for TerraFusion Spatial Analysis Service
+# Build: docker build -f Dockerfile.spatial -t terrafusion-spatial .
+# Run:   docker run -p 5002:5002 terrafusion-spatial
 
 # ── Build stage ──────────────────────────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy solution and project files first for layer caching
+# Copy solution and project files for layer caching
 COPY TerraFusion.sln ./
 COPY Directory.Packages.props ./
 COPY src/Directory.Build.targets src/
@@ -23,13 +23,12 @@ COPY src/TerraFusion.CostForge/TerraFusion.CostForge.csproj src/TerraFusion.Cost
 COPY src/TerraFusion.Sync/TerraFusion.Sync.csproj src/TerraFusion.Sync/
 COPY TerraFusion.Gateway/TerraFusion.Gateway.csproj TerraFusion.Gateway/
 
-# Restore NuGet packages with caching optimization
+# Restore packages
 RUN dotnet restore src/TerraFusion.API/TerraFusion.API.csproj --runtime linux-x64
 
-# Copy all source code
+# Copy all source code and publish
 COPY . .
 
-# Publish application in Release mode
 FROM build AS publish
 WORKDIR /src/src/TerraFusion.API
 RUN dotnet publish TerraFusion.API.csproj -c Release -o /app/publish \
@@ -38,38 +37,54 @@ RUN dotnet publish TerraFusion.API.csproj -c Release -o /app/publish \
     /p:DebugType=None \
     /p:DebugSymbols=false
 
-# ── Runtime stage ────────────────────────────────────────────────────────────
+# ── Runtime stage with GDAL/spatial libraries ────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
-# Install curl for health checks
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+# Install GDAL and spatial analysis dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    gdal-bin \
+    libgdal-dev \
+    libproj-dev \
+    libgeos-dev \
+    libspatialite-dev \
+    proj-bin \
     && rm -rf /var/lib/apt/lists/*
+
+# Set GDAL environment variables
+ENV GDAL_DATA=/usr/share/gdal
+ENV PROJ_LIB=/usr/share/proj
 
 WORKDIR /app
 
-# Security: run as non-root (FISMA-HIGH requirement)
+# Security: non-root user
 RUN groupadd -r terrafusion && useradd -r -g terrafusion -s /sbin/nologin terrafusion
 
 COPY --from=publish /app/publish .
 RUN chown -R terrafusion:terrafusion /app
 
 # Environment
-ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_URLS=http://+:5002
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 ENV TZ=America/Los_Angeles
 
-EXPOSE 5000
+# Spatial service configuration
+ENV SPATIAL__EnableGdalProcessing=true
+ENV SPATIAL__MaxConcurrentAnalyses=4
+ENV SPATIAL__DefaultCrs=EPSG:2927
 
-# Health check: /health every 30s, 5s timeout, 3 retries
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
+EXPOSE 5002
 
-LABEL org.opencontainers.image.title="TerraFusion API" \
-      org.opencontainers.image.description="TerraFusion OS Core API Kernel" \
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD curl -f http://localhost:5002/health || exit 1
+
+LABEL org.opencontainers.image.title="TerraFusion Spatial" \
+      org.opencontainers.image.description="TerraFusion Spatial Analysis with GDAL" \
       org.opencontainers.image.vendor="TerraFusion" \
-      terrafusion.component="api" \
+      terrafusion.component="spatial" \
       terrafusion.compliance="FISMA-High"
 
 USER terrafusion
