@@ -121,8 +121,8 @@ def test_archive_wave_values_are_unique_and_contiguous(archive_repos: List[Dict[
     assert waves == list(range(1, len(EXPECTED_REPOS) + 1))
 
 
-def test_archive_status_is_plan_only_for_now(archive_repos: List[Dict[str, Any]]) -> None:
-    valid = {"planned"}
+def test_archive_status_values_are_valid(archive_repos: List[Dict[str, Any]]) -> None:
+    valid = {"planned", "executed"}
     offenders = [
         {
             "source_repo": repo["source_repo"],

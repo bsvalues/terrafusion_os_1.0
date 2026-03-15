@@ -1,0 +1,32 @@
+{
+  "phase": "4I",
+  "title": "Archive Execution Log",
+  "created": "2026-03-15",
+  "execution_law": "One repo per wave. Freeze next wave until prior proven complete.",
+  "waves": [
+    {
+      "archive_wave": 1,
+      "source_repo": "BCBSLevy",
+      "total_assets": 76,
+      "activated_assets": 52,
+      "deduplicated_assets": 24,
+      "snapshot_tag": "archive/bcbslevy-pre-decommission",
+      "rollback_tag": "rollback/bcbslevy",
+      "rollback_path": "git checkout rollback/bcbslevy -- . (restores all BCBSLevy source paths from tagged snapshot)",
+      "decommission_smoke": "pass",
+      "remaining_source_routes": 0,
+      "remaining_source_imports": 0,
+      "remaining_source_controllers": 0,
+      "smoke_details": {
+        "source_repo_references": 0,
+        "source_route_residuals": 0,
+        "missing_destinations": 0,
+        "controllers_checked": 15,
+        "services_checked": 16
+      },
+      "archive_status": "executed",
+      "executed_at": "2026-03-15",
+      "blockers_for_next_wave": []
+    }
+  ]
+}
