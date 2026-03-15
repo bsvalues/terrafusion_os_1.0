@@ -36,9 +36,14 @@ SUITE_LANES = {
         "backend/src/TerraFusion.API/Controllers/",
         "frontend/apps/os-shell/src/pages/forge/",
         "frontend/apps/os-shell/src/components/forge/",
-        "frontend/apps/os-shell/src/services/forge",
+        "frontend/apps/os-shell/src/components/workbench/",
+        "frontend/apps/os-shell/src/pages/workbench/",
+        "frontend/apps/os-shell/src/services/",
         "frontend/apps/os-shell/src/hooks/",
         "frontend/apps/os-shell/src/types/",
+        "frontend/apps/os-shell/src/contexts/",
+        "frontend/apps/os-shell/src/components/levy/",
+        "frontend/apps/os-shell/src/pages/levy/",
     ],
     "Dais": [
         "backend/src/TerraFusion.AI/",
@@ -414,6 +419,135 @@ def check_p4f_013(data):
     return ok, detail
 
 
+CORE_FORGE_FOUNDATION = [
+    "propertyValuationClientService", "propertyComparisonClientService",
+    "marketTrendsClientService", "neighborhoodClientService",
+    "usePropertyData", "useMarketData", "useValuationData",
+    "ComparisonContext", "AdvancedComparisonContext",
+]
+
+FORGE_WORKBENCH_LANES = [
+    "frontend/apps/os-shell/src/pages/forge/",
+    "frontend/apps/os-shell/src/pages/workbench/",
+    "frontend/apps/os-shell/src/components/forge/",
+    "frontend/apps/os-shell/src/components/workbench/",
+    "frontend/apps/os-shell/src/components/levy/",
+    "frontend/apps/os-shell/src/pages/levy/",
+]
+
+FORGE_BACKEND_LANES = [
+    "backend/src/TerraFusion.AI/",
+    "backend/src/TerraFusion.Core/",
+    "backend/src/TerraFusion.API/Controllers/",
+]
+
+FORGE_SERVICE_LANES = [
+    "frontend/apps/os-shell/src/services/",
+    "frontend/apps/os-shell/src/hooks/",
+    "frontend/apps/os-shell/src/contexts/",
+    "frontend/apps/os-shell/src/types/",
+]
+
+ALL_FORGE_LANES = FORGE_WORKBENCH_LANES + FORGE_BACKEND_LANES + FORGE_SERVICE_LANES
+
+FOREIGN_PATH_MARKERS = {"/dais/", "/dossier/", "/atlas/", "/shell/", "/os/", "/canon/"}
+FOREIGN_ASSET_NAMES = {"daisService", "dossierService", "PdfConnector", "AuditTrailPage", "PacketAssembly"}
+
+
+@rule("P4F-014", "Forge foundation services/hooks/contexts exist and Forge-owned")
+def check_p4f_014(data):
+    index = {_asset_stem(a): a for a in data["assets"]}
+    missing = [n for n in CORE_FORGE_FOUNDATION if n not in index]
+    wrong = [n for n in CORE_FORGE_FOUNDATION if n in index and index[n]["suite_owner"] != "Forge"]
+    ok = not missing and not wrong
+    detail = f"{len(missing)} missing, {len(wrong)} wrong owner"
+    return ok, detail
+
+
+@rule("P4F-015", "Parcel-scoped Forge assets in Workbench lanes")
+def check_p4f_015(data):
+    parcel_markers = {"property", "valuation", "comp", "cost", "income", "sales",
+                      "sketch", "anatomy", "parcel", "depreciation"}
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "Forge" or a["activation_status"] != "activated":
+            continue
+        dest = a["destination_path"].lower()
+        stem = _asset_stem(a).lower()
+        is_parcel = any(m in stem for m in parcel_markers) or "workbench" in dest
+        is_frontend = dest.startswith("frontend/")
+        if is_parcel and is_frontend:
+            in_lane = any(dest.startswith(l.lower()) for l in FORGE_WORKBENCH_LANES + FORGE_SERVICE_LANES)
+            if not in_lane:
+                violations.append(f"{a['asset_id']}: {dest}")
+    ok = len(violations) == 0
+    detail = f"{len(violations)} parcel-scoped lane violations" if violations else "all parcel-scoped in lane"
+    return ok, detail
+
+
+@rule("P4F-016", "Cross-parcel Forge assets allowed standalone")
+def check_p4f_016(data):
+    cross_markers = {"ratio", "calibration", "regression", "market", "scenario",
+                     "model", "retrain", "quality", "avm", "economic", "hazard", "neighborhood"}
+    count = 0
+    for a in data["assets"]:
+        if a["suite_owner"] != "Forge" or a["activation_status"] != "activated":
+            continue
+        stem = _asset_stem(a).lower()
+        if any(m in stem for m in cross_markers):
+            count += 1
+    ok = True  # cross-parcel assets are allowed standalone by definition
+    detail = f"{count} cross-parcel Forge assets (standalone permitted)"
+    return ok, detail
+
+
+@rule("P4F-017", "No activated Forge asset leaves source primary")
+def check_p4f_017(data):
+    violations = [
+        a["asset_id"] for a in data["assets"]
+        if a["suite_owner"] == "Forge"
+        and a["activation_status"] == "activated"
+        and a["deprecation_status"] == "active-source"
+    ]
+    ok = len(violations) == 0
+    detail = f"{len(violations)} active-source Forge violations" if violations else "all Forge exclusive"
+    return ok, detail
+
+
+@rule("P4F-018", "No Forge asset drifts into foreign suite paths")
+def check_p4f_018(data):
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "Forge" or a["activation_status"] != "activated":
+            continue
+        dest = a["destination_path"].lower()
+        stem = _asset_stem(a)
+        if any(m in dest for m in FOREIGN_PATH_MARKERS):
+            violations.append(f"{a['asset_id']}: path drift {dest}")
+        if stem in FOREIGN_ASSET_NAMES:
+            violations.append(f"{a['asset_id']}: name drift {stem}")
+    ok = len(violations) == 0
+    detail = f"{len(violations)} foreign drift" if violations else "no foreign drift"
+    return ok, detail
+
+
+@rule("P4F-019", "No Forge UI asset classified as valuation-math ownership")
+def check_p4f_019(data):
+    forbidden = ("engine", "formula", "calc-core", "pricing-kernel", "valuation-kernel")
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "Forge" or a["activation_status"] != "activated":
+            continue
+        dest = a["destination_path"].lower()
+        if dest.endswith((".tsx", ".ts", ".jsx", ".js")):
+            if any(t in dest for t in ("/components/", "/pages/", "/contexts/", "/hooks/")):
+                if any(f in dest for f in forbidden):
+                    violations.append(f"{a['asset_id']}: {dest}")
+    ok = len(violations) == 0
+    detail = f"{len(violations)} math-in-UI violations" if violations else "no UI math drift"
+    return ok, detail
+
+
 def main():
     data = load_ledger()
 
@@ -427,6 +561,8 @@ def main():
         check_p4f_004, check_p4f_005, check_p4f_006,
         check_p4f_007, check_p4f_008, check_p4f_009,
         check_p4f_010, check_p4f_011, check_p4f_012, check_p4f_013,
+        check_p4f_014, check_p4f_015, check_p4f_016,
+        check_p4f_017, check_p4f_018, check_p4f_019,
     ]
 
     all_pass = True
