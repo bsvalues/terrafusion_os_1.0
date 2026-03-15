@@ -3,7 +3,7 @@
   "wave": "1A",
   "batch": "forge-statistics",
   "generated_at": "2026-03-15T04:13:55Z",
-  "execution_status": "planned",
+  "execution_status": "executed",
   "total_assets": 28,
   "by_source_repo": {
     "Bsbcintelligentvalues": 8,
@@ -24,10 +24,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/RatioStudyPanel.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "BIV-090",
@@ -39,10 +39,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/QualityControlPanel.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "BIV-109",
@@ -54,10 +54,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/AssessmentIntelligence.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "BIV-110",
@@ -69,10 +69,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/forge/assessmentIntelligenceService.ts. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "BIV-114",
@@ -84,10 +84,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/MarketAnalyticsDashboard.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "BIV-115",
@@ -99,10 +99,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/MarketDashboard.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "BIV-117",
@@ -114,10 +114,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/MarketCyclePredictor.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "BIV-122",
@@ -129,10 +129,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/EconomicIndicators.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-009",
@@ -144,10 +144,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/forge/veiService.ts. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-010",
@@ -159,10 +159,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/forge/ratioAnalysisService.ts. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-011",
@@ -174,10 +174,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/VEIDashboard.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-012",
@@ -189,10 +189,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/charts/TierRatioPlot.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-013",
@@ -204,10 +204,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/charts/CODTrendChart.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-014",
@@ -219,10 +219,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/charts/PRDTrendChart.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-015",
@@ -234,10 +234,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/drilldown/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-016",
@@ -249,10 +249,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/components/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-044",
@@ -264,10 +264,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/forge/advancedAnalyticsService.ts. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-092",
@@ -279,10 +279,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/forge/historicalRatioService.ts. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFR-114",
@@ -294,10 +294,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/pages/forge/statistics/AdvancedAnalytics.tsx. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-005",
@@ -309,10 +309,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/RatioStudies/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-008",
@@ -324,10 +324,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/DataQuality/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-009",
@@ -339,10 +339,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/DataQuality/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-010",
@@ -354,10 +354,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/DataQuality/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-011",
@@ -369,10 +369,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/DataQuality/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-012",
@@ -384,10 +384,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.Core/DTOs/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-013",
@@ -399,10 +399,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/DataQuality/. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-014",
@@ -414,10 +414,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.API/Controllers/DataQualityController.cs. Domain logic preserved, interfaces adapted to canonical stack."
     },
     {
       "asset_id": "TFT-196",
@@ -429,10 +429,17 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-statistics/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at scripts/. Domain logic preserved, interfaces adapted to canonical stack."
     }
-  ]
+  ],
+  "execution_completed_at": "2026-03-15T04:52:14Z",
+  "execution_summary": {
+    "total": 28,
+    "executed": 28,
+    "missing": 0,
+    "parity_rate": "100.0%"
+  }
 }
