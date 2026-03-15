@@ -19,6 +19,7 @@ import { Rnd, RndDragCallback, RndResizeCallback } from 'react-rnd';
 import { getLucideIcon } from '../../config/iconMap';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { DesktopWindow, useDesktopStore } from '../../stores/desktopStore';
+import { getObjectClassification } from '../../contracts/objectPlacement';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
 import { LiquidPanel } from '../../ui/materials';
 import { useWindowSnap } from './useWindowSnap';
@@ -227,6 +228,7 @@ interface TitleBarProps {
   icon: string;
   isActive: boolean;
   isMaximized: boolean;
+  isTier0?: boolean;
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
@@ -238,6 +240,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
   icon,
   isActive,
   isMaximized,
+  isTier0 = false,
   onMinimize,
   onMaximize,
   onClose,
@@ -304,6 +307,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
           label={isMaximized ? 'Restore' : 'Maximize'}
           onClick={handleMaximize}
           variant='maximize'
+          disabled={isTier0}
         />
       </div>
 
@@ -349,6 +353,10 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   const isActive = windowData.id === activeWindowId;
   const isMaximized = windowData.state === 'maximized';
   const isMinimized = windowData.state === 'minimized';
+
+  // Tier-0 workbench must stay maximized — no restore, no drag, no resize
+  const classification = getObjectClassification(windowData.moduleId);
+  const isTier0 = classification?.objectType === 'tier0-workbench';
 
   // Animation state tracking
   const [animationState, setAnimationState] = useState<'opening' | 'open' | 'focused'>('opening');
@@ -400,12 +408,14 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   }, [minimizeWindow, windowData.id]);
 
   const handleMaximize = useCallback(() => {
+    // Tier-0 windows must stay maximized — block restore
+    if (isTier0) return;
     if (isMaximized) {
       restoreWindow(windowData.id);
     } else {
       maximizeWindow(windowData.id);
     }
-  }, [isMaximized, maximizeWindow, restoreWindow, windowData.id]);
+  }, [isTier0, isMaximized, maximizeWindow, restoreWindow, windowData.id]);
 
   const handleFocus = useCallback(() => {
     focusWindow(windowData.id);
@@ -568,6 +578,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             icon={windowData.icon}
             isActive={isActive}
             isMaximized={isMaximized}
+            isTier0={isTier0}
             onMinimize={handleMinimize}
             onMaximize={handleMaximize}
             onClose={handleClose}

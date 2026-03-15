@@ -174,15 +174,15 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   if (classification) {
     const { objectType } = classification;
 
-    // Tier-0 workbench → near-full-stage (same as suites, not maximized)
+    // Tier-0 workbench → MAXIMIZED (fills viewport, not draggable/resizable)
     if (objectType === 'tier0-workbench') {
       return {
-        size: { width: vw - 40, height: vh - 120 },
-        maximized: false,
+        size: { width: vw, height: vh - TASKBAR_HEIGHT },
+        maximized: true,
       };
     }
 
-    // Suite workspaces and OS feature windows → near-full-stage
+    // Suite workspaces and OS feature windows → near-full-stage (large, movable)
     if (objectType === 'suite-workspace' || objectType === 'os-feature-window') {
       return {
         size: { width: vw - 40, height: vh - 120 },
@@ -192,12 +192,6 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   }
 
   // Prefix-matching fallback for unclassified modules
-  if (moduleId === 'property-workbench') {
-    return {
-      size: { width: vw - 40, height: vh - 120 },
-      maximized: false,
-    };
-  }
   if (moduleId.startsWith('suite-') || moduleId.startsWith('os-')) {
     return {
       size: { width: vw - 40, height: vh - 120 },
