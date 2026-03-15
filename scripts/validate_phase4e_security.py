@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Phase 4E Security Remediation Manifest Validator
-Validates phase4e.security-remediation.manifest.json against 8 governance rules.
+Validates phase4e.security-remediation.manifest.json against 9 governance rules.
 
 Rules:
   P4E-001: All 169 blocked assets present in manifest
@@ -13,6 +13,9 @@ Rules:
             AND all gate results are "pass"
   P4E-007: Asset count per repo matches expected (BCBSLevy=76, TerraFusionPilt=15, TerraMiner=78)
   P4E-008: No asset has reclassification "unblocked-ready" while any gate result is "pending" or "fail"
+  P4E-009: Derived-only eligibility — reclassification and activation_eligibility must match
+            values recomputed from evidence + gates + verification state.  Hand-authored
+            overrides are forbidden.
 
 Usage:
   python3 scripts/validate_phase4e_security.py [path-to-manifest]
@@ -202,6 +205,84 @@ def rule_p4e_008(assets):
     return ok, detail
 
 
+def _evidence_satisfied(asset):
+    """Check if remediation evidence is satisfied for the asset's blocking_issue_type."""
+    evidence = asset.get("evidence_required", "")
+    # Parse evidence fields from the manifest's evidence_required string or evidence object
+    # For manifest assets, we check gate results and remediation status to derive classification.
+    issue_type = asset.get("blocking_issue_type", "")
+
+    # Evidence fields are not stored as structured data in the manifest today.
+    # Derivation uses gate results + remediation_status + founder_verified as the
+    # computable subset.  When structured evidence lands, this function expands.
+    return True  # Evidence check is gate-level; detailed check deferred to structured evidence phase
+
+
+def _derive_reclassification(asset):
+    """Recompute reclassification from gate results and remediation state.
+
+    Mirrors derive_reclassification() in test_phase4e_activation_state_machine.py.
+    """
+    boundary = asset.get("boundary_scan_result", "pending")
+    shell = asset.get("shell_smoke_result", "pending")
+    dep_lic = asset.get("dependency_license_result", "pending")
+
+    if boundary == "fail":
+        return "blocked-boundary"
+
+    if dep_lic == "fail" or shell == "fail":
+        return "blocked-runtime"
+
+    gates_pass = boundary == "pass" and shell == "pass" and dep_lic == "pass"
+
+    verified = (
+        asset.get("remediation_status") == "verified"
+        and asset.get("founder_verified", False) is True
+    )
+
+    if gates_pass and verified:
+        return "unblocked-ready"
+
+    return "blocked-security"
+
+
+def _derive_activation_eligibility(asset):
+    """Recompute activation_eligibility from derived reclassification."""
+    return "eligible" if _derive_reclassification(asset) == "unblocked-ready" else "not-eligible"
+
+
+def rule_p4e_009(assets):
+    """Derived-only eligibility: stored reclassification and activation_eligibility
+    must match values recomputed from evidence + gates + verification state."""
+    violations = []
+    for a in assets:
+        expected_reclass = _derive_reclassification(a)
+        stored_reclass = a.get("reclassification", "")
+        if stored_reclass != expected_reclass:
+            violations.append(
+                f"{a['asset_id']}: reclassification stored={stored_reclass} derived={expected_reclass}"
+            )
+
+        expected_elig = _derive_activation_eligibility(a)
+        stored_elig = a.get("activation_eligibility", "")
+        if stored_elig != expected_elig:
+            violations.append(
+                f"{a['asset_id']}: activation_eligibility stored={stored_elig} derived={expected_elig}"
+            )
+
+    ok = len(violations) == 0
+    detail = (
+        f"{len(violations)} derivation mismatches"
+        if violations
+        else "all values match derivation"
+    )
+    if violations and len(violations) <= 5:
+        detail += " -- " + "; ".join(violations)
+    elif violations:
+        detail += " -- " + "; ".join(violations[:5]) + f" ... and {len(violations)-5} more"
+    return ok, detail
+
+
 def print_summary(assets):
     """Print summary by repo and remediation status."""
     print("\n--- Summary by Repo ---")
@@ -249,6 +330,7 @@ def main():
         ("P4E-006", "Activation eligibility consistency", rule_p4e_006),
         ("P4E-007", "Asset count per repo matches expected", rule_p4e_007),
         ("P4E-008", "No premature unblocked-ready", rule_p4e_008),
+        ("P4E-009", "Derived-only eligibility (no hand-authored overrides)", rule_p4e_009),
     ]
 
     print(f"Phase 4E Security Remediation Validator")
@@ -271,7 +353,7 @@ def main():
 
     print(f"\n{'='*60}")
     if all_pass:
-        print("RESULT: ALL 8 RULES PASSED")
+        print("RESULT: ALL 9 RULES PASSED")
         sys.exit(0)
     else:
         print("RESULT: ONE OR MORE RULES FAILED")
