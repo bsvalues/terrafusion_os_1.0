@@ -1,0 +1,143 @@
+{
+  "phase": "5A",
+  "title": "Shell Defect Ledger — Truth Freeze",
+  "created": "2026-03-15",
+  "snapshot_commit": "eda3e70f4",
+  "defects": [
+    {
+      "id": "SD-001",
+      "severity": "critical",
+      "title": "Workbench opens as draggable/resizable window instead of maximized Tier-0",
+      "file": "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "line": 178,
+      "expected": "getModuleWindowSize('property-workbench') returns { maximized: true }",
+      "actual": "getModuleWindowSize('property-workbench') returns { maximized: false }",
+      "codex_rule": "tier0-workbench driftForbidden: 'Must not float as popup — opens maximized'",
+      "fix_phase": "5B",
+      "fix_description": "Change maximized: false to maximized: true for tier0-workbench objectType"
+    },
+    {
+      "id": "SD-002",
+      "severity": "moderate",
+      "title": "Workbench can be restored from maximized via title-bar double-click",
+      "file": "frontend/apps/os-shell/src/shell/desktop/Window.tsx",
+      "line": 265,
+      "expected": "Tier-0 windows cannot be restored to normal state",
+      "actual": "handleDoubleClick calls onMaximize which toggles restore for all windows",
+      "codex_rule": "tier0-workbench driftForbidden: 'Must not float as popup — opens maximized'",
+      "fix_phase": "5B",
+      "fix_description": "Disable maximize toggle (restore) for tier-0 classified windows"
+    },
+    {
+      "id": "SD-003",
+      "severity": "low",
+      "title": "Workbench size uses vw-40/vh-120 instead of full viewport minus taskbar",
+      "file": "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "line": 180,
+      "expected": "{ width: vw, height: vh - 48 } (full viewport minus TASKBAR_HEIGHT)",
+      "actual": "{ width: vw - 40, height: vh - 120 } (arbitrary padding)",
+      "codex_rule": "tier0-workbench should fill available space",
+      "fix_phase": "5B",
+      "fix_description": "Use full viewport width and vh - TASKBAR_HEIGHT for tier-0 size"
+    },
+    {
+      "id": "SD-004",
+      "severity": "info",
+      "title": "Fallback prefix-matching for property-workbench duplicates MODULE_OBJECT_TYPES logic",
+      "file": "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "line": 195,
+      "expected": "MODULE_OBJECT_TYPES classification is authoritative; fallback is redundant",
+      "actual": "Fallback at line 195-200 returns same wrong values as classified path",
+      "codex_rule": "Single source of truth for module classification",
+      "fix_phase": "5B",
+      "fix_description": "Remove redundant fallback now that MODULE_OBJECT_TYPES is authoritative"
+    },
+    {
+      "id": "SD-005",
+      "severity": "info",
+      "title": "Dead/archived module entries in MODULE_REGISTRY and ModuleRenderer",
+      "file": "frontend/apps/os-shell/src/config/moduleComponents.tsx",
+      "line": 145,
+      "expected": "Registry contains only live, canonical modules",
+      "actual": "Registry contains archived entries (income-valuation, comparable-sales) and placeholder-only entries with no backing implementation",
+      "codex_rule": "Module registry should reflect canonical state",
+      "fix_phase": "5G",
+      "fix_description": "Remove archived and dead placeholder entries from MODULE_REGISTRY and ModuleRenderer"
+    }
+  ],
+  "verified_correct": [
+    {
+      "id": "SC-001",
+      "title": "All 5 constitutional suites registered with objectType: suite-workspace",
+      "file": "frontend/apps/os-shell/src/contracts/objectPlacement.ts",
+      "lines": "282-286",
+      "status": "correct"
+    },
+    {
+      "id": "SC-002",
+      "title": "All 3 OS features registered with objectType: os-feature-window",
+      "file": "frontend/apps/os-shell/src/contracts/objectPlacement.ts",
+      "lines": "303-305",
+      "status": "correct"
+    },
+    {
+      "id": "SC-003",
+      "title": "Taskbar has constitutional zone layout (A: Home, B: Suites, B-overflow: Running)",
+      "file": "frontend/apps/os-shell/src/shell/desktop/Taskbar.tsx",
+      "status": "correct"
+    },
+    {
+      "id": "SC-004",
+      "title": "Z-index hierarchy properly layered (desktop < topbar < window < dock < overlay)",
+      "file": "frontend/apps/os-shell/src/shell/desktop/zIndex.ts",
+      "status": "correct"
+    },
+    {
+      "id": "SC-005",
+      "title": "Suite boundary validation enforced in ModuleRenderer",
+      "file": "frontend/apps/os-shell/src/config/moduleComponents.tsx",
+      "lines": "908-918",
+      "status": "correct"
+    },
+    {
+      "id": "SC-006",
+      "title": "Workbench host boundary validation available",
+      "file": "frontend/apps/os-shell/src/contracts/objectPlacement.ts",
+      "lines": "529-558",
+      "status": "correct"
+    },
+    {
+      "id": "SC-007",
+      "title": "evaluateSpawnIntent() called in openWindow() before window creation",
+      "file": "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "status": "correct"
+    },
+    {
+      "id": "SC-008",
+      "title": "Window.tsx disables drag/resize when state === 'maximized'",
+      "file": "frontend/apps/os-shell/src/shell/desktop/Window.tsx",
+      "lines": "498-512",
+      "status": "correct"
+    },
+    {
+      "id": "SC-009",
+      "title": "Suite windows open near-full-stage (large, movable, not maximized)",
+      "file": "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "lines": "186-191",
+      "status": "correct"
+    }
+  ],
+  "summary": {
+    "total_defects": 5,
+    "critical": 1,
+    "moderate": 1,
+    "low": 1,
+    "info": 2,
+    "verified_correct": 9,
+    "code_changes_needed": {
+      "desktopStore.ts": "Fix maximized flag + size for tier0-workbench (SD-001, SD-003, SD-004)",
+      "Window.tsx": "Prevent restore from maximized for tier-0 windows (SD-002)",
+      "moduleComponents.tsx": "Remove dead/archived entries (SD-005)"
+    }
+  }
+}
