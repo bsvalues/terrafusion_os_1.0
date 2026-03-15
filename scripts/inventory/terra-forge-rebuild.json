@@ -1,0 +1,1142 @@
+[
+  {
+    "asset_id": "TFR-001",
+    "description": "OLS regression solver with Gauss-Jordan matrix inversion, t-distribution CDF, F-statistic computation. Supabase edge function that runs neighborhood-scoped calibration against qualified sales.",
+    "source_path": "supabase/functions/regression-calibrate/index.ts",
+    "asset_type": "service",
+    "domain": "calibration",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.regression.ols",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-002",
+    "description": "Client-side multiple regression engine with ANOVA, neighborhood dummy variables, Cook's distance, Q-Q plots, VIF multicollinearity detection, Durbin-Watson independence test, and diagnostic plot generation.",
+    "source_path": "src/hooks/useRegressionAnalysis.ts",
+    "asset_type": "utility",
+    "domain": "regression",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.regression.multiple",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-003",
+    "description": "Calibration hook that invokes the regression-calibrate edge function per neighborhood, manages selected variables, and emits change receipts.",
+    "source_path": "src/hooks/useCalibration.ts",
+    "asset_type": "utility",
+    "domain": "calibration",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.calibration.run",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-004",
+    "description": "PACS Benton County sync contract: county identity, identity doctrine (current year vs certified), 6 sync product definitions, watermark tracking, PII redaction rules, delta strategies, quality gate references, and contract validation.",
+    "source_path": "src/config/pacsBentonContract.ts",
+    "asset_type": "config",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.contract",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-005",
+    "description": "PACS True Automation field mapping profile: column-level mappings from CIAPS schema to TerraFusion canonical schema for parcels, sales, assessments, permits, exemptions. Includes field aliases, identity mode types, and neighborhood query generators.",
+    "source_path": "src/config/pacsFieldMappings.ts",
+    "asset_type": "config",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.field_mapping",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-006",
+    "description": "PACS workflow mappings for appeals (_arb_protest), permits (building_permit), and exemptions (property_exemption). Defines primary keys, parcel joins, status fields, PII warnings, and extraction SQL generators.",
+    "source_path": "src/config/pacsWorkflowMappings.ts",
+    "asset_type": "config",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.workflow_mapping",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-007",
+    "description": "PACS quality gates: IAAO-style integrity checks (one-row-per-prop_id, duplicate detection, null checks) run before publishing sync products. Includes schema drift detection and gate evaluation framework.",
+    "source_path": "src/config/pacsQualityGates.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.quality_gates",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-008",
+    "description": "SQL Server query helpers: ROW_NUMBER() CTE generator as replacement for PostgreSQL DISTINCT ON, preventing dialect errors in PACS extraction queries.",
+    "source_path": "src/config/sqlServerHelpers.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.sql_helpers",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-009",
+    "description": "VEI data hooks: study period management, assessment ratio tier grouping with median calculation, appeals-by-tier analysis, and sample size tracking.",
+    "source_path": "src/hooks/useVEIData.ts",
+    "asset_type": "utility",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.vei",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-010",
+    "description": "On-demand ratio analysis hook: computes COD, PRD, PRB, tier medians, and tier slope via database RPC. Supports tax year, sales window, neighborhood, and outlier method parameters. Emits model receipts for audit trail.",
+    "source_path": "src/hooks/useRatioAnalysis.ts",
+    "asset_type": "utility",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.ratio_analysis",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-011",
+    "description": "VEI Dashboard: full equity analysis UI with metric cards (COD, PRD, PRB, tier slope), tax year selector, sales window selector, neighborhood comparison grid, outlier method toggle, and drilldown dialogs.",
+    "source_path": "src/components/vei/VEIDashboard.tsx",
+    "asset_type": "component",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.vei",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-012",
+    "description": "Tier ratio bar chart: visualizes median assessment ratios by value quartile (Q1-Q4) with 1.0 reference line and deviation tooltips.",
+    "source_path": "src/components/vei/charts/TierRatioPlot.tsx",
+    "asset_type": "component",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.vei.tier_plot",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-013",
+    "description": "COD trend chart component for displaying Coefficient of Dispersion over time.",
+    "source_path": "src/components/vei/charts/CODTrendChart.tsx",
+    "asset_type": "component",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.vei.cod_trend",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-014",
+    "description": "PRD trend chart component for displaying Price-Related Differential over time.",
+    "source_path": "src/components/vei/charts/PRDTrendChart.tsx",
+    "asset_type": "component",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.vei.prd_trend",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-015",
+    "description": "VEI drilldown dialogs: COD drilldown, PRD drilldown, tier slope drilldown, and appeals drilldown for detailed equity analysis.",
+    "source_path": "src/components/vei/drilldown/index.ts",
+    "asset_type": "component",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.vei.drilldown",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-016",
+    "description": "VEI metric card, summary panel, export actions, skeleton, empty state, neighborhood comparison grid, tax year selector, and sales window selector components.",
+    "source_path": "src/components/vei/VEIMetricCard.tsx",
+    "asset_type": "component",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.vei.ui",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-017",
+    "description": "Sync engine with delta detection (insert/update/delete), SAGA workflow runners for sync refresh, bulk import, assessment update, and PACS migration. Includes UUID resolver for PACS prop_id to TerraFusion UUID mapping.",
+    "source_path": "src/services/syncEngine.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.engine",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-018",
+    "description": "SAGA orchestrator runtime: multi-step workflow execution with compensation/rollback, context passing, timing, and trace event emission.",
+    "source_path": "src/services/sagaOrchestrator.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.saga",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-019",
+    "description": "Contract-driven sync runtime: orchestrates PACS product extraction using contract-defined SQL, schema drift detection, PII redaction, quality gate enforcement, and watermark updates.",
+    "source_path": "src/services/sync/runtime.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.runtime",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-020",
+    "description": "Source lane registry: manages multiple data source connectors (PACS SQL, ProVal ODBC, Asend, Manatron) with priority-based selection, capability negotiation, and lazy initialization.",
+    "source_path": "src/services/sync/registry.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.registry",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-021",
+    "description": "Year doctrine discovery and enforcement: detects how legacy CAMA systems represent appraisal year (control_table, valuation_join, dated_rows, implicit_current, column_per_table) and resolves current year at runtime.",
+    "source_path": "src/services/sync/yearDoctrine.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.year_doctrine",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-022",
+    "description": "Read-only connector interface: universal contract for all data sources with capability flags, query execution, introspection, and product capability requirements for Benton County.",
+    "source_path": "src/services/sync/connectors/types.ts",
+    "asset_type": "model",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.connector_interface",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-023",
+    "description": "PACS read-only SQL connector: SQL statement validator that blocks write operations (INSERT/UPDATE/DELETE/EXEC/DROP etc.), providing three-layer write protection for PACS extraction.",
+    "source_path": "src/services/pacsConnector.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.pacs_connector",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-024",
+    "description": "Cost schedule hooks: CRUD for cost schedules and depreciation tables, plus pure computeCostApproach function (RCNew, depreciation, condition modifier, total value calculation).",
+    "source_path": "src/hooks/useCostSchedule.ts",
+    "asset_type": "utility",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.cost_approach",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-025",
+    "description": "Income approach hook: income property CRUD, cap rate and GRM calculation, NOI computation, and reconciled value estimation.",
+    "source_path": "src/hooks/useIncomeApproach.ts",
+    "asset_type": "utility",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.income_approach",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-026",
+    "description": "Comp grid data hook: fetches parcels by neighborhood with latest qualified sales, computes assessment ratios per parcel.",
+    "source_path": "src/hooks/useCompGrid.ts",
+    "asset_type": "utility",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.comp_grid",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-027",
+    "description": "TerraTrace audit event service: append-only event spine for all auditable actions with county-scoped RLS, before/after diff computation, and fire-and-forget async emission.",
+    "source_path": "src/services/terraTrace.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.audit.trace",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-028",
+    "description": "Write-lane enforcement: constitutional matrix mapping each data domain to exactly one owner module (forge, dais, atlas, dossier, os, pilot). Runtime assertion prevents cross-lane violations.",
+    "source_path": "src/services/writeLane.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.governance.write_lane",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-029",
+    "description": "Circuit breaker service: wraps edge function calls with failure threshold, half-open recovery, slow call detection, and optional fallback for operational resilience.",
+    "source_path": "src/services/circuitBreaker.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.resilience.circuit_breaker",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-030",
+    "description": "PACS multi-table ETL processor: detects True Automation CSV table types from headers (situs, imprv, imprv_items, land_detail, owner, account, permits, etc.), parses, and joins into unified parcel records.",
+    "source_path": "src/lib/pacsETL.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.etl.pacs_multi_table",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-031",
+    "description": "Forge suite service: parcel characteristic updates with write-lane enforcement and trace emission, value override creation with audit trail.",
+    "source_path": "src/services/suites/forgeService.ts",
+    "asset_type": "service",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.service.core",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-032",
+    "description": "Dais suite service: appeal status updates, permit and exemption workflow state changes, all with write-lane enforcement and trace emission.",
+    "source_path": "src/services/suites/daisService.ts",
+    "asset_type": "service",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.service.core",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-033",
+    "description": "Atlas suite service: GIS feature/boundary upserts, layer management, with write-lane enforcement and trace emission.",
+    "source_path": "src/services/suites/atlasService.ts",
+    "asset_type": "service",
+    "domain": "spatial",
+    "owner_suite": "TerraAtlas",
+    "canonical_capability": "atlas.service.core",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-034",
+    "description": "Dossier suite service: document management, narrative creation, packet assembly, with write-lane enforcement and trace emission.",
+    "source_path": "src/services/suites/dossierService.ts",
+    "asset_type": "service",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dossier.service.core",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-035",
+    "description": "Export service: CSV/JSON export generation for parcels, assessments, sales, appeals, exemptions, notices, and model receipts with configurable filters.",
+    "source_path": "src/services/exportService.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.export.engine",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-036",
+    "description": "Ingest service: batch parcel insert, upsert with conflict handling for PACS import, with progress callbacks.",
+    "source_path": "src/services/ingestService.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.ingest.batch",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-037",
+    "description": "Metric catalog: single source of truth for every key number in the OS. Each metric entry includes whatItMeans, soWhat, whereItCameFrom, health guidance, and proof links.",
+    "source_path": "src/lib/metrics/metricCatalog.ts",
+    "asset_type": "config",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.trust.metric_catalog",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-038",
+    "description": "Information Architecture map: canonical module/view/scope definitions (home, workbench, factory, registry), legacy route redirects, and navigation validation.",
+    "source_path": "src/config/IA_MAP.ts",
+    "asset_type": "config",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.navigation.ia_map",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-039",
+    "description": "Constitution guards: runtime navigation validation, stale module ID detection, and compile-time enforcement for all 5 constitutional rules.",
+    "source_path": "src/lib/constitutionGuards.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.governance.constitution_guards",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-040",
+    "description": "Mission constitution: registry of correction missions with scope, priority, SLA cooldown, role gates, impact categories, and receipt templates. Consumed by useSmartActions.",
+    "source_path": "src/lib/missionConstitution.ts",
+    "asset_type": "config",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.governance.missions",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-041",
+    "description": "AVM training edge function: fetches parcel data with sales, computes features (building_area, land_area, age, bedrooms, bathrooms), trains regression model, and stores model receipt.",
+    "source_path": "supabase/functions/avm-train/index.ts",
+    "asset_type": "service",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.avm.train",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-042",
+    "description": "AI valuation edge function: LLM-powered property valuation analysis supporting full, quick, and cost_approach modes with comparable sales context.",
+    "source_path": "supabase/functions/valuation-ai/index.ts",
+    "asset_type": "service",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.avm.ai_valuation",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-043",
+    "description": "Defense narrative edge function: LLM-powered narrative generation for BOE defense packets, value change explanations, appeal responses, exemption letters, and evidence synthesis.",
+    "source_path": "supabase/functions/defense-narrative/index.ts",
+    "asset_type": "service",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.narrative.defense",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-044",
+    "description": "Advanced analytics hooks: ratio trend sparklines (multi-year), assessment value forecasting with confidence intervals, outlier detection, and neighborhood clustering.",
+    "source_path": "src/hooks/useAdvancedAnalytics.ts",
+    "asset_type": "utility",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.advanced_analytics",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-045",
+    "description": "Segment discovery hook: factor importance analysis from regression coefficients, segment range suggestions, and data quality coverage assessment. Integrates with regression studio results.",
+    "source_path": "src/hooks/useSegmentDiscovery.ts",
+    "asset_type": "utility",
+    "domain": "calibration",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.calibration.segment_discovery",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-046",
+    "description": "Data quality scoring engine: per-parcel completeness scoring with weighted fields, neighborhood aggregation, stale-data detection, and grade assignment (A-F).",
+    "source_path": "src/hooks/useDataQualityScoring.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.quality.scoring_engine",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-047",
+    "description": "Field studio local store: IndexedDB-backed offline queue for field observations with condition/quality rubrics, sync status tracking, and event-sourced design.",
+    "source_path": "src/services/fieldStore.ts",
+    "asset_type": "service",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.field.offline_store",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-048",
+    "description": "Cost approach calculator component with batch apply, depreciation curve editor, cost schedule editor, and cost ratio analysis panel.",
+    "source_path": "src/components/factory/cost/CostApproachCalculator.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.cost_approach.ui",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-049",
+    "description": "Cost schedule editor: UI for managing base cost per sqft by property class and quality grade.",
+    "source_path": "src/components/factory/cost/CostScheduleEditor.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.cost_schedule.ui",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-050",
+    "description": "Depreciation curve editor: UI for managing age-based depreciation percentages and condition modifiers.",
+    "source_path": "src/components/factory/cost/DepreciationCurveEditor.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.depreciation.ui",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-051",
+    "description": "Income approach calculator, batch income apply panel, and income data manager components.",
+    "source_path": "src/components/factory/income/IncomeApproachCalculator.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.income_approach.ui",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-052",
+    "description": "Regression control panel, calibration diagnostics, calibration scatter plot, coefficient grid, batch apply panel, batch notice panel, roll readiness panel.",
+    "source_path": "src/components/factory/regression/RegressionControlPanel.tsx",
+    "asset_type": "component",
+    "domain": "regression",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.regression.ui",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-053",
+    "description": "Regression studio dashboard: ANOVA panel, diagnostic plots panel (Q-Q, residual vs fitted, Cook's distance, scale-location), multiple regression panel, neighborhood effects panel, summary cards, and actions.",
+    "source_path": "src/components/regression/RegressionStudioDashboard.tsx",
+    "asset_type": "component",
+    "domain": "regression",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.regression.studio",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-054",
+    "description": "Regression diagnostic chart components: Cook's distance plot, Q-Q plot, residual vs fitted plot, and scale-location plot.",
+    "source_path": "src/components/regression/charts/QQPlot.tsx",
+    "asset_type": "component",
+    "domain": "regression",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.regression.diagnostic_charts",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-055",
+    "description": "Appeals workflow component: appeal creation, timeline, audit log, status transitions for Dais suite.",
+    "source_path": "src/components/dais/AppealsWorkflow.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.workflow.appeals",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-056",
+    "description": "Permits workflow, exemptions workflow, notices panel, certification dashboard, and batch notice dashboard components.",
+    "source_path": "src/components/dais/PermitsWorkflow.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.workflow.permits",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-057",
+    "description": "GeoEquity map and dashboard: equity heatmap, parcel detail sheet, GIS layers panel, parcel filters, search panel, data sources panel, and ingest control panel.",
+    "source_path": "src/components/geoequity/GeoEquityDashboard.tsx",
+    "asset_type": "component",
+    "domain": "spatial",
+    "owner_suite": "TerraAtlas",
+    "canonical_capability": "atlas.equity.map",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-058",
+    "description": "Segment revaluation dashboard: segment calibration, equity rebalancing, and segment management panels for targeted revaluation workflows.",
+    "source_path": "src/components/revaluation/SegmentRevaluationDashboard.tsx",
+    "asset_type": "component",
+    "domain": "calibration",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.calibration.segment_revaluation",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-059",
+    "description": "Segment discovery dashboard: factor importance panel, neighborhood heatmap, segment suggestion panel for automated market segmentation.",
+    "source_path": "src/components/segments/SegmentDiscoveryDashboard.tsx",
+    "asset_type": "component",
+    "domain": "calibration",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.calibration.segment_discovery.ui",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-060",
+    "description": "Property workbench: parcel detail editor with suite tab navigation (Forge, Atlas, Dais, Dossier, Pilot), review queue, context ribbon, and command palette.",
+    "source_path": "src/components/workbench/PropertyWorkbench.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.workbench.core",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-061",
+    "description": "Change receipt utility: generates immutable audit records for data modifications with before/after diffs.",
+    "source_path": "src/lib/changeReceipt.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.audit.change_receipt",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-062",
+    "description": "Query invalidation utility: centralized cache invalidation helpers for factory, workbench, and VEI queries.",
+    "source_path": "src/lib/queryInvalidation.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.cache.invalidation",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-063",
+    "description": "AVM studio dashboard: AI valuation panel, feature engineering pipeline, model comparison panel, training progress, model metrics grid with prediction scatter, residual distribution, and feature importance charts.",
+    "source_path": "src/components/avm/AVMStudioDashboard.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.avm.studio",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-064",
+    "description": "Valuation anatomy dashboard: 3D valuation canvas, valuation details panel for property value breakdown visualization.",
+    "source_path": "src/components/anatomy/ValuationAnatomyDashboard.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.anatomy",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-065",
+    "description": "Roll readiness dashboard: certification pipeline, readiness scoring for assessment roll certification workflows.",
+    "source_path": "src/components/certification/RollReadinessDashboard.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.certification.readiness",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-066",
+    "description": "Sync dashboard: conflict resolution queue, data source registry, SAGA runner UI for monitoring and managing data sync operations.",
+    "source_path": "src/components/sync/SyncDashboard.tsx",
+    "asset_type": "component",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.dashboard",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-067",
+    "description": "IDS command center: ingest wizard, PACS multi-table import, inventory/quality/routing/versions pillars for data stewardship.",
+    "source_path": "src/components/ids/IDSCommandCenter.tsx",
+    "asset_type": "component",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.ids.command_center",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-068",
+    "description": "Parcel import wizard with column mapper, import preview, learning scoreboard, and row fix missions for data onboarding.",
+    "source_path": "src/components/import/DataImportDialog.tsx",
+    "asset_type": "component",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.ingest.import_wizard",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-069",
+    "description": "Trust registry page, provenance badge, provenance number, explainable wrapper, trust boundary, and trust OS health panel components for data lineage and trust UI.",
+    "source_path": "src/components/trust/TrustRegistryPage.tsx",
+    "asset_type": "component",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.trust.registry",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-070",
+    "description": "Defense packet generator, model receipt, and TerraTrace activity feed for proof/evidence components.",
+    "source_path": "src/components/proof/DefensePacketGenerator.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.proof.defense_packet",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-071",
+    "description": "Dossier components: document upload dialog, documents panel, narrative drafting panel, and packet assembly panel for records management.",
+    "source_path": "src/components/dossier/PacketAssemblyPanel.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dossier.records.ui",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-072",
+    "description": "Sketch module: measurement plan panel, plan trace panel, and sketch builder for property measurement and sketch recording.",
+    "source_path": "src/components/sketch/SketchModule.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.sketch.module",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-073",
+    "description": "Field studio dashboard and inspection panel for field inspection management.",
+    "source_path": "src/components/field/FieldStudioDashboard.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.field.studio",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-074",
+    "description": "Supabase database migrations: 60+ migration files defining the complete schema for parcels, sales, assessments, neighborhoods, appeals, permits, exemptions, cost schedules, study periods, model receipts, trace events, and more.",
+    "source_path": "supabase/migrations/",
+    "asset_type": "data",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.schema.migrations",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-075",
+    "description": "PACS Benton contract test: validates contract internal consistency (quality gate references, schema expectations, PII rules).",
+    "source_path": "src/config/pacsBentonContract.test.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.contract.test",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-076",
+    "description": "Sync engine tests: validates delta detection, SAGA workflow execution, and sync refresh behavior.",
+    "source_path": "src/services/syncEngine.test.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.engine.test",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-077",
+    "description": "SAGA orchestrator tests: validates multi-step execution, compensation/rollback, and context propagation.",
+    "source_path": "src/services/sagaOrchestrator.test.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.saga.test",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-078",
+    "description": "TerraTrace test: validates audit event emission and diff computation.",
+    "source_path": "src/services/terraTrace.test.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.audit.trace.test",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-079",
+    "description": "Write lane test: validates domain ownership assertions and cross-lane violation detection.",
+    "source_path": "src/services/writeLane.test.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.governance.write_lane.test",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-080",
+    "description": "Sync connector test: validates sync registry, connector capabilities, and year doctrine.",
+    "source_path": "src/services/sync/sync.test.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.test",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-081",
+    "description": "Shared auth module for Supabase edge functions: JWT validation, county ID extraction, and service client creation.",
+    "source_path": "supabase/functions/_shared/auth.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.auth.edge_functions",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-082",
+    "description": "Shared error handling for Supabase edge functions: safe error responses and AI gateway error formatting.",
+    "source_path": "supabase/functions/_shared/errors.ts",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.errors.edge_functions",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-083",
+    "description": "Draft notice edge function: generates assessment change notices for property owners.",
+    "source_path": "supabase/functions/draft-notice/index.ts",
+    "asset_type": "service",
+    "domain": "workflow",
+    "owner_suite": "TerraDais",
+    "canonical_capability": "dais.notices.draft",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-084",
+    "description": "GIS parse edge function: processes GIS file uploads for spatial data ingestion.",
+    "source_path": "supabase/functions/gis-parse/index.ts",
+    "asset_type": "service",
+    "domain": "spatial",
+    "owner_suite": "TerraAtlas",
+    "canonical_capability": "atlas.gis.parse",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-085",
+    "description": "GIS sync and ArcGIS parcel sync/import/polygon ingest edge functions for spatial data synchronization.",
+    "source_path": "supabase/functions/gis-sync/index.ts",
+    "asset_type": "service",
+    "domain": "spatial",
+    "owner_suite": "TerraAtlas",
+    "canonical_capability": "atlas.gis.sync",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-086",
+    "description": "Ingest process edge function: server-side data ingestion processing pipeline.",
+    "source_path": "supabase/functions/ingest-process/index.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.ingest.process",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-087",
+    "description": "System health edge function: health check endpoint for monitoring system status.",
+    "source_path": "supabase/functions/system-health/index.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.health.check",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-088",
+    "description": "TerraPilot chat edge function: AI chat assistant for assessor workflows.",
+    "source_path": "supabase/functions/terrapilot-chat/index.ts",
+    "asset_type": "service",
+    "domain": "workflow",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.pilot.chat",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-089",
+    "description": "Assessor scrape and statewide scrape edge functions: web scraping for assessor data collection.",
+    "source_path": "supabase/functions/assessor-scrape/index.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.ingest.scrape",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-090",
+    "description": "County setup edge function: initializes county configuration and initial data structures.",
+    "source_path": "supabase/functions/county-setup/index.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.admin.county_setup",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-091",
+    "description": "Schedule scrape edge function: manages scheduled web scraping jobs.",
+    "source_path": "supabase/functions/schedule-scrape/index.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.ingest.schedule_scrape",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-092",
+    "description": "Historical ratio trend hook: multi-year ratio statistics and appeals-by-value-tier analysis for trend visualization.",
+    "source_path": "src/hooks/useHistoricalRatioTrend.ts",
+    "asset_type": "utility",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.historical_trend",
+    "surface_reference": "Statistics Studio"
+  },
+  {
+    "asset_id": "TFR-093",
+    "description": "Supabase client configuration and auto-generated TypeScript types for the database schema.",
+    "source_path": "src/integrations/supabase/types.ts",
+    "asset_type": "model",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.schema.types",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-094",
+    "description": "Parcel 360 types: comprehensive type definitions for trace events, write domains, source modules, and parcel data shapes.",
+    "source_path": "src/types/parcel360.ts",
+    "asset_type": "model",
+    "domain": "valuation",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.types.parcel360",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-095",
+    "description": "Sync types: type definitions for sync operations, delta records, and saga execution.",
+    "source_path": "src/types/sync.ts",
+    "asset_type": "model",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.types.sync",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-096",
+    "description": "CostForge dashboard: quantum metrics grid, sacred balance panel with balance radar, quantum oscillator, and sacred flow chart. Aesthetic cost approach visualization.",
+    "source_path": "src/components/costforge/CostForgeDashboard.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.costforge.ui",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-097",
+    "description": "SVG accessibility checker script: validates SVG elements for WCAG compliance.",
+    "source_path": "scripts/check-svg-a11y.mjs",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.a11y.svg_check",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-098",
+    "description": "3D color palette for TerraFusion visualizations (tf3dPalette).",
+    "source_path": "src/lib/colors/tf3dPalette.ts",
+    "asset_type": "config",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.theme.3d_palette",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-099",
+    "description": "Admin dashboard with county switcher, data quality dashboard, security audit dashboard, user management panel, study period manager, and scrape job manager.",
+    "source_path": "src/components/admin/AdminDashboard.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.admin.dashboard",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-100",
+    "description": "Cost ratio analysis component: compares cost approach values against sales ratios for calibration validation.",
+    "source_path": "src/components/factory/cost/CostRatioAnalysis.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.cost_ratio",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-101",
+    "description": "Scenario mode component for what-if analysis in the factory layout.",
+    "source_path": "src/components/factory/scenarios/ScenarioMode.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.scenarios",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-102",
+    "description": "Batch cost apply panel: applies cost approach values in bulk across neighborhoods.",
+    "source_path": "src/components/factory/cost/BatchCostApplyPanel.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.cost_batch",
+    "surface_reference": "Regression Studio"
+  },
+  {
+    "asset_id": "TFR-103",
+    "description": "ODBC connector stub: interface for legacy Access .mdb database connectivity via ODBC on Windows.",
+    "source_path": "src/services/sync/connectors/odbcConnector.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.odbc_connector",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-104",
+    "description": "SQL Server connector: read-only SQL Server connector implementation for PACS direct database access.",
+    "source_path": "src/services/sync/connectors/sqlServerConnector.ts",
+    "asset_type": "service",
+    "domain": "data-quality",
+    "owner_suite": "TerraCanon",
+    "canonical_capability": "canon.sync.sqlserver_connector",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-105",
+    "description": "Geometry health dashboard: monitors parcel polygon linkage stats and spatial data integrity.",
+    "source_path": "src/components/geometry/GeometryHealthDashboard.tsx",
+    "asset_type": "component",
+    "domain": "spatial",
+    "owner_suite": "TerraAtlas",
+    "canonical_capability": "atlas.geometry.health",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-106",
+    "description": "Export center component: UI for configurable dataset exports (parcels, assessments, sales, etc.) in CSV/JSON format.",
+    "source_path": "src/components/exports/ExportCenter.tsx",
+    "asset_type": "component",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.export.center",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-107",
+    "description": "Parcel comparison panel: side-by-side comparison of parcel characteristics and values.",
+    "source_path": "src/components/comparison/ParcelComparisonPanel.tsx",
+    "asset_type": "component",
+    "domain": "valuation",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.valuation.comparison",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-108",
+    "description": "Watchlist panel: tracks parcels of interest for ongoing monitoring.",
+    "source_path": "src/components/watchlist/WatchlistPanel.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.watchlist.panel",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-109",
+    "description": "Onboarding wizard: guides new users through initial system setup and configuration.",
+    "source_path": "src/components/onboarding/OnboardingWizard.tsx",
+    "asset_type": "component",
+    "domain": "workflow",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.onboarding.wizard",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-110",
+    "description": "Auth context and auth page: authentication flow with Supabase, protected route component.",
+    "source_path": "src/contexts/AuthContext.tsx",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.auth.context",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-111",
+    "description": "Trust mode context: toggles between beginner and power-user views throughout the application.",
+    "source_path": "src/contexts/TrustModeContext.tsx",
+    "asset_type": "utility",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.trust.mode_context",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-112",
+    "description": "Navigation components: sovereign header, sovereign sidebar, dock launcher, global command palette, control center, module view bar, and system bar.",
+    "source_path": "src/components/navigation/SovereignSidebar.tsx",
+    "asset_type": "component",
+    "domain": "data-quality",
+    "owner_suite": "OS Admin",
+    "canonical_capability": "os.navigation.shell",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-113",
+    "description": "Dashboard components: suite hub, command briefing, daily briefing, system health panel, neighborhood leaderboard, smart quick actions, next best action, and data pipeline ledger.",
+    "source_path": "src/components/dashboard/SuiteHub.tsx",
+    "asset_type": "component",
+    "domain": "data-quality",
+    "owner_suite": "Shared",
+    "canonical_capability": "os.dashboard.core",
+    "surface_reference": ""
+  },
+  {
+    "asset_id": "TFR-114",
+    "description": "Analytics dashboard with clustering panel, forecast panel, outlier detection panel, and ratio trend sparklines.",
+    "source_path": "src/components/analytics/AdvancedAnalyticsDashboard.tsx",
+    "asset_type": "component",
+    "domain": "ratio-analysis",
+    "owner_suite": "TerraForge",
+    "canonical_capability": "forge.statistics.analytics_dashboard",
+    "surface_reference": "Statistics Studio"
+  }
+]
