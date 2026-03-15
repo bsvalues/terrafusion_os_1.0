@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 24.2.1: Policy Export/Import Deterministic Tests** ✅ COMPLETE |
-| **Phase** | Phase 3: Implementation Complete - All Tests Green |
-| **Task** | All core implementation + 29/29 tests deterministic and passing |
+| **Slice** | **Phase 5: Shell Integrity Recovery** ✅ COMPLETE |
+| **Phase** | Phase 5H: Z-Index Authority Verification — All Tests Green |
+| **Task** | 5 defects fixed, 30 tests passing, live-verified maximized workbench |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `a3552e345` (Slice 24.2.1 complete - 29/29 tests, FileReader timing fixed) |
+| **Latest Commit** | Phase 5 commits (5A-5H): truth freeze → sizing fix → verification → cleanup → z-index |
 
 ---
 
@@ -346,6 +346,38 @@
 - Export/import functionality now **fully tested** with 100% deterministic coverage
 - Disaster recovery and reproducibility workflows validated end-to-end
 - Ready for production deployment with confidence (zero broken windows)
+
+---
+
+## Slice 25: Module Rehost Queue
+
+### 25.1: Comparable Sales Rehost — HOST VERIFIED, WORKFLOW PENDING
+
+| Aspect | Status | Detail |
+|--------|--------|--------|
+| Host surface installed | VERIFIED | ComparableSalesPanel renders in Workbench Forge tab |
+| Graceful empty state | VERIFIED | "Select a parcel to view comparable sales" when no parcel context |
+| Placeholder replaced | VERIFIED | No longer dead module; real adapter host in lawful position |
+| Module registry updated | DONE | comparable-sales: alpha->beta, runnable:true, entry /workbench/forge |
+| Parcel-bound populated state | PENDING | Requires backend/property-store parcel selection to bind |
+| Comp candidates from snapshot | PENDING | Benton snapshot loads, but parcel-scoped filtering untested live |
+| Selection + adjustment API | PENDING | CostForge adjust-comparable endpoint reachability not proven |
+| Reconciliation API | PENDING | CostForge reconcile endpoint reachability not proven |
+| Suite launch to correct tab | PENDING | Navigation from module registry to Forge tab untested |
+
+**Files delivered:**
+- `frontend/apps/os-shell/src/components/workbench/ComparableSalesPanel.tsx` (adapter host)
+- `frontend/apps/os-shell/src/services/comparableSalesService.ts` (adapter service)
+- `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyForge.tsx` (Forge integration)
+- `frontend/apps/os-shell/src/config/moduleComponents.tsx` (lazy load registration)
+- `frontend/apps/os-shell/src/config/generatedModules.ts` (registry metadata)
+
+**Guardrails enforced:**
+- All adjustment/reconciliation math stays in backend CostForge endpoints
+- Frontend only filters, sorts, scores candidates
+- Graceful degradation when backend unavailable
+
+### 25.2: Income Valuation Rehost — IN PROGRESS
 
 ---
 
