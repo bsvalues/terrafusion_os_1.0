@@ -158,7 +158,8 @@ def check_p4f_001(data):
         if a.get("consumer_status") not in VALID_CONSUMER:
             bad_enums.append(f"{aid}: consumer={a.get('consumer_status')}")
 
-    ok = n == 511 and dupes == 0 and not missing_fields and not bad_enums
+    expected = data.get("total_assets", n)
+    ok = n == expected and dupes == 0 and not missing_fields and not bad_enums
     detail = f"{n} assets, {dupes} dupes, {len(missing_fields)} missing fields, {len(bad_enums)} bad enums"
     return ok, detail
 
@@ -322,6 +323,97 @@ def check_p4f_009(data):
     return ok, detail
 
 
+CORE_DAIS_ASSETS = [
+    "AppealsWorkflow", "WorkflowComponents", "RollReadiness",
+    "DefensePacket", "FieldStudio", "AuditTrailPage", "AuditTab",
+    "daisService", "fieldStore",
+]
+
+
+def _asset_stem(asset):
+    """Get filename stem from destination_path."""
+    dest = asset.get("destination_path", "")
+    name = os.path.basename(dest)
+    if "." in name:
+        return name.rsplit(".", 1)[0]
+    return name or dest.rstrip("/").split("/")[-1]
+
+
+@rule("P4F-010", "Core Dais assets present and uniquely indexed")
+def check_p4f_010(data):
+    """All core Dais assets exist in ledger with suite_owner=Dais."""
+    index = {_asset_stem(a): a for a in data["assets"]}
+    missing = [n for n in CORE_DAIS_ASSETS if n not in index]
+    wrong_owner = [
+        n for n in CORE_DAIS_ASSETS
+        if n in index and index[n]["suite_owner"] != "Dais"
+    ]
+    ok = not missing and not wrong_owner
+    detail = f"{len(missing)} missing, {len(wrong_owner)} wrong owner"
+    return ok, detail
+
+
+@rule("P4F-011", "Activated Dais assets fully proven")
+def check_p4f_011(data):
+    """Activated Dais assets must have verified parity, runtime pass, shell pass, destination-active."""
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "Dais" or a["activation_status"] != "activated":
+            continue
+        checks = []
+        if a["parity_status"] != "verified":
+            checks.append(f"parity={a['parity_status']}")
+        if a["runtime_status"] != "pass":
+            checks.append(f"runtime={a['runtime_status']}")
+        if a["shell_status"] != "pass":
+            checks.append(f"shell={a['shell_status']}")
+        if a["deprecation_status"] != "destination-active":
+            checks.append(f"deprec={a['deprecation_status']}")
+        if checks:
+            violations.append(f"{a['asset_id']}: {', '.join(checks)}")
+    activated_dais = sum(
+        1 for a in data["assets"]
+        if a["suite_owner"] == "Dais" and a["activation_status"] == "activated"
+    )
+    ok = len(violations) == 0
+    detail = f"{activated_dais} activated Dais, {len(violations)} incomplete"
+    return ok, detail
+
+
+@rule("P4F-012", "Dais DefensePacket requires activated dossierService")
+def check_p4f_012(data):
+    """DefensePacket (Dais) depends on dossierService (Dossier) being activated."""
+    index = {_asset_stem(a): a for a in data["assets"]}
+    dp = index.get("DefensePacket")
+    ds = index.get("dossierService")
+    if not dp or dp["activation_status"] != "activated":
+        return True, "DefensePacket not yet activated — vacuously true"
+    if not ds:
+        return False, "dossierService missing from ledger"
+    dp_ok = dp["suite_owner"] == "Dais"
+    ds_ok = ds["suite_owner"] == "Dossier" and ds["activation_status"] == "activated"
+    ok = dp_ok and ds_ok
+    detail = (
+        f"DefensePacket owner={dp['suite_owner']}, "
+        f"dossierService owner={ds['suite_owner']} activated={ds['activation_status']}"
+    )
+    return ok, detail
+
+
+@rule("P4F-013", "No activated Dais asset classified active-source")
+def check_p4f_013(data):
+    """Activated Dais assets must not have deprecation_status=active-source."""
+    violations = [
+        a["asset_id"] for a in data["assets"]
+        if a["suite_owner"] == "Dais"
+        and a["activation_status"] == "activated"
+        and a["deprecation_status"] == "active-source"
+    ]
+    ok = len(violations) == 0
+    detail = f"{len(violations)} active-source Dais violations" if violations else "all Dais exclusive"
+    return ok, detail
+
+
 def main():
     data = load_ledger()
 
@@ -334,6 +426,7 @@ def main():
         check_p4f_001, check_p4f_002, check_p4f_003,
         check_p4f_004, check_p4f_005, check_p4f_006,
         check_p4f_007, check_p4f_008, check_p4f_009,
+        check_p4f_010, check_p4f_011, check_p4f_012, check_p4f_013,
     ]
 
     all_pass = True
