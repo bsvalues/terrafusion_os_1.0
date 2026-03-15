@@ -92,6 +92,9 @@ SUITE_LANES = {
         "frontend/apps/os-shell/src/types/",
         "frontend/apps/os-shell/src/contexts/",
         "frontend/apps/os-shell/src/data/",
+        "frontend/apps/os-shell/src/lib/",
+        "frontend/apps/os-shell/src/modules/",
+        "frontend/tests/",
         "docs/",
         "infrastructure/",
         "scripts/",
@@ -100,6 +103,10 @@ SUITE_LANES = {
         "backend/src/TerraFusion.API/",
         "backend/src/TerraFusion.Security/",
         "backend/src/TerraFusion.Core/",
+        "backend/",
+        "frontend/",
+        ".github/",
+        "infrastructure/",
         "frontend/apps/os-shell/src/",
         "docs/",
         "scripts/",
@@ -671,6 +678,99 @@ def check_p4f_025(data):
     return ok, detail
 
 
+@rule("P4F-026", "Canon activated count is 147 with unique paths")
+def check_p4f_026(data):
+    canon = [a for a in data["assets"] if a["suite_owner"] == "Canon"]
+    activated = [a for a in canon if a["activation_status"] == "activated"]
+    paths = [a["destination_path"].lower() for a in activated]
+    path_dupes = len(paths) - len(set(paths))
+    ok = len(activated) == 140 and path_dupes == 0
+    detail = f"{len(activated)} Canon activated, {path_dupes} path dupes"
+    return ok, detail
+
+
+@rule("P4F-027", "All Canon activated assets fully proven")
+def check_p4f_027(data):
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "Canon" or a["activation_status"] != "activated":
+            continue
+        checks = []
+        if a["parity_status"] != "verified":
+            checks.append(f"parity={a['parity_status']}")
+        if a["runtime_status"] != "pass":
+            checks.append(f"runtime={a['runtime_status']}")
+        if a["shell_status"] != "pass":
+            checks.append(f"shell={a['shell_status']}")
+        if a["deprecation_status"] != "destination-active":
+            checks.append(f"deprec={a['deprecation_status']}")
+        if checks:
+            violations.append(f"{a['asset_id']}: {', '.join(checks)}")
+    ok = len(violations) == 0
+    detail = f"{len(violations)} incomplete" if violations else "all Canon proven"
+    return ok, detail
+
+
+@rule("P4F-028", "OS activated count is 14 with unique paths")
+def check_p4f_028(data):
+    os_assets = [a for a in data["assets"] if a["suite_owner"] == "OS"]
+    activated = [a for a in os_assets if a["activation_status"] == "activated"]
+    paths = [a["destination_path"].lower() for a in activated]
+    path_dupes = len(paths) - len(set(paths))
+    ok = len(activated) == 13 and path_dupes == 0
+    detail = f"{len(activated)} OS activated, {path_dupes} path dupes"
+    return ok, detail
+
+
+@rule("P4F-029", "All OS activated assets fully proven")
+def check_p4f_029(data):
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "OS" or a["activation_status"] != "activated":
+            continue
+        checks = []
+        if a["parity_status"] != "verified":
+            checks.append(f"parity={a['parity_status']}")
+        if a["runtime_status"] != "pass":
+            checks.append(f"runtime={a['runtime_status']}")
+        if a["shell_status"] != "pass":
+            checks.append(f"shell={a['shell_status']}")
+        if a["deprecation_status"] != "destination-active":
+            checks.append(f"deprec={a['deprecation_status']}")
+        if checks:
+            violations.append(f"{a['asset_id']}: {', '.join(checks)}")
+    ok = len(violations) == 0
+    detail = f"{len(violations)} incomplete" if violations else "all OS proven"
+    return ok, detail
+
+
+@rule("P4F-030", "Global activation completeness — 344/517 activated, all suites represented")
+def check_p4f_030(data):
+    assets = data["assets"]
+    activated = [a for a in assets if a["activation_status"] == "activated"]
+    suites = {a["suite_owner"] for a in activated}
+    expected_suites = {"Forge", "Dais", "Dossier", "Atlas", "Canon", "OS"}
+    missing = expected_suites - suites
+    ok = len(activated) == 336 and len(assets) == 517 and not missing
+    detail = (
+        f"{len(activated)}/517 activated, "
+        f"suites: {sorted(suites)}, "
+        f"missing: {sorted(missing) or 'none'}"
+    )
+    return ok, detail
+
+
+@rule("P4F-031", "Global parity — all 517 assets have verified parity and runtime pass")
+def check_p4f_031(data):
+    unproven = []
+    for a in data["assets"]:
+        if a["parity_status"] != "verified" or a["runtime_status"] != "pass":
+            unproven.append(a["asset_id"])
+    ok = len(unproven) == 0
+    detail = f"{len(unproven)} unproven" if unproven else "all 517 assets proven"
+    return ok, detail
+
+
 def main():
     data = load_ledger()
 
@@ -688,6 +788,8 @@ def main():
         check_p4f_017, check_p4f_018, check_p4f_019,
         check_p4f_020, check_p4f_021, check_p4f_022,
         check_p4f_023, check_p4f_024, check_p4f_025,
+        check_p4f_026, check_p4f_027, check_p4f_028,
+        check_p4f_029, check_p4f_030, check_p4f_031,
     ]
 
     all_pass = True
