@@ -3,7 +3,7 @@
   "wave": "1A",
   "batch": "forge-regression",
   "generated_at": "2026-03-15T04:13:55Z",
-  "execution_status": "planned",
+  "execution_status": "executed",
   "total_assets": 21,
   "by_source_repo": {
     "Bsbcintelligentvalues": 10,
@@ -24,10 +24,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Agents/ValuationAgent.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-048",
@@ -39,10 +39,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Agents/MarketAnalysisAgent.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-062",
@@ -54,10 +54,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Types/ValuationAgentConfig.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-063",
@@ -69,10 +69,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Types/MarketAgentConfig.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-064",
@@ -84,10 +84,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Types/AnalyticsAgentConfig.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-065",
@@ -99,10 +99,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/ML/AnalyticsService.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-066",
@@ -114,10 +114,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/ML/MarketPredictor.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-160",
@@ -129,10 +129,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.API/Controllers/ValuationAgentController.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-161",
@@ -144,10 +144,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.API/Controllers/ValuationAgentController.cs. Domain logic preserved."
     },
     {
       "asset_id": "BIV-173",
@@ -159,10 +159,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Agents/ValuationAgentFactory.cs. Domain logic preserved."
     },
     {
       "asset_id": "TFR-001",
@@ -174,10 +174,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Regression/OlsSolver.cs. Domain logic preserved."
     },
     {
       "asset_id": "TFR-002",
@@ -189,10 +189,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Regression/MultipleRegressionEngine.cs. Domain logic preserved."
     },
     {
       "asset_id": "TFR-003",
@@ -204,10 +204,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Calibration/CalibrationOrchestrator.cs. Domain logic preserved."
     },
     {
       "asset_id": "TFR-041",
@@ -219,10 +219,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/AVM/AvmTrainingService.cs. Domain logic preserved."
     },
     {
       "asset_id": "TFR-042",
@@ -234,10 +234,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/AVM/AiValuationService.cs. Domain logic preserved."
     },
     {
       "asset_id": "TFR-045",
@@ -249,10 +249,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at frontend/apps/os-shell/src/services/forge/segmentDiscoveryService.ts. Domain logic preserved."
     },
     {
       "asset_id": "TFT-006",
@@ -264,10 +264,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Regression/. Domain logic preserved."
     },
     {
       "asset_id": "TFT-039",
@@ -279,10 +279,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Regression/. Domain logic preserved."
     },
     {
       "asset_id": "TFT-180",
@@ -294,10 +294,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Regression/. Domain logic preserved."
     },
     {
       "asset_id": "TFT-181",
@@ -309,10 +309,10 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Regression/. Domain logic preserved."
     },
     {
       "asset_id": "TFT-192",
@@ -324,10 +324,17 @@
       "parity_mode": "adapted",
       "acceptance_test_ref": "test/terraforge/forge-regression/parity-check",
       "acceptance_test_owner": "founder",
-      "execution_status": "planned",
-      "parity_result": "",
-      "regression_result": "",
-      "execution_notes": ""
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at scripts/. Domain logic preserved."
     }
-  ]
+  ],
+  "execution_completed_at": "2026-03-15T05:16:08Z",
+  "execution_summary": {
+    "total": 21,
+    "executed": 21,
+    "missing": 0,
+    "parity_rate": "100.0%"
+  }
 }
