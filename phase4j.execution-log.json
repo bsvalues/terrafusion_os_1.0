@@ -1,0 +1,67 @@
+{
+  "phase": "4J",
+  "title": "TerraGPT ADR Closure",
+  "created": "2026-03-15",
+  "objective": "Register ADR-005 (TerraGPT charter), reclassify all 104 deferred assets, eliminate 'blocked on ADR' state",
+  "adr_registered": {
+    "adr_id": "ADR-005",
+    "title": "TerraGPT Suite Charter",
+    "status": "accepted",
+    "file": "docs/architecture/ADR-005-TERRAGPT-CHARTER.md",
+    "accepted_at": "2026-03-15",
+    "scope": "TerraGPT is a constitutional suite owning all AI/LLM capabilities",
+    "write_lane": [
+      "gpt.configurations",
+      "gpt.rag",
+      "gpt.embeddings",
+      "gpt.metrics",
+      "gpt.conversations",
+      "gpt.agents"
+    ],
+    "modules": [
+      "gpt-studio",
+      "gpt-marketplace",
+      "gpt-management",
+      "gpt-builder",
+      "gpt-analytics",
+      "gpt-rag"
+    ]
+  },
+  "reclassification_summary": {
+    "total_deferred_input": 104,
+    "reclassified_to_ported": 103,
+    "remaining_deferred_security": 1,
+    "remaining_deferred_security_detail": "BIV-178: Harris PACS DLLs — requires security review + legal clearance for redistribution",
+    "by_source_repo": {
+      "Bsbcintelligentvalues": { "reclassified": 7, "security": 1 },
+      "terra-forge-rebuild": { "reclassified": 1, "security": 0 },
+      "BCBSLevy": { "reclassified": 5, "security": 0 },
+      "TerraMiner": { "reclassified": 43, "security": 0 },
+      "TerraFusionPilt": { "reclassified": 5, "security": 0 },
+      "TerraFusionTheory": { "reclassified": 42, "security": 0 }
+    },
+    "by_blocker_resolved": {
+      "adr-pending": 95,
+      "architectural": 8,
+      "security": 0
+    }
+  },
+  "manifest_update": {
+    "file": "phase4b.manifest.json",
+    "before": {
+      "ported": 511,
+      "declined": 306,
+      "deferred-with-rationale": 104
+    },
+    "after": { "ported": 614, "declined": 306, "deferred-security": 1 }
+  },
+  "success_criteria": {
+    "adr_005_on_disk": true,
+    "adr_005_accepted": true,
+    "every_deferred_asset_reclassified": true,
+    "zero_adr_blocked_assets": true,
+    "remaining_deferred_has_named_blocker": true
+  },
+  "phase_status": "complete",
+  "completed_at": "2026-03-15"
+}
