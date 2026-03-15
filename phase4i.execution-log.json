@@ -108,6 +108,56 @@
       "archive_status": "executed",
       "executed_at": "2026-03-15",
       "blockers_for_next_wave": []
+    },
+    {
+      "archive_wave": 5,
+      "source_repo": "Bsbcintelligentvalues",
+      "total_assets": 110,
+      "activated_assets": 108,
+      "deduplicated_assets": 2,
+      "snapshot_tag": "archive/bsbcintelligentvalues-pre-decommission",
+      "rollback_tag": "rollback/bsbcintelligentvalues",
+      "rollback_path": "git checkout rollback/bsbcintelligentvalues -- . (restores all Bsbcintelligentvalues source paths)",
+      "decommission_smoke": "pass",
+      "remaining_source_routes": 0,
+      "remaining_source_imports": 0,
+      "remaining_source_controllers": 0,
+      "smoke_details": {
+        "source_repo_references": 26,
+        "blocking_source_imports": 0,
+        "disposition_script_refs": 1,
+        "archive_report_refs": 25,
+        "note": "All 26 refs are archive/manifest/disposition files. scripts/dispositions/bsbcintelligentvalues.py is archive tooling, not a source import."
+      },
+      "archive_status": "executed",
+      "executed_at": "2026-03-15",
+      "blockers_for_next_wave": []
+    },
+    {
+      "archive_wave": 6,
+      "source_repo": "TerraFusionTheory",
+      "total_assets": 137,
+      "activated_assets": 34,
+      "deduplicated_assets": 103,
+      "snapshot_tag": "archive/terrafusiontheory-pre-decommission",
+      "rollback_tag": "rollback/terrafusiontheory",
+      "rollback_path": "git checkout rollback/terrafusiontheory -- . (restores all TerraFusionTheory source paths)",
+      "decommission_smoke": "pass",
+      "remaining_source_routes": 0,
+      "remaining_source_imports": 0,
+      "remaining_source_controllers": 0,
+      "smoke_details": {
+        "source_repo_references": 33,
+        "blocking_source_imports": 0,
+        "quarantine_refs": 3,
+        "doc_comment_provenance_refs": 2,
+        "disposition_script_refs": 1,
+        "archive_report_refs": 27,
+        "note": "3 QUARANTINE files (inactive), 2 backend .cs doc-comment provenance lines, 1 disposition script. Zero source imports."
+      },
+      "archive_status": "executed",
+      "executed_at": "2026-03-15",
+      "blockers_for_next_wave": []
     }
   ]
 }

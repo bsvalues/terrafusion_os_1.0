@@ -67,8 +67,9 @@
       "snapshot_tag": "archive/bsbcintelligentvalues-pre-decommission",
       "rollback_tag": "rollback/bsbcintelligentvalues",
       "archive_wave": 5,
-      "archive_status": "planned",
-      "archive_eligibility": "eligible"
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
     },
     {
       "source_repo": "TerraFusionTheory",
@@ -79,8 +80,9 @@
       "snapshot_tag": "archive/terrafusiontheory-pre-decommission",
       "rollback_tag": "rollback/terrafusiontheory",
       "archive_wave": 6,
-      "archive_status": "planned",
-      "archive_eligibility": "eligible"
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
     }
   ]
 }

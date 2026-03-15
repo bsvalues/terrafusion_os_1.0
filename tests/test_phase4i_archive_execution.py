@@ -356,38 +356,190 @@ def test_wave4_forge_canon_consumers_resolve_to_destination(
     assert wave4.get("forge_canon_source_consumers", 0) == 0
 
 
-# ── Cross-wave integrity ────────────────────────────────────────
+# ── Wave 5: Bsbcintelligentvalues ────────────────────────────────
 
 
-def test_archive_plan_waves_1_3_remain_executed(archive_repos: List[Dict[str, Any]]) -> None:
-    for name in ["BCBSLevy", "TerraFusionPilt", "TerraMiner"]:
-        repo = next(r for r in archive_repos if r["source_repo"] == name)
-        assert repo["archive_status"] == "executed", f"{name} must remain executed"
+def test_wave5_repo_is_bsbcintelligentvalues(executed_waves: List[Dict[str, Any]]) -> None:
+    assert len(executed_waves) >= 5
+    assert executed_waves[4]["source_repo"] == "Bsbcintelligentvalues"
+    assert executed_waves[4]["archive_wave"] == 5
 
 
-def test_archive_plan_terra_forge_rebuild_status_updated(archive_repos: List[Dict[str, Any]]) -> None:
-    tfr = next(r for r in archive_repos if r["source_repo"] == "terra-forge-rebuild")
-    assert tfr["archive_status"] == "executed"
+def test_wave5_snapshot_tag_exists(executed_waves: List[Dict[str, Any]]) -> None:
+    wave5 = executed_waves[4]
+    assert wave5.get("snapshot_tag"), "snapshot_tag must be non-empty"
+    assert "bsbcintelligentvalues" in wave5["snapshot_tag"]
 
 
-def test_waves_5_through_6_remain_planned(archive_repos: List[Dict[str, Any]]) -> None:
-    must_be_planned = {"Bsbcintelligentvalues", "TerraFusionTheory"}
-    offenders = [
-        r["source_repo"]
-        for r in archive_repos
-        if r["source_repo"] in must_be_planned and r["archive_status"] != "planned"
-    ]
-    assert offenders == [], f"Repos should remain planned: {offenders}"
+def test_wave5_rollback_tag_exists(executed_waves: List[Dict[str, Any]]) -> None:
+    wave5 = executed_waves[4]
+    assert wave5.get("rollback_tag"), "rollback_tag must be non-empty"
+    assert "bsbcintelligentvalues" in wave5["rollback_tag"]
 
 
-def test_exactly_four_waves_executed(executed_waves: List[Dict[str, Any]]) -> None:
-    executed = [w for w in executed_waves if w["archive_status"] == "executed"]
-    assert len(executed) == 4, f"Expected 4 executed waves, got {len(executed)}"
+def test_wave5_decommission_smoke_passed(executed_waves: List[Dict[str, Any]]) -> None:
+    wave5 = executed_waves[4]
+    assert wave5["decommission_smoke"] == "pass"
 
 
-def test_executed_repos_match_expected_set(
+def test_wave5_no_source_routes_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave5 = executed_waves[4]
+    assert wave5["remaining_source_routes"] == 0
+
+
+def test_wave5_no_source_imports_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave5 = executed_waves[4]
+    assert wave5["remaining_source_imports"] == 0
+
+
+def test_wave5_no_source_controllers_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave5 = executed_waves[4]
+    assert wave5["remaining_source_controllers"] == 0
+
+
+def test_wave5_archive_status_is_executed(executed_waves: List[Dict[str, Any]]) -> None:
+    wave5 = executed_waves[4]
+    assert wave5["archive_status"] == "executed"
+
+
+def test_wave5_rollback_path_documented(executed_waves: List[Dict[str, Any]]) -> None:
+    wave5 = executed_waves[4]
+    assert wave5.get("rollback_path"), "rollback_path must be documented"
+
+
+def test_wave5_asset_count_matches_plan(
+    executed_waves: List[Dict[str, Any]],
     archive_repos: List[Dict[str, Any]],
 ) -> None:
-    """Waves 1-4 executed. Waves 5-6 remain planned."""
+    wave5 = executed_waves[4]
+    plan_repo = next(r for r in archive_repos if r["source_repo"] == "Bsbcintelligentvalues")
+    assert wave5["total_assets"] == plan_repo["total_assets"] == 110
+
+
+def test_wave5_all_retirement_assets_accounted(
+    executed_waves: List[Dict[str, Any]],
+    retirement_assets: List[Dict[str, Any]],
+) -> None:
+    wave5 = executed_waves[4]
+    bsbc_retirement = [a for a in retirement_assets if a["source_repo"] == "Bsbcintelligentvalues"]
+    assert wave5["total_assets"] == len(bsbc_retirement)
+    assert wave5["activated_assets"] + wave5["deduplicated_assets"] == wave5["total_assets"]
+
+
+# ── Wave 6: TerraFusionTheory ───────────────────────────────────
+
+
+def test_wave6_repo_is_terrafusiontheory(executed_waves: List[Dict[str, Any]]) -> None:
+    assert len(executed_waves) >= 6
+    assert executed_waves[5]["source_repo"] == "TerraFusionTheory"
+    assert executed_waves[5]["archive_wave"] == 6
+
+
+def test_wave6_snapshot_tag_exists(executed_waves: List[Dict[str, Any]]) -> None:
+    wave6 = executed_waves[5]
+    assert wave6.get("snapshot_tag"), "snapshot_tag must be non-empty"
+    assert "terrafusiontheory" in wave6["snapshot_tag"]
+
+
+def test_wave6_rollback_tag_exists(executed_waves: List[Dict[str, Any]]) -> None:
+    wave6 = executed_waves[5]
+    assert wave6.get("rollback_tag"), "rollback_tag must be non-empty"
+    assert "terrafusiontheory" in wave6["rollback_tag"]
+
+
+def test_wave6_decommission_smoke_passed(executed_waves: List[Dict[str, Any]]) -> None:
+    wave6 = executed_waves[5]
+    assert wave6["decommission_smoke"] == "pass"
+
+
+def test_wave6_no_source_routes_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave6 = executed_waves[5]
+    assert wave6["remaining_source_routes"] == 0
+
+
+def test_wave6_no_source_imports_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave6 = executed_waves[5]
+    assert wave6["remaining_source_imports"] == 0
+
+
+def test_wave6_no_source_controllers_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave6 = executed_waves[5]
+    assert wave6["remaining_source_controllers"] == 0
+
+
+def test_wave6_archive_status_is_executed(executed_waves: List[Dict[str, Any]]) -> None:
+    wave6 = executed_waves[5]
+    assert wave6["archive_status"] == "executed"
+
+
+def test_wave6_rollback_path_documented(executed_waves: List[Dict[str, Any]]) -> None:
+    wave6 = executed_waves[5]
+    assert wave6.get("rollback_path"), "rollback_path must be documented"
+
+
+def test_wave6_asset_count_matches_plan(
+    executed_waves: List[Dict[str, Any]],
+    archive_repos: List[Dict[str, Any]],
+) -> None:
+    wave6 = executed_waves[5]
+    plan_repo = next(r for r in archive_repos if r["source_repo"] == "TerraFusionTheory")
+    assert wave6["total_assets"] == plan_repo["total_assets"] == 137
+
+
+def test_wave6_all_retirement_assets_accounted(
+    executed_waves: List[Dict[str, Any]],
+    retirement_assets: List[Dict[str, Any]],
+) -> None:
+    wave6 = executed_waves[5]
+    tft_retirement = [a for a in retirement_assets if a["source_repo"] == "TerraFusionTheory"]
+    assert wave6["total_assets"] == len(tft_retirement)
+    assert wave6["activated_assets"] + wave6["deduplicated_assets"] == wave6["total_assets"]
+
+
+# ── Cross-wave integrity (all 6 waves complete) ─────────────────
+
+
+def test_all_six_repos_executed(archive_repos: List[Dict[str, Any]]) -> None:
+    for repo in archive_repos:
+        assert repo["archive_status"] == "executed", f"{repo['source_repo']} must be executed"
+
+
+def test_exactly_six_waves_executed(executed_waves: List[Dict[str, Any]]) -> None:
+    executed = [w for w in executed_waves if w["archive_status"] == "executed"]
+    assert len(executed) == 6, f"Expected 6 executed waves, got {len(executed)}"
+
+
+def test_executed_repos_match_full_set(
+    archive_repos: List[Dict[str, Any]],
+) -> None:
+    """All 6 repos executed. None remain planned."""
     executed = {r["source_repo"] for r in archive_repos if r["archive_status"] == "executed"}
-    assert executed == {"BCBSLevy", "TerraFusionPilt", "TerraMiner", "terra-forge-rebuild"}
+    assert executed == {
+        "BCBSLevy", "TerraFusionPilt", "TerraMiner",
+        "terra-forge-rebuild", "Bsbcintelligentvalues", "TerraFusionTheory",
+    }
+
+
+def test_no_repos_remain_planned(archive_repos: List[Dict[str, Any]]) -> None:
+    planned = [r["source_repo"] for r in archive_repos if r["archive_status"] == "planned"]
+    assert planned == [], f"No repos should remain planned: {planned}"
+
+
+def test_total_executed_assets_equal_517(executed_waves: List[Dict[str, Any]]) -> None:
+    total = sum(w["total_assets"] for w in executed_waves)
+    assert total == 517, f"Expected 517 total assets across all waves, got {total}"
+
+
+def test_all_waves_have_rollback_paths(executed_waves: List[Dict[str, Any]]) -> None:
+    missing = [w["source_repo"] for w in executed_waves if not w.get("rollback_path")]
+    assert missing == [], f"Missing rollback paths: {missing}"
+
+
+def test_all_waves_passed_decommission_smoke(executed_waves: List[Dict[str, Any]]) -> None:
+    failed = [w["source_repo"] for w in executed_waves if w["decommission_smoke"] != "pass"]
+    assert failed == [], f"Failed smoke: {failed}"
+
+
+def test_wave_order_is_contiguous(executed_waves: List[Dict[str, Any]]) -> None:
+    waves = [w["archive_wave"] for w in executed_waves]
+    assert waves == [1, 2, 3, 4, 5, 6]
