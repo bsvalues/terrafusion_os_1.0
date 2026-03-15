@@ -41,8 +41,9 @@
       "snapshot_tag": "archive/terraminer-pre-decommission",
       "rollback_tag": "rollback/terraminer",
       "archive_wave": 3,
-      "archive_status": "planned",
-      "archive_eligibility": "eligible"
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
     },
     {
       "source_repo": "terra-forge-rebuild",

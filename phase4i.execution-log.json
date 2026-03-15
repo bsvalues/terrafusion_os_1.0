@@ -51,6 +51,36 @@
       "archive_status": "executed",
       "executed_at": "2026-03-15",
       "blockers_for_next_wave": []
+    },
+    {
+      "archive_wave": 3,
+      "source_repo": "TerraMiner",
+      "total_assets": 78,
+      "activated_assets": 26,
+      "deduplicated_assets": 52,
+      "snapshot_tag": "archive/terraminer-pre-decommission",
+      "rollback_tag": "rollback/terraminer",
+      "rollback_path": "git checkout rollback/terraminer -- . (restores all TerraMiner source paths from tagged snapshot)",
+      "decommission_smoke": "pass",
+      "remaining_source_routes": 0,
+      "remaining_source_imports": 0,
+      "remaining_source_controllers": 0,
+      "shared_infra_source_consumers": 0,
+      "smoke_details": {
+        "source_repo_references": 0,
+        "module_name_references": 20,
+        "archive_report_references": 19,
+        "blocking_source_imports": 0,
+        "missing_destinations": 0,
+        "shared_infra_assets_checked": 3,
+        "project_reference_issues": 0,
+        "controllers_checked": 1,
+        "services_checked": 4,
+        "note": "All 39 TerraMiner refs are destination OS module names or archive reports, not source imports"
+      },
+      "archive_status": "executed",
+      "executed_at": "2026-03-15",
+      "blockers_for_next_wave": []
     }
   ]
 }
