@@ -22,7 +22,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MassAppraisalService; parity:content-verified"
+      "route_proof": "backend-service:MassAppraisalService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-002",
@@ -41,7 +42,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MassAppraisalController; parity:content-verified"
+      "route_proof": "backend-service:MassAppraisalController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-003",
@@ -60,7 +62,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:PropertyValuationService; parity:content-verified"
+      "route_proof": "backend-service:PropertyValuationService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-004",
@@ -79,7 +82,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:PropertyValuationController; parity:content-verified"
+      "route_proof": "backend-service:PropertyValuationController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-005",
@@ -98,7 +102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:AnalyticsOrchestrator; parity:content-verified"
+      "route_proof": "backend-service:AnalyticsOrchestrator; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-006",
@@ -117,7 +122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:AnalyticsController; parity:content-verified"
+      "route_proof": "backend-service:AnalyticsController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-007",
@@ -136,7 +142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-008",
@@ -155,7 +162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-009",
@@ -174,7 +182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-010",
@@ -193,7 +202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MarketConnector; parity:content-verified"
+      "route_proof": "backend-service:MarketConnector; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-011",
@@ -212,7 +222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:CensusConnector; parity:content-verified"
+      "route_proof": "backend-service:CensusConnector; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-012",
@@ -231,7 +242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:WeatherConnector; parity:content-verified"
+      "route_proof": "backend-service:WeatherConnector; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-013",
@@ -250,7 +262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries"
+      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-017",
@@ -269,7 +282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-018",
@@ -288,7 +302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-019",
@@ -307,7 +322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-020",
@@ -326,7 +342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MarketMonitor; parity:content-verified"
+      "route_proof": "backend-service:MarketMonitor; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-021",
@@ -345,7 +362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-035",
@@ -364,7 +382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MarketController; parity:content-verified"
+      "route_proof": "backend-service:MarketController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-036",
@@ -383,7 +402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-037",
@@ -402,7 +422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:RecommendationsController; parity:content-verified"
+      "route_proof": "backend-service:RecommendationsController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-038",
@@ -421,7 +442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:TimeseriesController; parity:content-verified"
+      "route_proof": "backend-service:TimeseriesController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-047",
@@ -440,7 +462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:ValuationAgent; parity:content-verified"
+      "route_proof": "backend-service:ValuationAgent; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-048",
@@ -459,7 +482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MarketAnalysisAgent; parity:content-verified"
+      "route_proof": "backend-service:MarketAnalysisAgent; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-062",
@@ -478,7 +502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:ValuationAgentConfig; parity:content-verified"
+      "route_proof": "backend-service:ValuationAgentConfig; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-063",
@@ -497,7 +522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MarketAgentConfig; parity:content-verified"
+      "route_proof": "backend-service:MarketAgentConfig; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-064",
@@ -516,7 +542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:AnalyticsAgentConfig; parity:content-verified"
+      "route_proof": "backend-service:AnalyticsAgentConfig; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-065",
@@ -535,7 +562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:AnalyticsService; parity:content-verified"
+      "route_proof": "backend-service:AnalyticsService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-066",
@@ -554,7 +582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MarketPredictor; parity:content-verified"
+      "route_proof": "backend-service:MarketPredictor; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-067",
@@ -573,7 +602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-070",
@@ -592,7 +622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MarketMetricsService; parity:content-verified"
+      "route_proof": "backend-service:MarketMetricsService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-071",
@@ -611,7 +642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-077",
@@ -630,7 +662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-079",
@@ -649,7 +682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-082",
@@ -668,7 +702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-084",
@@ -687,7 +722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-085",
@@ -706,7 +742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-086",
@@ -725,7 +762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-087",
@@ -744,7 +782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-088",
@@ -763,7 +802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-089",
@@ -782,7 +822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-090",
@@ -801,7 +842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-091",
@@ -820,7 +862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-092",
@@ -839,7 +882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-093",
@@ -858,7 +902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-094",
@@ -877,7 +922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-096",
@@ -896,7 +942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-097",
@@ -915,7 +962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-098",
@@ -934,7 +982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-099",
@@ -953,7 +1002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-100",
@@ -972,7 +1022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-101",
@@ -991,7 +1042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-104",
@@ -1010,7 +1062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-105",
@@ -1029,7 +1082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-106",
@@ -1048,7 +1102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-107",
@@ -1067,7 +1122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-108",
@@ -1086,7 +1142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-109",
@@ -1105,7 +1162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-110",
@@ -1124,7 +1182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-112",
@@ -1143,7 +1202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-113",
@@ -1162,7 +1222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-114",
@@ -1181,7 +1242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-115",
@@ -1200,7 +1262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-116",
@@ -1219,7 +1282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-117",
@@ -1238,7 +1302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-118",
@@ -1257,7 +1322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-119",
@@ -1276,7 +1342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-120",
@@ -1295,7 +1362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-121",
@@ -1314,7 +1382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-122",
@@ -1333,7 +1402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-123",
@@ -1352,7 +1422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-124",
@@ -1371,7 +1442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-128",
@@ -1390,7 +1462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-129",
@@ -1409,7 +1482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-130",
@@ -1428,7 +1502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-131",
@@ -1447,7 +1522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-132",
@@ -1466,7 +1542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-133",
@@ -1485,7 +1562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-134",
@@ -1504,7 +1582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "hook:forge; parity:content-verified"
+      "route_proof": "hook:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-135",
@@ -1523,7 +1602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "hook:forge; parity:content-verified"
+      "route_proof": "hook:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-136",
@@ -1542,7 +1622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "hook:forge; parity:content-verified"
+      "route_proof": "hook:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-139",
@@ -1561,7 +1642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-140",
@@ -1580,7 +1662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-141",
@@ -1599,7 +1682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-142",
@@ -1618,7 +1702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-143",
@@ -1637,7 +1722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-144",
@@ -1656,7 +1742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-145",
@@ -1675,7 +1762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-146",
@@ -1694,7 +1782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-147",
@@ -1713,7 +1802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-148",
@@ -1732,7 +1822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-149",
@@ -1751,7 +1842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-150",
@@ -1770,7 +1862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-151",
@@ -1789,7 +1882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-152",
@@ -1808,7 +1902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-160",
@@ -1827,7 +1922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:ValuationAgentController; parity:content-verified"
+      "route_proof": "backend-service:ValuationAgentController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-161",
@@ -1846,7 +1942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "BIV-166",
@@ -1865,7 +1962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "context:forge; parity:content-verified"
+      "route_proof": "context:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-167",
@@ -1884,7 +1982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "context:forge; parity:content-verified"
+      "route_proof": "context:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-169",
@@ -1903,7 +2002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "type-def:forge; parity:content-verified"
+      "route_proof": "type-def:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-170",
@@ -1922,7 +2022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-173",
@@ -1941,7 +2042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:ValuationAgentFactory; parity:content-verified"
+      "route_proof": "backend-service:ValuationAgentFactory; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-176",
@@ -1960,7 +2062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-177",
@@ -1979,7 +2082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-194",
@@ -1998,7 +2102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-199",
@@ -2017,7 +2122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFR-001",
@@ -2036,7 +2142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:OlsSolver; parity:content-verified"
+      "route_proof": "backend-service:OlsSolver; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-002",
@@ -2055,7 +2162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:MultipleRegressionEngine; parity:content-verified"
+      "route_proof": "backend-service:MultipleRegressionEngine; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-003",
@@ -2074,7 +2182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:CalibrationOrchestrator; parity:content-verified"
+      "route_proof": "backend-service:CalibrationOrchestrator; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-004",
@@ -2093,7 +2202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-005",
@@ -2112,7 +2222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-006",
@@ -2131,7 +2242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-007",
@@ -2150,7 +2262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-008",
@@ -2169,7 +2282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-009",
@@ -2188,7 +2302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-010",
@@ -2207,7 +2322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-011",
@@ -2226,7 +2342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-012",
@@ -2245,7 +2362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-013",
@@ -2264,7 +2382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-014",
@@ -2283,7 +2402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-015",
@@ -2302,7 +2422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-016",
@@ -2321,7 +2442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-017",
@@ -2340,7 +2462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-018",
@@ -2359,7 +2482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-019",
@@ -2378,7 +2502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-020",
@@ -2397,7 +2522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-021",
@@ -2416,7 +2542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-022",
@@ -2435,7 +2562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-023",
@@ -2454,7 +2582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-024",
@@ -2473,7 +2602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-025",
@@ -2492,7 +2622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-026",
@@ -2511,7 +2642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-027",
@@ -2530,7 +2662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-028",
@@ -2549,7 +2682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-029",
@@ -2568,7 +2702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-030",
@@ -2587,7 +2722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-031",
@@ -2606,7 +2742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-032",
@@ -2625,7 +2762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/services/suites/daisService.ts; parity:content-verified; route:services/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/services/suites/daisService.ts; parity:content-verified; route:services/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-033",
@@ -2644,7 +2782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-034",
@@ -2663,7 +2802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries"
+      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-035",
@@ -2682,7 +2822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-036",
@@ -2701,7 +2842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-037",
@@ -2720,7 +2862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-039",
@@ -2739,7 +2882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-041",
@@ -2758,7 +2902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:AvmTrainingService; parity:content-verified"
+      "route_proof": "backend-service:AvmTrainingService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-042",
@@ -2777,7 +2922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:AiValuationService; parity:content-verified"
+      "route_proof": "backend-service:AiValuationService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-043",
@@ -2796,7 +2942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:DefenseNarrativeService; parity:content-verified"
+      "route_proof": "backend-service:DefenseNarrativeService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-044",
@@ -2815,7 +2962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-045",
@@ -2834,7 +2982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-046",
@@ -2853,7 +3002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-047",
@@ -2872,7 +3022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/services/fieldStore.ts; parity:content-verified; route:services/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/services/fieldStore.ts; parity:content-verified; route:services/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-048",
@@ -2891,7 +3042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "path:frontend/apps/os-shell/src/pages/workbench/tabs/forge/CostApproach.tsx; parity:content-verified"
+      "route_proof": "path:frontend/apps/os-shell/src/pages/workbench/tabs/forge/CostApproach.tsx; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-049",
@@ -2910,7 +3062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "path:frontend/apps/os-shell/src/pages/workbench/tabs/forge/components/CostScheduleEditor.tsx; parity:content-verified"
+      "route_proof": "path:frontend/apps/os-shell/src/pages/workbench/tabs/forge/components/CostScheduleEditor.tsx; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-050",
@@ -2929,7 +3082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "path:frontend/apps/os-shell/src/pages/workbench/tabs/forge/components/DepreciationCurveEditor.tsx; parity:content-verified"
+      "route_proof": "path:frontend/apps/os-shell/src/pages/workbench/tabs/forge/components/DepreciationCurveEditor.tsx; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-051",
@@ -2948,7 +3102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "path:frontend/apps/os-shell/src/pages/workbench/tabs/forge/IncomeApproach.tsx; parity:content-verified"
+      "route_proof": "path:frontend/apps/os-shell/src/pages/workbench/tabs/forge/IncomeApproach.tsx; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-052",
@@ -2967,7 +3122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-053",
@@ -2986,7 +3142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-054",
@@ -3005,7 +3162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-055",
@@ -3024,7 +3182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/AppealsWorkflow.tsx; parity:content-verified; route:pages/dais/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/AppealsWorkflow.tsx; parity:content-verified; route:pages/dais/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-056",
@@ -3043,7 +3202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/WorkflowComponents.tsx; parity:content-verified; route:pages/dais/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/WorkflowComponents.tsx; parity:content-verified; route:pages/dais/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-057",
@@ -3062,7 +3222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-058",
@@ -3081,7 +3242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-059",
@@ -3100,7 +3262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-061",
@@ -3119,7 +3282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-063",
@@ -3138,7 +3302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-064",
@@ -3157,7 +3322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-065",
@@ -3176,7 +3342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/RollReadiness.tsx; parity:content-verified; route:pages/dais/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/RollReadiness.tsx; parity:content-verified; route:pages/dais/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-066",
@@ -3195,7 +3362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-067",
@@ -3214,7 +3382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-068",
@@ -3233,7 +3402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-069",
@@ -3252,7 +3422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-070",
@@ -3271,7 +3442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/DefensePacket.tsx; parity:content-verified; route:pages/dais/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/DefensePacket.tsx; parity:content-verified; route:pages/dais/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-071",
@@ -3290,7 +3462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries"
+      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-072",
@@ -3309,7 +3482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-073",
@@ -3328,7 +3502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/FieldStudio.tsx; parity:content-verified; route:pages/dais/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/FieldStudio.tsx; parity:content-verified; route:pages/dais/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-074",
@@ -3347,7 +3522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-075",
@@ -3366,7 +3542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-076",
@@ -3385,7 +3562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-077",
@@ -3404,7 +3582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-078",
@@ -3423,7 +3602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-079",
@@ -3442,7 +3622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-080",
@@ -3461,7 +3642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-081",
@@ -3480,7 +3662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-083",
@@ -3499,7 +3682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:DraftNoticeService; parity:content-verified"
+      "route_proof": "backend-service:DraftNoticeService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-084",
@@ -3518,7 +3702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-085",
@@ -3537,7 +3722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-086",
@@ -3556,7 +3742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-089",
@@ -3575,7 +3762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-090",
@@ -3594,7 +3782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-091",
@@ -3613,7 +3802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-092",
@@ -3632,7 +3822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-094",
@@ -3651,7 +3842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-095",
@@ -3670,7 +3862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-096",
@@ -3689,7 +3882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-099",
@@ -3708,7 +3902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-100",
@@ -3727,7 +3922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-101",
@@ -3746,7 +3942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-102",
@@ -3765,7 +3962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-103",
@@ -3784,7 +3982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-104",
@@ -3803,7 +4002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-105",
@@ -3822,7 +4022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-106",
@@ -3841,7 +4042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-107",
@@ -3860,7 +4062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-108",
@@ -3879,7 +4082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-114",
@@ -3898,7 +4102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane"
+      "route_proof": "shell-path:pages/forge/; parity:content-verified; workbench-lane",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-001",
@@ -3917,7 +4122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-002",
@@ -3936,7 +4142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-003",
@@ -3955,7 +4162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-004",
@@ -3974,7 +4182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:ValuationController; parity:content-verified"
+      "route_proof": "backend-service:ValuationController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-005",
@@ -3993,7 +4202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-006",
@@ -4012,7 +4222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-007",
@@ -4031,7 +4242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-008",
@@ -4050,7 +4262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-009",
@@ -4069,7 +4282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-010",
@@ -4088,7 +4302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-011",
@@ -4107,7 +4322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-012",
@@ -4126,7 +4342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-013",
@@ -4145,7 +4362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-014",
@@ -4164,7 +4382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:DataQualityController; parity:content-verified"
+      "route_proof": "backend-service:DataQualityController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-016",
@@ -4183,7 +4402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-017",
@@ -4202,7 +4422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-018",
@@ -4221,7 +4442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-019",
@@ -4240,7 +4462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-020",
@@ -4259,7 +4482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-021",
@@ -4278,7 +4502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-022",
@@ -4297,7 +4522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-023",
@@ -4316,7 +4542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-024",
@@ -4335,7 +4562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-025",
@@ -4354,7 +4582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-026",
@@ -4373,7 +4602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-027",
@@ -4392,7 +4622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-028",
@@ -4411,7 +4642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-030",
@@ -4430,7 +4662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-032",
@@ -4449,7 +4682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-034",
@@ -4468,7 +4702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-035",
@@ -4487,7 +4722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-036",
@@ -4506,7 +4742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-037",
@@ -4525,7 +4762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-038",
@@ -4544,7 +4782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-039",
@@ -4563,7 +4802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-040",
@@ -4582,7 +4822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-066",
@@ -4601,7 +4842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-067",
@@ -4620,7 +4862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-068",
@@ -4639,7 +4882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-069",
@@ -4658,7 +4902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-078",
@@ -4677,7 +4922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-080",
@@ -4696,7 +4942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-082",
@@ -4715,7 +4962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-083",
@@ -4734,7 +4982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-087",
@@ -4753,7 +5002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-088",
@@ -4772,7 +5022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-089",
@@ -4791,7 +5042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-090",
@@ -4810,7 +5062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-093",
@@ -4829,7 +5082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-098",
@@ -4848,7 +5102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-099",
@@ -4867,7 +5122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-100",
@@ -4886,7 +5142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-101",
@@ -4905,7 +5162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-102",
@@ -4924,7 +5182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-103",
@@ -4943,7 +5202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-104",
@@ -4962,7 +5222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-105",
@@ -4981,7 +5242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-106",
@@ -5000,7 +5262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-107",
@@ -5019,7 +5282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-108",
@@ -5038,7 +5302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-109",
@@ -5057,7 +5322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-110",
@@ -5076,7 +5342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-111",
@@ -5095,7 +5362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-112",
@@ -5114,7 +5382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-113",
@@ -5133,7 +5402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-114",
@@ -5152,7 +5422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-116",
@@ -5171,7 +5442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-117",
@@ -5190,7 +5462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-119",
@@ -5209,7 +5482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-120",
@@ -5228,7 +5502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-121",
@@ -5247,7 +5522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-122",
@@ -5266,7 +5542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-123",
@@ -5285,7 +5562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-124",
@@ -5304,7 +5582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-125",
@@ -5323,7 +5602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-126",
@@ -5342,7 +5622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-127",
@@ -5361,7 +5642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-128",
@@ -5380,7 +5662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-129",
@@ -5399,7 +5682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-131",
@@ -5418,7 +5702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-132",
@@ -5437,7 +5722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-133",
@@ -5456,7 +5742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-134",
@@ -5475,7 +5762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-135",
@@ -5494,7 +5782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-136",
@@ -5513,7 +5802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-139",
@@ -5532,7 +5822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-140",
@@ -5551,7 +5842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-141",
@@ -5570,7 +5862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-142",
@@ -5589,7 +5882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-143",
@@ -5608,7 +5902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-144",
@@ -5627,7 +5922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-145",
@@ -5646,7 +5942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-146",
@@ -5665,7 +5962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-147",
@@ -5684,7 +5982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-148",
@@ -5703,7 +6002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-150",
@@ -5722,7 +6022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-151",
@@ -5741,7 +6042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-152",
@@ -5760,7 +6062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-153",
@@ -5779,7 +6082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-154",
@@ -5798,7 +6102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-155",
@@ -5817,7 +6122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-157",
@@ -5836,7 +6142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-158",
@@ -5855,7 +6162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-159",
@@ -5874,7 +6182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-162",
@@ -5893,7 +6202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-164",
@@ -5912,7 +6222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-165",
@@ -5931,7 +6242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-166",
@@ -5950,7 +6262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-167",
@@ -5969,7 +6282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-168",
@@ -5988,7 +6302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-172",
@@ -6007,7 +6322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-173",
@@ -6026,7 +6342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-178",
@@ -6045,7 +6362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-179",
@@ -6064,7 +6382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-180",
@@ -6083,7 +6402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-181",
@@ -6102,7 +6422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-182",
@@ -6121,7 +6442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-183",
@@ -6140,7 +6462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-184",
@@ -6159,7 +6482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-185",
@@ -6178,7 +6502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-186",
@@ -6197,7 +6522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-187",
@@ -6216,7 +6542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-188",
@@ -6235,7 +6562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-189",
@@ -6254,7 +6582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-190",
@@ -6273,7 +6602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-191",
@@ -6292,7 +6622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-192",
@@ -6311,7 +6642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-193",
@@ -6330,7 +6662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-194",
@@ -6349,7 +6682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-195",
@@ -6368,7 +6702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-196",
@@ -6387,7 +6722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-197",
@@ -6406,7 +6742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-198",
@@ -6425,7 +6762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-199",
@@ -6444,7 +6782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-200",
@@ -6463,7 +6802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFT-204",
@@ -6482,7 +6822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFT-206",
@@ -6501,7 +6842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-002",
@@ -6520,7 +6862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-004",
@@ -6539,7 +6882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyCalculatorController; parity:content-verified"
+      "route_proof": "backend-service:LevyCalculatorController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-005",
@@ -6558,7 +6902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyCalculationService; parity:content-verified"
+      "route_proof": "backend-service:LevyCalculationService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-006",
@@ -6577,7 +6922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyForecastService; parity:content-verified"
+      "route_proof": "backend-service:LevyForecastService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-008",
@@ -6596,7 +6942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyForecastController; parity:content-verified"
+      "route_proof": "backend-service:LevyForecastController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-009",
@@ -6615,7 +6962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyComplianceService; parity:content-verified"
+      "route_proof": "backend-service:LevyComplianceService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-010",
@@ -6634,7 +6982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:EnhancedComplianceService; parity:content-verified"
+      "route_proof": "backend-service:EnhancedComplianceService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-011",
@@ -6653,7 +7002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:BillImpactService; parity:content-verified"
+      "route_proof": "backend-service:BillImpactService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-012",
@@ -6672,7 +7022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-013",
@@ -6691,7 +7042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:HistoricalRateService; parity:content-verified"
+      "route_proof": "backend-service:HistoricalRateService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-014",
@@ -6710,7 +7062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:HistoricalAnalysisService; parity:content-verified"
+      "route_proof": "backend-service:HistoricalAnalysisService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-015",
@@ -6729,7 +7082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:HistoricalAnalysisController; parity:content-verified"
+      "route_proof": "backend-service:HistoricalAnalysisController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-016",
@@ -6748,7 +7102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:DistrictAnalysisService; parity:content-verified"
+      "route_proof": "backend-service:DistrictAnalysisService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-017",
@@ -6767,7 +7122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-018",
@@ -6786,7 +7142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyExportController; parity:content-verified"
+      "route_proof": "backend-service:LevyExportController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-020",
@@ -6805,7 +7162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:backend/src/TerraFusion.API/Controllers/LevyAuditController.cs; parity:content-verified; route:api-controller"
+      "route_proof": "backend-service:backend/src/TerraFusion.API/Controllers/LevyAuditController.cs; parity:content-verified; route:api-controller",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-021",
@@ -6824,7 +7182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyDashboardController; parity:content-verified"
+      "route_proof": "backend-service:LevyDashboardController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-022",
@@ -6843,7 +7202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-023",
@@ -6862,7 +7222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-024",
@@ -6881,7 +7242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-025",
@@ -6900,7 +7262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:TaxRollExportService; parity:content-verified"
+      "route_proof": "backend-service:TaxRollExportService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-026",
@@ -6919,7 +7282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyReportController; parity:content-verified"
+      "route_proof": "backend-service:LevyReportController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-027",
@@ -6938,7 +7302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevyReportService; parity:content-verified"
+      "route_proof": "backend-service:LevyReportService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-028",
@@ -6957,7 +7322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:PropertyAssessmentController; parity:content-verified"
+      "route_proof": "backend-service:PropertyAssessmentController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-030",
@@ -6976,7 +7342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:PropertyValidationFramework; parity:content-verified"
+      "route_proof": "backend-service:PropertyValidationFramework; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-031",
@@ -6995,7 +7362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:TaxStrategyController; parity:content-verified"
+      "route_proof": "backend-service:TaxStrategyController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-032",
@@ -7014,7 +7382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:BudgetImpactController; parity:content-verified"
+      "route_proof": "backend-service:BudgetImpactController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-033",
@@ -7033,7 +7402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevySearchController; parity:content-verified"
+      "route_proof": "backend-service:LevySearchController; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-034",
@@ -7052,7 +7422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "backend-service:LevySearchService; parity:content-verified"
+      "route_proof": "backend-service:LevySearchService; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-037",
@@ -7071,7 +7442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-038",
@@ -7090,7 +7462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-040",
@@ -7109,7 +7482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-041",
@@ -7128,7 +7502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-042",
@@ -7147,7 +7522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-047",
@@ -7166,7 +7542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-048",
@@ -7185,7 +7562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-056",
@@ -7204,7 +7582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-058",
@@ -7223,7 +7602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-059",
@@ -7242,7 +7622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-060",
@@ -7261,7 +7642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-064",
@@ -7280,7 +7662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-065",
@@ -7299,7 +7682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-067",
@@ -7318,7 +7702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-071",
@@ -7337,7 +7722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-072",
@@ -7356,7 +7742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-073",
@@ -7375,7 +7762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-074",
@@ -7394,7 +7782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-076",
@@ -7413,7 +7802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-077",
@@ -7432,7 +7822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-078",
@@ -7451,7 +7842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-086",
@@ -7470,7 +7862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-087",
@@ -7489,7 +7882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-106",
@@ -7508,7 +7902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-107",
@@ -7527,7 +7922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-108",
@@ -7546,7 +7942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-109",
@@ -7565,7 +7962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-110",
@@ -7584,7 +7982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-111",
@@ -7603,7 +8002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-112",
@@ -7622,7 +8022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-113",
@@ -7641,7 +8042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-114",
@@ -7660,7 +8062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-115",
@@ -7679,7 +8082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-116",
@@ -7698,7 +8102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-117",
@@ -7717,7 +8122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-118",
@@ -7736,7 +8142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-119",
@@ -7755,7 +8162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-121",
@@ -7774,7 +8182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-129",
@@ -7793,7 +8202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-130",
@@ -7812,7 +8222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-134",
@@ -7831,7 +8242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-135",
@@ -7850,7 +8262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "LEV-136",
@@ -7869,7 +8282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-137",
@@ -7888,7 +8302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-138",
@@ -7907,7 +8322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-142",
@@ -7926,7 +8342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "LEV-143",
@@ -7945,7 +8362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-004",
@@ -7964,7 +8382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-005",
@@ -7983,7 +8402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-006",
@@ -8002,7 +8422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-007",
@@ -8021,7 +8442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-008",
@@ -8040,7 +8462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-011",
@@ -8059,7 +8482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-012",
@@ -8078,7 +8502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-013",
@@ -8097,7 +8522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-014",
@@ -8116,7 +8542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-015",
@@ -8135,7 +8562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-016",
@@ -8154,7 +8582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-017",
@@ -8173,7 +8602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-018",
@@ -8192,7 +8622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-019",
@@ -8211,7 +8642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-020",
@@ -8230,7 +8662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-021",
@@ -8249,7 +8682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-022",
@@ -8268,7 +8702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-023",
@@ -8287,7 +8722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-024",
@@ -8306,7 +8742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-025",
@@ -8325,7 +8762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-026",
@@ -8344,7 +8782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-029",
@@ -8363,7 +8802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-030",
@@ -8382,7 +8822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-031",
@@ -8401,7 +8842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-032",
@@ -8420,7 +8862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-033",
@@ -8439,7 +8882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-034",
@@ -8458,7 +8902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-036",
@@ -8477,7 +8922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-037",
@@ -8496,7 +8942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-038",
@@ -8515,7 +8962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-039",
@@ -8534,7 +8982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-040",
@@ -8553,7 +9002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-041",
@@ -8572,7 +9022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-042",
@@ -8591,7 +9042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-043",
@@ -8610,7 +9062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-044",
@@ -8629,7 +9082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-074",
@@ -8648,7 +9102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-075",
@@ -8667,7 +9122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-076",
@@ -8686,7 +9142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-077",
@@ -8705,7 +9162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-082",
@@ -8724,7 +9182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-083",
@@ -8743,7 +9202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-084",
@@ -8762,7 +9222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-085",
@@ -8781,7 +9242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-087",
@@ -8800,7 +9262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-094",
@@ -8819,7 +9282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-106",
@@ -8838,7 +9302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-107",
@@ -8857,7 +9322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-108",
@@ -8876,7 +9342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-109",
@@ -8895,7 +9362,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-110",
@@ -8914,7 +9382,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-111",
@@ -8933,7 +9402,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-112",
@@ -8952,7 +9422,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-113",
@@ -8971,7 +9442,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-114",
@@ -8990,7 +9462,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-120",
@@ -9009,7 +9482,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-123",
@@ -9028,7 +9502,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-124",
@@ -9047,7 +9522,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-125",
@@ -9066,7 +9542,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-126",
@@ -9085,7 +9562,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-127",
@@ -9104,7 +9582,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-128",
@@ -9123,7 +9602,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-129",
@@ -9142,7 +9622,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-134",
@@ -9161,7 +9642,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-145",
@@ -9180,7 +9662,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-151",
@@ -9199,7 +9682,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-152",
@@ -9218,7 +9702,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-154",
@@ -9237,7 +9722,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-156",
@@ -9256,7 +9742,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-167",
@@ -9275,7 +9762,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-168",
@@ -9294,7 +9782,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TMR-169",
@@ -9313,7 +9802,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-170",
@@ -9332,7 +9822,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-171",
@@ -9351,7 +9842,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-172",
@@ -9370,7 +9862,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-173",
@@ -9389,7 +9882,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-174",
@@ -9408,7 +9902,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TMR-175",
@@ -9427,7 +9922,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "deduplicated-merged-into-primary"
+      "route_proof": "deduplicated-merged-into-primary",
+      "terminal_status": "deduplicated"
     },
     {
       "asset_id": "TFP-002",
@@ -9446,7 +9942,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-003",
@@ -9465,7 +9962,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-009",
@@ -9484,7 +9982,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries"
+      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-010",
@@ -9503,7 +10002,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries"
+      "route_proof": "shell-path:pages/dossier/+services/suites/dossierService.ts; parity:content-verified; no-rogue-entries",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-012",
@@ -9522,7 +10022,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-014",
@@ -9541,7 +10042,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-016",
@@ -9560,7 +10062,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-017",
@@ -9579,7 +10082,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-019",
@@ -9598,7 +10102,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-021",
@@ -9617,7 +10122,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-022",
@@ -9636,7 +10142,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-029",
@@ -9655,7 +10162,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-030",
@@ -9674,7 +10182,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-066",
@@ -9693,7 +10202,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFP-069",
@@ -9712,7 +10222,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "destination-is-primary"
+      "route_proof": "destination-is-primary",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-200",
@@ -9731,7 +10242,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/AuditTrailPage.tsx; parity:content-verified; route:pages/dais/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/pages/dais/AuditTrailPage.tsx; parity:content-verified; route:pages/dais/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "TFR-201",
@@ -9750,7 +10262,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "shell-path:frontend/apps/os-shell/src/components/dais/AuditTab.tsx; parity:content-verified; route:components/dais/"
+      "route_proof": "shell-path:frontend/apps/os-shell/src/components/dais/AuditTab.tsx; parity:content-verified; route:components/dais/",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-200",
@@ -9769,7 +10282,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-201",
@@ -9788,7 +10302,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-202",
@@ -9807,7 +10322,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     },
     {
       "asset_id": "BIV-203",
@@ -9826,7 +10342,8 @@
       "shell_status": "pass",
       "deprecation_status": "destination-active",
       "consumer_status": "migrated",
-      "route_proof": "service-layer:forge; parity:content-verified"
+      "route_proof": "service-layer:forge; parity:content-verified",
+      "terminal_status": "activated"
     }
   ],
   "reconciliation_note": "517 = 511 original + 2 Dais gap-fills (TFR-200 AuditTrailPage, TFR-201 AuditTab) + 4 Forge gap-fills (BIV-200..203 service clients existed on disk but missing from Phase 4C manifest). All verified present and activated."
