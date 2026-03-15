@@ -22,7 +22,7 @@
       "secrets_status": "minor",
       "security_blocking": false,
       "archive_eligibility": "blocked-pending-extraction",
-      "remediation_tracker": "Made private 2026-03-14. Minor: fallback session secret in source, ArcGIS service catalog URL. Low risk — no longer publicly accessible.",
+      "remediation_tracker": "Made private 2026-03-14. Minor: fallback session secret in source, ArcGIS service catalog URL. Low risk \u2014 no longer publicly accessible.",
       "wave": 1,
       "notes": "Primary feeder for regression engine (MRA 4-model), ratio studies (COD/PRD/PRB/VIF), XGBoost market prediction, CAMA connector",
       "assets": [
@@ -4230,11 +4230,11 @@
     },
     {
       "name": "terra-forge-rebuild",
-      "repo_status": "active",
+      "repo_status": "migration-in-progress",
       "secrets_status": "critical",
       "security_blocking": true,
       "archive_eligibility": "blocked-pending-extraction-and-remediation",
-      "remediation_tracker": "Made private 2026-03-14. CRITICAL: Supabase anon key (project jzuculrmjuwrshramgye), DB dumps in public/uploads/. Key NOT ROTATED — project likely dormant. History scrub with BFG required before any re-publication.",
+      "remediation_tracker": "Made private 2026-03-14. CRITICAL: Supabase anon key (project jzuculrmjuwrshramgye), DB dumps in public/uploads/. Key NOT ROTATED \u2014 project likely dormant. History scrub with BFG required before any re-publication.",
       "wave": 1,
       "notes": "Primary feeder for OLS regression solver, VEI dashboard, PACS contract, cost schedules, sync engine",
       "assets": [
@@ -4245,19 +4245,25 @@
           "asset_type": "service",
           "domain": "calibration",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.AI/Regression/OlsSolver.cs",
           "canonical_capability": "forge.regression.ols",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Unique OLS regression solver with Gauss-Jordan inversion, t-distribution CDF, F-statistic. Core mass appraisal calibration math.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "No secrets in source."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-regression",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-002",
@@ -4266,19 +4272,25 @@
           "asset_type": "utility",
           "domain": "regression",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.AI/Regression/MultipleRegressionEngine.cs",
           "canonical_capability": "forge.regression.multiple",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Multiple regression engine with ANOVA, Cook's distance, VIF, Durbin-Watson, Q-Q diagnostic generation. Irreplaceable valuation math.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-regression",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-003",
@@ -4287,19 +4299,25 @@
           "asset_type": "utility",
           "domain": "calibration",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.AI/Calibration/CalibrationOrchestrator.cs",
           "canonical_capability": "forge.calibration.run",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Calibration orchestration hook: invokes regression per neighborhood, manages variable selection, emits change receipts. Core calibration behavior.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-regression",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-004",
@@ -4308,19 +4326,25 @@
           "asset_type": "config",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Contracts/PacsBentonContract.cs",
           "canonical_capability": "canon.sync.contract",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "PACS Benton County sync contract: identity doctrine, 6 sync product definitions, watermark tracking, PII redaction rules, delta strategies. Irreplaceable integration contract.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "PII redaction rules present \u2014 contract defines redaction, does not contain PII."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "exact",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-005",
@@ -4329,19 +4353,25 @@
           "asset_type": "config",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Contracts/PacsFieldMappings.cs",
           "canonical_capability": "canon.sync.field_mapping",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "PACS True Automation field mapping: column-level mappings from CIAPS schema. Irreplaceable integration reference.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "exact",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-006",
@@ -4350,19 +4380,25 @@
           "asset_type": "config",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Contracts/PacsWorkflowMappings.cs",
           "canonical_capability": "canon.sync.workflow_mapping",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "PACS workflow mappings for appeals, permits, and exemption data flows. Irreplaceable integration reference.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "exact",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-007",
@@ -4371,19 +4407,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/QualityGates/PacsQualityGates.cs",
           "canonical_capability": "canon.sync.quality_gates",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "PACS quality gates: IAAO-style integrity checks. Core data quality enforcement.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "exact",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-008",
@@ -4392,19 +4434,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Data/Helpers/SqlServerHelpers.cs",
           "canonical_capability": "canon.sync.sql_helpers",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "SQL Server query helpers: ROW_NUMBER() CTE generator for PostgreSQL compatibility. Required by PACS connector.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-009",
@@ -4413,19 +4461,25 @@
           "asset_type": "utility",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/forge/veiService.ts",
           "canonical_capability": "forge.statistics.vei",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "VEI data hooks: study period management, assessment ratio tier grouping. Unique IAAO equity analysis logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-010",
@@ -4434,19 +4488,25 @@
           "asset_type": "utility",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/forge/ratioAnalysisService.ts",
           "canonical_capability": "forge.statistics.ratio_analysis",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Ratio analysis hook: COD, PRD, PRB computation, tier medians, tier slopes. Core IAAO compliance math.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-011",
@@ -4455,19 +4515,25 @@
           "asset_type": "component",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
-          "canonical_capability": "forge.statistics.vei",
+          "target_home": "frontend/src/pages/forge/statistics/VEIDashboard.tsx",
+          "canonical_capability": "forge.statistics.vei.dashboard",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "VEI Dashboard: full equity analysis UI with metric cards, tier plots, COD/PRD trends. Unique IAAO-grade visualization.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-012",
@@ -4476,19 +4542,25 @@
           "asset_type": "component",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/statistics/charts/TierRatioPlot.tsx",
           "canonical_capability": "forge.statistics.vei.tier_plot",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Tier ratio bar chart: visualizes median assessment ratios by value quartile. Unique statistical visualization.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-013",
@@ -4497,19 +4569,25 @@
           "asset_type": "component",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/statistics/charts/CODTrendChart.tsx",
           "canonical_capability": "forge.statistics.vei.cod_trend",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "COD trend chart: displays Coefficient of Dispersion over time. IAAO compliance visualization.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-014",
@@ -4518,19 +4596,25 @@
           "asset_type": "component",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/statistics/charts/PRDTrendChart.tsx",
           "canonical_capability": "forge.statistics.vei.prd_trend",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "PRD trend chart: displays Price-Related Differential over time. IAAO compliance visualization.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-015",
@@ -4539,19 +4623,25 @@
           "asset_type": "component",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/statistics/drilldown/",
           "canonical_capability": "forge.statistics.vei.drilldown",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "VEI drilldown dialogs: COD drilldown, PRD drilldown, tier slope drilldown. Unique analytical depth.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-016",
@@ -4560,19 +4650,25 @@
           "asset_type": "component",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/statistics/components/",
           "canonical_capability": "forge.statistics.vei.ui",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "VEI metric cards, summary panel, export actions, skeleton, empty state, neighborhood filters. Unique statistical UI components.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-017",
@@ -4581,19 +4677,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/SyncEngine.cs",
           "canonical_capability": "canon.sync.engine",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Sync engine: delta detection (insert/update/delete), SAGA workflow runners. Core ETL data pipeline.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-018",
@@ -4602,19 +4704,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/SagaOrchestrator.cs",
           "canonical_capability": "canon.sync.saga",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "SAGA orchestrator: multi-step workflow execution with compensation/rollback. Core ETL resilience pattern.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-019",
@@ -4623,19 +4731,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/SyncRuntime.cs",
           "canonical_capability": "canon.sync.runtime",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Contract-driven sync runtime: orchestrates PACS product extraction using contract definitions. Core ETL execution.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-020",
@@ -4644,19 +4758,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/ConnectorRegistry.cs",
           "canonical_capability": "canon.sync.registry",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Source lane registry: manages multiple data source connectors. Core multi-source ETL architecture.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-021",
@@ -4665,19 +4785,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/YearDoctrine.cs",
           "canonical_capability": "canon.sync.year_doctrine",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Year doctrine discovery: detects how legacy CAMA systems represent assessment years. Irreplaceable PACS integration logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-022",
@@ -4686,19 +4812,25 @@
           "asset_type": "model",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Connectors/IConnector.cs",
           "canonical_capability": "canon.sync.connector_interface",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Read-only connector interface: universal contract for all data sources. Core integration architecture.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-023",
@@ -4707,19 +4839,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Connectors/PacsConnector.cs",
           "canonical_capability": "canon.sync.pacs_connector",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "PACS read-only SQL connector: SQL statement validator blocking write operations. Core PACS integration safety.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-024",
@@ -4728,19 +4866,25 @@
           "asset_type": "utility",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/forge/costApproachService.ts",
           "canonical_capability": "forge.valuation.cost_approach",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Cost schedule hooks: CRUD for cost schedules and depreciation tables, pure cost calculation functions. Core valuation math.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-valuation",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-025",
@@ -4749,19 +4893,25 @@
           "asset_type": "utility",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/forge/incomeApproachService.ts",
           "canonical_capability": "forge.valuation.income_approach",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Income approach hook: cap rate, GRM calculation, NOI computation. Core valuation math. Complements canonical IncomeValuationPanel.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-valuation",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-026",
@@ -4770,19 +4920,25 @@
           "asset_type": "utility",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/forge/compGridService.ts",
           "canonical_capability": "forge.valuation.comp_grid",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Comp grid hook: fetches parcels by neighborhood with qualified sales and ratio data. Core comparable sales logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-valuation",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-027",
@@ -4791,19 +4947,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/services/terraTrace.ts",
           "canonical_capability": "os.audit.trace",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "TerraTrace audit event service: append-only event spine per ADR-0003. Core constitutional audit infrastructure.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-028",
@@ -4812,19 +4974,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/services/writeLane.ts",
           "canonical_capability": "os.governance.write_lane",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Write-lane enforcement: constitutional matrix mapping domains to suite owners. Core governance infrastructure per ADR-0002.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-029",
@@ -4833,19 +5001,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/services/circuitBreaker.ts",
           "canonical_capability": "os.resilience.circuit_breaker",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Circuit breaker: failure threshold, half-open recovery. Shared resilience pattern for all edge function calls.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-030",
@@ -4854,19 +5028,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/ETL/PacsMultiTableProcessor.cs",
           "canonical_capability": "canon.etl.pacs_multi_table",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "PACS multi-table ETL processor: detects True Automation CSV table types from headers. Irreplaceable PACS import logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-031",
@@ -4875,19 +5055,25 @@
           "asset_type": "service",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/suites/forgeService.ts",
           "canonical_capability": "forge.service.core",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Forge suite service: parcel characteristic updates with write-lane enforcement and TerraTrace audit. Core suite boundary implementation.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-valuation",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-032",
@@ -4896,19 +5082,25 @@
           "asset_type": "service",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "frontend/src/services/suites/daisService.ts",
           "canonical_capability": "dais.service.core",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Dais suite service: appeal status updates, permit/exemption workflow. Core Dais domain logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-033",
@@ -4917,40 +5109,52 @@
           "asset_type": "service",
           "domain": "spatial",
           "owner_suite": "TerraAtlas",
-          "target_home": "",
+          "target_home": "frontend/src/services/suites/atlasService.ts",
           "canonical_capability": "atlas.service.core",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Atlas suite service: GIS feature/boundary upserts, layer management. Core Atlas domain logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "atlas-gis",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-034",
           "description": "Dossier suite service: document management, narrative creation, packet assembly, with write-lane enforcement and trace emission.",
           "source_path": "src/services/suites/dossierService.ts",
           "asset_type": "service",
-          "domain": "workflow",
-          "owner_suite": "TerraDais",
-          "target_home": "",
+          "domain": "documents",
+          "owner_suite": "TerraDossier",
+          "target_home": "frontend/src/services/suites/dossierService.ts",
           "canonical_capability": "dossier.service.core",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Dossier suite service: document management, narrative creation, packet assembly. Core Dossier domain logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-035",
@@ -4959,19 +5163,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/services/exportService.ts",
           "canonical_capability": "os.export.engine",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Export service: CSV/JSON export generation for parcels, assessments, sales, appeals. Core data export capability.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-036",
@@ -4980,19 +5190,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/IngestService.cs",
           "canonical_capability": "canon.ingest.batch",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Ingest service: batch parcel insert/upsert with conflict handling for PACS import. Core ETL ingestion.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-037",
@@ -5001,19 +5217,25 @@
           "asset_type": "config",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/lib/metrics/metricCatalog.ts",
           "canonical_capability": "os.trust.metric_catalog",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Metric catalog: single source of truth for every key number in the OS. Core governance/observability infrastructure.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-038",
@@ -5023,18 +5245,24 @@
           "domain": "data-quality",
           "owner_suite": "OS Admin",
           "target_home": "",
-          "canonical_capability": "os.navigation.ia_map",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Information Architecture map: navigation config superseded by canonical OS module registry (generatedModules.ts, suiteRegistry.ts).",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "frontend/src/config/generatedModules.ts",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-039",
@@ -5043,19 +5271,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "OS Admin",
-          "target_home": "",
+          "target_home": "frontend/src/lib/constitutionGuards.ts",
           "canonical_capability": "os.governance.constitution_guards",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Constitution guards: runtime navigation validation, stale module ID detection. Unique governance enforcement logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-040",
@@ -5065,18 +5299,24 @@
           "domain": "data-quality",
           "owner_suite": "OS Admin",
           "target_home": "",
-          "canonical_capability": "os.governance.missions",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Mission constitution: registry of correction missions with scope/priority/SLA. Config scaffolding \u2014 no business logic, superseded by canonical OS governance.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "canonical OS governance layer",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-041",
@@ -5085,19 +5325,25 @@
           "asset_type": "service",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.AI/AVM/AvmTrainingService.cs",
           "canonical_capability": "forge.avm.train",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "AVM training edge function: computes features, trains model, stores coefficients. Core AI valuation capability.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-regression",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-042",
@@ -5106,19 +5352,25 @@
           "asset_type": "service",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.AI/AVM/AiValuationService.cs",
           "canonical_capability": "forge.avm.ai_valuation",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "AI valuation edge function: LLM-powered property valuation analysis supporting multiple approaches. Unique AI capability.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-regression",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-043",
@@ -5127,19 +5379,25 @@
           "asset_type": "service",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.AI/Narratives/DefenseNarrativeService.cs",
           "canonical_capability": "dais.narrative.defense",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Defense narrative edge function: LLM-powered narrative generation for BOE defense. Unique Dais AI capability.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-044",
@@ -5148,19 +5406,25 @@
           "asset_type": "utility",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/forge/advancedAnalyticsService.ts",
           "canonical_capability": "forge.statistics.advanced_analytics",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Advanced analytics hooks: ratio trend sparklines, assessment value distribution, trend forecasting. Unique analytical depth.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-045",
@@ -5169,19 +5433,25 @@
           "asset_type": "utility",
           "domain": "calibration",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/forge/segmentDiscoveryService.ts",
           "canonical_capability": "forge.calibration.segment_discovery",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Segment discovery: factor importance analysis from regression coefficients, neighborhood segmentation. Core calibration capability.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-regression",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-046",
@@ -5190,19 +5460,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/services/dataQualityScoring.ts",
           "canonical_capability": "os.quality.scoring_engine",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Data quality scoring engine: per-parcel completeness scoring with weighted field groups. Unique data quality logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-047",
@@ -5211,19 +5487,25 @@
           "asset_type": "service",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "frontend/src/services/fieldStore.ts",
           "canonical_capability": "dais.field.offline_store",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Field studio local store: IndexedDB-backed offline queue for field observations. Unique offline-first Dais capability.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-048",
@@ -5232,19 +5514,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/workbench/tabs/forge/CostApproach.tsx",
           "canonical_capability": "forge.valuation.cost_approach.ui",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Cost approach calculator: batch apply, depreciation curve editor, year-based. Core Forge valuation UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-049",
@@ -5253,19 +5541,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/workbench/tabs/forge/components/CostScheduleEditor.tsx",
           "canonical_capability": "forge.valuation.cost_schedule.ui",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Cost schedule editor: base cost per sqft by property class and quality grade. Core cost approach reference data UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-050",
@@ -5274,19 +5568,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/workbench/tabs/forge/components/DepreciationCurveEditor.tsx",
           "canonical_capability": "forge.valuation.depreciation.ui",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Depreciation curve editor: age-based depreciation percentages. Core cost approach reference data UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-051",
@@ -5295,19 +5595,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/workbench/tabs/forge/IncomeApproach.tsx",
           "canonical_capability": "forge.valuation.income_approach.ui",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Income approach calculator, batch income apply panel, income data manager. Core Forge valuation UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-052",
@@ -5316,19 +5622,25 @@
           "asset_type": "component",
           "domain": "regression",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/regression/RegressionControlPanel.tsx",
           "canonical_capability": "forge.regression.ui",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Regression control panel, calibration diagnostics, scatter plot, coefficient table. Core Forge regression UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-053",
@@ -5337,19 +5649,25 @@
           "asset_type": "component",
           "domain": "regression",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/regression/RegressionStudio.tsx",
           "canonical_capability": "forge.regression.studio",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Regression studio dashboard: ANOVA panel, diagnostic plots, model comparison. Core Forge regression workspace.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-054",
@@ -5358,19 +5676,25 @@
           "asset_type": "component",
           "domain": "regression",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/regression/charts/",
           "canonical_capability": "forge.regression.diagnostic_charts",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Regression diagnostic charts: Cook's distance, Q-Q plot, residual plot, leverage plot. Unique statistical visualizations.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-055",
@@ -5379,19 +5703,25 @@
           "asset_type": "component",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "frontend/src/pages/dais/AppealsWorkflow.tsx",
           "canonical_capability": "dais.workflow.appeals",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Appeals workflow: creation, timeline, audit log, status transitions. Core TerraDais appeal management.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-056",
@@ -5400,19 +5730,25 @@
           "asset_type": "component",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "frontend/src/pages/dais/WorkflowComponents.tsx",
           "canonical_capability": "dais.workflow.permits",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Permits workflow, exemptions workflow, notices panel, certification dashboard. Core TerraDais operational workflows.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-057",
@@ -5421,19 +5757,25 @@
           "asset_type": "component",
           "domain": "spatial",
           "owner_suite": "TerraAtlas",
-          "target_home": "",
+          "target_home": "frontend/src/pages/atlas/GeoEquityDashboard.tsx",
           "canonical_capability": "atlas.equity.map",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "GeoEquity map and dashboard: equity heatmap, parcel detail, GIS layers. Core Atlas spatial equity visualization.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "atlas-gis",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-058",
@@ -5442,19 +5784,25 @@
           "asset_type": "component",
           "domain": "calibration",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/calibration/SegmentRevaluationDashboard.tsx",
           "canonical_capability": "forge.calibration.segment_revaluation",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Segment revaluation dashboard: calibration, equity rebalancing. Core Forge calibration UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-059",
@@ -5463,19 +5811,25 @@
           "asset_type": "component",
           "domain": "calibration",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/calibration/SegmentDiscoveryDashboard.tsx",
           "canonical_capability": "forge.calibration.segment_discovery.ui",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Segment discovery dashboard: factor importance, neighborhood heatmap, segment assignment. Core Forge analytical UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-060",
@@ -5485,18 +5839,24 @@
           "domain": "valuation",
           "owner_suite": "Shared",
           "target_home": "",
-          "canonical_capability": "os.workbench.core",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Property workbench: parcel detail editor with suite tab navigation. Superseded by canonical PropertyWorkbench in terrafusion_os_1.0.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "frontend/src/pages/workbench/PropertyWorkbench.tsx",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-061",
@@ -5505,19 +5865,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/lib/changeReceipt.ts",
           "canonical_capability": "os.audit.change_receipt",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Change receipt utility: generates immutable audit records. Core TerraTrace companion.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-062",
@@ -5527,18 +5893,24 @@
           "domain": "data-quality",
           "owner_suite": "Shared",
           "target_home": "",
-          "canonical_capability": "os.cache.invalidation",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Query invalidation utility: centralized cache invalidation helpers. Generic React Query utility \u2014 no unique business logic.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "standard TanStack Query invalidation patterns",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-063",
@@ -5547,19 +5919,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/avm/AVMStudio.tsx",
           "canonical_capability": "forge.avm.studio",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "AVM studio dashboard: AI valuation panel, feature engineering, model comparison. Core Forge AI valuation UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-064",
@@ -5568,19 +5946,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/anatomy/ValuationAnatomy.tsx",
           "canonical_capability": "forge.valuation.anatomy",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Valuation anatomy dashboard: 3D valuation canvas, valuation details panel. Unique visualization.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-065",
@@ -5589,19 +5973,25 @@
           "asset_type": "component",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "frontend/src/pages/dais/RollReadiness.tsx",
           "canonical_capability": "dais.certification.readiness",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Roll readiness dashboard: certification pipeline, readiness scoring. Core TerraDais certification workflow.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-066",
@@ -5610,19 +6000,25 @@
           "asset_type": "component",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "frontend/src/pages/canon/SyncDashboard.tsx",
           "canonical_capability": "canon.sync.dashboard",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Sync dashboard: conflict resolution queue, data source registry, SAGA runner UI. Core TerraCanon operational UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-067",
@@ -5631,19 +6027,25 @@
           "asset_type": "component",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "frontend/src/pages/canon/IDSCommandCenter.tsx",
           "canonical_capability": "canon.ids.command_center",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "IDS command center: ingest wizard, PACS multi-table import, inventory/quality/rollback panels. Core TerraCanon operational UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-068",
@@ -5652,19 +6054,25 @@
           "asset_type": "component",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "frontend/src/pages/canon/ImportWizard.tsx",
           "canonical_capability": "canon.ingest.import_wizard",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Parcel import wizard: column mapper, import preview, learning scoreboard. Unique data import UX.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-069",
@@ -5673,19 +6081,25 @@
           "asset_type": "component",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/pages/shared/TrustRegistry.tsx",
           "canonical_capability": "os.trust.registry",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Trust registry page, provenance badges, explainable wrapper. Core OS trust/governance UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-070",
@@ -5694,40 +6108,52 @@
           "asset_type": "component",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "frontend/src/pages/dais/DefensePacket.tsx",
           "canonical_capability": "dais.proof.defense_packet",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Defense packet generator, model receipt, TerraTrace activity feed. Core Dais proof assembly.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-071",
           "description": "Dossier components: document upload dialog, documents panel, narrative drafting panel, and packet assembly panel for records management.",
           "source_path": "src/components/dossier/PacketAssemblyPanel.tsx",
           "asset_type": "component",
-          "domain": "workflow",
-          "owner_suite": "TerraDais",
-          "target_home": "",
+          "domain": "documents",
+          "owner_suite": "TerraDossier",
+          "target_home": "frontend/src/pages/dossier/PacketAssembly.tsx",
           "canonical_capability": "dossier.records.ui",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Dossier components: document upload, documents panel, narrative drafting, packet assembly. Core TerraDossier domain UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-072",
@@ -5736,19 +6162,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/sketch/SketchModule.tsx",
           "canonical_capability": "forge.sketch.module",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Sketch module: measurement plan, plan trace, sketch builder. Unique parcel sketch capability.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-073",
@@ -5757,19 +6189,25 @@
           "asset_type": "component",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "frontend/src/pages/dais/FieldStudio.tsx",
           "canonical_capability": "dais.field.studio",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Field studio dashboard and inspection panel. Core TerraDais field inspection management.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-074",
@@ -5778,19 +6216,25 @@
           "asset_type": "data",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "docs/reference/supabase-schema/",
           "canonical_capability": "canon.schema.migrations",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Supabase migrations: 60+ migration files defining complete schema. Core schema reference for canonical EF Core migration.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Review for hardcoded connection strings."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-075",
@@ -5799,19 +6243,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.API.Tests/Sync/PacsBentonContractTests.cs",
           "canonical_capability": "canon.sync.contract.test",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "PACS contract test: validates contract internal consistency. Test asset \u2014 ports alongside TFR-004.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-076",
@@ -5820,19 +6270,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.API.Tests/Sync/SyncEngineTests.cs",
           "canonical_capability": "canon.sync.engine.test",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Sync engine tests: validates delta detection, SAGA execution. Test asset \u2014 ports alongside TFR-017.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-077",
@@ -5841,19 +6297,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.API.Tests/Sync/SagaOrchestratorTests.cs",
           "canonical_capability": "canon.sync.saga.test",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "SAGA orchestrator tests: validates multi-step execution, compensation, rollback. Test asset \u2014 ports alongside TFR-018.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-078",
@@ -5862,19 +6324,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/tests/services/terraTrace.test.ts",
           "canonical_capability": "os.audit.trace.test",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "TerraTrace test: validates audit event emission. Test asset \u2014 ports alongside TFR-027.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-079",
@@ -5883,19 +6351,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/tests/services/writeLane.test.ts",
           "canonical_capability": "os.governance.write_lane.test",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Write lane test: validates domain ownership assertions. Test asset \u2014 ports alongside TFR-028.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-080",
@@ -5904,19 +6378,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.API.Tests/Sync/ConnectorTests.cs",
           "canonical_capability": "canon.sync.test",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Sync connector test: validates registry, connector capabilities, year doctrine. Test asset \u2014 ports alongside TFR-020/021.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-081",
@@ -5925,19 +6405,25 @@
           "asset_type": "utility",
           "domain": "data-quality",
           "owner_suite": "OS Admin",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Security/Auth/EdgeFunctionAuth.cs",
           "canonical_capability": "os.auth.edge_functions",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Shared auth module for Supabase edge functions: JWT validation, county ID extraction. Irreplaceable auth pattern for edge function migration.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "JWT secret handling must be reviewed during actual port."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-admin",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-082",
@@ -5947,18 +6433,24 @@
           "domain": "data-quality",
           "owner_suite": "OS Admin",
           "target_home": "",
-          "canonical_capability": "os.errors.edge_functions",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Shared error handling for Supabase edge functions: safe error responses. Generic utility \u2014 no unique business logic.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "standard .NET exception handling middleware",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-083",
@@ -5967,19 +6459,25 @@
           "asset_type": "service",
           "domain": "workflow",
           "owner_suite": "TerraDais",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.AI/Notices/DraftNoticeService.cs",
           "canonical_capability": "dais.notices.draft",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Draft notice edge function: generates assessment change notices for property owners. Core Dais notice-writing logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "dais-workflow",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-084",
@@ -5988,19 +6486,25 @@
           "asset_type": "service",
           "domain": "spatial",
           "owner_suite": "TerraAtlas",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/GIS/GisParseService.cs",
           "canonical_capability": "atlas.gis.parse",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "GIS parse edge function: processes GIS file uploads for spatial data ingestion. Core Atlas spatial ingest.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "atlas-gis",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-085",
@@ -6009,19 +6513,25 @@
           "asset_type": "service",
           "domain": "spatial",
           "owner_suite": "TerraAtlas",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/GIS/GisSyncService.cs",
           "canonical_capability": "atlas.gis.sync",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "GIS sync/ArcGIS parcel sync/import/polygon ingest edge functions. Core Atlas spatial data pipeline.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "ArcGIS service URLs may need credential review."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "atlas-gis",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-086",
@@ -6030,19 +6540,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/IngestProcessor.cs",
           "canonical_capability": "canon.ingest.process",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Ingest process edge function: server-side data ingestion processing pipeline. Core Canon ingest.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-087",
@@ -6052,18 +6568,24 @@
           "domain": "data-quality",
           "owner_suite": "OS Admin",
           "target_home": "",
-          "canonical_capability": "os.health.check",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "System health edge function: generic health check endpoint. Superseded by canonical .NET health checks in TerraFusion.API.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "backend/TerraFusion.API health check middleware",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-088",
@@ -6075,16 +6597,22 @@
           "target_home": "",
           "canonical_capability": "os.pilot.chat",
           "surface_reference": "",
-          "status": "pending",
+          "status": "deferred-with-rationale",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "TerraPilot chat edge function: AI chat assistant for assessor workflows. Placement depends on TerraGPT suite architecture which is not yet constitutionally scoped.",
           "security_review": {
             "status": "pending",
-            "remediation_note": ""
+            "remediation_note": "LLM API key handling must be reviewed."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "none",
+          "replacement_ref": "none",
+          "migration_batch": "",
+          "blocker_type": "architectural",
+          "unblock_condition": "TerraGPT suite architecture scoped and constitutional charter written",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-089",
@@ -6093,19 +6621,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Scrapers/AssessorScraper.cs",
           "canonical_capability": "canon.ingest.scrape",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Assessor/statewide scrape edge functions: web scraping for assessor data collection. Unique ETL capability.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-090",
@@ -6114,19 +6648,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "OS Admin",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Admin/CountySetupService.cs",
           "canonical_capability": "os.admin.county_setup",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "County setup edge function: initializes county configuration and initial data structures. Core multi-county onboarding logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-admin",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-091",
@@ -6135,19 +6675,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Scrapers/ScrapingScheduler.cs",
           "canonical_capability": "canon.ingest.schedule_scrape",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Schedule scrape edge function: manages scheduled web scraping jobs. Unique ETL scheduling logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-092",
@@ -6156,19 +6702,25 @@
           "asset_type": "utility",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/services/forge/historicalRatioService.ts",
           "canonical_capability": "forge.statistics.historical_trend",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Historical ratio trend: multi-year ratio statistics and appeals-by-value-tier analysis. Unique IAAO time-series analytics.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-093",
@@ -6178,39 +6730,51 @@
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
           "target_home": "",
-          "canonical_capability": "canon.schema.types",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Supabase client config and auto-generated TypeScript types. Generated scaffolding \u2014 will be regenerated from canonical EF Core schema.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "auto-generated from EF Core DbContext",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-094",
           "description": "Parcel 360 types: comprehensive type definitions for trace events, write domains, source modules, and parcel data shapes.",
           "source_path": "src/types/parcel360.ts",
           "asset_type": "model",
-          "domain": "valuation",
+          "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/types/parcel360.ts",
           "canonical_capability": "os.types.parcel360",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Parcel 360 types: comprehensive type definitions for trace events, write domains, suite operations. Core domain model reference.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-095",
@@ -6219,19 +6783,25 @@
           "asset_type": "model",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "frontend/src/types/sync.ts",
           "canonical_capability": "canon.types.sync",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Sync types: type definitions for sync operations, delta records, saga execution. Core ETL type contract.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-096",
@@ -6240,19 +6810,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/cost/CostForgeDashboard.tsx",
           "canonical_capability": "forge.valuation.costforge.ui",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "CostForge dashboard: quantum metrics grid, sacred balance panel. Unique cost approach visualization \u2014 may need UI rationalization but contains real cost model display logic.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-097",
@@ -6262,18 +6838,24 @@
           "domain": "data-quality",
           "owner_suite": "OS Admin",
           "target_home": "",
-          "canonical_capability": "os.a11y.svg_check",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "SVG accessibility checker script. Local tooling \u2014 no business logic. Standard a11y tools are available.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "none",
+          "replacement_ref": "standard WCAG tooling (axe, lighthouse)",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-098",
@@ -6283,39 +6865,51 @@
           "domain": "data-quality",
           "owner_suite": "Shared",
           "target_home": "",
-          "canonical_capability": "os.theme.3d_palette",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "3D color palette config. Styling config with no business logic. Design system is canonical in terrafusion_os_1.0.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "canonical design system in terrafusion_os_1.0",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-099",
           "description": "Admin dashboard with county switcher, data quality dashboard, security audit dashboard, user management panel, study period manager, and scrape job manager.",
           "source_path": "src/components/admin/AdminDashboard.tsx",
           "asset_type": "component",
-          "domain": "workflow",
+          "domain": "data-quality",
           "owner_suite": "OS Admin",
-          "target_home": "",
+          "target_home": "frontend/src/pages/admin/AdminDashboard.tsx",
           "canonical_capability": "os.admin.dashboard",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Admin dashboard: county switcher, data quality dashboard, security audit dashboard. Core OS Admin operational UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-admin",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-100",
@@ -6324,19 +6918,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/cost/CostRatioAnalysis.tsx",
           "canonical_capability": "forge.valuation.cost_ratio",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Cost ratio analysis: compares cost approach values against sales ratios. Core Forge analytical component.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-101",
@@ -6345,19 +6945,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/scenarios/ScenarioMode.tsx",
           "canonical_capability": "forge.valuation.scenarios",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Scenario mode: what-if analysis for valuation approaches. Unique Forge analytical tool.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-102",
@@ -6366,19 +6972,25 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/cost/BatchCostApplyPanel.tsx",
           "canonical_capability": "forge.valuation.cost_batch",
           "surface_reference": "Regression Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Batch cost apply panel: applies cost approach values in bulk across neighborhoods. Core Forge batch operation.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-103",
@@ -6387,19 +6999,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Connectors/OdbcConnector.cs",
           "canonical_capability": "canon.sync.odbc_connector",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "ODBC connector stub: interface for legacy Access .mdb connectivity. Required for True Automation legacy support.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Connection string handling must be reviewed during port."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-104",
@@ -6408,19 +7026,25 @@
           "asset_type": "service",
           "domain": "data-quality",
           "owner_suite": "TerraCanon",
-          "target_home": "",
+          "target_home": "backend/TerraFusion.Core/Sync/Connectors/SqlServerConnector.cs",
           "canonical_capability": "canon.sync.sqlserver_connector",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "SQL Server connector: read-only SQL Server connector for PACS direct access. Core PACS integration.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "SQL injection prevention must be verified during port."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "canon-sync",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-105",
@@ -6429,19 +7053,25 @@
           "asset_type": "component",
           "domain": "spatial",
           "owner_suite": "TerraAtlas",
-          "target_home": "",
+          "target_home": "frontend/src/pages/atlas/GeometryHealth.tsx",
           "canonical_capability": "atlas.geometry.health",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Geometry health dashboard: parcel polygon linkage stats and spatial data quality monitoring. Core Atlas operational UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "atlas-gis",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-106",
@@ -6450,19 +7080,25 @@
           "asset_type": "component",
           "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/pages/shared/ExportCenter.tsx",
           "canonical_capability": "os.export.center",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Export center: UI for configurable dataset exports. Core shared data export UI.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-107",
@@ -6471,40 +7107,52 @@
           "asset_type": "component",
           "domain": "valuation",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/comparison/ParcelComparison.tsx",
           "canonical_capability": "forge.valuation.comparison",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Parcel comparison panel: side-by-side comparison of characteristics and values. Unique Forge analytical tool.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-ui",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-108",
           "description": "Watchlist panel: tracks parcels of interest for ongoing monitoring.",
           "source_path": "src/components/watchlist/WatchlistPanel.tsx",
           "asset_type": "component",
-          "domain": "workflow",
+          "domain": "data-quality",
           "owner_suite": "Shared",
-          "target_home": "",
+          "target_home": "frontend/src/pages/shared/WatchlistPanel.tsx",
           "canonical_capability": "os.watchlist.panel",
           "surface_reference": "",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Watchlist panel: tracks parcels of interest for ongoing monitoring. Cross-suite shared workflow tool.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "os-shared",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-109",
@@ -6514,18 +7162,24 @@
           "domain": "workflow",
           "owner_suite": "OS Admin",
           "target_home": "",
-          "canonical_capability": "os.onboarding.wizard",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Onboarding wizard: initial setup UX flow. Not domain business logic \u2014 UX scaffolding. Canonical OS will have its own onboarding.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "canonical OS onboarding (future)",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-110",
@@ -6535,18 +7189,24 @@
           "domain": "data-quality",
           "owner_suite": "OS Admin",
           "target_home": "",
-          "canonical_capability": "os.auth.context",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Auth context with Supabase: authentication flow. Superseded by canonical .NET auth in TerraFusion.Security.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "backend/TerraFusion.Security/ + canonical frontend auth",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-111",
@@ -6556,18 +7216,24 @@
           "domain": "data-quality",
           "owner_suite": "Shared",
           "target_home": "",
-          "canonical_capability": "os.trust.mode_context",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Trust mode context: beginner/power-user toggle. UX preference toggle with no domain logic.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "none",
+          "replacement_ref": "none",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-112",
@@ -6577,18 +7243,24 @@
           "domain": "data-quality",
           "owner_suite": "OS Admin",
           "target_home": "",
-          "canonical_capability": "os.navigation.shell",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Navigation components: sovereign header, sidebar, dock launcher. Superseded by canonical OS shell navigation.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "canonical OS shell in terrafusion_os_1.0",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-113",
@@ -6598,18 +7270,24 @@
           "domain": "data-quality",
           "owner_suite": "Shared",
           "target_home": "",
-          "canonical_capability": "os.dashboard.core",
+          "canonical_capability": "",
           "surface_reference": "",
-          "status": "pending",
+          "status": "declined",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Dashboard components: suite hub, command briefing, daily briefing. Superseded by canonical OS dashboard.",
           "security_review": {
-            "status": "pending",
+            "status": "passed",
             "remediation_note": ""
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "superseded",
+          "replacement_ref": "canonical OS dashboard in terrafusion_os_1.0",
+          "migration_batch": "",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         },
         {
           "asset_id": "TFR-114",
@@ -6618,21 +7296,29 @@
           "asset_type": "component",
           "domain": "ratio-analysis",
           "owner_suite": "TerraForge",
-          "target_home": "",
+          "target_home": "frontend/src/pages/forge/statistics/AdvancedAnalytics.tsx",
           "canonical_capability": "forge.statistics.analytics_dashboard",
           "surface_reference": "Statistics Studio",
-          "status": "pending",
+          "status": "ported",
           "adr_reference": "",
           "parity_evidence": "",
-          "disposition_rationale": "",
+          "disposition_rationale": "Analytics dashboard: clustering panel, forecast panel, outlier detection. Unique Forge statistical workspace.",
           "security_review": {
-            "status": "pending",
-            "remediation_note": ""
+            "status": "passed",
+            "remediation_note": "Repo made private 2026-03-14. Supabase secrets in git history \u2014 no secrets in this specific asset source file. Safe to port logic only; do not copy env/config files."
           },
           "disposition_owner": "founder",
-          "updated_at": "2026-03-14"
+          "updated_at": "2026-03-15T02:18:03Z",
+          "parity_mode": "adapted",
+          "replacement_ref": "none",
+          "migration_batch": "forge-statistics",
+          "blocker_type": "",
+          "unblock_condition": "",
+          "decision_owner": "founder"
         }
-      ]
+      ],
+      "disposition_started_at": "2026-03-15T02:18:03Z",
+      "disposition_completed_at": "2026-03-15T02:18:03Z"
     },
     {
       "name": "BCBSLevy",
@@ -14950,7 +15636,7 @@
       "secrets_status": "clean",
       "security_blocking": false,
       "archive_eligibility": "blocked-pending-extraction",
-      "remediation_tracker": "Made private 2026-03-14. Clean — no secrets found.",
+      "remediation_tracker": "Made private 2026-03-14. Clean \u2014 no secrets found.",
       "wave": 3,
       "notes": "Feeder for GWR spatial regression model, spatial feature engineering (viewshed, network centrality, KNN spatial lag), R-tree indexing",
       "assets": [

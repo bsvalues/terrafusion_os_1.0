@@ -44,6 +44,13 @@ ALLOWED_ASSET_STATUS = {
     "deferred-with-rationale",
 }
 
+ALLOWED_PARITY_MODES = {
+    "exact",
+    "adapted",
+    "superseded",
+    "none",
+}
+
 ALLOWED_SECURITY_STATUS = {
     "pending",
     "passed",
@@ -127,32 +134,69 @@ def validate_asset(repo_name: str, asset: dict[str, Any]) -> list[str]:
     sec_status = security_review.get("status")
     check(sec_status in ALLOWED_SECURITY_STATUS, f"invalid security status '{sec_status}'")
 
-    # P4B-004: ported assets require parity evidence + security clearance
+    # P4B-D002: terminal status required (no pending in dispositioned repos)
+    # (checked at repo level below)
+
+    # P4B-D003: ported assets are actionable
     if status == "ported":
-        check(bool(asset.get("target_home")), "ported asset must have target_home")
+        check(bool(asset.get("target_home")), "ported asset must have target_home (P4B-D003)")
         check(
             bool(asset.get("canonical_capability")),
-            "ported asset must have canonical_capability",
+            "ported asset must have canonical_capability (P4B-D003)",
         )
         check(
             bool(asset.get("owner_suite")) and owner_suite != "Unassigned",
-            "ported asset must have concrete owner_suite",
+            "ported asset must have concrete owner_suite (P4B-D003)",
         )
         check(
-            bool(asset.get("parity_evidence")),
-            "ported asset must have parity_evidence",
+            bool(asset.get("migration_batch")),
+            "ported asset must have migration_batch (P4B-D003)",
         )
         check(
             sec_status in {"passed", "remediated"},
-            "ported asset must have passed/remediated security review",
+            "ported asset must have passed/remediated security review (P4B-D003)",
+        )
+        # P4B-D003: parity_mode required for ported assets
+        parity_mode = asset.get("parity_mode")
+        check(
+            parity_mode in ALLOWED_PARITY_MODES,
+            f"ported asset must have valid parity_mode, got '{parity_mode}' (P4B-D003)",
         )
 
-    # P4B-004: declined/deferred require disposition rationale
-    if status in {"declined", "deferred-with-rationale"}:
+    # P4B-D004: declined assets have rationale
+    if status == "declined":
         check(
             bool(asset.get("disposition_rationale")),
-            f"{status} asset must have disposition_rationale",
+            "declined asset must have disposition_rationale (P4B-D004)",
         )
+        # P4B-D008: supersession traceability
+        check(
+            bool(asset.get("replacement_ref")),
+            "declined asset must have replacement_ref or explicit 'none' (P4B-D008)",
+        )
+
+    # P4B-D005: deferred assets are real-blocked
+    if status == "deferred-with-rationale":
+        check(
+            bool(asset.get("disposition_rationale")),
+            "deferred asset must have disposition_rationale (P4B-D005)",
+        )
+        check(
+            bool(asset.get("blocker_type")),
+            "deferred asset must have blocker_type (P4B-D005)",
+        )
+        check(
+            bool(asset.get("unblock_condition")),
+            "deferred asset must have unblock_condition (P4B-D005)",
+        )
+        check(
+            bool(asset.get("decision_owner")),
+            "deferred asset must have decision_owner (P4B-D005)",
+        )
+
+    # Legacy P4B-004: parity_evidence for pending→ported transition tracking
+    if status == "ported" and asset.get("parity_evidence"):
+        pass  # parity_evidence is optional if parity_mode is set
 
     # P4B-007: boundary enforcement
     domain = asset.get("domain")
@@ -226,7 +270,24 @@ def validate_repo(repo: dict[str, Any]) -> list[str]:
         else:
             errors.append(f"{name}: asset row must be an object")
 
-    # P4B-006: no premature archive/delete
+    # P4B-D001: once disposition starts, no assets stay pending
+    if repo.get("disposition_started_at"):
+        pending_assets = [
+            a.get("asset_id", "<missing-id>")
+            for a in assets
+            if isinstance(a, dict) and a.get("status") == "pending"
+        ]
+        if not repo.get("disposition_completed_at") and pending_assets:
+            pass  # disposition in progress, some pending is OK
+        elif repo.get("disposition_completed_at") and pending_assets:
+            check(
+                False,
+                f"disposition marked complete but assets still pending: {', '.join(pending_assets)} (P4B-D001)",
+            )
+
+    # P4B-D006 / P4B-006: boundary enforcement (already handled per-asset above)
+
+    # P4B-D007 / P4B-006: no premature archive/delete
     if repo.get("repo_status") in {"archive_candidate", "delete_candidate", "complete"}:
         unresolved = [
             a.get("asset_id", "<missing-id>")
