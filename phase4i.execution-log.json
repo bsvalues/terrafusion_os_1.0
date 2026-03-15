@@ -27,6 +27,30 @@
       "archive_status": "executed",
       "executed_at": "2026-03-15",
       "blockers_for_next_wave": []
+    },
+    {
+      "archive_wave": 2,
+      "source_repo": "TerraFusionPilt",
+      "total_assets": 15,
+      "activated_assets": 15,
+      "deduplicated_assets": 0,
+      "snapshot_tag": "archive/terrafusionpilt-pre-decommission",
+      "rollback_tag": "rollback/terrafusionpilt",
+      "rollback_path": "git checkout rollback/terrafusionpilt -- . (restores all TerraFusionPilt source paths from tagged snapshot)",
+      "decommission_smoke": "pass",
+      "remaining_source_routes": 0,
+      "remaining_source_imports": 0,
+      "remaining_source_controllers": 0,
+      "smoke_details": {
+        "source_repo_references": 0,
+        "source_route_residuals": 0,
+        "missing_destinations": 0,
+        "controllers_checked": 0,
+        "services_checked": 0
+      },
+      "archive_status": "executed",
+      "executed_at": "2026-03-15",
+      "blockers_for_next_wave": []
     }
   ]
 }

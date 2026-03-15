@@ -28,8 +28,9 @@
       "snapshot_tag": "archive/terrafusionpilt-pre-decommission",
       "rollback_tag": "rollback/terrafusionpilt",
       "archive_wave": 2,
-      "archive_status": "planned",
-      "archive_eligibility": "eligible"
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
     },
     {
       "source_repo": "TerraMiner",
