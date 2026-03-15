@@ -53,14 +53,9 @@ export const MODULE_ALIASES: Record<string, string> = {
   shortcuts: 'shortcuts-help',
 
   // Application Constellation aliases (Gen2 catalog)
-  // ARCHIVED: income-valuation absorbed into Forge → Income sub-tab (Phase 3)
-  income: 'income-valuation',
   regression: 'regression-studio',
   stats: 'statistics-studio',
   statistics: 'statistics-studio',
-  // ARCHIVED: comparable-sales absorbed into Forge → Sales sub-tab (Phase 3)
-  comps: 'comparable-sales',
-  comparables: 'comparable-sales',
   permit: 'terra-permit',
   pilt: 'terra-pilt',
   sync: 'terra-sync',
@@ -142,10 +137,10 @@ export const MODULE_REGISTRY = new Set<string>([
   'axiom-fs',
   'sovereign-dashboard', // Phase C3: Sovereign Dashboard
   // Application Constellation (Gen2 catalog — truthful placeholders)
-  'income-valuation',
+  // NOTE: income-valuation and comparable-sales REMOVED (Phase 5G) — archived in Phase 3,
+  // absorbed into Workbench → Forge → Income/Sales sub-tabs
   'regression-studio',
   'statistics-studio',
-  'comparable-sales',
   'vei',
   'property-tax-ai',
   'pacs-bridge',
@@ -272,12 +267,7 @@ const TerraLevyDashboard = lazy(
   () => import('../applications/terra-levy/TerraLevyDashboard')
 );
 
-// Comparable Sales — adapter host rehosted from legacy comp workflow
-const ComparableSalesPanelLazy = lazy(() =>
-  import('../components/workbench/ComparableSalesPanel').then((m) => ({
-    default: m.ComparableSalesPanel,
-  }))
-);
+// NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
 // ============================================================================
 // Property Workbench Window (Tier-0 OS Surface — Phase A)
@@ -633,21 +623,6 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     // APPLICATION CONSTELLATION (Gen2 truthful catalog)
     // ========================================================================
 
-    // ARCHIVED (Phase 3): Absorbed into Forge → Income sub-tab via IncomeValuationPanel + incomeValuationService.ts
-    case 'income-valuation':
-      return (
-        <PlaceholderModule
-          name='Income Valuation (Archived)'
-          icon='💰'
-          description='ARCHIVED: This capability has been absorbed into Property Workbench → Forge → Income sub-tab. Use the Workbench for income valuation.'
-          status='placeholder'
-          legacySource='BSIncomeValuation → IncomeValuationPanel'
-          domain='assessment'
-          scope='parcel'
-          launchSurface='Workbench → Forge → Income'
-        />
-      );
-
     case 'regression-studio':
       return (
         <PlaceholderModule
@@ -673,23 +648,6 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           domain='analytics'
           scope='county-wide'
           launchSurface='Standalone window'
-        />
-      );
-
-    // ARCHIVED (Phase 3): Absorbed into Forge → Sales sub-tab via ComparableSalesPanel + comparableSalesService.ts
-    // The ComparableSalesPanel component still exists and is used inside the Forge Sales sub-tab.
-    // This standalone module surface is no longer the canonical launch point.
-    case 'comparable-sales':
-      return (
-        <PlaceholderModule
-          name='Comparable Sales (Archived)'
-          icon='🏘️'
-          description='ARCHIVED: This capability has been absorbed into Property Workbench → Forge → Sales sub-tab. Use the Workbench for comparable sales analysis.'
-          status='placeholder'
-          legacySource='GeospatialAnalyzerBS → ComparableSalesPanel'
-          domain='assessment'
-          scope='parcel'
-          launchSurface='Workbench → Forge → Sales'
         />
       );
 
