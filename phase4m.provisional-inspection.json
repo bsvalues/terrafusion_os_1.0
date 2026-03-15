@@ -1,0 +1,123 @@
+{
+  "phase": "4M",
+  "title": "Provisional/Manual Inspection — 5 Repos",
+  "created": "2026-03-15",
+  "objective": "Inspect 5 repos flagged 'require manual inspection' and decide if they have unique capabilities",
+  "repos": [
+    {
+      "name": "TerraFusion-Valuator-Pro-Studio",
+      "visibility": "public",
+      "is_archived": false,
+      "is_empty": false,
+      "stack": "Next.js + Rust crates (valuator-core, market-analyzer, risk-assessor, valuation-service)",
+      "purpose": "Standalone property valuation demo with Rust core engine and 3-agent swarm pipeline (Valuation -> Market -> Risk)",
+      "unique_value": "LOW",
+      "unique_capabilities": [
+        "Rust valuation core (skeleton, not production-grade)",
+        "Comparable sales generator with GLA/bedroom/bathroom adjustments (simplistic formula)",
+        "Swarm pipeline UI components (dispatch-center, pipeline-history, network-topology)"
+      ],
+      "canonical_coverage": "All concepts (AVM, comps, risk scoring) already in TerraFusion.AI project. Rust code is trivial stubs.",
+      "disposition": "showcase",
+      "disposition_rationale": "Prototype demo. Rust crate is a skeleton with simplistic formulas. All domain concepts exist in canonical .NET stack. Keep as reference, archive.",
+      "action": "archive"
+    },
+    {
+      "name": "WashingtonForge",
+      "visibility": "public",
+      "is_archived": false,
+      "is_empty": false,
+      "stack": "Next.js 16 + React 19 + TypeScript + MapLibre GL + pnpm + Vitest",
+      "purpose": "Next-generation frontend prototype — full assessor workbench UI with GIS cockpit, AI pilot assistant, glass morphism design system",
+      "unique_value": "HIGH",
+      "unique_capabilities": [
+        "TerraPilot tool registry with RBAC + risk policy engine (mode locking, claims, risk tiering, supervisor approval)",
+        "Glass morphism material design system (glass-button, glass-card, matte-card, premium-tooltip)",
+        "GIS cockpit with MapLibre GL, filter panels, selection management",
+        "Data ingestion pipeline UI (upload, mapping, validation, preview, publish)",
+        "Comprehensive typed API client matching .NET backend domain model",
+        "Ratio study components (run-study-modal, charts, results)",
+        "Design tokens (styles/tokens.css)"
+      ],
+      "canonical_coverage": "Canonical frontend is React 18/Vite with different UI approach. WashingtonForge has the glass morphism design system the user wants.",
+      "disposition": "feeder",
+      "disposition_rationale": "Contains the most mature frontend design work. TerraPilot RBAC framework and glass morphism components should be ported to canonical frontend during Shell Phase 5. V0_SCOPE.md explicitly states this is a UI/UX spike.",
+      "action": "keep-as-reference-until-phase5",
+      "extraction_target": "Phase 5 (Shell Integrity Recovery) — port design system and pilot framework"
+    },
+    {
+      "name": "MLS_to_TOTAL",
+      "visibility": "private",
+      "is_archived": false,
+      "is_empty": true,
+      "stack": "EMPTY REPOSITORY — no commits",
+      "purpose": "Placeholder for MLS-to-TOTAL data bridge (never implemented)",
+      "unique_value": "NONE",
+      "unique_capabilities": [],
+      "canonical_coverage": "N/A — empty repo",
+      "disposition": "delete",
+      "disposition_rationale": "Empty repository with no commits. No code, no value.",
+      "action": "delete"
+    },
+    {
+      "name": "TaxI_AI",
+      "visibility": "private",
+      "is_archived": false,
+      "is_empty": false,
+      "stack": "Express/Node.js + React/Vite + Drizzle ORM + PostgreSQL + multi-LLM (OpenAI, Anthropic, Perplexity)",
+      "purpose": "Most feature-complete Benton County assessor prototype — working multi-agent system, PACS data import, property stories, market prediction, data lineage",
+      "unique_value": "HIGH",
+      "unique_capabilities": [
+        "FTP data processor for PACS data (CSV/fixed-width/XML/JSON)",
+        "Data lineage tracker with field-level provenance",
+        "Property story generator with multi-LLM fallback",
+        "Enhanced market prediction model (year-over-year forecasting with confidence)",
+        "Washington state validation rules (wa-validation-rules.ts)",
+        "Appeals management service",
+        "Voice search for properties",
+        "Extension/plugin framework with working registry",
+        "ArcGIS integration service",
+        "Property insight sharing (QR codes + PDFs)",
+        "Hierarchical agent command structure",
+        "Assessor workflow engine"
+      ],
+      "canonical_coverage": "Canonical .NET backend has service shells for these domains but TaxI_AI has richer business logic implementations. The domain-specific rules (WA validation, FTP PACS import, data lineage) would be valuable ports.",
+      "disposition": "feeder",
+      "disposition_rationale": "Richest domain-specific prototype. Business logic for FTP/PACS import, data lineage, WA validation rules, appeals, and market prediction should be ported to .NET backend when those domain modules mature. Keep as reference.",
+      "action": "keep-as-reference-until-domain-modules-mature",
+      "extraction_target": "Future phases — port domain services to .NET backend as each module matures"
+    },
+    {
+      "name": "terra-magic-wand",
+      "visibility": "private",
+      "is_archived": false,
+      "is_empty": false,
+      "stack": "React + Vite + TypeScript + Supabase Edge Functions + Tailwind",
+      "purpose": "Marketing/demo landing page with basic tax calculator, GPT chat via Supabase, and map visualization",
+      "unique_value": "LOW",
+      "unique_capabilities": [
+        "Supabase Edge Function for OpenAI streaming chat",
+        "Basic land value tax calculator (value * rate)",
+        "GPT Suite scaffolding (chat, document gen, knowledge base, session manager)"
+      ],
+      "canonical_coverage": "All concepts trivially implemented. Canonical stack has better AI services, tax calculation, and mapping.",
+      "disposition": "showcase",
+      "disposition_rationale": "Marketing demo site with trivial implementations. Nothing unique that isn't better-covered by canonical stack.",
+      "action": "archive"
+    }
+  ],
+  "summary": {
+    "total_repos": 5,
+    "high_value": 2,
+    "low_value": 2,
+    "empty": 1,
+    "dispositions": {
+      "feeder_keep_as_reference": 2,
+      "showcase_archive": 2,
+      "empty_delete": 1
+    },
+    "key_finding": "WashingtonForge contains the glass morphism design system and TerraPilot RBAC framework needed for Phase 5 shell work. TaxI_AI contains the richest domain-specific business logic (WA validation rules, PACS FTP import, data lineage, appeals). Both should be kept as reference until their capabilities are ported to the canonical stack."
+  },
+  "phase_status": "complete",
+  "completed_at": "2026-03-15"
+}
