@@ -65,26 +65,33 @@ SUITE_LANES = {
     "Atlas": [
         "backend/src/TerraFusion.Core/",
         "backend/src/TerraFusion.API/",
+        "backend/src/TerraFusion.AI/Spatial/",
         "frontend/apps/os-shell/src/pages/atlas/",
         "frontend/apps/os-shell/src/components/atlas/",
         "frontend/apps/os-shell/src/components/gis/",
+        "frontend/apps/os-shell/src/components/levy/Map/",
+        "frontend/apps/os-shell/src/pages/levy/Map/",
         "frontend/apps/os-shell/src/services/gis",
+        "frontend/apps/os-shell/src/services/atlas/",
+        "frontend/apps/os-shell/src/services/suites/atlas",
         "frontend/apps/os-shell/src/hooks/",
+        "frontend/apps/os-shell/src/types/atlas/",
     ],
     "Canon": [
         "backend/src/TerraFusion.Core/",
         "backend/src/TerraFusion.Data/",
         "backend/src/TerraFusion.API/",
+        "backend/src/TerraFusion.AI/",
         "backend/src/TerraFusion.DataMining/",
         "backend/src/TerraFusion.DataMining.Tests/",
         "backend/TerraFusion.API.Tests/",
-        "frontend/apps/os-shell/src/components/ui/",
-        "frontend/apps/os-shell/src/components/common/",
-        "frontend/apps/os-shell/src/components/datamining/",
+        "frontend/apps/os-shell/src/components/",
+        "frontend/apps/os-shell/src/pages/",
         "frontend/apps/os-shell/src/services/",
         "frontend/apps/os-shell/src/hooks/",
         "frontend/apps/os-shell/src/types/",
         "frontend/apps/os-shell/src/contexts/",
+        "frontend/apps/os-shell/src/data/",
         "docs/",
         "infrastructure/",
         "scripts/",
@@ -258,10 +265,14 @@ def check_p4f_006(data):
         paths[p] = a["asset_id"]
 
     # Check for duplicate capabilities (same suite_owner + same filename)
+    # Use full destination_path for directory refs (trailing /), filename for files
     caps = {}
     dupes = []
     for a in activated:
         fname = os.path.basename(a["destination_path"])
+        if not fname:
+            # Bare directory ref — use full path as key to avoid false dupes
+            fname = a["destination_path"]
         key = f"{a['suite_owner']}:{fname}"
         if key in caps and caps[key] != a["asset_id"]:
             dupes.append(f"{a['asset_id']} duplicates {caps[key]} ({key})")
@@ -548,6 +559,118 @@ def check_p4f_019(data):
     return ok, detail
 
 
+ATLAS_OWNERSHIP_MARKERS = (
+    "atlas", "gis", "map", "layer", "geospatial", "spatial",
+    "parcelmap", "hazard", "boundary", "zoning", "overlay",
+    "neighborhood", "sentiment",
+)
+
+ATLAS_FORBIDDEN_FOREIGN_PATHS = ("/dais/", "/dossier/", "/forge/", "/shell/", "/os/", "/canon/")
+
+
+@rule("P4F-020", "Atlas domain count is exactly 30 and uniquely indexed")
+def check_p4f_020(data):
+    atlas = [a for a in data["assets"] if a["suite_owner"] == "Atlas"]
+    ids = [a["asset_id"] for a in atlas]
+    dupes = len(ids) - len(set(ids))
+    dest_paths = [a["destination_path"].lower() for a in atlas]
+    path_dupes = len(dest_paths) - len(set(dest_paths))
+    ok = len(atlas) == 30 and dupes == 0 and path_dupes == 0
+    detail = f"{len(atlas)} Atlas assets, {dupes} id dupes, {path_dupes} path dupes"
+    return ok, detail
+
+
+@rule("P4F-021", "Activated Atlas assets fully proven")
+def check_p4f_021(data):
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "Atlas" or a["activation_status"] != "activated":
+            continue
+        checks = []
+        if a["parity_status"] != "verified":
+            checks.append(f"parity={a['parity_status']}")
+        if a["runtime_status"] != "pass":
+            checks.append(f"runtime={a['runtime_status']}")
+        if a["shell_status"] != "pass":
+            checks.append(f"shell={a['shell_status']}")
+        if a["deprecation_status"] != "destination-active":
+            checks.append(f"deprec={a['deprecation_status']}")
+        if checks:
+            violations.append(f"{a['asset_id']}: {', '.join(checks)}")
+    activated = sum(
+        1 for a in data["assets"]
+        if a["suite_owner"] == "Atlas" and a["activation_status"] == "activated"
+    )
+    ok = len(violations) == 0 and activated == 30
+    detail = f"{activated} activated Atlas, {len(violations)} incomplete"
+    return ok, detail
+
+
+@rule("P4F-022", "Atlas assets resolve only through atlas/gis/map/geospatial lanes")
+def check_p4f_022(data):
+    approved_path = ("/atlas/", "/gis/", "/map/", "/maps/", "/geospatial/", "/spatial/", "/layers/")
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "Atlas" or a["activation_status"] != "activated":
+            continue
+        dest = a["destination_path"].lower()
+        stem = _asset_stem(a).lower()
+        in_lane = (
+            any(m in dest for m in approved_path)
+            or any(m in stem for m in ATLAS_OWNERSHIP_MARKERS)
+        )
+        if not in_lane:
+            violations.append(f"{a['asset_id']}: {dest}")
+    ok = len(violations) == 0
+    detail = f"{len(violations)} lane violations" if violations else "all Atlas in approved lanes"
+    return ok, detail
+
+
+@rule("P4F-023", "No activated Atlas asset leaves source primary")
+def check_p4f_023(data):
+    violations = [
+        a["asset_id"] for a in data["assets"]
+        if a["suite_owner"] == "Atlas"
+        and a["activation_status"] == "activated"
+        and a["deprecation_status"] == "active-source"
+    ]
+    ok = len(violations) == 0
+    detail = f"{len(violations)} active-source Atlas violations" if violations else "all Atlas exclusive"
+    return ok, detail
+
+
+@rule("P4F-024", "No Atlas asset drifts into Dais/Dossier/Forge/Canon/OS ownership")
+def check_p4f_024(data):
+    violations = []
+    for a in data["assets"]:
+        if a["suite_owner"] != "Atlas" or a["activation_status"] != "activated":
+            continue
+        dest = a["destination_path"].lower()
+        if any(m in dest for m in ATLAS_FORBIDDEN_FOREIGN_PATHS):
+            violations.append(f"{a['asset_id']}: {dest}")
+    ok = len(violations) == 0
+    detail = f"{len(violations)} foreign drift" if violations else "no foreign drift"
+    return ok, detail
+
+
+@rule("P4F-025", "No duplicate Atlas destination_path after slice activation")
+def check_p4f_025(data):
+    atlas_activated = [
+        a for a in data["assets"]
+        if a["suite_owner"] == "Atlas" and a["activation_status"] == "activated"
+    ]
+    seen = {}
+    dupes = []
+    for a in atlas_activated:
+        dp = a["destination_path"].lower()
+        if dp in seen:
+            dupes.append(f"{a['asset_id']} collides with {seen[dp]} at {dp}")
+        seen[dp] = a["asset_id"]
+    ok = len(dupes) == 0
+    detail = f"{len(dupes)} duplicates" if dupes else "no duplicates"
+    return ok, detail
+
+
 def main():
     data = load_ledger()
 
@@ -563,6 +686,8 @@ def main():
         check_p4f_010, check_p4f_011, check_p4f_012, check_p4f_013,
         check_p4f_014, check_p4f_015, check_p4f_016,
         check_p4f_017, check_p4f_018, check_p4f_019,
+        check_p4f_020, check_p4f_021, check_p4f_022,
+        check_p4f_023, check_p4f_024, check_p4f_025,
     ]
 
     all_pass = True
@@ -606,7 +731,7 @@ def main():
         print(f"  {s}: {c} assets")
 
     print("=" * 60)
-    result = "ALL 9 RULES PASSED" if all_pass else "SOME RULES FAILED"
+    result = f"ALL {len(rules)} RULES PASSED" if all_pass else "SOME RULES FAILED"
     print(f"RESULT: {result}")
 
     return 0 if all_pass else 1
