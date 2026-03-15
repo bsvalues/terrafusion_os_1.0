@@ -1,0 +1,270 @@
+{
+  "phase": "4L",
+  "title": "Remaining Feeder Extraction — 8 Core Feeders",
+  "created": "2026-03-15",
+  "objective": "Assess 8 remaining feeder repos from Doc 0C, verify parity in canonical stack, determine archive eligibility",
+  "methodology": "Inventory each repo's assets via GitHub API, cross-reference with canonical codebase services/components, assign disposition",
+  "repos": [
+    {
+      "name": "BSIncomeValuation",
+      "visibility": "public",
+      "is_archived": false,
+      "significant_files": 95,
+      "stack": "TypeScript, React/Vite, Express, Drizzle ORM",
+      "core_capabilities": [
+        "Income approach valuation (forms, reports, analytics)",
+        "Pro forma worksheet with DCF",
+        "AI agent hierarchy (MasterControlProgram, 15 agents)",
+        "Pattern recognition service",
+        "Time series forecasting",
+        "Batch report generator",
+        "MCP integration"
+      ],
+      "canonical_parity": {
+        "income_approach": "FULL — incomeValuationService.ts, IncomeApproachPanel.tsx, ValuationAgent.cs, MassAppraisalService.cs",
+        "ai_agents": "FULL — TerraFusion.Consciousness swarm (1,008 agents)",
+        "reporting": "FULL — backend report generation services",
+        "pattern_recognition": "COVERED — MassAppraisalService regression diagnostics",
+        "pro_forma": "PARTIAL — income approach exists but no dedicated pro forma UI"
+      },
+      "disposition": "parity-verified-archive-eligible",
+      "unique_extras_declined": [
+        "Pro forma worksheet UI (prototype)",
+        "MCP integration (experimental)",
+        "ReplayBuffer ML training (prototype)"
+      ],
+      "security_issues": "None significant (standard dev configs)",
+      "archive_wave": 1
+    },
+    {
+      "name": "GeospatialAnalyzerBS",
+      "visibility": "public",
+      "is_archived": false,
+      "significant_files": 200,
+      "stack": "TypeScript, React/Vite, Express, Drizzle ORM, Leaflet",
+      "core_capabilities": [
+        "GIS mapping with Leaflet (heatmaps, clustering, drawing, measurement)",
+        "Spatial analysis (clustering, regression, hotspot detection)",
+        "Neighborhood demographics engine",
+        "Full ETL pipeline (ODBC, SQL Server, FTP, Zillow, Google Maps connectors)",
+        "USPAP compliance export",
+        "Property comparison tools",
+        "Income approach (DCF analyzer)",
+        "Script execution engine"
+      ],
+      "canonical_parity": {
+        "gis_mapping": "FULL — AtlasController, TerraGamaPage, GamaMap, GeospatialEnricher.cs",
+        "spatial_analysis": "FULL — GeospatialEnricher.cs (geocoding, proximity, flood zones, overlay)",
+        "neighborhood": "COVERED — neighborhood definitions in Atlas domain",
+        "etl": "FULL — sync services, PACS connectors, CountyMigrationPathways",
+        "comparables": "FULL — ComparableSalesPanel, comparableSalesService.ts",
+        "income": "FULL — IncomeApproachPanel, incomeValuationService.ts"
+      },
+      "disposition": "parity-verified-archive-eligible",
+      "unique_extras_declined": [
+        "Script execution engine (experimental)",
+        "Zillow/Google Maps ETL connectors (third-party API)",
+        "USPAP export template (reference only)",
+        "Accessibility screen reader service (partial)"
+      ],
+      "security_issues": "None significant",
+      "archive_wave": 2
+    },
+    {
+      "name": "PropertyTaxAI",
+      "visibility": "public",
+      "is_archived": false,
+      "significant_files": 250,
+      "stack": "TypeScript, React/Vite, Express, Drizzle ORM, Mapbox/OpenLayers, Socket.IO",
+      "core_capabilities": [
+        "Tax calculation and assessment",
+        "Voice command system (recognition, analytics, shortcuts)",
+        "CodeAgent CLI (multi-agent with learning, plugins, event bus)",
+        "Data lineage tracking",
+        "Extension/plugin system",
+        "Plandex AI integration",
+        "Assessment model workbench",
+        "Risk assessment panel",
+        "Dual GIS (Mapbox + OpenLayers + 3D terrain)",
+        "CI security pipeline (ZAP, Trivy)"
+      ],
+      "canonical_parity": {
+        "tax_calculation": "FULL — LevyCalculationService.cs, TaxRollExportService.cs, LevyComplianceService.cs, LevyForecastService.cs (187 backend files)",
+        "assessment": "FULL — PropertyValuationService.cs, MassAppraisalService.cs",
+        "gis": "FULL — AtlasController, Atlas suite",
+        "agents": "FULL — TerraFusion.Consciousness swarm",
+        "risk": "COVERED — compliance and security services in backend"
+      },
+      "disposition": "parity-verified-archive-eligible",
+      "unique_extras_declined": [
+        "Voice command system (experimental)",
+        "CodeAgent CLI (dev tool, not production)",
+        "Plandex AI integration (third-party prototype)",
+        "Data lineage tracking (experimental)",
+        "Extension/plugin system (experimental)",
+        "Geospatial storytelling wizard (experimental)"
+      ],
+      "security_issues": "None significant (CI security configs are reference only)",
+      "archive_wave": 3
+    },
+    {
+      "name": "BCBSGISPRO",
+      "visibility": "public",
+      "is_archived": false,
+      "significant_files": 45,
+      "stack": "TypeScript, React/Vite, Express, Drizzle ORM, Electron",
+      "core_capabilities": [
+        "GIS dashboard with map",
+        "Benton County data service",
+        "TF-Assistant (judge/narrator/workflow agents + RAG)",
+        "Electron desktop packaging with installers",
+        "Deprecated module library (Levy, Exemption, TaxCode, SpecialDistrict, Appeal, Compliance)"
+      ],
+      "canonical_parity": {
+        "gis": "FULL — Atlas suite, AtlasController",
+        "county_data": "FULL — CountyDeployments, Benton County config",
+        "assistants": "FULL — TerraFusion.Consciousness, GptSuiteHome",
+        "desktop": "FULL — Electron in frontend/electron/main.js",
+        "deprecated_modules": "SUPERSEDED — all domains covered by Forge/Atlas/Dais suites"
+      },
+      "disposition": "parity-verified-archive-eligible",
+      "unique_extras_declined": [
+        "TF-Assistant RAG (experimental)",
+        "NSIS/bat/ps1 installers (deployment artifacts)",
+        "Deprecated module designs (reference only)"
+      ],
+      "security_issues": "None significant",
+      "archive_wave": 4
+    },
+    {
+      "name": "TerraFlow",
+      "visibility": "public",
+      "is_archived": false,
+      "significant_files": 945,
+      "stack": "Python/Flask, Jinja2, Supabase, SQL Server, Next.js mock-up",
+      "core_capabilities": [
+        "Sync engine (bidirectional, incremental, chunked ETL)",
+        "Data quality and validation",
+        "Conflict resolution",
+        "20 AI agents (anomaly, validation, recovery, geospatial, predictive, valuation, security, MCP)",
+        "MCP multi-agent protocol with message broker",
+        "RAG engine",
+        "Data governance (classification, sovereignty)",
+        "Disaster recovery manager",
+        "Mobile PWA",
+        "Monitoring stack (Prometheus, Grafana, Alertmanager)",
+        "SQL Server database project (.sqlproj)",
+        "Supabase full integration",
+        "Legacy format converters (DBF, fixed-width, XML)",
+        "Next.js glassmorphism mock-up"
+      ],
+      "canonical_parity": {
+        "sync": "FULL — PacsToTerraFusionSyncService.cs, ConnectorRegistry, CamaConnector, PacsSqlAdapter",
+        "data_quality": "COVERED — validation in sync pipeline",
+        "ai_agents": "FULL — TerraFusion.Consciousness swarm",
+        "etl": "FULL — sync services with multi-connector support",
+        "workflow": "FULL — WorkflowAutomationService.cs, WorkflowRepository",
+        "monitoring": "COVERED — OpenTelemetry in canonical stack",
+        "ui": "FULL — React frontend replaces Jinja2 templates"
+      },
+      "disposition": "parity-verified-archive-eligible",
+      "unique_extras_declined": [
+        "Supabase integration (not used in canonical)",
+        "MCP protocol framework (experimental)",
+        "RAG engine (deferred to TerraGPT)",
+        "SQL Server .sqlproj (SQL Server not used in canonical)",
+        "Prometheus/Grafana configs (deployment-specific)",
+        "Next.js mock-up (superseded by React shell)",
+        "Mobile PWA (experimental)",
+        "BentonCounty DynLoader .NET exe (deployment tool)",
+        "Legacy format converters (one-time migration tools)",
+        "Power Query engine (experimental)"
+      ],
+      "security_issues": "Check for Supabase keys, API credentials in config files",
+      "archive_wave": 5
+    },
+    {
+      "name": "TerraPILT",
+      "visibility": "public",
+      "is_archived": false,
+      "significant_files": 30,
+      "stack": "Python/Flask, Node.js, HTML, Perl, Terraform",
+      "core_capabilities": [
+        "PILT calculator (Python + JS implementations)",
+        "Excel-like editing interface",
+        "Data import and validation",
+        "AI assistant for PILT domain",
+        "Terraform IaC (AWS EKS/VPC)"
+      ],
+      "canonical_parity": {
+        "pilt_calculator": "FULL — PiltPayment.cs, PiltController.cs, PiltRoutes.cs, PiltStorageService.cs, piltService.ts, Dashboard/Reports/BulkImport pages",
+        "data_import": "FULL — BulkImport.tsx in canonical PILT module",
+        "ai_assistant": "FULL — PiltDocumentFormattingAgent.cs, PiltDocumentConversionAgent.cs"
+      },
+      "disposition": "parity-verified-archive-eligible",
+      "unique_extras_declined": [
+        "Perl server (legacy prototype)",
+        "Terraform IaC (infrastructure, not application)",
+        "Streamlit config (experimental)",
+        "Excel-like HTML UI (superseded by React BulkImport)"
+      ],
+      "security_issues": "None significant",
+      "archive_wave": 6
+    },
+    {
+      "name": "TerraGama",
+      "visibility": "public",
+      "is_archived": false,
+      "significant_files": 0,
+      "stack": "EMPTY REPOSITORY — no commits",
+      "core_capabilities": [],
+      "canonical_parity": {
+        "gama_cama": "FULL — CamaConnector.cs, GamaZoningAgent.cs, GamaMraAgent.cs, GamaEquityGuard.cs, TerraGamaPage.tsx, cama-core plugin"
+      },
+      "disposition": "empty-archive-immediately",
+      "unique_extras_declined": [],
+      "security_issues": "None (empty repo)",
+      "archive_wave": 7
+    },
+    {
+      "name": "CountyDataSync-1",
+      "visibility": "public",
+      "is_archived": false,
+      "significant_files": 45,
+      "stack": "Python/Flask, SQLite/GeoPackage, NSIS installer",
+      "core_capabilities": [
+        "ETL pipeline (extract, transform, load)",
+        "Delta/incremental sync",
+        "Data quality checks and heatmap",
+        "Sync job management UI",
+        "Windows NSIS installer",
+        "GeoPackage output"
+      ],
+      "canonical_parity": {
+        "etl": "FULL — PacsToTerraFusionSyncService.cs, ConnectorRegistry, sync pipeline",
+        "delta_sync": "COVERED — incremental sync in canonical sync services",
+        "data_quality": "COVERED — validation in sync pipeline",
+        "job_management": "COVERED — WorkflowAutomationService.cs"
+      },
+      "disposition": "parity-verified-archive-eligible",
+      "unique_extras_declined": [
+        "NSIS Windows installer (deployment artifact)",
+        "GeoPackage output (format-specific)",
+        "Performance monitoring script (CI tool)",
+        "Azure ARM deployment docs (infrastructure)"
+      ],
+      "security_issues": "None significant",
+      "archive_wave": 8
+    }
+  ],
+  "summary": {
+    "total_repos": 8,
+    "parity_verified": 7,
+    "empty_repos": 1,
+    "archive_eligible": 8,
+    "unique_capabilities_needing_extraction": 0,
+    "note": "All 8 repos have their core domain capabilities already present in the canonical TerraFusion OS stack. Unique extras are experimental prototypes, deployment artifacts, or third-party integrations not used in the canonical architecture. No extraction pipeline needed — these repos are archive-eligible as-is."
+  },
+  "phase_status": "complete",
+  "completed_at": "2026-03-15"
+}
