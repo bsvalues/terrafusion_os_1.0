@@ -81,6 +81,33 @@
       "archive_status": "executed",
       "executed_at": "2026-03-15",
       "blockers_for_next_wave": []
+    },
+    {
+      "archive_wave": 4,
+      "source_repo": "terra-forge-rebuild",
+      "total_assets": 101,
+      "activated_assets": 101,
+      "deduplicated_assets": 0,
+      "snapshot_tag": "archive/terra-forge-rebuild-pre-decommission",
+      "rollback_tag": "rollback/terra-forge-rebuild",
+      "rollback_path": "git checkout rollback/terra-forge-rebuild -- . (restores all terra-forge-rebuild source paths)",
+      "decommission_smoke": "pass",
+      "remaining_source_routes": 0,
+      "remaining_source_imports": 0,
+      "remaining_source_controllers": 0,
+      "forge_canon_source_consumers": 0,
+      "smoke_details": {
+        "source_repo_references": 0,
+        "blocking_source_imports": 0,
+        "router_barrel_alias_sneaky": 0,
+        "project_reference_issues": 0,
+        "missing_destinations": 6,
+        "missing_destination_detail": "4 backend test files at wrong ledger path (exist at src/ path), 2 frontend test stubs never ported",
+        "note": "Zero source repo name references in entire codebase. 6 missing destinations are test files with path recording issues, not consumer gaps."
+      },
+      "archive_status": "executed",
+      "executed_at": "2026-03-15",
+      "blockers_for_next_wave": []
     }
   ]
 }

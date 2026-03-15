@@ -277,22 +277,101 @@ def test_wave3_shared_infra_consumers_resolve_to_destination(
     assert wave3.get("shared_infra_source_consumers", 0) == 0
 
 
+# ── Wave 4: terra-forge-rebuild ──────────────────────────────────
+
+
+def test_wave4_repo_is_terra_forge_rebuild(executed_waves: List[Dict[str, Any]]) -> None:
+    assert len(executed_waves) >= 4
+    assert executed_waves[3]["source_repo"] == "terra-forge-rebuild"
+    assert executed_waves[3]["archive_wave"] == 4
+
+
+def test_wave4_snapshot_tag_exists(executed_waves: List[Dict[str, Any]]) -> None:
+    wave4 = executed_waves[3]
+    assert wave4.get("snapshot_tag"), "snapshot_tag must be non-empty"
+    assert "terra-forge-rebuild" in wave4["snapshot_tag"]
+
+
+def test_wave4_rollback_tag_exists(executed_waves: List[Dict[str, Any]]) -> None:
+    wave4 = executed_waves[3]
+    assert wave4.get("rollback_tag"), "rollback_tag must be non-empty"
+    assert "terra-forge-rebuild" in wave4["rollback_tag"]
+
+
+def test_wave4_decommission_smoke_passed(executed_waves: List[Dict[str, Any]]) -> None:
+    wave4 = executed_waves[3]
+    assert wave4["decommission_smoke"] == "pass"
+
+
+def test_wave4_no_source_routes_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave4 = executed_waves[3]
+    assert wave4["remaining_source_routes"] == 0
+
+
+def test_wave4_no_source_imports_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave4 = executed_waves[3]
+    assert wave4["remaining_source_imports"] == 0
+
+
+def test_wave4_no_source_controllers_remain(executed_waves: List[Dict[str, Any]]) -> None:
+    wave4 = executed_waves[3]
+    assert wave4["remaining_source_controllers"] == 0
+
+
+def test_wave4_archive_status_is_executed(executed_waves: List[Dict[str, Any]]) -> None:
+    wave4 = executed_waves[3]
+    assert wave4["archive_status"] == "executed"
+
+
+def test_wave4_rollback_path_documented(executed_waves: List[Dict[str, Any]]) -> None:
+    wave4 = executed_waves[3]
+    assert wave4.get("rollback_path"), "rollback_path must be documented"
+
+
+def test_wave4_asset_count_matches_plan(
+    executed_waves: List[Dict[str, Any]],
+    archive_repos: List[Dict[str, Any]],
+) -> None:
+    wave4 = executed_waves[3]
+    plan_repo = next(r for r in archive_repos if r["source_repo"] == "terra-forge-rebuild")
+    assert wave4["total_assets"] == plan_repo["total_assets"] == 101
+
+
+def test_wave4_all_retirement_assets_accounted(
+    executed_waves: List[Dict[str, Any]],
+    retirement_assets: List[Dict[str, Any]],
+) -> None:
+    wave4 = executed_waves[3]
+    tfr_retirement = [a for a in retirement_assets if a["source_repo"] == "terra-forge-rebuild"]
+    assert wave4["total_assets"] == len(tfr_retirement)
+    assert wave4["activated_assets"] + wave4["deduplicated_assets"] == wave4["total_assets"]
+
+
+def test_wave4_forge_canon_consumers_resolve_to_destination(
+    executed_waves: List[Dict[str, Any]],
+) -> None:
+    """terra-forge-rebuild is a direct rebuild feeder for Forge/Canon.
+    Verify no rebuilt Forge/Canon consumer still resolves to source paths."""
+    wave4 = executed_waves[3]
+    assert wave4.get("forge_canon_source_consumers", 0) == 0
+
+
 # ── Cross-wave integrity ────────────────────────────────────────
 
 
-def test_archive_plan_waves_1_2_remain_executed(archive_repos: List[Dict[str, Any]]) -> None:
-    for name in ["BCBSLevy", "TerraFusionPilt"]:
+def test_archive_plan_waves_1_3_remain_executed(archive_repos: List[Dict[str, Any]]) -> None:
+    for name in ["BCBSLevy", "TerraFusionPilt", "TerraMiner"]:
         repo = next(r for r in archive_repos if r["source_repo"] == name)
         assert repo["archive_status"] == "executed", f"{name} must remain executed"
 
 
-def test_archive_plan_terraminer_status_updated(archive_repos: List[Dict[str, Any]]) -> None:
-    tm = next(r for r in archive_repos if r["source_repo"] == "TerraMiner")
-    assert tm["archive_status"] == "executed"
+def test_archive_plan_terra_forge_rebuild_status_updated(archive_repos: List[Dict[str, Any]]) -> None:
+    tfr = next(r for r in archive_repos if r["source_repo"] == "terra-forge-rebuild")
+    assert tfr["archive_status"] == "executed"
 
 
-def test_waves_4_through_6_remain_planned(archive_repos: List[Dict[str, Any]]) -> None:
-    must_be_planned = {"terra-forge-rebuild", "Bsbcintelligentvalues", "TerraFusionTheory"}
+def test_waves_5_through_6_remain_planned(archive_repos: List[Dict[str, Any]]) -> None:
+    must_be_planned = {"Bsbcintelligentvalues", "TerraFusionTheory"}
     offenders = [
         r["source_repo"]
         for r in archive_repos
@@ -301,14 +380,14 @@ def test_waves_4_through_6_remain_planned(archive_repos: List[Dict[str, Any]]) -
     assert offenders == [], f"Repos should remain planned: {offenders}"
 
 
-def test_exactly_three_waves_executed(executed_waves: List[Dict[str, Any]]) -> None:
+def test_exactly_four_waves_executed(executed_waves: List[Dict[str, Any]]) -> None:
     executed = [w for w in executed_waves if w["archive_status"] == "executed"]
-    assert len(executed) == 3, f"Expected 3 executed waves, got {len(executed)}"
+    assert len(executed) == 4, f"Expected 4 executed waves, got {len(executed)}"
 
 
 def test_executed_repos_match_expected_set(
     archive_repos: List[Dict[str, Any]],
 ) -> None:
-    """Waves 1-3 executed. Waves 4-6 remain planned."""
+    """Waves 1-4 executed. Waves 5-6 remain planned."""
     executed = {r["source_repo"] for r in archive_repos if r["archive_status"] == "executed"}
-    assert executed == {"BCBSLevy", "TerraFusionPilt", "TerraMiner"}
+    assert executed == {"BCBSLevy", "TerraFusionPilt", "TerraMiner", "terra-forge-rebuild"}
