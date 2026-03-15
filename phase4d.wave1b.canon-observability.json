@@ -1,0 +1,76 @@
+{
+  "phase": "4D",
+  "wave": "1B",
+  "batch": "canon-observability",
+  "generated_at": "2026-03-15T05:35:33Z",
+  "execution_status": "planned",
+  "total_assets": 4,
+  "by_source_repo": {
+    "TerraFusionTheory": 4
+  },
+  "by_suite": {
+    "TerraCanon": 4
+  },
+  "assets": [
+    {
+      "asset_id": "TFT-087",
+      "source_repo": "TerraFusionTheory",
+      "description": "Monitoring service with alert channels (console, email)",
+      "owner_suite": "TerraCanon",
+      "target_home": "backend/TerraFusion.API/Services/",
+      "target_path": "backend/TerraFusion.API/Services/",
+      "parity_mode": "adapted",
+      "acceptance_test_ref": "test/terracanon/canon-observability/parity-check",
+      "acceptance_test_owner": "founder",
+      "execution_status": "planned",
+      "parity_result": "",
+      "regression_result": "",
+      "execution_notes": ""
+    },
+    {
+      "asset_id": "TFT-090",
+      "source_repo": "TerraFusionTheory",
+      "description": "Performance logging middleware",
+      "owner_suite": "TerraCanon",
+      "target_home": "backend/TerraFusion.API/Middleware/",
+      "target_path": "backend/TerraFusion.API/Middleware/",
+      "parity_mode": "adapted",
+      "acceptance_test_ref": "test/terracanon/canon-observability/parity-check",
+      "acceptance_test_owner": "founder",
+      "execution_status": "planned",
+      "parity_result": "",
+      "regression_result": "",
+      "execution_notes": ""
+    },
+    {
+      "asset_id": "TFT-093",
+      "source_repo": "TerraFusionTheory",
+      "description": "Optimized structured logging service",
+      "owner_suite": "TerraCanon",
+      "target_home": "backend/TerraFusion.API/Services/",
+      "target_path": "backend/TerraFusion.API/Services/",
+      "parity_mode": "adapted",
+      "acceptance_test_ref": "test/terracanon/canon-observability/parity-check",
+      "acceptance_test_owner": "founder",
+      "execution_status": "planned",
+      "parity_result": "",
+      "regression_result": "",
+      "execution_notes": ""
+    },
+    {
+      "asset_id": "TFT-191",
+      "source_repo": "TerraFusionTheory",
+      "description": "Prometheus monitoring config",
+      "owner_suite": "TerraCanon",
+      "target_home": "backend/TerraFusion.API/",
+      "target_path": "backend/TerraFusion.API/",
+      "parity_mode": "adapted",
+      "acceptance_test_ref": "test/terracanon/canon-observability/parity-check",
+      "acceptance_test_owner": "founder",
+      "execution_status": "planned",
+      "parity_result": "",
+      "regression_result": "",
+      "execution_notes": ""
+    }
+  ]
+}
