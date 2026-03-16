@@ -558,3 +558,349 @@ describe('Phase 8.3 Tools - Dashboard Metrics', () => {
     assert.ok(toolIds.includes('draft_appeal_response'), 'Should have draft_appeal_response');
   });
 });
+
+// ============================================================================
+// Lane 1: 93/93 Handler Coverage Verification
+// ============================================================================
+
+describe('Lane 1 — 93/93 Handler Coverage', () => {
+  let registry;
+  let runner;
+  let traceStore;
+  let traceServiceLocal;
+  let registerAllHandlers;
+  let registerR1Handlers;
+
+  before(async () => {
+    const pilotModule = await import('../pilot/index.js');
+    const traceModule = await import('../trace/index.js');
+    const pilot = pilotModule.default || pilotModule;
+    const trace = traceModule.default || traceModule;
+
+    registerAllHandlers = pilot.registerAllHandlers;
+    registerR1Handlers = pilot.registerR1Handlers;
+
+    registry = new ToolRegistry();
+    await registry.initialize(MANIFEST_PATH);
+
+    traceStore = new InMemoryTraceStore({ maxEvents: 1000 });
+    traceServiceLocal = new TraceService({ store: traceStore });
+
+    runner = new ToolRunner({ registry, trace: traceServiceLocal });
+    registerAllHandlers(runner);
+    registerR1Handlers(runner, traceServiceLocal);
+  });
+
+  it('every manifest tool has a registered handler (93/93)', () => {
+    const manifestToolIds = registry.listTools().map(t => t.toolId).sort();
+    const registeredIds = runner.getRegisteredHandlers().sort();
+
+    const missing = manifestToolIds.filter(id => !registeredIds.includes(id));
+    assert.strictEqual(
+      missing.length, 0,
+      `Missing handlers for ${missing.length} tool(s): ${missing.join(', ')}`
+    );
+    assert.strictEqual(registeredIds.length, manifestToolIds.length,
+      `Handler count (${registeredIds.length}) must equal manifest count (${manifestToolIds.length})`
+    );
+  });
+
+  it('real handlers override stubs for all R1 tools', () => {
+    // Verify that registerR1Handlers was called (it registers the real handlers)
+    const registered = runner.getRegisteredHandlers();
+    const r1Tools = [
+      'run_valuation_model', 'explain_value_change', 'route_to_parcel',
+      'search_trace_by_correlation', 'summarize_levy_rate_components',
+    ];
+    for (const toolId of r1Tools) {
+      assert.ok(registered.includes(toolId), `R1 tool ${toolId} should be registered`);
+    }
+  });
+
+  it('canon tools are fully registered (40/40)', () => {
+    const canonIds = registry.listTools()
+      .filter(t => t.toolId.startsWith('canon_'))
+      .map(t => t.toolId)
+      .sort();
+    const registered = runner.getRegisteredHandlers();
+    const missingCanon = canonIds.filter(id => !registered.includes(id));
+    assert.strictEqual(
+      missingCanon.length, 0,
+      `Missing canon handlers: ${missingCanon.join(', ')}`
+    );
+  });
+});
+
+// ============================================================================
+// Lane 2: Irreversible + write_high Risk Enforcement
+// ============================================================================
+
+describe('Lane 2 — Risk Enforcement (irreversible + write_high)', () => {
+  let registry;
+  let runner;
+  let traceStore;
+  let traceServiceLocal;
+  let registerAllHandlers;
+  let registerR1Handlers;
+
+  beforeEach(async () => {
+    const pilotModule = await import('../pilot/index.js');
+    const traceModule = await import('../trace/index.js');
+    const pilot = pilotModule.default || pilotModule;
+    const trace = traceModule.default || traceModule;
+
+    registerAllHandlers = pilot.registerAllHandlers;
+    registerR1Handlers = pilot.registerR1Handlers;
+
+    registry = new ToolRegistry();
+    await registry.initialize(MANIFEST_PATH);
+
+    traceStore = new InMemoryTraceStore({ maxEvents: 1000 });
+    traceServiceLocal = new TraceService({ store: traceStore });
+
+    runner = new ToolRunner({ registry, trace: traceServiceLocal });
+    registerAllHandlers(runner);
+    registerR1Handlers(runner, traceServiceLocal);
+  });
+
+  it('irreversible tool without supervisorApproval → SUPERVISOR_APPROVAL_REQUIRED', async () => {
+    const context = {
+      countyId: 'benton',
+      userId: 'supervisor-001',
+      roles: ['supervisor'],
+      mode: 'pilot',
+      confirmation: true,
+      reasonCode: 'compliance_investigation',
+    };
+
+    const result = await runner.execute({
+      toolId: 'request_trace_redaction',
+      params: { county: 'benton', traceEventIds: ['evt-1'], reason: 'PII exposure' },
+      context,
+    });
+
+    assert.strictEqual(result.ok, false, 'Should fail without supervisorApproval');
+    assert.ok(
+      result.error.includes('SUPERVISOR_APPROVAL_REQUIRED'),
+      `Error should mention SUPERVISOR_APPROVAL_REQUIRED, got: ${result.error}`
+    );
+  });
+
+  it('irreversible tool with invalid supervisor role → SUPERVISOR_ROLE_INVALID', async () => {
+    const context = {
+      countyId: 'benton',
+      userId: 'clerk-001',
+      roles: ['clerk'],
+      mode: 'pilot',
+      confirmation: true,
+      reasonCode: 'compliance_investigation',
+      supervisorApproval: { role: 'clerk', userId: 'clerk-001' },
+    };
+
+    const result = await runner.execute({
+      toolId: 'request_trace_redaction',
+      params: { county: 'benton', traceEventIds: ['evt-1'], reason: 'PII exposure' },
+      context,
+    });
+
+    assert.strictEqual(result.ok, false, 'Should fail with invalid supervisor role');
+    assert.ok(
+      result.error.includes('SUPERVISOR_ROLE_INVALID'),
+      `Error should mention SUPERVISOR_ROLE_INVALID, got: ${result.error}`
+    );
+  });
+
+  it('irreversible tool with valid supervisor + confirmation + reason → passes enforcement', async () => {
+    const context = {
+      countyId: 'benton',
+      userId: 'admin-001',
+      roles: ['administrator'],
+      mode: 'pilot',
+      confirmation: true,
+      reasonCode: 'legal_compliance',
+      supervisorApproval: { role: 'supervisor', userId: 'super-001' },
+    };
+
+    const result = await runner.execute({
+      toolId: 'request_trace_redaction',
+      params: { county: 'benton', traceEventIds: ['evt-1'], reason: 'PII exposure' },
+      context,
+    });
+
+    // Should pass enforcement and reach handler execution
+    assert.strictEqual(result.ok, true, `Expected ok=true, got error: ${result.error ?? 'none'}`);
+    assert.ok(result.result.redactionTicketId, 'Should return a redaction ticket');
+    assert.strictEqual(result.result.status, 'pending_review');
+  });
+
+  it('write_high tool without confirmation → CONFIRMATION_REQUIRED', async () => {
+    const context = {
+      countyId: 'benton',
+      userId: 'supervisor-001',
+      roles: ['supervisor'],
+      mode: 'pilot',
+      // confirmation deliberately omitted
+      reasonCode: 'annual_certification',
+    };
+
+    const result = await runner.execute({
+      toolId: 'assemble_boe_packet',
+      params: { county: 'benton', caseId: 'BOE-2026-001' },
+      context,
+    });
+
+    assert.strictEqual(result.ok, false, 'Should fail without confirmation');
+    assert.ok(
+      result.error.includes('CONFIRMATION_REQUIRED'),
+      `Error should mention CONFIRMATION_REQUIRED, got: ${result.error}`
+    );
+  });
+
+  it('write_high tool without reasonCode → REASON_CODE_REQUIRED', async () => {
+    const context = {
+      countyId: 'benton',
+      userId: 'supervisor-001',
+      roles: ['supervisor'],
+      mode: 'pilot',
+      confirmation: true,
+      // reasonCode deliberately omitted
+    };
+
+    const result = await runner.execute({
+      toolId: 'assemble_boe_packet',
+      params: { county: 'benton', caseId: 'BOE-2026-001' },
+      context,
+    });
+
+    assert.strictEqual(result.ok, false, 'Should fail without reasonCode');
+    assert.ok(
+      result.error.includes('REASON_CODE_REQUIRED'),
+      `Error should mention REASON_CODE_REQUIRED, got: ${result.error}`
+    );
+  });
+});
+
+// ============================================================================
+// Lane 3: Real Trace Handler Tests (search + redaction)
+// ============================================================================
+
+describe('Lane 3 — Real Trace Handlers', () => {
+  let registry;
+  let runner;
+  let traceStore;
+  let traceServiceLocal;
+  let createSearchTraceHandler;
+  let createRequestTraceRedactionHandler;
+  let registerAllHandlers;
+
+  beforeEach(async () => {
+    const pilotModule = await import('../pilot/index.js');
+    const traceModule = await import('../trace/index.js');
+    const pilot = pilotModule.default || pilotModule;
+    const trace = traceModule.default || traceModule;
+
+    createSearchTraceHandler = pilot.createSearchTraceHandler;
+    createRequestTraceRedactionHandler = pilot.createRequestTraceRedactionHandler;
+    registerAllHandlers = pilot.registerAllHandlers;
+
+    registry = new ToolRegistry();
+    await registry.initialize(MANIFEST_PATH);
+
+    traceStore = new InMemoryTraceStore({ maxEvents: 1000 });
+    traceServiceLocal = new TraceService({ store: traceStore });
+
+    runner = new ToolRunner({ registry, trace: traceServiceLocal });
+    registerAllHandlers(runner);
+
+    // Register real trace handlers (override stubs)
+    runner.registerHandler(
+      'search_trace_by_correlation',
+      createSearchTraceHandler(traceServiceLocal)
+    );
+    runner.registerHandler(
+      'request_trace_redaction',
+      createRequestTraceRedactionHandler(traceServiceLocal)
+    );
+  });
+
+  it('search_trace_by_correlation finds events by correlationId', async () => {
+    // Seed a trace event with a known correlationId
+    const testCorrelationId = 'test-corr-12345';
+    traceServiceLocal.emit({
+      type: 'tool_invoked',
+      toolId: 'run_valuation_model',
+      correlationId: testCorrelationId,
+      context: { countyId: 'benton', userId: 'test', roles: ['appraiser'], mode: 'muse' },
+      summary: 'Test invocation',
+    });
+
+    const context = {
+      countyId: 'benton',
+      userId: 'appraiser-001',
+      roles: ['appraiser'],
+      mode: 'pilot',
+    };
+
+    const result = await runner.execute({
+      toolId: 'search_trace_by_correlation',
+      params: { county: 'benton', correlationId: testCorrelationId },
+      context,
+    });
+
+    assert.strictEqual(result.ok, true, `Expected ok=true, got error: ${result.error ?? 'none'}`);
+    assert.strictEqual(result.result.found, true, 'Should find the seeded event');
+    assert.ok(result.result.events.length >= 1, 'Should return at least 1 event');
+    assert.strictEqual(result.result.events[0].type, 'tool_invoked');
+  });
+
+  it('search_trace_by_correlation returns empty for unknown correlationId', async () => {
+    const context = {
+      countyId: 'benton',
+      userId: 'appraiser-001',
+      roles: ['appraiser'],
+      mode: 'pilot',
+    };
+
+    const result = await runner.execute({
+      toolId: 'search_trace_by_correlation',
+      params: { county: 'benton', correlationId: 'nonexistent-correlation' },
+      context,
+    });
+
+    assert.strictEqual(result.ok, true);
+    assert.strictEqual(result.result.found, false);
+    assert.strictEqual(result.result.events.length, 0);
+  });
+
+  it('request_trace_redaction emits redaction event via real handler', async () => {
+    const context = {
+      countyId: 'benton',
+      userId: 'admin-001',
+      roles: ['administrator'],
+      mode: 'pilot',
+      confirmation: true,
+      reasonCode: 'legal_compliance',
+      supervisorApproval: { role: 'supervisor', userId: 'super-001' },
+    };
+
+    const result = await runner.execute({
+      toolId: 'request_trace_redaction',
+      params: { county: 'benton', traceEventIds: ['evt-abc'], reason: 'PII data leak' },
+      context,
+    });
+
+    assert.strictEqual(result.ok, true, `Expected ok=true, got error: ${result.error ?? 'none'}`);
+    assert.ok(result.result.redactionTicketId, 'Should produce a redaction ticket ID');
+    assert.strictEqual(result.result.status, 'pending_review');
+    assert.strictEqual(result.result.eventsMarked, 1);
+
+    // Verify the redaction_requested event was emitted to trace
+    const allEvents = traceServiceLocal.query({});
+    const redactionEvent = allEvents.find(e => e.type === 'redaction_requested');
+    assert.ok(redactionEvent, 'TraceService should contain a redaction_requested event');
+    assert.ok(
+      redactionEvent.summary.includes('PII data leak'),
+      'Redaction event should contain the reason'
+    );
+  });
+});
