@@ -63,6 +63,8 @@ export const MODULE_ALIASES: Record<string, string> = {
   pacs: 'pacs-bridge',
   gama: 'terra-gama',
   'property-tax': 'property-tax-ai',
+  management: 'management-dashboard',
+  'assessor-ops': 'management-dashboard',
   primeview: 'terra-primeview',
 
   // New constellation modules
@@ -151,6 +153,7 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-pilt',
   'terra-permit',
   'terra-flow',
+  'management-dashboard',
   'terra-miner',
   'legislative-pulse',
   // GPT Suite namespaced modules
@@ -265,6 +268,12 @@ const TerraFlowCommandCenter = lazy(
 );
 const TerraLevyDashboard = lazy(
   () => import('../applications/terra-levy/TerraLevyDashboard')
+);
+const StatisticsStudio = lazy(
+  () => import('../pages/forge/statistics/StatisticsStudio')
+);
+const ManagementDashboard = lazy(
+  () => import('../pages/dais/ManagementDashboard')
 );
 
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
@@ -639,16 +648,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'statistics-studio':
       return (
-        <PlaceholderModule
-          name='Statistics Studio'
-          icon='📊'
-          description='Ratio studies — COD, COV, PRD, weighted mean ratios, IAAO Standard on Ratio Studies compliance.'
-          status='placeholder'
-          legacySource='Assessment workflow tools'
-          domain='analytics'
-          scope='county-wide'
-          launchSurface='Standalone window'
-        />
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Statistics Studio...</span></div>}>
+          <StatisticsStudio />
+        </Suspense>
       );
 
     case 'vei':
@@ -662,6 +664,13 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           scope='county-wide'
           launchSurface='Standalone window'
         />
+      );
+
+    case 'management-dashboard':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Management Dashboard...</span></div>}>
+          <ManagementDashboard />
+        </Suspense>
       );
 
     case 'terra-gama':

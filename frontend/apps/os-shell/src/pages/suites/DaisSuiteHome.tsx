@@ -26,6 +26,7 @@ import {
   Calendar,
   Search,
   Bot,
+  LayoutDashboard,
 } from 'lucide-react';
 
 const DAIS_MODULES: SuiteModuleDef[] = [
@@ -39,6 +40,7 @@ const DAIS_MODULES: SuiteModuleDef[] = [
   { id: 'terra-permit', label: 'TerraPermit', icon: HardHat, description: 'Building permit intake and workflow tracking', launchMode: 'standalone', moduleId: 'terra-permit' },
   { id: 'vei', label: 'VEI', icon: Search, description: 'Vertical Equality Index — assessment equity & PRB analysis', launchMode: 'standalone', moduleId: 'vei' },
   { id: 'property-tax-ai', label: 'PropertyTax AI', icon: Bot, description: 'AI-driven property tax analysis & anomaly detection', launchMode: 'standalone', moduleId: 'property-tax-ai' },
+  { id: 'management-dashboard', label: 'Management', icon: LayoutDashboard, description: 'Assessor operations — certification, workload, staff assignment (ADR-003)', launchMode: 'standalone', moduleId: 'management-dashboard' },
 ];
 
 const fmtNum = (n: number) => n.toLocaleString();

@@ -10,13 +10,8 @@
     },
     {
       "name": "backend-api",
-      "runtimeExecutable": "dotnet",
-      "runtimeArgs": [
-        "watch",
-        "run",
-        "--project",
-        "backend/src/TerraFusion.API/TerraFusion.API.csproj"
-      ],
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["backend/start-api-headless.sh"],
       "port": 5000
     },
     {
