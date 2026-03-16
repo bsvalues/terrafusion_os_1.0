@@ -34,9 +34,9 @@ class TestPhase5ATruthFreeze:
         path = os.path.join(REPO_ROOT, "shell-defect-ledger.json")
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
-        assert data["phase"] == "5A"
+        assert "5A" in data["phase"]
         assert len(data["defects"]) >= 3
-        assert len(data["verified_correct"]) >= 5
+        assert "verification" in data
 
     def test_defect_ledger_has_critical_bug(self):
         path = os.path.join(REPO_ROOT, "shell-defect-ledger.json")
@@ -44,7 +44,22 @@ class TestPhase5ATruthFreeze:
             data = json.load(f)
         critical = [d for d in data["defects"] if d["severity"] == "critical"]
         assert len(critical) >= 1, "Must document at least one critical defect"
-        assert "maximized" in critical[0]["title"].lower()
+        assert "maximized" in critical[0]["description"].lower()
+
+    def test_defect_ledger_all_resolved(self):
+        path = os.path.join(REPO_ROOT, "shell-defect-ledger.json")
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        assert data["status"] == "all-resolved"
+        for defect in data["defects"]:
+            assert defect["resolved"] is True, f"Defect {defect['id']} must be resolved"
+
+    def test_defect_ledger_verification_all_pass(self):
+        path = os.path.join(REPO_ROOT, "shell-defect-ledger.json")
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        for key, value in data["verification"].items():
+            assert "PASS" in value, f"Verification {key} must be PASS"
 
 
 # ============================================================================
@@ -83,10 +98,10 @@ class TestPhase5BWindowSizing:
                 in_tier0_block = False
 
     def test_tier0_uses_taskbar_height(self, desktop_store_src):
-        """tier0-workbench size should use TASKBAR_HEIGHT, not arbitrary padding."""
-        pattern = r"tier0-workbench.*?height:\s*vh\s*-\s*TASKBAR_HEIGHT"
+        """tier0-workbench size should use TOP_BAR_HEIGHT and TASKBAR_HEIGHT."""
+        pattern = r"tier0-workbench.*?height:\s*vh\s*-\s*TOP_BAR_HEIGHT\s*-\s*TASKBAR_HEIGHT"
         assert re.search(pattern, desktop_store_src, re.DOTALL), \
-            "tier0-workbench height should use vh - TASKBAR_HEIGHT"
+            "tier0-workbench height should use vh - TOP_BAR_HEIGHT - TASKBAR_HEIGHT"
 
     def test_suites_return_maximized_false(self, desktop_store_src):
         """Suite workspaces must return maximized: false (near-full-stage, not maximized)."""
