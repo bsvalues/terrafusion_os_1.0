@@ -185,7 +185,7 @@ bun install
 bun run dev          # Dual-port dev server
 ```
 
-### TerraFusion IDE
+### TerraCanon
 ```bash
 cd os-platform/development/tools/TerraFusionIDE
 bun install

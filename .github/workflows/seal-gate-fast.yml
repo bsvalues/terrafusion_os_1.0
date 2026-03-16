@@ -498,9 +498,8 @@ jobs:
         shell: bash
         run: node scripts/platform-lint.mjs
 
-      - name: Naming Governance (soft-fail, Phase C sweep pending)
+      - name: Naming Governance (hard-fail, Phase C complete)
         id: naming_governance
-        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -515,26 +514,14 @@ jobs:
 
           if [ "${{ steps.naming_governance.outcome }}" = "success" ]; then
             echo "- PASS naming-lint passed" >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          if [ "${TF_GOVERNANCE_ESCAPE_HATCH:-}" = "1" ]; then
-            echo "- WARN naming-lint failed, but TF_GOVERNANCE_ESCAPE_HATCH=1 is set (soft pass)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- FAIL naming-lint failed. Remove banned label occurrences." >> "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo "Output (tail):" >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             tail -n 60 naming-governance.txt >> "$GITHUB_STEP_SUMMARY" || true
             echo '```' >> "$GITHUB_STEP_SUMMARY"
-            exit 0
           fi
-
-          echo "- FAIL naming-lint failed (soft-fail step). Remove banned label occurrences." >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Output (tail):" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          tail -n 60 naming-governance.txt >> "$GITHUB_STEP_SUMMARY" || true
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          exit 0
 
       - name: Quarantine toolchain tests (23 tests / 4 suites)
         id: quarantine-tests
@@ -625,7 +612,7 @@ jobs:
           echo "| Workspace Sanity | ${{ steps.shape-guard.outcome != '' && '✅' || '⏭️' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| AGENTS.md Compliance | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| Drift Guard | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| Naming Governance (soft, Phase C) | ${{ steps.naming_governance.outcome == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Naming Governance | ${{ steps.naming_governance.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Quarantine Tests (23t/4s) | ${{ steps.quarantine-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Phase83 Tests (54t/17s) | ${{ steps.phase83-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Write-Lane Governance | ${{ steps.write-lane-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

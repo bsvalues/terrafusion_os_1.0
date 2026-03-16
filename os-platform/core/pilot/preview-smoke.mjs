@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const DEFAULT_BASE_URL = "http://localhost:4317";
+const DEFAULT_BASE_URL = `http://localhost:${process.env.PILOT_PORT || "4317"}`;
 
 function parseArgs(argv) {
   const args = argv.slice(2);

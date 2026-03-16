@@ -2,7 +2,7 @@
 
 ## Vision: Don't Build an IDE — Skin the Best Ones
 
-Instead of building TerraFusion IDE from scratch, we **inject TerraFusion power** into existing world-class tools:
+Instead of building TerraCanon from scratch, we **inject TerraFusion power** into existing world-class tools:
 
 | Layer | Tool | Role | Status |
 |-------|------|------|--------|
