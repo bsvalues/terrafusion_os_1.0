@@ -15,7 +15,7 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { vi } from 'vitest';
 
@@ -145,6 +145,52 @@ vi.mock('../../pages/forge/statistics/VEIDashboard', () => ({
   default: () => <div data-testid="vei-dashboard-stub">VEIDashboard stub</div>,
 }));
 
+// Phase 16 — OutlierReviewPanel + ModelComparisonPanel stubs
+vi.mock('../../pages/forge/statistics/OutlierReviewPanel', () => ({
+  __esModule: true,
+  OutlierReviewPanel: () => <div data-testid="outlier-review-stub">OutlierReviewPanel stub</div>,
+  default: () => <div data-testid="outlier-review-stub">OutlierReviewPanel stub</div>,
+}));
+
+vi.mock('../../pages/forge/statistics/ModelComparisonPanel', () => ({
+  __esModule: true,
+  ModelComparisonPanel: () => <div data-testid="model-comparison-stub">ModelComparisonPanel stub</div>,
+  default: () => <div data-testid="model-comparison-stub">ModelComparisonPanel stub</div>,
+}));
+
+// Phase 16 — forgeStatisticsStore mock
+vi.mock('@/stores/forgeStatisticsStore', () => ({
+  useForgeStatisticsStore: vi.fn((selector?: any) => {
+    const state = {
+      studyResult: null,
+      filters: { taxYear: 2026, salesWindowMonths: 12, neighborhood: null, propertyType: null, outlierMethod: 'iqr' },
+      outliers: [],
+      comparison: null,
+      strata: [],
+      qualification: null,
+      loading: false,
+      error: null,
+      fetchStudy: vi.fn(),
+      setFilter: vi.fn(),
+      reviewOutlier: vi.fn(),
+      loadComparison: vi.fn(),
+      refreshQualification: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
+}));
+
+// Phase 16 — fixture data mock (StatisticsStudio imports these)
+vi.mock('@/data/forgeStatisticsFixtures', () => ({
+  RATIO_STUDY_RESULT: { medianRatio: 0.985, cod: 12.4, prd: 1.008, prb: -0.023, sampleSize: 1847, params: { taxYear: 2026 } },
+  COD_TREND: [{ period: 'Q1-2026', cod: 12.4 }],
+  PRD_TREND: [{ period: 'Q1-2026', prd: 1.008 }],
+  VEI_METRICS: { cod: 12.4, prd: 1.008, prb: -0.023, tierSlope: 0.012, medianRatio: 0.985, sampleSize: 1847 },
+  NEIGHBORHOODS: [{ neighborhood: 'Richland', medianRatio: 0.978, cod: 11.2, sampleSize: 523 }],
+  TAX_YEARS: [2026, 2025, 2024, 2023],
+  STUDY_FILTER_DEFAULT: { taxYear: 2026, salesWindowMonths: 12, neighborhood: null, propertyType: null, outlierMethod: 'iqr' },
+}));
+
 // ---------------------------------------------------------------------------
 // Mocks — RegressionStudio child components
 // ---------------------------------------------------------------------------
@@ -264,12 +310,29 @@ describe('Phase 10: Forge Analytics Contract', () => {
       expect(screen.getByTestId('tab-ratio-study')).toBeInTheDocument();
       expect(screen.getByTestId('tab-trends')).toBeInTheDocument();
       expect(screen.getByTestId('tab-equity')).toBeInTheDocument();
+      // Phase 16 tabs
+      expect(screen.getByTestId('tab-outliers')).toBeInTheDocument();
+      expect(screen.getByTestId('tab-comparison')).toBeInTheDocument();
     });
 
     it('no light-mode classes in rendered output', () => {
       const { container } = render(<StatisticsStudio />);
       const violations = findLightModeViolations(container.innerHTML);
       expect(violations).toEqual([]);
+    });
+
+    // Phase 16: Outliers tab renders stub
+    it('Outliers tab renders OutlierReviewPanel stub', () => {
+      render(<StatisticsStudio />);
+      fireEvent.click(screen.getByTestId('tab-outliers'));
+      expect(screen.getByTestId('outlier-review-stub')).toBeInTheDocument();
+    });
+
+    // Phase 16: Comparison tab renders stub
+    it('Comparison tab renders ModelComparisonPanel stub', () => {
+      render(<StatisticsStudio />);
+      fireEvent.click(screen.getByTestId('tab-comparison'));
+      expect(screen.getByTestId('model-comparison-stub')).toBeInTheDocument();
     });
   });
 

@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   CANON_LAYOUT_STORAGE_KEY,
   defaultCanonLayoutV1,

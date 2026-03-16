@@ -11,11 +11,10 @@
  * @vitest-environment jsdom
  */
 
-// Vitest imports removed - Jest globals used
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import * as matchers from '@testing-library/jest-dom/matchers';
 
 import { Clock } from '../Clock';
 
@@ -25,12 +24,12 @@ import { Clock } from '../Clock';
 const mockDate = new Date('2024-12-15T14:30:00');
 
 beforeEach(() => {
-  jest.useFakeTimers();
-  jest.setSystemTime(mockDate);
+  vi.useFakeTimers();
+  vi.setSystemTime(mockDate);
 });
 
 afterEach(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
   cleanup();
 });
 
@@ -89,7 +88,7 @@ describe('Clock', () => {
       const initialTime = screen.getByTestId('clock-time').textContent;
       
       // Advance by 1 minute
-      jest.advanceTimersByTime(60000);
+      vi.advanceTimersByTime(60000);
       
       await waitFor(() => {
         // Time should have updated (or stayed same if within same minute)

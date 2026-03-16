@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { CanonModuleHost, type WorkspaceModule } from '../../canon/CanonModuleHost';
@@ -23,8 +24,8 @@ describe('Phase 50 contract: TerraCanon module host mount/unmount determinism', 
   });
 
   it('mounts once per workspace and unmounts on switch + host unmount', async () => {
-    const unmountA = jest.fn();
-    const unmountB = jest.fn();
+    const unmountA = vi.fn();
+    const unmountB = vi.fn();
     const mount = jest
       .fn()
       .mockResolvedValueOnce(unmountA)

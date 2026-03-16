@@ -7,18 +7,19 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock stores
-jest.mock('../../stores/commandPaletteStore', () => ({
-  useCommandPaletteStore: jest.fn(),
+vi.mock('../../stores/commandPaletteStore', () => ({
+  useCommandPaletteStore: vi.fn(),
 }));
 
 // Mock materials gate
-jest.mock('../../ui/materials/materialQualityGate', () => ({
+vi.mock('../../ui/materials/materialQualityGate', () => ({
   useMaterialQuality: () => ({
     tier: 'high',
     enableBackdropBlur: true,
@@ -33,7 +34,7 @@ jest.mock('../../ui/materials/materialQualityGate', () => ({
 }));
 
 // Mock launcherModel - items defined INSIDE factory to avoid hoisting issues
-jest.mock('../../components/launcher/launcherModel', () => {
+vi.mock('../../components/launcher/launcherModel', () => {
   const mockItems = [
     {
       id: 'forge',
@@ -74,7 +75,7 @@ jest.mock('../../components/launcher/launcherModel', () => {
     ],
     filterLauncherItems: (items: typeof mockItems, query: string) =>
       query ? items.filter((i) => i.label.toLowerCase().includes(query.toLowerCase())) : items,
-    navigateToLauncherItem: jest.fn(
+    navigateToLauncherItem: vi.fn(
       (item: (typeof mockItems)[0], navigate: (route: string) => void) => navigate(item.route)
     ),
     getIntentBadgeText: (intent: string) =>
@@ -83,9 +84,9 @@ jest.mock('../../components/launcher/launcherModel', () => {
 });
 
 // Mock navigation
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => ({
+  ...await vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }));
 
@@ -99,10 +100,10 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 
 const mockStore = {
   isOpen: true,
-  close: jest.fn(),
-  toggle: jest.fn(),
+  close: vi.fn(),
+  toggle: vi.fn(),
   searchQuery: '',
-  setSearchQuery: jest.fn(),
+  setSearchQuery: vi.fn(),
 };
 
 // Test items to pass directly to Launcher (bypasses the mock complexities)
@@ -140,7 +141,7 @@ const testLauncherItems = [
 ];
 
 function renderLauncher(props: { testItems?: typeof testLauncherItems } = {}) {
-  (useCommandPaletteStore as unknown as jest.Mock).mockImplementation((selector) =>
+  (useCommandPaletteStore as unknown as vi.Mock).mockImplementation((selector) =>
     selector ? selector(mockStore) : mockStore
   );
 
@@ -157,10 +158,10 @@ function renderLauncher(props: { testItems?: typeof testLauncherItems } = {}) {
 
 describe('Launcher: Open/Close Lifecycle', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockStore.isOpen = true;
-    mockStore.close = jest.fn();
-    mockStore.toggle = jest.fn();
+    mockStore.close = vi.fn();
+    mockStore.toggle = vi.fn();
     mockStore.searchQuery = '';
   });
 
@@ -208,7 +209,7 @@ describe('Launcher: Open/Close Lifecycle', () => {
 
 describe('Launcher: Focus Management', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockStore.isOpen = true;
     mockStore.searchQuery = '';
   });
@@ -279,7 +280,7 @@ describe('Launcher: Focus Management', () => {
 
 describe('Launcher: Keyboard Navigation', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockStore.isOpen = true;
     mockStore.searchQuery = '';
   });
@@ -345,10 +346,10 @@ describe('Launcher: Keyboard Navigation', () => {
 
 describe('Launcher: Search Filtering', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockStore.isOpen = true;
     mockStore.searchQuery = '';
-    mockStore.setSearchQuery = jest.fn();
+    mockStore.setSearchQuery = vi.fn();
   });
 
   it('typing in search updates query', async () => {
@@ -397,7 +398,7 @@ describe('Launcher: Search Filtering', () => {
 
 describe('Launcher: Accessibility', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockStore.isOpen = true;
     mockStore.searchQuery = '';
   });

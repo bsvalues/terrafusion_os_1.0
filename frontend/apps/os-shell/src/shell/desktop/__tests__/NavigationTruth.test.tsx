@@ -9,6 +9,7 @@
  * @see Phase B TDD - Navigation Truth
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React, { act } from 'react';
@@ -20,8 +21,8 @@ import {
     isConstitutionalSuite,
 } from '../../../config/suiteRegistry';
 
-const mockActivateModule = jest.fn();
-jest.mock('../../../orchestration/moduleActivation', () => ({
+const mockActivateModule = vi.fn();
+vi.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 

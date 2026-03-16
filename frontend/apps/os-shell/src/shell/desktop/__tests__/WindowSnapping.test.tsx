@@ -25,6 +25,7 @@
  * @module shell/desktop/__tests__/WindowSnapping.test
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 
@@ -55,7 +56,7 @@ beforeEach(() => {
     snapPreview: null,
   });
 
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {

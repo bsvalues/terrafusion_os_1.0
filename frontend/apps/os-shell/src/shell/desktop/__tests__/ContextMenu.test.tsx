@@ -1,6 +1,4 @@
 /**
- * @jest-environment jsdom
- *
  * Context Menu Tests
  *
  * Tests for right-click context menu system:
@@ -26,6 +24,7 @@
  * @module shell/desktop/__tests__/ContextMenu.test
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { act, cleanup, fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { useDesktopStore, type DesktopWindow } from '../../../stores/desktopStore';
@@ -40,18 +39,18 @@ import { useContextMenu } from '../useContextMenu';
 // ============================================================================
 
 const mockMenuItems: ContextMenuItem[] = [
-  { id: 'item1', label: 'Item 1', icon: '📄', onClick: jest.fn() },
-  { id: 'item2', label: 'Item 2', icon: '📁', onClick: jest.fn() },
+  { id: 'item1', label: 'Item 1', icon: '📄', onClick: vi.fn() },
+  { id: 'item2', label: 'Item 2', icon: '📁', onClick: vi.fn() },
   { id: 'separator1', label: '', separator: true },
-  { id: 'item3', label: 'Item 3 (disabled)', icon: '🔒', disabled: true, onClick: jest.fn() },
-  { id: 'item4', label: 'Item 4', icon: '⚙️', onClick: jest.fn(), shortcut: 'Ctrl+K' },
+  { id: 'item3', label: 'Item 3 (disabled)', icon: '🔒', disabled: true, onClick: vi.fn() },
+  { id: 'item4', label: 'Item 4', icon: '⚙️', onClick: vi.fn(), shortcut: 'Ctrl+K' },
 ];
 
 const mockPosition = { x: 100, y: 200 };
 
 beforeEach(() => {
   cleanup();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 
   // Reset desktop store
   useDesktopStore.setState({
@@ -73,7 +72,7 @@ afterEach(() => {
 describe('ContextMenu Component', () => {
   describe('Rendering', () => {
     it('renders menu with items', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByTestId('context-menu')).toBeInTheDocument();
       expect(screen.getByTestId('context-menu-item-item1')).toHaveTextContent('Item 1');
@@ -81,13 +80,13 @@ describe('ContextMenu Component', () => {
     });
 
     it('renders separators', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByTestId('context-menu-separator-separator1')).toBeInTheDocument();
     });
 
     it('renders disabled items', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       const disabledItem = screen.getByTestId('context-menu-item-item3');
       expect(disabledItem).toBeDisabled();
@@ -95,14 +94,14 @@ describe('ContextMenu Component', () => {
     });
 
     it('renders keyboard shortcuts', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByText('Ctrl+K')).toBeInTheDocument();
     });
 
     it('positions menu at specified coordinates', () => {
       render(
-        <ContextMenu items={mockMenuItems} position={{ x: 150, y: 250 }} onClose={jest.fn()} />
+        <ContextMenu items={mockMenuItems} position={{ x: 150, y: 250 }} onClose={vi.fn()} />
       );
 
       const menu = screen.getByTestId('context-menu');
@@ -112,7 +111,7 @@ describe('ContextMenu Component', () => {
 
   describe('Click Handling', () => {
     it('calls onClick when item clicked', () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={onClose} />);
 
       const item1 = screen.getByTestId('context-menu-item-item1');
@@ -123,7 +122,7 @@ describe('ContextMenu Component', () => {
     });
 
     it('does not call onClick for disabled items', () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={onClose} />);
 
       const disabledItem = screen.getByTestId('context-menu-item-item3');
@@ -134,7 +133,7 @@ describe('ContextMenu Component', () => {
     });
 
     it('closes menu on outside click', () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={onClose} />);
 
       // Click outside menu
@@ -144,7 +143,7 @@ describe('ContextMenu Component', () => {
     });
 
     it('does not close menu when clicking inside', () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={onClose} />);
 
       const menu = screen.getByTestId('context-menu');
@@ -156,7 +155,7 @@ describe('ContextMenu Component', () => {
 
   describe('Keyboard Navigation', () => {
     it('closes menu on Escape key', () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={onClose} />);
 
       fireEvent.keyDown(document, { key: 'Escape' });
@@ -165,7 +164,7 @@ describe('ContextMenu Component', () => {
     });
 
     it('navigates with arrow keys', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       // Arrow down should focus next item
       fireEvent.keyDown(document, { key: 'ArrowDown' });
@@ -174,7 +173,7 @@ describe('ContextMenu Component', () => {
     });
 
     it('activates item with Enter key', () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={onClose} />);
 
       fireEvent.keyDown(document, { key: 'Enter' });
@@ -187,7 +186,7 @@ describe('ContextMenu Component', () => {
 
   describe('Styling', () => {
     it('has TerraFusion brand styling', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       const menu = screen.getByTestId('context-menu');
 
@@ -196,7 +195,7 @@ describe('ContextMenu Component', () => {
     });
 
     it('has glass morphism effect', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       const menu = screen.getByTestId('context-menu');
       expect(menu.className).toMatch(/backdrop-blur/);
@@ -205,20 +204,20 @@ describe('ContextMenu Component', () => {
 
   describe('Accessibility', () => {
     it('has role="menu"', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
     it('menu items have role="menuitem"', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       const items = screen.getAllByRole('menuitem');
       expect(items.length).toBeGreaterThan(0);
     });
 
     it('disabled items are marked as disabled', () => {
-      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={jest.fn()} />);
+      render(<ContextMenu items={mockMenuItems} position={mockPosition} onClose={vi.fn()} />);
 
       const disabledItem = screen.getByTestId('context-menu-item-item3');
       expect(disabledItem).toHaveAttribute('disabled');
@@ -266,8 +265,8 @@ describe('useContextMenu Hook', () => {
     const { result } = renderHook(() => useContextMenu());
 
     const mockEvent = {
-      preventDefault: jest.fn(),
-      stopPropagation: jest.fn(),
+      preventDefault: vi.fn(),
+      stopPropagation: vi.fn(),
       clientX: 150,
       clientY: 250,
     } as unknown as React.MouseEvent;
@@ -289,7 +288,7 @@ describe('useContextMenu Hook', () => {
 
 describe('DesktopContextMenu', () => {
   it('renders desktop-specific menu items', () => {
-    render(<DesktopContextMenu isOpen={true} position={mockPosition} onClose={jest.fn()} />);
+    render(<DesktopContextMenu isOpen={true} position={mockPosition} onClose={vi.fn()} />);
 
     expect(screen.getByText('Refresh')).toBeInTheDocument();
     expect(screen.getByText('Display Settings')).toBeInTheDocument();
@@ -297,7 +296,7 @@ describe('DesktopContextMenu', () => {
   });
 
   it('calls onRefresh callback', () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     render(<DesktopContextMenu isOpen={true} position={mockPosition} onClose={onClose} />);
 
     const refreshItem = screen.getByRole('menuitem', { name: 'Refresh' });
@@ -307,7 +306,7 @@ describe('DesktopContextMenu', () => {
   });
 
   it('shows keyboard shortcut for refresh', () => {
-    render(<DesktopContextMenu isOpen={true} position={mockPosition} onClose={jest.fn()} />);
+    render(<DesktopContextMenu isOpen={true} position={mockPosition} onClose={vi.fn()} />);
 
     // Menu renders successfully (no shortcuts shown in this implementation)
     expect(screen.getByRole('menu')).toBeInTheDocument();
@@ -333,7 +332,7 @@ describe('TaskbarContextMenu', () => {
   it('renders taskbar-specific menu items', () => {
     const mockWindow = createMockWindow();
 
-    render(<TaskbarContextMenu window={mockWindow} position={mockPosition} onClose={jest.fn()} />);
+    render(<TaskbarContextMenu window={mockWindow} position={mockPosition} onClose={vi.fn()} />);
 
     expect(screen.getByText('Restore')).toBeInTheDocument();
     expect(screen.getByText('Minimize')).toBeInTheDocument();
@@ -344,7 +343,7 @@ describe('TaskbarContextMenu', () => {
   it('disables Restore when window is normal', () => {
     const mockWindow = createMockWindow();
 
-    render(<TaskbarContextMenu window={mockWindow} position={mockPosition} onClose={jest.fn()} />);
+    render(<TaskbarContextMenu window={mockWindow} position={mockPosition} onClose={vi.fn()} />);
 
     const restoreItem = screen.getByTestId('context-menu-item-restore');
     expect(restoreItem).toBeDisabled();
@@ -353,7 +352,7 @@ describe('TaskbarContextMenu', () => {
   it('disables Maximize when window is maximized', () => {
     const mockWindow = { ...createMockWindow(), state: 'maximized' as const };
 
-    render(<TaskbarContextMenu window={mockWindow} position={mockPosition} onClose={jest.fn()} />);
+    render(<TaskbarContextMenu window={mockWindow} position={mockPosition} onClose={vi.fn()} />);
 
     const maximizeItem = screen.getByTestId('context-menu-item-maximize');
     expect(maximizeItem).toBeDisabled();
@@ -361,9 +360,9 @@ describe('TaskbarContextMenu', () => {
 
   it('calls closeWindow action', () => {
     const mockWindow = createMockWindow();
-    const closeWindowSpy = jest.spyOn(useDesktopStore.getState(), 'closeWindow');
+    const closeWindowSpy = vi.spyOn(useDesktopStore.getState(), 'closeWindow');
 
-    render(<TaskbarContextMenu window={mockWindow} position={mockPosition} onClose={jest.fn()} />);
+    render(<TaskbarContextMenu window={mockWindow} position={mockPosition} onClose={vi.fn()} />);
 
     const closeItem = screen.getByTestId('context-menu-item-close');
     fireEvent.click(closeItem);
@@ -391,7 +390,7 @@ describe('WindowContextMenu', () => {
   it('renders window-specific menu items', () => {
     const mockWindow = createMockWindow();
 
-    render(<WindowContextMenu window={mockWindow} position={mockPosition} onClose={jest.fn()} />);
+    render(<WindowContextMenu window={mockWindow} position={mockPosition} onClose={vi.fn()} />);
 
     expect(screen.getByText('Snap to Left')).toBeInTheDocument();
     expect(screen.getByText('Snap to Right')).toBeInTheDocument();
@@ -400,7 +399,7 @@ describe('WindowContextMenu', () => {
   it('shows keyboard shortcuts for window actions', () => {
     const mockWindow = createMockWindow();
 
-    render(<WindowContextMenu window={mockWindow} position={mockPosition} onClose={jest.fn()} />);
+    render(<WindowContextMenu window={mockWindow} position={mockPosition} onClose={vi.fn()} />);
 
     expect(screen.getByText('Win+↓')).toBeInTheDocument(); // Minimize
     expect(screen.getByText('Win+↑')).toBeInTheDocument(); // Maximize
@@ -410,7 +409,7 @@ describe('WindowContextMenu', () => {
 
   it('calls snapWindow action for snap left', () => {
     const mockWindow = createMockWindow();
-    const snapWindowSpy = jest.spyOn(useDesktopStore.getState(), 'snapWindow');
+    const snapWindowSpy = vi.spyOn(useDesktopStore.getState(), 'snapWindow');
 
     // Mock window dimensions
     Object.defineProperty(window, 'innerWidth', {
@@ -424,7 +423,7 @@ describe('WindowContextMenu', () => {
       value: 1080,
     });
 
-    render(<WindowContextMenu window={mockWindow} position={mockPosition} onClose={jest.fn()} />);
+    render(<WindowContextMenu window={mockWindow} position={mockPosition} onClose={vi.fn()} />);
 
     const snapLeftItem = screen.getByTestId('context-menu-item-snap-left');
     fireEvent.click(snapLeftItem);
@@ -435,7 +434,7 @@ describe('WindowContextMenu', () => {
   it('disables snap options when window is maximized', () => {
     const mockWindow = { ...createMockWindow(), state: 'maximized' as const };
 
-    render(<WindowContextMenu window={mockWindow} position={mockPosition} onClose={jest.fn()} />);
+    render(<WindowContextMenu window={mockWindow} position={mockPosition} onClose={vi.fn()} />);
 
     expect(screen.getByTestId('context-menu-item-snap-left')).toBeDisabled();
     expect(screen.getByTestId('context-menu-item-snap-right')).toBeDisabled();

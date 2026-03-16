@@ -10,6 +10,7 @@
  * - Accessibility: proper ARIA roles and keyboard navigation
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { LegacyDeprecationBanner } from '../../components/legacy/LegacyDeprecationBanner';
 
@@ -20,13 +21,13 @@ beforeEach(() => {
   jest
     .spyOn(Storage.prototype, 'getItem')
     .mockImplementation((key: string) => mockSessionStorage[key] ?? null);
-  jest.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
     mockSessionStorage[key] = value;
   });
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('LegacyDeprecationBanner', () => {
@@ -113,7 +114,7 @@ describe('LegacyDeprecationBanner', () => {
 
   describe('Telemetry Integration', () => {
     it('calls onTelemetry callback on mount', () => {
-      const onTelemetry = jest.fn();
+      const onTelemetry = vi.fn();
 
       render(
         <LegacyDeprecationBanner legacyAppId='test.app' route='/test' onTelemetry={onTelemetry} />
@@ -127,7 +128,7 @@ describe('LegacyDeprecationBanner', () => {
     });
 
     it('calls onTelemetry callback with dismiss action', () => {
-      const onTelemetry = jest.fn();
+      const onTelemetry = vi.fn();
 
       render(
         <LegacyDeprecationBanner legacyAppId='test.app' route='/test' onTelemetry={onTelemetry} />
@@ -144,7 +145,7 @@ describe('LegacyDeprecationBanner', () => {
     });
 
     it('calls onTelemetry callback with upgrade action on link click', () => {
-      const onTelemetry = jest.fn();
+      const onTelemetry = vi.fn();
 
       render(
         <LegacyDeprecationBanner legacyAppId='test.app' route='/test' onTelemetry={onTelemetry} />

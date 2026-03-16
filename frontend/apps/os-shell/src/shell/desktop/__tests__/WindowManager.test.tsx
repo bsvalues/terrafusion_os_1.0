@@ -8,6 +8,7 @@
  * @see SUCCESS CRITERIA SC-4
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import { act } from 'react';
@@ -21,7 +22,7 @@ import { WindowManager } from '../WindowManager';
 // ============================================================================
 
 // Mock Window component to simplify testing WindowManager logic
-jest.mock('../Window', () => ({
+vi.mock('../Window', () => ({
   Window: ({ window }: { window: DesktopWindow }) => (
     <div
       data-testid={`window-${window.id}`}
@@ -61,7 +62,7 @@ describe('WindowManager', () => {
 
   afterEach(() => {
     cleanup();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ============================================================================

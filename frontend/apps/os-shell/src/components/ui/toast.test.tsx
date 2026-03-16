@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { toast } from 'sonner';
+import { vi } from 'vitest';
 import { Button } from './button';
 import { Toaster } from './sonner';
 
@@ -85,7 +86,7 @@ describe('Toast (Sonner)', () => {
       toast('Message', {
         action: {
           label: 'Undo',
-          onClick: jest.fn(),
+          onClick: vi.fn(),
         },
       });
 
@@ -96,7 +97,7 @@ describe('Toast (Sonner)', () => {
 
     // Skip: Sonner action button click handling is flaky in jsdom due to hasPointerCapture
     it.skip('calls action onClick when button is clicked', async () => {
-      const onClick = jest.fn();
+      const onClick = vi.fn();
       const user = userEvent.setup();
 
       render(<Toaster />);
@@ -126,7 +127,7 @@ describe('Toast (Sonner)', () => {
       toast('Message', {
         action: {
           label: 'Undo',
-          onClick: jest.fn(),
+          onClick: vi.fn(),
         },
       });
 
@@ -150,7 +151,7 @@ describe('Toast (Sonner)', () => {
       toast('Message', {
         cancel: {
           label: 'Cancel',
-          onClick: jest.fn(),
+          onClick: vi.fn(),
         },
       });
 
@@ -161,7 +162,7 @@ describe('Toast (Sonner)', () => {
 
     // Skip: Sonner cancel button click handling is flaky in jsdom due to hasPointerCapture
     it.skip('calls cancel onClick when button is clicked', async () => {
-      const onClick = jest.fn();
+      const onClick = vi.fn();
       const user = userEvent.setup();
 
       render(<Toaster />);
@@ -329,7 +330,7 @@ describe('Toast (Sonner)', () => {
     });
 
     it('action button is keyboard accessible', async () => {
-      const onClick = jest.fn();
+      const onClick = vi.fn();
       const user = userEvent.setup();
 
       render(<Toaster />);
@@ -535,7 +536,7 @@ describe('Toast (Sonner)', () => {
       toast('Message', {
         action: {
           label: 'Undo',
-          onClick: jest.fn(),
+          onClick: vi.fn(),
         },
       });
 

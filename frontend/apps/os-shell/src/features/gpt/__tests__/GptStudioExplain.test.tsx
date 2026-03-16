@@ -6,21 +6,22 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 // Mock the API module BEFORE importing the component
-jest.mock('../../../api/explainApi', () => ({
-  explainContext: jest.fn(),
+vi.mock('../../../api/explainApi', () => ({
+  explainContext: vi.fn(),
 }));
 
 // Mock PropertyAssessmentFlows to avoid undefined errors
-jest.mock('../components/PropertyAssessmentFlows', () => ({
+vi.mock('../components/PropertyAssessmentFlows', () => ({
   PropertyAssessmentFlows: () => <div data-testid='mock-flows'>Mock Flows</div>,
 }));
 
 // Mock the GPT client to avoid network calls and import.meta.env issues
-jest.mock('../../../api/gptClient', () => ({
-  getSystemGpts: jest.fn().mockResolvedValue([
+vi.mock('../../../api/gptClient', () => ({
+  getSystemGpts: vi.fn().mockResolvedValue([
     {
       key: 'PropertyAssessmentGPT',
       name: 'Property Assessment GPT',
@@ -32,30 +33,30 @@ jest.mock('../../../api/gptClient', () => ({
       enabled: true,
     },
   ]),
-  createConversation: jest.fn().mockResolvedValue({
+  createConversation: vi.fn().mockResolvedValue({
     id: 'test-conv-123',
     gptKey: 'PropertyAssessmentGPT',
     messages: [],
   }),
-  getMessages: jest.fn().mockResolvedValue([]),
-  getRagHealth: jest.fn().mockResolvedValue({
+  getMessages: vi.fn().mockResolvedValue([]),
+  getRagHealth: vi.fn().mockResolvedValue({
     indexed: true,
     embeddingCount: 100,
     documentCount: 5,
     healthy: true,
   }),
-  sendMessage: jest.fn(),
-  indexRagDataset: jest.fn(),
+  sendMessage: vi.fn(),
+  indexRagDataset: vi.fn(),
 }));
 
 import { explainContext } from '../../../api/explainApi';
 import { GptStudioView } from '../GptStudioView';
 
-const mockExplainContext = explainContext as jest.MockedFunction<typeof explainContext>;
+const mockExplainContext = explainContext as vi.MockedFunction<typeof explainContext>;
 
 describe('GptStudioView Explain Button', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════

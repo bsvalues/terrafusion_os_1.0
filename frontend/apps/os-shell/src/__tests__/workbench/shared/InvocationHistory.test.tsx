@@ -12,6 +12,7 @@
  * - Caps at 10 items
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import {
     InvocationHistory,
@@ -40,7 +41,7 @@ describe('InvocationHistory', () => {
   beforeEach(() => {
     Object.assign(navigator, {
       clipboard: {
-        writeText: jest.fn().mockResolvedValue(undefined),
+        writeText: vi.fn().mockResolvedValue(undefined),
       },
     });
   });

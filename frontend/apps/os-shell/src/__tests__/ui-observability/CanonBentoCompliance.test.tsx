@@ -14,6 +14,7 @@
  * The IDE grid (`.canon-ide`) now lives inside `.canon-devCockpit__inner`.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
@@ -22,43 +23,43 @@ import React from 'react';
 // ---------------------------------------------------------------------------
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useNavigate: () => vi.fn(),
 }));
 
 // StandaloneHomeShell — pass-through wrapper (no shell chrome in tests)
-jest.mock('../../components/standalone', () => ({
+vi.mock('../../components/standalone', () => ({
   StandaloneHomeShell: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // CanonModuleHost — invisible in layout tests
-jest.mock('../../canon/CanonModuleHost', () => ({
+vi.mock('../../canon/CanonModuleHost', () => ({
   CanonModuleHost: () => <div data-testid='canon-module-host-stub' />,
 }));
 
 // useCanonLayout — default layout
-jest.mock('../../canon/useCanonLayout', () => ({
+vi.mock('../../canon/useCanonLayout', () => ({
   useCanonLayout: () => [
     { leftPaneWidth: 250, rightPaneWidth: 750, inspectorOpen: false },
-    jest.fn(),
+    vi.fn(),
   ],
 }));
 
 // invokeWithPreflight — stub
-jest.mock('../../canon/invokeWithPreflight', () => ({
-  invokeWithPreflight: jest.fn(),
+vi.mock('../../canon/invokeWithPreflight', () => ({
+  invokeWithPreflight: vi.fn(),
 }));
 
 // Canon API calls — stubs
-jest.mock('../../api/canonDoctor', () => ({
-  runCanonDoctor: jest.fn(),
+vi.mock('../../api/canonDoctor', () => ({
+  runCanonDoctor: vi.fn(),
 }));
-jest.mock('../../api/canonGateFast', () => ({
-  runCanonGateFast: jest.fn(),
+vi.mock('../../api/canonGateFast', () => ({
+  runCanonGateFast: vi.fn(),
 }));
-jest.mock('../../api/canonPing', () => ({
-  runCanonPing: jest.fn(),
+vi.mock('../../api/canonPing', () => ({
+  runCanonPing: vi.fn(),
 }));
 
 // ---------------------------------------------------------------------------

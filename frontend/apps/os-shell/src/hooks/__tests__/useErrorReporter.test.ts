@@ -10,7 +10,7 @@
  * @vitest-environment jsdom
  */
 
-// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 
 import { useErrorReporter, errorTracker } from '../useErrorReporter';
@@ -20,8 +20,8 @@ const originalError = console.error;
 const originalWarn = console.warn;
 
 beforeEach(() => {
-  console.error = jest.fn();
-  console.warn = jest.fn();
+  console.error = vi.fn();
+  console.warn = vi.fn();
   // Clear error tracker
   errorTracker.clear();
 });

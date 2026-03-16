@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -10,27 +11,27 @@ import {
   getPiltStatus,
 } from '../../services/piltService';
 
-jest.mock('../../components/workbench/ParcelContextBanner', () => ({
+vi.mock('../../components/workbench/ParcelContextBanner', () => ({
   ParcelContextBanner: () => null,
 }));
 
-jest.mock('../../services/piltService', () => {
-  const actual = jest.requireActual('../../services/piltService');
+vi.mock('../../services/piltService', async () => {
+  const actual = await vi.importActual('../../services/piltService');
   return {
     ...actual,
-    getPiltStatus: jest.fn(),
-    getPiltDistricts: jest.fn(),
-    getPiltReceipts: jest.fn(),
+    getPiltStatus: vi.fn(),
+    getPiltDistricts: vi.fn(),
+    getPiltReceipts: vi.fn(),
   };
 });
 
-jest.mock('../../services/levyService', () => ({
-  calculateLevyRate: jest.fn(),
+vi.mock('../../services/levyService', () => ({
+  calculateLevyRate: vi.fn(),
 }));
 
-const mockGetPiltStatus = getPiltStatus as jest.MockedFunction<typeof getPiltStatus>;
-const mockGetPiltDistricts = getPiltDistricts as jest.MockedFunction<typeof getPiltDistricts>;
-const mockGetPiltReceipts = getPiltReceipts as jest.MockedFunction<typeof getPiltReceipts>;
+const mockGetPiltStatus = getPiltStatus as vi.MockedFunction<typeof getPiltStatus>;
+const mockGetPiltDistricts = getPiltDistricts as vi.MockedFunction<typeof getPiltDistricts>;
+const mockGetPiltReceipts = getPiltReceipts as vi.MockedFunction<typeof getPiltReceipts>;
 
 function renderSuite() {
   return render(
@@ -51,7 +52,7 @@ async function openPiltTab() {
 
 describe('DaisSuiteHome PILT module', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders live Benton snapshot data when PILT endpoints succeed', async () => {

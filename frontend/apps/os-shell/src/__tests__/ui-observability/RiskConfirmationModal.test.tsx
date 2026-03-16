@@ -5,6 +5,7 @@
  * Tests the modal UI for write-risk tool confirmation.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { Risk } from '../../api/pilotApi';
 import { RiskConfirmationModal } from '../../components/pilot/RiskConfirmationModal';
@@ -15,12 +16,12 @@ describe('RiskConfirmationModal', () => {
     toolId: 'test.tool',
     toolDescription: 'Test tool description',
     risk: 'write_low' as Risk,
-    onConfirm: jest.fn(),
-    onCancel: jest.fn(),
+    onConfirm: vi.fn(),
+    onCancel: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Rendering', () => {
@@ -76,7 +77,7 @@ describe('RiskConfirmationModal', () => {
 
   describe('Confirm/Cancel Actions', () => {
     it('calls onConfirm when confirm button is clicked', () => {
-      const onConfirm = jest.fn();
+      const onConfirm = vi.fn();
       render(<RiskConfirmationModal {...defaultProps} onConfirm={onConfirm} />);
 
       const confirmButton = screen.getByRole('button', { name: /confirm/i });
@@ -86,7 +87,7 @@ describe('RiskConfirmationModal', () => {
     });
 
     it('calls onCancel when cancel button is clicked', () => {
-      const onCancel = jest.fn();
+      const onCancel = vi.fn();
       render(<RiskConfirmationModal {...defaultProps} onCancel={onCancel} />);
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
@@ -96,7 +97,7 @@ describe('RiskConfirmationModal', () => {
     });
 
     it('calls onCancel when escape key is pressed', () => {
-      const onCancel = jest.fn();
+      const onCancel = vi.fn();
       render(<RiskConfirmationModal {...defaultProps} onCancel={onCancel} />);
 
       fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
@@ -105,7 +106,7 @@ describe('RiskConfirmationModal', () => {
     });
 
     it('calls onCancel when clicking backdrop', () => {
-      const onCancel = jest.fn();
+      const onCancel = vi.fn();
       render(<RiskConfirmationModal {...defaultProps} onCancel={onCancel} />);
 
       const backdrop = screen.getByTestId('modal-backdrop');
@@ -164,7 +165,7 @@ describe('RiskConfirmationModal', () => {
     });
 
     it('calls onConfirm with selected reason code', () => {
-      const onConfirm = jest.fn();
+      const onConfirm = vi.fn();
       render(
         <RiskConfirmationModal
           {...defaultProps}
@@ -187,7 +188,7 @@ describe('RiskConfirmationModal', () => {
 
   describe('Loading State', () => {
     it('shows loading state during confirmation', async () => {
-      const onConfirm = jest.fn(() => new Promise(() => {})); // Never resolves
+      const onConfirm = vi.fn(() => new Promise(() => {})); // Never resolves
       render(<RiskConfirmationModal {...defaultProps} onConfirm={onConfirm} />);
 
       const confirmButton = screen.getByRole('button', { name: /confirm/i });
@@ -201,7 +202,7 @@ describe('RiskConfirmationModal', () => {
     });
 
     it('disables cancel button during loading', async () => {
-      const onConfirm = jest.fn(() => new Promise(() => {}));
+      const onConfirm = vi.fn(() => new Promise(() => {}));
       render(<RiskConfirmationModal {...defaultProps} onConfirm={onConfirm} />);
 
       fireEvent.click(screen.getByRole('button', { name: /confirm/i }));

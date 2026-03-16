@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
+import { vi } from 'vitest';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 expect.extend(toHaveNoViolations);
@@ -764,7 +765,7 @@ describe('Popover', () => {
 
     it('handles rich content with interactive elements', async () => {
       const user = userEvent.setup();
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>

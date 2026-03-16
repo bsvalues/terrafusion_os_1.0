@@ -6,6 +6,7 @@
  *   2. Saving clears the dirty state and persists the content to localStorage.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 
@@ -13,33 +14,33 @@ import React from 'react';
 // Mocks — same pattern as WorkspaceMVP
 // ---------------------------------------------------------------------------
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useNavigate: () => vi.fn(),
 }));
 
-jest.mock('../../components/standalone', () => ({
+vi.mock('../../components/standalone', () => ({
   StandaloneHomeShell: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-jest.mock('../../canon/CanonModuleHost', () => ({
+vi.mock('../../canon/CanonModuleHost', () => ({
   CanonModuleHost: () => <div data-testid='canon-module-host-stub' />,
 }));
 
-jest.mock('../../canon/useCanonLayout', () => ({
+vi.mock('../../canon/useCanonLayout', () => ({
   useCanonLayout: () => [
     { leftPaneWidth: 250, rightPaneWidth: 750, inspectorOpen: false },
-    jest.fn(),
+    vi.fn(),
   ],
 }));
 
-jest.mock('../../canon/invokeWithPreflight', () => ({
-  invokeWithPreflight: jest.fn(),
+vi.mock('../../canon/invokeWithPreflight', () => ({
+  invokeWithPreflight: vi.fn(),
 }));
 
-jest.mock('../../api/canonDoctor', () => ({ runCanonDoctor: jest.fn() }));
-jest.mock('../../api/canonGateFast', () => ({ runCanonGateFast: jest.fn() }));
-jest.mock('../../api/canonPing', () => ({ runCanonPing: jest.fn() }));
+vi.mock('../../api/canonDoctor', () => ({ runCanonDoctor: vi.fn() }));
+vi.mock('../../api/canonGateFast', () => ({ runCanonGateFast: vi.fn() }));
+vi.mock('../../api/canonPing', () => ({ runCanonPing: vi.fn() }));
 
 // ---------------------------------------------------------------------------
 // Import under test

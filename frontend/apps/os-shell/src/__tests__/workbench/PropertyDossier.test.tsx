@@ -5,51 +5,52 @@
  * Tests: list docs → view → summarize via tool → correlationId UX
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import * as dossierServiceModule from '../../services/dossierService';
 import PropertyDossier from '../../pages/workbench/tabs/PropertyDossier';
 
 // Mock the pilotApi module
-jest.mock('../../api/pilotApi');
-jest.mock('../../services/dossierService', () => ({
+vi.mock('../../api/pilotApi');
+vi.mock('../../services/dossierService', () => ({
   dossierService: {
-    getDetails: jest.fn(),
-    getEvidenceSnapshot: jest.fn(),
-    searchDocuments: jest.fn(),
-    searchEvidence: jest.fn(),
-    getChainOfCustody: jest.fn(),
-    getStats: jest.fn(),
+    getDetails: vi.fn(),
+    getEvidenceSnapshot: vi.fn(),
+    searchDocuments: vi.fn(),
+    searchEvidence: vi.fn(),
+    getChainOfCustody: vi.fn(),
+    getStats: vi.fn(),
   },
 }));
 
 const mockGetDetails =
-  dossierServiceModule.dossierService.getDetails as jest.MockedFunction<
+  dossierServiceModule.dossierService.getDetails as vi.MockedFunction<
     typeof dossierServiceModule.dossierService.getDetails
   >;
 
 const mockGetEvidenceSnapshot =
-  dossierServiceModule.dossierService.getEvidenceSnapshot as jest.MockedFunction<
+  dossierServiceModule.dossierService.getEvidenceSnapshot as vi.MockedFunction<
     typeof dossierServiceModule.dossierService.getEvidenceSnapshot
   >;
 
 const mockSearchDocuments =
-  dossierServiceModule.dossierService.searchDocuments as jest.MockedFunction<
+  dossierServiceModule.dossierService.searchDocuments as vi.MockedFunction<
     typeof dossierServiceModule.dossierService.searchDocuments
   >;
 
 const mockSearchEvidence =
-  dossierServiceModule.dossierService.searchEvidence as jest.MockedFunction<
+  dossierServiceModule.dossierService.searchEvidence as vi.MockedFunction<
     typeof dossierServiceModule.dossierService.searchEvidence
   >;
 
 const mockGetChainOfCustody =
-  dossierServiceModule.dossierService.getChainOfCustody as jest.MockedFunction<
+  dossierServiceModule.dossierService.getChainOfCustody as vi.MockedFunction<
     typeof dossierServiceModule.dossierService.getChainOfCustody
   >;
 
 const mockGetStats =
-  dossierServiceModule.dossierService.getStats as jest.MockedFunction<
+  dossierServiceModule.dossierService.getStats as vi.MockedFunction<
     typeof dossierServiceModule.dossierService.getStats
   >;
 
@@ -75,7 +76,7 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 
 describe('PropertyDossier', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     mockGetDetails.mockResolvedValue({
       data: {

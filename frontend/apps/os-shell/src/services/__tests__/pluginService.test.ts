@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useModuleRegistryStore } from '../../stores/moduleRegistryStore';
 import { usePluginStore } from '../../stores/pluginStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
@@ -23,7 +24,7 @@ describe('PluginService', () => {
     useStartMenuStore.setState({ allApps: [] });
 
     // Mock fetch to return a valid manifest
-    global.fetch = jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(MOCK_MANIFEST),
     });
@@ -31,7 +32,7 @@ describe('PluginService', () => {
 
   afterEach(() => {
     global.fetch = originalFetch;
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should install a plugin', async () => {
@@ -81,7 +82,7 @@ describe('PluginService', () => {
   });
 
   it('should throw on fetch failure', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 404,
       statusText: 'Not Found',
@@ -92,7 +93,7 @@ describe('PluginService', () => {
   });
 
   it('should throw on invalid manifest', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ name: 'incomplete' }), // Missing id, version, entryPoint
     });

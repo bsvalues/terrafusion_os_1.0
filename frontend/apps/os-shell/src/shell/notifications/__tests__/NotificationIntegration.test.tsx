@@ -7,9 +7,9 @@
  * - NotificationBell reads from store
  *
  * @module shell/notifications/__tests__/NotificationIntegration.test
- * @jest-environment jsdom
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 
@@ -21,7 +21,7 @@ import { ToastContainer } from '../ToastContainer';
 
 // Reset stores before each test
 beforeEach(() => {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
   act(() => {
     useNotificationStore.getState().clearAll();
     useDesktopStore.setState({
@@ -33,7 +33,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
   cleanup();
 });
 
@@ -155,7 +155,7 @@ describe('Notification Integration', () => {
 
       // Wait for auto-dismiss
       act(() => {
-        jest.advanceTimersByTime(1000);
+        vi.advanceTimersByTime(1000);
       });
 
       // Toast gone
@@ -208,8 +208,8 @@ describe('Notification Integration', () => {
 
   describe('Notification Actions', () => {
     it('action callback can open a module', async () => {
-      jest.useRealTimers();
-      const openWindowMock = jest.fn();
+      vi.useRealTimers();
+      const openWindowMock = vi.fn();
 
       render(<ToastContainer />);
 

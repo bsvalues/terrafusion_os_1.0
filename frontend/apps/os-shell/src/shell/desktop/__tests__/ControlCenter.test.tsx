@@ -2,10 +2,11 @@
  * ControlCenter component tests.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 // Mock LiquidPanel and NeonSignal (material system)
-jest.mock('../../../ui/materials', () => ({
+vi.mock('../../../ui/materials', () => ({
   LiquidPanel: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div data-testid='liquid-panel' className={className}>{children}</div>
   ),
@@ -15,7 +16,7 @@ jest.mock('../../../ui/materials', () => ({
 }));
 
 // Mock lucide-react
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Layers: () => <svg data-testid='icon-layers' />,
   Map: () => <svg data-testid='icon-map' />,
   Settings2: () => <svg data-testid='icon-settings' />,

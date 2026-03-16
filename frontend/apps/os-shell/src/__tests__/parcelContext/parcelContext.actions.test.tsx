@@ -14,6 +14,7 @@
  * @see Slice 10: Parcel Context UX Surface
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ParcelContextIndicator } from '../../components/ParcelContext/ParcelContextIndicator';
@@ -33,9 +34,9 @@ import {
 // ============================================================================
 
 // Mock react-router-dom navigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => ({
+  ...await vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }));
 

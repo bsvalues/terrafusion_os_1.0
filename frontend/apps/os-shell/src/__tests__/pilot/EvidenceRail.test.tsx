@@ -11,6 +11,7 @@
  *  - Summary-only rendering (no raw payload)
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -22,13 +23,13 @@ import type { TracePhase } from '../../hooks/useTraceByCorrelationId';
 // Mock material components to avoid framer-motion dependency
 // ---------------------------------------------------------------------------
 
-jest.mock('../../ui/materials/LiquidPanel', () => ({
+vi.mock('../../ui/materials/LiquidPanel', () => ({
   LiquidPanel: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div {...props}>{children}</div>
   ),
 }));
 
-jest.mock('../../ui/materials/TactileButton', () => ({
+vi.mock('../../ui/materials/TactileButton', () => ({
   TactileButton: ({ children, ...props }: React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) => (
     <button {...props}>{children}</button>
   ),
@@ -67,26 +68,26 @@ const MOCK_EVENTS: PilotTraceEvent[] = [
 
 describe('EvidenceRail — empty state', () => {
   it('renders empty message when phase is "empty"', () => {
-    render(<EvidenceRail phase="empty" events={[]} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="empty" events={[]} error={null} onRetry={vi.fn()} />);
     expect(screen.getByTestId('evidence-empty')).toBeInTheDocument();
     expect(screen.getByText(/no trace events in the last 30 days/i)).toBeInTheDocument();
   });
 
   it('renders empty message when phase is "ready" but events array is empty', () => {
-    render(<EvidenceRail phase="ready" events={[]} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={[]} error={null} onRetry={vi.fn()} />);
     expect(screen.getByTestId('evidence-empty')).toBeInTheDocument();
   });
 });
 
 describe('EvidenceRail — loading / polling', () => {
   it('renders loading indicator when phase is "loading"', () => {
-    render(<EvidenceRail phase="loading" events={[]} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="loading" events={[]} error={null} onRetry={vi.fn()} />);
     expect(screen.getByTestId('evidence-loading')).toBeInTheDocument();
     expect(screen.getByText(/loading trace/i)).toBeInTheDocument();
   });
 
   it('renders polling indicator when phase is "polling"', () => {
-    render(<EvidenceRail phase="polling" events={[]} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="polling" events={[]} error={null} onRetry={vi.fn()} />);
     expect(screen.getByTestId('evidence-loading')).toBeInTheDocument();
     expect(screen.getByText(/waiting for trace events/i)).toBeInTheDocument();
   });
@@ -94,7 +95,7 @@ describe('EvidenceRail — loading / polling', () => {
 
 describe('EvidenceRail — error state', () => {
   it('renders error message with retry button', async () => {
-    const onRetry = jest.fn();
+    const onRetry = vi.fn();
     render(<EvidenceRail phase="error" events={[]} error="Network failure" onRetry={onRetry} />);
 
     expect(screen.getByTestId('evidence-error')).toBeInTheDocument();
@@ -108,7 +109,7 @@ describe('EvidenceRail — error state', () => {
 
 describe('EvidenceRail — timeline display', () => {
   it('renders correlation header with metadata', () => {
-    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={vi.fn()} />);
 
     const header = screen.getByTestId('evidence-header');
     expect(header).toBeInTheDocument();
@@ -118,14 +119,14 @@ describe('EvidenceRail — timeline display', () => {
   });
 
   it('renders all timeline events', () => {
-    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={vi.fn()} />);
 
     const events = screen.getAllByTestId('timeline-event');
     expect(events).toHaveLength(2);
   });
 
   it('renders type badges for each event', () => {
-    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={vi.fn()} />);
 
     const badges = screen.getAllByTestId('event-type-badge');
     expect(badges).toHaveLength(2);
@@ -134,7 +135,7 @@ describe('EvidenceRail — timeline display', () => {
   });
 
   it('renders event summaries', () => {
-    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={vi.fn()} />);
 
     const summaries = screen.getAllByTestId('event-summary');
     expect(summaries[0]).toHaveTextContent('Invoked explain_value_change for parcel P-001');
@@ -144,7 +145,7 @@ describe('EvidenceRail — timeline display', () => {
 
 describe('EvidenceRail — Gate 6 compliance', () => {
   it('shows payloadRef as reference text, not as a link', () => {
-    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={vi.fn()} />);
 
     const payloadRef = screen.getByTestId('payload-ref');
     expect(payloadRef).toHaveTextContent('Payload stored: dossier://evidence/doc-42');
@@ -154,14 +155,14 @@ describe('EvidenceRail — Gate 6 compliance', () => {
   });
 
   it('shows redacted-fields notice with count', () => {
-    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={vi.fn()} />);
 
     const notice = screen.getByTestId('redacted-notice');
     expect(notice).toHaveTextContent('2 fields redacted');
   });
 
   it('does not render raw field names in redacted notice', () => {
-    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={vi.fn()} />);
 
     const notice = screen.getByTestId('redacted-notice');
     expect(notice.textContent).not.toContain('ownerSSN');
@@ -171,7 +172,7 @@ describe('EvidenceRail — Gate 6 compliance', () => {
 
 describe('EvidenceRail — summary-only rendering', () => {
   it('renders only summary text, no raw JSON or payload body', () => {
-    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={MOCK_EVENTS} error={null} onRetry={vi.fn()} />);
 
     const timeline = screen.getByTestId('evidence-timeline');
     const text = timeline.textContent ?? '';

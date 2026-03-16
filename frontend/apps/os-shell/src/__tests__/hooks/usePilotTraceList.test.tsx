@@ -12,6 +12,7 @@
  *   - newest-first ordering maintained
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { usePilotTraceList } from '../../hooks/usePilotTraceList';
 import type { PilotTraceEvent, PilotTraceListResponse } from '../../api/pilotApi';
@@ -20,10 +21,10 @@ import type { PilotTraceEvent, PilotTraceListResponse } from '../../api/pilotApi
 // Mock the API
 // ============================================================================
 
-const mockListPilotTraces = jest.fn<Promise<PilotTraceListResponse>, [unknown]>();
+const mockListPilotTraces = vi.fn<Promise<PilotTraceListResponse>, [unknown]>();
 
-jest.mock('../../api/pilotApi', () => ({
-  ...jest.requireActual('../../api/pilotApi'),
+vi.mock('../../api/pilotApi', async () => ({
+  ...await vi.importActual('../../api/pilotApi'),
   listPilotTraces: (...args: unknown[]) => mockListPilotTraces(args[0]),
 }));
 
@@ -52,12 +53,12 @@ const evt3: PilotTraceEvent = makeEvent({ eventId: 'e3', timestamp: '2026-03-01T
 
 describe('usePilotTraceList', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     mockListPilotTraces.mockReset();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('stays idle when parcelId is null', () => {
@@ -132,7 +133,7 @@ describe('usePilotTraceList', () => {
 
     // Advance timer to trigger poll
     act(() => {
-      jest.advanceTimersByTime(5000);
+      vi.advanceTimersByTime(5000);
     });
 
     await waitFor(() => {

@@ -17,6 +17,7 @@
  * @module shell/desktop/__tests__/WindowPeek.test
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -28,14 +29,14 @@ import { WindowPeek } from '../WindowPeek';
 // Mock Setup
 // ============================================================================
 
-const mockFocusWindow = jest.fn();
-const mockCloseWindow = jest.fn();
+const mockFocusWindow = vi.fn();
+const mockCloseWindow = vi.fn();
 
-jest.mock('../../../stores/desktopStore', () => ({
-  useDesktopStore: jest.fn(),
+vi.mock('../../../stores/desktopStore', () => ({
+  useDesktopStore: vi.fn(),
 }));
 
-const mockUseDesktopStore = useDesktopStore as jest.MockedFunction<typeof useDesktopStore>;
+const mockUseDesktopStore = useDesktopStore as vi.MockedFunction<typeof useDesktopStore>;
 
 // ============================================================================
 // Test Setup
@@ -78,7 +79,7 @@ const mockWindows = [
 ];
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 
   // Reset peek store
   act(() => {
@@ -317,7 +318,7 @@ describe('WindowPeek', () => {
 
   describe('auto-hide on mouse leave (SC-13.10)', () => {
     it('hides when mouse leaves peek', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       showPeekForWindow('window-1');
       render(<WindowPeek />);
 
@@ -329,11 +330,11 @@ describe('WindowPeek', () => {
 
       // After PEEK_HIDE_DELAY_MS, should hide
       act(() => {
-        jest.advanceTimersByTime(100); // PEEK_HIDE_DELAY_MS
+        vi.advanceTimersByTime(100); // PEEK_HIDE_DELAY_MS
       });
 
       expect(useWindowPeekStore.getState().isVisible).toBe(false);
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
   });
 

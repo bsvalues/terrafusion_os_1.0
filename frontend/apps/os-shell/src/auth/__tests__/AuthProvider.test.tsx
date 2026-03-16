@@ -6,6 +6,7 @@
  * - login() persists + updates state
  * - logout() clears + updates state
  */
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { act, render } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
@@ -31,7 +32,7 @@ function renderWithAuth(ui: React.ReactElement) {
 describe('AuthProvider', () => {
   beforeEach(() => {
     localStorage.clear();
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('initializes_from_storage_token', () => {
@@ -114,7 +115,7 @@ describe('AuthProvider', () => {
 
   it('throws_when_useAuth_used_outside_provider', () => {
     // Suppress React error boundary noise for this test
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     function Orphan() {
       useAuth();

@@ -14,6 +14,7 @@
  * @module shell/desktop/__tests__/DesktopIcons.test
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
@@ -22,14 +23,14 @@ import userEvent from '@testing-library/user-event';
 // Mock Setup
 // ============================================================================
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-const mockActivateModule = jest.fn();
-jest.mock('../../../orchestration/moduleActivation', () => ({
+const mockActivateModule = vi.fn();
+vi.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
@@ -68,7 +69,7 @@ describe('Desktop Icons (Priority 3)', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // --------------------------------------------------------------------------
@@ -282,7 +283,7 @@ describe('Desktop Icons (Priority 3)', () => {
     });
 
     it('calls onSelect when clicked', () => {
-      const onSelect = jest.fn();
+      const onSelect = vi.fn();
       render(
         <DesktopIcon
           id={DESKTOP_ICONS[0].id}
@@ -299,7 +300,7 @@ describe('Desktop Icons (Priority 3)', () => {
     });
 
     it('calls onLaunch when double-clicked', () => {
-      const onLaunch = jest.fn();
+      const onLaunch = vi.fn();
       render(
         <DesktopIcon
           id={DESKTOP_ICONS[0].id}

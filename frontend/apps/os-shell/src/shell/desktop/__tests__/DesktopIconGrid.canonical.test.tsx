@@ -9,19 +9,20 @@
  * OS feature icons still use navigate() for standalone pages.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { getDesktopIcons } from '../../../config/desktopManifest';
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-const mockActivateModule = jest.fn();
-jest.mock('../../../orchestration/moduleActivation', () => ({
+const mockActivateModule = vi.fn();
+vi.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 

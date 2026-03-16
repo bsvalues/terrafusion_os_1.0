@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { toast } from 'sonner';
+import { vi } from 'vitest';
 import { Button } from './button';
 import { Toaster } from './sonner';
 
@@ -37,7 +38,7 @@ const ToastTrigger = ({ message, type = 'default' }: { message: string; type?: s
 describe('Sonner (Toast)', () => {
   beforeEach(() => {
     // Clear all toasts before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Rendering', () => {
@@ -208,7 +209,7 @@ describe('Sonner (Toast)', () => {
     // Skip: Clicking action buttons causes hasPointerCapture error in jsdom
     it.skip('renders toast with action button', async () => {
       const user = userEvent.setup();
-      const actionFn = jest.fn();
+      const actionFn = vi.fn();
 
       render(
         <>
@@ -244,7 +245,7 @@ describe('Sonner (Toast)', () => {
     // Skip: Clicking cancel buttons causes hasPointerCapture error in jsdom
     it.skip('renders toast with cancel button', async () => {
       const user = userEvent.setup();
-      const cancelFn = jest.fn();
+      const cancelFn = vi.fn();
 
       render(
         <>
@@ -279,8 +280,8 @@ describe('Sonner (Toast)', () => {
 
     it('renders toast with both action and cancel buttons', async () => {
       const user = userEvent.setup();
-      const actionFn = jest.fn();
-      const cancelFn = jest.fn();
+      const actionFn = vi.fn();
+      const cancelFn = vi.fn();
 
       render(
         <>

@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, beforeEach, afterEach, type MockInstance } from 'vitest';
 import { useNetworkStore } from '../../stores/networkStore';
 import { useSyncStore } from '../../stores/syncStore';
 import { syncService } from '../syncService';
@@ -21,7 +22,7 @@ class MockBroadcastChannel {
 global.BroadcastChannel = MockBroadcastChannel as any;
 
 describe('SyncService', () => {
-  let postMessageSpy: jest.SpyInstance;
+  let postMessageSpy: MockInstance;
 
   beforeEach(() => {
     // Reset stores
@@ -29,14 +30,14 @@ describe('SyncService', () => {
     useNetworkStore.setState({ isOnline: true });
 
     // Spy on postMessage
-    postMessageSpy = jest.spyOn(MockBroadcastChannel.prototype, 'postMessage');
+    postMessageSpy = vi.spyOn(MockBroadcastChannel.prototype, 'postMessage');
 
     // Ensure init is called (idempotent)
     syncService.init();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should broadcast immediately when online', () => {

@@ -11,6 +11,7 @@
  * - reset_clears_storage
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -45,7 +46,7 @@ const mockMetrics: Record<string, MetricsEntry> = {
 
 // Mock clipboard API
 const mockClipboard = {
-  writeText: jest.fn().mockResolvedValue(undefined),
+  writeText: vi.fn().mockResolvedValue(undefined),
 };
 
 describe('LegacyMetricsViewer', () => {

@@ -7,9 +7,9 @@
  * - Integrates with notification store
  *
  * @module shell/notifications/__tests__/ToastContainer.test
- * @jest-environment jsdom
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -21,14 +21,14 @@ import { ToastContainer } from '../ToastContainer';
 
 // Reset store before each test
 beforeEach(() => {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
   act(() => {
     useNotificationStore.getState().clearAll();
   });
 });
 
 afterEach(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
   cleanup();
 });
 
@@ -132,7 +132,7 @@ describe('ToastContainer', () => {
 
   describe('Toast Dismissal', () => {
     it('removes toast when dismiss clicked', async () => {
-      jest.useRealTimers();
+      vi.useRealTimers();
       render(<ToastContainer />);
 
       act(() => {
@@ -168,7 +168,7 @@ describe('ToastContainer', () => {
       expect(screen.getByText('Auto Dismiss')).toBeInTheDocument();
 
       act(() => {
-        jest.advanceTimersByTime(3000);
+        vi.advanceTimersByTime(3000);
       });
 
       expect(screen.queryByText('Auto Dismiss')).not.toBeInTheDocument();

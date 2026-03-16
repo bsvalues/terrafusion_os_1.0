@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 /**
  * workbench.contractGates.test.ts
  *
@@ -23,13 +22,14 @@
  * @see components/workbench/index.ts — Component barrel
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { VALID_WORKBENCH_TAB_IDS } from '../../config/suiteRegistry';
 
 // Mock the badge API so providers don't hit a real server in tests
-jest.mock('../../services/api/workbenchBadgeApi', () => ({
-  fetchPropertyBadgeData: jest.fn().mockResolvedValue({
+vi.mock('../../services/api/workbenchBadgeApi', () => ({
+  fetchPropertyBadgeData: vi.fn().mockResolvedValue({
     geoId: 'test-parcel',
     address: '123 Test St',
     ownerName: 'Test Owner',
@@ -42,12 +42,12 @@ jest.mock('../../services/api/workbenchBadgeApi', () => ({
     lastModified: null,
     source: 'PACS',
   }),
-  clearBadgeCache: jest.fn(),
+  clearBadgeCache: vi.fn(),
 }));
 
 // Mock the activity API so the hook doesn't hit a real server in tests
-jest.mock('../../services/api/activityApi', () => ({
-  fetchParcelActivity: jest.fn().mockResolvedValue([
+vi.mock('../../services/api/activityApi', () => ({
+  fetchParcelActivity: vi.fn().mockResolvedValue([
     {
       id: 'act-1',
       source: 'forge',
@@ -63,7 +63,7 @@ jest.mock('../../services/api/activityApi', () => ({
       severity: 'success',
     },
   ]),
-  clearActivityCache: jest.fn(),
+  clearActivityCache: vi.fn(),
 }));
 
 // ============================================================================

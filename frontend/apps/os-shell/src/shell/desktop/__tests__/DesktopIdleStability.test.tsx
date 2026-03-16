@@ -11,6 +11,7 @@
  * @see Phase A TDD - UI Stabilization
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { cleanup, screen } from '@testing-library/react';
 import { act } from 'react';
 
@@ -19,29 +20,29 @@ import { useDesktopStore } from '../../../stores/desktopStore';
 import { useStartMenuStore } from '../../../stores/startMenuStore';
 
 // Mock child components to isolate Desktop idle behavior
-jest.mock('../DesktopBackground', () => ({
+vi.mock('../DesktopBackground', () => ({
   DesktopBackground: () => <div data-testid='desktop-background'>Background</div>,
 }));
 
-jest.mock('../WindowManager', () => ({
+vi.mock('../WindowManager', () => ({
   WindowManager: () => <div data-testid='window-manager'>WindowManager</div>,
 }));
 
-jest.mock('../Taskbar', () => ({
+vi.mock('../Taskbar', () => ({
   Taskbar: () => <div data-testid='taskbar'>Taskbar</div>,
 }));
 
-jest.mock('../StartMenu', () => ({
+vi.mock('../StartMenu', () => ({
   StartMenu: () => <div data-testid='start-menu'>StartMenu</div>,
 }));
 
 // Mock SentinelPanel to prevent useAgentFeed intervals
-jest.mock('../../../sentinel/SentinelPanel', () => ({
+vi.mock('../../../sentinel/SentinelPanel', () => ({
   SentinelPanel: () => null,
 }));
 
 // Mock useAgentFeed to prevent any interval-based polling
-jest.mock('../../../sentinel/useAgentFeed', () => ({
+vi.mock('../../../sentinel/useAgentFeed', () => ({
   useAgentFeed: () => ({
     status: 'ok',
     statusWarnings: [],
@@ -51,10 +52,10 @@ jest.mock('../../../sentinel/useAgentFeed', () => ({
     gapDetected: false,
     paused: false,
     autoScroll: true,
-    setPaused: jest.fn(),
-    setAutoScroll: jest.fn(),
-    clearEvents: jest.fn(),
-    clearGap: jest.fn(),
+    setPaused: vi.fn(),
+    setAutoScroll: vi.fn(),
+    clearEvents: vi.fn(),
+    clearGap: vi.fn(),
   }),
 }));
 
@@ -63,7 +64,7 @@ import { captureStyles, renderDesktopRoute, stylesAreEqual } from '../../../test
 
 describe('Desktop Idle Stability', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     // Reset stores to clean state
     useDesktopStore.setState({
@@ -80,9 +81,9 @@ describe('Desktop Idle Stability', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
     cleanup();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Timer Stability', () => {
@@ -96,7 +97,7 @@ describe('Desktop Idle Stability', () => {
 
       // Allow component to mount fully
       await act(async () => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
       });
 
       // CRITICAL: No intervals should be started by the Desktop route
@@ -117,7 +118,7 @@ describe('Desktop Idle Stability', () => {
       const initialRafCount = capturedRafIds.length;
 
       await act(async () => {
-        jest.advanceTimersByTime(5000); // Advance 5 seconds
+        vi.advanceTimersByTime(5000); // Advance 5 seconds
       });
 
       const afterRafCount = capturedRafIds.length;
@@ -134,7 +135,7 @@ describe('Desktop Idle Stability', () => {
       const { spies, cleanup: harnessCleanup } = renderDesktopRoute();
 
       await act(async () => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
       });
 
       // Check for any 5000ms intervals (the known pulse period)
@@ -155,7 +156,7 @@ describe('Desktop Idle Stability', () => {
       const { cleanup: harnessCleanup } = renderDesktopRoute();
 
       await act(async () => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
       });
 
       const background = screen.getByTestId('desktop-background');
@@ -163,7 +164,7 @@ describe('Desktop Idle Stability', () => {
 
       // Advance 10 seconds (2 pulse cycles at 5s each)
       await act(async () => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const afterStyles = captureStyles(background);
@@ -178,7 +179,7 @@ describe('Desktop Idle Stability', () => {
       const { cleanup: harnessCleanup } = renderDesktopRoute();
 
       await act(async () => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
       });
 
       const desktop = screen.getByTestId('desktop');
@@ -186,7 +187,7 @@ describe('Desktop Idle Stability', () => {
 
       // Advance 5 seconds
       await act(async () => {
-        jest.advanceTimersByTime(5000);
+        vi.advanceTimersByTime(5000);
       });
 
       const afterBounds = desktop.getBoundingClientRect();
@@ -217,7 +218,7 @@ describe('Desktop Idle Stability', () => {
 
       // Clear any subscription calls from initial render
       await act(async () => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
       });
 
       const initialDesktopCount = desktopUpdates.length;
@@ -225,7 +226,7 @@ describe('Desktop Idle Stability', () => {
 
       // Advance 10 seconds without any user input
       await act(async () => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const desktopGrowth = desktopUpdates.length - initialDesktopCount;
@@ -246,7 +247,7 @@ describe('Desktop Idle Stability', () => {
       const { unmount, spies, capturedIntervalIds, cleanup: harnessCleanup } = renderDesktopRoute();
 
       await act(async () => {
-        jest.advanceTimersByTime(100);
+        vi.advanceTimersByTime(100);
       });
 
       const intervalsBeforeUnmount = [...capturedIntervalIds];

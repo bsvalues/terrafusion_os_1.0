@@ -13,7 +13,7 @@
  * - Accessibility
  */
 
-// Vitest imports removed - Jest globals used
+import { vi, describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -30,7 +30,7 @@ import {
 // Helper component for testing
 function SelectDemo({
   defaultValue = '',
-  onValueChange = jest.fn(),
+  onValueChange = vi.fn(),
   disabled = false,
 }: {
   defaultValue?: string;
@@ -125,7 +125,7 @@ describe('Select Component', () => {
   describe('Selection', () => {
     it('should select an option when clicked', async () => {
       const user = userEvent.setup();
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<SelectDemo onValueChange={onValueChange} />);
 
       const trigger = screen.getByRole('combobox');
@@ -153,7 +153,7 @@ describe('Select Component', () => {
 
     it('should change selection when different option clicked', async () => {
       const user = userEvent.setup();
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<SelectDemo defaultValue='apple' onValueChange={onValueChange} />);
 
       const trigger = screen.getByRole('combobox');
@@ -251,7 +251,7 @@ describe('Select Component', () => {
 
     it('should select focused option on Enter', async () => {
       const user = userEvent.setup();
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       render(<SelectDemo onValueChange={onValueChange} />);
 
       const trigger = screen.getByRole('combobox');
@@ -374,7 +374,7 @@ describe('Select Component', () => {
   // Category 6: Form Integration
   describe('Form Integration', () => {
     it('should work with form submission', async () => {
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmit = vi.fn((e) => e.preventDefault());
       const user = userEvent.setup();
 
       render(
@@ -398,7 +398,7 @@ describe('Select Component', () => {
     });
 
     it('should work with controlled component', () => {
-      const onValueChange = jest.fn();
+      const onValueChange = vi.fn();
       const { rerender } = render(
         <Select value='apple' onValueChange={onValueChange}>
           <SelectTrigger>

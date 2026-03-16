@@ -5,6 +5,7 @@
  * @testCategory Integration Testing
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -265,14 +266,14 @@ const CommandWithRecent = ({ onSelect }: { onSelect: (value: string) => void }) 
 describe('Integration: Basic Command Palette Workflow', () => {
   describe('Component Integration', () => {
     it('should render command input', () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<BasicCommandPalette onSelect={handleSelect} />);
 
       expect(screen.getByPlaceholderText(/type a command or search/i)).toBeInTheDocument();
     });
 
     it('should render command groups', () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<BasicCommandPalette onSelect={handleSelect} />);
 
       expect(
@@ -284,7 +285,7 @@ describe('Integration: Basic Command Palette Workflow', () => {
     });
 
     it('should render command items', () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<BasicCommandPalette onSelect={handleSelect} />);
 
       expect(screen.getByText(/calendar/i)).toBeInTheDocument();
@@ -293,7 +294,7 @@ describe('Integration: Basic Command Palette Workflow', () => {
     });
 
     it('should render keyboard shortcuts', () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<BasicCommandPalette onSelect={handleSelect} />);
 
       expect(screen.getByText(/⌘P/i)).toBeInTheDocument();
@@ -305,7 +306,7 @@ describe('Integration: Basic Command Palette Workflow', () => {
   describe('User Workflow: Item Selection', () => {
     it('should select command item on click', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<BasicCommandPalette onSelect={handleSelect} />);
 
       await user.click(screen.getByText(/calendar/i));
@@ -315,7 +316,7 @@ describe('Integration: Basic Command Palette Workflow', () => {
 
     it('should select multiple items sequentially', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<BasicCommandPalette onSelect={handleSelect} />);
 
       await user.click(screen.getByText(/calendar/i));
@@ -332,7 +333,7 @@ describe('Integration: Basic Command Palette Workflow', () => {
   describe('Keyboard Navigation', () => {
     it('should navigate items with arrow keys', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<BasicCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/type a command or search/i);
@@ -349,7 +350,7 @@ describe('Integration: Basic Command Palette Workflow', () => {
 
   describe('Accessibility: Command Palette', () => {
     it('should have no accessibility violations', async () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       const { container } = render(<BasicCommandPalette onSelect={handleSelect} />);
       const results = await axe(container, {
         rules: {
@@ -362,7 +363,7 @@ describe('Integration: Basic Command Palette Workflow', () => {
     });
 
     it('should have accessible input', () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<BasicCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/type a command or search/i);
@@ -379,7 +380,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
   describe('Search Functionality', () => {
     it('should filter items based on search input', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<SearchableCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/search actions/i);
@@ -396,7 +397,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
 
     it('should show empty state when no results', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<SearchableCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/search actions/i);
@@ -407,7 +408,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
 
     it('should filter by keywords', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<SearchableCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/search actions/i);
@@ -418,7 +419,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
 
     it('should clear search and show all items', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<SearchableCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/search actions/i);
@@ -439,7 +440,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
   describe('Group Filtering', () => {
     it('should show only matching groups', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<SearchableCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/search actions/i);
@@ -453,7 +454,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
   describe('Selection with Search', () => {
     it('should select filtered item', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<SearchableCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/search actions/i);
@@ -467,7 +468,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
 
   describe('Accessibility: Searchable Command', () => {
     it('should have no accessibility violations', async () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       const { container } = render(<SearchableCommandPalette onSelect={handleSelect} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -483,7 +484,7 @@ describe('Integration: Command Dialog Workflow', () => {
   describe('Dialog Open/Close', () => {
     it('should open dialog when button is clicked', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandDialogExample onSelect={handleSelect} />);
 
       await user.click(screen.getByRole('button', { name: /open command palette/i }));
@@ -494,7 +495,7 @@ describe('Integration: Command Dialog Workflow', () => {
 
     it('should close dialog after item selection', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandDialogExample onSelect={handleSelect} />);
 
       // Open dialog
@@ -510,7 +511,7 @@ describe('Integration: Command Dialog Workflow', () => {
 
     it('should close dialog on Escape key', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandDialogExample onSelect={handleSelect} />);
 
       await user.click(screen.getByRole('button', { name: /open command palette/i }));
@@ -525,7 +526,7 @@ describe('Integration: Command Dialog Workflow', () => {
   describe('Command Groups in Dialog', () => {
     it('should render multiple command groups', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandDialogExample onSelect={handleSelect} />);
 
       await user.click(screen.getByRole('button', { name: /open command palette/i }));
@@ -536,7 +537,7 @@ describe('Integration: Command Dialog Workflow', () => {
 
     it('should render shortcuts in dialog', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandDialogExample onSelect={handleSelect} />);
 
       await user.click(screen.getByRole('button', { name: /open command palette/i }));
@@ -549,7 +550,7 @@ describe('Integration: Command Dialog Workflow', () => {
   describe('Accessibility: Command Dialog', () => {
     it('should have no accessibility violations when open', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       const { container } = render(<CommandDialogExample onSelect={handleSelect} />);
 
       await user.click(screen.getByRole('button', { name: /open command palette/i }));
@@ -568,7 +569,7 @@ describe('Integration: Command with Recent Actions', () => {
   describe('Recent Actions Tracking', () => {
     it('should add selected action to recent', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandWithRecent onSelect={handleSelect} />);
 
       // Initially no recent actions
@@ -588,7 +589,7 @@ describe('Integration: Command with Recent Actions', () => {
 
     it('should track multiple recent actions', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandWithRecent onSelect={handleSelect} />);
 
       // Select multiple actions
@@ -607,7 +608,7 @@ describe('Integration: Command with Recent Actions', () => {
 
     it('should limit recent actions to 3 items', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandWithRecent onSelect={handleSelect} />);
 
       // Select 4 actions
@@ -628,7 +629,7 @@ describe('Integration: Command with Recent Actions', () => {
 
     it('should move action to top when selected again', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       render(<CommandWithRecent onSelect={handleSelect} />);
 
       // Select actions
@@ -657,7 +658,7 @@ describe('Integration: Command with Recent Actions', () => {
   describe('Accessibility: Recent Actions', () => {
     it('should have no accessibility violations with recent actions', async () => {
       const user = userEvent.setup();
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
       const { container } = render(<CommandWithRecent onSelect={handleSelect} />);
 
       await user.click(screen.getByText(/create task/i));

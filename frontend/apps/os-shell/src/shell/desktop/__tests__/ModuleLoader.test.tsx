@@ -8,6 +8,7 @@
  * @vitest-environment jsdom
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import type { ModuleDefinition } from '../../../stores/moduleRegistryStore';
@@ -15,8 +16,8 @@ import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { ModuleLoader } from '../ModuleLoader';
 
 // Mock the ModuleRenderer to avoid lazy loading issues and focus on ModuleLoader logic
-jest.mock('../../../config/moduleComponents', () => {
-  const actual = jest.requireActual('../../../config/moduleComponents');
+vi.mock('../../../config/moduleComponents', async () => {
+  const actual = await vi.importActual('../../../config/moduleComponents');
   return {
     ...actual,
     ModuleRenderer: ({ module }: { module: { id: string } }) => (
@@ -49,7 +50,7 @@ beforeEach(() => {
     isInitialized: false,
     initError: null,
   });
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {

@@ -12,6 +12,7 @@
  * Government. Transcended.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React, { Suspense, lazy } from 'react';
@@ -53,84 +54,84 @@ const MockTabWithContext: React.FC<{ tabName: string }> = ({ tabName }) => {
 };
 
 // Lazy-load mocks
-jest.mock('../tabs/PropertySummary', () => ({
+vi.mock('../tabs/PropertySummary', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='summary' />,
 }));
 
-jest.mock('../tabs/PropertyForge', () => ({
+vi.mock('../tabs/PropertyForge', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='forge' />,
 }));
 
-jest.mock('../tabs/PropertyAtlas', () => ({
+vi.mock('../tabs/PropertyAtlas', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='atlas' />,
 }));
 
-jest.mock('../tabs/PropertyDais', () => ({
+vi.mock('../tabs/PropertyDais', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='dais' />,
 }));
 
-jest.mock('../tabs/PropertyDossier', () => ({
+vi.mock('../tabs/PropertyDossier', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='dossier' />,
 }));
 
-jest.mock('../tabs/PropertyPilot', () => ({
+vi.mock('../tabs/PropertyPilot', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='pilot' />,
 }));
 
-jest.mock('../tabs/PropertyClerk', () => ({
+vi.mock('../tabs/PropertyClerk', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='clerk' />,
 }));
 
-jest.mock('../tabs/PropertyTreasury', () => ({
+vi.mock('../tabs/PropertyTreasury', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='treasury' />,
 }));
 
-jest.mock('../tabs/PropertyAudit', () => ({
+vi.mock('../tabs/PropertyAudit', () => ({
   __esModule: true,
   default: () => <MockTabWithContext tabName='audit' />,
 }));
 
 // Mock ErrorBoundary
-jest.mock('../../../components/errors/ErrorBoundary', () => ({
+vi.mock('../../../components/errors/ErrorBoundary', () => ({
   ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock workbench chrome components (tested separately)
-jest.mock('../../../components/workbench/ContextRibbon', () => ({
+vi.mock('../../../components/workbench/ContextRibbon', () => ({
   ContextRibbon: ({ parcelId }: { parcelId: string }) => (
     <div data-testid="context-ribbon">{parcelId}</div>
   ),
 }));
 
-jest.mock('../../../components/workbench/SuiteCompass', () => ({
+vi.mock('../../../components/workbench/SuiteCompass', () => ({
   SuiteCompass: () => <nav data-testid="suite-compass" />,
 }));
 
-jest.mock('../../../components/workbench/ActivityFeed', () => ({
+vi.mock('../../../components/workbench/ActivityFeed', () => ({
   ActivityFeed: () => <div data-testid="activity-feed" />,
 }));
 
-jest.mock('../../../services/badges', () => ({
+vi.mock('../../../services/badges', () => ({
   BADGE_PROVIDERS: [],
 }));
 
-jest.mock('../../../services/quickActions', () => ({
+vi.mock('../../../services/quickActions', () => ({
   QUICK_ACTION_PROVIDERS: [],
 }));
 
-jest.mock('../../../services/activityFeed', () => ({
+vi.mock('../../../services/activityFeed', () => ({
   useParcelActivity: () => ({ entries: [], loading: false, error: null }),
 }));
 
-jest.mock('../../../hooks/usePropertyLookup', () => ({
+vi.mock('../../../hooks/usePropertyLookup', () => ({
   usePropertyLookup: () => ({ data: null, loading: false, error: null }),
 }));
 
@@ -179,7 +180,7 @@ const renderWorkbench = (initialRoute: string = '/property/12345-001') => {
 
 describe('WorkbenchTabBar', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Tab Order Constitutional Invariants', () => {

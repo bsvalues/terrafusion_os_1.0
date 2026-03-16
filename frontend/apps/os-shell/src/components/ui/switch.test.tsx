@@ -12,6 +12,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import React from 'react';
+import { vi } from 'vitest';
 import { Label } from './label';
 import { Switch } from './switch';
 
@@ -248,7 +249,7 @@ describe('Switch', () => {
 
     it('calls onCheckedChange when toggled', async () => {
       const user = userEvent.setup();
-      const handleCheckedChange = jest.fn();
+      const handleCheckedChange = vi.fn();
 
       render(<Switch onCheckedChange={handleCheckedChange} aria-label='Toggle' />);
 
@@ -260,7 +261,7 @@ describe('Switch', () => {
 
     it('calls onCheckedChange with false when unchecking', async () => {
       const user = userEvent.setup();
-      const handleCheckedChange = jest.fn();
+      const handleCheckedChange = vi.fn();
 
       render(<Switch defaultChecked onCheckedChange={handleCheckedChange} aria-label='Toggle' />);
 
@@ -308,7 +309,7 @@ describe('Switch', () => {
 
     it('maintains controlled state after multiple changes', async () => {
       const user = userEvent.setup();
-      const handleCheckedChange = jest.fn();
+      const handleCheckedChange = vi.fn();
 
       render(
         <Switch defaultChecked={false} onCheckedChange={handleCheckedChange} aria-label='Toggle' />
@@ -372,7 +373,7 @@ describe('Switch', () => {
 
     it('does not call onCheckedChange if disabled', async () => {
       const user = userEvent.setup();
-      const handleCheckedChange = jest.fn();
+      const handleCheckedChange = vi.fn();
 
       render(<Switch disabled onCheckedChange={handleCheckedChange} aria-label='Toggle' />);
 

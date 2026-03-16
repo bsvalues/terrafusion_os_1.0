@@ -15,6 +15,7 @@
  * 5. Apply variant class for content layout
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
@@ -22,8 +23,8 @@ import { render, screen } from '@testing-library/react';
 // Mock Setup
 // ============================================================================
 
-jest.mock('../materialQualityGate', () => ({
-  useMaterialQuality: jest.fn().mockReturnValue({
+vi.mock('../materialQualityGate', () => ({
+  useMaterialQuality: vi.fn().mockReturnValue({
     tier: 'high',
     enableBackdropBlur: true,
     enableGlassDistortion: false,

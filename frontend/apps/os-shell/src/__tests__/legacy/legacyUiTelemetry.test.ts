@@ -11,6 +11,7 @@
  * - Uses session-scoped storage for aggregation
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
     emitLegacyUiHit,
     getLegacyUiMetrics,
@@ -25,7 +26,7 @@ beforeEach(() => {
   jest
     .spyOn(Storage.prototype, 'getItem')
     .mockImplementation((key: string) => mockSessionStorage[key] ?? null);
-  jest.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
     mockSessionStorage[key] = value;
   });
 
@@ -33,13 +34,13 @@ beforeEach(() => {
   resetLegacyUiMetrics();
 
   // Mock Date.now for time-based rate limiting
-  jest.useFakeTimers();
-  jest.setSystemTime(new Date('2026-02-05T12:00:00Z'));
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-02-05T12:00:00Z'));
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
-  jest.useRealTimers();
+  vi.restoreAllMocks();
+  vi.useRealTimers();
 });
 
 describe('legacyUiTelemetry', () => {
@@ -129,7 +130,7 @@ describe('legacyUiTelemetry', () => {
       });
 
       // Advance time beyond rate limit window (5 minutes)
-      jest.advanceTimersByTime(5 * 60 * 1000 + 1000);
+      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
       // Should emit again
       const result = emitLegacyUiHit({
@@ -181,7 +182,7 @@ describe('legacyUiTelemetry', () => {
       });
 
       // Advance time
-      jest.advanceTimersByTime(60 * 1000);
+      vi.advanceTimersByTime(60 * 1000);
 
       emitLegacyUiHit({
         legacyAppId: 'agg.test',

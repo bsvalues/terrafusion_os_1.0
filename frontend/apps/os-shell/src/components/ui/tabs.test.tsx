@@ -10,6 +10,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import React from 'react';
+import { vi } from 'vitest';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 
 expect.extend(toHaveNoViolations);
@@ -418,7 +419,7 @@ describe('Tabs', () => {
 
     it('calls onValueChange when tab is clicked', async () => {
       const user = userEvent.setup();
-      const handleValueChange = jest.fn();
+      const handleValueChange = vi.fn();
 
       render(
         <Tabs defaultValue='tab1' onValueChange={handleValueChange}>
@@ -472,7 +473,7 @@ describe('Tabs', () => {
 
     it('maintains controlled state after multiple changes', async () => {
       const user = userEvent.setup();
-      const handleValueChange = jest.fn();
+      const handleValueChange = vi.fn();
 
       render(
         <Tabs defaultValue='tab1' onValueChange={handleValueChange}>

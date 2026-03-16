@@ -1,3 +1,4 @@
+import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useDesktopStore } from '../../../stores/desktopStore';
@@ -6,11 +7,11 @@ import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { Desktop } from '../Desktop';
 
 // Mock the components to avoid full rendering complexity
-jest.mock('../../../fs/AxiomFSSurface', () => ({
+vi.mock('../../../fs/AxiomFSSurface', () => ({
   AxiomFSSurface: () => <div data-testid='axiomfs-surface'>AxiomFS Surface</div>,
 }));
 
-jest.mock('../../../ui/brand/TFSpiralIris', () => ({
+vi.mock('../../../ui/brand/TFSpiralIris', () => ({
   TFSpiralIris: () => <div data-testid='tf-spiral-iris'>Iris</div>,
 }));
 

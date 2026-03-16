@@ -5,6 +5,7 @@
  * @testCategory Integration Testing
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import {
   Accordion,
   AccordionContent,
@@ -338,7 +339,7 @@ describe('Integration: Tabs Navigation Workflow', () => {
   describe('State Management: Tabs', () => {
     it('should track active tab state', async () => {
       const user = userEvent.setup();
-      const handleTabChange = jest.fn();
+      const handleTabChange = vi.fn();
       render(<StatefulTabNavigation onTabChange={handleTabChange} />);
 
       // Initial state

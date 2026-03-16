@@ -6,11 +6,12 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { ExplainPanel, ExplainPanelState } from '../ExplainPanel';
 
 describe('ExplainPanel', () => {
-  const mockOnClose = jest.fn();
+  const mockOnClose = vi.fn();
 
   beforeEach(() => {
     mockOnClose.mockClear();

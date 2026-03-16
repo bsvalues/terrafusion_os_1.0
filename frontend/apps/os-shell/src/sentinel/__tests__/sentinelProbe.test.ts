@@ -1,6 +1,7 @@
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { probeHealth } from '../sentinelProbe';
 
-const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
+const mockFetch = vi.fn() as vi.MockedFunction<typeof fetch>;
 
 describe('probeHealth', () => {
   beforeEach(() => {

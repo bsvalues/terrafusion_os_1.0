@@ -10,7 +10,7 @@
  * @vitest-environment jsdom
  */
 
-// Vitest imports removed - Jest globals used
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 
@@ -92,7 +92,7 @@ beforeEach(() => {
     initError: null,
   });
 
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {
