@@ -248,3 +248,32 @@ export class TraceEnforcementError extends Error {
     this.name = 'TraceEnforcementError';
   }
 }
+
+// ============================================================================
+// Shell Lifecycle Event Types (Lane B: OS Shell Window System)
+// ============================================================================
+
+export type ShellEventType =
+  | 'window_opened'
+  | 'window_closed'
+  | 'window_focused'
+  | 'window_minimized'
+  | 'window_restored'
+  | 'window_maximized'
+  | 'window_snapped'
+  | 'shell_mode_changed'
+  | 'spawn_rejected'
+  | 'spawn_routed_to_workbench';
+
+export interface ShellEvent {
+  /** Event type */
+  type: ShellEventType;
+  /** Window ID (null for shell-level events) */
+  windowId: string | null;
+  /** Module that owns the window */
+  moduleId: string;
+  /** ISO 8601 timestamp */
+  timestamp: string;
+  /** Additional context */
+  detail?: Record<string, unknown>;
+}

@@ -26,6 +26,7 @@ import {
   type TerraFusionObjectType,
   type ObjectClassification,
 } from '../contracts/objectPlacement';
+import { shellEventBus } from './shellEventBus';
 
 // ============================================================================
 // Types
@@ -451,6 +452,7 @@ export const useDesktopStore = create<DesktopState>()(
               `[Codex] openWindow REJECTED for "${moduleId}": ${verdict.reason}`
             );
           }
+          shellEventBus.fire('spawn_rejected', null, moduleId, { reason: verdict.reason });
           return '';
         }
 
@@ -479,6 +481,10 @@ export const useDesktopStore = create<DesktopState>()(
               ),
             });
             get().focusWindow(existingWorkbench.id);
+            shellEventBus.fire('spawn_routed_to_workbench', existingWorkbench.id, moduleId, {
+              reason: verdict.reason,
+              reusedExisting: true,
+            });
             return existingWorkbench.id;
           }
 
@@ -520,11 +526,14 @@ export const useDesktopStore = create<DesktopState>()(
         // Shell mode: opening a window enters application mode
         get().enterApplication();
 
+        shellEventBus.fire('window_opened', id, moduleId, { state: newWindow.state });
+
         return id;
       },
 
       closeWindow: (windowId: string) => {
         const { windows, activeWindowId } = get();
+        const closedWindow = windows.find((w) => w.id === windowId);
         const newWindows = windows.filter((w) => w.id !== windowId);
 
         let newActiveId: string | null = activeWindowId;
@@ -545,6 +554,10 @@ export const useDesktopStore = create<DesktopState>()(
           activeWindowId: newActiveId,
         });
 
+        if (closedWindow) {
+          shellEventBus.fire('window_closed', windowId, closedWindow.moduleId);
+        }
+
         // Shell mode: when last window closes, restore prior mode (or home)
         if (newWindows.length === 0) {
           const { previousShellMode } = get();
@@ -555,6 +568,7 @@ export const useDesktopStore = create<DesktopState>()(
 
       minimizeWindow: (windowId: string) => {
         const { windows, activeWindowId } = get();
+        const targetWindow = windows.find((w) => w.id === windowId);
 
         const newWindows = windows.map((w) =>
           w.id === windowId ? { ...w, state: 'minimized' as WindowState } : w
@@ -572,6 +586,10 @@ export const useDesktopStore = create<DesktopState>()(
           windows: newWindows,
           activeWindowId: newActiveId,
         });
+
+        if (targetWindow) {
+          shellEventBus.fire('window_minimized', windowId, targetWindow.moduleId);
+        }
       },
 
       maximizeWindow: (windowId: string) => {
@@ -603,6 +621,8 @@ export const useDesktopStore = create<DesktopState>()(
           activeWindowId: windowId,
           nextZIndex: needsNewZIndex ? nextZIndex + 1 : nextZIndex,
         });
+
+        shellEventBus.fire('window_maximized', windowId, targetWindow.moduleId);
       },
 
       restoreWindow: (windowId: string) => {
@@ -635,6 +655,10 @@ export const useDesktopStore = create<DesktopState>()(
           windows: newWindows,
           activeWindowId: windowId,
           nextZIndex: needsNewZIndex ? nextZIndex + 1 : nextZIndex,
+        });
+
+        shellEventBus.fire('window_restored', windowId, targetWindow.moduleId, {
+          fromState: targetWindow.state,
         });
       },
 
@@ -672,6 +696,10 @@ export const useDesktopStore = create<DesktopState>()(
           windows: newWindows,
           activeWindowId: windowId,
           nextZIndex: isAlreadyTop ? nextZIndex : nextZIndex + 1,
+        });
+
+        shellEventBus.fire('window_focused', windowId, targetWindow.moduleId, {
+          restoredFromMinimized: wasMinimized,
         });
       },
 
