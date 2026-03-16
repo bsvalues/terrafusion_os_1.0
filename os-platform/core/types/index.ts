@@ -277,3 +277,104 @@ export interface ShellEvent {
   /** Additional context */
   detail?: Record<string, unknown>;
 }
+
+// ============================================================================
+// Forge Statistics Contract Types (Tranche 1A: Statistics Studio)
+// ============================================================================
+
+/** Outlier detection method for ratio study computation */
+export type OutlierMethod = 'iqr' | 'trim' | 'none';
+
+/** Parameters for an on-demand ratio study computation */
+export interface RatioStudyParams {
+  taxYear: number;
+  salesWindowMonths: number;
+  neighborhood?: string;
+  propertyType?: string;
+  outlierMethod: OutlierMethod;
+}
+
+/** Tier median ratios by value quartile */
+export interface TierMedians {
+  q1: number;
+  q2: number;
+  q3: number;
+  q4: number;
+}
+
+/** Complete ratio study result — IAAO-standard statistics */
+export interface RatioStudyResult {
+  medianRatio: number;
+  meanRatio: number;
+  weightedMeanRatio: number;
+  cod: number;
+  prd: number;
+  prb: number;
+  cov: number;
+  sampleSize: number;
+  outlierCount: number;
+  tierMedians: TierMedians;
+  tierSlope: number;
+  iaaoCompliant: boolean;
+  complianceNotes: string[];
+  computedAt: string;
+  params: RatioStudyParams;
+}
+
+/** IAAO qualification metrics for a ratio study */
+export interface QualificationMetrics {
+  cod: number;
+  prd: number;
+  prb: number;
+  medianRatio: number;
+  tierSlope: number;
+  sampleSize: number;
+  passCount: number;
+  qualified: boolean;
+}
+
+/** Strata-level ratio study result */
+export interface StrataResult {
+  strataId: string;
+  strataLabel: string;
+  neighborhood: string;
+  propertyType: string;
+  sampleSize: number;
+  medianRatio: number;
+  cod: number;
+  prd: number;
+  qualified: boolean;
+}
+
+/** Flagged parcel from outlier detection */
+export interface OutlierRecord {
+  parcelId: string;
+  address: string;
+  neighborhood: string;
+  salePrice: number;
+  assessedValue: number;
+  ratio: number;
+  ratioDeviation: number;
+  outlierMethod: 'iqr' | 'trim';
+  flagReason: string;
+  confidence: number;
+  reviewStatus: 'pending' | 'confirmed' | 'dismissed';
+}
+
+/** Side-by-side model comparison result */
+export interface ModelComparisonResult {
+  modelA: { label: string; params: RatioStudyParams; result: RatioStudyResult };
+  modelB: { label: string; params: RatioStudyParams; result: RatioStudyResult };
+  deltas: { cod: number; prd: number; prb: number; medianRatio: number; sampleSize: number };
+  improvedMetrics: string[];
+  degradedMetrics: string[];
+}
+
+/** IAAO residential compliance thresholds */
+export const IAAO_THRESHOLDS = {
+  cod: { max: 15.0 },
+  prd: { min: 0.98, max: 1.03 },
+  prb: { absMax: 0.05 },
+  medianRatio: { min: 0.90, max: 1.10 },
+  tierSlope: { absMax: 0.05 },
+} as const;

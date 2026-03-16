@@ -1,0 +1,79 @@
+{
+  "checkpointId": "tranche-1a-statistics-studio",
+  "phase": "Forge Depth Tranche 1A",
+  "title": "Statistics Studio — Governed Contract + Weighted Mean (hardening on existing scaffold)",
+  "commitSha": "c5f644a1c76eba203bd1a4e7fa550cb945b0a91a",
+  "parentSha": "c9f9abe007aa26b2fcd4b3812e5de754d58f5fd8",
+  "date": "2026-03-16",
+  "scope": "TerraForge standalone → Statistics Studio",
+
+  "deliverables": {
+    "governedTypes": {
+      "file": "os-platform/core/types/index.ts",
+      "added": [
+        "OutlierMethod",
+        "RatioStudyParams",
+        "TierMedians",
+        "RatioStudyResult",
+        "QualificationMetrics",
+        "StrataResult",
+        "OutlierRecord",
+        "ModelComparisonResult",
+        "IAAO_THRESHOLDS"
+      ],
+      "writeLane": "forge"
+    },
+    "contractTests": {
+      "file": "os-platform/core/tests/forge-statistics-contract.test.mjs",
+      "suites": 7,
+      "tests": 29,
+      "result": "29/29 PASS",
+      "coverage": [
+        "RatioStudyResult payload shape (5 tests)",
+        "IAAO compliance thresholds (6 tests)",
+        "QualificationMetrics computation (4 tests)",
+        "OutlierRecord shape (5 tests)",
+        "StrataResult shape (2 tests)",
+        "ModelComparisonResult deltas (4 tests)",
+        "Write lane scoping (3 tests)"
+      ]
+    },
+    "weightedMean": {
+      "description": "Added weightedMeanRatio to RatioStudyPanel metric display",
+      "files": [
+        "frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx",
+        "frontend/apps/os-shell/src/pages/forge/statistics/RatioStudyPanel.tsx"
+      ]
+    }
+  },
+
+  "statisticsStudioCapabilities": {
+    "ratioStudy": "COD, PRD, PRB, weighted mean, median ratio — IAAO compliance badges",
+    "trends": "COD trend chart, PRD trend chart (quarterly)",
+    "equity": "VEI dashboard with neighborhood grid, tier slope",
+    "outliers": "15 flagged parcels, IQR/trim method, confirm/dismiss actions, drill-through",
+    "comparison": "Side-by-side model comparison (12-mo IQR vs 24-mo Trim), delta indicators, strata breakdown"
+  },
+
+  "architecturalTruth": {
+    "placement": "TerraForge standalone (cross-parcel, county-wide)",
+    "launchMode": "standalone window via activateModule('statistics-studio')",
+    "objectType": "cross-parcel-operational-app",
+    "notInWorkbench": true,
+    "writeLane": "forge",
+    "fixtureBackedUntilApiReady": true
+  },
+
+  "gates": {
+    "typeCheck": "PASS",
+    "phase83Tools": "54/54 PASS",
+    "forgeStatisticsContract": "29/29 PASS",
+    "sealGate": "no forbidden paths, no hardcoded ports"
+  },
+
+  "liveEvidence": {
+    "forgeStandalone": "GET /forge → Statistics Studio launch card visible in module grid",
+    "moduleWiring": "moduleComponents.tsx case 'statistics-studio' → <StatisticsStudio />",
+    "codexPlacement": "objectPlacement.ts confirms cross-parcel-operational-app"
+  }
+}
