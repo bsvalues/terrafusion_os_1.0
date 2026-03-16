@@ -498,7 +498,7 @@ jobs:
         shell: bash
         run: node scripts/platform-lint.mjs
 
-      - name: Naming Governance (soft-fail)
+      - name: Naming Governance (soft-fail, Phase C sweep pending)
         id: naming_governance
         continue-on-error: true
         shell: bash
@@ -542,10 +542,22 @@ jobs:
         run: node --test scripts/quarantine/__tests__/*.test.mjs
         continue-on-error: true
 
-      - name: Phase83 platform tests (32 tests / 11 suites)
+      - name: Phase83 platform tests (54 tests / 17 suites)
         id: phase83-tests
         shell: bash
         run: node --test os-platform/core/tests/phase83-tools.test.mjs
+        continue-on-error: true
+
+      - name: Write-lane governance tests
+        id: write-lane-tests
+        shell: bash
+        run: node --test os-platform/core/tests/c2-write-lane-governance.test.mjs os-platform/core/tests/suite-write-lane-compliance.test.mjs
+        continue-on-error: true
+
+      - name: Workbench compliance tests
+        id: workbench-tests
+        shell: bash
+        run: node --test os-platform/core/tests/workbench-host-boundary.test.mjs os-platform/core/tests/workbench-tab-embedding.test.mjs
         continue-on-error: true
 
       - name: Workflow path integrity (13 tests / 5 suites)
@@ -567,7 +579,7 @@ jobs:
         continue-on-error: true
 
       - name: Governance test escape hatch (expires 2026-03-15)
-        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure'
+        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.write-lane-tests.outcome == 'failure' || steps.workbench-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
@@ -613,9 +625,11 @@ jobs:
           echo "| Workspace Sanity | ${{ steps.shape-guard.outcome != '' && '✅' || '⏭️' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| AGENTS.md Compliance | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| Drift Guard | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| Naming Governance (soft) | ${{ steps.naming_governance.outcome == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Naming Governance (soft, Phase C) | ${{ steps.naming_governance.outcome == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Quarantine Tests (23t/4s) | ${{ steps.quarantine-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Phase83 Tests (32t/11s) | ${{ steps.phase83-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase83 Tests (54t/17s) | ${{ steps.phase83-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Write-Lane Governance | ${{ steps.write-lane-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Workbench Compliance | ${{ steps.workbench-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Workflow Paths (13t/5s) | ${{ steps.workflow-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Inventory Tests (23t/5s) | ${{ steps.inventory-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Inventory Snapshot | ${{ steps.inventory-snapshot.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

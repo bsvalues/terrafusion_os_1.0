@@ -904,3 +904,154 @@ describe('Lane 3 — Real Trace Handlers', () => {
     );
   });
 });
+
+// ============================================================================
+// R3.0 — Constitutional CI Gate: Naming Lint (manifest-level)
+// ============================================================================
+
+describe('R3.0 Gate 1 — Naming Lint (manifest)', () => {
+  let manifest;
+
+  before(async () => {
+    const { readFileSync } = await import('node:fs');
+    manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf-8'));
+  });
+
+  it('every toolId is valid snake_case', () => {
+    const snakeCaseRe = /^[a-z][a-z0-9]*(_[a-z0-9]+)*$/;
+    const violations = manifest.tools
+      .filter(t => !snakeCaseRe.test(t.toolId))
+      .map(t => t.toolId);
+    assert.strictEqual(violations.length, 0,
+      `toolIds violating snake_case: ${violations.join(', ')}`);
+  });
+
+  it('no toolId or displayName contains banned naming patterns', () => {
+    const banned = [
+      /\btara\b/i,           // Must be "Terra", not "Tara"
+      /terra\s+pilot/i,      // Must be "TerraPilot" (no space)
+      /terra-pilot/i,        // Must be "TerraPilot" (no hyphen)
+      /terra\s+forge/i,
+      /terra\s+atlas/i,
+      /terra\s+dais/i,
+      /terra\s+dossier/i,
+      /terra\s+canon/i,
+      /terra\s+trace/i,
+    ];
+    const violations = [];
+    for (const tool of manifest.tools) {
+      for (const pattern of banned) {
+        if (pattern.test(tool.toolId) || pattern.test(tool.displayName)) {
+          violations.push(`${tool.toolId}: matched ${pattern}`);
+        }
+      }
+    }
+    assert.strictEqual(violations.length, 0,
+      `Banned naming patterns found: ${violations.join('; ')}`);
+  });
+
+  it('every suite value is in the constitutional allowlist', () => {
+    const allowed = new Set([
+      'forge', 'atlas', 'dais', 'dossier', 'os', 'pilot', 'gpt',
+      'clerk', 'treasury', 'audit',
+    ]);
+    const violations = manifest.tools
+      .filter(t => !allowed.has(t.suite))
+      .map(t => `${t.toolId} → suite="${t.suite}"`);
+    assert.strictEqual(violations.length, 0,
+      `Invalid suite values: ${violations.join(', ')}`);
+  });
+});
+
+// ============================================================================
+// R3.0 — Constitutional CI Gate: Write-Lane Assertions (manifest-level)
+// ============================================================================
+
+describe('R3.0 Gate 2 — Write-Lane Assertions (manifest)', () => {
+  let manifest;
+
+  before(async () => {
+    const { readFileSync } = await import('node:fs');
+    manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf-8'));
+  });
+
+  it('every non-read_only tool has a writeLane', () => {
+    const violations = manifest.tools
+      .filter(t => t.risk !== 'read_only' && !t.writeLane)
+      .map(t => t.toolId);
+    assert.strictEqual(violations.length, 0,
+      `Non-read_only tools missing writeLane: ${violations.join(', ')}`);
+  });
+
+  it('every read_only tool has writeLane === null', () => {
+    const violations = manifest.tools
+      .filter(t => t.risk === 'read_only' && t.writeLane != null)
+      .map(t => `${t.toolId} → writeLane="${t.writeLane}"`);
+    assert.strictEqual(violations.length, 0,
+      `read_only tools with non-null writeLane: ${violations.join(', ')}`);
+  });
+
+  it('writeLane matches suite for every tool (single-lane ownership)', () => {
+    const violations = manifest.tools
+      .filter(t => t.writeLane != null && t.writeLane !== t.suite)
+      .map(t => `${t.toolId}: suite="${t.suite}" vs writeLane="${t.writeLane}"`);
+    assert.strictEqual(violations.length, 0,
+      `Write-lane ≠ suite violations: ${violations.join('; ')}`);
+  });
+
+  it('every risk value is in the valid set', () => {
+    const valid = new Set(['read_only', 'write_low', 'write_high', 'irreversible']);
+    const violations = manifest.tools
+      .filter(t => !valid.has(t.risk))
+      .map(t => `${t.toolId} → risk="${t.risk}"`);
+    assert.strictEqual(violations.length, 0,
+      `Invalid risk values: ${violations.join(', ')}`);
+  });
+});
+
+// ============================================================================
+// R3.0 — Constitutional CI Gate: Risk Policy Completeness (manifest-level)
+// ============================================================================
+
+describe('R3.0 Gate 3 — Risk Policy Completeness (manifest)', () => {
+  let manifest;
+
+  before(async () => {
+    const { readFileSync } = await import('node:fs');
+    manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf-8'));
+  });
+
+  it('every write_high tool requires confirmation + reasonCode', () => {
+    const violations = manifest.tools
+      .filter(t => t.risk === 'write_high')
+      .filter(t => !t.requiresConfirmation || !t.reasonCodeRequired || !Array.isArray(t.reasonCodes) || t.reasonCodes.length === 0)
+      .map(t => t.toolId);
+    assert.strictEqual(violations.length, 0,
+      `write_high tools missing confirmation/reasonCode: ${violations.join(', ')}`);
+  });
+
+  it('every irreversible tool requires supervisorApproval + supervisorRoles', () => {
+    const violations = manifest.tools
+      .filter(t => t.risk === 'irreversible')
+      .filter(t => !t.requiresSupervisorApproval || !Array.isArray(t.supervisorRoles) || t.supervisorRoles.length === 0)
+      .map(t => t.toolId);
+    assert.strictEqual(violations.length, 0,
+      `irreversible tools missing supervisor config: ${violations.join(', ')}`);
+  });
+
+  it('every tool with piiHandling=payload_ref has payloadStore', () => {
+    const violations = manifest.tools
+      .filter(t => t.piiHandling === 'payload_ref' && !t.payloadStore)
+      .map(t => t.toolId);
+    assert.strictEqual(violations.length, 0,
+      `payload_ref tools missing payloadStore: ${violations.join(', ')}`);
+  });
+
+  it('every dais tool has piiHandling !== none', () => {
+    const violations = manifest.tools
+      .filter(t => t.suite === 'dais' && t.piiHandling === 'none')
+      .map(t => t.toolId);
+    assert.strictEqual(violations.length, 0,
+      `dais tools with piiHandling=none (must sanitize or payload_ref): ${violations.join(', ')}`);
+  });
+});

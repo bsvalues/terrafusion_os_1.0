@@ -2,7 +2,7 @@
   "checkpointId": "lanes-1-2-3",
   "description": "Registration/export truth gap closed + enforcement/trace proof evidence added",
   "baselineSha": "a1273361491e86f6e55162e9ede1d3ca7518e690",
-  "commitSha": "789dc7309b2a73e788a01197015f9822f355c715",
+  "commitSha": "21c0a3cf7de1016f8fc51f1be997754eb4c5cdfb",
   "branch": "phase-7-county-ops-visual-governance",
   "timestamp": "2026-03-16T00:00:00Z",
   "parentProvenance": {
