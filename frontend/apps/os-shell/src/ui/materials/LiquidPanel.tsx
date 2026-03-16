@@ -132,6 +132,7 @@ export const LiquidPanel = forwardRef<HTMLDivElement, LiquidPanelProps>(function
       ref={ref}
       className={`${classes} ${className}`.trim()}
       style={computedStyle}
+      data-material="liquid-glass"
       data-reduced-motion={quality.prefersReducedMotion ? 'true' : 'false'}
       data-quality-tier={quality.tier}
       {...props}

@@ -79,6 +79,7 @@ export const NeonSignal = forwardRef<HTMLSpanElement, NeonSignalProps>(
         ref={ref}
         role='status'
         aria-label={ariaLabel}
+        data-material="neon"
         className={`${classes} ${className}`.trim()}
         {...props}
       >

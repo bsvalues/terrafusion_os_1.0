@@ -145,6 +145,7 @@ export const TactileButton = forwardRef<HTMLButtonElement, TactileButtonProps>(
         ref={ref}
         className={`${classes} ${className}`.trim()}
         disabled={disabled || loading}
+        data-material="tactile"
         data-reduced-motion={!enableSprings ? 'true' : 'false'}
         data-loading={loading ? 'true' : 'false'}
         {...motionProps}
