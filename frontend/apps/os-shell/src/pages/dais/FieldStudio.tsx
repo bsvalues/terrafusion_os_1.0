@@ -12,19 +12,19 @@ import { fieldStore, type FieldObservation } from '../../services/fieldStore';
 // Condition Badge
 // ============================================================================
 
-const CONDITION_COLORS: Record<string, string> = {
-  excellent: 'bg-green-600 text-white',
-  good: 'bg-green-500 text-white',
-  average: 'bg-blue-600 text-white',
-  fair: 'bg-yellow-600 text-white',
-  poor: 'bg-orange-600 text-white',
-  demolished: 'bg-red-600 text-white',
+const CONDITION_VARIANTS: Record<string, string> = {
+  excellent: 'bg-primary text-primary-foreground',
+  good: 'bg-primary text-primary-foreground',
+  average: 'bg-secondary text-secondary-foreground',
+  fair: 'bg-secondary text-secondary-foreground',
+  poor: 'bg-destructive text-destructive-foreground',
+  demolished: 'bg-destructive text-destructive-foreground',
 };
 
 function ConditionBadge({ condition }: { condition: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${CONDITION_COLORS[condition] || 'bg-gray-600 text-white'}`}
+      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${CONDITION_VARIANTS[condition] || 'bg-white/10 text-muted-foreground'}`}
     >
       {condition}
     </span>
@@ -50,7 +50,7 @@ function SyncStatusBar({
   const online = navigator.onLine;
 
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+    <div className="flex items-center justify-between rounded-lg bg-card p-4" style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }} data-testid="sync-status" data-material="bento">
       <div className="flex items-center gap-4">
         <div>
           <div className="text-sm text-muted-foreground">Total Observations</div>
@@ -68,7 +68,7 @@ function SyncStatusBar({
       <div className="flex items-center gap-3">
         <span
           className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-            online ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
+            online ? 'bg-primary/20 text-primary' : 'bg-destructive/20 text-destructive'
           }`}
         >
           {online ? 'Online' : 'Offline'}
@@ -134,7 +134,7 @@ function NewObservationForm({
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div className="rounded-lg bg-card p-6" style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }} data-testid="observation-form" data-material="bento">
       <h3 className="mb-4 text-lg font-semibold">New Field Observation</h3>
       <form onSubmit={handleSave} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
@@ -231,9 +231,9 @@ function MapPlaceholder({ observations }: { observations: FieldObservation[] }) 
   const withCoords = observations.filter((o) => o.lat !== 0 && o.lng !== 0);
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-card p-4" style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }} data-material="bento">
       <h3 className="mb-3 text-lg font-semibold">Inspection Locations</h3>
-      <div className="flex h-64 items-center justify-center rounded-md border border-dashed border-border bg-muted/20">
+      <div className="flex h-64 items-center justify-center rounded-md bg-muted/20" style={{ border: '1px dashed hsl(var(--tf-border) / 0.15)' }}>
         <div className="text-center text-muted-foreground">
           <div className="text-sm">Map View</div>
           <div className="mt-1 text-xs">
@@ -295,7 +295,7 @@ export default function FieldStudio() {
   const displayed = tab === 'pending' ? pending : completed;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6" data-testid="field-studio" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -368,10 +368,10 @@ export default function FieldStudio() {
 
       {/* Observations List */}
       {!loading && displayed.length > 0 && (
-        <div className="rounded-lg border border-border">
+        <div className="rounded-lg" style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }} data-testid="observation-table">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border bg-muted/50">
+              <tr className="bg-muted/50" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
                 <th className="px-4 py-3 text-left text-sm font-medium">Parcel</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Date</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Condition</th>
@@ -382,7 +382,7 @@ export default function FieldStudio() {
             </thead>
             <tbody>
               {displayed.map((obs) => (
-                <tr key={obs.id} className="border-b border-border last:border-0">
+                <tr key={obs.id} className="last:border-0" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
                   <td className="px-4 py-3 font-mono text-sm">{obs.parcelId}</td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {new Date(obs.timestamp).toLocaleString()}
@@ -409,7 +409,7 @@ export default function FieldStudio() {
       )}
 
       {!loading && displayed.length === 0 && (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
+        <div className="rounded-lg p-8 text-center text-muted-foreground" style={{ border: '1px dashed hsl(var(--tf-border) / 0.15)' }}>
           {tab === 'pending'
             ? 'No pending observations. All synced.'
             : 'No synced observations yet.'}

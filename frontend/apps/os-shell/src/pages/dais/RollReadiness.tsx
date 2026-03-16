@@ -50,11 +50,13 @@ function SummaryCards({ statuses }: { statuses: CertificationStatus[] }) {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-4 gap-4" data-testid="readiness-summary">
       {cards.map((card) => (
         <div
           key={card.label}
-          className="rounded-lg border border-border bg-card p-4"
+          className="rounded-lg bg-card p-4"
+          style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }}
+          data-material="bento"
         >
           <div className="text-sm text-muted-foreground">{card.label}</div>
           <div className={`mt-1 text-2xl font-bold ${card.color || ''}`}>
@@ -80,17 +82,22 @@ function AreaRow({ status }: { status: CertificationStatus }) {
     status.percentComplete >= 90
       ? 'bg-green-600'
       : status.percentComplete >= 70
-        ? 'bg-yellow-600'
-        : 'bg-red-600';
+        ? 'bg-yellow-500'
+        : 'bg-destructive';
 
-  const statusColors: Record<string, string> = {
-    'on-track': 'bg-green-600 text-white',
-    'at-risk': 'bg-yellow-600 text-white',
-    overdue: 'bg-red-600 text-white',
+  const statusVariants: Record<string, string> = {
+    'on-track': 'bg-primary text-primary-foreground',
+    'at-risk': 'bg-secondary text-secondary-foreground',
+    overdue: 'bg-destructive text-destructive-foreground',
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div
+      className="rounded-lg bg-card p-4"
+      style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }}
+      role="link"
+      data-material="bento"
+    >
       <div className="flex items-center justify-between">
         <div>
           <h4 className="font-semibold">{status.area}</h4>
@@ -101,7 +108,7 @@ function AreaRow({ status }: { status: CertificationStatus }) {
         </div>
         <div className="flex items-center gap-3">
           <span
-            className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${statusColors[status.status] || 'bg-gray-600 text-white'}`}
+            className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${statusVariants[status.status] || 'bg-white/10 text-muted-foreground'}`}
           >
             {status.status}
           </span>
@@ -165,7 +172,7 @@ export default function RollReadiness() {
   });
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6" data-testid="roll-readiness" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Roll Readiness Dashboard</h1>
@@ -176,7 +183,7 @@ export default function RollReadiness() {
 
       {/* Error */}
       {error && (
-        <div className="rounded-md bg-red-900/20 p-4 text-sm text-red-400">{error}</div>
+        <div className="rounded-md bg-destructive/20 p-4 text-sm text-red-400">{error}</div>
       )}
 
       {/* Loading */}
@@ -220,7 +227,7 @@ export default function RollReadiness() {
       )}
 
       {!loading && statuses.length === 0 && !error && (
-        <div className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
+        <div className="rounded-lg p-8 text-center text-muted-foreground" style={{ border: '1px dashed hsl(var(--tf-border) / 0.15)' }}>
           No certification data available.
         </div>
       )}

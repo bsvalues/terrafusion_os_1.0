@@ -80,7 +80,7 @@ function ParcelInputForm({
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div className="rounded-lg bg-card p-6" style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }} data-testid="defense-form" data-material="bento">
       <h3 className="mb-4 text-lg font-semibold">Appeal Details</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
@@ -185,7 +185,7 @@ function NarrativePreview({ narrative }: { narrative: DefenseNarrative }) {
   ];
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div className="rounded-lg bg-card p-6" style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }} data-testid="narrative-preview" data-material="bento">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold">Defense Narrative Preview</h3>
         <span className="text-xs text-muted-foreground">
@@ -249,7 +249,7 @@ export default function DefensePacket() {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6" data-testid="defense-packet" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Defense Packet Generator</h1>
@@ -260,7 +260,7 @@ export default function DefensePacket() {
 
       {/* Error */}
       {error && (
-        <div className="rounded-md bg-red-900/20 p-4 text-sm text-red-400">{error}</div>
+        <div className="rounded-md bg-destructive/20 p-4 text-sm text-red-400">{error}</div>
       )}
 
       {/* Input Form */}
@@ -285,7 +285,7 @@ export default function DefensePacket() {
                   : 'Assemble Defense Packet'}
             </button>
             {packetReady && (
-              <span className="inline-flex items-center rounded-md bg-green-600 px-2.5 py-0.5 text-xs font-semibold text-white">
+              <span className="inline-flex items-center rounded-md bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">
                 Ready for BOE
               </span>
             )}

@@ -7,6 +7,8 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import type { AuditEvent } from '../../components/dais/AuditTab';
+import { Badge } from '../../components/ui/badge';
+import type { BadgeProps } from '../../components/ui/badge';
 
 // ============================================================================
 // API
@@ -39,14 +41,14 @@ async function searchAuditTrail(filters: AuditFilters): Promise<AuditEvent[]> {
 // Category Colors
 // ============================================================================
 
-const CATEGORY_COLORS: Record<string, string> = {
-  assessment: 'bg-blue-600 text-white',
-  appeal: 'bg-purple-600 text-white',
-  permit: 'bg-green-600 text-white',
-  exemption: 'bg-yellow-600 text-white',
-  document: 'bg-cyan-600 text-white',
-  field: 'bg-orange-600 text-white',
-  system: 'bg-gray-600 text-white',
+const CATEGORY_BADGE_VARIANT: Record<string, BadgeProps['variant']> = {
+  assessment: 'default',
+  appeal: 'secondary',
+  permit: 'default',
+  exemption: 'secondary',
+  document: 'outline',
+  field: 'outline',
+  system: 'destructive',
 };
 
 // ============================================================================
@@ -63,7 +65,7 @@ function FiltersPanel({
   onSearch: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg border p-4" style={{ borderColor: 'hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.5)' }} data-testid="audit-filters" data-material="bento">
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
         Filters
       </h3>
@@ -142,10 +144,10 @@ function FiltersPanel({
 
 function TableView({ events }: { events: AuditEvent[] }) {
   return (
-    <div className="rounded-lg border border-border">
+    <div className="rounded-lg border" style={{ borderColor: 'hsl(var(--tf-border) / 0.15)' }} data-testid="audit-table" data-material="bento">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-border bg-muted/50">
+          <tr className="border-b" style={{ borderColor: 'hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
             <th className="px-4 py-3 text-left text-sm font-medium">Timestamp</th>
             <th className="px-4 py-3 text-left text-sm font-medium">Parcel</th>
             <th className="px-4 py-3 text-left text-sm font-medium">Category</th>
@@ -157,17 +159,15 @@ function TableView({ events }: { events: AuditEvent[] }) {
         </thead>
         <tbody>
           {events.map((event) => (
-            <tr key={event.eventId} className="border-b border-border last:border-0 hover:bg-muted/30">
+            <tr key={event.eventId} className="border-b last:border-0 hover:bg-white/5" style={{ borderColor: 'hsl(var(--tf-border) / 0.15)' }}>
               <td className="whitespace-nowrap px-4 py-3 text-xs text-muted-foreground">
                 {new Date(event.timestamp).toLocaleString()}
               </td>
               <td className="px-4 py-3 font-mono text-sm">{event.parcelId}</td>
               <td className="px-4 py-3">
-                <span
-                  className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${CATEGORY_COLORS[event.category] || 'bg-gray-600 text-white'}`}
-                >
+                <Badge variant={CATEGORY_BADGE_VARIANT[event.category] || 'outline'}>
                   {event.category}
-                </span>
+                </Badge>
               </td>
               <td className="px-4 py-3 text-sm">{event.action}</td>
               <td className="px-4 py-3 text-sm">{event.userName}</td>
@@ -178,7 +178,7 @@ function TableView({ events }: { events: AuditEvent[] }) {
                 {(event.previousValue || event.newValue) && (
                   <div className="flex items-center gap-1 text-xs">
                     {event.previousValue && (
-                      <span className="rounded bg-red-900/30 px-1 py-0.5 text-red-400 line-through">
+                      <span className="rounded px-1 py-0.5 line-through" style={{ background: 'hsl(var(--tf-border) / 0.15)', color: 'hsl(var(--tf-muted))' }}>
                         {event.previousValue}
                       </span>
                     )}
@@ -186,7 +186,7 @@ function TableView({ events }: { events: AuditEvent[] }) {
                       <span className="text-muted-foreground">&rarr;</span>
                     )}
                     {event.newValue && (
-                      <span className="rounded bg-green-900/30 px-1 py-0.5 text-green-400">
+                      <span className="rounded px-1 py-0.5" style={{ background: 'hsl(var(--tf-border) / 0.15)', color: 'hsl(var(--tf-fg))' }}>
                         {event.newValue}
                       </span>
                     )}
@@ -207,7 +207,7 @@ function TableView({ events }: { events: AuditEvent[] }) {
 
 function TimelineView({ events }: { events: AuditEvent[] }) {
   return (
-    <div className="pl-1">
+    <div className="pl-1" data-testid="audit-timeline">
       {events.map((event) => (
         <div key={event.eventId} className="relative flex gap-4 pb-6 last:pb-0">
           <div className="flex flex-col items-center">
@@ -216,11 +216,9 @@ function TimelineView({ events }: { events: AuditEvent[] }) {
           </div>
           <div className="-mt-0.5 flex-1">
             <div className="flex items-center gap-2">
-              <span
-                className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${CATEGORY_COLORS[event.category] || 'bg-gray-600 text-white'}`}
-              >
+              <Badge variant={CATEGORY_BADGE_VARIANT[event.category] || 'outline'}>
                 {event.category}
-              </span>
+              </Badge>
               <span className="text-sm font-medium">{event.action}</span>
               <span className="text-xs text-muted-foreground">
                 {event.parcelId}
@@ -230,7 +228,7 @@ function TimelineView({ events }: { events: AuditEvent[] }) {
             {(event.previousValue || event.newValue) && (
               <div className="mt-1 flex items-center gap-2 text-xs">
                 {event.previousValue && (
-                  <span className="rounded bg-red-900/30 px-1.5 py-0.5 text-red-400 line-through">
+                  <span className="rounded px-1.5 py-0.5 line-through" style={{ background: 'hsl(var(--tf-border) / 0.15)', color: 'hsl(var(--tf-muted))' }}>
                     {event.previousValue}
                   </span>
                 )}
@@ -238,7 +236,7 @@ function TimelineView({ events }: { events: AuditEvent[] }) {
                   <span className="text-muted-foreground">&rarr;</span>
                 )}
                 {event.newValue && (
-                  <span className="rounded bg-green-900/30 px-1.5 py-0.5 text-green-400">
+                  <span className="rounded px-1.5 py-0.5" style={{ background: 'hsl(var(--tf-border) / 0.15)', color: 'hsl(var(--tf-fg))' }}>
                     {event.newValue}
                   </span>
                 )}
@@ -284,7 +282,7 @@ export default function AuditTrailPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6" data-testid="audit-trail" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -293,7 +291,7 @@ export default function AuditTrailPage() {
             Complete audit history with FISMA-compliant event tracking
           </p>
         </div>
-        <div className="flex gap-1 rounded-md bg-muted p-1">
+        <div className="flex gap-1 rounded-md p-1" style={{ background: 'hsl(var(--tf-card-bg) / 0.5)' }}>
           <button
             onClick={() => setViewMode('table')}
             className={`rounded px-3 py-1.5 text-sm font-medium ${
