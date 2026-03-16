@@ -51,12 +51,19 @@ const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
 
 export default function ForgeSuiteHome() {
   const navigate = useNavigate();
-  const { stats } = useCountyStats();
+  const { stats, loading, error } = useCountyStats();
 
   return (
     <div data-testid="suite-forge-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Parcel Context Banner — shows when parcel is active */}
       <ParcelContextBanner suiteTabId="forge" />
+
+      {loading && !stats && (
+        <div data-testid="forge-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
+      )}
+      {error && (
+        <div data-testid="forge-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-forge))' }}>{error}</div>
+      )}
 
       {/* Stats Strip */}
       {stats && (

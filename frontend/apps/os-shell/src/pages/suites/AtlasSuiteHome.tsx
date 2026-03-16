@@ -41,11 +41,18 @@ const fmtNum = (n: number) => n.toLocaleString();
 
 export default function AtlasSuiteHome() {
   const navigate = useNavigate();
-  const { stats } = useCountyStats();
+  const { stats, loading, error } = useCountyStats();
 
   return (
     <div data-testid="suite-atlas-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="atlas" />
+
+      {loading && !stats && (
+        <div data-testid="atlas-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
+      )}
+      {error && (
+        <div data-testid="atlas-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-atlas))' }}>{error}</div>
+      )}
 
       {/* Stats Strip */}
       {stats && (

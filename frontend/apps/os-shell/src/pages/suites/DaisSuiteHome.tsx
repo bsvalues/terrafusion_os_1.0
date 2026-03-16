@@ -48,11 +48,18 @@ const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
 
 export default function DaisSuiteHome() {
   const navigate = useNavigate();
-  const { stats } = useCountyStats();
+  const { stats, loading, error } = useCountyStats();
 
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dais" />
+
+      {loading && !stats && (
+        <div data-testid="dais-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
+      )}
+      {error && (
+        <div data-testid="dais-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-dais))' }}>{error}</div>
+      )}
 
       {/* Stats Strip */}
       {stats && (
