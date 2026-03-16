@@ -102,16 +102,7 @@ vi.mock('../../App', () => ({
   ),
 }));
 
-// Mock ShellHome (the component we are removing from routes)
-vi.mock('../../shell/home/ShellHome', () => ({
-  __esModule: true,
-  default: ({ className }: { className?: string }) => (
-    <div data-testid="shell-home" className={className}>
-      <input placeholder="Search parcels, addresses, owners..." />
-      ShellHome Search Hero
-    </div>
-  ),
-}));
+// ShellHome was deleted in Phase 8 — no mock needed
 
 // Mock CSSAmbientLayer
 vi.mock('../../components/compositor/layers/CSSAmbientLayer', () => ({
@@ -124,36 +115,9 @@ vi.mock('../../components/compositor/layers/CSSAmbientLayer', () => ({
 // ---------------------------------------------------------------------------
 
 /**
- * TestRouter renders the CURRENT production route table.
- * Phase 7 contract tests assert what SHOULD happen after the migration:
- *   - /home should redirect to / (currently renders ShellHome -- expected fail)
- */
-const TestRouter: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
-  const App = lazy(() => import('../../App'));
-  const ShellHome = lazy(() => import('../../shell/home/ShellHome'));
-
-  return (
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          {/* Desktop OS surface */}
-          <Route path="/" element={<App />} />
-
-          {/* /home — currently renders ShellHome (Phase 7 will change to redirect) */}
-          <Route path="/home" element={<ShellHome />} />
-
-          {/* /desktop — alias for Desktop */}
-          <Route path="/desktop" element={<App />} />
-        </Routes>
-      </Suspense>
-    </MemoryRouter>
-  );
-};
-
-/**
- * Phase7Router renders the FUTURE route table after Phase 7 enforcement:
+ * Phase7Router renders the canonical route table:
  *   - /home redirects to /
- *   - ShellHome is never rendered
+ *   - ShellHome was deleted in Phase 8
  */
 const Phase7Router: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
   const App = lazy(() => import('../../App'));
