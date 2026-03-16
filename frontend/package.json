@@ -7,7 +7,9 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "5.2.2",
     "@microsoft/signalr": "^8.0.0",
+    "@monaco-editor/react": "^4.6.0",
     "@mui/icons-material": "^5.18.0",
     "@mui/material": "^5.18.0",
     "@mui/x-data-grid": "^6.18.0",
@@ -52,7 +54,6 @@
     "i18next-browser-languagedetector": "8.2.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.540.0",
-    "@monaco-editor/react": "^4.6.0",
     "monaco-editor": "0.52.2",
     "next-themes": "0.4.6",
     "react": "18.3.1",
@@ -74,6 +75,7 @@
     "tailwind-merge": "^3.3.1",
     "three": "^0.179.1",
     "wait-on": "^8.0.4",
+    "zod": "^3.24.1",
     "zustand": "^4.4.7"
   },
   "devDependencies": {

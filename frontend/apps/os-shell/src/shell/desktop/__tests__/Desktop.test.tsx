@@ -134,11 +134,14 @@ describe('Desktop', () => {
       const desktop = screen.getByTestId('desktop');
       const children = Array.from(desktop.children);
 
-      // Verify correct order: skip-nav, background, top-system-bar, icons, window-manager, taskbar, start-menu
+      // Verify correct order: skip-nav, background, top-system-bar, stage-zero-state, window-manager, taskbar, start-menu
+      // z-index contract: desktop(0) < topbar(10) < window(30) < dock(1000) < overlay(1400)
+      // Note: DesktopIconGrid (desktop layer) is conditionally rendered only when surfaces.desktop !== 'hidden'.
+      // In the default shell mode, surfaces.recentWork is visible so StageZeroState renders at layer 0.5.
       expect(children[0]).toHaveAttribute('href', '#desktop-main-content'); // skip-nav
       expect(children[1]).toHaveAttribute('data-testid', 'desktop-background');
       expect(children[2]).toHaveAttribute('data-testid', 'desktop-top-system-bar');
-      expect(children[3]).toHaveAttribute('data-testid', 'desktop-icon-grid');
+      expect(children[3]).toHaveAttribute('data-testid', 'stage-zero-state');
       expect(children[4]).toHaveAttribute('data-testid', 'window-manager');
       expect(children[5]).toHaveAttribute('data-testid', 'taskbar');
       expect(children[6]).toHaveAttribute('data-testid', 'start-menu');

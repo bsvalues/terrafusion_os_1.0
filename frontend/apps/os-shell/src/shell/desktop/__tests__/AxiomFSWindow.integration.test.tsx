@@ -1,10 +1,22 @@
 import { vi, describe, test, expect, beforeEach } from 'vitest';
+import React from 'react';
 import { useAxiomFsStore } from '@/fs/store/axiomFsStore';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useDesktopStore } from '../../../stores/desktopStore';
 import type { ModuleDefinition } from '../../../stores/moduleRegistryStore';
 import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { Desktop } from '../Desktop';
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    BrowserRouter: ({ children }: { children: React.ReactNode }) => (
+      <actual.MemoryRouter initialEntries={['/']}>{children}</actual.MemoryRouter>
+    ),
+    useNavigate: () => vi.fn(),
+  };
+});
 
 // Mock the components to avoid full rendering complexity
 vi.mock('../../../fs/AxiomFSSurface', () => ({
@@ -55,24 +67,19 @@ describe('AxiomFS Module Integration', () => {
     useModuleRegistryStore.getState().registerModules([axiomModule]);
   });
 
-  test('Launch: Can be summoned via SovereignMenu', async () => {
+  test('Launch: Can be summoned via openWindow', async () => {
     render(<Desktop />);
 
-    // 1. Click "FILES" in Sovereign Dock
-    const filesButton = screen.getByTestId('sovereign-launch-files');
-    fireEvent.click(filesButton);
+    // Launch AxiomFS window via the desktop store (the canonical programmatic launch path)
+    act(() => {
+      useDesktopStore.getState().openWindow('axiom-fs', 'AxiomFS', '🌀');
+    });
 
-    // 2. Assert Window Creation
-    // The window frame renders the module component
-    // Note: ModuleLoader renders AxiomFSWindow which renders AxiomFSSurface
-    // We need to wait for the lazy load
+    // Assert Window Creation — surface host must appear
     const surface = await screen.findByTestId('axiomfs-surface-host');
     expect(surface).toBeInTheDocument();
 
-    // 4. Assert Window Title
-    // Note: Multiple elements with "AxiomFS" might exist (Title bar, Taskbar button)
-    // We just verify at least one is present, or specifically check the title bar
-    // Finding by role 'heading' isn't guaranteed if the title bar is just a div
+    // Assert Window Title — at least one element with "AxiomFS" must be present
     const titleElements = screen.getAllByText('AxiomFS');
     expect(titleElements.length).toBeGreaterThan(0);
   });

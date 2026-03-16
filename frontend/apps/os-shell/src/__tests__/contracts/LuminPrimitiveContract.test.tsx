@@ -87,8 +87,12 @@ describe('Lumin Primitive Contract', () => {
 
     const menu = screen.getByRole('menu', { name: /desktop context menu/i });
     expect(menu).toBeInTheDocument();
-    // Panel material classes present (uses CSS custom property variables, not hsl() wrappers)
-    expect(menu.className).toContain('border');
+    // DesktopContextMenu uses the Panel primitive from @terrafusion/ui.
+    // The mock stub renders data-testid="tf-panel" and forwards all props,
+    // so the role="menu" element IS the Panel. Verify it was constructed via
+    // the Panel primitive rather than checking an internal border CSS class
+    // which belongs to the Panel implementation, not the consumer contract.
+    expect(menu).toHaveAttribute('data-testid', 'tf-panel');
   });
 
   it('Taskbar nav uses token-backed background/border (no raw rgba)', () => {
