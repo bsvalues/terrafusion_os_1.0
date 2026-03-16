@@ -33,17 +33,19 @@ import { ForgeOverview } from './forge/ForgeOverview';
 import { CostApproach } from './forge/CostApproach';
 import { SalesComparison } from './forge/SalesComparison';
 import { IncomeApproach } from './forge/IncomeApproach';
+import { Reconciliation } from './forge/Reconciliation';
 import { CURRENT_YEAR, TAX_YEARS } from './forge/types';
 
 /* ── Sub-tab definitions ────────────────────────────────── */
 
-type ForgeSubTab = 'overview' | 'cost' | 'sales' | 'income';
+type ForgeSubTab = 'overview' | 'cost' | 'sales' | 'income' | 'reconcile';
 
 const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
-  { id: 'overview', label: 'Overview', icon: '\uD83D\uDD25' },
-  { id: 'cost',     label: 'Cost',     icon: '\uD83C\uDFD7\uFE0F' },
-  { id: 'sales',    label: 'Sales',    icon: '\uD83C\uDFD8\uFE0F' },
-  { id: 'income',   label: 'Income',   icon: '\uD83D\uDCB0' },
+  { id: 'overview',   label: 'Overview',       icon: '\uD83D\uDD25' },
+  { id: 'cost',       label: 'Cost',           icon: '\uD83C\uDFD7\uFE0F' },
+  { id: 'sales',      label: 'Sales',          icon: '\uD83C\uDFD8\uFE0F' },
+  { id: 'income',     label: 'Income',         icon: '\uD83D\uDCB0' },
+  { id: 'reconcile',  label: 'Reconciliation', icon: '\u2696\uFE0F' },
 ];
 
 /* ── PropertyForge ──────────────────────────────────────── */
@@ -170,6 +172,19 @@ export const PropertyForge: React.FC = () => {
         style={{ display: activeSubTab === 'income' ? 'block' : 'none' }}
       >
         <IncomeApproach
+          taxYear={taxYear}
+          onHistoryRecord={addHistoryRecord}
+          onValueIndicated={handleValueIndicated}
+        />
+      </div>
+
+      <div
+        id="forge-panel-reconcile"
+        role="tabpanel"
+        aria-labelledby="forge-tab-reconcile"
+        style={{ display: activeSubTab === 'reconcile' ? 'block' : 'none' }}
+      >
+        <Reconciliation
           taxYear={taxYear}
           onHistoryRecord={addHistoryRecord}
           onValueIndicated={handleValueIndicated}

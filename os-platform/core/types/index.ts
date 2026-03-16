@@ -378,3 +378,49 @@ export const IAAO_THRESHOLDS = {
   medianRatio: { min: 0.90, max: 1.10 },
   tierSlope: { absMax: 0.05 },
 } as const;
+
+// ── Forge > Reconciliation (Tranche 1B) ────────────────────────
+
+/** Valuation approach identifier */
+export type ApproachType = 'cost' | 'sales' | 'income';
+
+/** A single approach indication with its weight */
+export interface ApproachIndication {
+  approach: ApproachType;
+  indicatedValue: number;
+  /** 0–100 weight assigned by appraiser or model */
+  weight: number;
+  /** Optional confidence score 0–1 */
+  confidence?: number;
+  /** Free-form note or AI-generated justification */
+  note?: string;
+}
+
+/** Method used to derive the reconciled value */
+export type ReconciliationMethod =
+  | 'weighted_average'
+  | 'appraiser_judgment'
+  | 'single_approach'
+  | 'ai_assisted';
+
+/** Full reconciliation result — parcel-scoped, write-owner = Forge */
+export interface ReconciliationResult {
+  parcelId: string;
+  taxYear: number;
+  approaches: ApproachIndication[];
+  reconciledValue: number;
+  method: ReconciliationMethod;
+  effectiveDate: string;
+  /** The appraiser or agent who finalized */
+  reconciledBy: string;
+  /** Correlation ID for TerraTrace */
+  correlationId?: string;
+}
+
+/** Constraint: Approach weights must sum to 100 */
+export const RECONCILIATION_RULES = {
+  weightSum: 100,
+  minApproaches: 1,
+  maxApproaches: 3,
+  validApproaches: ['cost', 'sales', 'income'] as const,
+} as const;
