@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Building2,
   BarChart3,
+  CalendarDays,
   FileSearch,
   Map,
   Zap,
@@ -30,6 +31,7 @@ import {
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
+import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
 import { LiquidPanel } from '../../ui/materials';
 import { Z } from './zIndex';
 
@@ -109,6 +111,32 @@ const ActionRow: React.FC<{
     {!shortcut && <ArrowRight className='h-3 w-3 ml-auto opacity-30 flex-shrink-0' />}
   </button>
 );
+
+/** Today's Work panel — shows tasks from useTodaysWork hook */
+function TodaysWorkPanel({ tasks, onActivate }: { tasks: TodaysWorkItem[]; onActivate: (route: string) => void }) {
+  if (tasks.length === 0) {
+    return (
+      <div data-testid="todays-work-panel" className="flex flex-col items-center justify-center py-6 text-white/40">
+        <CalendarDays className="w-8 h-8 mb-2" />
+        <span className="text-sm">No tasks for today</span>
+      </div>
+    );
+  }
+
+  return (
+    <div data-testid="todays-work-panel" className="flex flex-col gap-1">
+      <SectionHeader icon={<CalendarDays className='h-3.5 w-3.5' />} title="Today's Work" />
+      {tasks.map((task) => (
+        <ActionRow
+          key={task.id}
+          icon={<Clock className='h-3.5 w-3.5' />}
+          label={`${task.title} — ${task.subtitle}`}
+          onClick={() => onActivate(task.route)}
+        />
+      ))}
+    </div>
+  );
+}
 
 // ============================================================================
 // County Map (SVG visualization)
@@ -210,6 +238,7 @@ const CountyMapOverview: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = '' }) => {
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
+  const { tasks: todaysTasks } = useTodaysWork();
 
   const handleOpenAtlas = useCallback(() => {
     activateModule('suite-atlas', { source: 'desktop' });
@@ -301,9 +330,12 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
           </LiquidPanel>
         </div>
 
-        {/* ═══ Right Panel: Quick Actions ═══ */}
+        {/* ═══ Right Panel: Today's Work + Quick Actions ═══ */}
         <div className='w-[240px] shrink-0 flex flex-col gap-3'>
           <GlassCard className='flex-1'>
+            <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route)} />
+          </GlassCard>
+          <GlassCard className='shrink-0'>
             <SectionHeader icon={<Zap className='h-3.5 w-3.5' />} title='Quick Actions' />
             <div className='flex flex-col gap-0.5 -mx-2.5'>
               <ActionRow

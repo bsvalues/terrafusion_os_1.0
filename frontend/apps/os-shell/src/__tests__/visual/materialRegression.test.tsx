@@ -36,6 +36,15 @@ vi.mock('@/orchestration/moduleActivation', () => ({
   default: vi.fn(),
 }));
 
+vi.mock('@/hooks/useTodaysWork', () => ({
+  useTodaysWork: () => ({
+    tasks: [
+      { id: 'tw-1', title: 'Review 3 appeals', subtitle: 'Dais', route: 'terradais', category: 'suite' },
+    ],
+    loading: false,
+  }),
+}));
+
 // Mock lucide-react to avoid SVG import issues in jsdom
 vi.mock('lucide-react', () => {
   const icon = (name: string) => {
@@ -53,6 +62,7 @@ vi.mock('lucide-react', () => {
     Zap: icon('Zap'),
     Search: icon('Search'),
     LayoutDashboard: icon('LayoutDashboard'),
+    CalendarDays: icon('CalendarDays'),
   };
 });
 

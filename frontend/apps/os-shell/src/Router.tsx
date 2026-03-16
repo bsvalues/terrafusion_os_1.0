@@ -1,10 +1,9 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
-import { CSSAmbientLayer } from './components/compositor/layers/CSSAmbientLayer';
 import { getViteEnv } from './env/getViteEnv';
 
 // CSS imports — design tokens must load for ShellHome route
@@ -37,8 +36,6 @@ const LoadingFallback = () => (
 // Lazy load route components for code splitting
 // Desktop Shell - OS windowed surface
 const App = lazy(() => import('./App'));
-// Shell Home - Primary OS landing surface with suite tiles, search, system health
-const ShellHome = lazy(() => import('./shell/home/ShellHome'));
 // Property Search - Native TerraPrime replacement (parcel browse/search → Workbench)
 const PropertySearch = lazy(() => import('./pages/PropertySearch'));
 // Property Workbench - Parcel-context hub (Tier-0 OS Surface)
@@ -119,16 +116,8 @@ const Router: React.FC = () => {
                 {/* TerraFusion OS Desktop — the real OS surface with windows, taskbar, start menu */}
                 <Route path='/' element={<App />} />
 
-                {/* Shell Home — alternative tile-based launcher (accessible via /home) */}
-                <Route
-                  path='/home'
-                  element={
-                    <div className='relative min-h-screen overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
-                      <CSSAmbientLayer />
-                      <ShellHome className='relative z-10' />
-                    </div>
-                  }
-                />
+                {/* Shell Home — deprecated; redirects to Desktop (Phase 7) */}
+                <Route path='/home' element={<Navigate to='/' replace />} />
 
                 {/* Legacy: /desktop still works */}
                 <Route path='/desktop' element={<App />} />

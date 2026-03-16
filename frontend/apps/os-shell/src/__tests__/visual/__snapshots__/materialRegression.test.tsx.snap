@@ -14,6 +14,7 @@ exports[`Phase 7: Material Regression Gate > StageZeroState snapshot matches bas
     >
       <div
         class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg p-4 flex flex-col flex-1"
+        data-material="liquid-glass"
         data-quality-tier="high"
         data-reduced-motion="false"
       >
@@ -90,6 +91,7 @@ exports[`Phase 7: Material Regression Gate > StageZeroState snapshot matches bas
     >
       <div
         class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg p-4 flex flex-col flex-1 p-2"
+        data-material="liquid-glass"
         data-quality-tier="high"
         data-reduced-motion="false"
       >
@@ -297,6 +299,7 @@ exports[`Phase 7: Material Regression Gate > StageZeroState snapshot matches bas
       </div>
       <div
         class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg px-4 py-2 shrink-0"
+        data-material="liquid-glass"
         data-quality-tier="high"
         data-reduced-motion="false"
       >
@@ -335,6 +338,59 @@ exports[`Phase 7: Material Regression Gate > StageZeroState snapshot matches bas
     >
       <div
         class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg p-4 flex flex-col flex-1"
+        data-material="liquid-glass"
+        data-quality-tier="high"
+        data-reduced-motion="false"
+      >
+        <div
+          class="flex flex-col gap-1"
+          data-testid="todays-work-panel"
+        >
+          <div
+            class="flex items-center gap-2 mb-3"
+          >
+            <span
+              class="opacity-50"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="CalendarDays"
+              />
+            </span>
+            <span
+              class="text-xs font-semibold uppercase tracking-wider"
+              style="color: hsl(var(--tf-text-primary-hs) 50%);"
+            >
+              Today's Work
+            </span>
+          </div>
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-80 hover:opacity-100"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="Clock"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              Review 3 appeals — Dais
+            </span>
+            <span
+              class="h-3 w-3 ml-auto opacity-30 flex-shrink-0"
+              data-icon="ArrowRight"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg p-4 flex flex-col shrink-0"
+        data-material="liquid-glass"
         data-quality-tier="high"
         data-reduced-motion="false"
       >

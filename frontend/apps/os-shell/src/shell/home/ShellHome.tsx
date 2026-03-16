@@ -1,3 +1,5 @@
+/** @deprecated Phase 8 deletion candidate. Replaced by StageZeroState (County Operations Scene). */
+
 /**
  * TerraFusion OS - Shell Home
  *
