@@ -104,7 +104,7 @@ export default function GeometryHealth() {
   }, []);
 
   return (
-    <div className="flex h-full bg-terra-midnight text-white">
+    <div data-testid="geometry-health" className="flex h-full bg-terra-midnight text-white">
       {/* Map */}
       <main className="flex-1 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -171,7 +171,7 @@ export default function GeometryHealth() {
         <h1 className="text-lg font-semibold text-terra-cyan">Geometry Health</h1>
 
         {/* Overall health */}
-        <Card variant="glass">
+        <Card variant="glass" data-material="bento">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm text-white/70">Overall Health</CardTitle>
@@ -213,7 +213,7 @@ export default function GeometryHealth() {
 
         {/* Recommendations */}
         {recommendations.length > 0 && (
-          <Card variant="glass">
+          <Card variant="glass" data-material="bento">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-white/70">Recommendations</CardTitle>
             </CardHeader>
@@ -232,7 +232,7 @@ export default function GeometryHealth() {
 
         {/* Selected area */}
         {selectedArea && (
-          <Card variant="glass">
+          <Card variant="glass" data-material="bento">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-terra-cyan">{selectedArea.name}</CardTitle>
             </CardHeader>

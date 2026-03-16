@@ -81,7 +81,7 @@ export default function GeoEquityDashboard() {
   const propertyTypes: PropertyTypeFilter[] = ['All', 'Residential', 'Commercial', 'Industrial', 'Agricultural'];
 
   return (
-    <div className="flex h-full bg-terra-midnight text-white">
+    <div data-testid="geo-equity-dashboard" className="flex h-full bg-terra-midnight text-white">
       {/* Map */}
       <main className="flex-1 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -182,7 +182,7 @@ export default function GeoEquityDashboard() {
         </div>
 
         {/* Summary */}
-        <Card variant="glass">
+        <Card variant="glass" data-material="bento">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-white/70">Area Summary</CardTitle>
           </CardHeader>
@@ -192,6 +192,7 @@ export default function GeoEquityDashboard() {
               return (
                 <button
                   key={area.id}
+                  role="link"
                   onClick={() => setSelectedId(area.id)}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm transition-colors ${
                     selectedId === area.id ? 'bg-white/10' : 'hover:bg-white/5'
@@ -212,7 +213,7 @@ export default function GeoEquityDashboard() {
 
         {/* Selected detail */}
         {selectedArea && (
-          <Card variant="glass">
+          <Card variant="glass" data-material="bento">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-terra-cyan">{selectedArea.name}</CardTitle>
             </CardHeader>

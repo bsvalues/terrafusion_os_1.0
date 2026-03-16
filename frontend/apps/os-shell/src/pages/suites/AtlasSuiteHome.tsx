@@ -49,7 +49,7 @@ export default function AtlasSuiteHome() {
 
       {/* Stats Strip */}
       {stats && (
-        <div className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
+        <div data-testid="atlas-stats" className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.totalParcels)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>By City</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{Object.keys(stats.parcelsByCity).length} cities</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Property Types</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{Object.keys(stats.parcelsByType).length} types</span></div>
@@ -79,8 +79,8 @@ export default function AtlasSuiteHome() {
 
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
-        <SuiteModuleGrid modules={ATLAS_MODULES} accentVar="--tf-suite-atlas" />
-        <OperationalQueue title="Recent GIS Queries" accentVar="--tf-suite-atlas" emptyMessage="No recent spatial queries" />
+        <div data-testid="atlas-modules"><SuiteModuleGrid modules={ATLAS_MODULES} accentVar="--tf-suite-atlas" /></div>
+        <div data-testid="atlas-queue"><OperationalQueue title="Recent GIS Queries" accentVar="--tf-suite-atlas" emptyMessage="No recent spatial queries" /></div>
       </main>
     </div>
   );

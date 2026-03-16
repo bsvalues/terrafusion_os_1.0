@@ -132,7 +132,7 @@ export default function NeighborhoodComparison() {
   );
 
   return (
-    <div className="flex flex-col h-full bg-terra-midnight text-white">
+    <div data-testid="neighborhood-comparison" className="flex flex-col h-full bg-terra-midnight text-white">
       {/* Header */}
       <header className="flex-shrink-0 p-4 border-b border-white/10">
         <h1 className="text-lg font-semibold text-terra-cyan">Neighborhood Comparison</h1>
@@ -143,7 +143,7 @@ export default function NeighborhoodComparison() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Selection sidebar */}
-        <aside className="w-56 flex-shrink-0 p-4 border-r border-white/10 overflow-y-auto">
+        <aside data-material="bento" className="w-56 flex-shrink-0 p-4 border-r border-white/10 overflow-y-auto">
           <p className="text-xs text-white/40 uppercase tracking-wider mb-3">
             Neighborhoods ({selectedIds.length}/{MAX_SELECTIONS})
           </p>
@@ -228,7 +228,7 @@ export default function NeighborhoodComparison() {
           {/* Comparison grid */}
           {selectedNeighborhoods.length >= 2 && (
             <div className="flex-shrink-0 border-t border-white/10 p-4 overflow-x-auto">
-              <Card variant="glass">
+              <Card variant="glass" data-material="bento">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm text-terra-cyan">Comparison</CardTitle>
                 </CardHeader>
