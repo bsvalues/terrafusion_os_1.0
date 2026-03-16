@@ -66,6 +66,9 @@ export const MODULE_ALIASES: Record<string, string> = {
   management: 'management-dashboard',
   'assessor-ops': 'management-dashboard',
   primeview: 'terra-primeview',
+  queue: 'terra-queue',
+  'work-queue': 'terra-queue',
+  terraqueue: 'terra-queue',
 
   // New constellation modules
   miner: 'terra-miner',
@@ -154,6 +157,7 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-permit',
   'terra-flow',
   'management-dashboard',
+  'terra-queue',
   'terra-miner',
   'legislative-pulse',
   // GPT Suite namespaced modules
@@ -275,6 +279,9 @@ const StatisticsStudio = lazy(
 const ManagementDashboard = lazy(
   () => import('../pages/dais/ManagementDashboard')
 );
+const TerraQueue = lazy(
+  () => import('../pages/dais/TerraQueue')
+);
 
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
@@ -331,6 +338,8 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'suite-dais': { Component: DaisSuiteHome },
   'suite-dossier': { Component: DossierSuiteHome },
   'suite-gpt': { Component: GptSuiteHome },
+  // Dais standalone modules
+  'terra-queue': { Component: TerraQueue },
   // OS Features (in-shell windows)
   'os-pilot': { Component: PilotHome },
   'os-trace': { Component: TraceHome },
@@ -670,6 +679,13 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Management Dashboard...</span></div>}>
           <ManagementDashboard />
+        </Suspense>
+      );
+
+    case 'terra-queue':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading TerraQueue...</span></div>}>
+          <TerraQueue />
         </Suspense>
       );
 
