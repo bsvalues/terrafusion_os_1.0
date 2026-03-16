@@ -62,6 +62,17 @@ vi.mock('../../api/canonPing', () => ({
   runCanonPing: vi.fn(),
 }));
 
+// useCanonConnection — stub (avoids real WebSocket setup)
+vi.mock('../../canon/useCanonConnection', () => ({
+  useCanonConnection: () => ({ status: 'disconnected', lastPingMs: null }),
+}));
+
+// CanonNotification — stub
+vi.mock('../../canon/CanonNotification', () => ({
+  CanonNotificationHost: () => null,
+  useCanonNotifications: () => ({ notifications: [], addNotification: vi.fn(), dismissNotification: vi.fn() }),
+}));
+
 // ---------------------------------------------------------------------------
 // Import under test
 // ---------------------------------------------------------------------------
@@ -97,19 +108,21 @@ describe('P17 – Canon IDE Shell Compliance', () => {
     expect(screen.getByTestId('terracanon-filetree')).toBeInTheDocument();
   });
 
-  it('agents panel is present with task input', () => {
+  it('agents panel is present with tool registry header', () => {
     render(<CanonHome />);
     expect(screen.getByTestId('terracanon-agents-panel')).toBeInTheDocument();
-    expect(screen.getByTestId('terracanon-agent-task-input')).toBeInTheDocument();
+    // P-A: panel now shows tool registry, not a task input
+    expect(screen.getByLabelText('Agents panel')).toBeInTheDocument();
   });
 
   it('tasks panel has safety dashboard', () => {
     render(<CanonHome />);
     expect(screen.getByTestId('terracanon-safety-dashboard')).toBeInTheDocument();
     expect(screen.getByTestId('terracanon-run-all')).toBeInTheDocument();
-    expect(screen.getByTestId('terracanon-run-canon-doctor')).toBeInTheDocument();
-    expect(screen.getByTestId('terracanon-run-canon-gatefast')).toBeInTheDocument();
-    expect(screen.getByTestId('terracanon-run-canon-ping')).toBeInTheDocument();
+    // Gate cards have duplicate testids (card wrapper + run button) — use getAllByTestId
+    expect(screen.getAllByTestId('terracanon-run-canon-doctor').length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('terracanon-run-canon-gatefast').length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('terracanon-run-canon-ping').length).toBeGreaterThan(0);
   });
 
   it('material hierarchy is applied (shell + infrastructure)', () => {

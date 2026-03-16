@@ -135,8 +135,9 @@ function assertLandmark(route: string) {
 // Tests
 // ============================================================================
 
-// Suite IDs that now open as windows (not navigate)
-const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt']);
+// IDs that open as desktop windows via activateModule (not navigate)
+// Includes constitutional suites AND OS feature icons (pilot, trace, canon)
+const SUITE_IDS = new Set(['forge', 'atlas', 'dais', 'dossier', 'gpt', 'pilot', 'trace', 'canon']);
 
 // Surface icons open desktop windows (not navigate)
 const SURFACE_PREFIX = 'surface-';

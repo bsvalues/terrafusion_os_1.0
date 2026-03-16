@@ -23,8 +23,7 @@ import {
 const mockSessionStorage: Record<string, string> = {};
 beforeEach(() => {
   Object.keys(mockSessionStorage).forEach((key) => delete mockSessionStorage[key]);
-  jest
-    .spyOn(Storage.prototype, 'getItem')
+  vi.spyOn(Storage.prototype, 'getItem')
     .mockImplementation((key: string) => mockSessionStorage[key] ?? null);
   vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
     mockSessionStorage[key] = value;

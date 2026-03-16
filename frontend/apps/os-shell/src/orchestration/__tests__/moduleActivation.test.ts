@@ -15,10 +15,35 @@
 
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-// Mock desktopStore
-const mockOpenWindow = vi.fn().mockReturnValue('window-123');
-const mockFocusWindow = vi.fn();
-const mockGetWindows = vi.fn().mockReturnValue([]);
+// Use vi.hoisted so mock variables are available when vi.mock factories run
+const {
+  mockOpenWindow,
+  mockFocusWindow,
+  mockGetWindows,
+  mockLoadModule,
+  mockGetLoadState,
+  mockNormalizeModuleId,
+  mockIsModuleRegistered,
+  mockTrackEvent,
+} = vi.hoisted(() => ({
+  mockOpenWindow: vi.fn().mockReturnValue('window-123'),
+  mockFocusWindow: vi.fn(),
+  mockGetWindows: vi.fn().mockReturnValue([]),
+  mockLoadModule: vi.fn().mockResolvedValue(undefined),
+  mockGetLoadState: vi.fn().mockReturnValue({ status: 'idle' }),
+  mockNormalizeModuleId: vi.fn((id: string) => {
+    const aliases: Record<string, string> = {
+      terrabuild: 'costforge',
+      assessment: 'costforge',
+    };
+    return aliases[id] || id;
+  }),
+  mockIsModuleRegistered: vi.fn((id: string) => {
+    const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
+    return registry.includes(id);
+  }),
+  mockTrackEvent: vi.fn(),
+}));
 
 vi.mock('../../stores/desktopStore', () => ({
   useDesktopStore: {
@@ -30,10 +55,6 @@ vi.mock('../../stores/desktopStore', () => ({
   },
 }));
 
-// Mock moduleLoaderStore
-const mockLoadModule = vi.fn().mockResolvedValue(undefined);
-const mockGetLoadState = vi.fn().mockReturnValue({ status: 'idle' });
-
 vi.mock('../../stores/moduleLoaderStore', () => ({
   useModuleLoaderStore: {
     getState: () => ({
@@ -43,31 +64,22 @@ vi.mock('../../stores/moduleLoaderStore', () => ({
   },
 }));
 
-// Mock moduleComponents (normalizeModuleId, isModuleRegistered)
-const mockNormalizeModuleId = vi.fn((id: string) => {
-  const aliases: Record<string, string> = {
-    terrabuild: 'costforge',
-    assessment: 'costforge',
-  };
-  return aliases[id] || id;
-});
-
-const mockIsModuleRegistered = vi.fn((id: string) => {
-  const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
-  return registry.includes(id);
-});
-
 vi.mock('../../config/moduleComponents', () => ({
   normalizeModuleId: mockNormalizeModuleId,
   isModuleRegistered: mockIsModuleRegistered,
 }));
 
-// Mock telemetry
-const mockTrackEvent = vi.fn();
-
 vi.mock('../../services/telemetry', () => ({
   telemetry: {
     trackEvent: mockTrackEvent,
+  },
+}));
+
+vi.mock('../../stores/notificationStore', () => ({
+  useNotificationStore: {
+    getState: () => ({
+      addNotification: vi.fn(),
+    }),
   },
 }));
 
@@ -134,7 +146,8 @@ describe('moduleActivation', () => {
       expect(mockOpenWindow).toHaveBeenCalledWith(
         'costforge', // moduleId
         expect.any(String), // title
-        expect.any(String) // icon
+        expect.any(String), // icon
+        undefined // metadata (none passed)
       );
     });
 
@@ -146,7 +159,8 @@ describe('moduleActivation', () => {
       expect(mockOpenWindow).toHaveBeenCalledWith(
         'costforge', // canonical ID, not alias
         expect.any(String), // title
-        expect.any(String) // icon
+        expect.any(String), // icon
+        undefined // metadata
       );
     });
 

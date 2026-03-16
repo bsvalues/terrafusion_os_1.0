@@ -126,10 +126,11 @@ describe('BentoGrid', () => {
 
 describe('BentoCard', () => {
   describe('Rendering', () => {
-    it('renders as LiquidPanel with infrastructure variant', () => {
+    it('renders as BentoCard with bento material identity', () => {
       render(<BentoCard data-testid="card">content</BentoCard>);
       const card = screen.getByTestId('card');
-      expect(card.className).toContain('liquid-panel--infrastructure');
+      expect(card.className).toContain('bento-card');
+      expect(card.getAttribute('data-material')).toBe('bento');
     });
 
     it('renders children in content area', () => {
@@ -237,14 +238,14 @@ describe('BentoCard', () => {
   });
 
   describe('Material Integration', () => {
-    it('uses LiquidPanel radius=lg', () => {
+    it('has bento material class', () => {
       render(<BentoCard data-testid="card">content</BentoCard>);
-      expect(screen.getByTestId('card').className).toContain('liquid-panel--radius-lg');
+      expect(screen.getByTestId('card').className).toContain('bento-card');
     });
 
-    it('has quality tier data attribute from LiquidPanel', () => {
+    it('has bento material identity data attribute', () => {
       render(<BentoCard data-testid="card">content</BentoCard>);
-      expect(screen.getByTestId('card')).toHaveAttribute('data-quality-tier');
+      expect(screen.getByTestId('card')).toHaveAttribute('data-material', 'bento');
     });
   });
 });

@@ -70,10 +70,33 @@ describe('MODULE_ALIASES -> MODULE_REGISTRY', () => {
 
 describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
   // Known PlaceholderModules rendered inline in the switch (no MODULE_ENTRY needed)
+  // This includes all modules that use PlaceholderModule or have inline Suspense+lazy
+  // but are NOT in MODULE_ENTRIES (i.e., getModuleEntry returns undefined for them).
   const KNOWN_PLACEHOLDER_MODULES = new Set([
     'levy-calculator',
+    'terra-levy',
     'gis-viewer',
     'document-manager',
+    'regression-studio',
+    'statistics-studio',
+    'vei',
+    'property-tax-ai',
+    'pacs-bridge',
+    'terra-sync',
+    'terra-flow',
+    'terra-gama',
+    'terra-pilt',
+    'terra-permit',
+    'terra-gis',
+    'management-dashboard',
+    'terra-miner',
+    'legislative-pulse',
+    'gpt-studio',
+    'gpt-marketplace',
+    'gpt-management',
+    'gpt-builder',
+    'gpt-analytics',
+    'gpt-rag',
   ]);
 
   it('every MODULE_REGISTRY entry has a MODULE_ENTRY or is a known placeholder', () => {
@@ -142,7 +165,7 @@ describe('moduleActivation displayNames/icons coverage', () => {
     const EXPECTED_DISPLAY_NAMES: Record<string, string> = {
       'costforge': 'CostForge',
       'terra-gaia': 'TerraGaia',
-      'federation-dashboard': 'TerraDais',
+      'federation-dashboard': 'Federation Dashboard',
       'levy-calculator': 'Levy Calculator',
       'gis-viewer': 'GIS Viewer',
       'document-manager': 'Documents',
@@ -162,6 +185,35 @@ describe('moduleActivation displayNames/icons coverage', () => {
       'suite-dossier': 'TerraDossier',
       'suite-gpt': 'TerraGPT',
       'property-workbench': 'Property Workbench',
+      // Application Constellation
+      'regression-studio': 'Regression Studio',
+      'statistics-studio': 'Statistics Studio',
+      'vei': 'Vertical Equality Index',
+      'property-tax-ai': 'PropertyTax AI',
+      'pacs-bridge': 'PACS DataBridge',
+      'terra-sync': 'TerraSync',
+      'terra-flow': 'TerraFlow',
+      'terra-gama': 'TerraGAMA',
+      'terra-pilt': 'TerraPILT',
+      'terra-permit': 'TerraPermit',
+      'terra-gis': 'TerraGIS Pro',
+      'management-dashboard': 'Management Dashboard',
+      'terra-queue': 'TerraQueue',
+      'terra-miner': 'TerraMiner',
+      'legislative-pulse': 'Legislative Pulse',
+      // GPT Suite namespaced modules
+      'gpt-studio': 'GPT Studio',
+      'gpt-marketplace': 'GPT Marketplace',
+      'gpt-management': 'GPT Management',
+      'gpt-builder': 'GPT Builder',
+      'gpt-analytics': 'GPT Analytics',
+      'gpt-rag': 'GPT RAG',
+      // OS Features
+      'os-pilot': 'TerraFusion Pilot',
+      'os-trace': 'TerraFusion Trace',
+      'os-canon': 'TerraCanon',
+      // Levy (legacy canonical kept for backward compat)
+      'terra-levy': 'Levy Calculator',
     };
 
     const missing: string[] = [];

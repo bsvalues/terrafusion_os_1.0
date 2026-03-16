@@ -53,7 +53,7 @@ const evt3: PilotTraceEvent = makeEvent({ eventId: 'e3', timestamp: '2026-03-01T
 
 describe('usePilotTraceList', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     mockListPilotTraces.mockReset();
   });
 

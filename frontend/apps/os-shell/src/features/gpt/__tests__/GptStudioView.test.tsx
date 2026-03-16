@@ -17,7 +17,7 @@ vi.mock('../../../api/gptClient', () => ({
   createConversation: vi.fn(),
   getMessages: vi.fn(),
   sendMessage: vi.fn(),
-  getRagHealth: vi.fn().mockResolvedValue({ healthy: true }),
+  getRagHealth: vi.fn().mockResolvedValue({ healthy: true, datasets: [] }),
   indexRagDataset: vi.fn(),
 }));
 
@@ -106,9 +106,9 @@ describe('GptStudioView Feature Tests', () => {
 
     render(<GptStudioView />);
 
-    // Wait for conversation to be ready
+    // Wait for conversation to be fully ready (getMessages called after setConversation)
     await waitFor(() => {
-      expect(gptClient.createConversation).toHaveBeenCalled();
+      expect(gptClient.getMessages).toHaveBeenCalledWith('convo-1');
     });
 
     // Type a message

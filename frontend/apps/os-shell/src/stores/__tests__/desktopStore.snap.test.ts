@@ -15,10 +15,11 @@ import { act } from '@testing-library/react';
 
 import { useDesktopStore, type SnapZone } from '../desktopStore';
 
-// Mock viewport dimensions
+// Mock viewport dimensions (must match desktopStore constants)
 const VIEWPORT = { width: 1920, height: 1080 };
+const TOP_BAR_HEIGHT = 44;
 const TASKBAR_HEIGHT = 48;
-const USABLE_HEIGHT = VIEWPORT.height - TASKBAR_HEIGHT;
+const USABLE_HEIGHT = VIEWPORT.height - TOP_BAR_HEIGHT - TASKBAR_HEIGHT;
 
 // Reset store before each test
 beforeEach(() => {
@@ -78,8 +79,10 @@ describe('Snap Store Extensions', () => {
     });
 
     it('detects BOTTOM-LEFT corner snap zone', () => {
+      // detectSnapZone uses viewportHeight - TASKBAR_HEIGHT for bottom threshold
+      const detectUsable = VIEWPORT.height - TASKBAR_HEIGHT;
       const zone = useDesktopStore.getState().detectSnapZone(
-        { x: 10, y: USABLE_HEIGHT - 10 },
+        { x: 10, y: detectUsable - 10 },
         VIEWPORT.width,
         VIEWPORT.height
       );
@@ -87,8 +90,9 @@ describe('Snap Store Extensions', () => {
     });
 
     it('detects BOTTOM-RIGHT corner snap zone', () => {
+      const detectUsable = VIEWPORT.height - TASKBAR_HEIGHT;
       const zone = useDesktopStore.getState().detectSnapZone(
-        { x: VIEWPORT.width - 10, y: USABLE_HEIGHT - 10 },
+        { x: VIEWPORT.width - 10, y: detectUsable - 10 },
         VIEWPORT.width,
         VIEWPORT.height
       );

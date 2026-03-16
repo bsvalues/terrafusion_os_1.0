@@ -9,7 +9,7 @@
  */
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 
 // ---------------------------------------------------------------------------
@@ -44,6 +44,14 @@ vi.mock('../../api/canonDoctor', () => ({ runCanonDoctor: vi.fn() }));
 vi.mock('../../api/canonGateFast', () => ({ runCanonGateFast: vi.fn() }));
 vi.mock('../../api/canonPing', () => ({ runCanonPing: vi.fn() }));
 
+// Mock the lazy-loaded Monaco editor to render content synchronously
+vi.mock('../../canon/CanonEditor', () => ({
+  CanonEditor: ({ value }: { value: string }) => (
+    <div data-testid='terracanon-editor-content-inner'>{value}</div>
+  ),
+  detectLanguage: vi.fn().mockReturnValue('plaintext'),
+}));
+
 // ---------------------------------------------------------------------------
 // Import under test
 // ---------------------------------------------------------------------------
@@ -69,7 +77,7 @@ describe('P19 – Workspace MVP', () => {
     expect(screen.getByTestId('terracanon-file-1')).toHaveTextContent('terrafusion.json');
   });
 
-  it('click file → tab appears and content is visible', () => {
+  it('click file → tab appears and content is visible', async () => {
     render(<CanonHome />);
     fireEvent.click(screen.getByTestId('terracanon-open-empty-workspace'));
 
@@ -80,8 +88,13 @@ describe('P19 – Workspace MVP', () => {
     expect(screen.getByTestId('terracanon-tab-bar')).toBeInTheDocument();
     expect(screen.getByTestId('terracanon-tab-README.md')).toBeInTheDocument();
 
-    // Editor content should show the file content (read-only)
+    // Editor content area should be rendered
     expect(screen.getByTestId('terracanon-editor-content')).toBeInTheDocument();
+
+    // Flush React.lazy Suspense resolution
+    await act(async () => {});
+
+    // The mocked editor renders file content — check for seed text
     expect(screen.getByTestId('terracanon-editor-content')).toHaveTextContent(
       'Welcome to TerraCanon'
     );

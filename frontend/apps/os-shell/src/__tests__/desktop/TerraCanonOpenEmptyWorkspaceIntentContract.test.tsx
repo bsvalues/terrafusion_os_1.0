@@ -43,8 +43,8 @@ import React from 'react';
 
 let memoryRouterEntries: string[] = ['/'];
 
-vi.mock('react-router-dom', () => {
-  const actual = vi.importActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -63,6 +63,18 @@ vi.mock('../../auth/authBridge', () => ({
   registerLogoutHandler: vi.fn(),
   unregisterLogoutHandler: vi.fn(),
 }));
+
+vi.mock('@monaco-editor/react', () => ({
+  default: () => <div data-testid="mock-monaco-editor" />,
+  loader: { config: vi.fn() },
+}));
+
+vi.mock('monaco-editor', () => ({}));
+vi.mock('monaco-editor/esm/vs/editor/editor.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/css/css.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/html/html.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
 
 import Router from '../../Router';
 

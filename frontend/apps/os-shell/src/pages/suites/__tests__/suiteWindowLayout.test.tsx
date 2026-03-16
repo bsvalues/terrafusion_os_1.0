@@ -42,8 +42,9 @@ describe('Suite home page layout classes', () => {
     it('should NOT contain min-h-screen on the root container', () => {
       const source = readSuiteSource(filename);
       // The root return should not use min-h-screen
+      // Support both single-quoted and double-quoted className attributes
       const rootDivMatch = source.match(
-        /return\s*\(\s*<div\s+className='([^']*)'/
+        /return\s*\(\s*<div\s[^>]*className=["']([^"']*)["']/
       );
       expect(rootDivMatch).not.toBeNull();
       const rootClasses = rootDivMatch![1];
@@ -52,8 +53,9 @@ describe('Suite home page layout classes', () => {
 
     it('should have a valid root container class', () => {
       const source = readSuiteSource(filename);
+      // Support both single-quoted and double-quoted className attributes
       const rootDivMatch = source.match(
-        /return\s*\(\s*<div\s+className='([^']*)'/
+        /return\s*\(\s*<div\s[^>]*className=["']([^"']*)["']/
       );
       expect(rootDivMatch).not.toBeNull();
       // Root container should have some layout class (flex or padding)

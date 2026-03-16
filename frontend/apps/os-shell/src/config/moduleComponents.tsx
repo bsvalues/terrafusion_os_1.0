@@ -38,9 +38,9 @@ export const MODULE_ALIASES: Record<string, string> = {
   analytics: 'reporting',
   reports: 'reporting',
   levy: 'terra-levy',
-  'levy-calculator': 'terra-levy',
+  // Note: 'levy-calculator' and 'gis-viewer' are canonical IDs in MODULE_REGISTRY
+  // so they are NOT aliased here (would create a canonical-ID-as-alias conflict).
   gis: 'terra-gis',
-  'gis-viewer': 'terra-gis',
   'gis-pro': 'terra-gis',
   map: 'terra-gis',
   docs: 'document-manager',
@@ -65,7 +65,6 @@ export const MODULE_ALIASES: Record<string, string> = {
   'property-tax': 'property-tax-ai',
   management: 'management-dashboard',
   'assessor-ops': 'management-dashboard',
-  primeview: 'terra-primeview',
   queue: 'terra-queue',
   'work-queue': 'terra-queue',
   terraqueue: 'terra-queue',
@@ -385,7 +384,7 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
     placeholder: { color: 'hsl(var(--tf-warning))', label: 'Placeholder' },
     partial: { color: 'hsl(var(--tf-info))', label: 'Partial' },
     rehosting: { color: 'hsl(var(--tf-accent-2))', label: 'Rehosting' },
-    live: { color: 'hsl(120 60% 50%)', label: 'Live' },
+    live: { color: 'hsl(var(--tf-success) / 1)', label: 'Live' },
     'coming-soon': { color: 'hsl(var(--tf-warning))', label: 'Coming Soon' },
     'in-development': { color: 'hsl(var(--tf-info))', label: 'In Development' },
     beta: { color: 'hsl(var(--tf-accent-2))', label: 'Beta' },
@@ -542,7 +541,7 @@ const SuiteBoundaryViolationNotice: React.FC<{
   <div
     className="w-full h-full flex flex-col items-center justify-center p-8"
     style={{
-      background: 'linear-gradient(135deg, hsl(var(--tf-bg) / 0.95) 0%, hsl(0 60% 10% / 0.95) 100%)',
+      background: 'linear-gradient(135deg, hsl(var(--tf-bg) / 0.95) 0%, hsl(var(--tf-error) / 0.95) 100%)',
     }}
   >
     <div className="text-4xl mb-4">🛡️</div>

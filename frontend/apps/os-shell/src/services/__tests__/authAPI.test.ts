@@ -1,15 +1,16 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { login } from '../authAPI';
 
-vi.mock('../api', () => {
-  const post = vi.fn();
-  return { __esModule: true, default: { post } };
-});
+vi.mock('../../services/api', () => ({
+  default: { post: vi.fn() },
+}));
 
 import api from '../api';
 
 describe('authAPI.login', () => {
-  beforeEach(() => (api.post as vi.Mock).mockReset());
+  beforeEach(() => {
+    (api.post as vi.Mock).mockReset();
+  });
 
   it('returns normalized token on success (token field)', async () => {
     (api.post as vi.Mock).mockResolvedValue({ data: { token: 'T' } });

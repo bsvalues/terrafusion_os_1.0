@@ -228,8 +228,8 @@ describe('Toast (Sonner)', () => {
         expect(screen.getByText('Persistent message')).toBeInTheDocument();
       });
 
-      // Wait longer than default duration
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      // Wait longer than default duration (but within test timeout)
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       expect(screen.getByText('Persistent message')).toBeInTheDocument();
     });

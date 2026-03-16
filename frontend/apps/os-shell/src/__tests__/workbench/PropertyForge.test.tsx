@@ -291,9 +291,9 @@ describe('PropertyForge', () => {
       fireEvent.click(screen.getByRole('button', { name: /explain valuation/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/Location/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Location/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/\+\$12,000/)).toBeInTheDocument();
-        expect(screen.getByText(/Condition/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Condition/i).length).toBeGreaterThan(0);
       });
     });
 

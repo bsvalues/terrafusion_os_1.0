@@ -62,6 +62,18 @@ vi.mock('../../auth/authBridge', () => ({
   unregisterLogoutHandler: vi.fn(),
 }));
 
+vi.mock('@monaco-editor/react', () => ({
+  default: () => <div data-testid="mock-monaco-editor" />,
+  loader: { config: vi.fn() },
+}));
+
+vi.mock('monaco-editor', () => ({}));
+vi.mock('monaco-editor/esm/vs/editor/editor.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/css/css.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/html/html.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
+
 import Router from '../../Router';
 
 // ============================================================================

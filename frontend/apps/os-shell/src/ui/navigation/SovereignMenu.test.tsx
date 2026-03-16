@@ -116,7 +116,7 @@ describe('SovereignMenu', () => {
     expect(document.activeElement).toBe(trigger);
   });
 
-  test('Motion Test: If data-reduce-motion="true", assert motion.div transform has rotate(0)', () => {
+  test('Motion Test: If data-reduce-motion="true", assert motion.div transform has rotate(0)', async () => {
     // Mock useReducedMotion to return true
     const { useReducedMotion } = await import('framer-motion');
     useReducedMotion.mockReturnValue(true);
