@@ -14,6 +14,12 @@ import {
   ResponsiveContainer, BarChart, Bar,
 } from 'recharts';
 
+/** Centralized chart palette — single source of truth for all Recharts colors */
+const AVM_CHART_COLORS = {
+  trainLoss: '#3b82f6',
+  valLoss: '#ef4444',
+};
+
 interface AVMModel {
   id: string;
   name: string;
@@ -68,9 +74,9 @@ const statusColor = (status: string) => {
 
 const pipelineColor = (status: string) => {
   const map: Record<string, string> = {
-    complete: 'bg-green-500', running: 'bg-blue-500 animate-pulse', error: 'bg-red-500', idle: 'bg-gray-300',
+    complete: 'bg-primary', running: 'bg-primary animate-pulse', error: 'bg-destructive', idle: 'bg-muted',
   };
-  return map[status] || 'bg-gray-300';
+  return map[status] || 'bg-muted';
 };
 
 export function AVMStudio() {
@@ -78,7 +84,7 @@ export function AVMStudio() {
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
 
   return (
-    <div className="space-y-4 p-4">
+    <div data-testid="avm-studio" className="space-y-4 p-4">
       <h1 className="text-2xl font-bold">AVM Studio</h1>
 
       {loading ? (
@@ -103,7 +109,7 @@ export function AVMStudio() {
                       {stage.recordsProcessed && <div className="text-xs text-muted-foreground">{stage.recordsProcessed.toLocaleString()} records</div>}
                     </div>
                     {i < PIPELINE.length - 1 && (
-                      <div className={`h-0.5 flex-1 ${stage.status === 'complete' ? 'bg-green-300' : 'bg-gray-200'}`} />
+                      <div className={`h-0.5 flex-1 ${stage.status === 'complete' ? 'bg-primary/50' : 'bg-muted'}`} />
                     )}
                   </React.Fragment>
                 ))}
@@ -116,7 +122,9 @@ export function AVMStudio() {
             {MODELS.map(model => (
               <Card
                 key={model.id}
-                className={`cursor-pointer transition-shadow ${selectedModel === model.id ? 'ring-2 ring-blue-500' : 'hover:shadow-md'}`}
+                data-material="bento"
+                role="link"
+                className={`cursor-pointer transition-shadow ${selectedModel === model.id ? 'ring-2 ring-primary' : 'hover:shadow-md'}`}
                 onClick={() => setSelectedModel(model.id)}
               >
                 <CardContent className="pt-6">
@@ -127,11 +135,11 @@ export function AVMStudio() {
                   <div className="text-xs text-muted-foreground mb-3">v{model.version}</div>
                   {model.accuracy > 0 ? (
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="text-center p-2 rounded bg-gray-50">
+                      <div className="text-center p-2 rounded bg-white/5">
                         <div className="text-lg font-bold">{model.accuracy}%</div>
                         <div className="text-xs text-muted-foreground">Accuracy</div>
                       </div>
-                      <div className="text-center p-2 rounded bg-gray-50">
+                      <div className="text-center p-2 rounded bg-white/5">
                         <div className="text-lg font-bold">{model.medianError}%</div>
                         <div className="text-xs text-muted-foreground">Median Error</div>
                       </div>
@@ -163,8 +171,8 @@ export function AVMStudio() {
                   <XAxis dataKey="epoch" label={{ value: 'Epoch', position: 'insideBottom', offset: -5 }} />
                   <YAxis label={{ value: 'Loss', angle: -90, position: 'insideLeft' }} />
                   <Tooltip formatter={(value: number) => value.toFixed(4)} />
-                  <Line type="monotone" dataKey="trainLoss" stroke="#3b82f6" strokeWidth={2} name="Training Loss" dot={false} />
-                  <Line type="monotone" dataKey="valLoss" stroke="#ef4444" strokeWidth={2} name="Validation Loss" dot={false} />
+                  <Line type="monotone" dataKey="trainLoss" stroke={AVM_CHART_COLORS.trainLoss} strokeWidth={2} name="Training Loss" dot={false} />
+                  <Line type="monotone" dataKey="valLoss" stroke={AVM_CHART_COLORS.valLoss} strokeWidth={2} name="Validation Loss" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -184,7 +192,7 @@ export function AVMStudio() {
                   { label: 'COD', value: '9.8' },
                   { label: 'PRD', value: '1.02' },
                 ].map(m => (
-                  <div key={m.label} className="text-center p-3 rounded bg-gray-50">
+                  <div key={m.label} className="text-center p-3 rounded bg-white/5">
                     <div className="text-xs text-muted-foreground">{m.label}</div>
                     <div className="text-xl font-bold">{m.value}</div>
                   </div>

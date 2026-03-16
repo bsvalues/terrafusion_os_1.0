@@ -27,7 +27,7 @@ export function MarketTrendsPage() {
   const propertyTypes = [...new Set(segments.map((s) => s.propertyType))];
 
   return (
-    <div className="space-y-4 p-4">
+    <div data-testid="market-trends" className="space-y-4 p-4">
       <h1 className="text-2xl font-bold">Market Trends</h1>
       <p className="text-sm text-muted-foreground">
         Time series analysis and segment performance

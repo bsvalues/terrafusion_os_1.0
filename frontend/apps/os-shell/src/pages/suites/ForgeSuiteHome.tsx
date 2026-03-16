@@ -60,7 +60,7 @@ export default function ForgeSuiteHome() {
 
       {/* Stats Strip */}
       {stats && (
-        <div className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
+        <div data-testid="forge-stats" className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.totalParcels)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Avg Assessed</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(stats.averageAssessedValue)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Assessed This Year</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.assessedThisYear)}</span></div>
@@ -90,8 +90,12 @@ export default function ForgeSuiteHome() {
 
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
-        <SuiteModuleGrid modules={FORGE_MODULES} accentVar="--tf-suite-forge" />
-        <OperationalQueue title="Recent Assessments" accentVar="--tf-suite-forge" emptyMessage="No recent assessment activity" />
+        <div data-testid="forge-modules">
+          <SuiteModuleGrid modules={FORGE_MODULES} accentVar="--tf-suite-forge" />
+        </div>
+        <div data-testid="forge-queue">
+          <OperationalQueue title="Recent Assessments" accentVar="--tf-suite-forge" emptyMessage="No recent assessment activity" />
+        </div>
       </main>
     </div>
   );

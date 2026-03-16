@@ -59,7 +59,7 @@ export function RegressionStudio() {
   };
 
   return (
-    <div className="space-y-4 p-4">
+    <div data-testid="regression-studio" className="space-y-4 p-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Regression Studio</h1>
         <div className="flex gap-2">
@@ -73,7 +73,7 @@ export function RegressionStudio() {
       </div>
 
       {error && (
-        <div className="p-3 rounded bg-red-50 text-red-700 text-sm border border-red-200">{error}</div>
+        <div className="p-3 rounded bg-destructive/10 text-destructive text-sm border border-destructive/20">{error}</div>
       )}
 
       {view === 'list' && (
@@ -90,7 +90,7 @@ export function RegressionStudio() {
               ) : (
                 <div className="space-y-2">
                   {savedModels.map(model => (
-                    <div key={model.id} className="flex items-center justify-between p-3 rounded border hover:bg-gray-50 cursor-pointer">
+                    <div key={model.id} className="flex items-center justify-between p-3 rounded border hover:bg-white/5 cursor-pointer" data-material="bento" role="link">
                       <div>
                         <div className="font-medium">{model.name}</div>
                         <div className="text-xs text-muted-foreground">
@@ -113,7 +113,7 @@ export function RegressionStudio() {
               <CardTitle>Run History</CardTitle>
             </CardHeader>
             <CardContent>
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" data-material="bento">
                 <thead>
                   <tr className="border-b">
                     <th className="text-left py-2">Timestamp</th>
@@ -124,7 +124,7 @@ export function RegressionStudio() {
                 </thead>
                 <tbody>
                   {runHistory.map(run => (
-                    <tr key={run.id} className="border-b hover:bg-gray-50 cursor-pointer">
+                    <tr key={run.id} className="border-b hover:bg-white/5 cursor-pointer" role="link">
                       <td className="py-2 text-muted-foreground">{run.timestamp}</td>
                       <td className="py-2"><Badge variant="outline" className="text-xs">{run.modelType}</Badge></td>
                       <td className="py-2 text-right font-mono">{run.rSquared.toFixed(4)}</td>

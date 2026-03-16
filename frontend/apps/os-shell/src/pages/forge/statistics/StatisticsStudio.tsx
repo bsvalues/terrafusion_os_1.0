@@ -76,7 +76,7 @@ export function StatisticsStudio() {
   ];
 
   return (
-    <div className="space-y-4 p-4">
+    <div data-testid="statistics-studio" className="space-y-4 p-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -87,6 +87,7 @@ export function StatisticsStudio() {
           {tabs.map((tab) => (
             <Button
               key={tab.key}
+              data-testid={`tab-${tab.key}`}
               variant={activeTab === tab.key ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveTab(tab.key)}
@@ -99,7 +100,7 @@ export function StatisticsStudio() {
 
       {/* Tab: Ratio Study */}
       {activeTab === 'ratio-study' && (
-        <Card>
+        <Card data-material="bento">
           <CardHeader>
             <CardTitle>Benton County Ratio Study</CardTitle>
           </CardHeader>
@@ -116,7 +117,7 @@ export function StatisticsStudio() {
       {/* Tab: Trends */}
       {activeTab === 'trends' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card>
+          <Card data-material="bento">
             <CardHeader>
               <CardTitle>COD Trend</CardTitle>
             </CardHeader>
@@ -124,7 +125,7 @@ export function StatisticsStudio() {
               <CODTrendChart data={sampleCODTrend} threshold={15} loading={false} />
             </CardContent>
           </Card>
-          <Card>
+          <Card data-material="bento">
             <CardHeader>
               <CardTitle>PRD Trend</CardTitle>
             </CardHeader>
@@ -137,7 +138,7 @@ export function StatisticsStudio() {
 
       {/* Tab: Equity (VEI) */}
       {activeTab === 'equity' && (
-        <Card>
+        <Card data-material="bento">
           <CardHeader>
             <CardTitle>Valuation Equity Index</CardTitle>
           </CardHeader>

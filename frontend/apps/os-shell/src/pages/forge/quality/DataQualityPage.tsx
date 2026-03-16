@@ -9,12 +9,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { DataQualityScore } from '@/types/realEstate';
 import { getDataQualityList } from '@/services/forge/neighborhoodClientService';
 
-const gradeColors: Record<string, string> = {
-  A: 'bg-green-600',
-  B: 'bg-blue-600',
-  C: 'bg-yellow-600',
-  D: 'bg-orange-600',
-  F: 'bg-red-600',
+const GRADE_VARIANT: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
+  A: 'default',
+  B: 'default',
+  C: 'secondary',
+  D: 'outline',
+  F: 'destructive',
 };
 
 export function DataQualityPage() {
@@ -36,7 +36,7 @@ export function DataQualityPage() {
   }, [gradeFilter, sortBy]);
 
   return (
-    <div className="space-y-4 p-4">
+    <div data-testid="data-quality" className="space-y-4 p-4">
       <h1 className="text-2xl font-bold">Data Quality</h1>
       <p className="text-sm text-muted-foreground">
         Per-parcel quality scores with A-F grades
@@ -71,7 +71,7 @@ export function DataQualityPage() {
               ))}
             </div>
           ) : (
-            <Table>
+            <Table data-material="bento">
               <TableHeader>
                 <TableRow>
                   <TableHead>Parcel ID</TableHead>
@@ -88,13 +88,9 @@ export function DataQualityPage() {
                   <TableRow key={item.parcelId}>
                     <TableCell className="font-mono text-xs">{item.parcelId}</TableCell>
                     <TableCell>
-                      <span
-                        className={`inline-flex h-6 w-6 items-center justify-center rounded text-xs font-bold text-white ${
-                          gradeColors[item.overallGrade] ?? 'bg-gray-500'
-                        }`}
-                      >
+                      <Badge variant={GRADE_VARIANT[item.overallGrade] ?? 'outline'}>
                         {item.overallGrade}
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right text-xs">{item.overallScore.toFixed(1)}</TableCell>
                     <TableCell className="text-right text-xs">{item.completeness.toFixed(0)}%</TableCell>
