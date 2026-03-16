@@ -91,16 +91,26 @@ const DockSuiteButton: React.FC<{
   suite: SuiteDefinition;
   isRunning: boolean;
   isActive: boolean;
-}> = ({ suite, isRunning, isActive }) => {
+  onContextMenu?: (e: React.MouseEvent, suiteId: string) => void;
+}> = ({ suite, isRunning, isActive, onContextMenu }) => {
   const Icon = getSuiteIcon(suite.iconName);
+  const focusWindow = useDesktopStore((s) => s.focusWindow);
+  const windows = useDesktopStore((s) => s.windows);
 
   const handleClick = () => {
-    activateModule(suite.id, { source: 'dock' });
+    // If the suite is running, toggle focus/minimize instead of re-launching
+    const suiteWindow = windows.find((w) => w.moduleId === suite.id);
+    if (suiteWindow) {
+      focusWindow(suiteWindow.id);
+    } else {
+      activateModule(suite.id, { source: 'dock' });
+    }
   };
 
   return (
     <button
       onClick={handleClick}
+      onContextMenu={(e) => onContextMenu?.(e, suite.id)}
       aria-label={suite.displayName}
       title={suite.displayName}
       className={cn(
@@ -145,15 +155,48 @@ const DockSuiteButton: React.FC<{
 const CoreSuiteZone: React.FC = () => {
   const { windows, activeWindowId, currentDesktopId } = useDesktopStore();
   const visibleWindows = windows.filter((w) => w.desktopId === currentDesktopId);
+  const {
+    isOpen: isContextMenuOpen,
+    position: contextMenuPosition,
+    handleContextMenu,
+    closeMenu: closeContextMenu,
+  } = useContextMenu();
+  const [contextMenuWindow, setContextMenuWindow] = useState<(typeof windows)[0] | null>(null);
+
+  const handleSuiteContextMenu = (e: React.MouseEvent, suiteId: string) => {
+    const suiteWindow = visibleWindows.find((w) => w.moduleId === suiteId);
+    if (suiteWindow) {
+      handleContextMenu(e);
+      setContextMenuWindow(suiteWindow);
+    }
+  };
 
   return (
-    <div className='flex items-center gap-1' role='group' aria-label='Core suites'>
-      {CONSTITUTIONAL_SUITES.map((suite) => {
-        const isRunning = visibleWindows.some((w) => w.moduleId === suite.id);
-        const isActive = visibleWindows.some((w) => w.moduleId === suite.id && w.id === activeWindowId);
-        return <DockSuiteButton key={suite.id} suite={suite} isRunning={isRunning} isActive={isActive} />;
-      })}
-    </div>
+    <>
+      <div className='flex items-center gap-1' role='group' aria-label='Core suites'>
+        {CONSTITUTIONAL_SUITES.map((suite) => {
+          const isRunning = visibleWindows.some((w) => w.moduleId === suite.id);
+          const isActive = visibleWindows.some((w) => w.moduleId === suite.id && w.id === activeWindowId);
+          return (
+            <DockSuiteButton
+              key={suite.id}
+              suite={suite}
+              isRunning={isRunning}
+              isActive={isActive}
+              onContextMenu={handleSuiteContextMenu}
+            />
+          );
+        })}
+      </div>
+
+      {isContextMenuOpen && contextMenuWindow && (
+        <TaskbarContextMenu
+          window={contextMenuWindow}
+          position={contextMenuPosition}
+          onClose={closeContextMenu}
+        />
+      )}
+    </>
   );
 };
 

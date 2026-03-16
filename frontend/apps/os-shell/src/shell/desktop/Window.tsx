@@ -385,7 +385,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   }, []);
 
   // Window snapping hook
-  const { applySnap, clearPreview } = useWindowSnap({
+  const { currentSnapZone, applySnap, clearPreview } = useWindowSnap({
     windowId: windowData.id,
     isDragging,
     cursorPosition,
@@ -449,12 +449,10 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
       // Check if we should apply snap
       const shouldSnap = _e && 'clientX' in _e && 'clientY' in _e;
 
+      // Always update position; also apply snap if in a snap zone
+      updateWindowPosition(windowData.id, { x: data.x, y: data.y });
       if (shouldSnap) {
-        // Apply snap if in snap zone
         applySnap();
-      } else {
-        // Just update position normally
-        updateWindowPosition(windowData.id, { x: data.x, y: data.y });
       }
 
       // Clear snap preview

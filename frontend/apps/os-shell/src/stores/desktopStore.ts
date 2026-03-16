@@ -159,6 +159,7 @@ const CASCADE_OFFSET = 30; // Pixels to offset each new window
 const BASE_POSITION: Position = { x: 100, y: 50 };
 const SNAP_THRESHOLD = 20; // Pixels from edge to trigger snap
 const TASKBAR_HEIGHT = 48;
+const TOP_BAR_HEIGHT = 44;
 
 /**
  * Returns the correct window size for a module based on its type.
@@ -174,10 +175,10 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   if (classification) {
     const { objectType } = classification;
 
-    // Tier-0 workbench → MAXIMIZED (fills viewport, not draggable/resizable)
+    // Tier-0 workbench → MAXIMIZED (fills usable area between top bar and taskbar)
     if (objectType === 'tier0-workbench') {
       return {
-        size: { width: vw, height: vh - TASKBAR_HEIGHT },
+        size: { width: vw, height: vh - TOP_BAR_HEIGHT - TASKBAR_HEIGHT },
         maximized: true,
       };
     }
@@ -366,7 +367,7 @@ const calculateSnapBounds = (
   viewportWidth: number,
   viewportHeight: number
 ): SnapBounds => {
-  const usableHeight = viewportHeight - TASKBAR_HEIGHT;
+  const usableHeight = viewportHeight - TOP_BAR_HEIGHT - TASKBAR_HEIGHT;
   const halfWidth = viewportWidth / 2;
   const halfHeight = usableHeight / 2;
 
@@ -638,17 +639,23 @@ export const useDesktopStore = create<DesktopState>()(
       },
 
       focusWindow: (windowId: string) => {
-        const { windows, nextZIndex } = get();
+        const { windows, activeWindowId, nextZIndex } = get();
 
         const targetWindow = windows.find((w) => w.id === windowId);
         if (!targetWindow) return;
 
+        // If minimized, restore it
+        const wasMinimized = targetWindow.state === 'minimized';
+
+        // Toggle: if already focused and not minimized, minimize it (standard OS behavior)
+        if (!wasMinimized && windowId === activeWindowId && targetWindow.state !== 'minimized') {
+          get().minimizeWindow(windowId);
+          return;
+        }
+
         // Check if window is already at highest z-index
         const maxZIndex = Math.max(...windows.map((w) => w.zIndex));
         const isAlreadyTop = targetWindow.zIndex === maxZIndex;
-
-        // If minimized, restore it
-        const wasMinimized = targetWindow.state === 'minimized';
 
         const newWindows = windows.map((w) => {
           if (w.id === windowId) {
