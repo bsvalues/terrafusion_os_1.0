@@ -81,6 +81,15 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
         _httpClient = httpClient;
         _configuration = configuration;
 
+        // Resolve service base URLs from configuration (platform.json-aligned)
+        var brainBase = _configuration["ServiceEndpoints:AICommandBrain"] ?? "http://localhost:3001";
+        var swarmBase = _configuration["ServiceEndpoints:AISwarm"] ?? "http://localhost:3002";
+        var advancedBase = _configuration["ServiceEndpoints:AIAdvanced"] ?? "http://localhost:3003";
+
+        _aiModules["ai-command-brain"].BaseUrl = $"{brainBase}/api/ai-command-brain";
+        _aiModules["ai-swarm"].BaseUrl = $"{swarmBase}/api/ai-swarm";
+        _aiModules["ai-advanced"].BaseUrl = $"{advancedBase}/api/ai-advanced";
+
         // Configure HttpClient for AI module communication with shorter timeout
         _httpClient.Timeout = TimeSpan.FromSeconds(2); // Reduced from 30 seconds
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "TerraFusion-OS/1.0");

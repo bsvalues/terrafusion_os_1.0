@@ -49,7 +49,20 @@ public class EnhancementOrchestrationService : IEnhancementOrchestrationService
         _httpClient = httpClient;
         _configuration = configuration;
         _auditLogger = auditLogger;
-        
+
+        // Resolve enhancement endpoints from configuration (platform.json-aligned)
+        var swarmBase = _configuration["ServiceEndpoints:AICommandBrain"] ?? "http://localhost:3001";
+        var consciousnessBase = _configuration["ServiceEndpoints:AISwarm"] ?? "http://localhost:3002";
+        var securityBase = _configuration["ServiceEndpoints:AIAdvanced"] ?? "http://localhost:3003";
+        var performanceBase = _configuration["ServiceEndpoints:Consciousness"] ?? "http://localhost:3004";
+        var integrationBase = _configuration["ServiceEndpoints:Integration"] ?? "http://localhost:3005";
+
+        _enhancementEndpoints["swarm"] = $"{swarmBase}/api/enhancement/swarm";
+        _enhancementEndpoints["consciousness"] = $"{consciousnessBase}/api/enhancement/consciousness";
+        _enhancementEndpoints["security"] = $"{securityBase}/api/enhancement/security";
+        _enhancementEndpoints["performance"] = $"{performanceBase}/api/enhancement/performance";
+        _enhancementEndpoints["integration"] = $"{integrationBase}/api/enhancement/integration";
+
         // Configure HttpClient for enhancement services
         _httpClient.Timeout = TimeSpan.FromSeconds(10);
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "TerraFusion-Enhancement-Orchestrator/1.0");

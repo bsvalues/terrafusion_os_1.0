@@ -28,6 +28,7 @@ import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
+import { emitTraceEvent } from '../../services/terraTrace';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
@@ -36,6 +37,7 @@ import type { WorkbenchHostViolation } from '../../contracts/objectPlacement';
 import { useRecentParcels, openWorkbenchWindow } from '../../context/parcelContext';
 import { useParcelSearch } from '../../shell/command-palette/useParcelSearch';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+import { useSession } from '../../auth/useSession';
 import { LiquidPanel } from '../../ui/materials';
 import { cn } from '@/lib/utils';
 
@@ -528,6 +530,7 @@ interface PropertyData {
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
   const parcelId = (metadata?.parcelId as string) ?? null;
   const initialTab = (metadata?.tabId as WorkbenchTabSlug) ?? 'summary';
+  const session = useSession();
 
   // Resolve initial tab from metadata slug
   const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
@@ -611,8 +614,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton', // TODO: from session
-      userId: 'current-user', // TODO: from auth
+      countyId: session.countyId,
+      userId: session.userId,
       roles: [],
       parcelId,
       workMode,
@@ -640,8 +643,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton',
-      userId: 'current-user',
+      countyId: session.countyId,
+      userId: session.userId,
       roles: [],
       parcelId,
       workMode,
@@ -670,9 +673,10 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Tab change handler
   const handleTabChange = useCallback((slug: WorkbenchTabSlug) => {
+    const previousTab = activeTab;
     setActiveTab(slug);
-    // TODO: Emit TerraTrace tab_switched event
-  }, []);
+    emitTraceEvent('tab_switched', 'workbench', parcelId ?? 'unknown', { tab: previousTab }, { tab: slug });
+  }, [activeTab, parcelId]);
 
   // Activity Feed state — collapsible bottom panel
   const [activityOpen, setActivityOpen] = useState(false);
