@@ -15,8 +15,27 @@ import {
   type QueueMetrics,
   type AppraiserProductivity,
 } from '@/data/queueFixtures';
+import { getToken } from '@/auth/authStorage';
 
 const API = '/api/dais/queue';
+
+// ============================================================================
+// Auth Helper (mirrors atlasService pattern)
+// ============================================================================
+
+function authHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+}
+
+function authHeadersReadOnly(): Record<string, string> {
+  const headers: Record<string, string> = {};
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+}
 
 // ============================================================================
 // Read Operations
@@ -24,7 +43,7 @@ const API = '/api/dais/queue';
 
 export async function getQueueItems(): Promise<QueueWorkItem[]> {
   try {
-    const res = await fetch(`${API}/pending`);
+    const res = await fetch(`${API}/pending`, { headers: authHeadersReadOnly() });
     if (!res.ok) throw new Error(res.statusText);
     return res.json();
   } catch {
@@ -34,7 +53,7 @@ export async function getQueueItems(): Promise<QueueWorkItem[]> {
 
 export async function getQueueMetrics(): Promise<QueueMetrics> {
   try {
-    const res = await fetch(`${API}/metrics`);
+    const res = await fetch(`${API}/metrics`, { headers: authHeadersReadOnly() });
     if (!res.ok) throw new Error(res.statusText);
     return res.json();
   } catch {
@@ -44,7 +63,7 @@ export async function getQueueMetrics(): Promise<QueueMetrics> {
 
 export async function getAppraiserProductivity(): Promise<AppraiserProductivity[]> {
   try {
-    const res = await fetch(`${API}/productivity`);
+    const res = await fetch(`${API}/productivity`, { headers: authHeadersReadOnly() });
     if (!res.ok) throw new Error(res.statusText);
     return res.json();
   } catch {
@@ -63,7 +82,7 @@ export async function assignWorkItems(
   try {
     const res = await fetch(`${API}/assign`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify({ workItemIds, appraiserName }),
     });
     if (!res.ok) throw new Error(res.statusText);
@@ -79,7 +98,7 @@ export async function reviewWorkItem(
   try {
     const res = await fetch(`${API}/review`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify({ workItemId, action }),
     });
     if (!res.ok) throw new Error(res.statusText);

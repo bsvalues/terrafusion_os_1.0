@@ -573,8 +573,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   // Work Mode state
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
-  // ── Role-based tab visibility (Phase 2) ──
-  const roles: string[] = useMemo(() => [], []);
+  // ── Role-based tab visibility (wired to session.role — Wave 1) ──
+  const roles = useMemo(() => (session.role ? [session.role] : []), [session.role]);
   const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved */
