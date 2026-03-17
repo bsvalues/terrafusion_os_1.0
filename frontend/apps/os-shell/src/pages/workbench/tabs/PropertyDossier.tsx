@@ -39,6 +39,7 @@ import type {
   DossierNoteHeaderItem,
   DossierValuationCategory,
 } from '../../../contracts/dossierDetails';
+import ParcelEvidencePacket from '../../../components/dossier/ParcelEvidencePacket';
 
 
 // InvocationRecord type imported from shared components
@@ -1101,6 +1102,11 @@ export const PropertyDossier: React.FC = () => {
         )}
         {noteState.status === 'error' && noteState.error && <ErrorDisplay error={{ message: noteState.error.message, errorCode: noteState.error.code, correlationId: noteState.correlationId }} />}
       </BentoCard>
+
+      {/* Phase 19: Evidence Packet Assembly */}
+      <div data-testid="evidence-packet-section">
+        <ParcelEvidencePacket parcelId={parcelId} />
+      </div>
 
       {/* Governed Tool Invocation History */}
       <InvocationHistory

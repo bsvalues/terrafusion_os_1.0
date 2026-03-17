@@ -7,7 +7,12 @@
  * No valuation math — that belongs to TerraForge.
  *
  * Typed fetch wrappers to backend endpoints. No business logic.
+ *
+ * Write-lane enforcement (Phase 19): all mutating functions call
+ * assertWriteLane('dossier', 'document') before touching the API.
  */
+
+import { assertWriteLane } from '../writeLane';
 
 const API = '/api/dossier';
 
@@ -63,6 +68,7 @@ export async function uploadDocument(
   file: File,
   type: string
 ): Promise<Document> {
+  assertWriteLane('dossier', 'document');
   const formData = new FormData();
   formData.append('file', file);
   formData.append('parcelId', parcelId);
@@ -85,6 +91,7 @@ export async function getDocuments(parcelId: string): Promise<Document[]> {
 }
 
 export async function deleteDocument(documentId: string): Promise<void> {
+  assertWriteLane('dossier', 'document');
   const res = await fetch(
     `${API}/documents/${encodeURIComponent(documentId)}`,
     { method: 'DELETE' }
@@ -150,6 +157,7 @@ export async function assemblePacket(
   parcelId: string,
   documentIds: string[]
 ): Promise<Packet> {
+  assertWriteLane('dossier', 'document');
   const res = await fetch(`${API}/packets`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -168,6 +176,7 @@ export async function getPackets(parcelId: string): Promise<Packet[]> {
 }
 
 export async function finalizePacket(packetId: string): Promise<Packet> {
+  assertWriteLane('dossier', 'document');
   const res = await fetch(
     `${API}/packets/${encodeURIComponent(packetId)}/finalize`,
     { method: 'POST' }
@@ -184,6 +193,7 @@ export async function attachEvidence(
   parcelId: string,
   evidence: Omit<Evidence, 'evidenceId' | 'addedAt'>
 ): Promise<Evidence> {
+  assertWriteLane('dossier', 'document');
   const res = await fetch(`${API}/evidence`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
