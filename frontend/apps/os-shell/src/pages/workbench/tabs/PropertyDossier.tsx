@@ -40,6 +40,7 @@ import type {
   DossierValuationCategory,
 } from '../../../contracts/dossierDetails';
 import ParcelEvidencePacket from '../../../components/dossier/ParcelEvidencePacket';
+import PacketNarrativeEditor from '../../../components/dossier/PacketNarrativeEditor';
 
 
 // InvocationRecord type imported from shared components
@@ -1106,6 +1107,11 @@ export const PropertyDossier: React.FC = () => {
       {/* Phase 19: Evidence Packet Assembly */}
       <div data-testid="evidence-packet-section">
         <ParcelEvidencePacket parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 3: Narrative Spine */}
+      <div data-testid="narrative-section">
+        <PacketNarrativeEditor parcelId={parcelId} />
       </div>
 
       {/* Governed Tool Invocation History */}

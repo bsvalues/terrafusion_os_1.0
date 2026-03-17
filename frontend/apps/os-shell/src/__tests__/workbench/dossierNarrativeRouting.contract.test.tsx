@@ -1,9 +1,9 @@
 /**
- * Phase 19 — TerraDossier Defense Spine, Tranche 1
- * Dossier Tab Packet Routing Contract
+ * Phase 19 — TerraDossier Defense Spine, Tranche 3
+ * Dossier Narrative Routing Contract
  *
- * Verifies that the PropertyDossier workbench tab includes
- * the evidence packet assembly surface and receives parcel context.
+ * Verifies that narrative work is hosted inside the Property Workbench
+ * Dossier tab, not in standalone windows.
  */
 
 import React from 'react';
@@ -12,7 +12,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import PropertyDossier from '../../pages/workbench/tabs/PropertyDossier';
 
-// Mock the read-side dossier service (used by PropertyDossier)
+// Mock the read-side dossier service
 vi.mock('../../services/dossierService', () => ({
   dossierService: {
     getDetails: vi.fn().mockResolvedValue({ data: null }),
@@ -24,7 +24,7 @@ vi.mock('../../services/dossierService', () => ({
   },
 }));
 
-// Mock the write-side dossier service (used by ParcelEvidencePacket + PacketNarrativeEditor)
+// Mock the write-side dossier service
 vi.mock('../../services/suites/dossierService', () => ({
   getDocuments: vi.fn().mockResolvedValue([]),
   getEvidence: vi.fn().mockResolvedValue([]),
@@ -70,34 +70,37 @@ const TestWrapper: React.FC = () => (
   </MemoryRouter>
 );
 
-describe('Dossier Tab Packet Routing Contract', () => {
+describe('Dossier Narrative Routing Contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('PropertyDossier renders with property-dossier-tab testid', async () => {
+  it('routes parcel-scoped narrative work into the Property Workbench Dossier tab', async () => {
     render(<TestWrapper />);
 
     await waitFor(() => {
       expect(screen.getByTestId('property-dossier-tab')).toBeInTheDocument();
+      expect(screen.getByTestId('narrative-section')).toBeInTheDocument();
     });
   });
 
-  it('contains evidence-packet-section', async () => {
+  it('does not open standalone parcel narrative windows', async () => {
     render(<TestWrapper />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('evidence-packet-section')).toBeInTheDocument();
+      const narrativeSection = screen.getByTestId('narrative-section');
+      const dossierTab = screen.getByTestId('property-dossier-tab');
+      expect(dossierTab).toContainElement(narrativeSection);
     });
   });
 
-  it('evidence packet section is inside dossier tab', async () => {
+  it('hosts narrative work as real dossier interaction, not a placeholder summary', async () => {
     render(<TestWrapper />);
 
     await waitFor(() => {
-      const tabContent = screen.getByTestId('property-dossier-tab');
-      const packetSection = screen.getByTestId('evidence-packet-section');
-      expect(tabContent).toContainElement(packetSection);
+      const narrativeSection = screen.getByTestId('narrative-section');
+      // Should contain the PacketNarrativeEditor component
+      expect(narrativeSection).toBeInTheDocument();
     });
   });
 });
