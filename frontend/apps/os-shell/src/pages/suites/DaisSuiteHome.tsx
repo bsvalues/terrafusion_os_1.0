@@ -16,6 +16,7 @@ import { ParcelContextBanner } from '../../components/workbench/ParcelContextBan
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
+import CertRollPanel from '../../components/dais/CertRollPanel';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   ArrowLeft,
@@ -30,6 +31,7 @@ import {
   LayoutDashboard,
   ClipboardList,
   Mail,
+  FileCheck,
 } from 'lucide-react';
 
 const DAIS_MODULES: SuiteModuleDef[] = [
@@ -45,6 +47,7 @@ const DAIS_MODULES: SuiteModuleDef[] = [
   { id: 'property-tax-ai', label: 'PropertyTax AI', icon: Bot, description: 'AI-driven property tax analysis & anomaly detection', launchMode: 'standalone', moduleId: 'property-tax-ai' },
   { id: 'management-dashboard', label: 'Management', icon: LayoutDashboard, description: 'Assessor operations — certification, workload, staff assignment (ADR-003)', launchMode: 'standalone', moduleId: 'management-dashboard' },
   { id: 'terra-queue', label: 'TerraQueue', icon: ClipboardList, description: 'Cross-parcel work queue — assignment, progress, quality review', launchMode: 'standalone', moduleId: 'terra-queue' },
+  { id: 'terra-cert', label: 'TerraCert', icon: FileCheck, description: 'Roll sign-off, statutory export, and certification operations', launchMode: 'standalone', moduleId: 'terra-cert' },
   { id: 'terra-notice', label: 'TerraNotice', icon: Mail, description: 'Batch notice dispatch — mail/print queue and delivery tracking', launchMode: 'standalone', moduleId: 'terra-notice' },
 ];
 
@@ -99,6 +102,9 @@ export default function DaisSuiteHome() {
       <main className="flex-1 min-h-0 overflow-y-auto">
         <div data-testid="dais-modules">
           <SuiteModuleGrid modules={DAIS_MODULES} accentVar="--tf-suite-dais" />
+        </div>
+        <div data-testid="dais-cert-ops">
+          <CertRollPanel />
         </div>
         <div data-testid="dais-notice-ops">
           <NoticeBatchQueuePanel />

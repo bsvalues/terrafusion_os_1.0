@@ -61,9 +61,24 @@
     "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx",
     "frontend/apps/os-shell/src/config/moduleComponents.tsx",
     "os-platform/core/tests/forge-batchcost-contract.test.mjs",
-    "tranche-1d-batchcost.json"
+    "os-platform/core/pilot/evidence/tranche-1d-batchcost.json"
   ],
   "parentSha": "d3564d0d9",
   "branch": "phase-7-county-ops-visual-governance",
-  "commitSha": "353d9ff38"
+  "commitSha": "8ed1a75dd",
+  "cleanup": {
+    "status": "normalized",
+    "mixedCommitNote": "8ed1a75dd is a mixed-scope commit containing both Forge 1D files and Dais AppealCertification (Phase 19 Tranche 9) files. The Dais files were included because the pre-commit hook requires all untracked governed-path files to be staged. History rewrite was not performed because downstream Dais commits (fed26adf3, 9bbcd6238) depend on this tree state.",
+    "evidenceRelocation": "tranche-1d-batchcost.json moved from repo root to os-platform/core/pilot/evidence/ during cleanup",
+    "daisSpilloverFiles": [
+      "frontend/apps/os-shell/src/__tests__/dais/appealCertificationImpact.contract.test.ts",
+      "frontend/apps/os-shell/src/__tests__/dais/appealCertificationReadiness.contract.test.ts",
+      "frontend/apps/os-shell/src/__tests__/dais/appealOutcomeDecision.contract.test.ts",
+      "frontend/apps/os-shell/src/__tests__/trace/appealCertificationTrace.contract.test.ts",
+      "frontend/apps/os-shell/src/__tests__/workbench/daisAppealCertificationRouting.contract.test.tsx",
+      "frontend/apps/os-shell/src/components/dais/AppealCertificationPanel.tsx",
+      "frontend/apps/os-shell/src/services/suites/daisAppealCertification.ts"
+    ],
+    "cleanupCommitSha": "b1dc43d4a"
+  }
 }
