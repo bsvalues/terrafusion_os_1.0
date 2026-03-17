@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TerraFusion.Data;
@@ -12,9 +13,11 @@ using TerraFusion.Data;
 namespace TerraFusion.Data.Migrations
 {
     [DbContext(typeof(TerraFusionDbContext))]
-    partial class TerraFusionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260317074518_AddDaisEntities")]
+    partial class AddDaisEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
