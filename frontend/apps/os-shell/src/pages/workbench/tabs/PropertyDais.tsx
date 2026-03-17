@@ -42,6 +42,7 @@ import { getEnv } from '../../../runtime/env';
 import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
+import AppealDeadlinePanel from '../../../components/dais/AppealDeadlinePanel';
 
 /** Workflow type options */
 const WORKFLOW_TYPES = [
@@ -1616,6 +1617,11 @@ export const PropertyDais: React.FC = () => {
         )}
         {escalateState.status === 'error' && escalateState.error && <ErrorDisplay error={{ message: escalateState.error.message, errorCode: escalateState.error.code, correlationId: escalateState.correlationId }} />}
       </BentoCard>
+
+      {/* Phase 19 Tranche 6: Appeal Deadline Spine */}
+      <div data-testid="appeal-deadline-section">
+        <AppealDeadlinePanel parcelId={parcelId} />
+      </div>
 
       {/* History */}
       <InvocationHistory
