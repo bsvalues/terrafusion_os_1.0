@@ -1,5 +1,5 @@
 /**
- * CoefficientPreview.tsx (Tranche 1D)
+ * CoefficientPreview.tsx (Tranche 1D → 1E audit-proof)
  *
  * Standalone Forge module: Coefficient Application Preview.
  * Shows current vs proposed coefficients, impacted parcel count,
@@ -7,12 +7,53 @@
  *
  * Write lane: Read-only preview (Forge scope).
  * No parcelId routing — cross-parcel / county-wide.
+ *
+ * 1E additions: ForgeApplyMode lifecycle, preview-only enforcement,
+ * backend-capability gate, blocker display, and audit event emission.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+
+// ---------------------------------------------------------------------------
+// 1E: Apply-mode types & audit event emitter
+// ---------------------------------------------------------------------------
+
+type ForgeApplyMode = 'preview_only' | 'apply_pending_backend' | 'apply_executed';
+
+interface AuditEvent {
+  eventId: string;
+  requestId: string;
+  suite: 'forge';
+  writeLane: 'forge' | 'none';
+  mode: ForgeApplyMode;
+  outcome: 'preview_generated' | 'apply_accepted' | 'apply_blocked' | 'apply_executed';
+  timestamp: string;
+}
+
+/** Backend capability flag — false until real backend is wired */
+const BACKEND_APPLY_CAPABLE = false;
+
+let _auditSeq = 0;
+function emitAuditEvent(
+  mode: ForgeApplyMode,
+  outcome: AuditEvent['outcome'],
+): AuditEvent {
+  const evt: AuditEvent = {
+    eventId: `coeff-audit-${++_auditSeq}`,
+    requestId: `coeff-req-${Date.now()}`,
+    suite: 'forge',
+    writeLane: mode === 'preview_only' ? 'none' : 'forge',
+    mode,
+    outcome,
+    timestamp: new Date().toISOString(),
+  };
+  // eslint-disable-next-line no-console
+  console.info('[TerraTrace] CoefficientPreview audit event:', evt);
+  return evt;
+}
 
 // ---------------------------------------------------------------------------
 // Fixture data (Benton County)
@@ -101,10 +142,29 @@ export function CoefficientPreview() {
   const [candidateId, setCandidateId] = useState(FIXTURE_MODELS[1].id);
   const [preview, setPreview] = useState<PreviewResult | null>(null);
 
-  const handlePreview = () => {
+  // 1E: Apply mode lifecycle
+  const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
+  const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
+
+  const handlePreview = useCallback(() => {
     // Fixture response — preview-only, non-destructive
     setPreview(FIXTURE_PREVIEW);
-  };
+    setApplyMode('preview_only');
+    const evt = emitAuditEvent('preview_only', 'preview_generated');
+    setAuditLog((prev) => [...prev, evt]);
+  }, []);
+
+  const handleApplyRequest = useCallback(() => {
+    if (BACKEND_APPLY_CAPABLE) {
+      setApplyMode('apply_executed');
+      const evt = emitAuditEvent('apply_executed', 'apply_executed');
+      setAuditLog((prev) => [...prev, evt]);
+    } else {
+      setApplyMode('apply_pending_backend');
+      const evt = emitAuditEvent('apply_pending_backend', 'apply_blocked');
+      setAuditLog((prev) => [...prev, evt]);
+    }
+  }, []);
 
   const fmtNum = (n: number) => n.toLocaleString();
   const fmtCurrency = (n: number) => {
@@ -167,6 +227,42 @@ export function CoefficientPreview() {
           <Button data-testid="coeff-preview-btn" onClick={handlePreview} className="w-full">
             Generate Preview
           </Button>
+
+          {/* 1E: Apply request + mode banner */}
+          {preview && (
+            <div className="space-y-2 pt-2">
+              <Button
+                data-testid="coeff-apply-btn"
+                variant={applyMode === 'apply_executed' ? 'default' : 'outline'}
+                onClick={handleApplyRequest}
+                disabled={applyMode === 'apply_executed'}
+                className="w-full"
+              >
+                {applyMode === 'apply_executed'
+                  ? 'Coefficients Applied'
+                  : applyMode === 'apply_pending_backend'
+                    ? 'Retry Apply Coefficients'
+                    : 'Apply Coefficients'}
+              </Button>
+
+              <div data-testid="coeff-apply-mode" className="text-xs px-2 py-1 rounded" style={{
+                background: applyMode === 'preview_only'
+                  ? 'hsl(200 60% 30% / 0.2)'
+                  : applyMode === 'apply_pending_backend'
+                    ? 'hsl(40 80% 40% / 0.2)'
+                    : 'hsl(120 50% 35% / 0.2)',
+                color: applyMode === 'preview_only'
+                  ? 'hsl(200 60% 70%)'
+                  : applyMode === 'apply_pending_backend'
+                    ? 'hsl(40 80% 70%)'
+                    : 'hsl(120 60% 60%)',
+              }}>
+                {applyMode === 'preview_only' && 'Mode: Preview Only — coefficients NOT applied'}
+                {applyMode === 'apply_pending_backend' && 'Mode: Apply Blocked — backend capability not available. Request recorded.'}
+                {applyMode === 'apply_executed' && 'Mode: Applied — coefficients committed to production model'}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -281,6 +377,27 @@ export function CoefficientPreview() {
             </CardContent>
           </Card>
         </>
+      )}
+
+      {/* 1E: Audit Trail */}
+      {auditLog.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle>Audit Trail</CardTitle></CardHeader>
+          <CardContent>
+            <div data-testid="coeff-audit-trail" className="space-y-1">
+              {auditLog.map((evt) => (
+                <div key={evt.eventId} className="flex items-center gap-2 text-xs py-1" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.1)' }}>
+                  <Badge variant="outline" className="shrink-0">{evt.outcome}</Badge>
+                  <span className="font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>{evt.mode}</span>
+                  <span className="font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>lane:{evt.writeLane}</span>
+                  <span className="ml-auto font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>
+                    {new Date(evt.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

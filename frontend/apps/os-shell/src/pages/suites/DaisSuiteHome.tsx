@@ -17,6 +17,7 @@ import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/Su
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
 import CertRollPanel from '../../components/dais/CertRollPanel';
+import ManagementDashboardPanel from '../../components/dais/ManagementDashboardPanel';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   ArrowLeft,
@@ -102,6 +103,9 @@ export default function DaisSuiteHome() {
       <main className="flex-1 min-h-0 overflow-y-auto">
         <div data-testid="dais-modules">
           <SuiteModuleGrid modules={DAIS_MODULES} accentVar="--tf-suite-dais" />
+        </div>
+        <div data-testid="dais-mgmt-ops">
+          <ManagementDashboardPanel />
         </div>
         <div data-testid="dais-cert-ops">
           <CertRollPanel />

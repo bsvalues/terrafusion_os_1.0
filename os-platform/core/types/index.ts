@@ -670,3 +670,128 @@ export const BATCH_COST_THRESHOLDS = {
   /** Impact bucket boundaries (percentage) */
   impactBucketEdges: [-20, -10, -5, -2, 0, 2, 5, 10, 20] as const,
 } as const;
+
+// ============================================================================
+// Tranche 1E — Model Application / Audit Proof
+// ============================================================================
+
+/**
+ * ForgeApplyMode — the three-state lifecycle of a model application.
+ *
+ * preview_only           — dry-run preview, no side-effects, no persistence.
+ * apply_pending_backend  — user requested apply but backend capability is absent;
+ *                          the request is recorded but NOT executed.
+ * apply_executed         — backend confirmed execution; values persisted.
+ */
+export type ForgeApplyMode = 'preview_only' | 'apply_pending_backend' | 'apply_executed';
+
+/** Request to apply (or preview) a cost/coefficient model across parcels. */
+export interface ModelApplicationRequest {
+  /** Unique request identifier */
+  requestId: string;
+  /** Which model to apply */
+  modelId: string;
+  /** Model name (human-readable) */
+  modelName: string;
+  /** Model year */
+  modelYear: number;
+  /** Lifecycle mode — preview, pending, or executed */
+  mode: ForgeApplyMode;
+  /** Filter (same shape as batch cost) */
+  filter: BatchCostRunFilter;
+  /** Timestamp of the request */
+  requestedAt: string;
+  /** Requesting user identifier */
+  requestedBy: string;
+  /** County scope (multi-tenant) */
+  countyId: string;
+  // NOTE: parcelId is intentionally ABSENT — cross-parcel only
+}
+
+/** Preview result returned from a model application dry-run. */
+export interface ModelApplicationPreview {
+  requestId: string;
+  mode: 'preview_only';
+  impactSummary: ModelApplicationImpactSummary;
+  /** SHA-256 hash of the input parameters (for audit reproducibility) */
+  inputHash: string;
+  generatedAt: string;
+}
+
+/** Aggregated impact summary for a model application. */
+export interface ModelApplicationImpactSummary {
+  totalParcelsEvaluated: number;
+  impactedParcelCount: number;
+  meanValueChange: number;
+  medianValueChange: number;
+  meanPctChange: number;
+  impactedStrata: string[];
+  impactBuckets: ImpactBucket[];
+}
+
+/** Persisted record of a model application (preview or execution). */
+export interface ModelApplicationRecord {
+  id: string;
+  request: ModelApplicationRequest;
+  mode: ForgeApplyMode;
+  preview: ModelApplicationPreview | null;
+  /** Non-null only when mode === 'apply_executed' */
+  executionResult: { completedAt: string; affectedParcels: number } | null;
+  /** Non-null when mode === 'apply_pending_backend' */
+  blockers: ModelApplicationBlocker[] | null;
+  auditEvents: ModelApplicationAuditEvent[];
+  countyId: string;
+  createdAt: string;
+}
+
+/** Audit event emitted on every preview/apply interaction. */
+export interface ModelApplicationAuditEvent {
+  eventId: string;
+  requestId: string;
+  /** Who triggered the action */
+  requestedBy: string;
+  /** Owning suite */
+  suite: 'forge';
+  /** Write lane (forge for apply, none for preview) */
+  writeLane: 'forge' | 'none';
+  /** Lifecycle mode at event time */
+  mode: ForgeApplyMode;
+  /** SHA-256 hash of input parameters */
+  inputHash: string;
+  /** Which strata were impacted */
+  impactedStrata: string[];
+  /** Outcome of the interaction */
+  outcome: 'preview_generated' | 'apply_accepted' | 'apply_blocked' | 'apply_executed';
+  /** ISO timestamp */
+  timestamp: string;
+  /** County scope */
+  countyId: string;
+}
+
+/** Reason an apply action was blocked. */
+export interface ModelApplicationBlocker {
+  code: 'no_backend_capability' | 'insufficient_permissions' | 'validation_failed';
+  message: string;
+  /** Timestamp blocker was recorded */
+  recordedAt: string;
+}
+
+/** Canonical rules enforced for all model application interactions. */
+export const MODEL_APPLICATION_RULES = {
+  /** Preview is always non-destructive — no persistence, no side-effects */
+  previewNonDestructive: true,
+  /** Apply requires backend capability flag; without it, mode stays pending */
+  applyRequiresBackend: true,
+  /** Write lane is always Forge */
+  writeLane: 'forge' as const,
+  /** Cross-parcel only — parcelId must be absent from requests */
+  crossParcelOnly: true,
+  /** Every interaction must emit an audit event */
+  auditRequired: true,
+  /** Valid apply modes */
+  validModes: ['preview_only', 'apply_pending_backend', 'apply_executed'] as const,
+  /** Valid audit outcomes */
+  validOutcomes: ['preview_generated', 'apply_accepted', 'apply_blocked', 'apply_executed'] as const,
+  /** Valid blocker codes */
+  validBlockerCodes: ['no_backend_capability', 'insufficient_permissions', 'validation_failed'] as const,
+} as const;

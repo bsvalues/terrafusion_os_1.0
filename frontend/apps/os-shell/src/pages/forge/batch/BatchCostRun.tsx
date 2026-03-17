@@ -1,5 +1,5 @@
 /**
- * BatchCostRun.tsx (Tranche 1D)
+ * BatchCostRun.tsx (Tranche 1D → 1E audit-proof)
  *
  * Standalone Forge module: Batch Cost Model Runs.
  * Provides run configuration with strata/neighborhood/class filters,
@@ -7,12 +7,54 @@
  *
  * Write lane: Forge (cross-parcel, no parcelId routing).
  * Preview-safe: dry-run produces summary without persisting values.
+ *
+ * 1E additions: ForgeApplyMode lifecycle, backend-capability gate,
+ * blocker display, and audit event emission on every interaction.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+
+// ---------------------------------------------------------------------------
+// 1E: Apply-mode types & audit event emitter
+// ---------------------------------------------------------------------------
+
+type ForgeApplyMode = 'preview_only' | 'apply_pending_backend' | 'apply_executed';
+
+interface AuditEvent {
+  eventId: string;
+  requestId: string;
+  suite: 'forge';
+  writeLane: 'forge' | 'none';
+  mode: ForgeApplyMode;
+  outcome: 'preview_generated' | 'apply_accepted' | 'apply_blocked' | 'apply_executed';
+  timestamp: string;
+}
+
+/** Backend capability flag — false until real backend is wired */
+const BACKEND_APPLY_CAPABLE = false;
+
+let _auditSeq = 0;
+function emitAuditEvent(
+  mode: ForgeApplyMode,
+  outcome: AuditEvent['outcome'],
+): AuditEvent {
+  const evt: AuditEvent = {
+    eventId: `bcr-audit-${++_auditSeq}`,
+    requestId: `bcr-req-${Date.now()}`,
+    suite: 'forge',
+    writeLane: mode === 'preview_only' ? 'none' : 'forge',
+    mode,
+    outcome,
+    timestamp: new Date().toISOString(),
+  };
+  // In production this would be sent to TerraTrace; for now log to console
+  // eslint-disable-next-line no-console
+  console.info('[TerraTrace] BatchCostRun audit event:', evt);
+  return evt;
+}
 
 // ---------------------------------------------------------------------------
 // Fixture data (Benton County)
@@ -94,11 +136,15 @@ export function BatchCostRun() {
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [dryRunResult, setDryRunResult] = useState<RunSummary | null>(null);
 
+  // 1E: Apply mode lifecycle
+  const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
+  const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
+
   const toggleItem = (arr: string[], item: string, setter: (v: string[]) => void) => {
     setter(arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]);
   };
 
-  const handleDryRun = () => {
+  const handleDryRun = useCallback(() => {
     // Fixture response — preview-safe, no real API call
     setDryRunResult({
       totalParcels: 12_430,
@@ -109,7 +155,24 @@ export function BatchCostRun() {
       medianChange: 7_200,
       meanPctChange: 3.6,
     });
-  };
+    setApplyMode('preview_only');
+    const evt = emitAuditEvent('preview_only', 'preview_generated');
+    setAuditLog((prev) => [...prev, evt]);
+  }, []);
+
+  const handleApplyRequest = useCallback(() => {
+    if (BACKEND_APPLY_CAPABLE) {
+      // Real backend path — would send to API
+      setApplyMode('apply_executed');
+      const evt = emitAuditEvent('apply_executed', 'apply_executed');
+      setAuditLog((prev) => [...prev, evt]);
+    } else {
+      // No backend — record the blocked attempt honestly
+      setApplyMode('apply_pending_backend');
+      const evt = emitAuditEvent('apply_pending_backend', 'apply_blocked');
+      setAuditLog((prev) => [...prev, evt]);
+    }
+  }, []);
 
   const fmtNum = (n: number) => n.toLocaleString();
   const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
@@ -236,6 +299,43 @@ export function BatchCostRun() {
               <Button data-testid="batch-dry-run-btn" onClick={handleDryRun} className="w-full">
                 Preview (Dry Run)
               </Button>
+
+              {/* 1E: Apply Request — only visible after a preview */}
+              {dryRunResult && (
+                <div className="space-y-2 pt-2">
+                  <Button
+                    data-testid="batch-apply-btn"
+                    variant={applyMode === 'apply_executed' ? 'default' : 'outline'}
+                    onClick={handleApplyRequest}
+                    disabled={applyMode === 'apply_executed'}
+                    className="w-full"
+                  >
+                    {applyMode === 'apply_executed'
+                      ? 'Applied'
+                      : applyMode === 'apply_pending_backend'
+                        ? 'Retry Apply'
+                        : 'Request Apply'}
+                  </Button>
+
+                  {/* 1E: Apply mode banner */}
+                  <div data-testid="batch-apply-mode" className="text-xs px-2 py-1 rounded" style={{
+                    background: applyMode === 'preview_only'
+                      ? 'hsl(200 60% 30% / 0.2)'
+                      : applyMode === 'apply_pending_backend'
+                        ? 'hsl(40 80% 40% / 0.2)'
+                        : 'hsl(120 50% 35% / 0.2)',
+                    color: applyMode === 'preview_only'
+                      ? 'hsl(200 60% 70%)'
+                      : applyMode === 'apply_pending_backend'
+                        ? 'hsl(40 80% 70%)'
+                        : 'hsl(120 60% 60%)',
+                  }}>
+                    {applyMode === 'preview_only' && 'Mode: Preview Only — no values persisted'}
+                    {applyMode === 'apply_pending_backend' && 'Mode: Apply Blocked — backend capability not available. Request recorded.'}
+                    {applyMode === 'apply_executed' && 'Mode: Applied — values persisted to cost tables'}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -335,6 +435,27 @@ export function BatchCostRun() {
                 ))}
               </tbody>
             </table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 1E: Audit Trail */}
+      {auditLog.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle>Audit Trail</CardTitle></CardHeader>
+          <CardContent>
+            <div data-testid="batch-audit-trail" className="space-y-1">
+              {auditLog.map((evt) => (
+                <div key={evt.eventId} className="flex items-center gap-2 text-xs py-1" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.1)' }}>
+                  <Badge variant="outline" className="shrink-0">{evt.outcome}</Badge>
+                  <span className="font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>{evt.mode}</span>
+                  <span className="font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>lane:{evt.writeLane}</span>
+                  <span className="ml-auto font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>
+                    {new Date(evt.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}
