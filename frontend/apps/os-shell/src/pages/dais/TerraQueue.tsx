@@ -4,16 +4,26 @@
  * Cross-parcel work queue for Deputy/Chief Appraiser.
  * Standalone window component for the TerraDais suite.
  * Tabs: Unassigned, In Progress, Review, Metrics.
+ *
+ * Phase 20 additions: drill-through, SLA aging badges, sortable columns, reassign.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useQueueStore } from '@/stores/queueStore';
 import { APPRAISERS } from '@/data/queueFixtures';
+import type { QueueWorkItem } from '@/data/queueFixtures';
+import { emitTraceEvent } from '@/services/terraTrace';
 
 type Tab = 'unassigned' | 'in-progress' | 'review' | 'metrics';
+type SortKey = 'priority' | 'value' | 'created' | 'area';
+type SortDir = 'asc' | 'desc';
+
+interface TerraQueueProps {
+  onDrillThrough?: (parcelId: string) => void;
+}
 
 // --- Helpers ---
 
@@ -43,11 +53,50 @@ function currency(n: number): string {
   return '$' + n.toLocaleString();
 }
 
+const PRIORITY_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 };
+
+function slaVariant(createdDate: string): 'outline' | 'secondary' | 'destructive' {
+  const created = new Date(createdDate).getTime();
+  const now = Date.now();
+  const daysSinceCreated = (now - created) / 86400000;
+  if (daysSinceCreated > 14) return 'destructive'; // overdue
+  if (daysSinceCreated > 7) return 'secondary';    // warning
+  return 'outline';                                  // normal
+}
+
+function slaLabel(createdDate: string): string {
+  const created = new Date(createdDate).getTime();
+  const now = Date.now();
+  const days = Math.floor((now - created) / 86400000);
+  return `${days}d`;
+}
+
+function sortItems(items: QueueWorkItem[], key: SortKey, dir: SortDir): QueueWorkItem[] {
+  const sorted = [...items].sort((a, b) => {
+    switch (key) {
+      case 'priority':
+        return (PRIORITY_ORDER[a.priority] ?? 9) - (PRIORITY_ORDER[b.priority] ?? 9);
+      case 'value':
+        return a.currentValue - b.currentValue;
+      case 'created':
+        return new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime();
+      case 'area':
+        return a.area.localeCompare(b.area);
+      default:
+        return 0;
+    }
+  });
+  return dir === 'desc' ? sorted.reverse() : sorted;
+}
+
 // --- Component ---
 
-export function TerraQueue() {
+export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
   const [activeTab, setActiveTab] = useState<Tab>('unassigned');
   const [assignDropdown, setAssignDropdown] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey>('priority');
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [reassignDropdown, setReassignDropdown] = useState<string | null>(null);
 
   const {
     items, metrics, productivity, loading,
@@ -60,11 +109,26 @@ export function TerraQueue() {
     fetchQueue();
   }, [fetchQueue]);
 
-  const unassigned = items.filter((i) => i.status === 'unassigned');
+  const unassignedRaw = items.filter((i) => i.status === 'unassigned');
+  const unassigned = useMemo(() => sortItems(unassignedRaw, sortKey, sortDir), [unassignedRaw, sortKey, sortDir]);
   const inProgress = items.filter((i) =>
     ['assigned', 'inspection-pending', 'inspected', 'valued', 'flagged'].includes(i.status)
   );
   const reviewPending = items.filter((i) => i.status === 'review-pending');
+
+  const handleRowClick = (parcelId: string) => {
+    emitTraceEvent('queue_drill_through', 'queue', parcelId, undefined, { parcelId });
+    onDrillThrough?.(parcelId);
+  };
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
+    } else {
+      setSortKey(key);
+      setSortDir('desc');
+    }
+  };
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'unassigned', label: `Unassigned (${unassigned.length})` },
@@ -164,20 +228,28 @@ export function TerraQueue() {
                     <th className="text-left py-2">Parcel ID</th>
                     <th className="text-left py-2">Address</th>
                     <th className="text-left py-2">Type</th>
-                    <th className="text-right py-2">Value</th>
-                    <th className="text-center py-2">Priority</th>
+                    <th className="text-right py-2 cursor-pointer select-none" data-testid="sort-header-value" data-sort-dir={sortKey === 'value' ? sortDir : undefined} onClick={() => handleSort('value')}>
+                      Value {sortKey === 'value' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
+                    </th>
+                    <th className="text-center py-2 cursor-pointer select-none" data-testid="sort-header-priority" data-sort-dir={sortKey === 'priority' ? sortDir : undefined} onClick={() => handleSort('priority')}>
+                      Priority {sortKey === 'priority' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
+                    </th>
                     <th className="text-left py-2">Area</th>
-                    <th className="text-right py-2">Created</th>
+                    <th className="text-right py-2 cursor-pointer select-none" data-testid="sort-header-created" data-sort-dir={sortKey === 'created' ? sortDir : undefined} onClick={() => handleSort('created')}>
+                      Created {sortKey === 'created' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
+                    </th>
+                    <th className="text-center py-2">SLA</th>
                   </tr>
                 </thead>
                 <tbody>
                   {unassigned.map((item) => (
                     <tr
                       key={item.workItemId}
-                      className="hover:bg-white/5"
+                      className="hover:bg-white/5 cursor-pointer"
                       style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}
+                      onClick={() => handleRowClick(item.parcelId)}
                     >
-                      <td className="py-2 px-3">
+                      <td className="py-2 px-3" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={selectedItemIds.has(item.workItemId)}
@@ -194,6 +266,9 @@ export function TerraQueue() {
                       </td>
                       <td className="py-2">{item.area}</td>
                       <td className="py-2 text-right text-muted-foreground">{item.createdDate}</td>
+                      <td className="py-2 text-center">
+                        <Badge data-testid="sla-badge" variant={slaVariant(item.createdDate)}>{slaLabel(item.createdDate)}</Badge>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -223,15 +298,17 @@ export function TerraQueue() {
                         <th className="text-left py-2">Address</th>
                         <th className="text-right py-2">Value</th>
                         <th className="text-center py-2">Status</th>
-                        <th className="text-right py-2 px-3">Assigned</th>
+                        <th className="text-right py-2">Assigned</th>
+                        <th className="text-center py-2 px-3">Reassign</th>
                       </tr>
                     </thead>
                     <tbody>
                       {appraiserItems.map((item) => (
                         <tr
                           key={item.workItemId}
-                          className="hover:bg-white/5"
+                          className="hover:bg-white/5 cursor-pointer"
                           style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}
+                          onClick={() => handleRowClick(item.parcelId)}
                         >
                           <td className="py-2 px-3 font-mono text-xs">{item.parcelId}</td>
                           <td className="py-2">{item.address}</td>
@@ -239,7 +316,40 @@ export function TerraQueue() {
                           <td className="py-2 text-center">
                             <Badge variant={statusVariant(item.status)}>{item.status}</Badge>
                           </td>
-                          <td className="py-2 px-3 text-right text-muted-foreground">{item.assignedDate}</td>
+                          <td className="py-2 text-right text-muted-foreground">{item.assignedDate}</td>
+                          <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                            <div className="relative inline-block">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                data-testid="reassign-btn"
+                                onClick={() => setReassignDropdown(
+                                  reassignDropdown === item.workItemId ? null : item.workItemId
+                                )}
+                              >
+                                Reassign
+                              </Button>
+                              {reassignDropdown === item.workItemId && (
+                                <div
+                                  className="absolute top-full right-0 mt-1 rounded shadow-lg z-10 py-1"
+                                  style={{ background: 'hsl(var(--tf-card))', border: '1px solid hsl(var(--tf-border) / 0.3)', minWidth: '200px' }}
+                                >
+                                  {APPRAISERS.filter((n) => n !== appraiser).map((name) => (
+                                    <button
+                                      key={name}
+                                      className="block w-full text-left px-4 py-2 text-sm hover:bg-white/10"
+                                      onClick={() => {
+                                        assignItems(name);
+                                        setReassignDropdown(null);
+                                      }}
+                                    >
+                                      {name}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>

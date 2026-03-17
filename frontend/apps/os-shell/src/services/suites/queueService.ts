@@ -43,7 +43,7 @@ function authHeadersReadOnly(): Record<string, string> {
 
 export async function getQueueItems(): Promise<QueueWorkItem[]> {
   try {
-    const res = await fetch(`${API}/pending`, { headers: authHeadersReadOnly() });
+    const res = await fetch(`${API}/all`, { headers: authHeadersReadOnly() });
     if (!res.ok) throw new Error(res.statusText);
     return res.json();
   } catch {

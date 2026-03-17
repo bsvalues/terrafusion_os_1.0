@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Services;
 using TerraFusion.Data;
 using TerraFusion.API.Security;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace TerraFusion.API.Controllers;
@@ -18,13 +20,30 @@ namespace TerraFusion.API.Controllers;
 [Authorize]
 public class DaisController : ControllerBase
 {
-  private readonly TerraFusionDbContext _db;
+  private readonly TerraFusion.Data.TerraFusionDbContext _db;
   private readonly ILogger<DaisController> _logger;
+  private readonly IExemptionService _exemptionService;
+  private readonly IAppealService _appealService;
+  private readonly ICertificationService _certificationService;
+  private readonly INoticeService _noticeService;
+  private readonly IQueueService _queueService;
 
-  public DaisController(TerraFusionDbContext db, ILogger<DaisController> logger)
+  public DaisController(
+    TerraFusion.Data.TerraFusionDbContext db,
+    ILogger<DaisController> logger,
+    IExemptionService exemptionService,
+    IAppealService appealService,
+    ICertificationService certificationService,
+    INoticeService noticeService,
+    IQueueService queueService)
   {
     _db = db;
     _logger = logger;
+    _exemptionService = exemptionService;
+    _appealService = appealService;
+    _certificationService = certificationService;
+    _noticeService = noticeService;
+    _queueService = queueService;
   }
 
   // ── County Isolation Helper ──────────────────────────────────────
@@ -714,28 +733,48 @@ public class DaisController : ControllerBase
   /// </summary>
   [HttpGet("certification/{county}/{taxYear:int}")]
   [AllowAnonymous]
-  public IActionResult GetCertificationStatus(string county, int taxYear)
+  public async Task<IActionResult> GetCertificationStatus(string county, int taxYear)
   {
-    var steps = new object[]
-    {
-      new { step = 1, name = "DATA_VALIDATION", status = "complete", completedAt = $"{taxYear}-06-15T00:00:00Z", assignee = "Data Quality Team" },
-      new { step = 2, name = "RATIO_STUDY", status = "complete", completedAt = $"{taxYear}-07-01T00:00:00Z", assignee = "Senior Appraiser" },
-      new { step = 3, name = "SUPERVISORY_REVIEW", status = "complete", completedAt = $"{taxYear}-07-10T00:00:00Z", assignee = "Chief Appraiser" },
-      new { step = 4, name = "ASSESSOR_SIGNOFF", status = "pending", completedAt = (string?)null, assignee = "County Assessor" },
-      new { step = 5, name = "DOR_SUBMISSION", status = "not_started", completedAt = (string?)null, assignee = "Assessor Admin" },
-      new { step = 6, name = "DOR_ACCEPTANCE", status = "not_started", completedAt = (string?)null, assignee = "WA Dept of Revenue" },
-    };
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
 
-    var completedCount = 3; // simulated
+    var steps = await _certificationService.GetByTaxYearAsync(taxYear, effectiveCountyId);
+
+    var totalSteps = steps.Count > 0 ? steps.Count : 6;
+    var completedCount = steps.Count(s => string.Equals(s.Status, "complete", StringComparison.OrdinalIgnoreCase)
+                                        || string.Equals(s.Status, "completed", StringComparison.OrdinalIgnoreCase));
+
+    var stepList = steps.Count > 0
+      ? steps.Select((s, i) => new
+        {
+          step = i + 1,
+          name = s.StepCode,
+          status = s.Status,
+          completedAt = s.CompletedAt?.ToString("o"),
+          assignee = s.CompletedBy ?? "Unassigned",
+        }).ToArray()
+      : new object[]
+        {
+          new { step = 1, name = "DATA_VALIDATION", status = "pending", completedAt = (string?)null, assignee = "Data Quality Team" },
+          new { step = 2, name = "RATIO_STUDY", status = "not_started", completedAt = (string?)null, assignee = "Senior Appraiser" },
+          new { step = 3, name = "SUPERVISORY_REVIEW", status = "not_started", completedAt = (string?)null, assignee = "Chief Appraiser" },
+          new { step = 4, name = "ASSESSOR_SIGNOFF", status = "not_started", completedAt = (string?)null, assignee = "County Assessor" },
+          new { step = 5, name = "DOR_SUBMISSION", status = "not_started", completedAt = (string?)null, assignee = "Assessor Admin" },
+          new { step = 6, name = "DOR_ACCEPTANCE", status = "not_started", completedAt = (string?)null, assignee = "WA Dept of Revenue" },
+        };
+
+    var totalParcels = county.Equals("benton", StringComparison.OrdinalIgnoreCase) ? 89247 : 50000;
+    var certifiedParcels = (int)Math.Round(totalParcels * ((decimal)completedCount / totalSteps));
+
     return Ok(new
     {
       county,
       taxYear,
-      rollStatus = completedCount == 6 ? "certified" : "in_progress",
-      completionPct = Math.Round((decimal)completedCount / 6 * 100, 1),
-      steps,
-      totalParcelCount = county.Equals("benton", StringComparison.OrdinalIgnoreCase) ? 89247 : 50000,
-      certifiedParcelCount = county.Equals("benton", StringComparison.OrdinalIgnoreCase) ? 87500 : 48000,
+      rollStatus = completedCount == totalSteps ? "certified" : "in_progress",
+      completionPct = Math.Round((decimal)completedCount / totalSteps * 100, 1),
+      steps = stepList,
+      totalParcelCount = totalParcels,
+      certifiedParcelCount = certifiedParcels,
       dueDate = $"{taxYear}-08-01",
       rcw = "RCW 84.48.050",
     });
@@ -746,9 +785,9 @@ public class DaisController : ControllerBase
   /// </summary>
   [HttpGet("cert/status")]
   [AllowAnonymous]
-  public IActionResult GetCertStatus([FromQuery] string? county, [FromQuery] int? taxYear)
+  public async Task<IActionResult> GetCertStatus([FromQuery] string? county, [FromQuery] int? taxYear)
   {
-    return GetCertificationStatus(county ?? "benton", taxYear ?? DateTime.UtcNow.Year);
+    return await GetCertificationStatus(county ?? "benton", taxYear ?? DateTime.UtcNow.Year);
   }
 
   // ══════════════════════════════════════════════════════════════════
@@ -777,24 +816,39 @@ public class DaisController : ControllerBase
   }
 
   /// <summary>
-  /// POST api/dais/notice/generate — Generate a notice from template.
+  /// POST api/dais/notice/generate — Generate a notice from template and persist it.
   /// </summary>
   [HttpPost("notice/generate")]
-  public IActionResult GenerateNotice([FromBody] GenerateNoticeRequest request)
+  public async Task<IActionResult> GenerateNotice([FromBody] GenerateNoticeRequest request)
   {
     if (request is null || string.IsNullOrWhiteSpace(request.TemplateId))
       return BadRequest(new { error = "Template ID is required." });
 
-    var noticeId = Guid.NewGuid();
+    var countyId = await ResolveCountyIdAsync();
+    // Fallback county ID for development / anonymous callers
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var notice = new Notice
+    {
+      ParcelId = request.ParcelId ?? string.Empty,
+      TemplateId = request.TemplateId,
+      DeliveryMethod = request.DeliveryMethod ?? "mail",
+      Status = "generated",
+      Fields = request.Fields is not null ? JsonSerializer.Serialize(request.Fields) : null,
+      CountyId = effectiveCountyId,
+    };
+
+    var created = await _noticeService.CreateAsync(notice);
+
     return Ok(new
     {
-      noticeId,
-      templateId = request.TemplateId,
-      parcelId = request.ParcelId,
-      status = "generated",
-      generatedAt = DateTime.UtcNow,
-      message = $"Notice generated from template {request.TemplateId}",
-      deliveryMethod = request.DeliveryMethod ?? "mail",
+      noticeId = created.Id,
+      templateId = created.TemplateId,
+      parcelId = created.ParcelId,
+      status = created.Status,
+      generatedAt = created.CreatedAt,
+      message = $"Notice generated from template {created.TemplateId}",
+      deliveryMethod = created.DeliveryMethod,
     });
   }
 
@@ -820,26 +874,452 @@ public class DaisController : ControllerBase
   }
 
   /// <summary>
-  /// POST api/dais/queue/assign — Assign a parcel task to queue.
+  /// POST api/dais/queue/assign — Assign a parcel task to queue and persist it.
   /// </summary>
   [HttpPost("queue/assign")]
-  public IActionResult AssignToQueue([FromBody] QueueAssignRequest request)
+  public async Task<IActionResult> AssignToQueue([FromBody] QueueAssignRequest request)
   {
     if (request is null || string.IsNullOrWhiteSpace(request.TaskType))
       return BadRequest(new { error = "Task type is required." });
 
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var slaHours = request.TaskType switch
+    {
+      "FIELD_INSPECTION" => 72,
+      "DESK_REVIEW" => 48,
+      "APPEAL_PREPARATION" => 120,
+      "EXEMPTION_REVIEW" => 96,
+      "DATA_CORRECTION" => 24,
+      "SUPERVISORY_REVIEW" => 48,
+      _ => 72,
+    };
+
+    var item = new QueueItem
+    {
+      ParcelId = request.ParcelId ?? string.Empty,
+      TaskType = request.TaskType,
+      Priority = request.Priority ?? "normal",
+      Status = "queued",
+      AssignedTo = request.AssignedTo,
+      SlaHours = slaHours,
+      SlaDeadline = DateTime.UtcNow.AddHours(slaHours),
+      CountyId = effectiveCountyId,
+    };
+
+    var created = await _queueService.CreateAsync(item);
+
     return Ok(new
     {
-      taskId = Guid.NewGuid(),
-      taskType = request.TaskType,
-      parcelId = request.ParcelId,
-      assignedTo = request.AssignedTo ?? "unassigned",
-      priority = request.Priority ?? "normal",
-      slaDeadline = DateTime.UtcNow.AddHours(72),
-      status = "queued",
-      createdAt = DateTime.UtcNow,
+      taskId = created.Id,
+      taskType = created.TaskType,
+      parcelId = created.ParcelId,
+      assignedTo = created.AssignedTo ?? "unassigned",
+      priority = created.Priority,
+      slaDeadline = created.SlaDeadline,
+      status = created.Status,
+      createdAt = created.CreatedAt,
     });
   }
+
+  // ══════════════════════════════════════════════════════════════════
+  //  CRUD Persistence Endpoints — Appeals, Exemptions, Notices, Queue
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── Appeals CRUD ───────────────────────────────────────────────────
+
+  /// <summary>
+  /// POST api/dais/appeals — Create a new BOE appeal.
+  /// </summary>
+  [HttpPost("appeals")]
+  public async Task<IActionResult> CreateAppeal([FromBody] CreateAppealRequest request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.ParcelId))
+      return BadRequest(new { error = "ParcelId is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var appeal = new Appeal
+    {
+      ParcelId = request.ParcelId,
+      AppealGround = request.AppealGround ?? "MARKET_VALUE",
+      PetitionerName = request.PetitionerName,
+      CurrentValue = request.CurrentValue,
+      RequestedValue = request.RequestedValue,
+      TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+      FiledDate = DateTime.UtcNow,
+      Status = "filed",
+      CountyId = effectiveCountyId,
+    };
+
+    var created = await _appealService.CreateAsync(appeal);
+    return CreatedAtAction(nameof(GetAppealById), new { id = created.Id }, created);
+  }
+
+  /// <summary>
+  /// GET api/dais/appeals — List all appeals for a given tax year (default: current year).
+  /// </summary>
+  [HttpGet("appeals")]
+  public async Task<IActionResult> GetAllAppeals([FromQuery] int? taxYear)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var year = taxYear ?? DateTime.UtcNow.Year;
+
+    var appeals = await _appealService.GetByTaxYearAsync(year, effectiveCountyId);
+    return Ok(appeals);
+  }
+
+  /// <summary>
+  /// GET api/dais/appeals/{id} — Get a specific appeal by ID.
+  /// </summary>
+  [HttpGet("appeals/{id:guid}")]
+  public async Task<IActionResult> GetAppealById(Guid id)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var appeal = await _appealService.GetByIdAsync(id, effectiveCountyId);
+    return appeal is not null ? Ok(appeal) : NotFound(new { error = $"Appeal {id} not found." });
+  }
+
+  /// <summary>
+  /// GET api/dais/appeals/parcel/{parcelId} — Get all appeals for a parcel.
+  /// </summary>
+  [HttpGet("appeals/parcel/{parcelId}")]
+  public async Task<IActionResult> GetAppealsByParcel(string parcelId)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var appeals = await _appealService.GetByParcelAsync(parcelId, effectiveCountyId);
+    return Ok(appeals);
+  }
+
+  /// <summary>
+  /// PUT api/dais/appeals/{id}/status — Update appeal status and optional decision fields.
+  /// </summary>
+  [HttpPut("appeals/{id:guid}/status")]
+  public async Task<IActionResult> UpdateAppealStatus(Guid id, [FromBody] UpdateAppealStatusRequest request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.Status))
+      return BadRequest(new { error = "Status is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    try
+    {
+      var updated = await _appealService.UpdateStatusAsync(
+        id, request.Status, effectiveCountyId, request.DecisionNotes, request.DecidedValue);
+      return Ok(updated);
+    }
+    catch (KeyNotFoundException)
+    {
+      return NotFound(new { error = $"Appeal {id} not found." });
+    }
+  }
+
+  // ── Exemptions CRUD ────────────────────────────────────────────────
+
+  /// <summary>
+  /// POST api/dais/exemptions — Create a new exemption record.
+  /// </summary>
+  [HttpPost("exemptions")]
+  public async Task<IActionResult> CreateExemption([FromBody] CreateExemptionRequest request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.ParcelId))
+      return BadRequest(new { error = "ParcelId is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var exemption = new Exemption
+    {
+      ParcelId = request.ParcelId,
+      ProgramCode = request.ProgramCode ?? "SENIOR_DISABLED",
+      ApplicantName = request.ApplicantName,
+      ApplicationDate = DateTime.UtcNow,
+      ExemptionAmount = request.ExemptionAmount,
+      RcwReference = request.RcwReference,
+      Notes = request.Notes,
+      Status = "pending",
+      CountyId = effectiveCountyId,
+    };
+
+    var created = await _exemptionService.CreateAsync(exemption);
+    return CreatedAtAction(nameof(GetExemptionById), new { id = created.Id }, created);
+  }
+
+  /// <summary>
+  /// GET api/dais/exemptions/{id} — Get a specific exemption by ID.
+  /// </summary>
+  [HttpGet("exemptions/{id:guid}")]
+  public async Task<IActionResult> GetExemptionById(Guid id)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var exemption = await _exemptionService.GetByIdAsync(id, effectiveCountyId);
+    return exemption is not null ? Ok(exemption) : NotFound(new { error = $"Exemption {id} not found." });
+  }
+
+  /// <summary>
+  /// GET api/dais/exemptions/parcel/{parcelId} — Get all exemptions for a parcel.
+  /// </summary>
+  [HttpGet("exemptions/parcel/{parcelId}")]
+  public async Task<IActionResult> GetExemptionsByParcel(string parcelId)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var exemptions = await _exemptionService.GetByParcelAsync(parcelId, effectiveCountyId);
+    return Ok(exemptions);
+  }
+
+  // ── Notices CRUD ───────────────────────────────────────────────────
+
+  /// <summary>
+  /// GET api/dais/notices/{id} — Get a specific notice by ID.
+  /// </summary>
+  [HttpGet("notices/{id:guid}")]
+  public async Task<IActionResult> GetNoticeById(Guid id)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var notice = await _noticeService.GetByIdAsync(id, effectiveCountyId);
+    return notice is not null ? Ok(notice) : NotFound(new { error = $"Notice {id} not found." });
+  }
+
+  /// <summary>
+  /// GET api/dais/notices/parcel/{parcelId} — Get all notices for a parcel.
+  /// </summary>
+  [HttpGet("notices/parcel/{parcelId}")]
+  public async Task<IActionResult> GetNoticesByParcel(string parcelId)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var notices = await _noticeService.GetByParcelAsync(parcelId, effectiveCountyId);
+    return Ok(notices);
+  }
+
+  // ── Queue CRUD ─────────────────────────────────────────────────────
+
+  /// <summary>
+  /// GET api/dais/queue/{id} — Get a specific queue item by ID.
+  /// </summary>
+  [HttpGet("queue/{id:guid}")]
+  public async Task<IActionResult> GetQueueItemById(Guid id)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var item = await _queueService.GetByIdAsync(id, effectiveCountyId);
+    return item is not null ? Ok(item) : NotFound(new { error = $"Queue item {id} not found." });
+  }
+
+  /// <summary>
+  /// GET api/dais/queue/pending — Get pending queue items, optionally filtered by task type.
+  /// </summary>
+  [HttpGet("queue/pending")]
+  public async Task<IActionResult> GetPendingQueueItems([FromQuery] string? taskType)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var items = await _queueService.GetPendingAsync(effectiveCountyId, taskType);
+    return Ok(items);
+  }
+
+  /// <summary>
+  /// GET api/dais/queue/all — Get all queue items with optional filters.
+  /// </summary>
+  [HttpGet("queue/all")]
+  public async Task<IActionResult> GetAllQueueItems([FromQuery] string? status, [FromQuery] string? assignedTo, [FromQuery] string? taskType)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var items = await _queueService.GetAllAsync(effectiveCountyId, status, assignedTo, taskType);
+    return Ok(items);
+  }
+
+  /// <summary>
+  /// GET api/dais/queue/metrics — Queue-wide aggregate metrics.
+  /// </summary>
+  [HttpGet("queue/metrics")]
+  public async Task<IActionResult> GetQueueMetrics()
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var metrics = await _queueService.GetMetricsAsync(effectiveCountyId);
+    return Ok(metrics);
+  }
+
+  /// <summary>
+  /// GET api/dais/queue/productivity — Per-appraiser productivity stats.
+  /// </summary>
+  [HttpGet("queue/productivity")]
+  public async Task<IActionResult> GetQueueProductivity()
+  {
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var productivity = await _queueService.GetProductivityAsync(effectiveCountyId);
+    return Ok(productivity);
+  }
+
+  /// <summary>
+  /// POST api/dais/queue/review — Approve or reject a queue item.
+  /// </summary>
+  [HttpPost("queue/review")]
+  public async Task<IActionResult> ReviewQueueItem([FromBody] ReviewQueueItemRequest request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.Action))
+      return BadRequest(new { error = "Action is required (approve or reject)." });
+
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    try
+    {
+      var reviewed = await _queueService.ReviewAsync(
+        request.WorkItemId, request.Action, effectiveCountyId, User.Identity?.Name);
+      return Ok(new { id = reviewed.Id, status = reviewed.Status, action = request.Action });
+    }
+    catch (KeyNotFoundException)
+    {
+      return NotFound(new { error = $"Queue item {request.WorkItemId} not found." });
+    }
+    catch (ArgumentException ex)
+    {
+      return BadRequest(new { error = ex.Message });
+    }
+  }
+
+  /// <summary>
+  /// PUT api/dais/exemptions/{id}/status — Update exemption status.
+  /// </summary>
+  [HttpPut("exemptions/{id:guid}/status")]
+  public async Task<IActionResult> UpdateExemptionStatus(Guid id, [FromBody] UpdateExemptionStatusRequest request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.Status))
+      return BadRequest(new { error = "Status is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    try
+    {
+      var updated = await _exemptionService.UpdateStatusAsync(id, request.Status, effectiveCountyId);
+      return Ok(updated);
+    }
+    catch (KeyNotFoundException)
+    {
+      return NotFound(new { error = $"Exemption {id} not found." });
+    }
+  }
+
+  /// <summary>
+  /// PUT api/dais/notices/{id}/status — Update notice delivery status.
+  /// </summary>
+  [HttpPut("notices/{id:guid}/status")]
+  public async Task<IActionResult> UpdateNoticeStatus(Guid id, [FromBody] UpdateNoticeStatusRequest request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.Status))
+      return BadRequest(new { error = "Status is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    try
+    {
+      var updated = await _noticeService.UpdateStatusAsync(id, request.Status, effectiveCountyId);
+      return Ok(updated);
+    }
+    catch (KeyNotFoundException)
+    {
+      return NotFound(new { error = $"Notice {id} not found." });
+    }
+  }
+
+  /// <summary>
+  /// PUT api/dais/queue/{id}/status — Update queue item status.
+  /// </summary>
+  [HttpPut("queue/{id:guid}/status")]
+  public async Task<IActionResult> UpdateQueueItemStatus(Guid id, [FromBody] UpdateQueueStatusRequest request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.Status))
+      return BadRequest(new { error = "Status is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    try
+    {
+      var updated = await _queueService.UpdateStatusAsync(id, request.Status, effectiveCountyId);
+      return Ok(updated);
+    }
+    catch (KeyNotFoundException)
+    {
+      return NotFound(new { error = $"Queue item {id} not found." });
+    }
+    catch (InvalidOperationException ex)
+    {
+      return BadRequest(new { error = ex.Message });
+    }
+  }
+
+  /// <summary>
+  /// PUT api/dais/queue/{id}/assign — Reassign a queue item.
+  /// </summary>
+  [HttpPut("queue/{id:guid}/assign")]
+  public async Task<IActionResult> AssignQueueItem(Guid id, [FromBody] AssignQueueItemRequest request)
+  {
+    if (request is null || string.IsNullOrWhiteSpace(request.AssignedTo))
+      return BadRequest(new { error = "AssignedTo is required." });
+
+    var countyId = await ResolveCountyIdAsync();
+    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    try
+    {
+      var updated = await _queueService.AssignAsync(id, request.AssignedTo, effectiveCountyId);
+      return Ok(updated);
+    }
+    catch (KeyNotFoundException)
+    {
+      return NotFound(new { error = $"Queue item {id} not found." });
+    }
+  }
+
+  // ── CRUD Request DTOs ──────────────────────────────────────────────
+
+  public sealed record CreateAppealRequest(
+    string? ParcelId, string? AppealGround, string? PetitionerName,
+    decimal CurrentValue, decimal RequestedValue, int TaxYear);
+
+  public sealed record UpdateAppealStatusRequest(
+    string? Status, string? DecisionNotes, decimal? DecidedValue);
+
+  public sealed record CreateExemptionRequest(
+    string? ParcelId, string? ProgramCode, string? ApplicantName,
+    decimal ExemptionAmount, string? RcwReference, string? Notes);
+
+  public sealed record UpdateExemptionStatusRequest(string? Status);
+
+  public sealed record UpdateNoticeStatusRequest(string? Status);
+
+  public sealed record UpdateQueueStatusRequest(string? Status);
+
+  public sealed record AssignQueueItemRequest(string? AssignedTo);
+
+  public sealed record ReviewQueueItemRequest(Guid WorkItemId, string? Action);
 
   // ── Wave 20-22 DTOs ───────────────────────────────────────────────
 
