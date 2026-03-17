@@ -71,7 +71,7 @@ export interface CertificationStatus {
 // ============================================================================
 
 export async function getAppeals(parcelId: string): Promise<Appeal[]> {
-  const res = await fetch(`${API}/appeals?parcelId=${encodeURIComponent(parcelId)}`);
+  const res = await fetch(`${API}/appeals/parcel/${encodeURIComponent(parcelId)}`);
   if (!res.ok) throw new Error(`Failed to fetch appeals: ${res.statusText}`);
   return res.json();
 }
@@ -84,12 +84,14 @@ export async function getAllAppeals(): Promise<Appeal[]> {
 
 export async function updateAppealStatus(
   appealId: string,
-  status: Appeal['status']
+  status: Appeal['status'],
+  decisionNotes?: string,
+  decidedValue?: number
 ): Promise<void> {
   const res = await fetch(`${API}/appeals/${encodeURIComponent(appealId)}/status`, {
-    method: 'PATCH',
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, decisionNotes, decidedValue }),
   });
   if (!res.ok) throw new Error(`Failed to update appeal status: ${res.statusText}`);
 }
@@ -121,7 +123,7 @@ export async function updatePermitStatus(
   status: string
 ): Promise<void> {
   const res = await fetch(`${API}/permits/${encodeURIComponent(permitId)}/status`, {
-    method: 'PATCH',
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status }),
   });
@@ -134,7 +136,7 @@ export async function updatePermitStatus(
 
 export async function getExemptions(parcelId: string): Promise<Exemption[]> {
   const res = await fetch(
-    `${API}/exemptions?parcelId=${encodeURIComponent(parcelId)}`
+    `${API}/exemptions/parcel/${encodeURIComponent(parcelId)}`
   );
   if (!res.ok) throw new Error(`Failed to fetch exemptions: ${res.statusText}`);
   return res.json();
@@ -144,12 +146,18 @@ export async function processExemption(
   exemptionId: string,
   action: 'approve' | 'deny' | 'renew' | 'revoke'
 ): Promise<void> {
+  const statusMap: Record<string, string> = {
+    approve: 'approved',
+    deny: 'denied',
+    renew: 'renewed',
+    revoke: 'revoked',
+  };
   const res = await fetch(
-    `${API}/exemptions/${encodeURIComponent(exemptionId)}/process`,
+    `${API}/exemptions/${encodeURIComponent(exemptionId)}/status`,
     {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action }),
+      body: JSON.stringify({ status: statusMap[action] ?? action }),
     }
   );
   if (!res.ok) throw new Error(`Failed to process exemption: ${res.statusText}`);
@@ -160,7 +168,7 @@ export async function processExemption(
 // ============================================================================
 
 export async function getCertificationStatus(): Promise<CertificationStatus[]> {
-  const res = await fetch(`${API}/certification/status`);
+  const res = await fetch(`${API}/cert/status`);
   if (!res.ok) throw new Error(`Failed to fetch certification status: ${res.statusText}`);
   return res.json();
 }
@@ -170,7 +178,7 @@ export async function getCertificationStatus(): Promise<CertificationStatus[]> {
 // ============================================================================
 
 export async function getNotices(parcelId: string): Promise<Notice[]> {
-  const res = await fetch(`${API}/notices?parcelId=${encodeURIComponent(parcelId)}`);
+  const res = await fetch(`${API}/notices/parcel/${encodeURIComponent(parcelId)}`);
   if (!res.ok) throw new Error(`Failed to fetch notices: ${res.statusText}`);
   return res.json();
 }

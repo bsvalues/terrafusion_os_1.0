@@ -308,6 +308,9 @@ secrets/
 *.sqlite
 *.sqlite3
 data/postgres*/
+
+# Smoke test scripts (temp dev artifacts)
+backend/smoke-*.ps1
 data/redis*/
 
 # Backup files

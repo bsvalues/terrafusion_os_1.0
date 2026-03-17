@@ -21,6 +21,7 @@ export default defineConfig({
       'os-platform/core/tests/**/*.test.ts',
       'os-platform/core/pilot/**/*.test.ts',
       'os-platform/core/terratrc/**/*.test.ts',
+      'frontend/apps/os-shell/src/__tests__/**/*.test.{ts,tsx}',
     ],
     exclude: [
       'node_modules/**',
@@ -78,7 +79,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './frontend/src'),
+      '@': path.resolve(__dirname, './frontend/apps/os-shell/src'),
       '@/tests': path.resolve(__dirname, './tests'),
       '@/fixtures': path.resolve(__dirname, './tests/fixtures'),
     },
