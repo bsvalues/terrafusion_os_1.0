@@ -1,38 +1,25 @@
 /**
- * SegmentDiscoveryDashboard.tsx (TFR-059)
+ * SegmentDiscoveryDashboard.tsx (TFR-059 → Wave 3)
  *
  * Shows auto-discovered market segments. Map placeholder + list view.
  * Accept/reject actions. No domain math in component.
+ *
+ * Explicitly fixture-backed: loads from segmentDiscoveryFixtures.
+ * DemoDataBanner discloses fixture origin.
  */
 
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
-interface DiscoveredSegment {
-  id: string;
-  name: string;
-  parcelCount: number;
-  medianValue: number;
-  avgSqft: number;
-  avgAge: number;
-  confidence: number;
-  status: 'pending' | 'accepted' | 'rejected';
-  boundaryDescription: string;
-  keyCharacteristics: string[];
-}
-
-const DISCOVERED_SEGMENTS: DiscoveredSegment[] = [
-  { id: 'd1', name: 'Cluster A: New Construction SFR', parcelCount: 312, medianValue: 425000, avgSqft: 2200, avgAge: 3, confidence: 0.92, status: 'pending', boundaryDescription: 'NE quadrant, north of Highway 240', keyCharacteristics: ['Built after 2022', '2000+ sqft', 'Quality Grade: Good+'] },
-  { id: 'd2', name: 'Cluster B: Historic Downtown', parcelCount: 178, medianValue: 285000, avgSqft: 1450, avgAge: 65, confidence: 0.87, status: 'pending', boundaryDescription: 'Downtown core, within 0.5mi of Main St', keyCharacteristics: ['Pre-1970 construction', 'Mixed use zone', 'Walkable area'] },
-  { id: 'd3', name: 'Cluster C: Rural Large Lot', parcelCount: 524, medianValue: 195000, avgSqft: 1600, avgAge: 28, confidence: 0.78, status: 'accepted', boundaryDescription: 'South county, lots > 2 acres', keyCharacteristics: ['Lot > 2 acres', 'Agricultural proximity', 'Well/septic'] },
-  { id: 'd4', name: 'Cluster D: Waterfront Premium', parcelCount: 67, medianValue: 680000, avgSqft: 2800, avgAge: 18, confidence: 0.95, status: 'pending', boundaryDescription: 'Columbia River frontage, 500ft buffer', keyCharacteristics: ['Water access', 'View premium', 'Higher quality grade'] },
-  { id: 'd5', name: 'Cluster E: Commercial Corridor', parcelCount: 143, medianValue: 520000, avgSqft: 4500, avgAge: 22, confidence: 0.81, status: 'rejected', boundaryDescription: 'Along US-395, commercial zoning', keyCharacteristics: ['Commercial zone', 'High traffic', 'Strip mall proximity'] },
-];
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import {
+  DISCOVERED_SEGMENTS_FIXTURE,
+  type DiscoveredSegment,
+} from '@/data/segmentDiscoveryFixtures';
 
 export function SegmentDiscoveryDashboard() {
-  const [segments, setSegments] = useState<DiscoveredSegment[]>(DISCOVERED_SEGMENTS);
+  const [segments, setSegments] = useState<DiscoveredSegment[]>(DISCOVERED_SEGMENTS_FIXTURE);
   const [loading] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
@@ -47,6 +34,7 @@ export function SegmentDiscoveryDashboard() {
 
   return (
     <div className="space-y-4 p-4">
+      <DemoDataBanner module="Segment Discovery" />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Segment Discovery</h1>
         <div className="flex gap-2">

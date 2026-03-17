@@ -1,14 +1,16 @@
 /**
- * Forge Regression Store (Phase 16B)
+ * Forge Regression Store (Phase 16B → Wave 3)
  * ===================================================================
  * Zustand store for regression model management, run history,
  * version comparison, and model promotion.
  *
- * Fixture-driven: falls back to fixture data when API is unavailable.
+ * API-first: calls /api/costforge/analytics/regression/* via regressionAPI,
+ * falls back to fixture data when API is unavailable.
  * Separate lifecycle from forgeStatisticsStore — this is Regression-scoped.
  */
 
 import { create } from 'zustand';
+import { regressionAPI } from '@/services/forge/regressionAPI';
 import {
   REGRESSION_MODELS,
   REGRESSION_RUNS,
@@ -112,13 +114,27 @@ export const useForgeRegressionStore = create<ForgeRegressionState>((set, get) =
   fetchModels: async () => {
     set({ loading: true, error: null });
     try {
-      // Fixture fallback — no API yet
+      // API-first: fetch regression history from backend
+      const history = await regressionAPI.getHistory(50);
+      // Map history items to local model/run shapes
+      const apiRuns: RegressionRunRecord[] = history.results.map((h) => ({
+        id: h.id,
+        modelId: h.dependentVariable || 'api',
+        modelType: 'OLS' as const,
+        rSquared: h.rSquared,
+        adjustedRSquared: h.adjustedRSquared,
+        timestamp: h.createdAt,
+        variables: [],
+        status: 'completed' as const,
+      }));
       set({
         models: [...REGRESSION_MODELS],
-        runs: [...REGRESSION_RUNS],
+        runs: apiRuns.length > 0 ? apiRuns : [...REGRESSION_RUNS],
         loading: false,
+        error: apiRuns.length === 0 ? 'Using fixture data — API returned empty history' : null,
       });
     } catch {
+      // Fixture fallback
       set({
         models: [...REGRESSION_MODELS],
         runs: [...REGRESSION_RUNS],
@@ -151,14 +167,19 @@ export const useForgeRegressionStore = create<ForgeRegressionState>((set, get) =
   runRegression: async (config) => {
     set({ loading: true, error: null });
     try {
-      // Fixture-driven: create a synthetic run record
+      // API-first: call backend regression endpoint
+      const result = await regressionAPI.runRegression({
+        observations: [], // Caller populates via store extension or direct API
+        featureNames: config.variables,
+        dependentVariable: config.modelType,
+      });
       const newRun: RegressionRunRecord = {
-        id: `r${Date.now()}`,
-        modelId: 'new',
+        id: result.id,
+        modelId: 'api',
         modelType: config.modelType as 'OLS' | 'GWR' | 'Quantile',
-        rSquared: 0.85 + Math.random() * 0.05,
-        adjustedRSquared: 0.84 + Math.random() * 0.05,
-        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        rSquared: result.rSquared,
+        adjustedRSquared: result.adjustedRSquared,
+        timestamp: result.createdAt,
         variables: config.variables,
         status: 'completed',
       };
@@ -167,7 +188,22 @@ export const useForgeRegressionStore = create<ForgeRegressionState>((set, get) =
         loading: false,
       }));
     } catch {
-      set({ loading: false, error: 'Regression run failed' });
+      // Fixture fallback — create a synthetic run using fixture baseline values
+      const newRun: RegressionRunRecord = {
+        id: `r${Date.now()}`,
+        modelId: 'fixture',
+        modelType: config.modelType as 'OLS' | 'GWR' | 'Quantile',
+        rSquared: 0.87,
+        adjustedRSquared: 0.86,
+        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        variables: config.variables,
+        status: 'completed',
+      };
+      set((state) => ({
+        runs: [newRun, ...state.runs],
+        loading: false,
+        error: 'Using fixture data — regression API unavailable',
+      }));
     }
   },
 }));

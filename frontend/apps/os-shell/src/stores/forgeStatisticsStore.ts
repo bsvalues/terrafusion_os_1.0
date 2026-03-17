@@ -1,10 +1,12 @@
 /**
- * Forge Statistics Store (Phase 16)
+ * Forge Statistics Store (Phase 16 → Wave 3)
  * ===================================================================
  * Zustand store for ratio study state, outlier management, strata
  * results, model comparison, and IAAO qualification metrics.
  *
- * Fixture-driven: falls back to fixture data when API is unavailable.
+ * API-first: fetchStudy calls real backend via ratioAnalysisService.
+ * Fixture fallback for outliers/strata/comparison (no backend endpoint yet).
+ * isFixture flag discloses fixture-only data sections.
  * Separate lifecycle from propertyStore — this is Forge-scoped.
  */
 
@@ -40,6 +42,13 @@ interface ForgeStatisticsState {
   qualification: QualificationMetrics | null;
   loading: boolean;
   error: string | null;
+  /** Discloses which data sections are from fixtures rather than API */
+  isFixture: {
+    studyResult: boolean;
+    outliers: boolean;
+    strata: boolean;
+    comparison: boolean;
+  };
 
   // Actions
   fetchStudy: () => Promise<void>;
@@ -89,6 +98,7 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
   qualification: null,
   loading: false,
   error: null,
+  isFixture: { studyResult: false, outliers: true, strata: true, comparison: true },
 
   fetchStudy: async () => {
     set({ loading: true, error: null });
@@ -101,6 +111,7 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
         strata: STRATA_RESULTS,
         qualification,
         loading: false,
+        isFixture: { studyResult: false, outliers: true, strata: true, comparison: get().isFixture.comparison },
       });
     } catch {
       // Fixture fallback
@@ -112,6 +123,7 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
         qualification,
         loading: false,
         error: 'Using fixture data — API unavailable',
+        isFixture: { studyResult: true, outliers: true, strata: true, comparison: get().isFixture.comparison },
       });
     }
   },
@@ -132,8 +144,11 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
   },
 
   loadComparison: async () => {
-    // Fixture-driven — no API yet
-    set({ comparison: MODEL_COMPARISON });
+    // Fixture-only — no dedicated API endpoint yet for model comparison
+    set((state) => ({
+      comparison: MODEL_COMPARISON,
+      isFixture: { ...state.isFixture, comparison: true },
+    }));
   },
 
   refreshQualification: () => {
