@@ -1,0 +1,69 @@
+{
+  "tranche": "1D",
+  "title": "Batch Cost Model Runs + Coefficient Application Preview",
+  "scope": "forge-standalone",
+  "writeLane": "forge",
+  "surfaces": [
+    {
+      "name": "BatchCostRun",
+      "moduleId": "batch-cost-run",
+      "launchMode": "standalone",
+      "features": [
+        "Run configuration form (label, model year, cost table version)",
+        "Strata / neighborhood / property class filter badges",
+        "Dry-run preview summary (total parcels, increased/decreased/unchanged, mean/median change)",
+        "Run history table with status and dry-run/live type"
+      ]
+    },
+    {
+      "name": "CoefficientPreview",
+      "moduleId": "coefficient-preview",
+      "launchMode": "standalone",
+      "features": [
+        "Production vs candidate model selector",
+        "COD / PRD / mean ratio / median ratio delta cards",
+        "Impacted parcel count vs total evaluated",
+        "Coefficient delta table (variable, current, proposed, Δ, Δ%)",
+        "Impact distribution bar chart with dollar impact by bucket"
+      ]
+    }
+  ],
+  "governedTypes": [
+    "BatchCostRunFilter",
+    "BatchCostRunStatus",
+    "BatchCostRunRequest",
+    "BatchCostRunSummary",
+    "BatchCostRunRecord",
+    "CoefficientDelta",
+    "CoefficientDeltaSet",
+    "CoefficientImpactMetrics",
+    "ImpactBucket",
+    "CoefficientPreviewResult",
+    "BATCH_COST_THRESHOLDS"
+  ],
+  "contractTests": {
+    "file": "os-platform/core/tests/forge-batchcost-contract.test.mjs",
+    "suites": 10,
+    "assertions": 54,
+    "pass": 54,
+    "fail": 0
+  },
+  "gates": {
+    "batchcostContract": "54/54",
+    "regressionContract": "60/60",
+    "phase83Tools": "54/54",
+    "typeCheck": "PASS"
+  },
+  "filesChanged": [
+    "os-platform/core/types/index.ts",
+    "frontend/apps/os-shell/src/pages/forge/batch/BatchCostRun.tsx",
+    "frontend/apps/os-shell/src/pages/forge/batch/CoefficientPreview.tsx",
+    "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx",
+    "frontend/apps/os-shell/src/config/moduleComponents.tsx",
+    "os-platform/core/tests/forge-batchcost-contract.test.mjs",
+    "tranche-1d-batchcost.json"
+  ],
+  "parentSha": "d3564d0d9",
+  "branch": "phase-7-county-ops-visual-governance",
+  "commitSha": "353d9ff38"
+}

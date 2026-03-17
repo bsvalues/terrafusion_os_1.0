@@ -45,6 +45,7 @@ import { BentoCard } from '../../../ui/materials/BentoCard';
 import AppealDeadlinePanel from '../../../components/dais/AppealDeadlinePanel';
 import AppealHearingPanel from '../../../components/dais/AppealHearingPanel';
 import AppealNoticePanel from '../../../components/dais/AppealNoticePanel';
+import AppealCertificationPanel from '../../../components/dais/AppealCertificationPanel';
 
 /** Workflow type options */
 const WORKFLOW_TYPES = [
@@ -1633,6 +1634,11 @@ export const PropertyDais: React.FC = () => {
       {/* Phase 19 Tranche 8: Appeal Notice Spine */}
       <div data-testid="appeal-notice-section">
         <AppealNoticePanel parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 9: Appeal Outcome + Certification Readiness */}
+      <div data-testid="appeal-certification-section">
+        <AppealCertificationPanel parcelId={parcelId} />
       </div>
 
       {/* History */}

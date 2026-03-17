@@ -278,6 +278,12 @@ const StatisticsStudio = lazy(
 const RegressionStudio = lazy(
   () => import('../pages/forge/regression/RegressionStudio')
 );
+const BatchCostRun = lazy(
+  () => import('../pages/forge/batch/BatchCostRun')
+);
+const CoefficientPreview = lazy(
+  () => import('../pages/forge/batch/CoefficientPreview')
+);
 const ManagementDashboard = lazy(
   () => import('../pages/dais/ManagementDashboard')
 );
@@ -340,6 +346,9 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'suite-dais': { Component: DaisSuiteHome },
   'suite-dossier': { Component: DossierSuiteHome },
   'suite-gpt': { Component: GptSuiteHome },
+  // Forge standalone modules (Tranche 1D)
+  'batch-cost-run': { Component: BatchCostRun },
+  'coefficient-preview': { Component: CoefficientPreview },
   // Dais standalone modules
   'terra-queue': { Component: TerraQueue },
   // OS Features (in-shell windows)
@@ -654,6 +663,20 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Statistics Studio...</span></div>}>
           <StatisticsStudio />
+        </Suspense>
+      );
+
+    case 'batch-cost-run':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Batch Cost Runs...</span></div>}>
+          <BatchCostRun />
+        </Suspense>
+      );
+
+    case 'coefficient-preview':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Coefficient Preview...</span></div>}>
+          <CoefficientPreview />
         </Suspense>
       );
 

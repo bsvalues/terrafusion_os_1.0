@@ -44,6 +44,8 @@ const FORGE_MODULES: SuiteModuleDef[] = [
   { id: 'regression-studio', label: 'Regression Studio', icon: LineChart, description: 'County-wide MRA regression models & IAAO compliance', launchMode: 'standalone', moduleId: 'regression-studio' },
   { id: 'statistics-studio', label: 'Statistics Studio', icon: PieChart, description: 'Ratio studies, COD/PRD/PRB & statistical diagnostics', launchMode: 'standalone', moduleId: 'statistics-studio' },
   { id: 'terra-gama', label: 'TerraGAMA', icon: MapPin, description: 'Geographic Area Market Analysis — neighborhood delineation', launchMode: 'standalone', moduleId: 'terra-gama' },
+  { id: 'batch-cost-run', label: 'Batch Cost Runs', icon: TrendingUp, description: 'Batch cost model runs with strata/neighborhood/class filters and dry-run preview', launchMode: 'standalone', moduleId: 'batch-cost-run' },
+  { id: 'coefficient-preview', label: 'Coefficient Preview', icon: Scale, description: 'Current vs proposed coefficient comparison with parcel impact analysis', launchMode: 'standalone', moduleId: 'coefficient-preview' },
 ];
 
 const fmtNum = (n: number) => n.toLocaleString();

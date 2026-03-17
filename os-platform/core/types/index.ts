@@ -523,3 +523,150 @@ export const REGRESSION_THRESHOLDS = {
   /** Valid feature categories */
   validCategories: ['Physical', 'Quality', 'Location', 'Amenity'] as const,
 } as const;
+
+// ============================================================================
+// BATCH COST MODEL RUNS (Tranche 1D — cross-parcel, Forge write-lane)
+// ============================================================================
+
+/** Filter criteria for a batch cost model run */
+export interface BatchCostRunFilter {
+  /** Strata codes to include (e.g. residential, commercial) */
+  strata: string[];
+  /** Neighborhood codes to include */
+  neighborhoods: string[];
+  /** Property class codes to include */
+  propertyClasses: string[];
+}
+
+/** Status of a batch cost model run */
+export type BatchCostRunStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+
+/** Request to initiate a batch cost model run */
+export interface BatchCostRunRequest {
+  /** Run label / description */
+  label: string;
+  /** Model year for the run */
+  modelYear: number;
+  /** Cost table version identifier */
+  costTableVersion: string;
+  /** Filter criteria */
+  filter: BatchCostRunFilter;
+  /** Whether this is a dry-run (preview only, no persistence) */
+  dryRun: boolean;
+}
+
+/** Summary produced by a dry-run or completed run */
+export interface BatchCostRunSummary {
+  /** Total parcels matched by filter */
+  totalParcels: number;
+  /** Parcels with increased value */
+  increasedCount: number;
+  /** Parcels with decreased value */
+  decreasedCount: number;
+  /** Parcels unchanged */
+  unchangedCount: number;
+  /** Mean value change (absolute dollars) */
+  meanChange: number;
+  /** Median value change (absolute dollars) */
+  medianChange: number;
+  /** Mean percentage change */
+  meanPctChange: number;
+}
+
+/** Record of a batch cost model run */
+export interface BatchCostRunRecord {
+  /** Unique run identifier */
+  id: string;
+  /** Request parameters */
+  request: BatchCostRunRequest;
+  /** Run status */
+  status: BatchCostRunStatus;
+  /** Summary statistics (populated after completion or dry-run) */
+  summary: BatchCostRunSummary | null;
+  /** ISO timestamp when run was created */
+  createdAt: string;
+  /** ISO timestamp when run completed */
+  completedAt: string | null;
+  /** County GUID scope */
+  countyId: string;
+}
+
+// ============================================================================
+// COEFFICIENT APPLICATION PREVIEW (Tranche 1D — cross-parcel, read-only)
+// ============================================================================
+
+/** A single coefficient delta: current vs proposed */
+export interface CoefficientDelta {
+  /** Variable / feature name */
+  variable: string;
+  /** Current production coefficient */
+  currentValue: number;
+  /** Proposed (candidate) coefficient */
+  proposedValue: number;
+  /** Absolute change */
+  delta: number;
+  /** Percentage change */
+  deltaPct: number;
+}
+
+/** Set of coefficient deltas between two model versions */
+export interface CoefficientDeltaSet {
+  /** Source model ID (current production) */
+  sourceModelId: string;
+  /** Candidate model ID (proposed) */
+  candidateModelId: string;
+  /** Individual variable deltas */
+  deltas: CoefficientDelta[];
+}
+
+/** Metric deltas for the coefficient preview impact */
+export interface CoefficientImpactMetrics {
+  /** COD change (current → proposed) */
+  codDelta: number;
+  /** PRD change (current → proposed) */
+  prdDelta: number;
+  /** Mean ratio change */
+  meanRatioDelta: number;
+  /** Median ratio change */
+  medianRatioDelta: number;
+}
+
+/** A bucket of parcels impacted by coefficient change */
+export interface ImpactBucket {
+  /** Bucket label (e.g. "+5% to +10%") */
+  label: string;
+  /** Number of parcels in this bucket */
+  count: number;
+  /** Mean dollar impact for parcels in this bucket */
+  meanDollarImpact: number;
+}
+
+/** Full coefficient application preview result */
+export interface CoefficientPreviewResult {
+  /** Coefficient delta set */
+  coefficients: CoefficientDeltaSet;
+  /** Impact metrics */
+  metrics: CoefficientImpactMetrics;
+  /** Total parcels impacted (value change > 0) */
+  impactedParcelCount: number;
+  /** Total parcels evaluated */
+  totalParcelsEvaluated: number;
+  /** Impact distribution buckets */
+  impactBuckets: ImpactBucket[];
+}
+
+/** Thresholds and constants for batch cost operations */
+export const BATCH_COST_THRESHOLDS = {
+  /** Maximum parcels in a single batch run */
+  maxBatchSize: 50_000,
+  /** Minimum parcels for a valid batch run */
+  minBatchSize: 10,
+  /** Valid run statuses */
+  validStatuses: ['pending', 'running', 'completed', 'failed', 'cancelled'] as const,
+  /** Valid strata codes (Benton County) */
+  validStrata: ['residential', 'commercial', 'industrial', 'agricultural', 'exempt'] as const,
+  /** COD improvement threshold (negative = improvement) */
+  codImprovementThreshold: -0.5,
+  /** Impact bucket boundaries (percentage) */
+  impactBucketEdges: [-20, -10, -5, -2, 0, 2, 5, 10, 20] as const,
+} as const;
