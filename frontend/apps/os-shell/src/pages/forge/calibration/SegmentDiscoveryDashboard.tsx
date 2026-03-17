@@ -1,27 +1,56 @@
 /**
- * SegmentDiscoveryDashboard.tsx (TFR-059 → Wave 3)
+ * SegmentDiscoveryDashboard.tsx (TFR-059 → Wave 4B)
  *
  * Shows auto-discovered market segments. Map placeholder + list view.
  * Accept/reject actions. No domain math in component.
  *
- * Explicitly fixture-backed: loads from segmentDiscoveryFixtures.
- * DemoDataBanner discloses fixture origin.
+ * API-first: loads from statisticsAPI.discoverSegments().
+ * Falls back to segmentDiscoveryFixtures on transport/runtime failure.
+ * DemoDataBanner discloses fixture origin when isFixture is true.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import { statisticsAPI } from '@/services/forge/statisticsAPI';
 import {
   DISCOVERED_SEGMENTS_FIXTURE,
   type DiscoveredSegment,
 } from '@/data/segmentDiscoveryFixtures';
 
 export function SegmentDiscoveryDashboard() {
-  const [segments, setSegments] = useState<DiscoveredSegment[]>(DISCOVERED_SEGMENTS_FIXTURE);
-  const [loading] = useState(false);
+  const [segments, setSegments] = useState<DiscoveredSegment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isFixture, setIsFixture] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadSegments() {
+      setLoading(true);
+      try {
+        const modelId = `${new Date().getFullYear()}-discovery`;
+        const data = await statisticsAPI.discoverSegments(modelId);
+        if (!cancelled) {
+          setSegments(data);
+          setIsFixture(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setSegments(DISCOVERED_SEGMENTS_FIXTURE);
+          setIsFixture(true);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+    loadSegments();
+    return () => { cancelled = true; };
+  }, []);
 
   const handleAction = useCallback((id: string, action: 'accepted' | 'rejected') => {
     setSegments(prev => prev.map(s =>
@@ -34,7 +63,7 @@ export function SegmentDiscoveryDashboard() {
 
   return (
     <div className="space-y-4 p-4">
-      <DemoDataBanner module="Segment Discovery" />
+      {isFixture && <DemoDataBanner module="Segment Discovery" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Segment Discovery</h1>
         <div className="flex gap-2">
@@ -79,6 +108,10 @@ export function SegmentDiscoveryDashboard() {
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <span className="text-muted-foreground">Loading discovered segments...</span>
+        </div>
+      ) : segments.length === 0 ? (
+        <div className="flex items-center justify-center py-12">
+          <span className="text-muted-foreground">No segments discovered. Run a discovery model to generate segments.</span>
         </div>
       ) : viewMode === 'map' ? (
         <Card>
