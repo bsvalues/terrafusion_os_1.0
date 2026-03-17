@@ -77,7 +77,6 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     'terra-levy',
     'gis-viewer',
     'document-manager',
-    'regression-studio',
     'statistics-studio',
     'vei',
     'property-tax-ai',

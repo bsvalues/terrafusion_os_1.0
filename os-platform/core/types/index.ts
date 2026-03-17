@@ -424,3 +424,102 @@ export const RECONCILIATION_RULES = {
   maxApproaches: 3,
   validApproaches: ['cost', 'sales', 'income'] as const,
 } as const;
+
+// ============================================================================
+// Tranche 1C: Regression Studio — governed types (cross-parcel, standalone)
+// ============================================================================
+
+/** Supported regression model types */
+export type RegressionModelType = 'OLS' | 'GWR' | 'Quantile';
+
+/** Model lifecycle status: draft → validated → production */
+export type RegressionModelStatus = 'draft' | 'validated' | 'production';
+
+/** A single coefficient in a fitted regression model */
+export interface RegressionCoefficient {
+  variable: string;
+  estimate: number;
+  stdError: number;
+  tStat: number;
+  pValue: number;
+  significant: boolean;
+  /** Variance Inflation Factor — multicollinearity diagnostic */
+  vif?: number;
+}
+
+/** Feature (independent variable) available for model specification */
+export interface RegressionFeature {
+  id: string;
+  name: string;
+  category: 'Physical' | 'Quality' | 'Location' | 'Amenity';
+  selected: boolean;
+  description?: string;
+}
+
+/** Goodness-of-fit and information-criterion diagnostics */
+export interface RegressionDiagnostics {
+  rSquared: number;
+  adjustedRSquared: number;
+  fStatistic: number;
+  mse: number;
+  aic: number;
+  bic: number;
+  observations: number;
+}
+
+/** Validation metrics for IAAO compliance assessment */
+export interface RegressionValidation {
+  qualificationPass: boolean;
+  /** Optional reason when qualificationPass is false */
+  failureReason?: string;
+}
+
+/** Full regression model record — cross-parcel, write-owner = Forge */
+export interface RegressionModelRecord extends RegressionDiagnostics, RegressionValidation {
+  id: string;
+  name: string;
+  modelType: RegressionModelType;
+  version: number;
+  status: RegressionModelStatus;
+  createdAt: string;
+  variables: string[];
+  coefficients: RegressionCoefficient[];
+}
+
+/** Coefficient delta between two model versions (for comparison) */
+export interface CoefficientDelta {
+  variable: string;
+  estimateA: number;
+  estimateB: number;
+  delta: number;
+  significantA: boolean;
+  significantB: boolean;
+  signChange: boolean;
+}
+
+/** Metric deltas between two model versions */
+export interface RegressionMetricDeltas {
+  rSquared: number;
+  adjustedRSquared: number;
+  aic: number;
+  bic: number;
+  mse: number;
+}
+
+/** IAAO-aligned qualification thresholds for regression models */
+export const REGRESSION_THRESHOLDS = {
+  /** Minimum acceptable R² for a production model */
+  minRSquared: 0.70,
+  /** Maximum acceptable VIF before multicollinearity concern */
+  maxVIF: 10.0,
+  /** Significance threshold (α) for coefficient p-values */
+  significanceAlpha: 0.05,
+  /** Minimum observations for a valid model run */
+  minObservations: 30,
+  /** Valid model types */
+  validModelTypes: ['OLS', 'GWR', 'Quantile'] as const,
+  /** Valid model statuses */
+  validStatuses: ['draft', 'validated', 'production'] as const,
+  /** Valid feature categories */
+  validCategories: ['Physical', 'Quality', 'Location', 'Amenity'] as const,
+} as const;

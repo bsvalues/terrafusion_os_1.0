@@ -275,6 +275,9 @@ const TerraLevyDashboard = lazy(
 const StatisticsStudio = lazy(
   () => import('../pages/forge/statistics/StatisticsStudio')
 );
+const RegressionStudio = lazy(
+  () => import('../pages/forge/regression/RegressionStudio')
+);
 const ManagementDashboard = lazy(
   () => import('../pages/dais/ManagementDashboard')
 );
@@ -642,16 +645,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'regression-studio':
       return (
-        <PlaceholderModule
-          name='Regression Studio'
-          icon='📈'
-          description='County-wide MRA regression models — multiple regression analysis, model diagnostics, IAAO compliance.'
-          status='placeholder'
-          legacySource='Bsbcintelligentvalues'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
-        />
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Regression Studio...</span></div>}>
+          <RegressionStudio />
+        </Suspense>
       );
 
     case 'statistics-studio':
