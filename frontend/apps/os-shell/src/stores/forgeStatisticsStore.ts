@@ -13,6 +13,7 @@
 import { create } from 'zustand';
 import { computeRatioStudy } from '@/services/forge/ratioAnalysisService';
 import type { RatioStudyResult } from '@/services/forge/ratioAnalysisService';
+import { statisticsAPI } from '@/services/forge/statisticsAPI';
 import {
   RATIO_STUDY_RESULT,
   OUTLIER_RECORDS,
@@ -105,13 +106,36 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
     try {
       const result = await computeRatioStudy(get().filters);
       const qualification = computeQualification(result);
+
+      // Attempt API-first for outliers and strata (modelId derived from filters)
+      const modelId = `${get().filters.taxYear}-${get().filters.outlierMethod}`;
+      let outliers = OUTLIER_RECORDS;
+      let strata = STRATA_RESULTS;
+      let outliersFromApi = false;
+      let strataFromApi = false;
+
+      try {
+        outliers = await statisticsAPI.getOutliers(modelId);
+        outliersFromApi = true;
+      } catch { /* fixture fallback */ }
+
+      try {
+        strata = await statisticsAPI.getStrata(modelId);
+        strataFromApi = true;
+      } catch { /* fixture fallback */ }
+
       set({
         studyResult: result,
-        outliers: OUTLIER_RECORDS,
-        strata: STRATA_RESULTS,
+        outliers,
+        strata,
         qualification,
         loading: false,
-        isFixture: { studyResult: false, outliers: true, strata: true, comparison: get().isFixture.comparison },
+        isFixture: {
+          studyResult: false,
+          outliers: !outliersFromApi,
+          strata: !strataFromApi,
+          comparison: get().isFixture.comparison,
+        },
       });
     } catch {
       // Fixture fallback
@@ -144,11 +168,23 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
   },
 
   loadComparison: async () => {
-    // Fixture-only — no dedicated API endpoint yet for model comparison
-    set((state) => ({
-      comparison: MODEL_COMPARISON,
-      isFixture: { ...state.isFixture, comparison: true },
-    }));
+    // API-first — fixture fallback
+    const modelId = `${get().filters.taxYear}-${get().filters.outlierMethod}`;
+    try {
+      const comparison = await statisticsAPI.compareModels({
+        modelIdA: `${modelId}-12mo`,
+        modelIdB: `${modelId}-24mo`,
+      });
+      set((state) => ({
+        comparison,
+        isFixture: { ...state.isFixture, comparison: false },
+      }));
+    } catch {
+      set((state) => ({
+        comparison: MODEL_COMPARISON,
+        isFixture: { ...state.isFixture, comparison: true },
+      }));
+    }
   },
 
   refreshQualification: () => {
