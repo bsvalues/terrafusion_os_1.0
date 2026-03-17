@@ -44,6 +44,7 @@ import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 import AppealDeadlinePanel from '../../../components/dais/AppealDeadlinePanel';
 import AppealHearingPanel from '../../../components/dais/AppealHearingPanel';
+import AppealNoticePanel from '../../../components/dais/AppealNoticePanel';
 
 /** Workflow type options */
 const WORKFLOW_TYPES = [
@@ -1627,6 +1628,11 @@ export const PropertyDais: React.FC = () => {
       {/* Phase 19 Tranche 7: Hearing Scheduling Spine */}
       <div data-testid="appeal-hearing-section">
         <AppealHearingPanel parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 8: Appeal Notice Spine */}
+      <div data-testid="appeal-notice-section">
+        <AppealNoticePanel parcelId={parcelId} />
       </div>
 
       {/* History */}

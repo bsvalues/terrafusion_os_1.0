@@ -577,3 +577,4 @@ tf_quarantine_*/
 tools/reports/
 # Exception: TDC violation inventory (classification artifact, tracked)
 !tools/reports/tdc_violation_inventory.json
+os-platform/core/tests/forge-regression-contract.test.mjs
