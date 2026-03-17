@@ -41,6 +41,7 @@ import type {
 } from '../../../contracts/dossierDetails';
 import ParcelEvidencePacket from '../../../components/dossier/ParcelEvidencePacket';
 import PacketNarrativeEditor from '../../../components/dossier/PacketNarrativeEditor';
+import PacketFinalizationPanel from '../../../components/dossier/PacketFinalizationPanel';
 
 
 // InvocationRecord type imported from shared components
@@ -1112,6 +1113,11 @@ export const PropertyDossier: React.FC = () => {
       {/* Phase 19 Tranche 3: Narrative Spine */}
       <div data-testid="narrative-section">
         <PacketNarrativeEditor parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 4: Finalization Spine */}
+      <div data-testid="finalization-section">
+        <PacketFinalizationPanel parcelId={parcelId} />
       </div>
 
       {/* Governed Tool Invocation History */}
