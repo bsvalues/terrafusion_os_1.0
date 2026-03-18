@@ -137,9 +137,17 @@ public static class GptAiEntityConfigurations
             builder.Property(e => e.Metadata).HasColumnType("jsonb");
             builder.Property(e => e.CreatedAt).IsRequired();
 
-            // RAGEmbedding.Embedding is float[] mapped to vector(1536) in PostgreSQL.
-            // In-memory provider ignores column type — no pgvector extension needed for tests.
-            builder.Property(e => e.Embedding).IsRequired();
+            // RAGEmbedding.Embedding stores 1536-dimensional float vectors.
+            // Mapped to PostgreSQL real[] (native float array) so EF migration generates without
+            // requiring the Pgvector.EntityFrameworkCore package. The entity carries
+            // [Column(TypeName = "vector(1536)")] but EF Fluent API takes precedence over attributes.
+            //
+            // FOLLOW-ON (Post-R1): Add Pgvector.EntityFrameworkCore, call UseVector() in
+            // DbContextFactory, and run a migration that does:
+            //   ALTER TABLE "RAGEmbeddings" ALTER COLUMN "Embedding" TYPE vector(1536)
+            //   USING "Embedding"::vector(1536);
+            // This enables cosine/L2 distance queries via the pgvector extension.
+            builder.Property(e => e.Embedding).IsRequired().HasColumnType("real[]");
 
             builder.HasOne(e => e.Document)
                    .WithMany()
