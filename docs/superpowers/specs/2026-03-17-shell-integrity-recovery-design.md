@@ -240,7 +240,7 @@ Prove `StageZeroState` matches the County Operations Scene contract. Includes at
 |---|-----------|
 | 6 | Quick Action buttons call `activateModule()`, not `navigate()` |
 | 7 | Recent parcel click opens workbench window via `activateModule('property-workbench', ...)` |
-| 8 | `activateScene('county-ops')` (or the equivalent default scene ID from `sceneStore`) opens the predefined window set. Assert the scene-store state transitions and that `activateModule` is called for each window in the set. Name one concrete scene — do not test an abstract "any scene." |
+| 8 | `activateScene('county-ops')` opens the County Operations predefined window set. Assert: (a) `sceneStore.getState().activeSceneId === 'county-ops'`, (b) `activateModule` is called for each window in the `county-ops` scene definition (at minimum: `property-workbench`). If `sceneStore` or `activateScene` does not yet exist, create a minimal `sceneStore.ts` with a single `county-ops` scene entry and wire it from StageZeroState Quick Actions. |
 
 ### Test File
 
@@ -263,9 +263,13 @@ npx vitest run "countyOpsScene.contract"
 
 Single Claude Code session. Can run in parallel with Phase 23 since they touch different surfaces.
 
+### Shared Test Harness Rule
+
+Phases 23 and 24 MUST use existing shared render helpers and providers for workbench and scene surfaces. Do not invent ad hoc mocks or alternate wrappers that would turn the "real hosting gate" into a "mock hosting gate." If a shared provider does not exist for a surface, document the gap — do not create a one-off substitute.
+
 ### Out of Scope
 
-No StageZeroState redesign. No new scene definitions. No UI changes beyond data-testid additions for test targeting. Both Phases 23 and 24 MUST NOT make opportunistic edits to shared shell primitives (`desktopStore.ts`, `moduleActivation.ts`, `moduleComponents.tsx`). Use existing shared render helpers and providers for workbench and scene surfaces — do not invent ad hoc mocks or alternate wrappers that would turn the "real hosting gate" into a "mock hosting gate."
+No StageZeroState redesign. No new scene definitions beyond the single `county-ops` entry if `sceneStore` needs bootstrapping. No UI changes beyond data-testid additions for test targeting. Both Phases 23 and 24 MUST NOT make opportunistic edits to shared shell primitives (`desktopStore.ts`, `moduleActivation.ts`, `moduleComponents.tsx`).
 
 ---
 
@@ -312,10 +316,10 @@ For each module type, verify spawn behavior:
 
 Instead of abstract structural math, prove 1-2 concrete user flows:
 
-1. **Dock → Suite → Workbench**: Click Forge in dock → suite window opens → click parcel-scoped action → `activateModule('property-workbench', { metadata: { tabId: 'forge', parcelId } })` routes to Property Workbench with `activeTabId: 'forge'`
-2. **Home → Recent Parcel → Workbench**: Click recent parcel in StageZeroState → `activateModule('property-workbench', { metadata: { parcelId: '<clicked-parcel-id>' } })` opens maximized workbench with parcel context containing the clicked parcel identifier
+1. **Dock → Suite → Workbench**: Click Forge in dock → suite window opens → click parcel-scoped action → `activateModule('property-workbench', { metadata: { tabId: 'forge', parcelId: '09-103580-0000' } })` routes to Property Workbench with `activeTabId: 'forge'` and parcel context `{ parcelId: '09-103580-0000' }`
+2. **Home → Recent Parcel → Workbench**: Click recent parcel in StageZeroState → `activateModule('property-workbench', { metadata: { parcelId: '09-103580-0000' } })` opens maximized workbench with parcel context `{ parcelId: '09-103580-0000' }`
 
-These are traced through the activation/spawn APIs, not full DOM renders. Assert exact payload shapes, not just call existence.
+These are traced through the activation/spawn APIs, not full DOM renders. Assert exact payload shapes (tabId, parcelId), not just call existence.
 
 ### Test File
 
