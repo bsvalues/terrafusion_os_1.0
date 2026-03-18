@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
@@ -34,16 +35,15 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<AIModel> AIModels { get; set; }
   public DbSet<PerformanceMetric> PerformanceMetrics { get; set; }
 
-  // NOTE: AI GPT & RAG Entities cannot be added here due to circular dependency
-  // TerraFusion.Data → TerraFusion.AI would create circular reference
-  // These entities are managed directly in TerraFusion.AI services via raw DbContext access
-  // public DbSet<GPTConfiguration> GPTConfigurations { get; set; }
-  // public DbSet<GPTConversation> GPTConversations { get; set; }
-  // public DbSet<GPTMessage> GPTMessages { get; set; }
-  // public DbSet<RAGDataset> RAGDatasets { get; set; }
-  // public DbSet<RAGDocument> RAGDocuments { get; set; }
-  // public DbSet<GPTMarketplaceInstall> GPTMarketplaceInstalls { get; set; }
-  // public DbSet<GPTUsageMetric> GPTUsageMetrics { get; set; }
+  // GPT Core Entities (TerraFusion.Core.Entities — no circular dep)
+  public DbSet<GPTConfiguration> GPTConfigurations { get; set; }
+  public DbSet<GPTConversation> GPTConversations { get; set; }
+
+  // GPT/RAG AI Entities (TerraFusion.AI.Entities — registered via OnModelCreatingExtensions
+  // hook to avoid circular dependency Data → AI → Data).
+  // Extension method: TerraFusion.AI.Data.GptAiEntityConfigurations.Apply(ModelBuilder)
+  // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
+  public static Action<ModelBuilder>? OnModelCreatingExtensions { get; set; }
 
   // Module System Entities
   public DbSet<Module> Modules { get; set; }
@@ -624,6 +624,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.Property(e => e.Status).HasMaxLength(20);
       entity.HasIndex(e => new { e.CountyId, e.TaxYear });
     });
+
+    // GPT Core Entities (Wave 4 — entities are in TerraFusion.Core, no circular dep)
+    modelBuilder.ApplyConfiguration(new GptCoreEntityConfigurations.GPTConfigurationConfiguration());
+    modelBuilder.ApplyConfiguration(new GptCoreEntityConfigurations.GPTConversationConfiguration());
+
+    // GPT/RAG AI Entities (Wave 4 — entities in TerraFusion.AI, registered via hook)
+    // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
+    OnModelCreatingExtensions?.Invoke(modelBuilder);
 
     // Configure encryption for sensitive fields
     ConfigureEncryption(modelBuilder);

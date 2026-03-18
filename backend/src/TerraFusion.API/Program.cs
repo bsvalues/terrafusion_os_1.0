@@ -377,6 +377,11 @@ builder.Services.AddAutoMapper(typeof(TerraFusion.API.Program).Assembly, typeof(
 // TEMPORARILY DISABLED - ffi_bridge.dll is placeholder, may cause issues
 // builder.Services.AddSingleton<RustFFIService>();
 
+// Wave 4: Wire GPT/RAG AI entity configurations into TerraFusionDbContext via static hook.
+// This avoids a circular assembly reference (Data → AI → Data).
+// Program.cs references both assemblies, so it can bridge them safely.
+TerraFusion.Data.TerraFusionDbContext.OnModelCreatingExtensions = TerraFusion.AI.Data.GptAiEntityConfigurations.Apply;
+
 // Register database context with SQLite fallback
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 {
