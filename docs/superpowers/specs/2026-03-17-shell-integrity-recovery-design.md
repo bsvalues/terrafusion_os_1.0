@@ -216,7 +216,7 @@ No tab content redesign. No new workbench features. Clerk/Treasury/Audit are reg
 **Branch**: `post-r3/phase-24-county-ops-scene`
 **Duration**: 2-3 hours
 **New tests**: 10-12
-**Source changes**: 1-2 files (data-testid additions only)
+**Source changes**: 1-2 files (data-testid additions + `county-ops` scene entry in `sceneStore.ts`)
 **Depends on**: Phase 22
 **Can parallelize with**: Phase 23
 
@@ -240,7 +240,7 @@ Prove `StageZeroState` matches the County Operations Scene contract. Includes at
 |---|-----------|
 | 6 | Quick Action buttons call `activateModule()`, not `navigate()` |
 | 7 | Recent parcel click opens workbench window via `activateModule('property-workbench', ...)` |
-| 8 | `activateScene('county-ops')` opens the County Operations predefined window set. Assert: (a) `sceneStore.getState().activeSceneId === 'county-ops'`, (b) `activateModule` is called for each window in the `county-ops` scene definition (at minimum: `property-workbench`). If `sceneStore` or `activateScene` does not yet exist, create a minimal `sceneStore.ts` with a single `county-ops` scene entry and wire it from StageZeroState Quick Actions. |
+| 8 | `activateScene('county-ops')` opens the County Operations predefined window set. Assert: (a) `sceneStore.getState().activeSceneId === 'county-ops'`, (b) `activateModule` is called for each window in the `county-ops` scene definition (at minimum: `property-workbench`). Note: `sceneStore.ts` already exists at `frontend/apps/os-shell/src/stores/sceneStore.ts` with 8 scenes in `SCENE_LIBRARY` and `activateScene` implemented. The required work is adding a `county-ops` entry to `SCENE_LIBRARY` — not creating the store from scratch. |
 
 ### Test File
 
