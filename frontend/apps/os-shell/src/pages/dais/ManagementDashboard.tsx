@@ -144,7 +144,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
 
     // Workload — compose from getAppraiserProductivity
     try {
-      const prodData = await getAppraiserProductivity();
+      const prodData = await getAppraiserProductivity({ throwOnError: true });
       if (prodData && prodData.length > 0) {
         setAppraisers(mapProductivityToAppraisers(prodData));
         anyApi = true;
@@ -153,7 +153,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
 
     // Queue metrics → overview stats
     try {
-      const metrics = await getQueueMetrics();
+      const metrics = await getQueueMetrics({ throwOnError: true });
       if (metrics) {
         setOverviewStats((prev) =>
           prev.map((s) =>

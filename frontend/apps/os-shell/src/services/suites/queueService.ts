@@ -39,34 +39,45 @@ function authHeadersReadOnly(): Record<string, string> {
 
 // ============================================================================
 // Read Operations
+//
+// Default: silent fixture fallback (backward-compatible).
+// Pass { throwOnError: true } when callers need provenance tracking
+// (e.g. ManagementDashboard's isFixture flag).
 // ============================================================================
 
-export async function getQueueItems(): Promise<QueueWorkItem[]> {
+interface QueueReadOptions {
+  throwOnError?: boolean;
+}
+
+export async function getQueueItems(options?: QueueReadOptions): Promise<QueueWorkItem[]> {
   try {
     const res = await fetch(`${API}/all`, { headers: authHeadersReadOnly() });
     if (!res.ok) throw new Error(res.statusText);
     return res.json();
-  } catch {
+  } catch (err) {
+    if (options?.throwOnError) throw err;
     return QUEUE_ITEMS;
   }
 }
 
-export async function getQueueMetrics(): Promise<QueueMetrics> {
+export async function getQueueMetrics(options?: QueueReadOptions): Promise<QueueMetrics> {
   try {
     const res = await fetch(`${API}/metrics`, { headers: authHeadersReadOnly() });
     if (!res.ok) throw new Error(res.statusText);
     return res.json();
-  } catch {
+  } catch (err) {
+    if (options?.throwOnError) throw err;
     return QUEUE_METRICS;
   }
 }
 
-export async function getAppraiserProductivity(): Promise<AppraiserProductivity[]> {
+export async function getAppraiserProductivity(options?: QueueReadOptions): Promise<AppraiserProductivity[]> {
   try {
     const res = await fetch(`${API}/productivity`, { headers: authHeadersReadOnly() });
     if (!res.ok) throw new Error(res.statusText);
     return res.json();
-  } catch {
+  } catch (err) {
+    if (options?.throwOnError) throw err;
     return APPRAISER_PRODUCTIVITY;
   }
 }
