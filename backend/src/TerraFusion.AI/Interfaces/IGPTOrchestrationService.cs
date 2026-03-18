@@ -106,6 +106,17 @@ namespace TerraFusion.AI.Interfaces
         /// Phase 11: Get audit record by message ID for RAG traceability
         /// </summary>
         System.Threading.Tasks.Task<GPTAudit?> GetAuditByMessageIdAsync(int messageId);
+
+        /// <summary>
+        /// Wave 2: Get all conversations for a user scoped to a county, with pagination.
+        /// Returns an empty list when no conversations exist (acceptable — DbSets not yet activated in Wave 2).
+        /// </summary>
+        System.Threading.Tasks.Task<List<GPTConversation>> GetAllConversationsAsync(
+            string userId,
+            int countyId,
+            int skip = 0,
+            int limit = 50,
+            System.Threading.CancellationToken cancellationToken = default);
     }
 
     /// <summary>

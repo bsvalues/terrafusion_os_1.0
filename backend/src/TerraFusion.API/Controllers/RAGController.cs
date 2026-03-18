@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -223,20 +224,19 @@ namespace TerraFusion.API.Controllers
 
         /// <summary>
         /// List chunks for a document — read-only view for the UI.
-        /// Chunks are derived from embeddings indexed for that document.
+        /// Chunks are projected from RAGEmbedding rows indexed for that document.
+        /// Returns an empty list when the document has not been indexed yet (Wave 2 — DbSets not yet activated).
         /// </summary>
         [HttpGet("documents/{documentId:int}/chunks")]
-        public async Task<ActionResult> GetChunks(int documentId)
+        public async Task<ActionResult> GetChunks(int documentId, CancellationToken cancellationToken = default)
         {
+            if (documentId <= 0)
+                return BadRequest(new { error = "documentId must be a positive integer" });
+
             try
             {
-                // Chunks are stored as RAGEmbedding rows. Return a simplified projection.
-                // IRAGService doesn't expose a GetChunks method directly, so we project
-                // from the search result or pass through to the embedding repository.
-                // For now, return an empty list — the UI displays chunk stats from the
-                // parent document's ChunkCount field. Full chunk content viewing can be
-                // added when a GetChunksAsync method is added to IRAGService.
-                return Ok(new List<object>());
+                var chunks = await _ragService.GetDocumentChunksAsync(documentId);
+                return Ok(chunks);
             }
             catch (Exception ex)
             {

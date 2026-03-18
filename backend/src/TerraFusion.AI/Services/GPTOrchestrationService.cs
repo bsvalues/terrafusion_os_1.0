@@ -551,6 +551,24 @@ This information comes from the Benton County property assessment knowledge base
                 .ToListAsync();
         }
 
+        /// <inheritdoc />
+        public async System.Threading.Tasks.Task<List<GPTConversation>> GetAllConversationsAsync(
+            string userId,
+            int countyId,
+            int skip = 0,
+            int limit = 50,
+            System.Threading.CancellationToken cancellationToken = default)
+        {
+            return await _context.GPTConversations()
+                .Where(c => c.UserId == userId &&
+                            c.CountyId == countyId &&
+                            c.Status != "Deleted")
+                .OrderByDescending(c => c.UpdatedAt)
+                .Skip(skip)
+                .Take(limit)
+                .ToListAsync(cancellationToken);
+        }
+
         public async System.Threading.Tasks.Task UpdateConversationTitleAsync(int conversationId, string title)
         {
             var conversation = await _context.GPTConversations().FindAsync(conversationId);
