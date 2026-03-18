@@ -37,6 +37,19 @@ import type {
 } from '@/data/managementDashboardFixtures';
 
 type Tab = 'overview' | 'certification' | 'appeals' | 'workload';
+type LaneStatus = 'loading' | 'live' | 'degraded';
+type LaneKey = 'certification' | 'appeals' | 'queueMetrics' | 'productivity';
+
+interface LaneProvenanceState {
+  status: LaneStatus;
+  detail: string;
+}
+
+interface LaneDescriptor {
+  key: LaneKey;
+  label: string;
+  testId: string;
+}
 
 // --- Props ---
 
@@ -96,6 +109,57 @@ function mapProductivityToAppraisers(prod: AppraiserProductivity[]): Appraiser[]
   }));
 }
 
+function laneBadgeVariant(status: LaneStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
+  switch (status) {
+    case 'live': return 'default';
+    case 'loading': return 'secondary';
+    case 'degraded': return 'destructive';
+    default: return 'outline';
+  }
+}
+
+function laneStatusLabel(status: LaneStatus): string {
+  switch (status) {
+    case 'live': return 'Live';
+    case 'loading': return 'Loading';
+    case 'degraded': return 'Degraded';
+    default: return 'Unknown';
+  }
+}
+
+function getErrorDetail(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message;
+  return 'Unknown error';
+}
+
+function createInitialLaneProvenance(): Record<LaneKey, LaneProvenanceState> {
+  return {
+    certification: {
+      status: 'loading',
+      detail: 'Attempting live certification readiness data.',
+    },
+    appeals: {
+      status: 'loading',
+      detail: 'Attempting live appeals activity data.',
+    },
+    queueMetrics: {
+      status: 'loading',
+      detail: 'Attempting live queue metrics data.',
+    },
+    productivity: {
+      status: 'loading',
+      detail: 'Attempting live productivity data.',
+    },
+  };
+}
+
+const LANE_DESCRIPTORS: LaneDescriptor[] = [
+  { key: 'certification', label: 'Certification', testId: 'certification' },
+  { key: 'appeals', label: 'Appeals', testId: 'appeals' },
+  { key: 'queueMetrics', label: 'Queue Metrics', testId: 'queue-metrics' },
+  { key: 'productivity', label: 'Productivity', testId: 'productivity' },
+];
+
 // --- Component ---
 
 export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
@@ -110,61 +174,150 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
   const [recentAppeals, setRecentAppeals] = useState<RecentAppeal[]>(RECENT_APPEALS_FIXTURE);
   const [appraisers, setAppraisers] = useState<Appraiser[]>(APPRAISERS_FIXTURE);
   const [isFixture, setIsFixture] = useState(true);
+  const [laneProvenance, setLaneProvenance] = useState<Record<LaneKey, LaneProvenanceState>>(() => createInitialLaneProvenance());
 
   const fetchDashboardData = useCallback(async () => {
-    let anyApi = false;
+    setLaneProvenance(createInitialLaneProvenance());
 
-    // Certification — compose from getCertificationStatus
-    try {
-      const certData = await getCertificationStatus();
-      if (certData && certData.length > 0) {
-        setCertificationAreas(certData.map(mapCertToArea));
-        anyApi = true;
-      }
-    } catch { /* fixture fallback — already set */ }
+    await Promise.allSettled([
+      (async () => {
+        try {
+          const certData = await getCertificationStatus();
+          if (certData && certData.length > 0) {
+            setCertificationAreas(certData.map(mapCertToArea));
+            setLaneProvenance((prev) => ({
+              ...prev,
+              certification: {
+                status: 'live',
+                detail: 'Live county certification endpoint resolved.',
+              },
+            }));
+          } else {
+            setLaneProvenance((prev) => ({
+              ...prev,
+              certification: {
+                status: 'degraded',
+                detail: 'Certification endpoint returned no live records; showing fixture readiness.',
+              },
+            }));
+          }
+        } catch (error) {
+          setLaneProvenance((prev) => ({
+            ...prev,
+            certification: {
+              status: 'degraded',
+              detail: `Certification endpoint unavailable: ${getErrorDetail(error)}. Showing fixture readiness.`,
+            },
+          }));
+        }
+      })(),
+      (async () => {
+        try {
+          const appealsData = await getAllAppeals();
+          if (appealsData && appealsData.length > 0) {
+            setRecentAppeals(mapAppealsToRecent(appealsData));
+            setAppealsSummary(computeAppealsSummary(appealsData));
+            setLaneProvenance((prev) => ({
+              ...prev,
+              appeals: {
+                status: 'live',
+                detail: 'Live county appeals endpoint resolved.',
+              },
+            }));
 
-    // Appeals — compose from getAllAppeals
-    try {
-      const appealsData = await getAllAppeals();
-      if (appealsData && appealsData.length > 0) {
-        setRecentAppeals(mapAppealsToRecent(appealsData));
-        setAppealsSummary(computeAppealsSummary(appealsData));
-        anyApi = true;
-
-        // Update overview stats with real appeal count
-        setOverviewStats((prev) =>
-          prev.map((s) =>
-            s.label === 'Active Appeals'
-              ? { ...s, value: String(appealsData.filter((a) => a.status !== 'decided' && a.status !== 'withdrawn').length) }
-              : s,
-          ),
-        );
-      }
-    } catch { /* fixture fallback */ }
-
-    // Workload — compose from getAppraiserProductivity
-    try {
-      const prodData = await getAppraiserProductivity({ throwOnError: true });
-      if (prodData && prodData.length > 0) {
-        setAppraisers(mapProductivityToAppraisers(prodData));
-        anyApi = true;
-      }
-    } catch { /* fixture fallback */ }
-
-    // Queue metrics → overview stats
-    try {
-      const metrics = await getQueueMetrics({ throwOnError: true });
-      if (metrics) {
-        setOverviewStats((prev) =>
-          prev.map((s) =>
-            s.label === 'Pending Reviews' ? { ...s, value: String(metrics.totalPendingReview ?? s.value) } : s,
-          ),
-        );
-        anyApi = true;
-      }
-    } catch { /* fixture fallback */ }
-
-    if (anyApi) setIsFixture(false);
+            setOverviewStats((prev) =>
+              prev.map((s) =>
+                s.label === 'Active Appeals'
+                  ? { ...s, value: String(appealsData.filter((a) => a.status !== 'decided' && a.status !== 'withdrawn').length) }
+                  : s,
+              ),
+            );
+          } else {
+            setLaneProvenance((prev) => ({
+              ...prev,
+              appeals: {
+                status: 'degraded',
+                detail: 'Appeals endpoint returned no live records; showing fixture appeal activity.',
+              },
+            }));
+          }
+        } catch (error) {
+          setLaneProvenance((prev) => ({
+            ...prev,
+            appeals: {
+              status: 'degraded',
+              detail: `Appeals endpoint unavailable: ${getErrorDetail(error)}. Showing fixture appeal activity.`,
+            },
+          }));
+        }
+      })(),
+      (async () => {
+        try {
+          const prodData = await getAppraiserProductivity({ throwOnError: true });
+          if (prodData && prodData.length > 0) {
+            setAppraisers(mapProductivityToAppraisers(prodData));
+            setLaneProvenance((prev) => ({
+              ...prev,
+              productivity: {
+                status: 'live',
+                detail: 'Live county productivity endpoint resolved.',
+              },
+            }));
+          } else {
+            setLaneProvenance((prev) => ({
+              ...prev,
+              productivity: {
+                status: 'degraded',
+                detail: 'Productivity endpoint returned no live records; showing fixture workload assignments.',
+              },
+            }));
+          }
+        } catch (error) {
+          setLaneProvenance((prev) => ({
+            ...prev,
+            productivity: {
+              status: 'degraded',
+              detail: `Productivity endpoint unavailable: ${getErrorDetail(error)}. Showing fixture workload assignments.`,
+            },
+          }));
+        }
+      })(),
+      (async () => {
+        try {
+          const metrics = await getQueueMetrics({ throwOnError: true });
+          if (metrics) {
+            setOverviewStats((prev) =>
+              prev.map((s) =>
+                s.label === 'Pending Reviews' ? { ...s, value: String(metrics.totalPendingReview ?? s.value) } : s,
+              ),
+            );
+            setLaneProvenance((prev) => ({
+              ...prev,
+              queueMetrics: {
+                status: 'live',
+                detail: 'Live county queue metrics endpoint resolved.',
+              },
+            }));
+          } else {
+            setLaneProvenance((prev) => ({
+              ...prev,
+              queueMetrics: {
+                status: 'degraded',
+                detail: 'Queue metrics endpoint returned no live metrics; showing fixture overview counts.',
+              },
+            }));
+          }
+        } catch (error) {
+          setLaneProvenance((prev) => ({
+            ...prev,
+            queueMetrics: {
+              status: 'degraded',
+              detail: `Queue metrics endpoint unavailable: ${getErrorDetail(error)}. Showing fixture overview counts.`,
+            },
+          }));
+        }
+      })(),
+    ]);
   }, []);
 
   useEffect(() => {
@@ -177,6 +330,11 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
     { key: 'appeals', label: 'Appeals' },
     { key: 'workload', label: 'Workload' },
   ];
+  const hasNonLiveLane = Object.values(laneProvenance).some((lane) => lane.status !== 'live');
+
+  useEffect(() => {
+    setIsFixture(hasNonLiveLane);
+  }, [hasNonLiveLane]);
 
   return (
     <div
@@ -200,6 +358,43 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
           ))}
         </div>
       </div>
+
+      <Card data-testid="management-dashboard-provenance">
+        <CardHeader>
+          <CardTitle>Read Lane Provenance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p data-testid="management-dashboard-provenance-note" className="text-sm text-muted-foreground">
+            Certification, appeals, queue metrics, and productivity disclose their own live, loading, or degraded state.
+          </p>
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {LANE_DESCRIPTORS.map((lane) => {
+              const state = laneProvenance[lane.key];
+              return (
+                <Card key={lane.key} data-testid={`management-dashboard-lane-${lane.testId}`}>
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium">{lane.label}</span>
+                      <Badge
+                        data-testid={`management-dashboard-lane-${lane.testId}-status`}
+                        variant={laneBadgeVariant(state.status)}
+                      >
+                        {laneStatusLabel(state.status)}
+                      </Badge>
+                    </div>
+                    <p
+                      data-testid={`management-dashboard-lane-${lane.testId}-detail`}
+                      className="mt-2 text-xs text-muted-foreground"
+                    >
+                      {state.detail}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Overview Tab */}
       {activeTab === 'overview' && (
