@@ -35,9 +35,14 @@ No later-wave expansion opens until these three truths are green at the same tim
 **Checkpoint truth:**
 - Muse-first pilot is sealed on committed code only
 - No lawful staged-cache proof exists at this checkpoint
-- Workbench real-host gate is green after a bounded Dais lazy-host harness fix in `workbenchRealHosting.gate.test.tsx`
+- Phase 2 is closed via bounded real-host harness stabilization in `workbenchRealHosting.gate.test.tsx`
 - Wave 0 inventory is now grounded by current measured counts, not the older zero-console assumption
 - The next unblocked implementation lane is Wave 1 auth/context threading
+
+**Immediate next-lane rule:**
+- If Wave 0 inventory/debt ledger is not explicitly closed, do Wave 0 next.
+- If Wave 0 is already explicitly closed, proceed to Wave 1 auth/context threading.
+- Current repo state: `WAVE0_DEBT_LEDGER_v1.md` is published, so Wave 1 auth/context threading is next.
 
 ---
 
