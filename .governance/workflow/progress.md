@@ -19,7 +19,7 @@
 | **Phase** | Phase 7: Waves 3-5 entry gate defined |
 | **Task** | Next-phase roadmap locked: workflow reconciliation first, module rehost closure second, remediation waves third |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `Pending` roadmap slice not yet committed in this working tree |
+| **Latest Commit** | `5a01be449` docs(workflow): add slice 25.4 next-phase roadmap |
 
 ---
 
@@ -418,11 +418,11 @@
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| ✅ 1.1 | Add Slice 25.4 roadmap to `plan.md` | Pending | Roadmap block verified | 2026-03-18 |
-| ✅ 1.2 | Update `progress.md` next-step queue to match roadmap | Pending | Queue alignment verified | 2026-03-18 |
-| ✅ 2.1 | Calibrate Wave 0 with current repo counts | Pending | `console=0`, `@ts-ignore=0`, raw `any=1013` | 2026-03-18 |
-| ✅ 2.2 | Ground module-rehost phases in live Forge files | Pending | Comparable Sales and Income Valuation surfaces verified | 2026-03-18 |
-| ✅ 3.1 | Lock entry gate for Waves 3-5 | Pending | Phase gate verified | 2026-03-18 |
+| ✅ 1.1 | Add Slice 25.4 roadmap to `plan.md` | `5a01be449` | Roadmap block verified | 2026-03-18 |
+| ✅ 1.2 | Update `progress.md` next-step queue to match roadmap | `5a01be449` | Queue alignment verified | 2026-03-18 |
+| ✅ 2.1 | Calibrate Wave 0 with current repo counts | `5a01be449` | `console=0`, `@ts-ignore=0`, raw `any=1013` | 2026-03-18 |
+| ✅ 2.2 | Ground module-rehost phases in live Forge files | `5a01be449` | Comparable Sales and Income Valuation surfaces verified | 2026-03-18 |
+| ✅ 3.1 | Lock entry gate for Waves 3-5 | `5a01be449` | Phase gate verified | 2026-03-18 |
 
 **Key Achievement:** The next execution phases are now sequenced explicitly instead of living as a loose backlog. The roadmap starts with workflow reconciliation, then closes the live Forge rehost queue, then enters Wave 0, Wave 1, and Wave 2 in proof-first order. Waves 3-5 are now explicitly blocked until the earlier phases close cleanly.
 
@@ -467,7 +467,7 @@
 | 🔵 6 | 25.4 / Phase 6 | Split Wave 2 into backend recon then frontend wiring | Wave 1 proof |
 | 🔵 7 | 25.4 / Phase 7 | Hold Waves 3-5 until prior proof gates land | Phases 1-6 |
 | ✅ 8 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
-| 🔵 9 | Commit | Create docs commit for Slice 25.4 | - |
+| ✅ 9 | Commit | Create docs commit for Slice 25.4 | Done |
 
 ---
 
