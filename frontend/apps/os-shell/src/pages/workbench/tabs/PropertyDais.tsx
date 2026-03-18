@@ -28,7 +28,7 @@
  * Architecture: UI → select params → governed tool → correlationId UX
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
@@ -39,7 +39,7 @@ import {
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { getEnv } from '../../../runtime/env';
-import { usePropertyStore } from '../../../stores/propertyStore';
+import { getAppeals, type Appeal } from '../../../services/suites/daisService';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 import AppealDeadlinePanel from '../../../components/dais/AppealDeadlinePanel';
@@ -186,11 +186,20 @@ interface QueueStatsResult { county: string; period: string; totalTasks: number;
 /** R2.9 — Task escalation from escalate_task */
 interface EscalateResult { taskId: string; escalatedTo: string; status: string; payloadRef: string }
 
+interface AppealsReadState {
+  status: 'loading' | 'success' | 'error';
+  appeals: Appeal[];
+  error?: ErrorInfo;
+}
+
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
-  const appeals = usePropertyStore((s) => s.appeals);
 
   const [workflowType, setWorkflowType] = useState<WorkflowType>('certification');
+  const [appealsState, setAppealsState] = useState<AppealsReadState>({
+    status: 'loading',
+    appeals: [],
+  });
   const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
   const [piltState, setPiltState] = useState<PiltState>({ status: 'idle' });
   const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
@@ -239,6 +248,34 @@ export const PropertyDais: React.FC = () => {
   const [escalateState, setEscalateState] = useState<DaisToolState<EscalateResult>>({ status: 'idle' });
   const [escalateTaskId, setEscalateTaskId] = useState<string>('');
   const [escalateReason, setEscalateReason] = useState<string>('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    setAppealsState({ status: 'loading', appeals: [] });
+
+    getAppeals(parcelId)
+      .then((appeals) => {
+        if (cancelled) return;
+        setAppealsState({ status: 'success', appeals });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        setAppealsState({
+          status: 'error',
+          appeals: [],
+          error: {
+            code: 'APPEALS_LOAD_FAILED',
+            message: error instanceof Error ? error.message : 'Failed to load appeals',
+            severity: 'error',
+          },
+        });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [parcelId]);
 
   const handleCheckStatus = useCallback(async () => {
     setStatusState({ status: 'loading' });
@@ -828,26 +865,58 @@ export const PropertyDais: React.FC = () => {
         subtitle={`Workflow orchestration for ${parcelId}`}
       />
 
-      {/* Active Appeals from Store */}
-      {appeals.length > 0 && (
-        <BentoGrid columns={3} gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Active Appeals">
-            <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
-              {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
+      {/* Active Appeals via Dais endpoint */}
+      <BentoGrid columns={3} gap={0.75} padding={0} data-testid='property-dais-appeals-section'>
+        <BentoCard variant="stat" title="Active Appeals">
+          {appealsState.status === 'loading' ? (
+            <p
+              data-testid='property-dais-appeals-loading'
+              className='text-sm font-medium'
+              style={{ color: 'hsl(var(--tf-text))' }}
+            >
+              Loading appeals...
             </p>
-          </BentoCard>
-          {appeals.slice(0, 2).map((a) => (
-            <BentoCard key={a.appealId} variant="stat" title={`Appeal ${a.appealId.slice(0, 8)}`}>
+          ) : appealsState.status === 'error' && appealsState.error ? (
+            <div data-testid='property-dais-appeals-error' className='space-y-1'>
+              <p className='text-sm font-semibold' style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
+                Appeals unavailable
+              </p>
+              <p className='text-xs' style={{ color: 'hsl(var(--tf-text) / 0.6)' }}>
+                {appealsState.error.message}
+              </p>
+            </div>
+          ) : (
+            <>
+              <p
+                data-testid='property-dais-appeals-count'
+                className='text-2xl font-bold'
+                style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}
+              >
+                {appealsState.appeals.length} appeal{appealsState.appeals.length !== 1 ? 's' : ''}
+              </p>
+              <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                {appealsState.appeals.length > 0 ? 'Endpoint-backed parcel appeals' : 'No active appeals'}
+              </p>
+            </>
+          )}
+        </BentoCard>
+        {appealsState.status === 'success' && appealsState.appeals.slice(0, 2).map((appeal) => (
+          <BentoCard
+            key={appeal.appealId}
+            variant="stat"
+            title={`Appeal ${appeal.appealId.slice(0, 8)}`}
+          >
+            <div data-testid='property-dais-appeal-card'>
               <p className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-                {a.status} — {a.appealType}
+                {appeal.status} — {appeal.petitionerName}
               </p>
               <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                Filed: {new Date(a.filingDate).toLocaleDateString()}
+                Filed: {new Date(appeal.filedDate).toLocaleDateString()}
               </p>
-            </BentoCard>
-          ))}
-        </BentoGrid>
-      )}
+            </div>
+          </BentoCard>
+        ))}
+      </BentoGrid>
 
       {/* Main Content Grid */}
       <BentoGrid columns={3} gap={1.5} padding={0}>
