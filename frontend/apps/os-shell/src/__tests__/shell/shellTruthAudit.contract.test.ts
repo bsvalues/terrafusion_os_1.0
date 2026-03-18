@@ -113,9 +113,17 @@ describe('Phase 21: Shell Truth Audit', () => {
   describe('Q8: Z-depth class audit', () => {
     const Z_REGEX = /\bz-\d+\b|z-\[\d+\]/g;
 
-    it.todo('deferred to Phase 22: 4 z-depth classes in shell/desktop/GenericModuleHost.tsx');
+    it('audit z-depth classes in shell/desktop/GenericModuleHost.tsx', () => {
+      const src = readShellFile('shell/desktop/GenericModuleHost.tsx');
+      const matches = src.match(Z_REGEX) || [];
+      expect(matches.length).toBe(0);
+    });
 
-    it.todo('deferred to Phase 22: 2 z-depth classes in shell/desktop/Window.tsx');
+    it('audit z-depth classes in shell/desktop/Window.tsx', () => {
+      const src = readShellFile('shell/desktop/Window.tsx');
+      const matches = src.match(Z_REGEX) || [];
+      expect(matches.length).toBe(0);
+    });
 
     it('audit z-depth classes in shell/desktop/Taskbar.tsx', () => {
       const src = readShellFile('shell/desktop/Taskbar.tsx');
