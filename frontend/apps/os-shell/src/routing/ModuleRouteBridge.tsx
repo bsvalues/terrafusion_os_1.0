@@ -19,6 +19,7 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 
 import { activateModule, type ModuleActivationSource } from '../orchestration/moduleActivation';
 import { isModuleRegistered, normalizeModuleId } from '../config/moduleComponents';
+import { useAuthContext, toOsActor } from '../auth/useAuthContext';
 
 // ============================================================================
 // Types
@@ -201,6 +202,10 @@ export const ModuleRouteBridge: React.FC<ModuleRouteBridgeProps> = ({ className 
   const { moduleId: rawModuleId } = useParams<{ moduleId: string }>();
   const location = useLocation();
 
+  // Actor
+  const auth = useAuthContext();
+  const actor = toOsActor(auth);
+
   // State
   const [bridgeState, setBridgeState] = useState<BridgeState>('idle');
 
@@ -256,6 +261,7 @@ export const ModuleRouteBridge: React.FC<ModuleRouteBridgeProps> = ({ className 
       focusIfOpen,
       warmLoad,
       metadata,
+      actor,
     })
       .then(() => {
         setBridgeState('activated');
