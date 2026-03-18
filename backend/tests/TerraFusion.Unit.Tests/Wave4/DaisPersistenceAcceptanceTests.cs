@@ -17,7 +17,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void Appeal_GetAll_Filters_By_CountyId() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Exemption_GetAll_Filters_By_CountyId() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -42,10 +42,10 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void Appeal_Decision_Sets_DecidedValue_And_DecisionDate() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Exemption_Create_Validates_Required_Fields() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Exemption_UpdateStatus_Transitions_Pending_To_Approved() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -79,7 +79,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact(Skip = "Wave 4: pending implementation")]
     public void NoticeService_Cannot_Create_EvidencePacket() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void ExemptionService_Cannot_Modify_CostModel() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -92,7 +92,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void DbContext_Exposes_Appeals_DbSet() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DbContext_Exposes_Exemptions_DbSet() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -114,7 +114,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact(Skip = "Wave 4: pending implementation")]
     public void ICertificationService_Defines_CreateAsync_GetByIdAsync_GetByTaxYearAsync_CompleteStepAsync() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void IExemptionService_Defines_CreateAsync_GetByIdAsync_GetByParcelAsync_UpdateStatusAsync() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -127,7 +127,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void DaisController_Appeal_Endpoints_Delegate_To_IAppealService() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DaisController_Exemption_Endpoints_Delegate_To_IExemptionService() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
