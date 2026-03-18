@@ -45,6 +45,11 @@ export function initTraceContext(countyId: string, actor: string): void {
   _actor = actor;
 }
 
+/** Accessor for current trace session context. Returns empty strings before init. */
+export function getTraceContext(): { countyId: string; actor: string } {
+  return { countyId: _countyId, actor: _actor };
+}
+
 function generateId(): string {
   return `tr_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }

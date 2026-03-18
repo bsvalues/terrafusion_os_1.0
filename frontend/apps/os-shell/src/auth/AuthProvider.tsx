@@ -11,6 +11,8 @@ import { getToken, setToken as persistToken, clearToken } from './authStorage';
 import { registerLogoutHandler, unregisterLogoutHandler } from './authBridge';
 import { useAuth } from './useAuth';
 import { isDevPreviewMode, shouldForceLoginRedirect } from './authPolicy';
+import { decodeAuthClaims } from '@/auth/useAuthContext';
+import { initTraceContext } from '@/services/terraTrace';
 
 export interface AuthContextValue {
   token: string | null;
@@ -68,6 +70,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     registerLogoutHandler((reason) => logout(reason));
     return () => unregisterLogoutHandler();
   }, [logout]);
+
+  // Wave 1: sync TerraTrace session context whenever token changes.
+  // Uses shared decodeAuthClaims() — single JWT decode source, no duplication.
+  useEffect(() => {
+    if (!token) { initTraceContext('', ''); return; }
+    const claims = decodeAuthClaims(token);
+    initTraceContext(claims.countyId ?? '', claims.userId ?? '');
+  }, [token]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
