@@ -26,7 +26,8 @@ import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 
 vi.mock('../../api/pilotApi', () => ({
   invokeTool: vi.fn().mockResolvedValue({ success: true, data: {} }),
-  listPilotTools: vi.fn().mockResolvedValue([]),
+  listPilotTools: vi.fn().mockResolvedValue({ count: 0, tools: [] }),
+  filterMuseReadOnlyTools: (tools: unknown[]) => tools,
 }));
 
 // ---------------------------------------------------------------------------
@@ -87,7 +88,7 @@ vi.mock('../../hooks/useToolInvocation', () => ({
 }));
 
 vi.mock('../../hooks/usePilotTraceList', () => ({
-  usePilotTraceList: () => ({ traces: [], loading: false }),
+  usePilotTraceList: () => ({ phase: 'ready', events: [], error: null, refresh: vi.fn() }),
 }));
 
 vi.mock('../../hooks/useEvidenceSnapshot', () => ({

@@ -51,7 +51,7 @@ const MOCK_EVENTS: PilotTraceEvent[] = [
   },
   {
     eventId: 'evt-2',
-    type: 'tool_completed',
+    type: 'tool_succeeded',
     toolId: 'explain_value_change',
     correlationId: 'corr-abc-123',
     summary: 'Value change explained — market adjustment +4.2 %',
@@ -131,7 +131,7 @@ describe('EvidenceRail — timeline display', () => {
     const badges = screen.getAllByTestId('event-type-badge');
     expect(badges).toHaveLength(2);
     expect(badges[0]).toHaveTextContent('tool_invoked');
-    expect(badges[1]).toHaveTextContent('tool_completed');
+    expect(badges[1]).toHaveTextContent('tool_succeeded');
   });
 
   it('renders event summaries', () => {

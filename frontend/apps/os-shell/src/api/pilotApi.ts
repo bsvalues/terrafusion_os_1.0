@@ -273,6 +273,39 @@ export interface PilotHealthResponse {
   timestamp: string;
 }
 
+export function isMuseReadOnlyTool(tool: Pick<PilotTool, 'mode' | 'risk'>): boolean {
+  return tool.mode === 'muse' && tool.risk === 'read_only';
+}
+
+export function filterMuseReadOnlyTools<T extends PilotTool>(tools: T[]): T[] {
+  return tools.filter(isMuseReadOnlyTool);
+}
+
+function normalizeTraceEvent(event: PilotTraceEvent): PilotTraceEvent {
+  if (event.type !== 'tool_completed') {
+    return event;
+  }
+
+  return {
+    ...event,
+    type: 'tool_succeeded',
+  };
+}
+
+function normalizeTraceResponse(response: PilotTraceResponse): PilotTraceResponse {
+  return {
+    ...response,
+    events: response.events.map(normalizeTraceEvent),
+  };
+}
+
+function normalizeTraceListResponse(response: PilotTraceListResponse): PilotTraceListResponse {
+  return {
+    ...response,
+    events: response.events.map(normalizeTraceEvent),
+  };
+}
+
 // ═══════════════════════════════════════════════════════════════
 // API FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
@@ -455,7 +488,7 @@ export async function getPilotTrace(correlationId: string): Promise<PilotTraceRe
     throw new Error(`Failed to get trace (${response.status}): ${errorText}`);
   }
 
-  return (await response.json()) as PilotTraceResponse;
+  return normalizeTraceResponse((await response.json()) as PilotTraceResponse);
 }
 
 /**
@@ -485,7 +518,7 @@ export async function listPilotTraces(params: PilotTraceListParams): Promise<Pil
     throw new Error(`Failed to list traces (${response.status}): ${errorText}`);
   }
 
-  return (await response.json()) as PilotTraceListResponse;
+  return normalizeTraceListResponse((await response.json()) as PilotTraceListResponse);
 }
 
 /** Parameters for trace export (NDJSON download). */
