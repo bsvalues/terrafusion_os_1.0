@@ -3,7 +3,8 @@
  * Advanced AI status and capability showcase for government excellence
  */
 import React from 'react';
-import { terraFusionAPI, type GovernmentMetrics } from '../../services/TerraFusionEliteAPI';
+import { terraFusionAPI, type GovernmentMetrics, type APIResponse } from '../../services/TerraFusionEliteAPI';
+import { DemoDataBanner } from '../governance/DemoDataBanner';
 
 interface GovernmentAIStatusProps {
   className?: string;
@@ -12,15 +13,17 @@ interface GovernmentAIStatusProps {
 export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ className = '' }) => {
   const [metrics, setMetrics] = React.useState<GovernmentMetrics | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [dataSource, setDataSource] = React.useState<APIResponse['source'] | null>(null);
 
   const loadGovernmentMetrics = React.useCallback(async () => {
     try {
       const response = await terraFusionAPI.getGovernmentMetrics();
       if (response.success) {
         setMetrics(response.data);
+        setDataSource(response.source);
       }
     } catch (error) {
-      console.log('📊 Government AI: Loading elite metrics');
+      console.info('📊 Government AI: Loading elite metrics');
     } finally {
       setLoading(false);
     }
@@ -57,11 +60,14 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
         : 'text-red-400';
   };
 
+  const isSimulated = dataSource !== null && dataSource !== 'BACKEND';
+
   return (
     <div
       className={`bg-gradient-to-br from-blue-900/40 to-cyan-900/30 backdrop-blur-lg
                      border border-cyan-500/30 rounded-xl p-6 shadow-xl ${className}`}
     >
+      {isSimulated && <DemoDataBanner module="Government AI Status" />}
       {/* Header */}
       <div className='flex items-center justify-between mb-4'>
         <div className='flex items-center space-x-3'>
