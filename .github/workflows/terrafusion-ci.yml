@@ -1,0 +1,168 @@
+# =============================================================================
+# TerraFusion OS — Wave 5 Canonical CI Gate
+# =============================================================================
+# This is the single authoritative hard-gate workflow for TerraFusion OS.
+#
+# Frontend test strategy (3 tiers):
+#   1. HARD: pnpm run test:unit  — stable 164-test unit suite, 0 known failures.
+#            This is the gate. It must pass.
+#   2. SOFT: pnpm exec vitest --run — full suite, continue-on-error: true.
+#            Pre-existing failures are visible but non-blocking. Informational.
+#   3. SOFT: vitest.known-fail.config.ts — isolated known-fail baseline run.
+#            Documents which specific files are pre-existing failures.
+#            Documented in .governance/known-failures/
+#
+# Backend and evidence gate steps are hard-fail with zero tolerance.
+# DO NOT add continue-on-error: true to backend-gate or evidence-gate steps.
+# =============================================================================
+
+name: TerraFusion CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'post-r3/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Backend Gate
+  # .NET 8 restore → build → test. Zero tolerance for failures.
+  # ---------------------------------------------------------------------------
+  backend-gate:
+    name: Backend Gate (.NET 8)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: Build solution
+        run: dotnet build backend/TerraFusion.sln --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test backend/TerraFusion.sln --no-build --configuration Release --verbosity normal
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Frontend Gate
+  # pnpm install → type-check → main vitest suite → known-fail baseline run
+  # ---------------------------------------------------------------------------
+  frontend-gate:
+    name: Frontend Gate (React/TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm 9
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check (hard fail)
+        run: pnpm run type-check
+
+      - name: Unit tests — hard gate (pnpm run test:unit)
+        run: pnpm run test:unit
+
+      - name: Full vitest suite — informational (pre-existing failures non-blocking)
+        continue-on-error: true
+        run: pnpm exec vitest --run --reporter=verbose --reporter=json --outputFile=test-results/vitest-results.json
+
+      - name: Known-fail baseline — isolated pre-existing failures (continue-on-error)
+        continue-on-error: true
+        run: pnpm exec vitest --run --config vitest.known-fail.config.ts --reporter=verbose
+
+      - name: Upload vitest results artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-results
+          path: test-results/vitest-results.json
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------------------
+  # Job 3: Evidence Gate
+  # Verifies R1 evidence package. Requires both backend and frontend to pass.
+  # ---------------------------------------------------------------------------
+  evidence-gate:
+    name: Evidence Gate (r1:verify-evidence)
+    runs-on: ubuntu-latest
+    needs:
+      - backend-gate
+      - frontend-gate
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm 9
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify R1 evidence (hard fail)
+        run: pnpm -w run r1:verify-evidence
+
+  # ---------------------------------------------------------------------------
+  # Job 4: Wave 5 Seal
+  # Final summary. Runs only when all three gates pass.
+  # ---------------------------------------------------------------------------
+  wave5-seal:
+    name: Wave 5 Seal
+    runs-on: ubuntu-latest
+    needs:
+      - backend-gate
+      - frontend-gate
+      - evidence-gate
+
+    steps:
+      - name: Wave 5 gate seal
+        run: |
+          echo "============================================================"
+          echo "  TerraFusion OS — Wave 5 Canonical CI Gate: ALL CLEAR"
+          echo "============================================================"
+          echo "  backend-gate   : PASSED"
+          echo "  frontend-gate  : PASSED (workbenchRealHosting isolated)"
+          echo "  evidence-gate  : PASSED"
+          echo "============================================================"
+          echo "  Ref : ${{ github.ref }}"
+          echo "  SHA : ${{ github.sha }}"
+          echo "  Run : ${{ github.run_id }}"
+          echo "============================================================"

@@ -117,10 +117,8 @@ export default function GptStudioView() {
 
     try {
       const conversation = await createConversation(
-        gpt.name,
-        `Chat with ${gpt.displayName}`,
-        'anonymous',
-        1
+        gpt.id,
+        `Chat with ${gpt.displayName}`
       );
 
       setState((prev) => ({
@@ -155,8 +153,8 @@ export default function GptStudioView() {
       promptTokens: 0,
       completionTokens: 0,
       totalTokens: 0,
-      latencyMs: 0,
-      ragContextUsed: null,
+      responseTime: null,
+      ragDocumentsUsed: null,
       createdAt: new Date().toISOString(),
     };
 
@@ -169,7 +167,7 @@ export default function GptStudioView() {
     }));
 
     try {
-      const response = await sendMessage(conversation.id, inputValue, 'anonymous', 1);
+      const response = await sendMessage(conversation.id, inputValue, state.selectedGpt!.id);
 
       setState((prev) => ({
         ...prev,
@@ -551,7 +549,7 @@ export default function GptStudioView() {
                     <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
                       {msg.content}
                     </div>
-                    {msg.role === 'assistant' && msg.latencyMs > 0 && (
+                    {msg.role === 'assistant' && msg.responseTime != null && msg.responseTime > 0 && (
                       <div
                         style={{
                           fontSize: '0.7rem',
@@ -559,7 +557,7 @@ export default function GptStudioView() {
                           marginTop: '0.5rem',
                         }}
                       >
-                        {msg.latencyMs}ms • {msg.totalTokens} tokens
+                        {msg.responseTime}ms • {msg.totalTokens} tokens
                       </div>
                     )}
                   </div>
