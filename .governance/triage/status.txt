@@ -1,0 +1,100 @@
+ M .claude/settings.local.json
+ M .env.example
+ M .governance/workflow/progress.md
+ M backend/Directory.Packages.props
+ D backend/src/TerraFusion.AI/Analytics/AnalyticsService.cs
+ D backend/src/TerraFusion.AI/Comps/CompAnalysisService.cs
+ M backend/src/TerraFusion.AI/DataQuality/IAAOValidationRules.cs
+ D backend/src/TerraFusion.AI/MarketPredictor/MarketPredictorService.cs
+ D backend/src/TerraFusion.AI/MassAppraisal/MassAppraisalService.cs
+ M backend/src/TerraFusion.AI/Services/CompAnalysisService.cs
+ M backend/src/TerraFusion.AI/Services/PropertyValuationService.cs
+ D backend/src/TerraFusion.AI/Valuation/PropertyValuationService.cs
+ M backend/src/TerraFusion.API/Monitoring/PrometheusConfig.cs
+ M backend/src/TerraFusion.API/appsettings.Production.json
+ M backend/src/TerraFusion.API/appsettings.Staging.json
+ D backend/src/TerraFusion.Core/Connectors/CensusConnector.cs
+ D backend/src/TerraFusion.Core/Connectors/MarketConnector.cs
+ D backend/src/TerraFusion.Core/Connectors/WeatherConnector.cs
+ M backend/src/TerraFusion.Core/Entities/Property/PropertyExtended.cs
+ M backend/src/TerraFusion.Core/Interfaces/ITerraFusionDbContext.cs
+ M backend/src/TerraFusion.Core/Services/LevyComplianceService.cs
+ D backend/src/TerraFusion.Core/Services/PropertyValuationService.cs
+ M backend/src/TerraFusion.Core/TerraFusion.Core.csproj
+ M backend/src/TerraFusion.Data/TerraFusionDbContext.cs
+ M backend/src/TerraFusion.DataMining/Services/CmaService.cs
+ M backend/tests/TerraFusion.Unit.Tests/R1Week5/R1Week5CxR1ClosureTests.cs
+ M backend/tests/TerraFusion.Unit.Tests/R2FullPlan/R2FullPlanHandlerAlignmentTests.cs
+ M frontend/apps/os-shell/src/__tests__/integration/suiteHandoff.contract.test.tsx
+ M frontend/apps/os-shell/src/__tests__/shell/shellAccessibility.contract.test.tsx
+ M frontend/apps/os-shell/src/__tests__/shell/suiteStates.contract.test.tsx
+ M frontend/apps/os-shell/src/__tests__/workflows/contextPreservation.contract.test.tsx
+ M frontend/apps/os-shell/src/__tests__/workflows/operatorJourneys.contract.test.tsx
+ M frontend/apps/os-shell/src/__tests__/workflows/workflowEntryPoints.contract.test.tsx
+ M frontend/apps/os-shell/src/applications/terra-levy/TerraLevyDashboard.tsx
+ M frontend/apps/os-shell/src/applications/terra-levy/hooks/useBudgetData.ts
+ M frontend/apps/os-shell/src/components/atlas/SchoolDistrictWidget.tsx
+ M frontend/apps/os-shell/src/components/atlas/SentimentHeatMapWidget.tsx
+ M frontend/apps/os-shell/src/components/canon/CanonMinimapPanel.tsx
+ M frontend/apps/os-shell/src/config/moduleComponents.tsx
+ M frontend/apps/os-shell/src/hooks/useTodaysWork.ts
+ M frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx
+ M frontend/apps/os-shell/src/pages/forge/regression/RegressionControlPanel.tsx
+ M frontend/apps/os-shell/src/pages/forge/regression/RegressionStudio.tsx
+ M frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx
+ M frontend/apps/os-shell/src/services/QuantumModuleManager.ts
+ M os-platform/core/pilot/evidence/benton-sync-proof.latest.json
+ M os-platform/core/pilot/evidence/phase10-environment-identity.latest.json
+ M os-platform/core/pilot/evidence/phase11-deployment-contract.latest.json
+ M os-platform/core/pilot/evidence/phase12-pacs-connected-runtime.latest.json
+ M os-platform/core/pilot/evidence/phase13-snapshot-promotion.latest.json
+ M os-platform/core/pilot/evidence/phase14-production-atlas-click.png
+ M os-platform/core/pilot/evidence/phase14-production-audit-click.png
+ M os-platform/core/pilot/evidence/phase14-production-clerk-click.png
+ M os-platform/core/pilot/evidence/phase14-production-dais-click.png
+ M os-platform/core/pilot/evidence/phase14-production-dossier-click.png
+ M os-platform/core/pilot/evidence/phase14-production-forge-click.png
+ M os-platform/core/pilot/evidence/phase14-production-pilot-click.png
+ M os-platform/core/pilot/evidence/phase14-production-treasury-click.png
+ M os-platform/core/pilot/evidence/phase14-staging-atlas-click.png
+ M os-platform/core/pilot/evidence/phase14-staging-audit-click.png
+ M os-platform/core/pilot/evidence/phase14-staging-clerk-click.png
+ M os-platform/core/pilot/evidence/phase14-staging-dais-click.png
+ M os-platform/core/pilot/evidence/phase14-staging-dossier-click.png
+ M os-platform/core/pilot/evidence/phase14-staging-forge-click.png
+ M os-platform/core/pilot/evidence/phase14-staging-pilot-click.png
+ M os-platform/core/pilot/evidence/phase14-staging-treasury-click.png
+ M os-platform/core/pilot/evidence/phase19-promotion-manifest.latest.json
+ M os-platform/core/pilot/evidence/phase19-promotion-manifest.latest.sha256
+ M os-platform/core/pilot/evidence/phase19-promotion-signature.latest.json
+ M os-platform/core/pilot/evidence/phase19-promotion-snapshot.latest.sha256
+ M os-platform/core/pilot/evidence/phase7-deployment-alignment.latest.json
+ M os-platform/core/pilot/evidence/phase8-deployed-operator-parity.latest.json
+ M os-platform/core/pilot/evidence/phase9-runtime-role-separation.latest.json
+ M package.json
+?? .claude/agents/
+?? .claude/settings.json
+?? .governance/triage/
+?? .governance/workflow/REMEDIATION_PLAN_v1.md
+?? backend/TerraFusion.API.Tests/DaisPersistenceTests.cs
+?? backend/build-errors.txt
+?? backend/src/TerraFusion.Core/Entities/Appeal.cs
+?? backend/src/TerraFusion.Core/Entities/CertificationStep.cs
+?? backend/src/TerraFusion.Core/Entities/Exemption.cs
+?? backend/src/TerraFusion.Core/Entities/Notice.cs
+?? backend/src/TerraFusion.Core/Entities/QueueItem.cs
+?? backend/src/TerraFusion.Core/Services/AppealService.cs
+?? backend/src/TerraFusion.Core/Services/CertificationService.cs
+?? backend/src/TerraFusion.Core/Services/ExemptionService.cs
+?? backend/src/TerraFusion.Core/Services/IAppealService.cs
+?? backend/src/TerraFusion.Core/Services/ICertificationService.cs
+?? backend/src/TerraFusion.Core/Services/IExemptionService.cs
+?? backend/src/TerraFusion.Core/Services/INoticeService.cs
+?? backend/src/TerraFusion.Core/Services/NoticeService.cs
+?? backend/tests/TerraFusion.Integration.Tests/TestResults/
+?? backend/tests/TerraFusion.Tests.Unit/TestResults/
+?? backend/tests/TerraFusion.Unit.SmokeTests/TestResults/
+?? backend/tests/TerraFusion.Unit.Tests/Contracts/
+?? backend/tests/TerraFusion.Unit.Tests/TestResults/
+?? frontend/vitest-failure-triage.json
+?? frontend/vitest-results.json

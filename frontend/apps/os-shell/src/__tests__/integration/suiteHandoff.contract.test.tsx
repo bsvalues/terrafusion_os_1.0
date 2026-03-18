@@ -70,7 +70,7 @@ vi.mock('lucide-react', () => {
     Download: Icon, Database: Icon,
     // Dais icons
     Receipt: Icon, Landmark: Icon, CheckCircle2: Icon, HardHat: Icon,
-    Calendar: Icon, Bot: Icon, LayoutDashboard: Icon, ClipboardList: Icon,
+    Calendar: Icon, Bot: Icon, LayoutDashboard: Icon, ClipboardList: Icon, Mail: Icon, FileCheck: Icon,
   };
 });
 

@@ -143,7 +143,7 @@ public static class IAAOValidationRules
 
             .Custom("ASMT-006", "Land + improvement = total",
                 "Land value plus improvement value must equal total assessed value.",
-                a => Math.Abs(a.LandValue + a.ImprovementValue - a.TotalAssessedValue) < 0.01,
+                a => Math.Abs(a.LandValue + a.ImprovementValue - a.TotalAssessedValue) < 0.01m,
                 a => $"Land ({a.LandValue}) + Improvement ({a.ImprovementValue}) != Total ({a.TotalAssessedValue}).",
                 ValidationSeverity.Error, "Consistency", "TotalAssessedValue")
 

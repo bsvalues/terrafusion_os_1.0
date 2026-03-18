@@ -8,6 +8,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
+using IExemptionService = TerraFusion.Core.Services.IExemptionService;
+using IAppealService = TerraFusion.Core.Services.IAppealService;
+using ICertificationService = TerraFusion.Core.Services.ICertificationService;
+using INoticeService = TerraFusion.Core.Services.INoticeService;
+using IQueueService = TerraFusion.Core.Services.IQueueService;
 using TerraFusion.Core.Entities;
 using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
@@ -87,7 +92,20 @@ public sealed class R2FullPlanHandlerAlignmentTests
 
   private static DaisController CreateDaisController(DataDbContext db, ClaimsPrincipal? principal = null)
   {
-    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    var noticeMock = new Mock<INoticeService>();
+    noticeMock.Setup(s => s.CreateAsync(It.IsAny<Notice>()))
+      .ReturnsAsync((Notice n) => { n.Id = Guid.NewGuid(); n.CreatedAt = DateTime.UtcNow; return n; });
+
+    var queueMock = new Mock<IQueueService>();
+    queueMock.Setup(s => s.CreateAsync(It.IsAny<QueueItem>()))
+      .ReturnsAsync((QueueItem q) => { q.Id = Guid.NewGuid(); q.CreatedAt = DateTime.UtcNow; return q; });
+
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        noticeMock.Object,
+        queueMock.Object);
     AttachPrincipal(controller, principal ?? CreatePrincipal(BentonCountyId));
     return controller;
   }
@@ -287,23 +305,23 @@ public sealed class R2FullPlanHandlerAlignmentTests
 
   [Fact]
   [Trait("Category", "Wave22")]
-  public void Notice_Generate_ValidTemplate()
+  public async Task Notice_Generate_ValidTemplate()
   {
     using var db = CreateDbContext("notice-gen");
     var controller = CreateDaisController(db);
     var request = new DaisController.GenerateNoticeRequest("VALUE_CHANGE", "P-001", "mail", null);
-    var result = controller.GenerateNotice(request);
+    var result = await controller.GenerateNotice(request);
     result.Should().BeOfType<OkObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "Wave22")]
-  public void Notice_Generate_NullTemplate_Returns400()
+  public async Task Notice_Generate_NullTemplate_Returns400()
   {
     using var db = CreateDbContext("notice-gen-null");
     var controller = CreateDaisController(db);
     var request = new DaisController.GenerateNoticeRequest(null, null, null, null);
-    var result = controller.GenerateNotice(request);
+    var result = await controller.GenerateNotice(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 
@@ -319,23 +337,23 @@ public sealed class R2FullPlanHandlerAlignmentTests
 
   [Fact]
   [Trait("Category", "Wave22")]
-  public void Queue_Assign_ValidTask()
+  public async Task Queue_Assign_ValidTask()
   {
     using var db = CreateDbContext("queue-assign");
     var controller = CreateDaisController(db);
     var request = new DaisController.QueueAssignRequest("FIELD_INSPECTION", "P-001", "appraiser-1", "normal");
-    var result = controller.AssignToQueue(request);
+    var result = await controller.AssignToQueue(request);
     result.Should().BeOfType<OkObjectResult>();
   }
 
   [Fact]
   [Trait("Category", "Wave22")]
-  public void Queue_Assign_NullType_Returns400()
+  public async Task Queue_Assign_NullType_Returns400()
   {
     using var db = CreateDbContext("queue-assign-null");
     var controller = CreateDaisController(db);
     var request = new DaisController.QueueAssignRequest(null, null, null, null);
-    var result = controller.AssignToQueue(request);
+    var result = await controller.AssignToQueue(request);
     result.Should().BeOfType<BadRequestObjectResult>();
   }
 

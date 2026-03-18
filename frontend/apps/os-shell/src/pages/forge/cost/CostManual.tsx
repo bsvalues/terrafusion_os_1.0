@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import {
   Table,
   TableBody,
@@ -26,7 +27,7 @@ interface CostScheduleRow {
   effectiveDate: string;
 }
 
-const PLACEHOLDER_DATA: CostScheduleRow[] = [
+const SAMPLE_COST_SCHEDULES: CostScheduleRow[] = [
   { buildingClass: 'Residential - Wood Frame', qualityGrade: 'Average', baseRate: 125.5, unit: '$/SF', effectiveDate: '2025-01-01' },
   { buildingClass: 'Residential - Wood Frame', qualityGrade: 'Good', baseRate: 168.75, unit: '$/SF', effectiveDate: '2025-01-01' },
   { buildingClass: 'Residential - Masonry', qualityGrade: 'Average', baseRate: 142.0, unit: '$/SF', effectiveDate: '2025-01-01' },
@@ -39,7 +40,7 @@ export function CostManual() {
   const [search, setSearch] = useState('');
   const [qualityFilter, setQualityFilter] = useState<string>('all');
 
-  const filtered = PLACEHOLDER_DATA.filter((row) => {
+  const filtered = SAMPLE_COST_SCHEDULES.filter((row) => {
     const matchesSearch = row.buildingClass.toLowerCase().includes(search.toLowerCase());
     const matchesQuality = qualityFilter === 'all' || row.qualityGrade === qualityFilter;
     return matchesSearch && matchesQuality;
@@ -47,6 +48,7 @@ export function CostManual() {
 
   return (
     <div className="space-y-4 p-4">
+      <DemoDataBanner module="Cost Manual" />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Cost Manual Reference</h1>

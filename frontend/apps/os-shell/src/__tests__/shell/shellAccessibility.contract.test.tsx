@@ -67,7 +67,7 @@ vi.mock('lucide-react', () => {
     Map: Icon, Layers: Icon, Crosshair: Icon, Printer: Icon,
     Download: Icon, Database: Icon,
     Receipt: Icon, Landmark: Icon, CheckCircle2: Icon, HardHat: Icon,
-    Calendar: Icon, Bot: Icon, LayoutDashboard: Icon, ClipboardList: Icon,
+    Calendar: Icon, Bot: Icon, LayoutDashboard: Icon, ClipboardList: Icon, Mail: Icon, FileCheck: Icon,
   };
 });
 

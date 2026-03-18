@@ -349,6 +349,8 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   // Forge standalone modules (Tranche 1D)
   'batch-cost-run': { Component: BatchCostRun },
   'coefficient-preview': { Component: CoefficientPreview },
+  // Forge standalone modules (Gen2)
+  'regression-studio': { Component: RegressionStudio },
   // Dais standalone modules
   'terra-queue': { Component: TerraQueue },
   // OS Features (in-shell windows)

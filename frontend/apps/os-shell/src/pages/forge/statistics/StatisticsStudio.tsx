@@ -17,6 +17,7 @@ import VEIDashboard from './VEIDashboard';
 import { OutlierReviewPanel } from './OutlierReviewPanel';
 import { ModelComparisonPanel } from './ModelComparisonPanel';
 import { useForgeStatisticsStore } from '@/stores/forgeStatisticsStore';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import {
   RATIO_STUDY_RESULT,
   COD_TREND,
@@ -33,6 +34,8 @@ type Tab = 'ratio-study' | 'trends' | 'equity' | 'outliers' | 'comparison';
 function useRatioData() {
   const studyResult = useForgeStatisticsStore((s) => s.studyResult);
   if (studyResult) {
+    // If the store fell back to fixture data, still flag as fixture
+    const isFixture = studyResult === RATIO_STUDY_RESULT;
     return {
       medianRatio: studyResult.medianRatio,
       weightedMeanRatio: studyResult.weightedMeanRatio,
@@ -40,7 +43,8 @@ function useRatioData() {
       prd: studyResult.prd,
       prb: studyResult.prb,
       sampleSize: studyResult.sampleSize,
-      salesPeriod: `Tax Year ${studyResult.params.taxYear}`,
+      salesPeriod: isFixture ? 'Jul 2025 \u2013 Jun 2026' : `Tax Year ${studyResult.params.taxYear}`,
+      isFixture,
     };
   }
   return {
@@ -51,6 +55,7 @@ function useRatioData() {
     prb: RATIO_STUDY_RESULT.prb,
     sampleSize: RATIO_STUDY_RESULT.sampleSize,
     salesPeriod: 'Jul 2025 \u2013 Jun 2026',
+    isFixture: true,
   };
 }
 
@@ -77,6 +82,7 @@ export function StatisticsStudio() {
 
   return (
     <div data-testid="statistics-studio" className="space-y-4 p-4">
+      {ratioData.isFixture && <DemoDataBanner module="Statistics Studio" />}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

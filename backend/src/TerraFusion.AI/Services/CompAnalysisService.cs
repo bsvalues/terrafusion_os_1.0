@@ -22,6 +22,9 @@ public sealed class ComparableResult
 /// </summary>
 public sealed class ComparablePropertyInfo
 {
+    public string ParcelId { get; set; } = string.Empty;
+    public decimal SalePrice { get; set; }
+    public DateTime SaleDate { get; set; }
     public int SqFtLiving { get; set; }
     public decimal LotSizeAcres { get; set; }
     public int Bedrooms { get; set; }

@@ -55,6 +55,13 @@ public interface ITerraFusionDbContext
     DbSet<CodexUltimatePower> CodexUltimatePowerRecords { get; set; }
     DbSet<CodexAlert> CodexAlerts { get; set; }
 
+    // Dais County Ops — Exemptions, Appeals, Certification, Notices, Queue (Phase 7)
+    DbSet<Exemption> Exemptions { get; set; }
+    DbSet<Appeal> Appeals { get; set; }
+    DbSet<CertificationStep> CertificationSteps { get; set; }
+    DbSet<Notice> Notices { get; set; }
+    DbSet<QueueItem> QueueItems { get; set; }
+
     System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
     EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
