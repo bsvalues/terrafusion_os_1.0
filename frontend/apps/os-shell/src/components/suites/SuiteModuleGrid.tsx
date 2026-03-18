@@ -24,6 +24,7 @@ export interface SuiteModuleDef {
   icon: LucideIcon;
   description: string;
   launchMode: 'workbench' | 'standalone';
+  availability?: 'live' | 'coming-soon';
   /** Required when launchMode === 'workbench' */
   workbenchTab?: WorkbenchTabSlug;
   /** Required when launchMode === 'standalone'. Defaults to id if omitted. */
@@ -39,6 +40,10 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
   const handleLaunch = (mod: SuiteModuleDef) => {
+    if (mod.availability === 'coming-soon') {
+      return;
+    }
+
     if (mod.launchMode === 'workbench') {
       if (!mod.workbenchTab) {
         console.warn(`[SuiteModuleGrid] workbench card "${mod.id}" missing workbenchTab — skipping`);
@@ -66,14 +71,21 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-6">
       {modules.map((mod) => {
         const Icon = mod.icon;
+        const isComingSoon = mod.availability === 'coming-soon';
         return (
           <button
             key={mod.id}
             onClick={() => handleLaunch(mod)}
-            className="flex items-start gap-3 p-4 rounded-xl text-left transition-all hover:scale-[1.01] active:scale-[0.99]"
+            disabled={isComingSoon}
+            aria-disabled={isComingSoon}
+            data-coming-soon={isComingSoon ? 'true' : 'false'}
+            className="flex items-start gap-3 p-4 rounded-xl text-left transition-all disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100"
             style={{
-              background: 'hsl(var(--tf-card-bg) / 0.4)',
-              border: '1px solid hsl(var(--tf-border) / 0.15)',
+              background: isComingSoon ? 'hsl(var(--tf-card-bg) / 0.24)' : 'hsl(var(--tf-card-bg) / 0.4)',
+              border: isComingSoon
+                ? '1px dashed hsl(var(--tf-border) / 0.28)'
+                : '1px solid hsl(var(--tf-border) / 0.15)',
+              opacity: isComingSoon ? 0.78 : 1,
             }}
           >
             <div
@@ -83,15 +95,34 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
               <Icon size={20} style={{ color: `hsl(var(${accentVar}))` }} />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium truncate" style={{ color: 'hsl(var(--tf-fg))' }}>
-                {mod.label}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium truncate" style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {mod.label}
+                </p>
+                {isComingSoon && (
+                  <span
+                    className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em]"
+                    style={{
+                      color: `hsl(var(${accentVar}))`,
+                      background: `hsl(var(${accentVar}) / 0.12)`,
+                      border: `1px solid hsl(var(${accentVar}) / 0.18)`,
+                    }}
+                  >
+                    Coming Soon
+                  </span>
+                )}
+              </div>
               <p
                 className="text-xs mt-0.5 line-clamp-2"
                 style={{ color: 'hsl(var(--tf-muted))' }}
               >
                 {mod.description}
               </p>
+              {isComingSoon && (
+                <p className="text-[11px] mt-2" style={{ color: `hsl(var(${accentVar}))` }}>
+                  Launch disabled until the standalone module is implemented.
+                </p>
+              )}
             </div>
           </button>
         );
