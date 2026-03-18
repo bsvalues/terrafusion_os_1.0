@@ -19,7 +19,7 @@
 | **Phase** | Phase 3: Structure and doctrine verification |
 | **Task** | Operator pack created, workflow docs cross-linked, 6 prompts + contract fields verified |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `Pending` docs-only slice, not committed in this working tree |
+| **Latest Commit** | `2524a30fc` docs(workflow): add codex directive pack v1 |
 
 ---
 
@@ -385,10 +385,10 @@
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| ✅ 1.1 | Create `CODEX_DIRECTIVE_PACK_v1.md` | Pending | Structure verified | 2026-03-18 |
-| ✅ 2.1 | Link pack from workflow README | Pending | Cross-link verified | 2026-03-18 |
-| ✅ 2.2 | Align remediation plan to bounded Codex prompts | Pending | Cross-link verified | 2026-03-18 |
-| ✅ 3.1 | Verify 6 prompts + operator contract consistency | Pending | `rg` verification pass | 2026-03-18 |
+| ✅ 1.1 | Create `CODEX_DIRECTIVE_PACK_v1.md` | `2524a30fc` | Structure verified | 2026-03-18 |
+| ✅ 2.1 | Link pack from workflow README | `2524a30fc` | Cross-link verified | 2026-03-18 |
+| ✅ 2.2 | Align remediation plan to bounded Codex prompts | `2524a30fc` | Cross-link verified | 2026-03-18 |
+| ✅ 3.1 | Verify 6 prompts + operator contract consistency | `2524a30fc` | `rg` verification pass | 2026-03-18 |
 
 **Key Achievement:** TerraFusion now has a dedicated Codex operator playbook that formalizes Codex as a bounded execution swarm, not a decider. The pack defines `Recon`, `Execution`, and `Review` modes, locks a single `Objective` → `Output` prompt contract, and provides 6 TerraFusion-specific prompt frames for drift audits, bounded frontend work, governed contract alignment, and PR hardening.
 
@@ -425,7 +425,7 @@
 | ✅ 5 | 3.1 | Migrate PilotConsole | Done |
 | ✅ 6 | 4.1 | Run all gates | Done |
 | ✅ 7 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
-| 🔵 8 | Commit | Create docs commit for Slice 25.3 | - |
+| ✅ 8 | Commit | Create docs commit for Slice 25.3 | Done |
 
 ---
 
@@ -466,14 +466,14 @@
 - [x] Required gates passing for this slice
 - [x] No blockers
 - [x] Known debt documented
-- [ ] Latest commit hash in this document
+- [x] Latest commit hash in this document
 
 ---
 
 ## Document Status
 
 - [x] Current status accurate
-- [ ] All completed tasks have commits
+- [x] All completed tasks have commits
 - [x] Next steps defined
 - [x] Debt documented
-- [ ] Ready for merge
+- [x] Ready for merge
