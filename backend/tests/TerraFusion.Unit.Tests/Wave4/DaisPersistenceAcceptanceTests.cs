@@ -14,7 +14,7 @@ public class DaisPersistenceAcceptanceTests
     // County Isolation — every query must filter by CountyId
     // ================================================================
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Appeal_GetAll_Filters_By_CountyId() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -33,13 +33,13 @@ public class DaisPersistenceAcceptanceTests
     // CRUD Operations — entity-specific validation
     // ================================================================
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Appeal_Create_Sets_AuditFields() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Appeal_Update_Validates_Status_Transition() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Appeal_Decision_Sets_DecidedValue_And_DecisionDate() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -73,7 +73,7 @@ public class DaisPersistenceAcceptanceTests
     // Lane Guards — Dais must NOT mutate Forge or Dossier artifacts
     // ================================================================
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void AppealService_Cannot_Mutate_PropertyValuation() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -89,7 +89,7 @@ public class DaisPersistenceAcceptanceTests
     // DbContext Registration — all 5 Dais DbSets must exist
     // ================================================================
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DbContext_Exposes_Appeals_DbSet() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -108,7 +108,7 @@ public class DaisPersistenceAcceptanceTests
     // Service Interface Compliance
     // ================================================================
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void IAppealService_Defines_CreateAsync_GetByIdAsync_GetByParcelAsync_UpdateStatusAsync_GetByTaxYearAsync() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -124,7 +124,7 @@ public class DaisPersistenceAcceptanceTests
     // DaisController Delegation — thin controller delegates to services
     // ================================================================
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DaisController_Appeal_Endpoints_Delegate_To_IAppealService() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
