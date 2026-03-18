@@ -48,7 +48,7 @@ Prove the 8 shell assumptions with diagnostic-only tests. No source edits. No da
 | 5 | Does the Property Workbench open maximized? | Assert `MODULE_OBJECT_TYPES['property-workbench'].objectType === 'tier0-workbench'`. Direct `getModuleWindowSize` call deferred to Phase 22. |
 | 6 | Do os-pilot/os-trace/os-canon open in-shell? | Assert all 3 exist in `MODULE_REGISTRY` with `objectType: 'os-feature-window'` |
 | 7 | Do parcel actions collapse into the Workbench? | Assert `evaluateSpawnIntent('forge').decision === 'route-to-workbench'`. Repeat for `atlas`, `dais`. Assert `evaluateSpawnIntent('suite-forge').decision === 'open'` (suite homes are standalone). Import from `../../stores/desktopStore`. |
-| 8 | Are there hardcoded z-depth classes in governed shell files? | Scan `GenericModuleHost.tsx`, `Window.tsx`, `Taskbar.tsx`, `Desktop.tsx` for regex `/\bz-\d+\b/` and `/z-\[\d+\]/`. Record findings. |
+| 8 | Are there hardcoded z-depth classes in governed shell files? | Scan `GenericModuleHost.tsx`, `Window.tsx`, `Taskbar.tsx`, `Desktop.tsx` for regex `/\bz-\d+\b/` and `/z-\[\d+\]/`. Assert zero findings per file; mark each file with findings as `it.todo("deferred to Phase 22: N z-depth classes in <file>")`. |
 
 ### Test File
 
@@ -124,7 +124,7 @@ The spec defines the real rule as: **no hardcoded Tailwind z-depth classes in go
 
 ```bash
 npx vitest run "shellChrome.contract" "shellTruthAudit.contract" "ZIndexOrdering"
-rg "z-\d" frontend/apps/os-shell/src/shell -g "*.tsx" -g "*.ts"
+rg -n '\bz-\d+\b|z-\[\d+\]' frontend/apps/os-shell/src/shell -g '*.tsx' -g '*.ts'
 ```
 
 ### Agent Strategy
@@ -240,7 +240,7 @@ Prove `StageZeroState` matches the County Operations Scene contract. Includes at
 |---|-----------|
 | 6 | Quick Action buttons call `activateModule()`, not `navigate()` |
 | 7 | Recent parcel click opens workbench window via `activateModule('property-workbench', ...)` |
-| 8 | At least one `activateScene()` or scene-store test proves a defined window set opens when a scene is activated |
+| 8 | `activateScene('county-ops')` (or the equivalent default scene ID from `sceneStore`) opens the predefined window set. Assert the scene-store state transitions and that `activateModule` is called for each window in the set. Name one concrete scene — do not test an abstract "any scene." |
 
 ### Test File
 
@@ -265,7 +265,7 @@ Single Claude Code session. Can run in parallel with Phase 23 since they touch d
 
 ### Out of Scope
 
-No StageZeroState redesign. No new scene definitions. No UI changes beyond data-testid additions for test targeting. Both Phases 23 and 24 MUST NOT make opportunistic edits to shared shell primitives (`desktopStore.ts`, `moduleActivation.ts`, `moduleComponents.tsx`).
+No StageZeroState redesign. No new scene definitions. No UI changes beyond data-testid additions for test targeting. Both Phases 23 and 24 MUST NOT make opportunistic edits to shared shell primitives (`desktopStore.ts`, `moduleActivation.ts`, `moduleComponents.tsx`). Use existing shared render helpers and providers for workbench and scene surfaces — do not invent ad hoc mocks or alternate wrappers that would turn the "real hosting gate" into a "mock hosting gate."
 
 ---
 
@@ -312,10 +312,10 @@ For each module type, verify spawn behavior:
 
 Instead of abstract structural math, prove 1-2 concrete user flows:
 
-1. **Dock → Suite → Workbench**: Click Forge in dock → suite window opens → click parcel-scoped action → routes to Property Workbench with correct tab
-2. **Home → Recent Parcel → Workbench**: Click recent parcel in StageZeroState → Property Workbench opens maximized with parcel context
+1. **Dock → Suite → Workbench**: Click Forge in dock → suite window opens → click parcel-scoped action → `activateModule('property-workbench', { metadata: { tabId: 'forge', parcelId } })` routes to Property Workbench with `activeTabId: 'forge'`
+2. **Home → Recent Parcel → Workbench**: Click recent parcel in StageZeroState → `activateModule('property-workbench', { metadata: { parcelId: '<clicked-parcel-id>' } })` opens maximized workbench with parcel context containing the clicked parcel identifier
 
-These are traced through the activation/spawn APIs, not full DOM renders.
+These are traced through the activation/spawn APIs, not full DOM renders. Assert exact payload shapes, not just call existence.
 
 ### Test File
 
