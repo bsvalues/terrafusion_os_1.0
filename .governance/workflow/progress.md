@@ -19,7 +19,7 @@
 | **Phase** | Phase 6: Wave 1 auth/context threading |
 | **Task** | The Workbench real-host gate is green and the Wave 0 debt ledger is published; Wave 1 auth/context threading is now the next unblocked implementation lane |
 | **Status** | 🟡 READY |
-| **Latest Commit** | Working tree |
+| **Latest Commit** | `da6ef0bce` `test(workbench): stabilize host proofs and publish wave0 ledger` |
 
 ---
 
@@ -420,14 +420,14 @@
 |------|-------------|--------|-------|------|
 | ✅ 1.1 | Add Slice 25.4 roadmap to `plan.md` | `5a01be449` | Roadmap block verified | 2026-03-18 |
 | ✅ 1.2 | Update `progress.md` next-step queue to match roadmap | `5a01be449` | Queue alignment verified | 2026-03-18 |
-| ✅ 1.3 | Reconcile stale workflow truth across workflow docs | Working tree | `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` aligned to current evidence | 2026-03-18 |
-| ✅ 1.4 | Require explicit proof-posture artifact for current checkpoint | Working tree | `proof-posture.md` becomes canonical statement of Muse/Workbench-host proof boundary | 2026-03-18 |
+| ✅ 1.3 | Reconcile stale workflow truth across workflow docs | `da6ef0bce` | `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` aligned to current evidence | 2026-03-18 |
+| ✅ 1.4 | Require explicit proof-posture artifact for current checkpoint | `da6ef0bce` | `proof-posture.md` becomes canonical statement of Muse/Workbench-host proof boundary | 2026-03-18 |
 | ✅ 2.1 | Calibrate Wave 0 with current repo counts | `5a01be449` | Initial roadmap baseline captured for Wave 0 entry | 2026-03-18 |
 | ✅ 2.2 | Ground module-rehost phases in live Forge files | `5a01be449` | Comparable Sales and Income Valuation surfaces verified | 2026-03-18 |
-| ✅ 2.3 | Close the Workbench real-host blocker with a bounded harness fix | Working tree | `workbenchRealHosting.gate.test.tsx` passes `15/15`; required gates stay green | 2026-03-18 |
-| ✅ 3.2 | Complete Forge lane F1 Comparable Sales proof pack | Working tree | `ComparableSalesForgeHost.test.tsx` + `SalesComparison.test.tsx` (`7/7`) prove launch hint, host rendering, wrapper history, value flow, and frontend boundary behavior | 2026-03-18 |
-| ✅ 4.1 | Complete Forge lane F2 Income Valuation proof pack | Working tree | `PropertyForge.income.test.tsx`, `IncomeApproach.test.tsx`, `IncomeValuationPanel.test.tsx`, and `incomeValuationService.test.ts` (`8/8`) prove host, wrapper, panel, and service behavior | 2026-03-18 |
-| ✅ 5.1 | Publish Wave 0 debt ledger from fresh probes | Working tree | `WAVE0_DEBT_LEDGER_v1.md` records current counts and bounded cleanup candidates | 2026-03-18 |
+| ✅ 2.3 | Close the Workbench real-host blocker with a bounded harness fix | `da6ef0bce` | `workbenchRealHosting.gate.test.tsx` passes `15/15`; required gates stay green | 2026-03-18 |
+| ✅ 3.2 | Complete Forge lane F1 Comparable Sales proof pack | `da6ef0bce` | `ComparableSalesForgeHost.test.tsx` + `SalesComparison.test.tsx` (`7/7`) prove launch hint, host rendering, wrapper history, value flow, and frontend boundary behavior | 2026-03-18 |
+| ✅ 4.1 | Complete Forge lane F2 Income Valuation proof pack | `da6ef0bce` | `PropertyForge.income.test.tsx`, `IncomeApproach.test.tsx`, `IncomeValuationPanel.test.tsx`, and `incomeValuationService.test.ts` (`8/8`) prove host, wrapper, panel, and service behavior | 2026-03-18 |
+| ✅ 5.1 | Publish Wave 0 debt ledger from fresh probes | `da6ef0bce` | `WAVE0_DEBT_LEDGER_v1.md` records current counts and bounded cleanup candidates | 2026-03-18 |
 | ✅ 3.1 | Lock entry gate for Waves 3-5 | `5a01be449` | Phase gate verified | 2026-03-18 |
 
 **Key Achievement:** The workflow canon, Forge proof bundles, Workbench real-host gate, and Wave 0 inventory baseline are now aligned to current evidence instead of stale assumptions. The former Atlas blocker reduced to a bounded Dais lazy-host harness defect in `workbenchRealHosting.gate.test.tsx`, the full host gate is now green, and Wave 1 auth/context threading is the next unblocked implementation lane. Waves 3-5 remain explicitly blocked until the earlier truths close cleanly.
