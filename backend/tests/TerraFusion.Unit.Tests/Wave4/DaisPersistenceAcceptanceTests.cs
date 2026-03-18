@@ -20,13 +20,13 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void Exemption_GetAll_Filters_By_CountyId() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Notice_GetAll_Filters_By_CountyId() { }
 
     [Fact]
     public void CertificationStep_GetAll_Filters_By_CountyId() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void QueueItem_GetAll_Filters_By_CountyId() { }
 
     // ================================================================
@@ -48,10 +48,10 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void Exemption_UpdateStatus_Transitions_Pending_To_Approved() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Notice_Create_Sets_CreatedAt() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void Notice_UpdateStatus_To_Sent_Sets_SentAt() { }
 
     [Fact]
@@ -60,13 +60,13 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void CertificationStep_Complete_Sets_CompletedBy_And_CompletedAt() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void QueueItem_Create_Defaults_Status_To_Queued() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void QueueItem_StatusTransition_Sets_StartedAt_On_InProgress() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void QueueItem_StatusTransition_Sets_CompletedAt_On_Completed() { }
 
     // ================================================================
@@ -76,7 +76,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void AppealService_Cannot_Mutate_PropertyValuation() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void NoticeService_Cannot_Create_EvidencePacket() { }
 
     [Fact]
@@ -95,13 +95,13 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void DbContext_Exposes_Exemptions_DbSet() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DbContext_Exposes_Notices_DbSet() { }
 
     [Fact]
     public void DbContext_Exposes_CertificationSteps_DbSet() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DbContext_Exposes_QueueItems_DbSet() { }
 
     // ================================================================
@@ -117,7 +117,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void IExemptionService_Defines_CreateAsync_GetByIdAsync_GetByParcelAsync_UpdateStatusAsync() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void INoticeService_Defines_CreateAsync_GetByIdAsync_GetByParcelAsync_UpdateStatusAsync() { }
 
     // ================================================================
@@ -130,7 +130,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void DaisController_Exemption_Endpoints_Delegate_To_IExemptionService() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DaisController_Notice_Endpoints_Delegate_To_INoticeService() { }
 
     [Fact]
