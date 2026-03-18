@@ -196,6 +196,7 @@ builder.Services.AddSignalR();
 
 // Register authentication services
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<TerraFusion.Core.Auth.IRequestUserContextAccessor, TerraFusion.API.Auth.HttpContextRequestUserContextAccessor>();
 builder.Services.AddTerraFusionAuthentication(builder.Configuration);
 builder.Services.AddTerraFusionSecurityServices(builder.Configuration, builder.Environment);
 

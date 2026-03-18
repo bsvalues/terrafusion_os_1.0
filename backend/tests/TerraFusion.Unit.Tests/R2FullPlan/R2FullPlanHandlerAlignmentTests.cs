@@ -13,6 +13,7 @@ using IAppealService = TerraFusion.Core.Services.IAppealService;
 using ICertificationService = TerraFusion.Core.Services.ICertificationService;
 using INoticeService = TerraFusion.Core.Services.INoticeService;
 using IQueueService = TerraFusion.Core.Services.IQueueService;
+using TerraFusion.Core.Auth;
 using TerraFusion.Core.Entities;
 using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
@@ -109,7 +110,8 @@ public sealed class R2FullPlanHandlerAlignmentTests
         new Mock<IAppealService>().Object,
         certMock.Object,
         noticeMock.Object,
-        queueMock.Object);
+        queueMock.Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     AttachPrincipal(controller, principal ?? CreatePrincipal(BentonCountyId));
     return controller;
   }

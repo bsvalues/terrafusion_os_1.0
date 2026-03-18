@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
+using TerraFusion.Core.Auth;
 using TerraFusion.Data;
 using TerraFusion.API.Security;
 using System.Text.Json;
@@ -27,6 +28,7 @@ public class DaisController : ControllerBase
   private readonly ICertificationService _certificationService;
   private readonly INoticeService _noticeService;
   private readonly IQueueService _queueService;
+  private readonly IRequestUserContextAccessor _userContext;
 
   public DaisController(
     TerraFusion.Data.TerraFusionDbContext db,
@@ -35,7 +37,8 @@ public class DaisController : ControllerBase
     IAppealService appealService,
     ICertificationService certificationService,
     INoticeService noticeService,
-    IQueueService queueService)
+    IQueueService queueService,
+    IRequestUserContextAccessor userContext)
   {
     _db = db;
     _logger = logger;
@@ -44,6 +47,7 @@ public class DaisController : ControllerBase
     _certificationService = certificationService;
     _noticeService = noticeService;
     _queueService = queueService;
+    _userContext = userContext;
   }
 
   // ── County Isolation Helper ──────────────────────────────────────
@@ -960,10 +964,18 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/appeals — List all appeals for a given tax year (default: current year).
+  /// Wave 1: threads IRequestUserContextAccessor as proof of centralized claim extraction.
+  /// Falls back to the existing ResolveCountyIdAsync for full county resolution.
   /// </summary>
   [HttpGet("appeals")]
   public async Task<IActionResult> GetAllAppeals([FromQuery] int? taxYear)
   {
+    // Wave 1 threading proof: use accessor for fast-path county string extraction.
+    // Full Guid resolution still goes through ResolveCountyIdAsync (DB lookup).
+    var ctx = _userContext.Current;
+    if (!ctx.IsAuthenticated)
+      return Unauthorized();
+
     var countyId = await ResolveCountyIdAsync();
     var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
     var year = taxYear ?? DateTime.UtcNow.Year;
