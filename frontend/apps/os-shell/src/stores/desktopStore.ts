@@ -167,7 +167,7 @@ const TOP_BAR_HEIGHT = 44;
  * - All suites, workbench, and OS features → near-full-stage
  * - Everything else → DEFAULT_WINDOW_SIZE
  */
-function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean } {
+export function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean } {
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
 
