@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 25.3: Codex Directive Pack v1** ✅ COMPLETE |
-| **Phase** | Phase 3: Structure and doctrine verification |
-| **Task** | Operator pack created, workflow docs cross-linked, 6 prompts + contract fields verified |
+| **Slice** | **Slice 25.4: Next-Phase Execution Roadmap** ✅ COMPLETE |
+| **Phase** | Phase 7: Waves 3-5 entry gate defined |
+| **Task** | Next-phase roadmap locked: workflow reconciliation first, module rehost closure second, remediation waves third |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `2524a30fc` docs(workflow): add codex directive pack v1 |
+| **Latest Commit** | `Pending` roadmap slice not yet committed in this working tree |
 
 ---
 
@@ -414,18 +414,60 @@
 
 ---
 
+## Slice 25.4: Next-Phase Execution Roadmap ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Add Slice 25.4 roadmap to `plan.md` | Pending | Roadmap block verified | 2026-03-18 |
+| ✅ 1.2 | Update `progress.md` next-step queue to match roadmap | Pending | Queue alignment verified | 2026-03-18 |
+| ✅ 2.1 | Calibrate Wave 0 with current repo counts | Pending | `console=0`, `@ts-ignore=0`, raw `any=1013` | 2026-03-18 |
+| ✅ 2.2 | Ground module-rehost phases in live Forge files | Pending | Comparable Sales and Income Valuation surfaces verified | 2026-03-18 |
+| ✅ 3.1 | Lock entry gate for Waves 3-5 | Pending | Phase gate verified | 2026-03-18 |
+
+**Key Achievement:** The next execution phases are now sequenced explicitly instead of living as a loose backlog. The roadmap starts with workflow reconciliation, then closes the live Forge rehost queue, then enters Wave 0, Wave 1, and Wave 2 in proof-first order. Waves 3-5 are now explicitly blocked until the earlier phases close cleanly.
+
+**Current State Calibration:**
+- `frontend/apps/os-shell/src` currently shows `console.` matches = `0`
+- `frontend/apps/os-shell/src` currently shows `@ts-ignore` matches = `0`
+- `frontend/apps/os-shell/src` currently shows raw `any` matches = `1013`
+- Comparable Sales host surfaces verified in Forge:
+  - `frontend/apps/os-shell/src/components/workbench/ComparableSalesPanel.tsx`
+  - `frontend/apps/os-shell/src/services/comparableSalesService.ts`
+  - `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyForge.tsx`
+- Income Valuation host surfaces verified in Forge:
+  - `frontend/apps/os-shell/src/pages/workbench/tabs/forge/IncomeApproach.tsx`
+  - `frontend/apps/os-shell/src/components/workbench/IncomeValuationPanel.tsx`
+  - `frontend/apps/os-shell/src/services/incomeValuationService.ts`
+
+**Roadmap Order Locked:**
+1. Workflow reconciliation
+2. Comparable Sales rehost closure
+3. Income Valuation rehost completion
+4. Wave 0 hygiene sweep
+5. Wave 1 auth context and core wiring
+6. Wave 2 RAG and GPT split
+7. Waves 3-5 entry only after earlier proof
+
+**Operational Boundary:**
+- Codex stays in bounded recon, execution, and review lanes via `CODEX_DIRECTIVE_PACK_v1.md`
+- Copilot remains preferred for auth-heavy UI wiring
+- Claude Code remains preferred for backend-risky implementation
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| ✅ 1 | 1.1 | Write standaloneHomes.contract.test.tsx | Done |
-| ✅ 2 | 1.2 | Write standaloneHomes.navigation.test.tsx | Done |
-| ✅ 3 | 1.3 | Write standaloneHomes.accessibility.test.tsx | Done |
-| ✅ 4 | 2.1-2.2 | Create StandaloneHomeShell + contracts | Done |
-| ✅ 5 | 3.1 | Migrate PilotConsole | Done |
-| ✅ 6 | 4.1 | Run all gates | Done |
-| ✅ 7 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
-| ✅ 8 | Commit | Create docs commit for Slice 25.3 | Done |
+| 🔵 1 | 25.4 / Phase 1 | Reconcile stale workflow truth across `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` | None |
+| 🔵 2 | 25.4 / Phase 2 | Close Comparable Sales rehost proof gaps inside Forge | Phase 1 truth reconciliation |
+| 🔵 3 | 25.4 / Phase 3 | Complete Income Valuation rehost proof inside Forge | Comparable Sales closure |
+| 🔵 4 | 25.4 / Phase 4 | Execute recalibrated Wave 0 hygiene sweep with `any` triage first | Phases 1-3 |
+| 🔵 5 | 25.4 / Phase 5 | Finish Wave 1 auth threading on named surfaces | Wave 0 proof |
+| 🔵 6 | 25.4 / Phase 6 | Split Wave 2 into backend recon then frontend wiring | Wave 1 proof |
+| 🔵 7 | 25.4 / Phase 7 | Hold Waves 3-5 until prior proof gates land | Phases 1-6 |
+| ✅ 8 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
+| 🔵 9 | Commit | Create docs commit for Slice 25.4 | - |
 
 ---
 
@@ -437,6 +479,8 @@
 | 2026-02-07 | Variant: infrastructure for headers | Matches material hierarchy spec | Consistent theming |
 | 2026-03-18 | Keep Codex Directive Pack doc-only in v1 | Tighten execution without changing live entrypoint governance | No `.github/AGENT_ENTRYPOINT.md` drift |
 | 2026-03-18 | Standardize Codex prompts on `Objective` → `Output` | Prevent broad or under-specified Codex handoffs | More consistent bounded execution |
+| 2026-03-18 | Reconcile workflow truth before new feature execution | Completed slices still read as open in parts of the workflow ledger | Governance first, then feature work |
+| 2026-03-18 | Recalibrate Wave 0 from measured repo counts | Current probes show `console.` and `@ts-ignore` already at zero | Shift Wave 0 toward `any` triage and scoped cleanup |
 
 ---
 
@@ -457,6 +501,7 @@
 | phase83-tools | 54 | 0 | 0 |
 | prompt contract verification (`rg`) | ✅ | 0 | - |
 | cross-link verification (`rg`) | ✅ | 0 | - |
+| roadmap calibration probes (`rg`) | ✅ | 0 | - |
 
 ---
 

@@ -1258,3 +1258,262 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Git strategy defined
 - [x] Dependencies verified
 - [x] Execution complete
+
+---
+
+# Slice 25.4: Next-Phase Execution Roadmap
+
+> **Purpose:** Lock the next execution phases into a proof-first sequence after the Codex directive pack so future work starts with governance truth, closes the active module-rehost queue, and only then enters the broader remediation waves.
+> **Strategy:** Reconcile workflow truth first, finish the live rehost surfaces second, then execute Wave 0, Wave 1, and Wave 2 in bounded slices. Do not enter Waves 3-5 until earlier proof gates are satisfied.
+
+---
+
+* **Project:** TerraFusion Next-Phase Execution Roadmap
+* **Branch/PR:** current working tree
+* **Date:** 2026-03-18
+* **Prereq:** Slice 25.3 complete; `CODEX_DIRECTIVE_PACK_v1.md` available for bounded Codex handoffs
+
+---
+
+## Definition of Done
+
+> What MUST be true for this planning slice to be complete?
+
+- [x] The next execution phases are ordered explicitly, not left as an informal backlog
+- [x] Workflow reconciliation is Phase 1 before new feature execution
+- [x] Comparable Sales and Income Valuation rehost work are defined before broader remediation waves
+- [x] Wave 0, Wave 1, and Wave 2 are separated into distinct phases with explicit proof requirements
+- [x] Entry gates for Waves 3-5 are documented so they do not start early
+- [x] Tool ownership is explicit: Codex for bounded recon/execution/review, Copilot for UI/auth-heavy implementation, Claude Code for backend-risky work
+- [x] `progress.md` next steps are updated to match this roadmap
+
+---
+
+## Current State Calibration
+
+> These facts were rechecked before locking the roadmap.
+
+- [x] `frontend/apps/os-shell/src` currently shows `console.` count = `0`
+- [x] `frontend/apps/os-shell/src` currently shows `@ts-ignore` count = `0`
+- [x] Raw `any` references remain high in `frontend/apps/os-shell/src` (`1013` matches), so Wave 0 must start with triage and scope narrowing instead of a blind bulk sweep
+- [x] Comparable Sales host files exist in Forge:
+  - `frontend/apps/os-shell/src/components/workbench/ComparableSalesPanel.tsx`
+  - `frontend/apps/os-shell/src/services/comparableSalesService.ts`
+  - `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyForge.tsx`
+- [x] Income Valuation host files exist in Forge:
+  - `frontend/apps/os-shell/src/pages/workbench/tabs/forge/IncomeApproach.tsx`
+  - `frontend/apps/os-shell/src/components/workbench/IncomeValuationPanel.tsx`
+  - `frontend/apps/os-shell/src/services/incomeValuationService.ts`
+- [x] Wave 1 target surfaces exist and are discoverable:
+  - `frontend/apps/os-shell/src/auth/useAuthContext.ts`
+  - `frontend/apps/os-shell/src/components/gpt/GPTManagementDashboard.tsx`
+  - `frontend/apps/os-shell/src/components/research/ResearchPortal.tsx`
+  - `frontend/apps/os-shell/src/services/QuantumModuleManager.ts`
+  - `frontend/apps/os-shell/src/hooks/useTodaysWork.ts`
+  - `frontend/apps/os-shell/src/applications/terra-levy/hooks/useBudgetData.ts`
+- [x] Wave 2 target surfaces exist and are discoverable:
+  - `frontend/apps/os-shell/src/components/gpt/RAGDatasetManager.tsx`
+  - `frontend/apps/os-shell/src/features/gpt/components/SystemGptAtlasPanel.tsx`
+  - `backend/src/TerraFusion.API/Controllers/RAGController.cs`
+  - `backend/src/TerraFusion.Consciousness/CoPilot/CoPilotController.cs`
+
+---
+
+## Phases & Tasks
+
+### Phase 1: Workflow Reconciliation
+
+> Clean the governance ledger before starting new execution.
+
+#### Task 1.1: Normalize workflow truth
+
+* **Description:** Reconcile stale open/completed states between `plan.md`, `progress.md`, and the active remediation memo
+* **Files:**
+  - `.governance/workflow/plan.md`
+  - `.governance/workflow/progress.md`
+  - `.governance/workflow/REMEDIATION_PLAN_v1.md` if remediation assumptions need recalibration
+* **Implementation:**
+  - Mark historically completed slices consistently across workflow docs
+  - Remove stale “open” signals for work already shipped
+  - Recalibrate Wave 0 assumptions using current measured counts instead of older audit numbers
+* **Acceptance Criteria:**
+  - [x] Phase defined
+  - [x] Cross-doc reconciliation identified as the first execution phase
+  - [x] Wave 0 count drift explicitly called out
+
+### Phase 2: Comparable Sales Rehost Closure
+
+> Close the live rehost item before widening scope.
+
+#### Task 2.1: Prove parcel-bound Forge sales hosting
+
+* **Description:** Close the remaining proof gaps for Comparable Sales inside Forge
+* **Files:**
+  - `frontend/apps/os-shell/src/components/workbench/ComparableSalesPanel.tsx`
+  - `frontend/apps/os-shell/src/services/comparableSalesService.ts`
+  - `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyForge.tsx`
+  - related Forge/workbench tests
+* **Implementation:**
+  - Verify parcel-bound populated state
+  - Prove Benton snapshot filtering against the current parcel context
+  - Verify selection/adjustment and reconciliation API reachability or record an explicit backend blocker with evidence
+  - Verify suite launch lands on the Forge tab correctly
+* **Acceptance Criteria:**
+  - [x] Phase defined
+  - [x] Required proof points named
+  - [x] Files and boundaries named
+
+### Phase 3: Income Valuation Rehost Completion
+
+> Finish the second live Forge rehost surface after Comparable Sales closes.
+
+#### Task 3.1: Prove Forge income hosting and persistence path
+
+* **Description:** Convert Income Valuation from “in progress” into a fully verified Forge sub-tab surface
+* **Files:**
+  - `frontend/apps/os-shell/src/pages/workbench/tabs/forge/IncomeApproach.tsx`
+  - `frontend/apps/os-shell/src/components/workbench/IncomeValuationPanel.tsx`
+  - `frontend/apps/os-shell/src/services/incomeValuationService.ts`
+  - `backend/src/TerraFusion.API/Controllers/CostForgeController.cs`
+  - related Forge/workbench tests
+* **Implementation:**
+  - Verify the income sub-tab host renders correctly from Forge
+  - Prove API reachability for calculation and valuation-record persistence/retrieval paths
+  - Clarify whether legacy standalone income surfaces remain archived-only or still require route cleanup
+* **Acceptance Criteria:**
+  - [x] Phase defined
+  - [x] Host, service, and backend controller surfaces named
+  - [x] Persistence/retrieval proof included in the phase scope
+
+### Phase 4: Wave 0 Hygiene Sweep
+
+> Start the remediation waves only after the workflow and module queue are stable.
+
+#### Task 4.1: Recalibrated hygiene execution
+
+* **Description:** Execute Wave 0 using current counts, not stale assumptions
+* **Files:**
+  - `frontend/apps/os-shell/**`
+  - related tests only
+* **Implementation:**
+  - Skip console and `@ts-ignore` cleanup unless new hits are introduced, because current probes show both at zero
+  - Triage `any` usage into governed, test-only, archived, and deferred buckets before bulk edits
+  - Use Codex only for bounded mechanical cleanup after the triage pass
+* **Acceptance Criteria:**
+  - [x] Phase defined
+  - [x] Current measured counts reflected in scope
+  - [x] Codex usage constrained to post-triage mechanical work
+
+### Phase 5: Wave 1 Auth Context and Core Wiring
+
+> Thread real auth after hygiene assumptions are corrected.
+
+#### Task 5.1: Complete auth wiring on named surfaces
+
+* **Description:** Finish the Wave 1 auth work on the existing named hooks and surfaces
+* **Files:**
+  - `frontend/apps/os-shell/src/auth/useAuthContext.ts`
+  - `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbench.tsx`
+  - `frontend/apps/os-shell/src/components/gpt/GPTManagementDashboard.tsx`
+  - `frontend/apps/os-shell/src/components/research/ResearchPortal.tsx`
+  - `frontend/apps/os-shell/src/services/QuantumModuleManager.ts`
+  - `frontend/apps/os-shell/src/hooks/useTodaysWork.ts`
+  - `frontend/apps/os-shell/src/applications/terra-levy/hooks/useBudgetData.ts`
+  - related auth contract tests
+* **Implementation:**
+  - Eliminate remaining hardcoded user/role placeholders
+  - Prove session/auth context reaches the target surfaces
+  - Keep Codex on bounded replacements and proof loops; reserve auth-model decisions to the human/Copilot lane
+* **Acceptance Criteria:**
+  - [x] Phase defined
+  - [x] Named target files grounded in the current repo
+  - [x] Tool split called out explicitly
+
+### Phase 6: Wave 2 RAG and GPT Split
+
+> Break Wave 2 into a backend recon pass and a bounded implementation pass.
+
+#### Task 6.1: Backend inventory first
+
+* **Description:** Start Wave 2 with a recon pass across RAG and CoPilot backend paths before touching implementation
+* **Files:**
+  - `backend/src/TerraFusion.API/Controllers/RAGController.cs`
+  - `backend/src/TerraFusion.Consciousness/CoPilot/CoPilotController.cs`
+  - related backend services/tests
+* **Implementation:**
+  - Inventory active endpoints, stubs, persistence gaps, and tests
+  - Record blockers and drift before any frontend wiring changes
+* **Acceptance Criteria:**
+  - [x] Backend recon phase defined
+  - [x] Relevant controllers named
+
+#### Task 6.2: Frontend wiring after backend truth
+
+* **Description:** Only after backend truth is known, wire the frontend RAG and GPT surfaces
+* **Files:**
+  - `frontend/apps/os-shell/src/components/gpt/RAGDatasetManager.tsx`
+  - `frontend/apps/os-shell/src/components/gpt/GPTManagementDashboard.tsx`
+  - `frontend/apps/os-shell/src/features/gpt/components/SystemGptAtlasPanel.tsx`
+  - related contract tests
+* **Implementation:**
+  - Finish dataset CRUD wiring
+  - Finish GPT dashboard integration
+  - Replace remaining TODO-backed test gaps in the atlas panel
+* **Acceptance Criteria:**
+  - [x] Frontend implementation phase defined
+  - [x] Backend-before-frontend ordering is explicit
+
+### Phase 7: Waves 3-5 Entry Gate
+
+> Prevent larger standalone/backend/infrastructure work from starting early.
+
+#### Task 7.1: Gate later waves on earlier proof
+
+* **Description:** Enter Waves 3-5 only after Phases 1-6 are closed with proof
+* **Implementation:**
+  - Do not start Standalone Page Completion, Backend Service Completion, or Infrastructure & Quality while workflow truth, module rehost closure, hygiene, auth, and Wave 2 remain open
+  - Require `pnpm run type-check` and `node --test os-platform/core/tests/phase83-tools.test.mjs` at each phase boundary
+* **Acceptance Criteria:**
+  - [x] Gate documented
+  - [x] Required proof commands carried forward
+
+---
+
+## Risk Register
+
+| ID | Risk | Severity | Likelihood | Mitigation | Rollback |
+|----|------|----------|------------|------------|----------|
+| R1 | Remediation waves start from stale assumptions | High | Med | Reconcile workflow truth first and recalibrate Wave 0 using current counts | Pause execution and refresh docs |
+| R2 | Module rehost work widens into backend redesign | High | Med | Force recon/proof before implementation and use explicit blockers when backend truth fails | Hold frontend host as-is |
+| R3 | Codex scope creeps into architecture or governance decisions | High | Low | Require bounded prompt pack usage for Codex slices | Reassign slice to human/Copilot/Claude |
+| R4 | Waves 3-5 start before earlier proof is locked | Med | Med | Add explicit entry gate in this roadmap and carry it into `progress.md` next steps | Freeze later waves until proof lands |
+
+---
+
+## Git Strategy
+
+1. `docs(workflow): add slice 25.4 next-phase roadmap`
+2. `docs(workflow): record slice 25.4 completion and next-step queue`
+
+---
+
+## Dependencies
+
+- [x] Slice 25.3 complete
+- [x] `CODEX_DIRECTIVE_PACK_v1.md` available for bounded Codex handoffs
+- [x] Current probes for Wave 0 calibration collected
+- [x] Comparable Sales and Income Valuation host files confirmed in repo
+- [x] Auth, RAG, and GPT target surfaces confirmed in repo
+
+---
+
+## Document Status (Slice 25.4)
+
+- [x] Definition of Done defined
+- [x] Current state calibrated with repo evidence
+- [x] All phases defined
+- [x] All tasks have acceptance criteria
+- [x] Risk register complete
+- [x] Git strategy defined
+- [x] Dependencies verified
+- [x] Execution complete
