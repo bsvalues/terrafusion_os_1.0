@@ -23,7 +23,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact(Skip = "Wave 4: pending implementation")]
     public void Notice_GetAll_Filters_By_CountyId() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void CertificationStep_GetAll_Filters_By_CountyId() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -54,10 +54,10 @@ public class DaisPersistenceAcceptanceTests
     [Fact(Skip = "Wave 4: pending implementation")]
     public void Notice_UpdateStatus_To_Sent_Sets_SentAt() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void CertificationStep_Create_Validates_StepOrder() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void CertificationStep_Complete_Sets_CompletedBy_And_CompletedAt() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -82,7 +82,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void ExemptionService_Cannot_Modify_CostModel() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void CertificationService_Cannot_Write_MarketAnalysis() { }
 
     // ================================================================
@@ -98,7 +98,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact(Skip = "Wave 4: pending implementation")]
     public void DbContext_Exposes_Notices_DbSet() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DbContext_Exposes_CertificationSteps_DbSet() { }
 
     [Fact(Skip = "Wave 4: pending implementation")]
@@ -111,7 +111,7 @@ public class DaisPersistenceAcceptanceTests
     [Fact]
     public void IAppealService_Defines_CreateAsync_GetByIdAsync_GetByParcelAsync_UpdateStatusAsync_GetByTaxYearAsync() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void ICertificationService_Defines_CreateAsync_GetByIdAsync_GetByTaxYearAsync_CompleteStepAsync() { }
 
     [Fact]
@@ -133,6 +133,6 @@ public class DaisPersistenceAcceptanceTests
     [Fact(Skip = "Wave 4: pending implementation")]
     public void DaisController_Notice_Endpoints_Delegate_To_INoticeService() { }
 
-    [Fact(Skip = "Wave 4: pending implementation")]
+    [Fact]
     public void DaisController_Certification_Endpoints_Delegate_To_ICertificationService() { }
 }
