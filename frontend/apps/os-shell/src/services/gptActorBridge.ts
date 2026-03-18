@@ -22,9 +22,9 @@ export type GptActorResult<T> =
  */
 export function resolveGptActor(actor: OsActor | null): GptActorResult<GptActorContext> {
   if (!actor) return { ok: false, error: { kind: 'unauthenticated' } };
-  const countyIdNumeric = parseInt(actor.countyId, 10);
-  if (isNaN(countyIdNumeric)) {
+  if (!/^\d+$/.test(actor.countyId)) {
     return { ok: false, error: { kind: 'missing_county', userId: actor.userId } };
   }
+  const countyIdNumeric = parseInt(actor.countyId, 10);
   return { ok: true, data: { actor, countyIdNumeric } };
 }

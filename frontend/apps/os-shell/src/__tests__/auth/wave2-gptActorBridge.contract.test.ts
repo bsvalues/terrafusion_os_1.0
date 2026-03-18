@@ -49,4 +49,10 @@ describe('Gate 4 — resolveGptActor runtime: valid actor', () => {
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.kind).toBe('missing_county');
   });
+  it('returns missing_county for leading-numeric countyId like "30abc"', async () => {
+    const { resolveGptActor } = await import('@/services/gptActorBridge');
+    const r = resolveGptActor({ userId: 'u1', countyId: '30abc', roles: [] });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.kind).toBe('missing_county');
+  });
 });
