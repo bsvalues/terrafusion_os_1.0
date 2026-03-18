@@ -1,0 +1,219 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { GPTChatInterface } from '../../components/gpt/GPTChatInterface';
+
+const {
+  mockCreateConversation,
+  mockGetConversation,
+  mockGetConversationHistory,
+  mockSendMessage,
+  mockArchiveConversation,
+  mockDeleteConversation,
+} = vi.hoisted(() => ({
+  mockCreateConversation: vi.fn(),
+  mockGetConversation: vi.fn(),
+  mockGetConversationHistory: vi.fn(),
+  mockSendMessage: vi.fn(),
+  mockArchiveConversation: vi.fn(),
+  mockDeleteConversation: vi.fn(),
+}));
+
+vi.mock('@/services/gptAPI', () => ({
+  gptAPI: {
+    createConversation: mockCreateConversation,
+    getConversation: mockGetConversation,
+    getConversationHistory: mockGetConversationHistory,
+    sendMessage: mockSendMessage,
+    archiveConversation: mockArchiveConversation,
+    deleteConversation: mockDeleteConversation,
+  },
+}));
+
+function makeGpt(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 1,
+    name: 'county-valuation-helper',
+    displayName: 'County Valuation Helper',
+    description: 'Assists assessors with county valuation review.',
+    iconUrl: undefined,
+    category: 'Assessment',
+    isSystemGPT: false,
+    isPublic: false,
+    createdByUserId: 'u1',
+    countyId: 33,
+    modelProvider: 'OpenAI',
+    modelName: 'gpt-4.1-mini',
+    systemPrompt: 'Review county assessment records carefully.',
+    temperature: 0.7,
+    maxTokens: 4000,
+    topP: 1,
+    frequencyPenalty: 0,
+    presencePenalty: 0,
+    enableRAG: true,
+    ragDatasetId: 12,
+    ragTopK: 5,
+    ragScoreThreshold: 0.7,
+    enableFunctions: false,
+    functionsJson: undefined,
+    requiredRole: 'assessor',
+    allowedCounties: undefined,
+    totalConversations: 8,
+    totalMessages: 40,
+    totalTokensUsed: 1200,
+    totalCost: 12.34,
+    averageRating: 4.5,
+    ratingCount: 6,
+    installCount: 3,
+    isFeatured: false,
+    price: 0,
+    status: 'Active',
+    version: '1.0',
+    createdAt: '2026-03-01T00:00:00.000Z',
+    updatedAt: '2026-03-10T00:00:00.000Z',
+    createdBy: 'u1',
+    updatedBy: 'u1',
+    ...overrides,
+  };
+}
+
+function makeConversation(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 55,
+    gptConfigurationId: 1,
+    userId: 'u1',
+    countyId: 33,
+    title: 'New conversation with County Valuation Helper',
+    totalMessages: 0,
+    totalTokensUsed: 0,
+    totalCost: 0,
+    duration: undefined,
+    rating: undefined,
+    feedback: undefined,
+    status: 'Active',
+    createdAt: '2026-03-18T12:00:00.000Z',
+    updatedAt: '2026-03-18T12:00:00.000Z',
+    lastMessageAt: undefined,
+    ...overrides,
+  };
+}
+
+function makeMessage(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 100,
+    conversationId: 55,
+    role: 'assistant',
+    content: 'Here is the county valuation summary.',
+    promptTokens: 24,
+    completionTokens: 46,
+    totalTokens: 70,
+    cost: 0.0123,
+    modelUsed: 'gpt-4.1-mini',
+    provider: 'OpenAI',
+    functionName: undefined,
+    functionArgs: undefined,
+    functionResult: undefined,
+    ragDocumentsUsed: '["doc-1","doc-2"]',
+    ragScore: 0.88,
+    responseTime: 1450,
+    finishReason: 'stop',
+    createdAt: '2026-03-18T12:01:00.000Z',
+    ...overrides,
+  };
+}
+
+describe('GPTChatInterface interactions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('confirm', vi.fn(() => true));
+    window.HTMLElement.prototype.scrollIntoView = vi.fn();
+  });
+
+  it('creates a conversation, sends a message through the canonical DTO, and refreshes manually', async () => {
+    const gpt = makeGpt();
+    const createdConversation = makeConversation();
+    const syncedConversation = makeConversation({ totalMessages: 2, totalTokensUsed: 70, totalCost: 0.0123 });
+    const userMessage = makeMessage({
+      id: 101,
+      role: 'user',
+      content: 'Summarize Benton County valuation shifts.',
+      totalTokens: 12,
+      cost: 0,
+      ragDocumentsUsed: undefined,
+      responseTime: undefined,
+    });
+    const assistantMessage = makeMessage();
+
+    let history = [userMessage, assistantMessage];
+
+    mockCreateConversation.mockResolvedValue(createdConversation);
+    mockSendMessage.mockResolvedValue(assistantMessage);
+    mockGetConversation.mockResolvedValue(syncedConversation);
+    mockGetConversationHistory.mockImplementation(async () => history);
+
+    const onConversationChange = vi.fn();
+    render(<GPTChatInterface gpt={gpt} onConversationChange={onConversationChange} />);
+
+    expect(await screen.findByText('County Valuation Helper')).toBeInTheDocument();
+    expect(mockCreateConversation).toHaveBeenCalledWith({
+      gptConfigId: 1,
+      title: 'New conversation with County Valuation Helper',
+    });
+    expect(onConversationChange).toHaveBeenCalledWith(createdConversation);
+    expect(
+      screen.getByText(/streaming, typing indicators, and live hub push are not currently mapped by the backend/i),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByPlaceholderText('Message County Valuation Helper...'), {
+      target: { value: 'Summarize Benton County valuation shifts.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+    expect(await screen.findByText('Summarize Benton County valuation shifts.')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mockSendMessage).toHaveBeenCalledWith(55, {
+        gptConfigId: 1,
+        message: 'Summarize Benton County valuation shifts.',
+      });
+    });
+
+    expect(await screen.findByText('Here is the county valuation summary.')).toBeInTheDocument();
+    expect(screen.getByText('RAG: 2 docs')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh conversation' }));
+
+    await waitFor(() => {
+      expect(mockGetConversation).toHaveBeenCalledWith(55);
+      expect(mockGetConversationHistory).toHaveBeenCalledWith(55);
+    });
+  });
+
+  it('loads an existing conversation and history through confirmed endpoints', async () => {
+    const gpt = makeGpt();
+    const existingConversation = makeConversation({ id: 77, totalMessages: 2, totalTokensUsed: 88, totalCost: 0.015 });
+    const existingHistory = [
+      makeMessage({ id: 201, conversationId: 77, role: 'user', content: 'What changed this week?', totalTokens: 11, cost: 0, ragDocumentsUsed: undefined, responseTime: undefined }),
+      makeMessage({ id: 202, conversationId: 77, content: 'County valuation deltas stayed within expected thresholds.', conversationId: 77 }),
+    ];
+
+    mockGetConversation.mockResolvedValue(existingConversation);
+    mockGetConversationHistory.mockResolvedValue(existingHistory);
+
+    render(<GPTChatInterface gpt={gpt} conversationId={77} />);
+
+    expect(await screen.findByText('What changed this week?')).toBeInTheDocument();
+    expect(await screen.findByText('County valuation deltas stayed within expected thresholds.')).toBeInTheDocument();
+    expect(mockGetConversation).toHaveBeenCalledWith(77);
+    expect(mockGetConversationHistory).toHaveBeenCalledWith(77);
+    expect(screen.getByText('Tokens: 88')).toBeInTheDocument();
+  });
+
+  it('surfaces initialization errors truthfully', async () => {
+    const gpt = makeGpt();
+    mockCreateConversation.mockRejectedValueOnce(new Error('conversation bootstrap failed'));
+
+    render(<GPTChatInterface gpt={gpt} />);
+
+    expect(await screen.findByText('conversation bootstrap failed')).toBeInTheDocument();
+  });
+});
