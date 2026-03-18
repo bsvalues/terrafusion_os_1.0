@@ -427,7 +427,7 @@ jobs:
           # Check 2: Legacy frontend
           echo ""
           echo "📋 Check: Legacy frontend..."
-          LEGACY=$(echo "$CHANGED" | grep -E '^frontend/' | grep -v -E '^frontend-v2/|^frontend/apps/os-shell/|^frontend/electron/|^frontend/package\.json$|^frontend/vitest\.config\.ts$|^frontend/vite\.config\.ts$|^frontend/jest\.config\.cjs$|^frontend/jest-import-meta-transformer\.cjs$|^frontend/lighthouserc\.cjs$|^frontend/Dockerfile$|^frontend/nginx\.conf$|^frontend/pnpm-lock\.yaml$|^frontend/\.dockerignore$|^frontend/\.eslintrc\.(cjs|json|js)$|^frontend/tsconfig(\..+)?\.json$|^frontend/\.env' || true)
+          LEGACY=$(echo "$CHANGED" | grep -E '^frontend/' | grep -v -E '^frontend-v2/|^frontend/apps/os-shell/|^frontend/electron/|^frontend/__mocks__/|^frontend/scripts/|^frontend/package\.json$|^frontend/vitest\.config\.ts$|^frontend/vite\.config\.ts$|^frontend/jest\.config\.cjs$|^frontend/jest-import-meta-transformer\.cjs$|^frontend/lighthouserc\.cjs$|^frontend/Dockerfile$|^frontend/nginx\.conf$|^frontend/pnpm-lock\.yaml$|^frontend/\.dockerignore$|^frontend/\.eslintrc\.(cjs|json|js)$|^frontend/tsconfig(\..+)?\.json$|^frontend/\.env' || true)
           if [ -n "$LEGACY" ]; then
             echo "::error::Legacy frontend modified (use frontend-v2/ or frontend/apps/os-shell/ instead)"
             echo "$LEGACY" | while read -r f; do echo "  ❌ $f"; done

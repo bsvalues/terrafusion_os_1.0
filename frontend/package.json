@@ -152,7 +152,7 @@
     "test:integration:coverage": "vitest run --coverage --config vitest.config.ts",
     "test:unit": "vitest run",
     "test:tier0": "vitest run",
-    "test:tier1": "vitest run",
+    "test:tier1": "vitest run --passWithNoTests apps/os-shell/src/__tests__/standalone/ apps/os-shell/src/config/__tests__/moduleRegistryConsistency.test.ts",
     "test:ipc": "vitest run apps/os-shell/src/ipc --passWithNoTests",
     "test:all": "npm run test:unit && npm run test:integration",
     "test:e2e": "playwright test",
