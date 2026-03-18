@@ -35,6 +35,7 @@ import { ConsciousnessParameterTuningPanel } from './ConsciousnessParameterTunin
 import { InfinitePrecisionAnalyticsPanel } from './InfinitePrecisionAnalyticsPanel';
 import { QuantumResearchDashboard } from './QuantumResearchDashboard';
 import { StatisticalValidationWorkbench } from './StatisticalValidationWorkbench';
+import { useAuthContext } from '@/auth/useAuthContext';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS - Research Portal DTOs
@@ -129,6 +130,8 @@ export const ResearchPortal: React.FC = () => {
   // STATE MANAGEMENT
   // ─────────────────────────────────────────────────────────────────────────────
 
+  const auth = useAuthContext();
+
   const [activePanel, setActivePanel] = useState<ResearchPanelType>('quantum-dashboard');
   const [session, setSession] = useState<ResearchSession | null>(null);
   const [panelMetrics, setPanelMetrics] = useState<Map<ResearchPanelType, PanelMetrics>>(new Map());
@@ -195,7 +198,7 @@ export const ResearchPortal: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          researcherId: 'phd-researcher-001', // TODO: Get from auth context
+          researcherId: auth.userId ?? 'phd-researcher-001',
           researcherName: 'Dr. Sarah Chen',
           institutionName: 'Harvard University - MIT Joint Program',
           preferences: {

@@ -5,12 +5,13 @@
  * It extends the base setupTests.ts with integration-specific configurations.
  */
 
-// Extend default test timeout for integration tests
-jest.setTimeout(10000); // 10 seconds
+import { vi, describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
+
+// Extend default test timeout for integration tests - vitest uses test-level timeout or config
 
 // Mock timers for integration tests with animations
 // Uncomment if needed for specific workflows
-// jest.useFakeTimers();
+// vi.useFakeTimers();
 
 // Global setup for integration tests
 beforeAll(() => {
@@ -26,7 +27,7 @@ afterAll(() => {
 // Reset state between integration tests to avoid side effects
 beforeEach(() => {
   // Clear all mocks before each test
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {
@@ -37,15 +38,15 @@ afterEach(() => {
 // Mock window.matchMedia for responsive components
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // Deprecated
-    removeListener: jest.fn(), // Deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
+    addListener: vi.fn(), // Deprecated
+    removeListener: vi.fn(), // Deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
   })),
 });
 
@@ -72,7 +73,7 @@ global.ResizeObserver = class ResizeObserver {
 // Uncomment if you want cleaner test output
 // const originalWarn = console.warn;
 // beforeAll(() => {
-//   console.warn = jest.fn();
+//   console.warn = vi.fn();
 // });
 // afterAll(() => {
 //   console.warn = originalWarn;

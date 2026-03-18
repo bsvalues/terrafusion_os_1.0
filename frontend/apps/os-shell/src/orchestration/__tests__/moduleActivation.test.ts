@@ -13,12 +13,39 @@
 // Mock Setup - Must be before imports
 // ============================================================================
 
-// Mock desktopStore
-const mockOpenWindow = jest.fn().mockReturnValue('window-123');
-const mockFocusWindow = jest.fn();
-const mockGetWindows = jest.fn().mockReturnValue([]);
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-jest.mock('../../stores/desktopStore', () => ({
+// Use vi.hoisted so mock variables are available when vi.mock factories run
+const {
+  mockOpenWindow,
+  mockFocusWindow,
+  mockGetWindows,
+  mockLoadModule,
+  mockGetLoadState,
+  mockNormalizeModuleId,
+  mockIsModuleRegistered,
+  mockTrackEvent,
+} = vi.hoisted(() => ({
+  mockOpenWindow: vi.fn().mockReturnValue('window-123'),
+  mockFocusWindow: vi.fn(),
+  mockGetWindows: vi.fn().mockReturnValue([]),
+  mockLoadModule: vi.fn().mockResolvedValue(undefined),
+  mockGetLoadState: vi.fn().mockReturnValue({ status: 'idle' }),
+  mockNormalizeModuleId: vi.fn((id: string) => {
+    const aliases: Record<string, string> = {
+      terrabuild: 'costforge',
+      assessment: 'costforge',
+    };
+    return aliases[id] || id;
+  }),
+  mockIsModuleRegistered: vi.fn((id: string) => {
+    const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
+    return registry.includes(id);
+  }),
+  mockTrackEvent: vi.fn(),
+}));
+
+vi.mock('../../stores/desktopStore', () => ({
   useDesktopStore: {
     getState: () => ({
       windows: mockGetWindows(),
@@ -28,11 +55,7 @@ jest.mock('../../stores/desktopStore', () => ({
   },
 }));
 
-// Mock moduleLoaderStore
-const mockLoadModule = jest.fn().mockResolvedValue(undefined);
-const mockGetLoadState = jest.fn().mockReturnValue({ status: 'idle' });
-
-jest.mock('../../stores/moduleLoaderStore', () => ({
+vi.mock('../../stores/moduleLoaderStore', () => ({
   useModuleLoaderStore: {
     getState: () => ({
       loadModule: mockLoadModule,
@@ -41,31 +64,22 @@ jest.mock('../../stores/moduleLoaderStore', () => ({
   },
 }));
 
-// Mock moduleComponents (normalizeModuleId, isModuleRegistered)
-const mockNormalizeModuleId = jest.fn((id: string) => {
-  const aliases: Record<string, string> = {
-    terrabuild: 'costforge',
-    assessment: 'costforge',
-  };
-  return aliases[id] || id;
-});
-
-const mockIsModuleRegistered = jest.fn((id: string) => {
-  const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
-  return registry.includes(id);
-});
-
-jest.mock('../../config/moduleComponents', () => ({
+vi.mock('../../config/moduleComponents', () => ({
   normalizeModuleId: mockNormalizeModuleId,
   isModuleRegistered: mockIsModuleRegistered,
 }));
 
-// Mock telemetry
-const mockTrackEvent = jest.fn();
-
-jest.mock('../../services/telemetry', () => ({
+vi.mock('../../services/telemetry', () => ({
   telemetry: {
     trackEvent: mockTrackEvent,
+  },
+}));
+
+vi.mock('../../stores/notificationStore', () => ({
+  useNotificationStore: {
+    getState: () => ({
+      addNotification: vi.fn(),
+    }),
   },
 }));
 
@@ -116,7 +130,7 @@ describe('moduleActivation', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // --------------------------------------------------------------------------
@@ -132,7 +146,8 @@ describe('moduleActivation', () => {
       expect(mockOpenWindow).toHaveBeenCalledWith(
         'costforge', // moduleId
         expect.any(String), // title
-        expect.any(String) // icon
+        expect.any(String), // icon
+        undefined // metadata (none passed)
       );
     });
 
@@ -144,7 +159,8 @@ describe('moduleActivation', () => {
       expect(mockOpenWindow).toHaveBeenCalledWith(
         'costforge', // canonical ID, not alias
         expect.any(String), // title
-        expect.any(String) // icon
+        expect.any(String), // icon
+        undefined // metadata
       );
     });
 

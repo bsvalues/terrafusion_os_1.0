@@ -19,6 +19,7 @@ import { Rnd, RndDragCallback, RndResizeCallback } from 'react-rnd';
 import { getLucideIcon } from '../../config/iconMap';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { DesktopWindow, useDesktopStore } from '../../stores/desktopStore';
+import { getObjectClassification } from '../../contracts/objectPlacement';
 import { TerraSphereIcon } from '../../ui/brand/TerraSphereIcon';
 import { LiquidPanel } from '../../ui/materials';
 import { useWindowSnap } from './useWindowSnap';
@@ -58,6 +59,9 @@ export interface WindowProps {
 // ============================================================================
 // Constants
 // ============================================================================
+
+/** Window-chrome z-layering (scoped, not shell-level) */
+const WINDOW_CHROME_Z = { titleControls: 50, titleCenter: 10 } as const;
 
 const MIN_WIDTH = 400;
 const MIN_HEIGHT = 300;
@@ -227,6 +231,7 @@ interface TitleBarProps {
   icon: string;
   isActive: boolean;
   isMaximized: boolean;
+  isTier0?: boolean;
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
@@ -238,6 +243,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
   icon,
   isActive,
   isMaximized,
+  isTier0 = false,
   onMinimize,
   onMaximize,
   onClose,
@@ -295,7 +301,8 @@ const TitleBar: React.FC<TitleBarProps> = ({
 
       {/* Window Controls (left) - macOS traffic lights: close, minimize, maximize */}
       <div
-        className='group/controls flex items-center gap-2 relative z-50 pointer-events-auto'
+        className='group/controls flex items-center gap-2 relative pointer-events-auto'
+        style={{ zIndex: WINDOW_CHROME_Z.titleControls }}
         data-testid='window-controls'
       >
         <WindowControlButton label='Close' onClick={handleClose} variant='close' />
@@ -304,11 +311,12 @@ const TitleBar: React.FC<TitleBarProps> = ({
           label={isMaximized ? 'Restore' : 'Maximize'}
           onClick={handleMaximize}
           variant='maximize'
+          disabled={isTier0}
         />
       </div>
 
       {/* Title (center) - pointer-events-none so it doesn't block */}
-      <div className='flex items-center gap-2 absolute left-1/2 -translate-x-1/2 pointer-events-none z-10'>
+      <div className='flex items-center gap-2 absolute left-1/2 -translate-x-1/2 pointer-events-none' style={{ zIndex: WINDOW_CHROME_Z.titleCenter }}>
         <div role='img' aria-hidden='true'>
           <TerraSphereIcon size={24} variant='default' glyph={<Icon className='h-2.5 w-2.5' />} />
         </div>
@@ -350,6 +358,10 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   const isMaximized = windowData.state === 'maximized';
   const isMinimized = windowData.state === 'minimized';
 
+  // Tier-0 workbench must stay maximized — no restore, no drag, no resize
+  const classification = getObjectClassification(windowData.moduleId);
+  const isTier0 = classification?.objectType === 'tier0-workbench';
+
   // Animation state tracking
   const [animationState, setAnimationState] = useState<'opening' | 'open' | 'focused'>('opening');
 
@@ -377,7 +389,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   }, []);
 
   // Window snapping hook
-  const { applySnap, clearPreview } = useWindowSnap({
+  const { currentSnapZone, applySnap, clearPreview } = useWindowSnap({
     windowId: windowData.id,
     isDragging,
     cursorPosition,
@@ -400,12 +412,14 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   }, [minimizeWindow, windowData.id]);
 
   const handleMaximize = useCallback(() => {
+    // Tier-0 windows must stay maximized — block restore
+    if (isTier0) return;
     if (isMaximized) {
       restoreWindow(windowData.id);
     } else {
       maximizeWindow(windowData.id);
     }
-  }, [isMaximized, maximizeWindow, restoreWindow, windowData.id]);
+  }, [isTier0, isMaximized, maximizeWindow, restoreWindow, windowData.id]);
 
   const handleFocus = useCallback(() => {
     focusWindow(windowData.id);
@@ -439,12 +453,10 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
       // Check if we should apply snap
       const shouldSnap = _e && 'clientX' in _e && 'clientY' in _e;
 
+      // Always update position; also apply snap if in a snap zone
+      updateWindowPosition(windowData.id, { x: data.x, y: data.y });
       if (shouldSnap) {
-        // Apply snap if in snap zone
         applySnap();
-      } else {
-        // Just update position normally
-        updateWindowPosition(windowData.id, { x: data.x, y: data.y });
       }
 
       // Clear snap preview
@@ -568,6 +580,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             icon={windowData.icon}
             isActive={isActive}
             isMaximized={isMaximized}
+            isTier0={isTier0}
             onMinimize={handleMinimize}
             onMaximize={handleMaximize}
             onClose={handleClose}

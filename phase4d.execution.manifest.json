@@ -1,0 +1,84 @@
+{
+  "phase": "4D",
+  "generated_at": "2026-03-15T04:13:55Z",
+  "schema_version": "1.0",
+  "description": "Tier 1 execution manifest for 342 ready assets. Only execution_readiness=ready assets appear. No deferred, no blocked-security.",
+  "rules": {
+    "P4D-001": "Every asset in an execution batch has execution_readiness=ready",
+    "P4D-002": "No deferred asset appears in any execution manifest",
+    "P4D-003": "No blocked-security asset appears in implementation",
+    "P4D-004": "Every executing asset has target_home and target_path",
+    "P4D-005": "Every executing asset has acceptance_test_ref and acceptance_test_owner",
+    "P4D-006": "Completed assets must record parity_result and regression_result",
+    "P4D-007": "Commits may only touch assets in the active batch manifest",
+    "P4D-008": "Destination paths must match constitutionally assigned suite"
+  },
+  "execution_order": [
+    "wave-1A: Forge core logic (forge-valuation, forge-statistics, forge-regression, forge-calibration)",
+    "wave-1B: Canon/Shared support (canon-sync, canon-etl, canon-observability, os-shared, os-admin)",
+    "wave-1C: Atlas spatial layer (atlas-gis)",
+    "wave-1D: UI + workflow (forge-ui, dais-workflow, dais-levy, dais-pilt, dossier-documents)"
+  ],
+  "totals": {
+    "ready_assets": 342,
+    "waves": {
+      "wave-1A": {
+        "label": "Forge core logic",
+        "total_assets": 100,
+        "batches": {
+          "forge-valuation": 50,
+          "forge-statistics": 28,
+          "forge-regression": 21,
+          "forge-calibration": 1
+        },
+        "execution_status": "planned"
+      },
+      "wave-1B": {
+        "label": "Canon/Shared support",
+        "total_assets": 92,
+        "batches": {
+          "canon-sync": 58,
+          "canon-etl": 1,
+          "canon-observability": 4,
+          "os-shared": 16,
+          "os-admin": 13
+        },
+        "execution_status": "queued"
+      },
+      "wave-1C": {
+        "label": "Atlas spatial layer",
+        "total_assets": 45,
+        "batches": {
+          "atlas-gis": 45
+        },
+        "execution_status": "queued"
+      },
+      "wave-1D": {
+        "label": "UI + workflow",
+        "total_assets": 105,
+        "batches": {
+          "forge-ui": 91,
+          "dais-workflow": 13,
+          "dossier-documents": 1
+        },
+        "execution_status": "queued"
+      }
+    },
+    "by_batch": {
+      "atlas-gis": 45,
+      "canon-etl": 1,
+      "canon-observability": 4,
+      "canon-sync": 58,
+      "dais-workflow": 13,
+      "dossier-documents": 1,
+      "forge-calibration": 1,
+      "forge-regression": 21,
+      "forge-statistics": 28,
+      "forge-ui": 91,
+      "forge-valuation": 50,
+      "os-admin": 13,
+      "os-shared": 16
+    },
+    "batch_sum_check": 342
+  }
+}

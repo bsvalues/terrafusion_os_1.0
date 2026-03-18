@@ -5,8 +5,8 @@ import path from "node:path";
 import process from "node:process";
 import { setTimeout as sleep } from "node:timers/promises";
 
-const DEFAULT_KERNEL_URL = "http://localhost:5000";
-const DEFAULT_PILOT_URL = "http://localhost:4317";
+const DEFAULT_KERNEL_URL = `http://localhost:${process.env.TF_API_PORT || "5046"}`;
+const DEFAULT_PILOT_URL = `http://localhost:${process.env.PILOT_PORT || "4317"}`;
 const DEFAULT_OUT_PATH = path.resolve(
   process.cwd(),
   "os-platform/core/pilot/evidence/r1-local-proof.latest.json"

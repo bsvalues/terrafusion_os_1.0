@@ -1,6 +1,6 @@
-# 🏗️ TerraFusion IDE - Architecture & Design Document
+# 🏗️ TerraCanon - Architecture & Design Document
 
-**Project**: TerraFusion IDE v1.0  
+**Project**: TerraCanon v1.0  
 **Status**: Design Phase → MVP Implementation  
 **Architect**: MIT/PhD Systems Design Engineer  
 **Philosophy**: THE TERRAFUSION WAY - Done Right The First Time  
@@ -10,7 +10,7 @@
 
 ## 🎯 Executive Summary
 
-TerraFusion IDE is a specialized development environment designed specifically
+TerraCanon is a specialized development environment designed specifically
 for building and maintaining government technology platforms, with deep
 integration into the TerraFusion OS ecosystem.
 
@@ -63,7 +63,7 @@ Create a **vertical IDE** that:
 - Replit (cloud-based, generic)
 - Lovable (AI UI generation, generic)
 
-**TerraFusion IDE Differentiation**:
+**TerraCanon Differentiation**:
 
 - **Government-First**: Built specifically for public sector
 - **Property-Native**: Understands parcels, assessments, GIS
@@ -105,7 +105,7 @@ Create a **vertical IDE** that:
 ### Extension Pack Components
 
 ```
-TerraFusion IDE v1.0 (Extension Pack)
+TerraCanon v1.0 (Extension Pack)
 │
 ├─── 1. Core Extension (Main)
 │    ├─ Project templates
@@ -805,7 +805,7 @@ TerraFusion: AI Assistant
 
 ```bash
 # 1. Install from VS Code Marketplace
-# Search: "TerraFusion IDE"
+# Search: "TerraCanon"
 
 # 2. Create new project
 # Ctrl+Shift+P → "TerraFusion: New County Project"
@@ -962,7 +962,7 @@ TerraFusion: AI Assistant
 
 ---
 
-**Let's build TerraFusion IDE - THE TERRAFUSION WAY! 🏛️💻**
+**Let's build TerraCanon - THE TERRAFUSION WAY! 🏛️💻**
 
 _Architecture designed by MIT/PhD Systems Engineer_  
 _October 11, 2025_

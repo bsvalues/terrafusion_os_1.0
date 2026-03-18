@@ -1,13 +1,14 @@
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
-jest.mock('@/services/authAPI', () => ({ __esModule: true, login: jest.fn() }));
+vi.mock('@/services/authAPI', () => ({ __esModule: true, login: vi.fn() }));
 
-const navigate = jest.fn();
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+const navigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return { ...actual, useNavigate: () => navigate };
 });
 
@@ -17,13 +18,13 @@ import LoginPage from '../LoginPage';
 
 describe('LoginPage real auth exchange', () => {
   beforeEach(() => {
-    (authLogin as jest.Mock).mockReset();
+    (authLogin as vi.Mock).mockReset();
     navigate.mockReset();
     localStorage.clear();
   });
 
   it('on success: calls authAPI.login, logs in, navigates home', async () => {
-    (authLogin as jest.Mock).mockResolvedValue({ token: 'REAL_TOKEN' });
+    (authLogin as vi.Mock).mockResolvedValue({ token: 'REAL_TOKEN' });
 
     render(
       <MemoryRouter initialEntries={['/login']}>
@@ -49,7 +50,7 @@ describe('LoginPage real auth exchange', () => {
   });
 
   it('on failure: shows error and does not navigate', async () => {
-    (authLogin as jest.Mock).mockRejectedValue(new Error('Invalid credentials'));
+    (authLogin as vi.Mock).mockRejectedValue(new Error('Invalid credentials'));
 
     render(
       <MemoryRouter initialEntries={['/login']}>

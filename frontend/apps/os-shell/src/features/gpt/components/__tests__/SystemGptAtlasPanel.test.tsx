@@ -6,30 +6,29 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-// Vitest imports removed - Jest globals used
-import '@testing-library/jest-dom';
 import type { SystemGptAtlasResponse } from '../../../../api/systemDiagnosticsApi';
 import { SystemGptAtlasPanel } from '../SystemGptAtlasPanel';
 
 // Mock the systemDiagnosticsApi module entirely (avoids import.meta.env issues)
-const mockFetchSystemGptAtlas = jest.fn();
-jest.mock('../../../../api/systemDiagnosticsApi', () => ({
+const mockFetchSystemGptAtlas = vi.fn();
+vi.mock('../../../../api/systemDiagnosticsApi', () => ({
   fetchSystemGptAtlas: (...args: any[]) => mockFetchSystemGptAtlas(...args),
 }));
 
 describe('SystemGptAtlasPanel', () => {
-  const mockOnCountySelect = jest.fn();
+  const mockOnCountySelect = vi.fn();
 
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     mockOnCountySelect.mockClear();
     mockFetchSystemGptAtlas.mockClear();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.restoreAllMocks();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════

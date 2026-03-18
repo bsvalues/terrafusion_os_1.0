@@ -13,6 +13,9 @@ import React, { lazy, Suspense } from 'react';
 import { GenericModuleHost } from '../shell/desktop/GenericModuleHost';
 import { MODULES, type ModuleDefinition } from './modules';
 import { validateSuiteRendering } from '../contracts/objectPlacement';
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('ModuleRenderer');
 
 // ============================================================================
 // Module Aliases - Maps legacy/short IDs to canonical IDs (Phase 2)
@@ -38,9 +41,9 @@ export const MODULE_ALIASES: Record<string, string> = {
   analytics: 'reporting',
   reports: 'reporting',
   levy: 'terra-levy',
-  'levy-calculator': 'terra-levy',
+  // Note: 'levy-calculator' and 'gis-viewer' are canonical IDs in MODULE_REGISTRY
+  // so they are NOT aliased here (would create a canonical-ID-as-alias conflict).
   gis: 'terra-gis',
-  'gis-viewer': 'terra-gis',
   'gis-pro': 'terra-gis',
   map: 'terra-gis',
   docs: 'document-manager',
@@ -53,12 +56,9 @@ export const MODULE_ALIASES: Record<string, string> = {
   shortcuts: 'shortcuts-help',
 
   // Application Constellation aliases (Gen2 catalog)
-  income: 'income-valuation',
   regression: 'regression-studio',
   stats: 'statistics-studio',
   statistics: 'statistics-studio',
-  comps: 'comparable-sales',
-  comparables: 'comparable-sales',
   permit: 'terra-permit',
   pilt: 'terra-pilt',
   sync: 'terra-sync',
@@ -66,7 +66,11 @@ export const MODULE_ALIASES: Record<string, string> = {
   pacs: 'pacs-bridge',
   gama: 'terra-gama',
   'property-tax': 'property-tax-ai',
-  primeview: 'terra-primeview',
+  management: 'management-dashboard',
+  'assessor-ops': 'management-dashboard',
+  queue: 'terra-queue',
+  'work-queue': 'terra-queue',
+  terraqueue: 'terra-queue',
 
   // New constellation modules
   miner: 'terra-miner',
@@ -140,10 +144,10 @@ export const MODULE_REGISTRY = new Set<string>([
   'axiom-fs',
   'sovereign-dashboard', // Phase C3: Sovereign Dashboard
   // Application Constellation (Gen2 catalog — truthful placeholders)
-  'income-valuation',
+  // NOTE: income-valuation and comparable-sales REMOVED (Phase 5G) — archived in Phase 3,
+  // absorbed into Workbench → Forge → Income/Sales sub-tabs
   'regression-studio',
   'statistics-studio',
-  'comparable-sales',
   'vei',
   'property-tax-ai',
   'pacs-bridge',
@@ -154,6 +158,8 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-pilt',
   'terra-permit',
   'terra-flow',
+  'management-dashboard',
+  'terra-queue',
   'terra-miner',
   'legislative-pulse',
   // GPT Suite namespaced modules
@@ -269,6 +275,26 @@ const TerraFlowCommandCenter = lazy(
 const TerraLevyDashboard = lazy(
   () => import('../applications/terra-levy/TerraLevyDashboard')
 );
+const StatisticsStudio = lazy(
+  () => import('../pages/forge/statistics/StatisticsStudio')
+);
+const RegressionStudio = lazy(
+  () => import('../pages/forge/regression/RegressionStudio')
+);
+const BatchCostRun = lazy(
+  () => import('../pages/forge/batch/BatchCostRun')
+);
+const CoefficientPreview = lazy(
+  () => import('../pages/forge/batch/CoefficientPreview')
+);
+const ManagementDashboard = lazy(
+  () => import('../pages/dais/ManagementDashboard')
+);
+const TerraQueue = lazy(
+  () => import('../pages/dais/TerraQueue')
+);
+
+// NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
 // ============================================================================
 // Property Workbench Window (Tier-0 OS Surface — Phase A)
@@ -323,6 +349,13 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'suite-dais': { Component: DaisSuiteHome },
   'suite-dossier': { Component: DossierSuiteHome },
   'suite-gpt': { Component: GptSuiteHome },
+  // Forge standalone modules (Tranche 1D)
+  'batch-cost-run': { Component: BatchCostRun },
+  'coefficient-preview': { Component: CoefficientPreview },
+  // Forge standalone modules (Gen2)
+  'regression-studio': { Component: RegressionStudio },
+  // Dais standalone modules
+  'terra-queue': { Component: TerraQueue },
   // OS Features (in-shell windows)
   'os-pilot': { Component: PilotHome },
   'os-trace': { Component: TraceHome },
@@ -368,7 +401,7 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
     placeholder: { color: 'hsl(var(--tf-warning))', label: 'Placeholder' },
     partial: { color: 'hsl(var(--tf-info))', label: 'Partial' },
     rehosting: { color: 'hsl(var(--tf-accent-2))', label: 'Rehosting' },
-    live: { color: 'hsl(120 60% 50%)', label: 'Live' },
+    live: { color: 'hsl(var(--tf-success) / 1)', label: 'Live' },
     'coming-soon': { color: 'hsl(var(--tf-warning))', label: 'Coming Soon' },
     'in-development': { color: 'hsl(var(--tf-info))', label: 'In Development' },
     beta: { color: 'hsl(var(--tf-accent-2))', label: 'Beta' },
@@ -525,7 +558,7 @@ const SuiteBoundaryViolationNotice: React.FC<{
   <div
     className="w-full h-full flex flex-col items-center justify-center p-8"
     style={{
-      background: 'linear-gradient(135deg, hsl(var(--tf-bg) / 0.95) 0%, hsl(0 60% 10% / 0.95) 100%)',
+      background: 'linear-gradient(135deg, hsl(var(--tf-bg) / 0.95) 0%, hsl(var(--tf-error) / 0.95) 100%)',
     }}
   >
     <div className="text-4xl mb-4">🛡️</div>
@@ -624,60 +657,32 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     // APPLICATION CONSTELLATION (Gen2 truthful catalog)
     // ========================================================================
 
-    case 'income-valuation':
-      return (
-        <PlaceholderModule
-          name='Income Valuation'
-          icon='💰'
-          description='Income approach — direct capitalization, GRM, and AI-assisted NOI analysis for commercial properties.'
-          status='placeholder'
-          legacySource='BSIncomeValuation'
-          domain='assessment'
-          scope='parcel'
-          launchSurface='Workbench → Forge tab'
-        />
-      );
-
     case 'regression-studio':
       return (
-        <PlaceholderModule
-          name='Regression Studio'
-          icon='📈'
-          description='County-wide MRA regression models — multiple regression analysis, model diagnostics, IAAO compliance.'
-          status='placeholder'
-          legacySource='Bsbcintelligentvalues'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
-        />
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Regression Studio...</span></div>}>
+          <RegressionStudio />
+        </Suspense>
       );
 
     case 'statistics-studio':
       return (
-        <PlaceholderModule
-          name='Statistics Studio'
-          icon='📊'
-          description='Ratio studies — COD, COV, PRD, weighted mean ratios, IAAO Standard on Ratio Studies compliance.'
-          status='placeholder'
-          legacySource='Assessment workflow tools'
-          domain='analytics'
-          scope='county-wide'
-          launchSurface='Standalone window'
-        />
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Statistics Studio...</span></div>}>
+          <StatisticsStudio />
+        </Suspense>
       );
 
-    case 'comparable-sales':
+    case 'batch-cost-run':
       return (
-        <PlaceholderModule
-          name='Comparable Sales'
-          icon='🏘️'
-          description='Sales comparison approach — neighborhood comps, paired adjustments, Leaflet mapping, USPAP exports.'
-          status='placeholder'
-          legacySource='GeospatialAnalyzerBS'
-          domain='assessment'
-          scope='parcel'
-          launchSurface='Workbench → Forge tab'
-        />
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Batch Cost Runs...</span></div>}>
+          <BatchCostRun />
+        </Suspense>
+      );
+
+    case 'coefficient-preview':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Coefficient Preview...</span></div>}>
+          <CoefficientPreview />
+        </Suspense>
       );
 
     case 'vei':
@@ -691,6 +696,20 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           scope='county-wide'
           launchSurface='Standalone window'
         />
+      );
+
+    case 'management-dashboard':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Management Dashboard...</span></div>}>
+          <ManagementDashboard />
+        </Suspense>
+      );
+
+    case 'terra-queue':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading TerraQueue...</span></div>}>
+          <TerraQueue />
+        </Suspense>
       );
 
     case 'terra-gama':
@@ -894,7 +913,7 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'suite-gpt': {
       const suiteViolation = validateSuiteRendering(module.id);
       if (suiteViolation) {
-        console.warn('[Codex] Suite boundary violation:', suiteViolation);
+        logger.warn('Suite boundary violation:', suiteViolation);
         return (
           <SuiteBoundaryViolationNotice
             moduleId={suiteViolation.moduleId}

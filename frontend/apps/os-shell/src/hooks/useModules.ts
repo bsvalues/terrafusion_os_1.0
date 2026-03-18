@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 import { moduleAPI } from '../services/moduleAPI';
+import { useLogger } from '@/hooks/useLogger';
 
 interface Module {
   id: string;
@@ -22,6 +23,7 @@ interface Module {
 
 export const useModules = () => {
   const queryClient = useQueryClient();
+  const logger = useLogger('useModules');
 
   const {
     data: modules = [],
@@ -54,7 +56,7 @@ export const useModules = () => {
     try {
       await launchModuleMutation.mutateAsync(moduleId);
     } catch (error) {
-      console.error('Failed to launch module:', error);
+      logger.error('Failed to launch module:', error);
       throw error;
     }
   };
@@ -63,7 +65,7 @@ export const useModules = () => {
     try {
       await stopModuleMutation.mutateAsync(moduleId);
     } catch (error) {
-      console.error('Failed to stop module:', error);
+      logger.error('Failed to stop module:', error);
       throw error;
     }
   };

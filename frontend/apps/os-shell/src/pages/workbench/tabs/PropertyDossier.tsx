@@ -39,6 +39,10 @@ import type {
   DossierNoteHeaderItem,
   DossierValuationCategory,
 } from '../../../contracts/dossierDetails';
+import ParcelEvidencePacket from '../../../components/dossier/ParcelEvidencePacket';
+import PacketNarrativeEditor from '../../../components/dossier/PacketNarrativeEditor';
+import PacketFinalizationPanel from '../../../components/dossier/PacketFinalizationPanel';
+import PacketAppealHandoffPanel from '../../../components/dossier/PacketAppealHandoffPanel';
 
 
 // InvocationRecord type imported from shared components
@@ -1101,6 +1105,26 @@ export const PropertyDossier: React.FC = () => {
         )}
         {noteState.status === 'error' && noteState.error && <ErrorDisplay error={{ message: noteState.error.message, errorCode: noteState.error.code, correlationId: noteState.correlationId }} />}
       </BentoCard>
+
+      {/* Phase 19: Evidence Packet Assembly */}
+      <div data-testid="evidence-packet-section">
+        <ParcelEvidencePacket parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 3: Narrative Spine */}
+      <div data-testid="narrative-section">
+        <PacketNarrativeEditor parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 4: Finalization Spine */}
+      <div data-testid="finalization-section">
+        <PacketFinalizationPanel parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 5: Appeal Handoff Spine */}
+      <div data-testid="appeal-handoff-section">
+        <PacketAppealHandoffPanel parcelId={parcelId} />
+      </div>
 
       {/* Governed Tool Invocation History */}
       <InvocationHistory

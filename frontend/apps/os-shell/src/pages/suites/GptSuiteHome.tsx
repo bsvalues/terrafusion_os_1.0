@@ -25,12 +25,12 @@ import {
 } from 'lucide-react';
 
 const GPT_MODULES: SuiteModuleDef[] = [
-  { id: 'studio', label: 'GPT Studio', icon: MessageSquare, description: 'Interactive chat with AI assistants', workbenchTab: 'pilot' },
-  { id: 'marketplace', label: 'GPT Marketplace', icon: Store, description: 'Browse, install, and rate GPT configurations', workbenchTab: 'pilot' },
-  { id: 'management', label: 'GPT Management', icon: Settings, description: 'Dashboard for GPT usage, statistics, and configuration', workbenchTab: 'pilot' },
-  { id: 'builder', label: 'GPT Builder', icon: Wrench, description: 'Create custom GPT configurations with RAG', workbenchTab: 'pilot' },
-  { id: 'analytics', label: 'GPT Analytics', icon: BarChart3, description: 'Usage analytics and cost tracking', workbenchTab: 'pilot' },
-  { id: 'rag', label: 'RAG Datasets', icon: Database, description: 'Manage knowledge bases for RAG-enabled GPTs', workbenchTab: 'pilot' },
+  { id: 'studio', label: 'GPT Studio', icon: MessageSquare, description: 'Interactive chat with AI assistants', launchMode: 'workbench', workbenchTab: 'pilot' },
+  { id: 'marketplace', label: 'GPT Marketplace', icon: Store, description: 'Browse, install, and rate GPT configurations', launchMode: 'workbench', workbenchTab: 'pilot' },
+  { id: 'management', label: 'GPT Management', icon: Settings, description: 'Dashboard for GPT usage, statistics, and configuration', launchMode: 'workbench', workbenchTab: 'pilot' },
+  { id: 'builder', label: 'GPT Builder', icon: Wrench, description: 'Create custom GPT configurations with RAG', launchMode: 'workbench', workbenchTab: 'pilot' },
+  { id: 'analytics', label: 'GPT Analytics', icon: BarChart3, description: 'Usage analytics and cost tracking', launchMode: 'workbench', workbenchTab: 'pilot' },
+  { id: 'rag', label: 'RAG Datasets', icon: Database, description: 'Manage knowledge bases for RAG-enabled GPTs', launchMode: 'workbench', workbenchTab: 'pilot' },
 ];
 
 const fmtNum = (n: number) => n.toLocaleString();

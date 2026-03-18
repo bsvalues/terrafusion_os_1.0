@@ -2,51 +2,1962 @@
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
   "ok": false,
-  "scannedFileCount": 813,
-  "violationCount": 6,
+  "scannedFileCount": 854,
+  "violationCount": 279,
   "violations": [
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DesktopIcon.tsx",
-      "line": 198,
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 41,
+      "column": 31,
+      "excerpt": "rgb(139, 92, 246))',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 42,
+      "column": 12,
+      "excerpt": "rgba(255,255,255,0.03)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 43,
+      "column": 26,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 44,
+      "column": 31,
+      "excerpt": "rgba(0, 255, 255, 0.15)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 45,
+      "column": 17,
+      "excerpt": "rgba(0, 255, 255, 0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 180,
+      "column": 56,
+      "excerpt": "rgba(0, 255, 255, 0.15)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 193,
+      "column": 26,
+      "excerpt": "rgba(0, 255, 255, 0.1)', border: '1px solid rgba(0, 255, 255, 0.3)', color: T.cyan,"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 193,
+      "column": 70,
+      "excerpt": "rgba(0, 255, 255, 0.3)', color: T.cyan,"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 197,
+      "column": 26,
+      "excerpt": "rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: T.success,"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 197,
+      "column": 70,
+      "excerpt": "rgba(34, 197, 94, 0.3)', color: T.success,"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 204,
+      "column": 59,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 213,
+      "column": 40,
+      "excerpt": "rgba(0, 255, 255, 0.08)' : 'transparent',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 261,
+      "column": 26,
+      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 261,
+      "column": 70,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 272,
+      "column": 22,
+      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 272,
+      "column": 66,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 278,
+      "column": 65,
+      "excerpt": "rgba(255,255,255,0.06)', overflow: 'hidden' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 294,
+      "column": 22,
+      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 294,
+      "column": 66,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 336,
+      "column": 73,
+      "excerpt": "rgba(255,255,255,0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 337,
+      "column": 43,
+      "excerpt": "rgba(0, 255, 255, 0.1)' : 'transparent',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 350,
+      "column": 28,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 354,
+      "column": 39,
+      "excerpt": "rgba(255,255,255,0.04)' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 358,
       "column": 64,
-      "excerpt": "hsl(0 0% 100% / 0.08)`,"
+      "excerpt": "rgba(255,255,255,0.06)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DesktopIcon.tsx",
-      "line": 214,
-      "column": 55,
-      "excerpt": "hsl(0 0% 100% / 0.06), transparent)',"
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 365,
+      "column": 64,
+      "excerpt": "rgba(255,255,255,0.04)' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
-      "line": 750,
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 413,
+      "column": 26,
+      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 413,
+      "column": 70,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 425,
+      "column": 24,
+      "excerpt": "rgba(0, 255, 255, 0.1)' : 'rgba(234, 179, 8, 0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 425,
+      "column": 51,
+      "excerpt": "rgba(234, 179, 8, 0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 427,
+      "column": 85,
+      "excerpt": "rgba(0,255,255,0.3)' : 'rgba(234,179,8,0.3)'}`,"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 427,
+      "column": 109,
+      "excerpt": "rgba(234,179,8,0.3)'}`,"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 445,
+      "column": 68,
+      "excerpt": "rgba(255,255,255,0.06)', overflow: 'hidden' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 484,
+      "column": 22,
+      "excerpt": "rgba(0, 255, 255, 0.05)', border: '1px solid rgba(0, 255, 255, 0.15)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 484,
+      "column": 67,
+      "excerpt": "rgba(0, 255, 255, 0.15)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 494,
+      "column": 24,
+      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 494,
+      "column": 68,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 510,
+      "column": 52,
+      "excerpt": "rgba(34,197,94,0.1)' : 'rgba(234,179,8,0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 510,
+      "column": 76,
+      "excerpt": "rgba(234,179,8,0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 517,
+      "column": 26,
+      "excerpt": "rgba(0, 255, 255, 0.04)', border: '1px solid rgba(0, 255, 255, 0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
+      "line": 517,
+      "column": 71,
+      "excerpt": "rgba(0, 255, 255, 0.1)',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\CanonEditor.tsx",
+      "line": 233,
+      "column": 48,
+      "excerpt": "#f44' : m.severity === 'warning' ? '#fa0' : '#4af',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\CanonEditor.tsx",
+      "line": 233,
+      "column": 84,
+      "excerpt": "#fa0' : '#4af',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\CanonEditor.tsx",
+      "line": 233,
+      "column": 93,
+      "excerpt": "#4af',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\CanonEditor.tsx",
+      "line": 305,
+      "column": 44,
+      "excerpt": "#f44' : m.severity === 'warning' ? '#fa0' : '#4af',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\CanonEditor.tsx",
+      "line": 305,
+      "column": 80,
+      "excerpt": "#fa0' : '#4af',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\CanonEditor.tsx",
+      "line": 305,
+      "column": 89,
+      "excerpt": "#4af',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 57,
+      "column": 27,
+      "excerpt": "#ffffff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 58,
+      "column": 27,
+      "excerpt": "#24292e',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 59,
+      "column": 36,
+      "excerpt": "#0366d625',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 60,
+      "column": 44,
+      "excerpt": "#0366d610',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 61,
+      "column": 40,
+      "excerpt": "#f6f8fa',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 62,
+      "column": 36,
+      "excerpt": "#00000000',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 63,
+      "column": 33,
+      "excerpt": "#044289',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 64,
+      "column": 37,
+      "excerpt": "#babbbc',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 65,
+      "column": 43,
+      "excerpt": "#24292e',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 66,
+      "column": 33,
+      "excerpt": "#ffffff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 67,
+      "column": 38,
+      "excerpt": "#eff2f5',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 68,
+      "column": 44,
+      "excerpt": "#d7dbe0',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 69,
+      "column": 39,
+      "excerpt": "#0366d620',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 70,
+      "column": 35,
+      "excerpt": "#0366d680',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 71,
+      "column": 36,
+      "excerpt": "#9599a022',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 72,
+      "column": 41,
+      "excerpt": "#9599a044',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 73,
+      "column": 42,
+      "excerpt": "#9599a066',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 74,
+      "column": 33,
+      "excerpt": "#f6f8fa',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 75,
+      "column": 29,
+      "excerpt": "#e1e4e8',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 76,
+      "column": 28,
+      "excerpt": "#ffffff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 96,
+      "column": 27,
+      "excerpt": "#000000',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 97,
+      "column": 27,
+      "excerpt": "#ffffff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 98,
+      "column": 36,
+      "excerpt": "#264f78',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 99,
+      "column": 44,
+      "excerpt": "#264f7844',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 100,
+      "column": 40,
+      "excerpt": "#0a0a0a',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 101,
+      "column": 36,
+      "excerpt": "#6e768166',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 102,
+      "column": 33,
+      "excerpt": "#ffffff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 103,
+      "column": 37,
+      "excerpt": "#8b949e',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 104,
+      "column": 43,
+      "excerpt": "#ffffff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 105,
+      "column": 33,
+      "excerpt": "#000000',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 106,
+      "column": 38,
+      "excerpt": "#30363d',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 107,
+      "column": 44,
+      "excerpt": "#6e7681',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 108,
+      "column": 39,
+      "excerpt": "#264f78',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 109,
+      "column": 35,
+      "excerpt": "#ffffff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 110,
+      "column": 36,
+      "excerpt": "#6e768155',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 111,
+      "column": 41,
+      "excerpt": "#6e768177',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 112,
+      "column": 42,
+      "excerpt": "#6e768199',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 113,
+      "column": 33,
+      "excerpt": "#0a0a0a',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 114,
+      "column": 29,
+      "excerpt": "#6e7681',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\canon\\canonEditorTheme.ts",
+      "line": 115,
+      "column": 28,
+      "excerpt": "#000000',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 10,
+      "column": 14,
+      "excerpt": "#4fc1ff',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 11,
+      "column": 11,
+      "excerpt": "#e5935a',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 12,
       "column": 15,
-      "excerpt": "hsl(40 100% 50% / 0.25);"
+      "excerpt": "#3dc9b0',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 13,
+      "column": 10,
+      "excerpt": "#c586c0',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 14,
+      "column": 12,
+      "excerpt": "#808080',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 15,
+      "column": 12,
+      "excerpt": "#9cdcfe',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 16,
+      "column": 13,
+      "excerpt": "#6a9955',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 17,
+      "column": 11,
+      "excerpt": "#555',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 125,
+      "column": 63,
+      "excerpt": "#888' }}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 137,
+      "column": 66,
+      "excerpt": "#555',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 159,
+      "column": 66,
+      "excerpt": "#555',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "line": 99,
+      "column": 47,
+      "excerpt": "hsl(190, 90%, 60%)' : undefined,"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 117,
+      "column": 18,
+      "excerpt": "hsl(142 71% 45% / 0.15)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 119,
+      "column": 20,
+      "excerpt": "hsl(43 96% 56% / 0.15)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 120,
+      "column": 20,
+      "excerpt": "hsl(0 84% 60% / 0.15)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 123,
+      "column": 18,
+      "excerpt": "hsl(142 71% 45%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 125,
+      "column": 20,
+      "excerpt": "hsl(43 96% 56%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 126,
+      "column": 20,
+      "excerpt": "hsl(0 84% 60%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 476,
+      "column": 30,
+      "excerpt": "hsl(43 96% 56% / 0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 477,
+      "column": 25,
+      "excerpt": "hsl(43 96% 56%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
+      "line": 478,
+      "column": 36,
+      "excerpt": "hsl(43 96% 56% / 0.2)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 90,
+      "column": 36,
+      "excerpt": "hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 90,
+      "column": 57,
+      "excerpt": "hsl(0 84% 60%)' }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 102,
+      "column": 10,
+      "excerpt": "hsl(142 71% 45%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 104,
+      "column": 12,
+      "excerpt": "hsl(43 96% 56%)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 105,
+      "column": 12,
+      "excerpt": "hsl(0 84% 60%)';"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 514,
+      "column": 30,
+      "excerpt": "hsl(43 96% 56% / 0.1)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 515,
+      "column": 25,
+      "excerpt": "hsl(43 96% 56%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 516,
+      "column": 36,
+      "excerpt": "hsl(43 96% 56% / 0.2)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 530,
+      "column": 34,
+      "excerpt": "hsl(43 96% 56% / 0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 531,
+      "column": 29,
+      "excerpt": "hsl(43 96% 56%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
+      "line": 532,
+      "column": 41,
+      "excerpt": "hsl(43 96% 56% / 0.3)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\config\\moduleComponents.tsx",
+      "line": 537,
+      "column": 73,
+      "excerpt": "hsl(0 60% 10% / 0.95) 100%)',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 255,
+      "column": 64,
+      "excerpt": "#128339;</span>} title=\"Recent Parcels\" />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 259,
+      "column": 45,
+      "excerpt": "#127970;</span>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 270,
+      "column": 52,
+      "excerpt": "#127970;</span>}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 284,
+      "column": 52,
+      "excerpt": "#127970;</span>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 368,
+      "column": 64,
+      "excerpt": "#9889;</span>} title=\"Quick Actions\" />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 371,
+      "column": 48,
+      "excerpt": "#128269;</span>}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 378,
+      "column": 50,
+      "excerpt": "#9654;</span>}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
+      "line": 332,
+      "column": 44,
+      "excerpt": "hsl(0 0% 0% / 0.3)',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
+      "line": 86,
+      "column": 26,
+      "excerpt": "#128269; Model Inputs\" variant=\"default\">"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
+      "line": 156,
+      "column": 45,
+      "excerpt": "#128200;</div>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 207,
+      "column": 80,
+      "excerpt": "#9881;&#65039;</span>}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 207,
+      "column": 87,
+      "excerpt": "#65039;</span>}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 267,
+      "column": 26,
+      "excerpt": "#10004;&#65039;</span> Valuation Explanation"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 267,
+      "column": 34,
+      "excerpt": "#65039;</span> Valuation Explanation"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 273,
+      "column": 167,
+      "excerpt": "#128203;</button>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 291,
+      "column": 86,
+      "excerpt": "#128221; Explanation</h5>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 298,
+      "column": 86,
+      "excerpt": "#128202; Value Drivers</h5>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 332,
+      "column": 47,
+      "excerpt": "#128293;</div>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 346,
+      "column": 26,
+      "excerpt": "#128200; Value Change Analysis\" variant=\"default\">"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 383,
+      "column": 84,
+      "excerpt": "#128221; Change Explanation</h5>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 390,
+      "column": 84,
+      "excerpt": "#128202; Contributing Factors</h5>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 406,
+      "column": 167,
+      "excerpt": "#128203;</button>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 418,
+      "column": 26,
+      "excerpt": "#128202; Value History Trend\" variant=\"default\">"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 447,
+      "column": 26,
+      "excerpt": "#127959;&#65039; Run Valuation Model\" actions={<span className=\"text-xs tf-badge-error px-2 py-0.5 rounded\">write_high</span>}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 447,
+      "column": 35,
+      "excerpt": "#65039; Run Valuation Model\" actions={<span className=\"text-xs tf-badge-error px-2 py-0.5 rounded\">write_high</span>}>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 472,
+      "column": 118,
+      "excerpt": "#9888;&#65039; Confirm Above to Enable'}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 472,
+      "column": 125,
+      "excerpt": "#65039; Confirm Above to Enable'}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\IncomeApproach.tsx",
+      "line": 97,
+      "column": 26,
+      "excerpt": "#128176; Quick Income Valuation\" variant=\"default\">"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
+      "line": 93,
+      "column": 26,
+      "excerpt": "#127960; Sales Comps Rationale\" variant=\"default\">"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
+      "line": 317,
+      "column": 14,
+      "excerpt": "hsl(142 71% 45% / 0.15)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
+      "line": 318,
+      "column": 14,
+      "excerpt": "hsl(38 92% 50% / 0.15)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
+      "line": 326,
+      "column": 33,
+      "excerpt": "hsl(142 71% 45%)' : 'hsl(38 92% 50%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
+      "line": 326,
+      "column": 54,
+      "excerpt": "hsl(38 92% 50%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
+      "line": 328,
+      "column": 24,
+      "excerpt": "hsl(142 71% 45% / 0.6)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
+      "line": 329,
+      "column": 24,
+      "excerpt": "hsl(38 92% 50% / 0.6)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
+      "line": 335,
+      "column": 28,
+      "excerpt": "hsl(142 71% 45%)' : 'hsl(38 92% 50%)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
+      "line": 335,
+      "column": 49,
+      "excerpt": "hsl(38 92% 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
-      "line": 751,
+      "line": 1674,
       "column": 10,
-      "excerpt": "hsl(40 100% 75%);"
+      "excerpt": "hsl(45, 90%, 65%);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
-      "line": 894,
-      "column": 10,
-      "excerpt": "hsl(0 70% 60%);"
+      "line": 1675,
+      "column": 15,
+      "excerpt": "hsl(45, 90%, 65% / 0.1);"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
-      "line": 898,
+      "line": 1679,
       "column": 10,
-      "excerpt": "hsl(0 70% 65%);"
+      "excerpt": "hsl(140, 70%, 55%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1680,
+      "column": 15,
+      "excerpt": "hsl(140, 70%, 55% / 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1684,
+      "column": 10,
+      "excerpt": "hsl(0, 75%, 60%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1685,
+      "column": 15,
+      "excerpt": "hsl(0, 75%, 60% / 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1689,
+      "column": 10,
+      "excerpt": "hsl(210, 20%, 55%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1690,
+      "column": 15,
+      "excerpt": "hsl(210, 20%, 55% / 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1694,
+      "column": 10,
+      "excerpt": "hsl(200, 75%, 60%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1695,
+      "column": 15,
+      "excerpt": "hsl(200, 75%, 60% / 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1699,
+      "column": 10,
+      "excerpt": "hsl(280, 60%, 65%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1700,
+      "column": 15,
+      "excerpt": "hsl(280, 60%, 65% / 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1704,
+      "column": 10,
+      "excerpt": "hsl(15, 90%, 60%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1814,
+      "column": 41,
+      "excerpt": "hsl(45, 90%, 65%); }"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1815,
+      "column": 38,
+      "excerpt": "hsl(30, 80%, 60%); }"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 1816,
+      "column": 42,
+      "excerpt": "hsl(200, 75%, 60%); }"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2059,
+      "column": 10,
+      "excerpt": "hsl(0, 80%, 65%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2129,
+      "column": 15,
+      "excerpt": "hsl(0, 60%, 50% / 0.15);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2130,
+      "column": 10,
+      "excerpt": "hsl(0, 70%, 65%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2131,
+      "column": 17,
+      "excerpt": "hsl(0, 60%, 50% / 0.3);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2242,
+      "column": 10,
+      "excerpt": "hsl(45, 80%, 55%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2304,
+      "column": 15,
+      "excerpt": "hsl(0, 60%, 50% / 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2338,
+      "column": 26,
+      "excerpt": "hsl(0 0% 0% / 0.5), 0 2px 8px hsl(0 0% 0% / 0.3);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2338,
+      "column": 56,
+      "excerpt": "hsl(0 0% 0% / 0.3);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2460,
+      "column": 10,
+      "excerpt": "hsl(0, 70%, 60%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2516,
+      "column": 15,
+      "excerpt": "hsl(0 0% 0% / 0.45);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2530,
+      "column": 26,
+      "excerpt": "hsl(0 0% 0% / 0.35);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2612,
+      "column": 34,
+      "excerpt": "hsl(210, 80%, 65%); }"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2613,
+      "column": 31,
+      "excerpt": "hsl(35, 85%, 60%); }"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2614,
+      "column": 35,
+      "excerpt": "hsl(170, 65%, 55%); }"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2728,
+      "column": 10,
+      "excerpt": "hsl(0, 70%, 60%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2906,
+      "column": 10,
+      "excerpt": "hsl(0, 70%, 60%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2907,
+      "column": 15,
+      "excerpt": "hsl(0, 70%, 60% / 0.08);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 2908,
+      "column": 17,
+      "excerpt": "hsl(0, 70%, 60% / 0.2);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3119,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.5);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3128,
+      "column": 28,
+      "excerpt": "rgba(255, 255, 255, 0.08);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3134,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.92);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3141,
+      "column": 15,
+      "excerpt": "rgba(0, 200, 120, 0.15);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3142,
+      "column": 10,
+      "excerpt": "rgba(0, 200, 120, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3149,
+      "column": 15,
+      "excerpt": "rgba(255, 80, 80, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3150,
+      "column": 21,
+      "excerpt": "rgba(255, 80, 80, 0.2);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3151,
+      "column": 10,
+      "excerpt": "rgba(255, 80, 80, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3168,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.45);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3180,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.8);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3184,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.04);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3188,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.06);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3189,
+      "column": 21,
+      "excerpt": "rgba(255, 255, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3190,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.85);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3198,
+      "column": 17,
+      "excerpt": "rgba(100, 180, 255, 0.5);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3202,
+      "column": 17,
+      "excerpt": "rgba(100, 180, 255, 0.8);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3216,
+      "column": 21,
+      "excerpt": "rgba(255, 255, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3217,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.06);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3218,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.8);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3227,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3240,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.85);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3245,
+      "column": 25,
+      "excerpt": "rgba(255, 255, 255, 0.08);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3251,
+      "column": 21,
+      "excerpt": "rgba(255, 80, 80, 0.25);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3252,
+      "column": 15,
+      "excerpt": "rgba(255, 80, 80, 0.06);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3253,
+      "column": 10,
+      "excerpt": "rgba(255, 80, 80, 0.85);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3261,
+      "column": 15,
+      "excerpt": "rgba(255, 80, 80, 0.12);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3266,
+      "column": 15,
+      "excerpt": "rgba(30, 30, 44, 0.98);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3267,
+      "column": 28,
+      "excerpt": "rgba(255, 255, 255, 0.08);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3284,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.85);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3296,
+      "column": 21,
+      "excerpt": "rgba(255, 255, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3297,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.04);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3298,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.6);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3310,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3311,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.85);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3315,
+      "column": 15,
+      "excerpt": "rgba(100, 180, 255, 0.15);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3316,
+      "column": 17,
+      "excerpt": "rgba(100, 180, 255, 0.3);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3317,
+      "column": 10,
+      "excerpt": "rgba(100, 180, 255, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3334,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.06);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3335,
+      "column": 21,
+      "excerpt": "rgba(255, 255, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3336,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3345,
+      "column": 17,
+      "excerpt": "rgba(100, 180, 255, 0.5);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3351,
+      "column": 21,
+      "excerpt": "rgba(255, 255, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3352,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.04);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3353,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.5);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3362,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.08);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3363,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.8);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3367,
+      "column": 15,
+      "excerpt": "rgba(100, 180, 255, 0.15);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3368,
+      "column": 17,
+      "excerpt": "rgba(100, 180, 255, 0.3);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3369,
+      "column": 10,
+      "excerpt": "rgba(100, 180, 255, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3374,
+      "column": 21,
+      "excerpt": "rgba(255, 140, 60, 0.3);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3375,
+      "column": 15,
+      "excerpt": "rgba(255, 140, 60, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3376,
+      "column": 10,
+      "excerpt": "rgba(255, 140, 60, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3386,
+      "column": 15,
+      "excerpt": "rgba(255, 140, 60, 0.2);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3405,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.65);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3411,
+      "column": 17,
+      "excerpt": "rgba(100, 180, 255, 0.8);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3418,
+      "column": 21,
+      "excerpt": "rgba(100, 180, 255, 0.3);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3419,
+      "column": 15,
+      "excerpt": "rgba(100, 180, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3420,
+      "column": 10,
+      "excerpt": "rgba(100, 180, 255, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3429,
+      "column": 15,
+      "excerpt": "rgba(100, 180, 255, 0.2);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3438,
+      "column": 15,
+      "excerpt": "rgba(255, 80, 80, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3439,
+      "column": 21,
+      "excerpt": "rgba(255, 80, 80, 0.2);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3440,
+      "column": 10,
+      "excerpt": "rgba(255, 80, 80, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3448,
+      "column": 15,
+      "excerpt": "rgba(0, 200, 120, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3449,
+      "column": 21,
+      "excerpt": "rgba(0, 200, 120, 0.2);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3450,
+      "column": 10,
+      "excerpt": "rgba(0, 200, 120, 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3458,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.5);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3464,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.35);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3486,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.03);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3491,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.8);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3497,
+      "column": 15,
+      "excerpt": "rgba(255, 255, 255, 0.06);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3503,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.45);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3518,
+      "column": 15,
+      "excerpt": "rgba(100, 180, 255, 0.1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3519,
+      "column": 10,
+      "excerpt": "rgba(100, 180, 255, 0.8);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3533,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.7);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3538,
+      "column": 15,
+      "excerpt": "rgba(100, 180, 255, 0.06);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3543,
+      "column": 10,
+      "excerpt": "rgba(255, 255, 255, 0.35);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3557,
+      "column": 15,
+      "excerpt": "rgba(255, 200, 50, 0.3);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3558,
+      "column": 10,
+      "excerpt": "rgba(255, 220, 100, 1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3617,
+      "column": 15,
+      "excerpt": "hsl(190 80% 55% / 0.5);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3631,
+      "column": 31,
+      "excerpt": "hsl(190 80% 55% / 0.9);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3635,
+      "column": 31,
+      "excerpt": "hsl(190 80% 70% / 1);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3644,
+      "column": 15,
+      "excerpt": "hsl(0 70% 45% / 0.12);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3648,
+      "column": 15,
+      "excerpt": "hsl(40 80% 50% / 0.10);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3652,
+      "column": 15,
+      "excerpt": "hsl(210 70% 55% / 0.08);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3656,
+      "column": 15,
+      "excerpt": "hsl(150 50% 45% / 0.08);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3660,
+      "column": 15,
+      "excerpt": "hsl(0 70% 50%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3668,
+      "column": 15,
+      "excerpt": "hsl(40 90% 55%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3676,
+      "column": 15,
+      "excerpt": "hsl(210 70% 60%);"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\styles\\canon-ide.css",
+      "line": 3684,
+      "column": 15,
+      "excerpt": "hsl(150 50% 50%);"
     }
   ],
-  "generatedAtIso": "2026-03-13T14:48:45.990Z"
+  "generatedAtIso": "2026-03-14T22:43:27.905Z"
 }

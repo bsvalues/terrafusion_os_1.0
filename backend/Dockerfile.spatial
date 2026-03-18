@@ -1,0 +1,92 @@
+# TFT-189: Dockerfile for TerraFusion Spatial Analysis Service
+# Build: docker build -f Dockerfile.spatial -t terrafusion-spatial .
+# Run:   docker run -p 5002:5002 terrafusion-spatial
+
+# ── Build stage ──────────────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy solution and project files for layer caching
+COPY TerraFusion.sln ./
+COPY Directory.Packages.props ./
+COPY src/Directory.Build.targets src/
+COPY src/TerraFusion.API/TerraFusion.API.csproj src/TerraFusion.API/
+COPY src/TerraFusion.Core/TerraFusion.Core.csproj src/TerraFusion.Core/
+COPY src/TerraFusion.Data/TerraFusion.Data.csproj src/TerraFusion.Data/
+COPY src/TerraFusion.AI/TerraFusion.AI.csproj src/TerraFusion.AI/
+COPY src/TerraFusion.Security/TerraFusion.Security.csproj src/TerraFusion.Security/
+COPY src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj src/TerraFusion.Abstractions/
+COPY src/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj src/TerraFusion.Consciousness/
+COPY src/TerraFusion.Operations/TerraFusion.Operations.csproj src/TerraFusion.Operations/
+COPY src/TerraFusion.Levy/TerraFusion.Levy.csproj src/TerraFusion.Levy/
+COPY src/TerraFusion.CostForge/TerraFusion.CostForge.csproj src/TerraFusion.CostForge/
+COPY src/TerraFusion.Sync/TerraFusion.Sync.csproj src/TerraFusion.Sync/
+COPY TerraFusion.Gateway/TerraFusion.Gateway.csproj TerraFusion.Gateway/
+
+# Restore packages
+RUN dotnet restore src/TerraFusion.API/TerraFusion.API.csproj --runtime linux-x64
+
+# Copy all source code and publish
+COPY . .
+
+FROM build AS publish
+WORKDIR /src/src/TerraFusion.API
+RUN dotnet publish TerraFusion.API.csproj -c Release -o /app/publish \
+    --self-contained false \
+    --no-restore \
+    /p:DebugType=None \
+    /p:DebugSymbols=false
+
+# ── Runtime stage with GDAL/spatial libraries ────────────────────────────────
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+
+# Install GDAL and spatial analysis dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    gdal-bin \
+    libgdal-dev \
+    libproj-dev \
+    libgeos-dev \
+    libspatialite-dev \
+    proj-bin \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set GDAL environment variables
+ENV GDAL_DATA=/usr/share/gdal
+ENV PROJ_LIB=/usr/share/proj
+
+WORKDIR /app
+
+# Security: non-root user
+RUN groupadd -r terrafusion && useradd -r -g terrafusion -s /sbin/nologin terrafusion
+
+COPY --from=publish /app/publish .
+RUN chown -R terrafusion:terrafusion /app
+
+# Environment
+ENV ASPNETCORE_URLS=http://+:5002
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+ENV TZ=America/Los_Angeles
+
+# Spatial service configuration
+ENV SPATIAL__EnableGdalProcessing=true
+ENV SPATIAL__MaxConcurrentAnalyses=4
+ENV SPATIAL__DefaultCrs=EPSG:2927
+
+EXPOSE 5002
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD curl -f http://localhost:5002/health || exit 1
+
+LABEL org.opencontainers.image.title="TerraFusion Spatial" \
+      org.opencontainers.image.description="TerraFusion Spatial Analysis with GDAL" \
+      org.opencontainers.image.vendor="TerraFusion" \
+      terrafusion.component="spatial" \
+      terrafusion.compliance="FISMA-High"
+
+USER terrafusion
+
+ENTRYPOINT ["dotnet", "TerraFusion.API.dll"]

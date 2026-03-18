@@ -26,6 +26,7 @@
  * Scope: Mechanical robustness only; not asserting backend data correctness.
  */
 
+import { vi, describe, it, expect, afterEach } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -35,8 +36,8 @@ import React from 'react';
 
 let memoryRouterEntries: string[] = ['/'];
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -45,15 +46,15 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-jest.mock('../../auth/authStorage', () => ({
+vi.mock('../../auth/authStorage', () => ({
   getToken: () => 'smoke-test-token',
-  setToken: jest.fn(),
-  clearToken: jest.fn(),
+  setToken: vi.fn(),
+  clearToken: vi.fn(),
 }));
 
-jest.mock('../../auth/authBridge', () => ({
-  registerLogoutHandler: jest.fn(),
-  unregisterLogoutHandler: jest.fn(),
+vi.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: vi.fn(),
+  unregisterLogoutHandler: vi.fn(),
 }));
 
 import Router from '../../Router';

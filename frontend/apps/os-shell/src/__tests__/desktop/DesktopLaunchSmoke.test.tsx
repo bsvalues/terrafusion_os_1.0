@@ -15,6 +15,7 @@
  * Scope: Mechanical smoke only; not asserting business behavior or data loading.
  */
 
+import { vi, describe, it, expect, afterEach } from 'vitest';
 import React from 'react';
 import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import { getDesktopIcons } from '../../config/desktopManifest';
@@ -26,8 +27,8 @@ import { getDesktopIcons } from '../../config/desktopManifest';
 // Mutable entries array — set per-test to control initial route.
 let memoryRouterEntries: string[] = ['/'];
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => (
@@ -37,16 +38,16 @@ jest.mock('react-router-dom', () => {
 });
 
 // Mock auth to be authenticated — bypasses AuthGuard redirect to /login.
-jest.mock('../../auth/authStorage', () => ({
+vi.mock('../../auth/authStorage', () => ({
   getToken: () => 'smoke-test-token',
-  setToken: jest.fn(),
-  clearToken: jest.fn(),
+  setToken: vi.fn(),
+  clearToken: vi.fn(),
 }));
 
 // Mock authBridge to avoid registration side effects.
-jest.mock('../../auth/authBridge', () => ({
-  registerLogoutHandler: jest.fn(),
-  unregisterLogoutHandler: jest.fn(),
+vi.mock('../../auth/authBridge', () => ({
+  registerLogoutHandler: vi.fn(),
+  unregisterLogoutHandler: vi.fn(),
 }));
 
 // Top-level import — Router.tsx uses getViteEnv() (not import.meta directly),

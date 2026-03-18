@@ -23,6 +23,7 @@
  * @elite-status Championship-Grade Memory Management
  */
 
+import { vi, describe, test, expect, afterAll } from 'vitest';
 import { render } from '@testing-library/react';
 import React, { useEffect, useState } from 'react';
 
@@ -196,48 +197,48 @@ describe('Memory Leak Detection - Event Listeners', () => {
 
 describe('Memory Leak Detection - Timers', () => {
   test('should cleanup intervals on unmount', () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const { unmount } = render(<ComponentWithInterval />);
 
     // Fast-forward time
-    jest.advanceTimersByTime(5000);
+    vi.advanceTimersByTime(5000);
 
     unmount();
 
     // No more timer executions should happen
-    const timerCount = jest.getTimerCount();
+    const timerCount = vi.getTimerCount();
     expect(timerCount).toBe(0);
 
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   test('should cleanup timeouts on unmount', () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const { unmount } = render(<ComponentWithTimeout />);
 
     unmount();
 
     // Timeout should be cleared
-    const timerCount = jest.getTimerCount();
+    const timerCount = vi.getTimerCount();
     expect(timerCount).toBe(0);
 
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   test('should not accumulate timers with repeated mount/unmount', () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     for (let i = 0; i < 50; i++) {
       const { unmount } = render(<ComponentWithInterval />);
       unmount();
     }
 
-    const timerCount = jest.getTimerCount();
+    const timerCount = vi.getTimerCount();
     expect(timerCount).toBe(0);
 
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });
 

@@ -1,0 +1,166 @@
+{
+  "generatedAt": "2026-03-16T16:08:12.462Z",
+  "scope": "Phase 20 Benton Acceptance / UAT Packet",
+  "decision": "READY_FOR_SIGNOFF",
+  "technicalUatReady": true,
+  "assessorSignoffPresent": false,
+  "checks": [
+    {
+      "name": "phase17.go_live.decision",
+      "ok": true,
+      "detail": "decision=GO",
+      "payload": {
+        "generatedAt": "2026-03-13T11:59:52.552Z",
+        "summary": {
+          "ok": true,
+          "failures": 0,
+          "blockers": [],
+          "goLiveScope": "Benton operational-snapshot runtime on Hostinger staging and production only. PACS-connected sync remains a separate canonical runtime role.",
+          "operatorTruth": "A Phase 17 GO means operator workflow, promoted snapshot truth, environment identity, deployment contract, monitoring freshness, and recovery posture are all proven on the active Hostinger runtime role."
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase19.snapshot_promotion.decision",
+      "ok": true,
+      "detail": "decision=GO",
+      "payload": {
+        "generatedAt": "2026-03-13T12:02:25.720Z",
+        "summary": {
+          "ok": true,
+          "failures": 0,
+          "blockers": [],
+          "automationTruth": "Phase 19 GO means the Benton promotion artifact is generated, checksummed, locally attested, published to the Hostinger promotion catalog, and tied to staging/production receipts through one repeatable automation path.",
+          "promotionMode": "Current automation mode is parity-confirmed no-replace promotion because the deployed Hostinger runtimes already match the promoted stable Benton contract."
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase15.data_quality.decision",
+      "ok": true,
+      "detail": "decision=GO",
+      "payload": {
+        "generatedAt": "2026-03-13T11:59:42.562Z"
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase14.operator_workflow.decision",
+      "ok": true,
+      "detail": "decision=GO",
+      "payload": {
+        "generatedAt": "2026-03-13T11:59:33.489Z",
+        "summary": {
+          "ok": true,
+          "failures": 0,
+          "blockers": [],
+          "operatorWorkflowDecision": "The active Benton operator path is proven through local workbench slice tests and deployed authenticated 9-tab workbench flows on staging and production."
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase16.monitoring_recovery.decision",
+      "ok": true,
+      "detail": "decision=GO",
+      "payload": {
+        "generatedAt": "2026-03-13T11:59:51.546Z",
+        "summary": {
+          "ok": true,
+          "failures": 0,
+          "blockers": [],
+          "monitoringTruth": "Public health must stay truthful, the promoted Benton snapshot must remain fresh enough, and both Hostinger snapshot runtimes must survive backup/restore without breaking the Benton operator contract."
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "phase18.pacs_runtime.decision",
+      "ok": true,
+      "detail": "decision=GO",
+      "payload": {
+        "generatedAt": "2026-03-13T11:59:53.422Z",
+        "summary": {
+          "ok": true,
+          "failures": 0,
+          "blockers": [],
+          "runtimeRole": "Canonical PACS-connected Benton runtime is the secured local workstation/runtime. Hostinger remains snapshot-only.",
+          "productizationTruth": "A Phase 18 GO means the current PACS-connected runtime role is explicitly documented, locally provable, and no longer implied by tribal knowledge."
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "uat.public_runtime_health",
+      "ok": true,
+      "detail": "staging=200/Staging, production=200/Production",
+      "payload": {
+        "staging": {
+          "status": 200,
+          "environment": "Staging",
+          "releaseSha": "fcaf281450757307fe43a235e22e9dbd78877e26"
+        },
+        "production": {
+          "status": 200,
+          "environment": "Production",
+          "releaseSha": "fcaf281450757307fe43a235e22e9dbd78877e26"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "name": "governance.phase20_doc",
+      "ok": true,
+      "detail": "Phase 20 runbook records the two-layer decision model",
+      "payload": {
+        "missingPhase20Doc": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "governance.hostinger_control_plane.phase20_truth",
+      "ok": true,
+      "detail": "Hostinger control plane records the Phase 20 UAT contract",
+      "payload": {
+        "missingHostingerCanon": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "governance.checklist.phase20",
+      "ok": true,
+      "detail": "Post-go-live checklist tracks Phase 20",
+      "payload": {
+        "missingChecklist": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "uat.assessor_signoff_artifact",
+      "ok": true,
+      "detail": "assessor signoff artifact not yet committed (expected — Phase 20 remains READY_FOR_SIGNOFF)",
+      "payload": {
+        "signoffArtifactExists": false
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": [],
+    "uatScope": "Benton operational-snapshot runtime on Hostinger staging and production. Technical UAT readiness is derived from Phase 17 go-live baseline and Phase 19 promoted snapshot contract.",
+    "signoffRequirement": "Final GO requires an explicit Benton assessor/operator signoff artifact at os-platform/core/pilot/evidence/phase20-assessor-signoff.json",
+    "knownLimitations": [
+      "ComparableSales.Bedrooms null on 76773/76775 rows (PACS source characteristic)",
+      "ComparableSales.Bathrooms populated on 42012 rows after Phase 15 correction",
+      "GrossLivingArea null on 3068 comparable sales rows",
+      "LotSizeSqft null on 12461 comparable sales rows",
+      "YearBuilt null on 8636 comparable sales rows",
+      "1022 placeholder PACS-prefix addresses in comparable sales",
+      "Hostinger runtimes are snapshot-only; no live PACS sync"
+    ]
+  }
+}

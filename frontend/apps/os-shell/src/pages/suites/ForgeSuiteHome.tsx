@@ -44,6 +44,8 @@ const FORGE_MODULES: SuiteModuleDef[] = [
   { id: 'regression-studio', label: 'Regression Studio', icon: LineChart, description: 'County-wide MRA regression models & IAAO compliance', launchMode: 'standalone', moduleId: 'regression-studio' },
   { id: 'statistics-studio', label: 'Statistics Studio', icon: PieChart, description: 'Ratio studies, COD/PRD/PRB & statistical diagnostics', launchMode: 'standalone', moduleId: 'statistics-studio' },
   { id: 'terra-gama', label: 'TerraGAMA', icon: MapPin, description: 'Geographic Area Market Analysis — neighborhood delineation', launchMode: 'standalone', moduleId: 'terra-gama' },
+  { id: 'batch-cost-run', label: 'Batch Cost Runs', icon: TrendingUp, description: 'Batch cost model runs with strata/neighborhood/class filters and dry-run preview', launchMode: 'standalone', moduleId: 'batch-cost-run' },
+  { id: 'coefficient-preview', label: 'Coefficient Preview', icon: Scale, description: 'Current vs proposed coefficient comparison with parcel impact analysis', launchMode: 'standalone', moduleId: 'coefficient-preview' },
 ];
 
 const fmtNum = (n: number) => n.toLocaleString();
@@ -51,16 +53,23 @@ const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
 
 export default function ForgeSuiteHome() {
   const navigate = useNavigate();
-  const { stats } = useCountyStats();
+  const { stats, loading, error } = useCountyStats();
 
   return (
     <div data-testid="suite-forge-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Parcel Context Banner — shows when parcel is active */}
       <ParcelContextBanner suiteTabId="forge" />
 
+      {loading && !stats && (
+        <div data-testid="forge-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
+      )}
+      {error && (
+        <div data-testid="forge-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-forge))' }}>{error}</div>
+      )}
+
       {/* Stats Strip */}
       {stats && (
-        <div className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
+        <div data-testid="forge-stats" className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.totalParcels)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Avg Assessed</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(stats.averageAssessedValue)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Assessed This Year</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.assessedThisYear)}</span></div>
@@ -90,8 +99,12 @@ export default function ForgeSuiteHome() {
 
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
-        <SuiteModuleGrid modules={FORGE_MODULES} accentVar="--tf-suite-forge" />
-        <OperationalQueue title="Recent Assessments" accentVar="--tf-suite-forge" emptyMessage="No recent assessment activity" />
+        <div data-testid="forge-modules">
+          <SuiteModuleGrid modules={FORGE_MODULES} accentVar="--tf-suite-forge" />
+        </div>
+        <div data-testid="forge-queue">
+          <OperationalQueue title="Recent Assessments" accentVar="--tf-suite-forge" emptyMessage="No recent assessment activity" />
+        </div>
       </main>
     </div>
   );

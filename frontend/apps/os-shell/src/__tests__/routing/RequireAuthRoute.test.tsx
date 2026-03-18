@@ -5,6 +5,7 @@
  * - Unauthenticated users are redirected to /login
  * - Authenticated users see children
  */
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { AuthGuard, AuthProvider } from '../../auth/AuthProvider';
@@ -37,7 +38,7 @@ function renderGuardedRoute(initialPath: string) {
 describe('RequireAuth / AuthGuard route guard', () => {
   beforeEach(() => {
     localStorage.clear();
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     delete process.env.VITE_USE_MOCK_DATA;
     delete process.env.VITE_DEV_PREVIEW_BYPASS_AUTH;
   });

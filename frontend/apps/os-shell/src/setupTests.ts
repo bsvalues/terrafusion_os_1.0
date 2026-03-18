@@ -16,7 +16,7 @@ Object.defineProperty(globalThis, 'import', {
   value: {
     meta: {
       env: {
-        VITE_API_URL: 'http://localhost:5000',
+        VITE_API_URL: process.env.VITE_API_URL || 'http://localhost:5000',
         VITE_COUNTY_NAME: 'Benton County',
         VITE_COUNTY_CODE: 'benton',
         VITE_COUNTY_FIPS: '53005',

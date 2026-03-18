@@ -11,19 +11,20 @@
  * - Shows dev info in development mode
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { ResultPanel } from '../../../components/workbench/ResultPanel';
 
 // Mock ErrorDisplay
-jest.mock('../../../components/errors/ErrorDisplay', () => ({
+vi.mock('../../../components/errors/ErrorDisplay', () => ({
   ErrorDisplay: ({ error }: { error: { message: string } }) => (
     <div data-testid='error-display'>{error.message}</div>
   ),
 }));
 
 // Mock getEnv
-jest.mock('../../../runtime/env', () => ({
-  getEnv: jest.fn((key?: string) => {
+vi.mock('../../../runtime/env', () => ({
+  getEnv: vi.fn((key?: string) => {
     if (key === 'MODE') return 'development';
     if (key === 'DEV') return true;
     return { DEV: true, MODE: 'development' };
@@ -34,7 +35,7 @@ describe('ResultPanel', () => {
   beforeEach(() => {
     Object.assign(navigator, {
       clipboard: {
-        writeText: jest.fn().mockResolvedValue(undefined),
+        writeText: vi.fn().mockResolvedValue(undefined),
       },
     });
   });
@@ -143,7 +144,7 @@ describe('ResultPanel', () => {
     });
 
     it('shows dismiss button when onDismiss provided', () => {
-      const onDismiss = jest.fn();
+      const onDismiss = vi.fn();
       render(
         <ResultPanel
           status='error'

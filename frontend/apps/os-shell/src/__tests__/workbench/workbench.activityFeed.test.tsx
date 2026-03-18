@@ -15,18 +15,19 @@
  * @see components/workbench/ActivityFeed — Component under test
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import { ActivityFeed, ActivityEntry } from '../../components/workbench/ActivityFeed';
 import * as materialQualityGate from '../../ui/materials/materialQualityGate';
 import { MaterialQuality } from '../../ui/materials/materialQualityGate';
 
 // Mock the quality gate
-jest.mock('../../ui/materials/materialQualityGate', () => ({
-  ...jest.requireActual('../../ui/materials/materialQualityGate'),
-  useMaterialQuality: jest.fn(),
+vi.mock('../../ui/materials/materialQualityGate', async () => ({
+  ...(await vi.importActual('../../ui/materials/materialQualityGate')),
+  useMaterialQuality: vi.fn(),
 }));
 
-const mockUseMaterialQuality = materialQualityGate.useMaterialQuality as jest.MockedFunction<
+const mockUseMaterialQuality = materialQualityGate.useMaterialQuality as vi.MockedFunction<
   typeof materialQualityGate.useMaterialQuality
 >;
 
@@ -89,7 +90,7 @@ const SAMPLE_ENTRIES: ActivityEntry[] = [
 
 describe('ActivityFeed', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockUseMaterialQuality.mockReturnValue(HIGH_QUALITY_STATE);
   });
 

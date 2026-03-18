@@ -212,7 +212,7 @@ environment:
 
 ### Future Enhancements (Priority: MEDIUM)
 
-5. **Real-Time County Violation Detection in TerraFusion IDE**
+5. **Real-Time County Violation Detection in TerraCanon**
    - Monaco Editor integration
    - Detect `.ToListAsync()` without `CountyId` filter
    - Show CRITICAL warning inline with FISMA violation context

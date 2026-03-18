@@ -1,0 +1,43 @@
+{
+  "phase": "4D",
+  "wave": "1D",
+  "batch": "dossier-documents",
+  "generated_at": "2026-03-15T07:50:20Z",
+  "execution_status": "executed",
+  "total_assets": 1,
+  "by_source_repo": {
+    "Bsbcintelligentvalues": 1
+  },
+  "by_suite": {
+    "TerraDossier": 1
+  },
+  "assets": [
+    {
+      "asset_id": "BIV-013",
+      "source_repo": "Bsbcintelligentvalues",
+      "description": "PDF document connector for extracting fields, text, and metadata from assessment documents",
+      "owner_suite": "TerraDossier",
+      "target_home": "backend/TerraFusion.Core/Documents/PdfConnector.cs",
+      "target_path": "backend/TerraFusion.Core/Documents/PdfConnector.cs",
+      "parity_mode": "adapted",
+      "acceptance_test_ref": "test/terradossier/dossier-documents/parity-check",
+      "acceptance_test_owner": "founder",
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.Core/Documents/PdfConnector.cs. Domain logic preserved."
+    }
+  ],
+  "execution_completed_at": "2026-03-15T07:59:27Z",
+  "execution_summary": {
+    "total": 1,
+    "executed": 1,
+    "missing": 0,
+    "parity_rate": "100.0%",
+    "parity_mode_split": {
+      "adapted": 1,
+      "exact": 0,
+      "superseded": 0
+    }
+  }
+}

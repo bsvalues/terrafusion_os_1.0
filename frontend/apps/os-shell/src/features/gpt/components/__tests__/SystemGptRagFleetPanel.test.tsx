@@ -6,25 +6,24 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-// Vitest imports removed - Jest globals used
-import '@testing-library/jest-dom';
 import type { RagFleetReadiness } from '../../../../api/systemDiagnosticsApi';
 import { SystemGptRagFleetPanel } from '../SystemGptRagFleetPanel';
 
 // Mock the systemDiagnosticsApi module entirely (avoids import.meta.env issues)
-jest.mock('../../../../api/systemDiagnosticsApi', () => ({
-  fetchRagFleetReadiness: jest.fn(),
+vi.mock('../../../../api/systemDiagnosticsApi', () => ({
+  fetchRagFleetReadiness: vi.fn(),
 }));
 
 describe('SystemGptRagFleetPanel', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.restoreAllMocks();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   // ═══════════════════════════════════════════════════════════════

@@ -28,6 +28,10 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
   state = 'idle',
   className = '',
 }) => {
+  const isCompact = size < 32;
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ringCount = 7;
 
   const getStateStyles = () => {
@@ -77,6 +81,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
   return (
     <div
       className={`terrasphere-container ${className}`}
+      data-size-class={isCompact ? 'compact' : 'standard'}
       style={{
         width: size,
         height: size,
@@ -94,7 +99,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
           height: size * 0.8,
           position: 'relative',
           transformStyle: 'preserve-3d',
-          animation: styles.sphereAnimation,
+          animation: prefersReducedMotion ? 'none' : styles.sphereAnimation,
         }}
       >
         {/* Wireframe rings */}
@@ -110,7 +115,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
               borderRadius: '50%',
               transformStyle: 'preserve-3d',
               transform: i < 4 ? `rotateX(${i * 30}deg)` : `rotateY(${(i - 4 + 1) * 30}deg)`,
-              animation: styles.ringAnimation,
+              animation: prefersReducedMotion ? 'none' : styles.ringAnimation,
             }}
           />
         ))}
@@ -128,8 +133,9 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
             background: `radial-gradient(circle, ${styles.coreColor} 0%, transparent 70%)`,
             borderRadius: '50%',
             boxShadow: styles.coreShadow,
-            animation:
-              state === 'processing'
+            animation: prefersReducedMotion
+              ? 'none'
+              : state === 'processing'
                 ? 'intensePulse 0.5s ease-in-out infinite'
                 : 'pulse 2s ease-in-out infinite',
           }}
@@ -143,7 +149,7 @@ export const TerraSphere: React.FC<TerraSphereProps> = ({
               height: '100%',
               background: `conic-gradient(from 0deg, transparent, ${styles.coreColor}, transparent)`,
               borderRadius: '50%',
-              animation: 'spiralRotate 3s linear infinite',
+              animation: prefersReducedMotion ? 'none' : 'spiralRotate 3s linear infinite',
               opacity: 0.6,
             }}
           />

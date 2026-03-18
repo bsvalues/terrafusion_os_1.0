@@ -42,6 +42,10 @@ import { getEnv } from '../../../runtime/env';
 import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
+import AppealDeadlinePanel from '../../../components/dais/AppealDeadlinePanel';
+import AppealHearingPanel from '../../../components/dais/AppealHearingPanel';
+import AppealNoticePanel from '../../../components/dais/AppealNoticePanel';
+import AppealCertificationPanel from '../../../components/dais/AppealCertificationPanel';
 
 /** Workflow type options */
 const WORKFLOW_TYPES = [
@@ -1616,6 +1620,26 @@ export const PropertyDais: React.FC = () => {
         )}
         {escalateState.status === 'error' && escalateState.error && <ErrorDisplay error={{ message: escalateState.error.message, errorCode: escalateState.error.code, correlationId: escalateState.correlationId }} />}
       </BentoCard>
+
+      {/* Phase 19 Tranche 6: Appeal Deadline Spine */}
+      <div data-testid="appeal-deadline-section">
+        <AppealDeadlinePanel parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 7: Hearing Scheduling Spine */}
+      <div data-testid="appeal-hearing-section">
+        <AppealHearingPanel parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 8: Appeal Notice Spine */}
+      <div data-testid="appeal-notice-section">
+        <AppealNoticePanel parcelId={parcelId} />
+      </div>
+
+      {/* Phase 19 Tranche 9: Appeal Outcome + Certification Readiness */}
+      <div data-testid="appeal-certification-section">
+        <AppealCertificationPanel parcelId={parcelId} />
+      </div>
 
       {/* History */}
       <InvocationHistory

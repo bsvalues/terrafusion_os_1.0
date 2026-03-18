@@ -11,6 +11,7 @@
  * 7. Header correlationId shown when different from body
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { EvidenceSnapshotPanel } from '../../components/workbench/EvidenceSnapshotPanel';
 import type { EvidenceSnapshot } from '../../services/dossierService';
@@ -141,7 +142,7 @@ describe('EvidenceSnapshotPanel', () => {
     });
 
     it('copies to clipboard on click', async () => {
-      const writeText = jest.fn().mockResolvedValue(undefined);
+      const writeText = vi.fn().mockResolvedValue(undefined);
       Object.assign(navigator, { clipboard: { writeText } });
 
       render(<EvidenceSnapshotPanel snapshot={FULL_SNAPSHOT} headerCorrelationId={null} />);

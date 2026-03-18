@@ -1,0 +1,38 @@
+{
+  "phase": "4D",
+  "wave": "1A",
+  "batch": "forge-calibration",
+  "generated_at": "2026-03-15T04:13:55Z",
+  "execution_status": "executed",
+  "total_assets": 1,
+  "by_source_repo": {
+    "TerraFusionTheory": 1
+  },
+  "by_suite": {
+    "TerraForge": 1
+  },
+  "assets": [
+    {
+      "asset_id": "TFT-038",
+      "source_repo": "TerraFusionTheory",
+      "description": "GAMA equity guard for assessment equity, bias detection, IAAO compliance",
+      "owner_suite": "TerraForge",
+      "target_home": "backend/TerraFusion.AI/Calibration/",
+      "target_path": "backend/TerraFusion.AI/Calibration/",
+      "parity_mode": "adapted",
+      "acceptance_test_ref": "test/terraforge/forge-calibration/parity-check",
+      "acceptance_test_owner": "founder",
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.AI/Calibration/. GamaEquityGuard.cs + CalibrationOrchestrator.cs."
+    }
+  ],
+  "execution_completed_at": "2026-03-15T05:17:46Z",
+  "execution_summary": {
+    "total": 1,
+    "executed": 1,
+    "missing": 0,
+    "parity_rate": "100.0%"
+  }
+}

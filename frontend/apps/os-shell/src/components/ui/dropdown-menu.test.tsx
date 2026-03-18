@@ -1,8 +1,8 @@
-// Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import { vi } from 'vitest';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -131,7 +131,7 @@ describe('DropdownMenu Component', () => {
   describe('Menu Item Interactions', () => {
     it('calls onSelect handler when item is clicked', async () => {
       const user = userEvent.setup();
-      const onSelect = jest.fn();
+      const onSelect = vi.fn();
 
       render(
         <DropdownMenu>
@@ -178,7 +178,7 @@ describe('DropdownMenu Component', () => {
 
     it('does not trigger disabled menu items', async () => {
       const user = userEvent.setup();
-      const onSelect = jest.fn();
+      const onSelect = vi.fn();
 
       render(
         <DropdownMenu>
@@ -279,7 +279,7 @@ describe('DropdownMenu Component', () => {
 
     it('selects menu item with Enter key', async () => {
       const user = userEvent.setup();
-      const onSelect = jest.fn();
+      const onSelect = vi.fn();
 
       render(
         <DropdownMenu>

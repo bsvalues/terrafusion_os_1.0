@@ -123,6 +123,7 @@ export const DesktopIconGrid: React.FC<DesktopIconGridProps> = ({ id, className 
           name={icon.name}
           iconName={icon.iconName}
           category={icon.category}
+          objectClass={icon.objectClass}
           wiringStatus={icon.wiringStatus}
           isSelected={selectedId === icon.id}
           onSelect={handleSelect}

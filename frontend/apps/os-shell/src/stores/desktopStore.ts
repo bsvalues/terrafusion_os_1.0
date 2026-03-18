@@ -26,6 +26,7 @@ import {
   type TerraFusionObjectType,
   type ObjectClassification,
 } from '../contracts/objectPlacement';
+import { shellEventBus } from './shellEventBus';
 
 // ============================================================================
 // Types
@@ -159,14 +160,14 @@ const CASCADE_OFFSET = 30; // Pixels to offset each new window
 const BASE_POSITION: Position = { x: 100, y: 50 };
 const SNAP_THRESHOLD = 20; // Pixels from edge to trigger snap
 const TASKBAR_HEIGHT = 48;
+const TOP_BAR_HEIGHT = 44;
 
 /**
  * Returns the correct window size for a module based on its type.
- * - Suite windows (suite-*) and OS features (os-*) → near-full-stage
- * - Property Workbench → maximized (full viewport minus chrome)
+ * - All suites, workbench, and OS features → near-full-stage
  * - Everything else → DEFAULT_WINDOW_SIZE
  */
-function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean } {
+export function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean } {
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
 
@@ -175,15 +176,15 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   if (classification) {
     const { objectType } = classification;
 
-    // Tier-0 workbench → opens maximized
+    // Tier-0 workbench → MAXIMIZED (fills usable area between top bar and taskbar)
     if (objectType === 'tier0-workbench') {
       return {
-        size: { width: vw, height: vh - TASKBAR_HEIGHT },
+        size: { width: vw, height: vh - TOP_BAR_HEIGHT - TASKBAR_HEIGHT },
         maximized: true,
       };
     }
 
-    // Suite workspaces and OS feature windows → near-full-stage
+    // Suite workspaces and OS feature windows → near-full-stage (large, movable)
     if (objectType === 'suite-workspace' || objectType === 'os-feature-window') {
       return {
         size: { width: vw - 40, height: vh - 120 },
@@ -193,12 +194,6 @@ function getModuleWindowSize(moduleId: string): { size: Size; maximized: boolean
   }
 
   // Prefix-matching fallback for unclassified modules
-  if (moduleId === 'property-workbench') {
-    return {
-      size: { width: vw, height: vh - TASKBAR_HEIGHT },
-      maximized: true,
-    };
-  }
   if (moduleId.startsWith('suite-') || moduleId.startsWith('os-')) {
     return {
       size: { width: vw - 40, height: vh - 120 },
@@ -373,7 +368,7 @@ const calculateSnapBounds = (
   viewportWidth: number,
   viewportHeight: number
 ): SnapBounds => {
-  const usableHeight = viewportHeight - TASKBAR_HEIGHT;
+  const usableHeight = viewportHeight - TOP_BAR_HEIGHT - TASKBAR_HEIGHT;
   const halfWidth = viewportWidth / 2;
   const halfHeight = usableHeight / 2;
 
@@ -457,6 +452,7 @@ export const useDesktopStore = create<DesktopState>()(
               `[Codex] openWindow REJECTED for "${moduleId}": ${verdict.reason}`
             );
           }
+          shellEventBus.fire('spawn_rejected', null, moduleId, { reason: verdict.reason });
           return '';
         }
 
@@ -485,6 +481,10 @@ export const useDesktopStore = create<DesktopState>()(
               ),
             });
             get().focusWindow(existingWorkbench.id);
+            shellEventBus.fire('spawn_routed_to_workbench', existingWorkbench.id, moduleId, {
+              reason: verdict.reason,
+              reusedExisting: true,
+            });
             return existingWorkbench.id;
           }
 
@@ -526,11 +526,14 @@ export const useDesktopStore = create<DesktopState>()(
         // Shell mode: opening a window enters application mode
         get().enterApplication();
 
+        shellEventBus.fire('window_opened', id, moduleId, { state: newWindow.state });
+
         return id;
       },
 
       closeWindow: (windowId: string) => {
         const { windows, activeWindowId } = get();
+        const closedWindow = windows.find((w) => w.id === windowId);
         const newWindows = windows.filter((w) => w.id !== windowId);
 
         let newActiveId: string | null = activeWindowId;
@@ -551,6 +554,10 @@ export const useDesktopStore = create<DesktopState>()(
           activeWindowId: newActiveId,
         });
 
+        if (closedWindow) {
+          shellEventBus.fire('window_closed', windowId, closedWindow.moduleId);
+        }
+
         // Shell mode: when last window closes, restore prior mode (or home)
         if (newWindows.length === 0) {
           const { previousShellMode } = get();
@@ -561,6 +568,7 @@ export const useDesktopStore = create<DesktopState>()(
 
       minimizeWindow: (windowId: string) => {
         const { windows, activeWindowId } = get();
+        const targetWindow = windows.find((w) => w.id === windowId);
 
         const newWindows = windows.map((w) =>
           w.id === windowId ? { ...w, state: 'minimized' as WindowState } : w
@@ -578,6 +586,10 @@ export const useDesktopStore = create<DesktopState>()(
           windows: newWindows,
           activeWindowId: newActiveId,
         });
+
+        if (targetWindow) {
+          shellEventBus.fire('window_minimized', windowId, targetWindow.moduleId);
+        }
       },
 
       maximizeWindow: (windowId: string) => {
@@ -609,6 +621,8 @@ export const useDesktopStore = create<DesktopState>()(
           activeWindowId: windowId,
           nextZIndex: needsNewZIndex ? nextZIndex + 1 : nextZIndex,
         });
+
+        shellEventBus.fire('window_maximized', windowId, targetWindow.moduleId);
       },
 
       restoreWindow: (windowId: string) => {
@@ -642,20 +656,30 @@ export const useDesktopStore = create<DesktopState>()(
           activeWindowId: windowId,
           nextZIndex: needsNewZIndex ? nextZIndex + 1 : nextZIndex,
         });
+
+        shellEventBus.fire('window_restored', windowId, targetWindow.moduleId, {
+          fromState: targetWindow.state,
+        });
       },
 
       focusWindow: (windowId: string) => {
-        const { windows, nextZIndex } = get();
+        const { windows, activeWindowId, nextZIndex } = get();
 
         const targetWindow = windows.find((w) => w.id === windowId);
         if (!targetWindow) return;
 
+        // If minimized, restore it
+        const wasMinimized = targetWindow.state === 'minimized';
+
+        // Toggle: if already focused and not minimized, minimize it (standard OS behavior)
+        if (!wasMinimized && windowId === activeWindowId && targetWindow.state !== 'minimized') {
+          get().minimizeWindow(windowId);
+          return;
+        }
+
         // Check if window is already at highest z-index
         const maxZIndex = Math.max(...windows.map((w) => w.zIndex));
         const isAlreadyTop = targetWindow.zIndex === maxZIndex;
-
-        // If minimized, restore it
-        const wasMinimized = targetWindow.state === 'minimized';
 
         const newWindows = windows.map((w) => {
           if (w.id === windowId) {
@@ -672,6 +696,10 @@ export const useDesktopStore = create<DesktopState>()(
           windows: newWindows,
           activeWindowId: windowId,
           nextZIndex: isAlreadyTop ? nextZIndex : nextZIndex + 1,
+        });
+
+        shellEventBus.fire('window_focused', windowId, targetWindow.moduleId, {
+          restoredFromMinimized: wasMinimized,
         });
       },
 

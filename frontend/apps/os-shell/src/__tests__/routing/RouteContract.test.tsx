@@ -13,6 +13,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import React, { Suspense, lazy } from 'react';
@@ -20,12 +21,12 @@ import { MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 // Mock lazy-loaded components
 // ShellHome deprecated — / now renders App (Desktop OS surface)
-jest.mock('../../App', () => ({
+vi.mock('../../App', () => ({
   __esModule: true,
   default: () => <div data-testid='desktop'>Desktop OS</div>,
 }));
 
-jest.mock('../../pages/workbench/PropertyWorkbench', () => ({
+vi.mock('../../pages/workbench/PropertyWorkbench', () => ({
   __esModule: true,
   default: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid='property-workbench'>
@@ -35,32 +36,32 @@ jest.mock('../../pages/workbench/PropertyWorkbench', () => ({
   ),
 }));
 
-jest.mock('../../pages/workbench/tabs/PropertySummary', () => ({
+vi.mock('../../pages/workbench/tabs/PropertySummary', () => ({
   __esModule: true,
   default: () => <div data-testid='property-summary'>PropertySummary</div>,
 }));
 
-jest.mock('../../pages/workbench/tabs/PropertyForge', () => ({
+vi.mock('../../pages/workbench/tabs/PropertyForge', () => ({
   __esModule: true,
   default: () => <div data-testid='property-forge'>PropertyForge</div>,
 }));
 
-jest.mock('../../pages/workbench/tabs/PropertyAtlas', () => ({
+vi.mock('../../pages/workbench/tabs/PropertyAtlas', () => ({
   __esModule: true,
   default: () => <div data-testid='property-atlas'>PropertyAtlas</div>,
 }));
 
-jest.mock('../../pages/workbench/tabs/PropertyDais', () => ({
+vi.mock('../../pages/workbench/tabs/PropertyDais', () => ({
   __esModule: true,
   default: () => <div data-testid='property-dais'>PropertyDais</div>,
 }));
 
-jest.mock('../../pages/workbench/tabs/PropertyDossier', () => ({
+vi.mock('../../pages/workbench/tabs/PropertyDossier', () => ({
   __esModule: true,
   default: () => <div data-testid='property-dossier'>PropertyDossier</div>,
 }));
 
-jest.mock('../../pages/workbench/tabs/PropertyPilot', () => ({
+vi.mock('../../pages/workbench/tabs/PropertyPilot', () => ({
   __esModule: true,
   default: () => <div data-testid='property-pilot'>PropertyPilot</div>,
 }));

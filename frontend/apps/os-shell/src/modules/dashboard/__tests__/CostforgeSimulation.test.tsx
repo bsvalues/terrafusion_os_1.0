@@ -8,12 +8,13 @@
  * @see Phase C4: CostForge AI Integration
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 
 import { useCostforgeStore } from '../store/costforgeStore';
 
 // Tests run with mock data so initial metrics use GOLDEN_METRICS
-jest.mock('../../../config/features', () => ({
+vi.mock('../../../config/features', () => ({
   FEATURES: { USE_MOCK_DATA: true },
 }));
 
@@ -68,11 +69,11 @@ describe('CostForge Simulation - Phase C4', () => {
 
   describe('state transitions', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('transitions from idle to analyzing on runAnalysis', async () => {
@@ -95,7 +96,7 @@ describe('CostForge Simulation - Phase C4', () => {
 
       // Fast-forward past the analysis delay (phi-based: 1618ms)
       await act(async () => {
-        jest.advanceTimersByTime(1618);
+        vi.advanceTimersByTime(1618);
       });
 
       expect(result.current.status).toBe('ready');
@@ -109,7 +110,7 @@ describe('CostForge Simulation - Phase C4', () => {
         result.current.runAnalysis();
       });
       await act(async () => {
-        jest.advanceTimersByTime(1618);
+        vi.advanceTimersByTime(1618);
       });
 
       expect(result.current.status).toBe('ready');
@@ -129,7 +130,7 @@ describe('CostForge Simulation - Phase C4', () => {
         result.current.runAnalysis();
       });
       await act(async () => {
-        jest.advanceTimersByTime(1618);
+        vi.advanceTimersByTime(1618);
       });
       act(() => {
         result.current.applyOptimization();
@@ -151,11 +152,11 @@ describe('CostForge Simulation - Phase C4', () => {
 
   describe('optimization commit', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('applyOptimization commits projected to current', async () => {
@@ -166,7 +167,7 @@ describe('CostForge Simulation - Phase C4', () => {
         result.current.runAnalysis();
       });
       await act(async () => {
-        jest.advanceTimersByTime(1618);
+        vi.advanceTimersByTime(1618);
       });
 
       const projectedBefore = result.current.metrics.assessedValue.projected;
@@ -186,7 +187,7 @@ describe('CostForge Simulation - Phase C4', () => {
         result.current.runAnalysis();
       });
       await act(async () => {
-        jest.advanceTimersByTime(1618);
+        vi.advanceTimersByTime(1618);
       });
 
       act(() => {
@@ -220,11 +221,11 @@ describe('CostForge Simulation - Phase C4', () => {
 
   describe('idempotency', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('runAnalysis is idempotent (only runs if idle)', async () => {

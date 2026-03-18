@@ -14,6 +14,7 @@
  * - Keyboard focus states remain correct
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InvocationHistory, InvocationRecord } from '../../components/workbench/InvocationHistory';
@@ -23,12 +24,12 @@ import * as materialQualityGate from '../../ui/materials/materialQualityGate';
 import { MaterialQuality } from '../../ui/materials/materialQualityGate';
 
 // Mock the quality gate
-jest.mock('../../ui/materials/materialQualityGate', () => ({
-  ...jest.requireActual('../../ui/materials/materialQualityGate'),
-  useMaterialQuality: jest.fn(),
+vi.mock('../../ui/materials/materialQualityGate', async () => ({
+  ...(await vi.importActual('../../ui/materials/materialQualityGate')),
+  useMaterialQuality: vi.fn(),
 }));
 
-const mockUseMaterialQuality = materialQualityGate.useMaterialQuality as jest.MockedFunction<
+const mockUseMaterialQuality = materialQualityGate.useMaterialQuality as vi.MockedFunction<
   typeof materialQualityGate.useMaterialQuality
 >;
 
@@ -58,7 +59,7 @@ const LOW_QUALITY_STATE: materialQualityGate.MaterialQualityState = {
 
 describe('Workbench Materials Adoption', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockUseMaterialQuality.mockReturnValue(HIGH_QUALITY_STATE);
   });
 

@@ -1,0 +1,88 @@
+{
+  "phase": "4H",
+  "title": "Repo-Level Archival Plan",
+  "created": "2026-03-15",
+  "total_repos": 6,
+  "total_assets": 517,
+  "archive_order_rationale": "smallest-risk / highest-risk-reduction first",
+  "repos": [
+    {
+      "source_repo": "BCBSLevy",
+      "total_assets": 76,
+      "ready_assets": 76,
+      "eligible_assets": 76,
+      "runtime_consumers_remaining": 0,
+      "snapshot_tag": "archive/bcbslevy-pre-decommission",
+      "rollback_tag": "rollback/bcbslevy",
+      "archive_wave": 1,
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
+    },
+    {
+      "source_repo": "TerraFusionPilt",
+      "total_assets": 15,
+      "ready_assets": 15,
+      "eligible_assets": 15,
+      "runtime_consumers_remaining": 0,
+      "snapshot_tag": "archive/terrafusionpilt-pre-decommission",
+      "rollback_tag": "rollback/terrafusionpilt",
+      "archive_wave": 2,
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
+    },
+    {
+      "source_repo": "TerraMiner",
+      "total_assets": 78,
+      "ready_assets": 78,
+      "eligible_assets": 78,
+      "runtime_consumers_remaining": 0,
+      "snapshot_tag": "archive/terraminer-pre-decommission",
+      "rollback_tag": "rollback/terraminer",
+      "archive_wave": 3,
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
+    },
+    {
+      "source_repo": "terra-forge-rebuild",
+      "total_assets": 101,
+      "ready_assets": 101,
+      "eligible_assets": 101,
+      "runtime_consumers_remaining": 0,
+      "snapshot_tag": "archive/terra-forge-rebuild-pre-decommission",
+      "rollback_tag": "rollback/terra-forge-rebuild",
+      "archive_wave": 4,
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
+    },
+    {
+      "source_repo": "Bsbcintelligentvalues",
+      "total_assets": 110,
+      "ready_assets": 110,
+      "eligible_assets": 110,
+      "runtime_consumers_remaining": 0,
+      "snapshot_tag": "archive/bsbcintelligentvalues-pre-decommission",
+      "rollback_tag": "rollback/bsbcintelligentvalues",
+      "archive_wave": 5,
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
+    },
+    {
+      "source_repo": "TerraFusionTheory",
+      "total_assets": 137,
+      "ready_assets": 137,
+      "eligible_assets": 137,
+      "runtime_consumers_remaining": 0,
+      "snapshot_tag": "archive/terrafusiontheory-pre-decommission",
+      "rollback_tag": "rollback/terrafusiontheory",
+      "archive_wave": 6,
+      "archive_status": "executed",
+      "archive_eligibility": "eligible",
+      "executed_at": "2026-03-15"
+    }
+  ]
+}

@@ -22,19 +22,22 @@ public class EnhancementController : ControllerBase
     private readonly IEnhancementOrchestrationService _enhancementService;
     private readonly IAuditLogger _auditLogger;
     private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
 
     public EnhancementController(
         ILogger<EnhancementController> logger,
         IHubContext<EnhancementHub> enhancementHub,
         IEnhancementOrchestrationService enhancementService,
         IAuditLogger auditLogger,
-        HttpClient httpClient)
+        HttpClient httpClient,
+        IConfiguration configuration)
     {
         _logger = logger;
         _enhancementHub = enhancementHub;
         _enhancementService = enhancementService;
         _auditLogger = auditLogger;
         _httpClient = httpClient;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -138,7 +141,7 @@ public class EnhancementController : ControllerBase
             var jsonContent = JsonSerializer.Serialize(consciousnessPayload);
             var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("http://localhost:3002/api/enhancement/consciousness/coordinate", content);
+            var response = await _httpClient.PostAsync($"{_configuration["ServiceEndpoints:AISwarm"] ?? "http://localhost:3002"}/api/enhancement/consciousness/coordinate", content);
             
             if (response.IsSuccessStatusCode)
             {
@@ -190,7 +193,7 @@ public class EnhancementController : ControllerBase
             var jsonContent = JsonSerializer.Serialize(securityPayload);
             var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("http://localhost:3003/api/enhancement/security/audit", content);
+            var response = await _httpClient.PostAsync($"{_configuration["ServiceEndpoints:AIAdvanced"] ?? "http://localhost:3003"}/api/enhancement/security/audit", content);
             
             if (response.IsSuccessStatusCode)
             {

@@ -1,0 +1,43 @@
+{
+  "phase": "4D",
+  "wave": "1B",
+  "batch": "canon-etl",
+  "generated_at": "2026-03-15T05:35:33Z",
+  "execution_status": "executed",
+  "total_assets": 1,
+  "by_source_repo": {
+    "TerraFusionTheory": 1
+  },
+  "by_suite": {
+    "TerraCanon": 1
+  },
+  "assets": [
+    {
+      "asset_id": "TFT-182",
+      "source_repo": "TerraFusionTheory",
+      "description": "Airflow DAG for real estate ETL pipeline",
+      "owner_suite": "TerraCanon",
+      "target_home": "backend/TerraFusion.Data/ETL/",
+      "target_path": "backend/TerraFusion.Data/ETL/",
+      "parity_mode": "adapted",
+      "acceptance_test_ref": "test/terracanon/canon-etl/parity-check",
+      "acceptance_test_owner": "founder",
+      "execution_status": "executed",
+      "parity_result": "adapted-verified",
+      "regression_result": "pass",
+      "execution_notes": "Adapted implementation at backend/src/TerraFusion.Data/ETL/. Domain logic preserved."
+    }
+  ],
+  "execution_completed_at": "2026-03-15T07:24:47Z",
+  "execution_summary": {
+    "total": 1,
+    "executed": 1,
+    "missing": 0,
+    "parity_rate": "100.0%",
+    "parity_mode_split": {
+      "adapted": 1,
+      "exact": 0,
+      "superseded": 0
+    }
+  }
+}

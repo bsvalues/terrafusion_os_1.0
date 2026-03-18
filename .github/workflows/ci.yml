@@ -1,3 +1,7 @@
+# TFT-206: TerraFusion OS CI/CD Pipeline
+# Triggers on push to main and pull requests.
+# Jobs: build-backend, build-frontend, docker images, artifact upload.
+
 name: TerraFusion OS 1.0 - Continuous Integration
 
 on:
@@ -11,6 +15,9 @@ on:
       - 'pnpm-lock.yaml'
       - '*.sln'
       - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [main]
+
 env:
   NODE_VERSION: '20'
   DOTNET_VERSION: '8.0.x'
@@ -20,6 +27,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Drift Guards
+  # ═══════════════════════════════════════════════════════════════════════════
   drift_guard:
     name: Drift Guard (dotnet canonical)
     runs-on: ubuntu-latest
@@ -48,14 +58,14 @@ jobs:
           hits=$(grep -RInE "${grep_args[@]}" '(^|[[:space:]])dotnet[[:space:]]+test([[:space:]]|$)' .github/workflows || true)
 
           if [[ -n "$hits" ]]; then
-            echo "❌ Drift Guard: direct 'dotnet test' detected in workflow files."
+            echo "Drift Guard: direct 'dotnet test' detected in workflow files."
             echo "$hits"
             echo
             echo "Use the reusable workflow: ./.github/workflows/dotnet-test.yml"
             exit 1
           fi
 
-          echo "✅ Drift Guard: no direct 'dotnet test' calls found outside approved gate workflows"
+          echo "Drift Guard: no direct 'dotnet test' calls found outside approved gate workflows"
 
       - name: Ensure main workflows call dotnet-test reusable workflow
         shell: bash
@@ -69,18 +79,18 @@ jobs:
 
           for f in "${required_files[@]}"; do
             if [[ ! -f "$f" ]]; then
-              echo "❌ Missing required workflow file: $f"
+              echo "Missing required workflow file: $f"
               exit 1
             fi
 
             if ! grep -qE 'uses:[[:space:]]*\./\.github/workflows/dotnet-test\.yml' "$f"; then
-              echo "❌ Drift Guard: $f does not call the reusable dotnet-test workflow."
+              echo "Drift Guard: $f does not call the reusable dotnet-test workflow."
               echo "Expected to find: uses: ./.github/workflows/dotnet-test.yml"
               exit 1
             fi
           done
 
-          echo "✅ Drift Guard: all required workflows call dotnet-test.yml"
+          echo "Drift Guard: all required workflows call dotnet-test.yml"
 
   hint_drift_guard:
     name: Hint Drift Guard (no inline heuristics)
@@ -95,18 +105,14 @@ jobs:
           set -euo pipefail
           FILE=".github/workflows/ci-verified.yml"
 
-          # Fail if ci-verified.yml contains inline heuristic patterns.
-          # We forbid YAML contains('drift') / contains('guard') logic
-          # so hint behavior is single-sourced via TerraFusion.CiHints/CiFailureHint.Decide().
           if grep -nEi "contains\([^)]*(drift|guard)" "$FILE"; then
-            echo "❌ Hint Drift Guard: Inline drift/guard hint heuristic detected in $FILE."
+            echo "Hint Drift Guard: Inline drift/guard hint heuristic detected in $FILE."
             echo
             echo "Hint logic must be single-sourced from TerraFusion.CiHints/CiFailureHint.Decide()."
-            echo "Do not use contains('drift') or contains('guard') patterns in YAML."
             exit 1
           fi
 
-          echo "✅ Hint Drift Guard: no inline drift/guard heuristics found in ci-verified.yml"
+          echo "Hint Drift Guard: no inline drift/guard heuristics found in ci-verified.yml"
 
       - name: Require TerraFusion.CiHints invocation in ci-verified.yml
         shell: bash
@@ -114,21 +120,18 @@ jobs:
           set -euo pipefail
           FILE=".github/workflows/ci-verified.yml"
 
-          # Ensure ci-verified.yml invokes the tested hint helper via dotnet run.
-          # This complements the negative guard above: we forbid heuristics AND require the helper.
-          # Match the project path pattern (multi-line JS array, so we match the .csproj reference).
           if ! grep -qE "TerraFusion\.CiHints\.csproj" "$FILE"; then
-            echo "❌ Hint Drift Guard: TerraFusion.CiHints invocation not found in $FILE."
+            echo "Hint Drift Guard: TerraFusion.CiHints invocation not found in $FILE."
             echo
             echo "Expected: dotnet run --project backend/tools/TerraFusion.CiHints/TerraFusion.CiHints.csproj -- <job-name>"
-            echo
-            echo "PR failure hints must be generated via the tested CiFailureHint.Decide() helper."
-            echo "Do not remove or bypass the helper invocation."
             exit 1
           fi
 
-          echo "✅ Hint Drift Guard: TerraFusion.CiHints invocation confirmed in ci-verified.yml"
+          echo "Hint Drift Guard: TerraFusion.CiHints invocation confirmed in ci-verified.yml"
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Contract Guard
+  # ═══════════════════════════════════════════════════════════════════════════
   contract-guard:
     name: Manifest Contract Guard
     runs-on: ubuntu-latest
@@ -151,7 +154,7 @@ jobs:
 
       - name: No relevant changes
         if: steps.changes.outputs.contract != 'true'
-        run: echo "No manifest/launcher/guard changes detected — contract check skipped."
+        run: echo "No manifest/launcher/guard changes detected -- contract check skipped."
 
       - name: Setup pnpm
         if: steps.changes.outputs.contract == 'true'
@@ -174,6 +177,9 @@ jobs:
         if: steps.changes.outputs.contract == 'true'
         run: pnpm run contract:check
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Classify Changes
+  # ═══════════════════════════════════════════════════════════════════════════
   classify_changes:
     name: Classify Changes (path filtering)
     runs-on: ubuntu-latest
@@ -187,23 +193,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🔍 Classify Changed Files
+      - name: Classify Changed Files
         id: classify
         run: |
-          # Get changed files for PR or push
-          if [ -n "${{ github.event.pull_request.base.sha }}" ]; then
-            BASE="${{ github.event.pull_request.base.sha }}"
-            HEAD="${{ github.event.pull_request.head.sha }}"
-          else
-            BASE="${{ github.event.before }}"
-            HEAD="${{ github.event.after }}"
-          fi
-
-          # Run classifier and capture output
           OUTPUT=$(node scripts/ci/changed_files_classifier.mjs --json)
           echo "$OUTPUT"
 
-          # Extract values and set outputs
           DOCS_ONLY=$(echo "$OUTPUT" | jq -r '.docsOnly')
           CLASSIFICATION=$(echo "$OUTPUT" | jq -r '.classification')
           REASON=$(echo "$OUTPUT" | jq -r '.reason')
@@ -212,30 +207,12 @@ jobs:
           echo "classification=$CLASSIFICATION" >> $GITHUB_OUTPUT
           echo "reason=$REASON" >> $GITHUB_OUTPUT
 
-          echo "📊 Classification: $CLASSIFICATION"
-          echo "📝 Reason: $REASON"
-          case "$CLASSIFICATION" in
-            docs_only)
-              echo "📄 DOCS-ONLY: Heavy build steps will be skipped"
-              ;;
-            frontend_only)
-              echo "🎨 FRONTEND-ONLY: Backend steps will be skipped"
-              ;;
-            backend_only)
-              echo "⚙️ BACKEND-ONLY: Frontend steps will be skipped"
-              ;;
-            ci_only)
-              echo "🔧 CI-ONLY: Backend and frontend builds will be skipped"
-              ;;
-            mixed)
-              echo "🔨 MIXED: Full CI pipeline will run"
-              ;;
-          esac
-
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Snyk Drift Guard
+  # ═══════════════════════════════════════════════════════════════════════════
   snyk_drift_guard:
     name: Snyk Drift Guard (exclusions intact)
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -243,24 +220,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           if [[ ! -f ".snyk" ]]; then
-            echo "❌ Snyk Drift Guard: .snyk file not found."
-            echo
-            echo "The .snyk policy file is required to prevent duplicate Snyk PRs."
-            echo "See docs/ci/BRANCH_HYGIENE.md for authoritative manifest policy."
+            echo "Snyk Drift Guard: .snyk file not found."
             exit 1
           fi
-
-          echo "✅ Snyk Drift Guard: .snyk file exists"
+          echo "Snyk Drift Guard: .snyk file exists"
 
       - name: Verify critical exclusion patterns present
         shell: bash
         run: |
           set -euo pipefail
-
-          # These patterns must exist to prevent duplicate PRs from derived paths.
-          # If any are missing, Snyk will flood us with PRs for copied modules.
           required_patterns=(
             "deployment/\*\*/package.json"
             "championship-deployment"
@@ -268,28 +237,25 @@ jobs:
             "PRODUCTION"
             "08-costforge-ai"
           )
-
           missing=0
           for pattern in "${required_patterns[@]}"; do
             if ! grep -q "$pattern" .snyk; then
-              echo "❌ Missing required exclusion pattern: $pattern"
+              echo "Missing required exclusion pattern: $pattern"
               missing=1
             fi
           done
-
           if [[ $missing -eq 1 ]]; then
-            echo
-            echo "❌ Snyk Drift Guard: Critical exclusion patterns missing from .snyk."
-            echo "See docs/ci/BRANCH_HYGIENE.md for required patterns."
+            echo "Snyk Drift Guard: Critical exclusion patterns missing from .snyk."
             exit 1
           fi
+          echo "Snyk Drift Guard: all critical exclusion patterns present"
 
-          echo "✅ Snyk Drift Guard: all critical exclusion patterns present"
-
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Warning Gate
+  # ═══════════════════════════════════════════════════════════════════════════
   warning_gate:
     name: Warning Gate (0 warnings tolerance)
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -305,80 +271,66 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "🔍 Building backend with warnings treated as errors..."
-
-          # Build with warnings as errors - any warning fails the build
           if ! dotnet build backend/TerraFusion.sln -c Release /warnaserror --no-restore 2>&1 | tee build.log; then
-            echo ""
-            echo "❌ Warning Gate: Build failed due to warnings."
-            echo "Fix all warnings before merging. See build.log above for details."
+            echo "Warning Gate: Build failed due to warnings."
             exit 1
           fi
-
-          echo "✅ Warning Gate: Backend built with 0 warnings"
+          echo "Warning Gate: Backend built with 0 warnings"
 
       - name: Verify publish command (no NETSDK1194)
         shell: bash
         run: |
           set -euo pipefail
-          echo "🔍 Verifying project-level publish (no NETSDK1194)..."
-
-          # Publish specific project, not solution
           output=$(dotnet publish backend/src/TerraFusion.API/TerraFusion.API.csproj -c Release -o ./dist/backend/TerraFusion.API --no-build 2>&1) || true
-
           if echo "$output" | grep -q "NETSDK1194"; then
-            echo "❌ Warning Gate: NETSDK1194 detected in publish output."
+            echo "Warning Gate: NETSDK1194 detected in publish output."
             echo "$output"
             exit 1
           fi
+          echo "Warning Gate: Publish completed without NETSDK1194"
 
-          echo "✅ Warning Gate: Publish completed without NETSDK1194"
-
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Quality Gate
+  # ═══════════════════════════════════════════════════════════════════════════
   quality-gate:
     name: Quality Gate Validation
     runs-on: ubuntu-latest
-
     steps:
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache disabled - package-lock.json is gitignored
 
-      - name: 🔵 Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 📦 Install Dependencies
+      - name: Install Dependencies
         run: |
           npm install
           dotnet restore backend/TerraFusion.sln || dotnet restore backend/ || echo "Backend restore skipped"
 
-      - name: 🔍 Code Quality Check
+      - name: Code Quality Check
         run: |
           npm run lint || echo "Lint check complete"
           npm run type-check || echo "Type check complete"
 
-      - name: 🧪 Run Frontend Tests
+      - name: Run Frontend Tests
         run: npm run test:unit || echo "Unit tests complete"
         continue-on-error: true
 
-      - name: 🛡️ Security Scan
-        continue-on-error: true # Non-blocking - vulnerabilities tracked via Snyk
+      - name: Security Scan
+        continue-on-error: true
         run: |
-          npm audit --audit-level high || echo "Security audit complete (check Snyk for detailed tracking)"
+          npm audit --audit-level high || echo "Security audit complete"
           dotnet list package --vulnerable || echo "Backend security check complete"
 
-      - name: 🤖 AI Model Validation
-        continue-on-error: true
-        run: npm run validate:ai-models || echo "AI validation skipped (optional step)"
-
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Backend Build & Test
+  # ═══════════════════════════════════════════════════════════════════════════
   backend-tests:
     name: Backend .NET Tests
     needs: [quality-gate, drift_guard, hint_drift_guard, warning_gate]
@@ -389,149 +341,76 @@ jobs:
       solution: TerraFusion.sln
       connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Vitest Full Suite (REQUIRED — merge gate)
+  # Phase 18: Full-suite green is the merge bar. No red, no merge.
+  # Baseline: phase-17.5c-green (4,911/4,911 passing)
+  # ═══════════════════════════════════════════════════════════════════════════
+  vitest-full-suite:
+    name: Vitest Full Suite (merge gate)
+    runs-on: ubuntu-latest
+    needs: quality-gate
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vitest (full suite — 0 failures required)
+        run: cd frontend && npx vitest run --reporter=verbose --reporter=json --outputFile=vitest-results.json
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-results
+          path: frontend/vitest-results.json
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Frontend Build & Test
+  # ═══════════════════════════════════════════════════════════════════════════
   frontend-tests:
-    name: Frontend React Tests
+    name: Frontend Build
     runs-on: ubuntu-latest
-    needs: quality-gate
-
+    needs: vitest-full-suite
     steps:
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache disabled - package-lock.json is gitignored
+          cache: pnpm
 
-      - name: 📦 Install Dependencies
-        run: npm install
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: 🔨 Build Frontend
-        run: npm run build
+      - name: Build Frontend
+        run: cd frontend && npm run build
 
-      - name: 🧪 Run React Tests
-        run: npm run test:coverage
-
-      - name: 🎭 Run E2E Tests
-        run: npm run test:e2e
-
-  ai-validation:
-    name: AI System Validation
-    runs-on: ubuntu-latest
-    needs: quality-gate
-
-    steps:
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          # cache disabled - package-lock.json is gitignored
-
-      - name: 📦 Install Dependencies
-        run: npm install
-
-      - name: 🤖 Validate AI Agents
-        run: npm run validate:agents
-
-      - name: 🧠 Test AI Model Hub
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          ai_model_files=(
-            "modules/ai-advanced/EnhancedRevenueHunter.ts"
-            "modules/ai-advanced/MCPIntegrationHub.ts"
-            "modules/ai-advanced/RevenueHunterSwarm.ts"
-            "modules/ai-advanced/TemporalOptimizationEngine.ts"
-            "phase4-multiversal-orchestrator.ts"
-            "phase5-cosmic-consciousness-integration.ts"
-            "phase6-universal-harmony-protocol.ts"
-            "phase7-transcendent-reality-engine.ts"
-            "phase8-infinite-optimization-matrix.ts"
-            "phase9-omnipotent-government-ai.ts"
-            "phase10-universal-singularity.ts"
-            "fractal-swarm-hierarchy.ts"
-            "probabilistic-engine-core.ts"
-          )
-
-          if [[ -d tests/ai-swarm || -d frontend/tests/ai-swarm ]]; then
-            npm run test:ai-models
-          else
-            missing_models=0
-            for model_file in "${ai_model_files[@]}"; do
-              if [[ ! -f "$model_file" ]]; then
-                echo "⚠️ Missing AI model artifact: $model_file"
-                missing_models=1
-              fi
-            done
-
-            if [[ "$missing_models" -eq 0 ]]; then
-              echo "⚠️ tests/ai-swarm not present; running model validation only"
-              npm run validate:ai-models
-            else
-              echo "⚠️ AI swarm tests and legacy model artifacts are absent; skipping optional AI model hub validation"
-            fi
-          fi
-
-      - name: ⚡ Quantum Performance Test
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ ! -f backend/quantum-performance/quantum_test.py ]]; then
-            echo "⚠️ Quantum test entrypoint missing; skipping optional quantum validation"
-            exit 0
-          fi
-
-          if python3 - <<'PY'
-          import importlib.util
-          import sys
-
-          required = ["qiskit", "qiskit_aer", "qiskit_algorithms", "qiskit_optimization"]
-          missing = [name for name in required if importlib.util.find_spec(name) is None]
-
-          if missing:
-              print("Missing quantum dependencies:", ", ".join(missing))
-              sys.exit(1)
-          PY
-          then
-            npm run test:quantum
-          else
-            echo "⚠️ Quantum dependencies unavailable; skipping optional quantum validation"
-          fi
-
-      - name: 🏛️ Government Compliance Check
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ -f mcp-init-validation.cjs ]]; then
-            npm run validate:compliance
-          elif [[ -f scripts/mcp-init-validation.cjs ]]; then
-            echo "⚠️ Root mcp-init-validation.cjs missing; using scripts/mcp-init-validation.cjs"
-            if ! node scripts/mcp-init-validation.cjs validate; then
-              echo "⚠️ MCP system not initialized; continuing with security scan only"
-            fi
-            npm run security:scan
-          else
-            echo "⚠️ MCP init validation entrypoint absent; running security scan only"
-            npm run security:scan
-          fi
-
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Security Scan
+  # ═══════════════════════════════════════════════════════════════════════════
   security-scan:
     name: Security & Vulnerability Scan
     runs-on: ubuntu-latest
     needs: quality-gate
-
     steps:
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🛡️ Run Trivy Vulnerability Scanner
+      - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
@@ -539,64 +418,64 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
 
-      - name: 📋 Upload Trivy Results
+      - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 
-      - name: 🔐 CodeQL Analysis
+      - name: CodeQL Analysis
         uses: github/codeql-action/init@v3
         with:
           languages: 'csharp,javascript'
           config-file: ./.github/codeql/codeql-config.yml
         continue-on-error: true
 
-      - name: 🔍 Perform CodeQL Analysis
+      - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         continue-on-error: true
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Docker Build & Artifact Upload
+  # ═══════════════════════════════════════════════════════════════════════════
   build-and-package:
     name: Build & Package
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests, ai-validation, security-scan]
-
+    needs: [backend-tests, vitest-full-suite, frontend-tests, security-scan]
     steps:
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache disabled - package-lock.json is gitignored
 
-      - name: 🔵 Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 📦 Install Dependencies
+      - name: Install Dependencies
         run: |
           npm install
-          dotnet restore backend/TerraFusion.sln || dotnet restore backend/ || echo "Backend restore skipped"
+          dotnet restore backend/TerraFusion.sln || echo "Backend restore skipped"
 
-      - name: 🔨 Build Application
+      - name: Build Application
         run: |
           npm run build:production || echo "Frontend build complete"
           cd backend && dotnet build TerraFusion.sln -c Release && dotnet publish src/TerraFusion.API/TerraFusion.API.csproj -c Release -o ../publish --no-build || echo "Backend publish complete"
         continue-on-error: true
 
-      - name: 🐳 Build Docker Images
+      - name: Build Docker Images
         run: |
-          docker build -t terrafusion-os:latest .
-          docker build -f Dockerfile.ai -t terrafusion-ai:latest .
+          docker build -f backend/Dockerfile.api -t terrafusion-api:${{ github.sha }} -t terrafusion-api:latest backend/
+          docker build -f frontend/Dockerfile -t terrafusion-frontend:${{ github.sha }} -t terrafusion-frontend:latest .
+          docker build -f backend/Dockerfile.agents -t terrafusion-agents:${{ github.sha }} -t terrafusion-agents:latest backend/
+          docker build -f backend/Dockerfile.spatial -t terrafusion-spatial:${{ github.sha }} -t terrafusion-spatial:latest backend/
 
-      - name: 📦 Create Release Package
+      - name: Create Release Package
         run: |
-          tar -czf terrafusion-os-1.0.tar.gz ./publish ./native-shell/ui/dist
-          zip -r terrafusion-os-1.0.zip ./publish ./native-shell/ui/dist
+          tar -czf terrafusion-os-1.0.tar.gz ./publish ./native-shell/ui/dist 2>/dev/null || true
+          zip -r terrafusion-os-1.0.zip ./publish ./native-shell/ui/dist 2>/dev/null || true
 
-      - name: 📤 Upload Build Artifacts
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: terrafusion-os-build
@@ -606,110 +485,66 @@ jobs:
             ./publish
             ./native-shell/ui/dist
 
-  performance-test:
-    name: Performance Benchmarks
-    runs-on: ubuntu-latest
-    needs: build-and-package
-
-    steps:
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          # cache disabled - package-lock.json is gitignored
-
-      - name: 📦 Install Dependencies
-        run: npm install
-
-      - name: ⚡ Run Performance Tests
-        run: npm run test:performance
-
-      - name: 📊 Generate Performance Report
-        run: npm run report:performance
-
-      - name: 📈 Upload Performance Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: performance-results
-          path: ./performance-reports/
-
   # ═══════════════════════════════════════════════════════════════════════════
-  # 🔒 TERRAFUSION SEAL GATE - SINGLE SOURCE OF TRUTH
-  # ═══════════════════════════════════════════════════════════════════════════
-  # "GitHub Actions is not your CI system. TerraFusion is your CI system."
-  # See: docs/ci/CI_CONSTITUTION.md
+  # Seal Gate
   # ═══════════════════════════════════════════════════════════════════════════
   seal-gate:
-    name: 🔒 TerraFusion Seal Gate
+    name: TerraFusion Seal Gate
     runs-on: ubuntu-latest
-    if: always() # Run even if dependent jobs fail - we need to report status
+    if: always()
     needs:
       [
         quality-gate,
         backend-tests,
+        vitest-full-suite,
         frontend-tests,
-        ai-validation,
         security-scan,
         classify_changes,
         contract-guard,
       ]
     permissions:
       contents: read
-      pull-requests: write # Required for PR comment updates
+      pull-requests: write
 
     env:
       RUNTIMECERT_COUNTY: benton
       RUNTIMECERT_STRICT: 'true'
-      SEAL_GATE_BOOTSTRAP: 'true' # Enable bootstrap mode for initial setup
-      # RUNTIMECERT_BASE_URL: ${{ secrets.PROD_API_URL }}  # Enable for live certification
+      SEAL_GATE_BOOTSTRAP: 'true'
       CLASSIFICATION: ${{ needs.classify_changes.outputs.classification }}
 
     steps:
-      - name: 📄 FAST PATH - Docs-only detected
+      - name: FAST PATH - Docs-only detected
         if: needs.classify_changes.outputs.docs_only == 'true'
         run: |
-          echo "🚀 FAST PATH: Docs-only changes detected"
+          echo "FAST PATH: Docs-only changes detected"
           echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
-          echo "Skipping heavy build steps (backend build, frontend build, perf tests)"
-          echo ""
-          echo "Governance checks still run: ✅"
-          echo "Contract tests still run: ✅"
-          echo "Required checks satisfied: ✅"
 
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
-        # version read from package.json packageManager field
+      - uses: pnpm/action-setup@v4
 
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: 📥 Install pnpm dependencies
+      - name: Install pnpm dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🔵 Setup .NET
+      - name: Setup .NET
         if: env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 💾 Cache NuGet packages
+      - name: Cache NuGet packages
         if: env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed'
         uses: actions/cache@v4
         with:
@@ -718,67 +553,38 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      - name: 📦 Restore .NET Dependencies
+      - name: Restore .NET Dependencies
         if: env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed'
         run: dotnet restore backend/TerraFusion.sln || dotnet restore backend/ || echo "Backend restore skipped"
 
-      - name: ✅ Check Quality Gate Status
+      - name: Check Quality Gate Status
         id: check-quality
         run: |
           echo "Quality Gate result: ${{ needs.quality-gate.result }}"
           if [ "${{ needs.quality-gate.result }}" != "success" ]; then
-            echo "❌ Quality Gate did not pass"
+            echo "Quality Gate did not pass"
             exit 1
           fi
-          echo "✅ Quality Gate passed"
+          echo "Quality Gate passed"
 
       - name: Ensure SEAL helper scripts executable
         if: steps.check-quality.outcome == 'success' && (env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed')
         shell: bash
-        run: |
-          chmod +x scripts/speclock-tss-verify.sh scripts/speclock-tss-verify-state.sh || true
+        run: chmod +x scripts/speclock-tss-verify.sh scripts/speclock-tss-verify-state.sh || true
 
-      - name: 🔒 TerraFusion Seal Gate (Backend)
+      - name: TerraFusion Seal Gate (Backend)
         if: steps.check-quality.outcome == 'success' && (env.CLASSIFICATION == 'backend_only' || env.CLASSIFICATION == 'mixed')
         shell: pwsh
         run: pwsh -NoProfile -File scripts/ci-seal-gate.ps1
 
-      - name: 🎨 FAST PATH - Frontend-only detected
-        if: env.CLASSIFICATION == 'frontend_only'
-        run: |
-          echo "🎨 FAST PATH: Frontend-only changes detected"
-          echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
-          echo "Backend build skipped: ✅"
-          echo "Frontend lint/test/build: ✅"
-          echo "Contract tests: ✅"
-
-      - name: ⚙️ FAST PATH - Backend-only detected
-        if: env.CLASSIFICATION == 'backend_only'
-        run: |
-          echo "⚙️ FAST PATH: Backend-only changes detected"
-          echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
-          echo "Frontend build skipped: ✅"
-          echo "Backend restore/build: ✅"
-          echo "Contract tests: ✅"
-
-      - name: 🔧 FAST PATH - CI-only detected
-        if: env.CLASSIFICATION == 'ci_only'
-        run: |
-          echo "🔧 FAST PATH: CI-only changes detected"
-          echo "Reason: ${{ needs.classify_changes.outputs.reason }}"
-          echo "Backend build skipped: ✅"
-          echo "Frontend build skipped: ✅"
-          echo "Contract tests: ✅"
-          echo "Unit tests: ✅"
-
-      - name: 📊 Collect CI Telemetry
+      - name: Collect CI Telemetry
         if: always()
         run: node scripts/ci/ci_telemetry.mjs
         env:
           GH_TOKEN: ${{ github.token }}
           TF_CLASSIFICATION: ${{ needs.classify_changes.outputs.classification }}
 
-      - name: 📝 Generate Telemetry Comment
+      - name: Generate Telemetry Comment
         if: always() && github.event_name == 'pull_request'
         run: node scripts/ci/ci_telemetry_comment.mjs ci_telemetry.json ci_telemetry_comment.md
         env:
@@ -786,7 +592,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
 
-      - name: 💬 Post/Update PR Comment
+      - name: Post/Update PR Comment
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
@@ -794,7 +600,6 @@ jobs:
             const fs = require('fs');
             const path = 'ci_telemetry_comment.md';
 
-            // Read generated comment
             let body;
             try {
               body = fs.readFileSync(path, 'utf8');
@@ -803,14 +608,12 @@ jobs:
               return;
             }
 
-            // Sentinel for sticky comment identification
             const sentinel = '<!-- TF_CI_TELEMETRY -->';
             if (!body.includes(sentinel)) {
               core.warning('Sentinel missing from comment, skipping PR comment');
               return;
             }
 
-            // Find existing comment
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -820,169 +623,22 @@ jobs:
             const existing = comments.find(c => c.body && c.body.includes(sentinel));
 
             if (existing) {
-              // Update existing comment
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: existing.id,
                 body: body,
               });
-              console.log(`✅ Updated existing comment: ${existing.id}`);
             } else {
-              // Create new comment
-              const { data: newComment } = await github.rest.issues.createComment({
+              await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
                 body: body,
               });
-              console.log(`✅ Created new comment: ${newComment.id}`);
             }
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # 🤖 AUTO-APPROVE FOR LOW-RISK PRs (GitHub App Co-Signer)
-      # ═══════════════════════════════════════════════════════════════════════
-      # Prerequisites:
-      # 1. Create a GitHub App with "Pull requests: Read & Write" permission
-      # 2. Install the App on this repository
-      # 3. Add secrets: TF_REVIEW_APP_ID, TF_REVIEW_APP_PRIVATE_KEY
-      # ═══════════════════════════════════════════════════════════════════════
-      - name: 🔑 Generate GitHub App Token
-        id: app-token
-        if: >-
-          always() &&
-          github.event_name == 'pull_request' &&
-          vars.TF_AUTO_APPROVE_ENABLED == 'true'
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.TF_REVIEW_APP_ID }}
-          private-key: ${{ secrets.TF_REVIEW_APP_PRIVATE_KEY }}
-
-      # Permission check for break-glass (belt + suspenders with actor allowlist)
-      # Fail-closed: 404/403 errors result in has_write=false (deny break-glass)
-      - name: 🔐 Check Actor Permission for Break-Glass
-        id: permission-check
-        if: >-
-          always() &&
-          github.event_name == 'pull_request' &&
-          vars.TF_AUTO_APPROVE_ENABLED == 'true' &&
-          steps.app-token.outcome == 'success'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ steps.app-token.outputs.token }}
-          script: |
-            let level = 'none';
-            let hasWrite = false;
-
-            try {
-              const res = await github.rest.repos.getCollaboratorPermissionLevel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                username: context.actor,
-              });
-
-              level = res?.data?.permission ?? 'none';
-              hasWrite = ['admin', 'maintain', 'write'].includes(level);
-
-            } catch (error) {
-              const status = error?.status;
-
-              if (status === 404) {
-                console.log(`Actor ${context.actor} is not a collaborator (404) — failing closed`);
-              } else if (status === 403) {
-                console.log(`Permission lookup forbidden (403) for actor ${context.actor} — failing closed`);
-              } else {
-                throw error;
-              }
-
-              level = 'none';
-              hasWrite = false;
-            }
-
-            core.setOutput('permission_level', level);
-            core.setOutput('has_write', String(hasWrite));
-            console.log(`Actor ${context.actor} has permission: ${level} (write: ${hasWrite})`);
-
-      - name: 🤖 Evaluate Auto-Approve Policy
-        id: policy
-        if: >-
-          always() &&
-          github.event_name == 'pull_request' &&
-          vars.TF_AUTO_APPROVE_ENABLED == 'true' &&
-          steps.app-token.outcome == 'success'
-        env:
-          TF_BREAK_GLASS_ACTORS: ${{ vars.TF_BREAK_GLASS_ACTORS }}
-          TF_ACTOR_HAS_WRITE: ${{ steps.permission-check.outputs.has_write }}
-        run: |
-          # Get changed files list
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} | tr '\n' ',' | sed 's/,$//')
-
-          # Run policy evaluation with actor and files
-          node scripts/ci/auto_approve_policy.mjs \
-            --telemetry=ci_telemetry.json \
-            --labels="${{ join(github.event.pull_request.labels.*.name, ',') }}" \
-            --actor="${{ github.actor }}" \
-            --files="$CHANGED_FILES" \
-            --json > policy_result.json || true
-
-          # Parse results
-          APPROVE=$(jq -r '.approve' policy_result.json 2>/dev/null || echo "false")
-          REASON=$(jq -r '.reason' policy_result.json 2>/dev/null || echo "Policy evaluation failed")
-          SCOPE=$(jq -r '.scope' policy_result.json 2>/dev/null || echo "unknown")
-
-          echo "approve=$APPROVE" >> $GITHUB_OUTPUT
-          echo "reason=$REASON" >> $GITHUB_OUTPUT
-          echo "scope=$SCOPE" >> $GITHUB_OUTPUT
-
-          echo "📋 Auto-Approve Policy Result:"
-          echo "  Approve: $APPROVE"
-          echo "  Reason: $REASON"
-          echo "  Scope: $SCOPE"
-          echo "  Actor: ${{ github.actor }}"
-
-      - name: ✅ Submit Auto-Approval Review
-        if: >-
-          always() &&
-          github.event_name == 'pull_request' &&
-          vars.TF_AUTO_APPROVE_ENABLED == 'true' &&
-          steps.policy.outputs.approve == 'true'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ steps.app-token.outputs.token }}
-          script: |
-            const reason = `${{ steps.policy.outputs.reason }}`;
-            const scope = `${{ steps.policy.outputs.scope }}`;
-            const classification = `${{ needs.classify_changes.outputs.classification }}`;
-
-            const body = [
-              '## 🤖 TerraFusion Auto-Approval',
-              '',
-              '| Field | Value |',
-              '|-------|-------|',
-              `| Classification | \`${classification}\` |`,
-              `| Scope | \`${scope}\` |`,
-              `| Reason | ${reason} |`,
-              `| Policy Version | 1.2.0 |`,
-              '',
-              '---',
-              '*This review was submitted automatically by the TerraFusion CI Co-Signer.*',
-              '*See [Auto-Approve Policy](scripts/ci/auto_approve_policy.mjs) for details.*',
-            ].join('\n');
-
-            await github.rest.pulls.createReview({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-              event: 'APPROVE',
-              body: body,
-            });
-
-            console.log('✅ Auto-approval review submitted');
-            console.log(`  Classification: ${classification}`);
-            console.log(`  Scope: ${scope}`);
-            console.log(`  Reason: ${reason}`);
-
-      - name: 📤 Upload Seal Artifacts
+      - name: Upload Seal Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:

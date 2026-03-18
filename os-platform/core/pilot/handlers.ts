@@ -2685,6 +2685,19 @@ export function registerCanonHandlers(runner: {
   runner.registerHandler('canon_editor_layout', canonEditorLayoutHandler);
   runner.registerHandler('canon_terminal_exec', canonTerminalExecHandler);
   runner.registerHandler('canon_inlay_hints', canonInlayHintsHandler);
+  runner.registerHandler('canon_folding_ranges', canonFoldingRangesHandler);
+  runner.registerHandler('canon_line_markers', canonLineMarkersHandler);
+  runner.registerHandler('canon_hover_info', canonHoverInfoHandler);
+  runner.registerHandler('canon_goto_definition', canonGotoDefinitionHandler);
+  runner.registerHandler('canon_completions', canonCompletionsHandler);
+  runner.registerHandler('canon_editor_themes', canonEditorThemesHandler);
+  runner.registerHandler('canon_code_actions', canonCodeActionsHandler);
+  runner.registerHandler('canon_find_references', canonFindReferencesHandler);
+  runner.registerHandler('canon_rename_symbol', canonRenameSymbolHandler);
+  runner.registerHandler('canon_signature_help', canonSignatureHelpHandler);
+  runner.registerHandler('canon_document_highlights', canonDocumentHighlightsHandler);
+  runner.registerHandler('canon_git_diff', canonGitDiffHandler);
+  runner.registerHandler('canon_document_links', canonDocumentLinksHandler);
 }
 
 /**
@@ -2759,4 +2772,17 @@ export const canonHandlers = {
   canon_editor_layout: canonEditorLayoutHandler,
   canon_terminal_exec: canonTerminalExecHandler,
   canon_inlay_hints: canonInlayHintsHandler,
+  canon_folding_ranges: canonFoldingRangesHandler,
+  canon_line_markers: canonLineMarkersHandler,
+  canon_hover_info: canonHoverInfoHandler,
+  canon_goto_definition: canonGotoDefinitionHandler,
+  canon_completions: canonCompletionsHandler,
+  canon_editor_themes: canonEditorThemesHandler,
+  canon_code_actions: canonCodeActionsHandler,
+  canon_find_references: canonFindReferencesHandler,
+  canon_rename_symbol: canonRenameSymbolHandler,
+  canon_signature_help: canonSignatureHelpHandler,
+  canon_document_highlights: canonDocumentHighlightsHandler,
+  canon_git_diff: canonGitDiffHandler,
+  canon_document_links: canonDocumentLinksHandler,
 } as const;

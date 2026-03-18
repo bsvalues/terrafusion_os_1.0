@@ -1,9 +1,23 @@
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import React from 'react';
 import {
   CANON_LAYOUT_STORAGE_KEY,
   defaultCanonLayoutV1,
   loadCanonLayout,
   saveCanonLayout,
 } from '../../canon/layoutPersistence';
+
+vi.mock('@monaco-editor/react', () => ({
+  default: () => <div data-testid="mock-monaco-editor" />,
+  loader: { config: vi.fn() },
+}));
+
+vi.mock('monaco-editor', () => ({}));
+vi.mock('monaco-editor/esm/vs/editor/editor.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/css/css.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/html/html.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ default: class {} }));
+vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
 
 describe('Phase 50 contract: TerraCanon layout persistence', () => {
   beforeEach(() => {

@@ -319,6 +319,11 @@ export const MODULE_OBJECT_TYPES: Record<string, ObjectClassification> = {
   'sovereign-dashboard':  { objectType: 'cross-parcel-operational-app', entryPath: 'desktop-icon:sovereign-dashboard', hasActionableUI: true },
   'axiom-fs':             { objectType: 'cross-parcel-operational-app', entryPath: 'desktop-icon:axiom-fs', hasActionableUI: true },
 
+  // ── ADR-backed suite modules (layer 5 — cross-parcel operational) ─────
+  'statistics-studio':    { objectType: 'cross-parcel-operational-app', entryPath: 'suite-forge:statistics-studio', hasActionableUI: true },
+  'regression-studio':    { objectType: 'cross-parcel-operational-app', entryPath: 'suite-forge:regression-studio', hasActionableUI: true },
+  'management-dashboard': { objectType: 'cross-parcel-operational-app', entryPath: 'suite-dais:management-dashboard', hasActionableUI: true },
+
   // ── OS feature utilities (layer 5 — settings/help) ────────────────────
   'settings':             { objectType: 'os-feature-window', entryPath: 'desktop-icon:settings', hasActionableUI: true },
   'shortcuts-help':       { objectType: 'os-feature-window', entryPath: 'desktop-icon:shortcuts-help', hasActionableUI: true },

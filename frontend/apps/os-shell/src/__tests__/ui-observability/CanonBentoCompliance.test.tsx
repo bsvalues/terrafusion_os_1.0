@@ -14,6 +14,7 @@
  * The IDE grid (`.canon-ide`) now lives inside `.canon-devCockpit__inner`.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
@@ -22,43 +23,54 @@ import React from 'react';
 // ---------------------------------------------------------------------------
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useNavigate: () => vi.fn(),
 }));
 
 // StandaloneHomeShell — pass-through wrapper (no shell chrome in tests)
-jest.mock('../../components/standalone', () => ({
+vi.mock('../../components/standalone', () => ({
   StandaloneHomeShell: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // CanonModuleHost — invisible in layout tests
-jest.mock('../../canon/CanonModuleHost', () => ({
+vi.mock('../../canon/CanonModuleHost', () => ({
   CanonModuleHost: () => <div data-testid='canon-module-host-stub' />,
 }));
 
 // useCanonLayout — default layout
-jest.mock('../../canon/useCanonLayout', () => ({
+vi.mock('../../canon/useCanonLayout', () => ({
   useCanonLayout: () => [
     { leftPaneWidth: 250, rightPaneWidth: 750, inspectorOpen: false },
-    jest.fn(),
+    vi.fn(),
   ],
 }));
 
 // invokeWithPreflight — stub
-jest.mock('../../canon/invokeWithPreflight', () => ({
-  invokeWithPreflight: jest.fn(),
+vi.mock('../../canon/invokeWithPreflight', () => ({
+  invokeWithPreflight: vi.fn(),
 }));
 
 // Canon API calls — stubs
-jest.mock('../../api/canonDoctor', () => ({
-  runCanonDoctor: jest.fn(),
+vi.mock('../../api/canonDoctor', () => ({
+  runCanonDoctor: vi.fn(),
 }));
-jest.mock('../../api/canonGateFast', () => ({
-  runCanonGateFast: jest.fn(),
+vi.mock('../../api/canonGateFast', () => ({
+  runCanonGateFast: vi.fn(),
 }));
-jest.mock('../../api/canonPing', () => ({
-  runCanonPing: jest.fn(),
+vi.mock('../../api/canonPing', () => ({
+  runCanonPing: vi.fn(),
+}));
+
+// useCanonConnection — stub (avoids real WebSocket setup)
+vi.mock('../../canon/useCanonConnection', () => ({
+  useCanonConnection: () => ({ status: 'disconnected', lastPingMs: null }),
+}));
+
+// CanonNotification — stub
+vi.mock('../../canon/CanonNotification', () => ({
+  CanonNotificationHost: () => null,
+  useCanonNotifications: () => ({ notifications: [], addNotification: vi.fn(), dismissNotification: vi.fn() }),
 }));
 
 // ---------------------------------------------------------------------------
@@ -96,19 +108,21 @@ describe('P17 – Canon IDE Shell Compliance', () => {
     expect(screen.getByTestId('terracanon-filetree')).toBeInTheDocument();
   });
 
-  it('agents panel is present with task input', () => {
+  it('agents panel is present with tool registry header', () => {
     render(<CanonHome />);
     expect(screen.getByTestId('terracanon-agents-panel')).toBeInTheDocument();
-    expect(screen.getByTestId('terracanon-agent-task-input')).toBeInTheDocument();
+    // P-A: panel now shows tool registry, not a task input
+    expect(screen.getByLabelText('Agents panel')).toBeInTheDocument();
   });
 
   it('tasks panel has safety dashboard', () => {
     render(<CanonHome />);
     expect(screen.getByTestId('terracanon-safety-dashboard')).toBeInTheDocument();
     expect(screen.getByTestId('terracanon-run-all')).toBeInTheDocument();
-    expect(screen.getByTestId('terracanon-run-canon-doctor')).toBeInTheDocument();
-    expect(screen.getByTestId('terracanon-run-canon-gatefast')).toBeInTheDocument();
-    expect(screen.getByTestId('terracanon-run-canon-ping')).toBeInTheDocument();
+    // Gate cards have duplicate testids (card wrapper + run button) — use getAllByTestId
+    expect(screen.getAllByTestId('terracanon-run-canon-doctor').length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('terracanon-run-canon-gatefast').length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('terracanon-run-canon-ping').length).toBeGreaterThan(0);
   });
 
   it('material hierarchy is applied (shell + infrastructure)', () => {

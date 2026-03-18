@@ -3,6 +3,9 @@ import axios from 'axios';
 import { getToken } from '@/auth/authStorage';
 import { logout as authBridgeLogout, isLogoutInFlight } from '@/auth/authBridge';
 import { shouldForceLoginRedirect } from '@/auth/authPolicy';
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('api');
 
 const env = getViteEnv();
 const API_BASE_URL =
@@ -29,10 +32,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error);
+    logger.error('API Error:', error);
     if (error.response?.status === 401) {
       if (!shouldForceLoginRedirect()) {
-        console.warn('[dev-preview] Suppressed auto-logout on 401:', error.config?.url);
+        logger.warn('[dev-preview] Suppressed auto-logout on 401:', error.config?.url);
         return Promise.reject(error);
       }
       // Delegate to auth bridge — ensures single logout per burst
@@ -43,7 +46,7 @@ api.interceptors.response.use(
     }
     if (error.response?.status === 403) {
       // 403 = Forbidden — do NOT logout, just warn
-      console.warn('Forbidden: insufficient permissions for', error.config?.url);
+      logger.warn('Forbidden: insufficient permissions for', error.config?.url);
     }
     return Promise.reject(error);
   }

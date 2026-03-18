@@ -10,6 +10,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import React from 'react';
+import { vi } from 'vitest';
 import {
   Select,
   SelectContent,
@@ -296,7 +297,7 @@ describe('Select', () => {
     // Skip: requires click-to-open which jsdom doesn't support for Radix portals
     it.skip('does not select disabled option', async () => {
       const user = userEvent.setup();
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
 
       render(
         <Select onValueChange={handleChange}>
@@ -472,7 +473,7 @@ describe('Select', () => {
     // Skip: requires keyboard-to-open and interaction within Radix portal
     it.skip('selects highlighted option with Enter key', async () => {
       const user = userEvent.setup();
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
 
       render(
         <Select onValueChange={handleChange}>
@@ -557,7 +558,7 @@ describe('Select', () => {
     // Skip: requires click-to-open which jsdom doesn't support for Radix portals
     it.skip('calls onValueChange when selection changes', async () => {
       const user = userEvent.setup();
-      const handleValueChange = jest.fn();
+      const handleValueChange = vi.fn();
 
       render(
         <Select onValueChange={handleValueChange}>
@@ -617,7 +618,7 @@ describe('Select', () => {
     // Skip: requires click-to-open which jsdom doesn't support for Radix portals
     it.skip('maintains controlled state after multiple changes', async () => {
       const user = userEvent.setup();
-      const handleValueChange = jest.fn();
+      const handleValueChange = vi.fn();
 
       render(
         <Select defaultValue='option1' onValueChange={handleValueChange}>

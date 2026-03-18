@@ -1,0 +1,90 @@
+{
+  "phase": "4K",
+  "title": "Security Gate Completion",
+  "created": "2026-03-15",
+  "objective": "Close security gates on 3 repos with active security issues from Phase 4B extraction",
+  "assessment": "All 3 repos are private and archived (Phase 4I). Primary mitigation achieved. Remaining items are external manual operations (key rotation on third-party services, BFG history scrub on GitHub).",
+  "repos": [
+    {
+      "repo": "TerraMiner",
+      "security_issues": [
+        "RapidAPI key 451301875bmsh... exposed in Rapid API.env.txt",
+        "PACS.env.txt with internal server hostname jcharrispacs"
+      ],
+      "mitigation_applied": [
+        "Repo made private 2026-03-14",
+        "All 78 assets extracted to canonical repo (Phase 4I Wave 3)",
+        "Repo archived with snapshot/rollback tags",
+        "0 runtime consumers remaining"
+      ],
+      "remaining_manual_actions": [
+        "Rotate RapidAPI key (if subscription reactivated)",
+        "Run BFG to scrub Rapid API.env.txt and PACS.env.txt from git history",
+        "Run BFG to remove terraform.exe/terraform.zip/terragrunt.exe binaries"
+      ],
+      "risk_level": "LOW",
+      "risk_rationale": "RapidAPI subscription believed lapsed. PACS server is internal-only. Repo is private. No external access evidence.",
+      "gate_status": "mitigated-pending-manual"
+    },
+    {
+      "repo": "TerraFusionPilt",
+      "security_issues": [
+        "Session secret in .env.production (BentonCountyPILTDashboard2025SecureSessionKey64Characters...)"
+      ],
+      "mitigation_applied": [
+        "Repo made private 2026-03-14",
+        "All 15 assets extracted to canonical repo (Phase 4I Wave 2)",
+        "Repo archived with snapshot/rollback tags",
+        "0 runtime consumers remaining"
+      ],
+      "remaining_manual_actions": [
+        "Replace session secret in app config (if service reactivated)",
+        "Run BFG to scrub .env.production from git history"
+      ],
+      "risk_level": "LOW",
+      "risk_rationale": "Service is dormant. Session secret only useful if app is running. Repo is private.",
+      "gate_status": "mitigated-pending-manual"
+    },
+    {
+      "repo": "BCBSLevy",
+      "security_issues": [
+        "6 PostgreSQL dumps in backups/ directory",
+        "Real 2025 levy Excel files in 2025/ directory"
+      ],
+      "mitigation_applied": [
+        "Repo made private 2026-03-14",
+        "All 76 assets extracted to canonical repo (Phase 4I Wave 1)",
+        "Repo archived with snapshot/rollback tags",
+        "0 runtime consumers remaining"
+      ],
+      "remaining_manual_actions": [
+        "Run BFG to remove backups/ folder from git history",
+        "Decide whether 2025/ levy data should also be scrubbed (public records but sensitive in aggregate)"
+      ],
+      "risk_level": "MEDIUM",
+      "risk_rationale": "Contains real county financial data (levy calculations, PostgreSQL dumps). Data exposure, not credentials. Repo is private, mitigating immediate risk. History scrub recommended but not blocking.",
+      "gate_status": "mitigated-pending-manual"
+    }
+  ],
+  "additional_security_item": {
+    "asset": "BIV-178",
+    "description": "Harris PACS DLL artifacts (Core.DLL, MRA.DLL, etc.)",
+    "status": "deferred-security",
+    "rationale": "Requires security review of binary artifacts + legal clearance for Harris PACS DLL redistribution. This is a vendor licensing issue, not a credential exposure.",
+    "action_required": "Legal review with Harris Computer Systems before any DLL redistribution"
+  },
+  "summary": {
+    "total_repos_assessed": 3,
+    "repos_private": 3,
+    "repos_archived": 3,
+    "assets_extracted": "169 (76 + 15 + 78)",
+    "runtime_consumers_remaining": 0,
+    "credential_exposures_mitigated": "All repos made private, no public access",
+    "manual_actions_remaining": 8,
+    "blocking_for_consolidation": false,
+    "rationale": "Security gates do not block consolidation because: (1) all repos are private, (2) all assets are extracted, (3) no runtime consumers remain, (4) exposed credentials point to dormant services. Manual key rotation and history scrub are hygiene tasks, not blockers."
+  },
+  "phase_status": "complete",
+  "completed_at": "2026-03-15",
+  "note": "Manual follow-up items logged in docs/architecture/SECURITY_REMEDIATION_2026-03-14.md. Owner must execute BFG scrubs and key rotations on external services when those services are reactivated."
+}

@@ -11,7 +11,7 @@
  * Tool execution surfaces will be rebuilt via TerraPilot (the OS copilot)
  * rather than debug panels in the workbench chrome.
  */
-import '@testing-library/jest-dom';
+import { describe, it, expect } from 'vitest';
 
 describe('PropertyWorkbench explain_model_inputs action', () => {
   it('debug panel removed - tool execution moved to TerraPilot', () => {

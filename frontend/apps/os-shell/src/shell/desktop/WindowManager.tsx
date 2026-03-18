@@ -126,7 +126,7 @@ export function WindowManager({ className = '' }: WindowManagerProps) {
       aria-label='Application windows'
       aria-live='polite'
       className={`
-        absolute top-0 left-0 w-full h-[calc(100vh-48px)]
+        absolute top-[44px] left-0 w-full h-[calc(100vh-44px-48px)]
         pointer-events-none overflow-hidden
         ${className}
       `.trim()}

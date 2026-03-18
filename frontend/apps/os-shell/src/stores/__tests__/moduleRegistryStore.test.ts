@@ -8,22 +8,22 @@
  * @see SUCCESS CRITERIA Phase 3.1
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { act, cleanup, renderHook } from '@testing-library/react';
-// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 
 import { useDesktopStore } from '../desktopStore';
 import { useModuleRegistryStore, type ModuleDefinition } from '../moduleRegistryStore';
 
 // Mock desktopStore
-jest.mock('../desktopStore', () => ({
+vi.mock('../desktopStore', () => ({
   useDesktopStore: {
-    getState: jest.fn(() => ({
-      openWindow: jest.fn(() => 'window-123'),
-      focusWindow: jest.fn(),
+    getState: vi.fn(() => ({
+      openWindow: vi.fn(() => 'window-123'),
+      focusWindow: vi.fn(),
       windows: [],
     })),
-    setState: jest.fn(),
-    subscribe: jest.fn(),
+    setState: vi.fn(),
+    subscribe: vi.fn(),
   },
 }));
 
@@ -109,7 +109,7 @@ beforeEach(() => {
     isInitialized: false,
     initError: null,
   });
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {
@@ -385,10 +385,10 @@ describe('Module Registry Store', () => {
     });
 
     it('calls desktopStore.openWindow with correct params', async () => {
-      const mockOpenWindow = jest.fn(() => 'window-123');
+      const mockOpenWindow = vi.fn(() => 'window-123');
       (useDesktopStore.getState as any).mockReturnValue({
         openWindow: mockOpenWindow,
-        focusWindow: jest.fn(),
+        focusWindow: vi.fn(),
         windows: [],
       });
 
@@ -402,9 +402,9 @@ describe('Module Registry Store', () => {
     });
 
     it('focuses existing window if module already loaded', async () => {
-      const mockFocusWindow = jest.fn();
+      const mockFocusWindow = vi.fn();
       (useDesktopStore.getState as any).mockReturnValue({
-        openWindow: jest.fn(() => 'window-123'),
+        openWindow: vi.fn(() => 'window-123'),
         focusWindow: mockFocusWindow,
         windows: [{ id: 'window-123', moduleId: 'government-edition' }],
       });
@@ -637,8 +637,8 @@ describe('Module Registry Store', () => {
     });
 
     it('prevents duplicate launches of same module', async () => {
-      const mockOpenWindow = jest.fn(() => 'window-123');
-      const mockFocusWindow = jest.fn();
+      const mockOpenWindow = vi.fn(() => 'window-123');
+      const mockFocusWindow = vi.fn();
 
       (useDesktopStore.getState as any).mockReturnValue({
         openWindow: mockOpenWindow,

@@ -21,6 +21,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { execSync } from "node:child_process";
 
 const REPO_ROOT = process.cwd();
 
@@ -336,8 +337,20 @@ function main() {
   validateFinalManifest(branchHeadSha, canonVersion);
 
   console.log("✅ R1 evidence verification passed.");
-  console.log(`- Verified branch-head SHA: ${branchHeadSha}`);
+  console.log(`- R1 signed SHA: ${branchHeadSha}`);
   console.log(`- Canon version: ${canonVersion}`);
+
+  // Report HEAD context so operators see whether they are at R1 or post-R1
+  try {
+    const head = execSync("git rev-parse HEAD", { cwd: REPO_ROOT, encoding: "utf8" }).trim().toLowerCase();
+    if (head === branchHeadSha) {
+      console.log(`- Current HEAD matches R1 signed SHA`);
+    } else {
+      console.log(`- Current HEAD: ${head} (post-R1 — R1 evidence frozen at signed SHA above)`);
+    }
+  } catch {
+    // git not available or not a repo — skip context line
+  }
 }
 
 main();

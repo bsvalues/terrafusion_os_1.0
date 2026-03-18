@@ -18,7 +18,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { usePropertyStore } from '../../stores/propertyStore';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
@@ -28,9 +28,18 @@ import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
+import { emitTraceEvent } from '../../services/terraTrace';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
+import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
+import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
 import { validateWorkbenchHost } from '../../contracts/objectPlacement';
 import type { WorkbenchHostViolation } from '../../contracts/objectPlacement';
+import { useRecentParcels, openWorkbenchWindow } from '../../context/parcelContext';
+import { useParcelSearch } from '../../shell/command-palette/useParcelSearch';
+import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+import { useSession } from '../../auth/useSession';
+import { LiquidPanel } from '../../ui/materials';
+import { cn } from '@/lib/utils';
 
 // ============================================================================
 // Lazy-loaded Tab Components (same as Router.tsx)
@@ -129,24 +138,258 @@ const TabLoader: React.FC = () => (
 );
 
 // ============================================================================
-// No Parcel State
+// Workbench Start Scene — Parcel Intake Surface
 // ============================================================================
 
-const NoParcelSelected: React.FC = () => (
-  <div
-    className="flex flex-col items-center justify-center h-full gap-4 p-8"
-    style={{ color: 'hsl(var(--tf-text) / 0.6)' }}
-  >
-    <span className="text-5xl">🏠</span>
-    <h2 className="text-lg font-medium" style={{ color: 'hsl(var(--tf-text))' }}>
-      No Parcel Selected
-    </h2>
-    <p className="text-sm text-center max-w-md">
-      Open a parcel from the Start Menu recent parcels, Command Palette search,
-      or double-click the Property Workbench icon to get started.
-    </p>
+/** Glass card wrapper (same pattern as StageZeroState) */
+const StartGlassCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
+  <LiquidPanel variant="shell" radius="lg" className={cn('p-4 flex flex-col', className)}>
+    {children}
+  </LiquidPanel>
+);
+
+/** Section header */
+const StartSectionHeader: React.FC<{ icon: React.ReactNode; title: string }> = ({ icon, title }) => (
+  <div className="flex items-center gap-2 mb-3">
+    <span className="opacity-50">{icon}</span>
+    <span
+      className="text-xs font-semibold uppercase tracking-wider"
+      style={{ color: 'hsl(var(--tf-text) / 0.5)' }}
+    >
+      {title}
+    </span>
   </div>
 );
+
+/** Clickable action row */
+const StartActionRow: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  sublabel?: string;
+  onClick: () => void;
+  subtle?: boolean;
+  shortcut?: string;
+}> = ({ icon, label, sublabel, onClick, subtle = false, shortcut }) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      'flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left',
+      'transition-all duration-150',
+      'hover:bg-[hsl(var(--tf-text)_/_0.08)]',
+      'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--tf-accent))]',
+      subtle ? 'opacity-60 hover:opacity-90' : 'opacity-80 hover:opacity-100',
+    )}
+  >
+    <span className="flex-shrink-0 opacity-60">{icon}</span>
+    <span className="flex-1 min-w-0">
+      <span className="text-sm font-medium truncate block" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+        {label}
+      </span>
+      {sublabel && (
+        <span className="text-xs truncate block" style={{ color: 'hsl(var(--tf-text) / 0.4)' }}>
+          {sublabel}
+        </span>
+      )}
+    </span>
+    {shortcut && (
+      <span
+        className="ml-auto flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded"
+        style={{
+          color: 'hsl(var(--tf-text) / 0.35)',
+          background: 'hsl(var(--tf-text) / 0.06)',
+        }}
+      >
+        {shortcut}
+      </span>
+    )}
+  </button>
+);
+
+/** Workbench Start Scene — parcel intake when no parcel is active */
+const WorkbenchStartScene: React.FC = () => {
+  const recentParcels = useRecentParcels();
+  const openPalette = useCommandPaletteStore((s) => s.open);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Inline search
+  const [searchQuery, setSearchQuery] = useState('');
+  const { results, isLoading } = useParcelSearch(searchQuery, searchQuery.length >= 3);
+  const [showResults, setShowResults] = useState(false);
+
+  // Autofocus the search input
+  useEffect(() => {
+    const timer = setTimeout(() => searchInputRef.current?.focus(), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show results when we have them
+  useEffect(() => {
+    setShowResults(results.length > 0);
+  }, [results]);
+
+  const handleSelectParcel = useCallback((parcelId: string) => {
+    openWorkbenchWindow(parcelId);
+  }, []);
+
+  const handleResumeLast = useCallback(() => {
+    if (recentParcels.length > 0) {
+      openWorkbenchWindow(recentParcels[0]);
+    }
+  }, [recentParcels]);
+
+  const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && results.length > 0) {
+      e.preventDefault();
+      openWorkbenchWindow(results[0].parcelNumber);
+    }
+    if (e.key === 'Escape') {
+      setSearchQuery('');
+      setShowResults(false);
+    }
+  }, [results]);
+
+  return (
+    <div className="h-full flex gap-3 p-6" style={{ background: 'hsl(var(--tf-bg))' }}>
+
+      {/* ═══ Left Panel: Recent Parcels ═══ */}
+      <div className="w-[240px] shrink-0 flex flex-col gap-3">
+        <StartGlassCard className="flex-1">
+          <StartSectionHeader icon={<span className="text-sm">&#128339;</span>} title="Recent Parcels" />
+          <div className="flex flex-col gap-0.5 -mx-2.5 flex-1">
+            {recentParcels.length === 0 ? (
+              <div className="flex flex-col items-center justify-center flex-1 gap-2 opacity-40">
+                <span className="text-2xl">&#127970;</span>
+                <p className="text-xs text-center" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  No recent parcels.
+                  <br />
+                  Use ⌘K to search.
+                </p>
+              </div>
+            ) : (
+              recentParcels.slice(0, 8).map((parcelId) => (
+                <StartActionRow
+                  key={parcelId}
+                  icon={<span className="text-sm">&#127970;</span>}
+                  label={parcelId}
+                  onClick={() => handleSelectParcel(parcelId)}
+                />
+              ))
+            )}
+          </div>
+        </StartGlassCard>
+      </div>
+
+      {/* ═══ Center Panel: Parcel Search ═══ */}
+      <div className="flex-1 flex flex-col gap-3 min-w-0">
+        <StartGlassCard className="flex-1 items-center justify-center">
+          <div className="flex flex-col items-center gap-4 w-full max-w-md">
+            <span className="text-4xl opacity-20">&#127970;</span>
+            <h2 className="text-lg font-medium" style={{ color: 'hsl(var(--tf-text))' }}>
+              Property Workbench
+            </h2>
+            <p className="text-sm text-center" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              Search or select a parcel to begin
+            </p>
+
+            {/* Search input */}
+            <div className="relative w-full">
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                onFocus={() => results.length > 0 && setShowResults(true)}
+                onBlur={() => setTimeout(() => setShowResults(false), 200)}
+                placeholder="Search by parcel number, address, or owner..."
+                className={cn(
+                  'w-full px-4 py-3 rounded-lg text-sm',
+                  'transition-all duration-150',
+                  'focus:outline-none focus:ring-2',
+                )}
+                style={{
+                  background: 'hsl(var(--tf-text) / 0.06)',
+                  color: 'hsl(var(--tf-text))',
+                  border: '1px solid hsl(var(--tf-border) / 0.15)',
+                }}
+                aria-label="Search parcels"
+              />
+              {isLoading && (
+                <div
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full animate-spin"
+                  style={{
+                    border: '2px solid hsl(var(--tf-accent) / 0.2)',
+                    borderTopColor: 'hsl(var(--tf-accent))',
+                  }}
+                />
+              )}
+
+              {/* Results dropdown */}
+              {showResults && results.length > 0 && (
+                <div
+                  className="absolute left-0 right-0 top-full mt-1 rounded-lg overflow-hidden z-10"
+                  style={{
+                    background: 'hsl(var(--tf-bg-surface))',
+                    border: '1px solid hsl(var(--tf-border) / 0.2)',
+                    boxShadow: '0 4px 12px hsl(0 0% 0% / 0.3)',
+                  }}
+                >
+                  {results.map((r) => (
+                    <button
+                      key={r.parcelNumber}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleSelectParcel(r.parcelNumber)}
+                      className={cn(
+                        'flex flex-col w-full px-4 py-2.5 text-left',
+                        'transition-colors duration-100',
+                        'hover:bg-[hsl(var(--tf-text)_/_0.06)]',
+                      )}
+                    >
+                      <span className="text-sm font-medium" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+                        {r.parcelNumber}
+                      </span>
+                      <span className="text-xs" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                        {r.address}{r.ownerName ? ` — ${r.ownerName}` : ''}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <p className="text-xs" style={{ color: 'hsl(var(--tf-text) / 0.3)' }}>
+              Press ⌘K for full search
+            </p>
+          </div>
+        </StartGlassCard>
+      </div>
+
+      {/* ═══ Right Panel: Quick Actions ═══ */}
+      <div className="w-[240px] shrink-0 flex flex-col gap-3">
+        <StartGlassCard className="flex-1">
+          <StartSectionHeader icon={<span className="text-sm">&#9889;</span>} title="Quick Actions" />
+          <div className="flex flex-col gap-0.5 -mx-2.5">
+            <StartActionRow
+              icon={<span className="text-sm">&#128269;</span>}
+              label="Search Parcels"
+              onClick={openPalette}
+              shortcut="⌘K"
+            />
+            {recentParcels.length > 0 && (
+              <StartActionRow
+                icon={<span className="text-sm">&#9654;</span>}
+                label="Resume Last Parcel"
+                sublabel={recentParcels[0]}
+                onClick={handleResumeLast}
+              />
+            )}
+          </div>
+        </StartGlassCard>
+      </div>
+
+    </div>
+  );
+};
 
 // ============================================================================
 // Phase 7: Workbench Host Violation Notice
@@ -188,37 +431,67 @@ const WorkbenchHostViolationNotice: React.FC<{ violation: WorkbenchHostViolation
 interface TabBarProps {
   activeTab: WorkbenchTabSlug;
   onTabChange: (tab: WorkbenchTabSlug) => void;
+  /** Filtered tabs to display (Phase 2 role visibility) */
+  tabs?: readonly TabDef[];
+  /** Number of hidden tabs (for toggle badge) */
+  hiddenCount?: number;
+  /** Whether showing all tabs */
+  showAll?: boolean;
+  /** Toggle show-all override */
+  onToggleShowAll?: () => void;
 }
 
-const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
-  <nav
-    className="border-b px-4 flex gap-1 overflow-x-auto"
-    style={{
-      borderColor: 'hsl(var(--tf-border) / 0.15)',
-      background: 'hsl(var(--tf-bg-surface) / 0.5)',
-    }}
-  >
-    {TABS.map((tab) => {
-      const isActive = tab.id === activeTab;
-      return (
-        <button
-          key={tab.id}
-          onClick={() => onTabChange(tab.id)}
-          className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
-          style={{
-            color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
-            borderBottom: isActive ? '2px solid hsl(var(--tf-accent))' : '2px solid transparent',
-            background: isActive ? 'hsl(var(--tf-accent) / 0.05)' : 'transparent',
-          }}
-          aria-selected={isActive}
-          role="tab"
-        >
-          <span>{tab.icon}</span>
-          <span>{tab.label}</span>
-        </button>
-      );
-    })}
-  </nav>
+const TabBar: React.FC<TabBarProps> = ({
+  activeTab,
+  onTabChange,
+  tabs = TABS,
+  hiddenCount = 0,
+  showAll = false,
+  onToggleShowAll,
+}) => (
+  <div className="flex items-center">
+    <nav
+      className="flex-1 min-w-0 border-b px-4 flex gap-1 overflow-x-auto"
+      style={{
+        borderColor: 'hsl(var(--tf-border) / 0.15)',
+        background: 'hsl(var(--tf-bg-surface) / 0.5)',
+      }}
+    >
+      {tabs.map((tab) => {
+        const isActive = tab.id === activeTab;
+        return (
+          <button
+            key={tab.id}
+            onClick={() => onTabChange(tab.id)}
+            className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+            style={{
+              color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
+              borderBottom: isActive ? '2px solid hsl(var(--tf-accent))' : '2px solid transparent',
+              background: isActive ? 'hsl(var(--tf-accent) / 0.05)' : 'transparent',
+            }}
+            aria-selected={isActive}
+            role="tab"
+          >
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        );
+      })}
+    </nav>
+    {hiddenCount > 0 && onToggleShowAll && (
+      <button
+        onClick={onToggleShowAll}
+        className="shrink-0 px-3 py-1 mr-2 text-xs rounded transition-colors"
+        style={{
+          color: showAll ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.4)',
+          background: showAll ? 'hsl(var(--tf-accent) / 0.1)' : 'transparent',
+        }}
+        title={showAll ? 'Show role-default tabs' : `Show all tabs (+${hiddenCount} hidden)`}
+      >
+        {showAll ? 'Role view' : `+${hiddenCount} more`}
+      </button>
+    )}
+  </div>
 );
 
 // ============================================================================
@@ -257,6 +530,7 @@ interface PropertyData {
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
   const parcelId = (metadata?.parcelId as string) ?? null;
   const initialTab = (metadata?.tabId as WorkbenchTabSlug) ?? 'summary';
+  const session = useSession();
 
   // Resolve initial tab from metadata slug
   const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
@@ -299,6 +573,32 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   // Work Mode state
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
+  // ── Role-based tab visibility (wired to session.role — Wave 1) ──
+  const roles = useMemo(() => (session.role ? [session.role] : []), [session.role]);
+  const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
+
+  /** Tabs filtered by role visibility — order preserved */
+  const filteredTabs = useMemo(
+    () => TABS.filter((tab) => visibleTabs.includes(tab.id)),
+    [visibleTabs]
+  );
+
+  /** SuiteCompass items filtered by role visibility */
+  const compassItems = useMemo<SuiteCompassItem[]>(() => {
+    const compassMap: Record<WorkbenchTabSlug, SuiteCompassItem> = {
+      summary:  { slug: 'summary',  label: 'Summary',       shortLabel: 'Sum',     icon: '\uD83D\uDCCA', affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
+      forge:    { slug: 'forge',    label: 'TerraForge',    shortLabel: 'Forge',   icon: '\uD83D\uDD28', affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
+      atlas:    { slug: 'atlas',    label: 'TerraAtlas',    shortLabel: 'Atlas',   icon: '\uD83D\uDDFA\uFE0F', affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
+      dais:     { slug: 'dais',     label: 'TerraDais',     shortLabel: 'Dais',    icon: '\u2696\uFE0F', affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
+      clerk:    { slug: 'clerk',    label: 'TerraClerk',    shortLabel: 'Clerk',   icon: '\uD83D\uDCDC', affordance: 'Record & title',      color: 'var(--tf-accent)' },
+      treasury: { slug: 'treasury', label: 'TerraTreasury', shortLabel: 'Treas',   icon: '\uD83D\uDCB0', affordance: 'Tax collection',      color: 'var(--tf-accent)' },
+      audit:    { slug: 'audit',    label: 'TerraAudit',    shortLabel: 'Audit',   icon: '\uD83D\uDD0D', affordance: 'Financial compliance', color: 'var(--tf-accent)' },
+      dossier:  { slug: 'dossier',  label: 'TerraDossier',  shortLabel: 'Dossier', icon: '\uD83D\uDCCB', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
+      pilot:    { slug: 'pilot',    label: 'TerraPilot',    shortLabel: 'Pilot',   icon: '\uD83E\uDD16', affordance: 'Act or draft',        color: 'var(--tf-accent)' },
+    };
+    return visibleTabs.map((slug) => compassMap[slug]);
+  }, [visibleTabs]);
+
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
     () => ({ parcelId: parcelId || 'Unknown', propertyData }),
@@ -314,8 +614,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton', // TODO: from session
-      userId: 'current-user', // TODO: from auth
+      countyId: session.countyId,
+      userId: session.userId,
       roles: [],
       parcelId,
       workMode,
@@ -343,8 +643,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton',
-      userId: 'current-user',
+      countyId: session.countyId,
+      userId: session.userId,
       roles: [],
       parcelId,
       workMode,
@@ -373,9 +673,10 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Tab change handler
   const handleTabChange = useCallback((slug: WorkbenchTabSlug) => {
+    const previousTab = activeTab;
     setActiveTab(slug);
-    // TODO: Emit TerraTrace tab_switched event
-  }, []);
+    emitTraceEvent('tab_switched', 'workbench', parcelId ?? 'unknown', { tab: previousTab }, { tab: slug });
+  }, [activeTab, parcelId]);
 
   // Activity Feed state — collapsible bottom panel
   const [activityOpen, setActivityOpen] = useState(false);
@@ -391,9 +692,9 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   // Resolve active tab component
   const ActiveTabComponent = TAB_COMPONENTS[activeTab];
 
-  // No parcel selected
+  // No parcel selected — show parcel intake scene
   if (!parcelId) {
-    return <NoParcelSelected />;
+    return <WorkbenchStartScene />;
   }
 
   return (
@@ -416,12 +717,19 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
         <div className="flex flex-1 min-h-0">
           {/* Suite Compass — left rail (desktop) / top bar (tablet) */}
           <div className="shrink-0">
-            <SuiteCompass activeTab={activeTab} onTabChange={handleTabChange} />
+            <SuiteCompass activeTab={activeTab} onTabChange={handleTabChange} items={compassItems} />
           </div>
 
           {/* Main content area */}
           <div className="flex flex-col flex-1 min-w-0">
-            <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+            <TabBar
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+              tabs={filteredTabs}
+              hiddenCount={hiddenCount}
+              showAll={showAll}
+              onToggleShowAll={toggleShowAll}
+            />
             <main className="flex-1 overflow-auto">
               {hostViolation ? (
                 <WorkbenchHostViolationNotice violation={hostViolation} />

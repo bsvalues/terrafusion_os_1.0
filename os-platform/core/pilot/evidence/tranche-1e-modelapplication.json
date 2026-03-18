@@ -1,0 +1,68 @@
+{
+  "tranche": "1E",
+  "title": "Model Application Audit-Proof with Preview-Safe Execution",
+  "scope": "forge",
+  "writeLane": "forge",
+  "description": "Governed model-application lifecycle: ForgeApplyMode (preview_only | apply_pending_backend | apply_executed), audit event emission on every preview/apply interaction, backend-capability gate, blocker display. Zero fake apply behavior, zero parcel leakage, zero cross-suite writes.",
+  "typesAdded": [
+    "ForgeApplyMode",
+    "ModelApplicationRequest",
+    "ModelApplicationPreview",
+    "ModelApplicationImpactSummary",
+    "ModelApplicationRecord",
+    "ModelApplicationAuditEvent",
+    "ModelApplicationBlocker",
+    "MODEL_APPLICATION_RULES"
+  ],
+  "filesModified": [
+    "os-platform/core/types/index.ts",
+    "frontend/apps/os-shell/src/pages/forge/batch/BatchCostRun.tsx",
+    "frontend/apps/os-shell/src/pages/forge/batch/CoefficientPreview.tsx"
+  ],
+  "filesCreated": [
+    "os-platform/core/tests/forge-modelapplication-contract.test.mjs",
+    "os-platform/core/pilot/evidence/tranche-1e-modelapplication.json"
+  ],
+  "tests": {
+    "contractTests": "os-platform/core/tests/forge-modelapplication-contract.test.mjs",
+    "contractTestCount": 70,
+    "contractTestPass": 70,
+    "phase83Tests": "os-platform/core/tests/phase83-tools.test.mjs",
+    "phase83Pass": true,
+    "batchcostRegressionPass": true
+  },
+  "gates": {
+    "typeCheck": "PASS",
+    "phase83": "PASS",
+    "contractTests1E": "70/70 PASS",
+    "contractTests1D": "PASS (regression check)"
+  },
+  "auditProof": {
+    "previewNonDestructive": true,
+    "applyRequiresBackend": true,
+    "backendCapableFlag": false,
+    "blockerDisplayOnApplyAttempt": true,
+    "auditEventOnEveryInteraction": true,
+    "writeLaneEnforced": "forge (apply) / none (preview)",
+    "crossParcelOnly": true,
+    "noParcelIdInAnyType": true,
+    "noWorkbenchTabInAnyType": true,
+    "noCrossSuiteWrites": true,
+    "noFakeApplyBehavior": true
+  },
+  "architecture": {
+    "batchCostRun": {
+      "applyModeTracked": true,
+      "auditTrailRendered": true,
+      "modeBannerRendered": true,
+      "backendCapabilityGate": "BACKEND_APPLY_CAPABLE = false"
+    },
+    "coefficientPreview": {
+      "applyModeTracked": true,
+      "auditTrailRendered": true,
+      "modeBannerRendered": true,
+      "backendCapabilityGate": "BACKEND_APPLY_CAPABLE = false"
+    }
+  },
+  "timestamp": "2025-01-27T00:00:00Z"
+}

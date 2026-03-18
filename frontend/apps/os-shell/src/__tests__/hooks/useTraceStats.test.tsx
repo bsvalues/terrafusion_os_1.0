@@ -4,14 +4,15 @@
  * Lane J: Tests for global trace-store diagnostics hook.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useTraceStats } from '../../hooks/useTraceStats';
 import type { PilotTraceStatsResponse } from '../../api/pilotApi';
 
-const mockGetTraceStats = jest.fn<Promise<PilotTraceStatsResponse>, []>();
+const mockGetTraceStats = vi.fn<Promise<PilotTraceStatsResponse>, []>();
 
-jest.mock('../../api/pilotApi', () => ({
-  ...jest.requireActual('../../api/pilotApi'),
+vi.mock('../../api/pilotApi', async () => ({
+  ...await vi.importActual('../../api/pilotApi'),
   getTraceStats: () => mockGetTraceStats(),
 }));
 

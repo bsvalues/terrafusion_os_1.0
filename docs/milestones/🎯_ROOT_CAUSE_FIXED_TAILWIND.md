@@ -11,7 +11,7 @@
 
 ### Why You Saw "Nothing"
 
-The TerraFusion IDE component uses **Tailwind CSS** utility classes extensively:
+The TerraCanon component uses **Tailwind CSS** utility classes extensively:
 
 - `bg-gray-900` - background colors
 - `text-white` - text colors

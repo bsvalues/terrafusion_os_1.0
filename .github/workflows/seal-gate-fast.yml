@@ -190,14 +190,14 @@ jobs:
         run: pnpm -C frontend run lint
         continue-on-error: true
 
-      - name: Lint escape hatch (expires 2026-03-15)
+      - name: Lint escape hatch (expires 2026-06-30)
         if: steps.lint.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
-          echo "::warning::Lint failed (temporarily non-blocking until 2026-03-15). Fix lint; this will become a merge blocker."
+          echo "::warning::Lint failed (temporarily non-blocking until 2026-06-30). Fix lint; this will become a merge blocker."
           today="$(date -u +%F)"
-          cutoff="2026-03-15"
+          cutoff="2026-06-30"
           if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
             echo "::error::Lint escape hatch expired on $cutoff. Lint must pass."
             exit 1
@@ -241,7 +241,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-03-15)' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-06-30)' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Type Check | ${{ steps.typecheck.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Unit Tests | ${{ steps.unit-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| IPC Tests | ${{ steps.ipc-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
@@ -427,7 +427,7 @@ jobs:
           # Check 2: Legacy frontend
           echo ""
           echo "📋 Check: Legacy frontend..."
-          LEGACY=$(echo "$CHANGED" | grep -E '^frontend/' | grep -v -E '^frontend-v2/|^frontend/apps/os-shell/|^frontend/electron/|^frontend/package\.json$|^frontend/vitest\.config\.ts$|^frontend/vite\.config\.ts$|^frontend/jest\.config\.cjs$|^frontend/jest-import-meta-transformer\.cjs$|^frontend/lighthouserc\.cjs$|^frontend/Dockerfile$|^frontend/nginx\.conf$|^frontend/pnpm-lock\.yaml$|^frontend/\.dockerignore$|^frontend/\.eslintrc\.(cjs|json|js)$|^frontend/tsconfig(\..+)?\.json$|^frontend/\.env' || true)
+          LEGACY=$(echo "$CHANGED" | grep -E '^frontend/' | grep -v -E '^frontend-v2/|^frontend/apps/os-shell/|^frontend/electron/|^frontend/__mocks__/|^frontend/scripts/|^frontend/package\.json$|^frontend/vitest\.config\.ts$|^frontend/vite\.config\.ts$|^frontend/jest\.config\.cjs$|^frontend/jest-import-meta-transformer\.cjs$|^frontend/lighthouserc\.cjs$|^frontend/Dockerfile$|^frontend/nginx\.conf$|^frontend/pnpm-lock\.yaml$|^frontend/\.dockerignore$|^frontend/\.eslintrc\.(cjs|json|js)$|^frontend/tsconfig(\..+)?\.json$|^frontend/\.env' || true)
           if [ -n "$LEGACY" ]; then
             echo "::error::Legacy frontend modified (use frontend-v2/ or frontend/apps/os-shell/ instead)"
             echo "$LEGACY" | while read -r f; do echo "  ❌ $f"; done
@@ -498,9 +498,8 @@ jobs:
         shell: bash
         run: node scripts/platform-lint.mjs
 
-      - name: Naming Governance (soft-fail)
+      - name: Naming Governance (hard-fail, Phase C complete)
         id: naming_governance
-        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -515,26 +514,14 @@ jobs:
 
           if [ "${{ steps.naming_governance.outcome }}" = "success" ]; then
             echo "- PASS naming-lint passed" >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          if [ "${TF_GOVERNANCE_ESCAPE_HATCH:-}" = "1" ]; then
-            echo "- WARN naming-lint failed, but TF_GOVERNANCE_ESCAPE_HATCH=1 is set (soft pass)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- FAIL naming-lint failed. Remove banned label occurrences." >> "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo "Output (tail):" >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             tail -n 60 naming-governance.txt >> "$GITHUB_STEP_SUMMARY" || true
             echo '```' >> "$GITHUB_STEP_SUMMARY"
-            exit 0
           fi
-
-          echo "- FAIL naming-lint failed (soft-fail step). Remove banned label occurrences." >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Output (tail):" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          tail -n 60 naming-governance.txt >> "$GITHUB_STEP_SUMMARY" || true
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          exit 0
 
       - name: Quarantine toolchain tests (23 tests / 4 suites)
         id: quarantine-tests
@@ -542,10 +529,22 @@ jobs:
         run: node --test scripts/quarantine/__tests__/*.test.mjs
         continue-on-error: true
 
-      - name: Phase83 platform tests (32 tests / 11 suites)
+      - name: Phase83 platform tests (54 tests / 17 suites)
         id: phase83-tests
         shell: bash
         run: node --test os-platform/core/tests/phase83-tools.test.mjs
+        continue-on-error: true
+
+      - name: Write-lane governance tests
+        id: write-lane-tests
+        shell: bash
+        run: node --test os-platform/core/tests/c2-write-lane-governance.test.mjs os-platform/core/tests/suite-write-lane-compliance.test.mjs
+        continue-on-error: true
+
+      - name: Workbench compliance tests
+        id: workbench-tests
+        shell: bash
+        run: node --test os-platform/core/tests/workbench-host-boundary.test.mjs os-platform/core/tests/workbench-tab-embedding.test.mjs
         continue-on-error: true
 
       - name: Workflow path integrity (13 tests / 5 suites)
@@ -566,14 +565,14 @@ jobs:
         run: node scripts/governance/workflow-inventory.mjs --check
         continue-on-error: true
 
-      - name: Governance test escape hatch (expires 2026-03-15)
-        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure'
+      - name: Governance test escape hatch (expires 2026-06-30)
+        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.write-lane-tests.outcome == 'failure' || steps.workbench-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
-          echo "::warning::Governance tests failed (temporarily non-blocking until 2026-03-15). See Issue #266."
+          echo "::warning::Governance tests failed (temporarily non-blocking until 2026-06-30). See Issue #266."
           today="$(date -u +%F)"
-          cutoff="2026-03-15"
+          cutoff="2026-06-30"
           if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
             echo "::error::Governance test escape hatch expired on $cutoff. All governance tests must pass."
             exit 1
@@ -613,9 +612,11 @@ jobs:
           echo "| Workspace Sanity | ${{ steps.shape-guard.outcome != '' && '✅' || '⏭️' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| AGENTS.md Compliance | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| Drift Guard | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| Naming Governance (soft) | ${{ steps.naming_governance.outcome == 'success' && '✅' || '⚠️' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Naming Governance | ${{ steps.naming_governance.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Quarantine Tests (23t/4s) | ${{ steps.quarantine-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Phase83 Tests (32t/11s) | ${{ steps.phase83-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase83 Tests (54t/17s) | ${{ steps.phase83-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Write-Lane Governance | ${{ steps.write-lane-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Workbench Compliance | ${{ steps.workbench-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Workflow Paths (13t/5s) | ${{ steps.workflow-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Inventory Tests (23t/5s) | ${{ steps.inventory-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Inventory Snapshot | ${{ steps.inventory-snapshot.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

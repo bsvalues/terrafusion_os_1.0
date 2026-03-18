@@ -40,6 +40,9 @@ import { useParcelActivity } from '../../services/activityFeed';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 import { usePropertyStore } from '../../stores/propertyStore';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
+import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
+import { useSession } from '../../auth/useSession';
+import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
 
 // ============================================================================
 // Types
@@ -229,6 +232,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const { parcelId } = useParams<{ parcelId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const session = useSession();
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -270,6 +274,32 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // ── Work Mode state ──
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
+  // ── Role-based tab visibility (wired to session.role — Wave 1) ──
+  const roles = useMemo(() => (session.role ? [session.role] : []), [session.role]);
+  const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
+
+  /** Tabs filtered by role visibility — order preserved, never mutated */
+  const filteredTabs = useMemo(
+    () => WORKBENCH_TABS.filter((tab) => visibleTabs.includes(tab.id)),
+    [visibleTabs]
+  );
+
+  /** SuiteCompass items filtered by role visibility */
+  const compassItems = useMemo<SuiteCompassItem[]>(() => {
+    const compassMap: Record<WorkbenchTabSlug, SuiteCompassItem> = {
+      summary:  { slug: 'summary',  label: 'Summary',       shortLabel: 'Sum',     icon: '\uD83D\uDCCA', affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
+      forge:    { slug: 'forge',    label: 'TerraForge',    shortLabel: 'Forge',   icon: '\uD83D\uDD28', affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
+      atlas:    { slug: 'atlas',    label: 'TerraAtlas',    shortLabel: 'Atlas',   icon: '\uD83D\uDDFA\uFE0F', affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
+      dais:     { slug: 'dais',     label: 'TerraDais',     shortLabel: 'Dais',    icon: '\u2696\uFE0F', affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
+      clerk:    { slug: 'clerk',    label: 'TerraClerk',    shortLabel: 'Clerk',   icon: '\uD83D\uDCDC', affordance: 'Record & title',      color: 'var(--tf-accent)' },
+      treasury: { slug: 'treasury', label: 'TerraTreasury', shortLabel: 'Treas',   icon: '\uD83D\uDCB0', affordance: 'Tax collection',      color: 'var(--tf-accent)' },
+      audit:    { slug: 'audit',    label: 'TerraAudit',    shortLabel: 'Audit',   icon: '\uD83D\uDD0D', affordance: 'Financial compliance', color: 'var(--tf-accent)' },
+      dossier:  { slug: 'dossier',  label: 'TerraDossier',  shortLabel: 'Dossier', icon: '\uD83D\uDCCB', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
+      pilot:    { slug: 'pilot',    label: 'TerraPilot',    shortLabel: 'Pilot',   icon: '\uD83E\uDD16', affordance: 'Act or draft',        color: 'var(--tf-accent)' },
+    };
+    return visibleTabs.map((slug) => compassMap[slug]);
+  }, [visibleTabs]);
+
   // ── Badge state — collected from all suite providers ──
   const [badges, setBadges] = useState<Badge[]>([]);
 
@@ -278,8 +308,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton', // TODO: from session
-      userId: 'current-user', // TODO: from auth
+      countyId: session.countyId,
+      userId: session.userId,
       roles: [],
       parcelId,
       workMode,
@@ -307,8 +337,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton',
-      userId: 'current-user',
+      countyId: session.countyId,
+      userId: session.userId,
       roles: [],
       parcelId,
       workMode,
@@ -479,19 +509,37 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
                 navigate(href);
               }
             }}
+            items={compassItems}
           />
         </div>
 
         {/* Main content area */}
         <div className="flex flex-col flex-1 min-w-0">
-          {/* Tab Navigation */}
-          <TabNavigation
-            parcelId={parcelId}
-            tabs={WORKBENCH_TABS}
-            currentTabId={currentTabId}
-            emphasizedTabId={MODE_TAB_EMPHASIS[workMode]}
-            onTabClick={handleTabClick}
-          />
+          {/* Tab Navigation — filtered by role visibility (Phase 2) */}
+          <div className="flex items-center">
+            <div className="flex-1 min-w-0">
+              <TabNavigation
+                parcelId={parcelId}
+                tabs={filteredTabs}
+                currentTabId={currentTabId}
+                emphasizedTabId={MODE_TAB_EMPHASIS[workMode]}
+                onTabClick={handleTabClick}
+              />
+            </div>
+            {hiddenCount > 0 && (
+              <button
+                onClick={toggleShowAll}
+                className="shrink-0 px-3 py-1 mr-2 text-xs rounded transition-colors"
+                style={{
+                  color: showAll ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.4)',
+                  background: showAll ? 'hsl(var(--tf-accent) / 0.1)' : 'transparent',
+                }}
+                title={showAll ? 'Show role-default tabs' : `Show all tabs (+${hiddenCount} hidden)`}
+              >
+                {showAll ? 'Role view' : `+${hiddenCount} more`}
+              </button>
+            )}
+          </div>
 
           {/* Tab Content via React Router Outlet */}
           <main className="flex-1 overflow-auto">

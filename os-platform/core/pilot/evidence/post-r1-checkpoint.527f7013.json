@@ -1,0 +1,58 @@
+{
+  "type": "post-r1-maintenance-checkpoint",
+  "commitSha": "527f70136863888bdb41e68e406cfc472ca2ddc8",
+  "commitDate": "2026-03-16T11:07:42-07:00",
+  "commitMessage": "chore(config): externalize service endpoints and remove stale port config",
+  "parentProvenance": {
+    "r1SignoffSha": "eef087493343d292efa2681bddc217b76e0ee6b3",
+    "r1CanonVersion": "r1-canon-2026-03-07",
+    "r1EvidenceManifest": "docs/evidence/final/manifest.json",
+    "relationship": "post-R1 maintenance derived from R1-signed state"
+  },
+  "scope": {
+    "gate2": {
+      "label": "Port Config Hardening (config externalization / port templating)",
+      "summary": "Removed hardcoded service endpoints; centralized via IConfiguration with env-var fallbacks",
+      "filesModified": [
+        "backend/src/TerraFusion.API/appsettings.json",
+        "backend/src/TerraFusion.API/appsettings.Development.json",
+        "backend/src/TerraFusion.API/Services/AIModuleOrchestrator.cs",
+        "backend/src/TerraFusion.API/Services/EnhancementOrchestrationService.cs",
+        "backend/src/TerraFusion.API/Controllers/EnhancementController.cs",
+        "backend/src/TerraFusion.API/Services/EnhancementModuleRegistrationService.cs",
+        "compose/docker-compose.yml",
+        "compose/docker-compose.dev.yml",
+        "frontend/apps/os-shell/src/components/testing/TerraFusionSystemCheck.tsx"
+      ],
+      "filesDeleted": ["config/environment.ini"]
+    },
+    "gate3": {
+      "label": "Active Surface Honesty (TerraTrace emission)",
+      "summary": "Wired emitTraceEvent('tab_switched') in PropertyWorkbenchWindow.tsx",
+      "filesModified": [
+        "frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchWindow.tsx"
+      ]
+    },
+    "carriedArtifacts": {
+      "label": "Prior-session evidence and governance artifacts",
+      "summary": "Phase 21-25 evidence packets, useSession.ts, DemoDataBanner.tsx, quarantined test",
+      "filesAdded": 13
+    }
+  },
+  "gateResults": {
+    "typeCheck": "PASS",
+    "phase83Tools": "32/32 PASS",
+    "uiTokenRatchet": "828 violations (improved by 372 from baseline 1200)",
+    "lintStaged": "PASS (prettier + dotnet format)",
+    "r1EvidenceVerifier": "PASS (validates R1 chain at eef087..., not current HEAD)",
+    "environmentIniRefCheck": "2 consumers found (both have os.path.exists guards) — no runtime risk"
+  },
+  "truthNotes": [
+    "This is a mixed checkpoint: Gate 2/3 code changes + carried prior-session artifacts",
+    "R1 evidence chain is frozen at eef087... and was NOT updated to this SHA",
+    "The R1 evidence verifier validates R1 internal consistency, not HEAD agreement",
+    "config/environment.ini deletion is safe: 2 Python consumers have os.path.exists() guards"
+  ],
+  "generatedAt": "2026-03-16T18:30:00Z",
+  "generatedBy": "GitHub Copilot (Claude Opus 4.6)"
+}

@@ -1,0 +1,64 @@
+{
+  "checkpointId": "r3.0-constitutional-gates",
+  "description": "R3.0 constitutional CI gate enforcement — manifest-level naming lint, write-lane assertions, and risk policy completeness tests added to phase83 suite; write-lane governance and workbench compliance test steps wired into SEAL gate",
+  "parentCheckpoint": "lanes-1-2-3",
+  "parentCommitSha": "21c0a3cf7de1016f8fc51f1be997754eb4c5cdfb",
+  "parentCommitNote": "This artifact lives in the commit immediately following this parent. Verify: git log --oneline --ancestry-path 21c0a3cf7..HEAD",
+  "branch": "phase-7-county-ops-visual-governance",
+  "timestamp": "2026-03-16T00:00:00Z",
+  "gates": {
+    "gate1_naming": {
+      "title": "R3.0 Gate 1 — Naming Lint (manifest-level, hard-fail)",
+      "status": "PASS",
+      "tests": [
+        "every toolId is valid snake_case",
+        "no toolId or displayName contains banned naming patterns",
+        "every suite value is in the constitutional allowlist"
+      ],
+      "note": "Codebase-level naming lint (tools/naming/) remains soft-fail — 86 'TerraFusion IDE' occurrences pending Phase C rename sweep"
+    },
+    "gate2_writeLane": {
+      "title": "R3.0 Gate 2 — Write-Lane Assertions (manifest-level, hard-fail)",
+      "status": "PASS",
+      "tests": [
+        "every non-read_only tool has a writeLane",
+        "every read_only tool has writeLane === null",
+        "writeLane matches suite for every tool (single-lane ownership)",
+        "every risk value is in the valid set"
+      ]
+    },
+    "gate3_riskPolicy": {
+      "title": "R3.0 Gate 3 — Risk Policy Completeness (manifest-level, hard-fail)",
+      "status": "PASS",
+      "tests": [
+        "every write_high tool requires confirmation + reasonCode",
+        "every irreversible tool requires supervisorApproval + supervisorRoles",
+        "every tool with piiHandling=payload_ref has payloadStore",
+        "every dais tool has piiHandling !== none"
+      ]
+    }
+  },
+  "sealWiring": {
+    "newSteps": [
+      "Write-lane governance tests (c2-write-lane-governance.test.mjs + suite-write-lane-compliance.test.mjs)",
+      "Workbench compliance tests (workbench-host-boundary.test.mjs + workbench-tab-embedding.test.mjs)"
+    ],
+    "escapeHatchCoverage": "write-lane-tests and workbench-tests added to governance escape hatch condition",
+    "summaryTableUpdated": true,
+    "namingLint": "Remains soft-fail (Phase C sweep required for 86 codebase violations)"
+  },
+  "gateResults": {
+    "typeCheck": "PASS",
+    "phase83Tests": "54/54 PASS (was 43/43 before R3.0, +11 manifest-level constitutional tests)",
+    "namingLintCodebase": "SOFT-FAIL (86 violations, Phase C)",
+    "testBreakdown": {
+      "prior": 43,
+      "added": 11,
+      "total": 54
+    }
+  },
+  "filesModified": [
+    "os-platform/core/tests/phase83-tools.test.mjs",
+    ".github/workflows/seal-gate-fast.yml"
+  ]
+}

@@ -435,7 +435,7 @@ Each module just needs to:
 - ✅ 592 \_COMPLETE.md files
 - ✅ Ready to deploy
 
-**TerraFusion IDE** (Scattered):
+**TerraCanon** (Scattered):
 
 - ⏳ IDE Gateway in OS backend
 - ⏳ IDE electron shell in OS
@@ -463,7 +463,7 @@ Each module just needs to:
 - Development scripts
 - Platform architecture
 
-**TerraFusion IDE** (Vision):
+**TerraCanon** (Vision):
 
 ```
 Combine the best of both:
@@ -497,7 +497,7 @@ Combine the best of both:
 4. ⏳ **Migration Story** - Replit → VS Code → TerraFusion OS
 5. ⏳ **IDE Reunification Plan** - Bringing IDE pieces together
 
-### **For TerraFusion IDE**
+### **For TerraCanon**
 
 **Option A: Consolidate Existing**
 

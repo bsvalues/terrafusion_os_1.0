@@ -8,6 +8,7 @@
  * @see SUCCESS CRITERIA SC-4
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -22,7 +23,7 @@ import { Window } from '../Window';
 // ============================================================================
 
 // Mock react-rnd since it requires actual DOM measurements
-jest.mock('react-rnd', () => {
+vi.mock('react-rnd', () => {
   const React = require('react');
   return {
     Rnd: React.forwardRef(
@@ -74,7 +75,7 @@ describe('Window Component', () => {
 
   afterEach(() => {
     cleanup();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ============================================================================
@@ -558,7 +559,7 @@ describe('Window Component', () => {
   describe('Event Propagation', () => {
     it('stops propagation on close button click', async () => {
       const mockWindow = createMockWindow();
-      const windowClickHandler = jest.fn();
+      const windowClickHandler = vi.fn();
 
       act(() => {
         useDesktopStore.setState({
@@ -581,7 +582,7 @@ describe('Window Component', () => {
 
     it('stops propagation on minimize button click', async () => {
       const mockWindow = createMockWindow();
-      const windowClickHandler = jest.fn();
+      const windowClickHandler = vi.fn();
 
       act(() => {
         useDesktopStore.setState({

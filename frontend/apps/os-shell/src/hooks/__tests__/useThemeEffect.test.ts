@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useThemeStore } from '../../stores/themeStore';
 import { useThemeEffect } from '../useThemeEffect';
@@ -16,15 +17,15 @@ describe('useThemeEffect', () => {
       matches: false,
       media: '',
       onchange: null,
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
     };
 
     originalMatchMedia = window.matchMedia;
-    window.matchMedia = jest.fn().mockReturnValue(mediaQueryList);
+    window.matchMedia = vi.fn().mockReturnValue(mediaQueryList);
   });
 
   afterEach(() => {

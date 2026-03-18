@@ -100,14 +100,18 @@ public sealed class AsyncPatternTests
     }
 
     [Fact]
-    public void SyncIntegrationService_UsesTaskRunForInit()
+    public void SyncIntegrationService_NoSyncOverAsync()
     {
         var filePath = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.API",
             "Services", "TerraFusionSyncIntegrationService.cs");
         var content = File.ReadAllText(filePath);
 
-        content.Should().Contain("Task.Run(async",
-            "init methods should use Task.Run(async ...) for fire-and-forget async initialization");
+        content.Should().NotContain(".Result",
+            "service must not use .Result (sync-over-async anti-pattern)");
+        content.Should().NotContain(".Wait()",
+            "service must not use .Wait() (sync-over-async anti-pattern)");
+        content.Should().NotContain(".GetAwaiter().GetResult()",
+            "service must not use .GetAwaiter().GetResult() (sync-over-async anti-pattern)");
     }
 
     [Fact]

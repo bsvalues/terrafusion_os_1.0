@@ -170,7 +170,7 @@ return await _context.Properties
 
 ## 🔧 Technology Stack
 
-### TerraFusion IDE (os-platform/development/tools/TerraFusionIDE)
+### TerraCanon (os-platform/development/tools/TerraFusionIDE)
 - **React 18.2.0** + **TypeScript 5.2.2** + **Monaco Editor 0.45.0**
 - **Vite 5.0.8** (dev server), **Tailwind CSS 4.1.14** (styling)
 - **1,008 AI agents** for government development assistance
@@ -196,7 +196,7 @@ return await _context.Properties
 
 ## 🚀 Development Workflows
 
-### Run TerraFusion IDE
+### Run TerraCanon
 
 ```bash
 cd os-platform/development/tools/TerraFusionIDE/
@@ -462,7 +462,7 @@ await _context.SaveChangesAsync();
 ## 🚀 Quick Reference Commands
 
 ```bash
-# TerraFusion IDE development
+# TerraCanon development
 cd os-platform/development/tools/TerraFusionIDE/
 npm run dev                        # Basic IDE
 npm run build:ultimate             # Full AI swarm

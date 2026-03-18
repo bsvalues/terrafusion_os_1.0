@@ -15,6 +15,7 @@
  * @jest-environment jsdom
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -29,7 +30,7 @@ import { StartMenu } from '../StartMenu';
 // Clean up after each test
 afterEach(() => {
   cleanup();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 // Mock modules - USE REGISTERED MODULE IDs from MODULE_REGISTRY

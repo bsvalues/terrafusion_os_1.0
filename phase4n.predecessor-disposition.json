@@ -1,0 +1,224 @@
+{
+  "phase": "4N",
+  "title": "Predecessor/Showcase Disposition",
+  "created": "2026-03-15",
+  "objective": "Archive/delete/keep decisions for ~22 predecessor and showcase repos",
+  "repos": [
+    {
+      "name": "TerraFusion_OS",
+      "visibility": "private",
+      "has_content": false,
+      "description": "Enterprise-grade government operating system with multi-window management",
+      "classification": "predecessor",
+      "disposition": "delete",
+      "rationale": "Empty repo (no commits). Superseded by terrafusion_os_1.0."
+    },
+    {
+      "name": "terrafusion-os",
+      "visibility": "private",
+      "has_content": true,
+      "description": "Gen-1 OS variant with .ai/ directory",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Large codebase but fully superseded by terrafusion_os_1.0. Archive for historical reference."
+    },
+    {
+      "name": "TerraFusion_Master_Workspace",
+      "visibility": "private",
+      "has_content": true,
+      "description": "Unified production-grade TerraFusion Master Workspace (post-transcendence)",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Large codebase with .claude/.devcontainer config. Superseded by terrafusion_os_1.0. Archive."
+    },
+    {
+      "name": "BCBSDesktop",
+      "visibility": "private",
+      "has_content": true,
+      "description": "Replit-based desktop project with CI/CD",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Gen-1 desktop shell. Superseded by Electron shell in terrafusion_os_1.0."
+    },
+    {
+      "name": "TerraFusion",
+      "visibility": "private",
+      "has_content": false,
+      "description": "Mixed-stack project with Rust backend, TypeScript frontend, Python AI",
+      "classification": "predecessor",
+      "disposition": "delete",
+      "rationale": "Empty repo (no commits). Original placeholder."
+    },
+    {
+      "name": "terrafusion-website",
+      "visibility": "public",
+      "has_content": true,
+      "description": "TerraFusion OS - Official Website & Landing Page",
+      "classification": "showcase",
+      "disposition": "keep-as-reference",
+      "rationale": "Live marketing site with PHP API and Hostinger deploy. Keep as public-facing website."
+    },
+    {
+      "name": "shock_and_awe",
+      "visibility": "private",
+      "has_content": true,
+      "description": "Next.js demo app with dashboard",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Demo/prototype. No unique capabilities."
+    },
+    {
+      "name": "TerraFusion_Record",
+      "visibility": "public",
+      "has_content": true,
+      "description": "Rust + Next.js hybrid with admin/auth",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Experimental Rust/Next.js prototype. No unique production capabilities."
+    },
+    {
+      "name": "fusion-governance-achieved",
+      "visibility": "private",
+      "has_content": true,
+      "description": "Marketing/landing site (Vite + React + shadcn/ui)",
+      "classification": "showcase",
+      "disposition": "archive",
+      "rationale": "Marketing site. No production capabilities."
+    },
+    {
+      "name": "TerraFusion_DevOps_Championship",
+      "visibility": "private",
+      "has_content": false,
+      "description": "TerraFusion Devops Team placeholder",
+      "classification": "predecessor",
+      "disposition": "delete",
+      "rationale": "Empty repo (no commits)."
+    },
+    {
+      "name": "terrafusion-market",
+      "visibility": "public",
+      "has_content": true,
+      "description": "Official TerraFusion Market - AI-Powered Government Solutions Platform",
+      "classification": "showcase",
+      "disposition": "archive",
+      "rationale": "Marketplace demo/prototype. Canonical marketplace exists in terrafusion_os_1.0/marketplace/."
+    },
+    {
+      "name": "TerraBuild",
+      "visibility": "public",
+      "has_content": true,
+      "description": "Docker + Terraform deployment project",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Deployment tooling. Infrastructure patterns may be useful reference. Archive."
+    },
+    {
+      "name": "terrafusion_enterprise",
+      "visibility": "private",
+      "has_content": true,
+      "description": "Python-based enterprise app with consciousness/liberation protocols",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Very large Python codebase. Superseded by .NET backend. Archive for reference."
+    },
+    {
+      "name": "TerraFusionV0Demo",
+      "visibility": "private",
+      "has_content": true,
+      "description": "Next.js demo with AI AVM and analytics pages",
+      "classification": "showcase",
+      "disposition": "archive",
+      "rationale": "V0 demo. No unique capabilities beyond canonical stack."
+    },
+    {
+      "name": "TerraFusion_PlayGround",
+      "visibility": "public",
+      "has_content": true,
+      "description": "Replit-based playground with agents, PRD, docs",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Playground/sandbox. Reference docs may be useful. Archive."
+    },
+    {
+      "name": "BCBSPermit",
+      "visibility": "private",
+      "has_content": true,
+      "description": "Full permit application (Replit-based)",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Permit app. Dais suite covers permits. SECURITY: .env.local committed — make private before archive.",
+      "security_note": ".env.local committed to repo. Already private."
+    },
+    {
+      "name": "TerraFusion_BentonCounty",
+      "visibility": "public",
+      "has_content": true,
+      "description": "Early prototype with TerraDashboard.exe, mock data, Python scripts",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "Very early prototype with committed .exe binary and .env file. SECURITY: .env committed to public repo — should be made private first.",
+      "security_note": ".env committed to public repo. TerraDashboard.exe (11MB binary) committed. Make private before archive."
+    },
+    {
+      "name": "TerraDBAssist",
+      "visibility": "private",
+      "has_content": false,
+      "description": "README only placeholder",
+      "classification": "predecessor",
+      "disposition": "delete",
+      "rationale": "Near-empty repo (README only). No code."
+    },
+    {
+      "name": "BCBSLegislativePulse",
+      "visibility": "private",
+      "has_content": false,
+      "description": "Empty placeholder",
+      "classification": "predecessor",
+      "disposition": "delete",
+      "rationale": "Empty repo (no commits)."
+    },
+    {
+      "name": "kid-safeguard-ai",
+      "visibility": "private",
+      "has_content": true,
+      "description": "GPT-generated boilerplate app (Vite + React + shadcn/ui)",
+      "classification": "predecessor",
+      "disposition": "archive",
+      "rationale": "AI-generated boilerplate. Not related to TerraFusion domain. Archive."
+    },
+    {
+      "name": "mass-valuation-showcase",
+      "visibility": "public",
+      "has_content": true,
+      "description": "Interactive showcase of quantum-powered Mass Valuation Appraisal Suite (CostForge 3-6-9 framework, built with Manus)",
+      "classification": "showcase",
+      "disposition": "archive",
+      "rationale": "Showcase/demo. Mass valuation capabilities exist in canonical Forge suite. Archive."
+    },
+    {
+      "name": "legislative-pulse-beacon",
+      "visibility": "public",
+      "has_content": true,
+      "description": "Legislative tracking app (Vite + React + shadcn/ui)",
+      "classification": "showcase",
+      "disposition": "archive",
+      "rationale": "Legislative tracking demo. Not core assessor domain. Archive."
+    }
+  ],
+  "summary": {
+    "total_repos": 22,
+    "dispositions": {
+      "delete": 5,
+      "archive": 16,
+      "keep_as_reference": 1
+    },
+    "empty_repos": 5,
+    "security_concerns": [
+      "BCBSPermit: .env.local committed (already private)",
+      "TerraFusion_BentonCounty: .env committed to PUBLIC repo + 11MB .exe binary — make private before archive"
+    ],
+    "key_finding": "No predecessor/showcase repo contains unique capabilities not already in the canonical stack. WashingtonForge and TaxI_AI (classified in Phase 4M) are the only repos with high unique value. terrafusion-website is kept as the live public-facing marketing site."
+  },
+  "phase_status": "complete",
+  "completed_at": "2026-03-15"
+}

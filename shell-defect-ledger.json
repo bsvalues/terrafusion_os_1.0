@@ -1,0 +1,101 @@
+{
+  "version": "2.0",
+  "created": "2026-03-15",
+  "updated": "2026-03-15",
+  "phase": "5A-5H",
+  "status": "all-resolved",
+  "defects": [
+    {
+      "id": "D-001",
+      "file": "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "line": 178,
+      "severity": "critical",
+      "description": "tier0-workbench returned maximized: false",
+      "expected": "maximized: true for Property Workbench",
+      "actual": "maximized: false — workbench opened as draggable window",
+      "resolution": "Changed to maximized: true",
+      "commit": "prior-session",
+      "resolved": true
+    },
+    {
+      "id": "D-002",
+      "file": "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "line": 178,
+      "severity": "high",
+      "description": "Workbench size missed TOP_BAR_HEIGHT",
+      "expected": "size.height = vh - TOP_BAR_HEIGHT - TASKBAR_HEIGHT",
+      "actual": "size.height = vh - TASKBAR_HEIGHT (top bar not subtracted)",
+      "resolution": "Added TOP_BAR_HEIGHT constant, subtracted from all sizing",
+      "commit": "b1204e4ef",
+      "resolved": true
+    },
+    {
+      "id": "D-003",
+      "file": "frontend/apps/os-shell/src/shell/desktop/Window.tsx",
+      "line": null,
+      "severity": "high",
+      "description": "Window drag position lost on drop",
+      "expected": "updateWindowPosition called on every drag stop",
+      "actual": "Position only saved when snap zone active; normal drags reverted",
+      "resolution": "Always call updateWindowPosition before conditional snap",
+      "commit": "b1204e4ef",
+      "resolved": true
+    },
+    {
+      "id": "D-004",
+      "file": "frontend/apps/os-shell/src/shell/desktop/WindowManager.tsx",
+      "line": 129,
+      "severity": "high",
+      "description": "WindowManager container at top-0 — behind OS top bar",
+      "expected": "Container starts at top-[44px] (below top bar)",
+      "actual": "Container at top-0, windows rendered behind 44px top bar",
+      "resolution": "Changed to top-[44px] with height calc(100vh-44px-48px)",
+      "commit": "b1204e4ef",
+      "resolved": true
+    },
+    {
+      "id": "D-005",
+      "file": "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "line": 641,
+      "severity": "medium",
+      "description": "focusWindow had no toggle minimize behavior",
+      "expected": "Clicking already-focused app minimizes it",
+      "actual": "Clicking already-focused app did nothing",
+      "resolution": "Added minimize toggle when windowId === activeWindowId",
+      "commit": "b1204e4ef",
+      "resolved": true
+    },
+    {
+      "id": "D-006",
+      "file": "frontend/apps/os-shell/src/shell/desktop/Taskbar.tsx",
+      "line": 90,
+      "severity": "medium",
+      "description": "Suite dock buttons had no context menu",
+      "expected": "Right-click on suite icon opens Close/Minimize/Maximize menu",
+      "actual": "No onContextMenu handler on DockSuiteButton",
+      "resolution": "Added onContextMenu prop + TaskbarContextMenu integration",
+      "commit": "b1204e4ef",
+      "resolved": true
+    },
+    {
+      "id": "D-007",
+      "file": "frontend/apps/os-shell/src/contracts/objectPlacement.ts",
+      "line": 322,
+      "severity": "medium",
+      "description": "ADR modules missing from MODULE_OBJECT_TYPES",
+      "expected": "statistics-studio, regression-studio, management-dashboard classified",
+      "actual": "Not in MODULE_OBJECT_TYPES — fell to DEFAULT_WINDOW_SIZE",
+      "resolution": "Added as cross-parcel-operational-app entries",
+      "commit": "188b43cf0",
+      "resolved": true
+    }
+  ],
+  "verification": {
+    "5C_suite_staging": "PASS — all 5 suites registered as suite-workspace",
+    "5D_dock_ownership": "PASS — constitutional zones only (Home, Suites, Running, DataMode)",
+    "5E_os_features": "PASS — all 3 OS features registered as os-feature-window",
+    "5F_workbench_embedding": "PASS — all 9 tabs registered as parcel-scoped-app",
+    "5G_legacy_cleanup": "PASS — no dead entries (Phase 3 already cleaned)",
+    "5H_zindex_authority": "PASS — windows(30) < dock(1000) < system(1010+)"
+  }
+}

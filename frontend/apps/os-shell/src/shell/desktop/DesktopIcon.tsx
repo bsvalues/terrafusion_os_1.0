@@ -9,6 +9,7 @@
  */
 
 import React, { useCallback } from 'react';
+import type { DesktopObjectClass } from '../../config/desktopManifest';
 import type { Category } from '../../config/generatedModules';
 import { getLucideIcon } from '../../config/iconMap';
 
@@ -38,6 +39,8 @@ export interface DesktopIconProps {
   iconName: string;
   /** Module category (maps to tile color) */
   category?: Category;
+  /** Visual weight class — suite (larger) vs system (lighter) */
+  objectClass?: DesktopObjectClass;
   /** Wiring status for honest UX */
   wiringStatus?: WiringStatus;
   /** Whether icon is selected */
@@ -123,11 +126,36 @@ const wiringBadgeStyles: Record<WiringStatus, { bg: string; text: string; label:
   LEGACY: { bg: 'bg-red-500/80', text: 'text-white', label: 'OLD' },
 };
 
+// Size/weight presets per object class
+const OBJECT_CLASS_STYLE = {
+  suite: {
+    tileSize: 60,
+    tileBorderRadius: 15,
+    borderWidth: 1.5,
+    iconSize: 'h-8 w-8',
+    glowMultiplier: 1.2,
+    labelClass: 'text-[14px] font-semibold',
+    containerWidth: 'w-[100px]',
+    opacity: 1,
+  },
+  system: {
+    tileSize: 48,
+    tileBorderRadius: 12,
+    borderWidth: 1,
+    iconSize: 'h-6 w-6',
+    glowMultiplier: 0.7,
+    labelClass: 'text-[12px] font-medium',
+    containerWidth: 'w-[88px]',
+    opacity: 0.85,
+  },
+} as const;
+
 export const DesktopIcon: React.FC<DesktopIconProps> = ({
   id,
   name,
   iconName,
   category = 'system',
+  objectClass = 'suite',
   wiringStatus,
   isSelected = false,
   onSelect,
@@ -136,6 +164,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
   const Icon = getLucideIcon(iconName);
   const tile = CATEGORY_TILE[category] ?? CATEGORY_TILE.system;
   const badge = wiringStatus ? wiringBadgeStyles[wiringStatus] : null;
+  const cls = OBJECT_CLASS_STYLE[objectClass];
 
   // Handle single click (select)
   const handleClick = useCallback(
@@ -176,12 +205,13 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       aria-selected={isSelected}
       className={`
         group flex flex-col items-center justify-start
-        w-[96px] py-3 px-2 rounded-2xl cursor-pointer
+        ${cls.containerWidth} py-3 px-2 rounded-2xl cursor-pointer
         select-none transition-all duration-200
         ${isSelected
           ? 'bg-[hsl(var(--tf-text)/0.15)] shadow-[inset_0_0_0_1.5px_hsl(var(--tf-text)_/_0.2)]'
           : 'hover:bg-white/8'}
       `.trim()}
+      style={{ opacity: isSelected ? 1 : cls.opacity }}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
@@ -190,12 +220,12 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       <div className='relative mb-2' aria-hidden='true'>
         <div
           style={{
-            width: 56,
-            height: 56,
-            borderRadius: 14,
+            width: cls.tileSize,
+            height: cls.tileSize,
+            borderRadius: cls.tileBorderRadius,
             background: tile.bg,
-            border: `1px solid ${tile.glow}`,
-            boxShadow: `0 4px 16px ${tile.glow}, inset 0 1px 0 hsl(var(--tf-text) / 0.08)`,
+            border: `${cls.borderWidth}px solid ${tile.glow}`,
+            boxShadow: `0 4px ${16 * cls.glowMultiplier}px ${tile.glow}, inset 0 1px 0 hsl(var(--tf-text) / 0.08)`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -212,15 +242,15 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
               right: '10%',
               height: '40%',
               background: 'linear-gradient(to bottom, hsl(var(--tf-text) / 0.06), transparent)',
-              borderRadius: '14px 14px 50% 50%',
+              borderRadius: `${cls.tileBorderRadius}px ${cls.tileBorderRadius}px 50% 50%`,
             }}
           />
           {/* Large glyph — the primary visual element */}
           <Icon
-            className='h-7 w-7 relative'
+            className={`${cls.iconSize} relative`}
             style={{
               color: tile.iconColor,
-              filter: `drop-shadow(0 0 6px ${tile.glow})`,
+              filter: `drop-shadow(0 0 ${6 * cls.glowMultiplier}px ${tile.glow})`,
             }}
           />
         </div>
@@ -236,9 +266,9 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
         )}
       </div>
 
-      {/* Label — larger, bolder, with shadow for readability */}
+      {/* Label — sized by object class */}
       <span
-        className='text-[13px] text-[hsl(var(--tf-text)/0.95)] text-center leading-tight line-clamp-2 font-semibold tracking-wide'
+        className={`${cls.labelClass} text-[hsl(var(--tf-text)/0.95)] text-center leading-tight line-clamp-2 tracking-wide`}
         style={{ textShadow: '0 1px 6px hsl(var(--tf-bg) / 0.9), 0 0 2px hsl(var(--tf-bg))' }}
       >
         {name}

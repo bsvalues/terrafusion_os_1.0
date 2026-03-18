@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
+import { vi } from 'vitest';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion';
 
 expect.extend(toHaveNoViolations);
@@ -507,7 +508,7 @@ describe('Accordion', () => {
     });
 
     it('calls onValueChange when item is toggled in single mode', async () => {
-      const handleValueChange = jest.fn();
+      const handleValueChange = vi.fn();
       const user = userEvent.setup();
 
       render(
@@ -528,7 +529,7 @@ describe('Accordion', () => {
     });
 
     it('calls onValueChange when item is toggled in multiple mode', async () => {
-      const handleValueChange = jest.fn();
+      const handleValueChange = vi.fn();
       const user = userEvent.setup();
 
       render(

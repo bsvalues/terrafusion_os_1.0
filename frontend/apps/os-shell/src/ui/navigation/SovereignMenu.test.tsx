@@ -1,20 +1,21 @@
+import { vi, describe, test, expect, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { SovereignMenu } from './SovereignMenu';
 
 // Mock Framer Motion to avoid animation issues in tests
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
     button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
-  useReducedMotion: jest.fn(),
+  useReducedMotion: vi.fn(),
 }));
 
 describe('SovereignMenu', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('Mount Test: Assert role="menu" is not in DOM by default', () => {
@@ -115,9 +116,9 @@ describe('SovereignMenu', () => {
     expect(document.activeElement).toBe(trigger);
   });
 
-  test('Motion Test: If data-reduce-motion="true", assert motion.div transform has rotate(0)', () => {
+  test('Motion Test: If data-reduce-motion="true", assert motion.div transform has rotate(0)', async () => {
     // Mock useReducedMotion to return true
-    const { useReducedMotion } = require('framer-motion');
+    const { useReducedMotion } = await import('framer-motion');
     useReducedMotion.mockReturnValue(true);
 
     render(<SovereignMenu />);
@@ -141,7 +142,7 @@ describe('SovereignMenu', () => {
     // Let's try to find the div and check if we can see the prop? No, React props aren't DOM attributes.
 
     // Refined Mock for this test
-    // We can't change the mock inside the test easily without jest.doMock and require.
+    // We can't change the mock inside the test easily without vi.doMock and dynamic import.
     // But we defined the mock at the top.
     // Let's rely on the fact that we set useReducedMotion to true.
     // And maybe we can snapshot?

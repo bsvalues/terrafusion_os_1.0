@@ -26,6 +26,9 @@ import {
 // Types
 // ============================================================================
 
+/** Visual weight class for desktop icons */
+export type DesktopObjectClass = 'suite' | 'system';
+
 export interface DesktopIconEntry {
   /** Canonical ID from suiteRegistry (suite or OS feature) */
   id: string;
@@ -39,6 +42,8 @@ export interface DesktopIconEntry {
   route: string;
   /** Wiring status badge for honest UX */
   wiringStatus: WiringStatus;
+  /** Visual weight class — suites are larger/bolder, system is lighter */
+  objectClass: DesktopObjectClass;
 }
 
 // ============================================================================
@@ -73,6 +78,7 @@ function suiteToDesktopIcon(suite: SuiteDefinition): DesktopIconEntry {
     category: SUITE_CATEGORY[suite.id] ?? 'system',
     route: suite.route,
     wiringStatus: suite.workbenchTab ? 'WB' : 'OS',
+    objectClass: 'suite',
   };
 }
 
@@ -84,12 +90,13 @@ function featureToDesktopIcon(feature: OsFeatureDefinition): DesktopIconEntry {
     category: FEATURE_CATEGORY[feature.id] ?? 'system',
     route: feature.route ?? `/${feature.id}`,
     wiringStatus: 'OS',
+    objectClass: 'system',
   };
 }
 
 /** Category mapping for OS surfaces (keyed by canonical surface ID) */
 const SURFACE_CATEGORY: Record<string, Category> = {
-  workbench: 'system',
+  workbench: 'assessment',
 };
 
 function surfaceToDesktopIcon(surface: OsSurfaceDefinition): DesktopIconEntry {
@@ -100,6 +107,7 @@ function surfaceToDesktopIcon(surface: OsSurfaceDefinition): DesktopIconEntry {
     category: SURFACE_CATEGORY[surface.id] ?? 'system',
     route: surface.route,
     wiringStatus: 'OS',
+    objectClass: 'suite',
   };
 }
 
