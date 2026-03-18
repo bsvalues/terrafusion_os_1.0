@@ -16,6 +16,7 @@ import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 // ---------------------------------------------------------------------------
 // 1E: Apply-mode types & audit event emitter
@@ -188,6 +189,7 @@ export function BatchCostRun() {
 
   return (
     <div data-testid="batch-cost-run" className="space-y-4 p-4">
+      <DemoDataBanner module="Batch Cost Run" />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Batch Cost Model Runs</h1>
         <div className="flex gap-2">
