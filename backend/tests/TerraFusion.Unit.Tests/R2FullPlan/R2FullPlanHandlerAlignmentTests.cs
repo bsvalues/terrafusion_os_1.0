@@ -100,10 +100,14 @@ public sealed class R2FullPlanHandlerAlignmentTests
     queueMock.Setup(s => s.CreateAsync(It.IsAny<QueueItem>()))
       .ReturnsAsync((QueueItem q) => { q.Id = Guid.NewGuid(); q.CreatedAt = DateTime.UtcNow; return q; });
 
+    var certMock = new Mock<ICertificationService>();
+    certMock.Setup(s => s.GetByTaxYearAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+      .ReturnsAsync(new List<CertificationStep>());
+
     var controller = new DaisController(db, NullLogger<DaisController>.Instance,
         new Mock<IExemptionService>().Object,
         new Mock<IAppealService>().Object,
-        new Mock<ICertificationService>().Object,
+        certMock.Object,
         noticeMock.Object,
         queueMock.Object);
     AttachPrincipal(controller, principal ?? CreatePrincipal(BentonCountyId));
@@ -270,22 +274,22 @@ public sealed class R2FullPlanHandlerAlignmentTests
   // Handler #14: check_cert_status → GET /api/dais/certification/{county}/{taxYear}
   [Fact]
   [Trait("Category", "Handler14")]
-  public void Handler14_CertificationStatus_Benton()
+  public async Task Handler14_CertificationStatus_Benton()
   {
     using var db = CreateDbContext("handler-14");
     var controller = CreateDaisController(db);
-    var result = controller.GetCertificationStatus("benton", 2026);
+    var result = await controller.GetCertificationStatus("benton", 2026);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
     ok.Value.Should().NotBeNull();
   }
 
   [Fact]
   [Trait("Category", "Wave21")]
-  public void Cert_AltStatus_ReturnsOk()
+  public async Task Cert_AltStatus_ReturnsOk()
   {
     using var db = CreateDbContext("cert-alt-status");
     var controller = CreateDaisController(db);
-    var result = controller.GetCertStatus("benton", 2026);
+    var result = await controller.GetCertStatus("benton", 2026);
     result.Should().BeOfType<OkObjectResult>();
   }
 

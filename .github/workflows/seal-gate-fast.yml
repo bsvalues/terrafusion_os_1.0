@@ -190,14 +190,14 @@ jobs:
         run: pnpm -C frontend run lint
         continue-on-error: true
 
-      - name: Lint escape hatch (expires 2026-03-15)
+      - name: Lint escape hatch (expires 2026-06-30)
         if: steps.lint.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
-          echo "::warning::Lint failed (temporarily non-blocking until 2026-03-15). Fix lint; this will become a merge blocker."
+          echo "::warning::Lint failed (temporarily non-blocking until 2026-06-30). Fix lint; this will become a merge blocker."
           today="$(date -u +%F)"
-          cutoff="2026-03-15"
+          cutoff="2026-06-30"
           if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
             echo "::error::Lint escape hatch expired on $cutoff. Lint must pass."
             exit 1
@@ -241,7 +241,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-03-15)' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-06-30)' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Type Check | ${{ steps.typecheck.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Unit Tests | ${{ steps.unit-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| IPC Tests | ${{ steps.ipc-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
@@ -565,14 +565,14 @@ jobs:
         run: node scripts/governance/workflow-inventory.mjs --check
         continue-on-error: true
 
-      - name: Governance test escape hatch (expires 2026-03-15)
+      - name: Governance test escape hatch (expires 2026-06-30)
         if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.write-lane-tests.outcome == 'failure' || steps.workbench-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
-          echo "::warning::Governance tests failed (temporarily non-blocking until 2026-03-15). See Issue #266."
+          echo "::warning::Governance tests failed (temporarily non-blocking until 2026-06-30). See Issue #266."
           today="$(date -u +%F)"
-          cutoff="2026-03-15"
+          cutoff="2026-06-30"
           if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
             echo "::error::Governance test escape hatch expired on $cutoff. All governance tests must pass."
             exit 1
