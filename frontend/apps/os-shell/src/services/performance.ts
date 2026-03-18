@@ -247,12 +247,12 @@ class FrontendPerformanceService {
   }
 
   private getMemoryInfo(): any {
-    // @ts-ignore - Chrome specific API
+    // @ts-expect-error Chrome-only performance.memory API
     return (performance as any).memory || null;
   }
 
   private getConnectionInfo(): any {
-    // @ts-ignore - Network Information API
+    // @ts-expect-error Network Information API (navigator.connection)
     return (
       (navigator as any).connection ||
       (navigator as any).mozConnection ||
