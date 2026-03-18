@@ -6,8 +6,6 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-// @ts-nocheck - Disable TypeScript checking for CSS-in-JS conflicts
-/* eslint-disable no-unused-vars */
 
 import { CostAnalysis, CostCalculationRequest, useCostForgeAPI } from '@/hooks/useCostForgeAPI';
 import { getViteEnv } from '@/shared/viteEnv';
@@ -62,8 +60,8 @@ import { Slider } from '../ui/slider';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
-// CostForge branding colors - TerraFusion Design System
-const COSTFORGE_COLORS = {
+// CostForge branding colors - TerraFusion Design System (reserved for chart theming)
+export const COSTFORGE_COLORS = {
   trustBlue: 'var(--tf-network-blue)',
   transcendCyan: 'var(--tf-transcend-highlight)',
   successGreen: 'var(--tf-accent-success)',
@@ -102,6 +100,16 @@ const costForgeSchema = z.object({
   businessPropertyValue: z.coerce.number().min(0).optional().default(0),
   businessPropertyType: z.string().optional(),
   businessPropertyCategory: z.string().optional(),
+
+  // Extended fields used by backend calculation API
+  parcelNumber: z.string().optional(),
+  stories: z.coerce.number().min(1).optional(),
+  bedrooms: z.coerce.number().min(0).optional(),
+  bathrooms: z.coerce.number().min(0).optional(),
+  hasGarage: z.boolean().optional(),
+  hasBasement: z.boolean().optional(),
+  hasPool: z.boolean().optional(),
+  landValue: z.coerce.number().min(0).optional(),
 });
 
 type CostForgeFormValues = z.infer<typeof costForgeSchema>;
@@ -140,14 +148,14 @@ export const EnhancedCostCalculator: React.FC = () => {
   const [costBreakdown, setCostBreakdown] = useState<CostBreakdown[]>([]);
   const [regionalMultiplier, setRegionalMultiplier] = useState<number>(1.0);
   const [activeTab, setActiveTab] = useState<string>('calculator');
-  const [hoveredCostItem, setHoveredCostItem] = useState<string | null>(null);
+  const [_hoveredCostItem, _setHoveredCostItem] = useState<string | null>(null);
   const [timelineData, setTimelineData] = useState<TimelineData[]>([]);
-  const [treemapData, setTreemapData] = useState<any[]>([]);
+  const [_treemapData, _setTreemapData] = useState<unknown[]>([]);
 
-  // What-If Scenario States for Government Planning
-  const [scenarios, setScenarios] = useState<Scenario[]>([]);
-  const [showScenarioModal, setShowScenarioModal] = useState<boolean>(false);
-  const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
+  // What-If Scenario States for Government Planning (scaffolded for future use)
+  const [_scenarios, _setScenarios] = useState<Scenario[]>([]);
+  const [_showScenarioModal, _setShowScenarioModal] = useState<boolean>(false);
+  const [_currentScenario, _setCurrentScenario] = useState<Scenario | null>(null);
 
   // Backend Integration - Championship Level Performance
   const [backendAnalysis, setBackendAnalysis] = useState<CostAnalysis | null>(null);
@@ -172,8 +180,9 @@ export const EnhancedCostCalculator: React.FC = () => {
     buildingAge: 0,
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- zodResolver with optional/default fields produces incompatible generic; CostForgeFormValues is the authoritative shape
   const form = useForm<CostForgeFormValues>({
-    resolver: zodResolver(costForgeSchema),
+    resolver: zodResolver(costForgeSchema) as any,
     defaultValues,
   });
 
