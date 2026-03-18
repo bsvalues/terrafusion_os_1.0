@@ -24,6 +24,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import {
   ParcelContextHeader,
@@ -48,13 +49,40 @@ const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
   { id: 'reconcile',  label: 'Reconciliation', icon: '\u2696\uFE0F' },
 ];
 
+const FORGE_SUB_TABS = new Set<ForgeSubTab>(SUB_TABS.map((tab) => tab.id));
+
+function readInitialSubTab(search: string, state: unknown): ForgeSubTab {
+  const params = new URLSearchParams(search);
+  const queryHint = params.get('tab') ?? params.get('subTab') ?? params.get('initialSubTab');
+  if (queryHint && FORGE_SUB_TABS.has(queryHint as ForgeSubTab)) {
+    return queryHint as ForgeSubTab;
+  }
+
+  if (state && typeof state === 'object') {
+    const launchState = state as Record<string, unknown>;
+    const rawSubTab = launchState.initialSubTab ?? launchState.subTab ?? launchState.tab;
+    if (typeof rawSubTab === 'string' && FORGE_SUB_TABS.has(rawSubTab as ForgeSubTab)) {
+      return rawSubTab as ForgeSubTab;
+    }
+
+    if (launchState.moduleId === 'comparable-sales') {
+      return 'sales';
+    }
+  }
+
+  return 'overview';
+}
+
 /* ── PropertyForge ──────────────────────────────────────── */
 
 export const PropertyForge: React.FC = () => {
+  const location = useLocation();
   const { parcelId } = useWorkbenchTab();
 
   /* Shared state */
-  const [activeSubTab, setActiveSubTab] = useState<ForgeSubTab>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<ForgeSubTab>(() =>
+    readInitialSubTab(location.search, location.state)
+  );
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 

@@ -85,9 +85,15 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   /* ── Render ───────────────────────────────────────────── */
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="sales-comparison-host">
       {/* Full ComparableSalesPanel — existing 612-line component, no changes */}
-      <ComparableSalesPanel />
+      <ComparableSalesPanel
+        onReconciledValue={(result) => {
+          if (onValueIndicated && typeof result.weightedAverage === 'number') {
+            onValueIndicated('sales', result.weightedAverage);
+          }
+        }}
+      />
 
       {/* Governed Tool: Sales Comps Rationale */}
       <BentoCard title="&#127960; Sales Comps Rationale" variant="default">

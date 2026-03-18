@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 25.4: Next-Phase Execution Roadmap** ✅ COMPLETE |
-| **Phase** | Phase 7: Waves 3-5 entry gate defined |
-| **Task** | Next-phase roadmap locked: workflow reconciliation first, module rehost closure second, remediation waves third |
-| **Status** | ✅ COMPLETE |
-| **Latest Commit** | `5a01be449` docs(workflow): add slice 25.4 next-phase roadmap |
+| **Slice** | **Slice 25.4: Next-Phase Execution Roadmap** 🔄 ACTIVE |
+| **Phase** | Phase 6: Wave 1 auth/context threading |
+| **Task** | The Workbench real-host gate is green and the Wave 0 debt ledger is published; Wave 1 auth/context threading is now the next unblocked implementation lane |
+| **Status** | 🟡 READY |
+| **Latest Commit** | Working tree |
 
 ---
 
@@ -420,16 +420,25 @@
 |------|-------------|--------|-------|------|
 | ✅ 1.1 | Add Slice 25.4 roadmap to `plan.md` | `5a01be449` | Roadmap block verified | 2026-03-18 |
 | ✅ 1.2 | Update `progress.md` next-step queue to match roadmap | `5a01be449` | Queue alignment verified | 2026-03-18 |
-| ✅ 2.1 | Calibrate Wave 0 with current repo counts | `5a01be449` | `console=0`, `@ts-ignore=0`, raw `any=1013` | 2026-03-18 |
+| ✅ 1.3 | Reconcile stale workflow truth across workflow docs | Working tree | `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` aligned to current evidence | 2026-03-18 |
+| ✅ 1.4 | Require explicit proof-posture artifact for current checkpoint | Working tree | `proof-posture.md` becomes canonical statement of Muse/Workbench-host proof boundary | 2026-03-18 |
+| ✅ 2.1 | Calibrate Wave 0 with current repo counts | `5a01be449` | Initial roadmap baseline captured for Wave 0 entry | 2026-03-18 |
 | ✅ 2.2 | Ground module-rehost phases in live Forge files | `5a01be449` | Comparable Sales and Income Valuation surfaces verified | 2026-03-18 |
+| ✅ 2.3 | Close the Workbench real-host blocker with a bounded harness fix | Working tree | `workbenchRealHosting.gate.test.tsx` passes `15/15`; required gates stay green | 2026-03-18 |
+| ✅ 3.2 | Complete Forge lane F1 Comparable Sales proof pack | Working tree | `ComparableSalesForgeHost.test.tsx` + `SalesComparison.test.tsx` (`7/7`) prove launch hint, host rendering, wrapper history, value flow, and frontend boundary behavior | 2026-03-18 |
+| ✅ 4.1 | Complete Forge lane F2 Income Valuation proof pack | Working tree | `PropertyForge.income.test.tsx`, `IncomeApproach.test.tsx`, `IncomeValuationPanel.test.tsx`, and `incomeValuationService.test.ts` (`8/8`) prove host, wrapper, panel, and service behavior | 2026-03-18 |
+| ✅ 5.1 | Publish Wave 0 debt ledger from fresh probes | Working tree | `WAVE0_DEBT_LEDGER_v1.md` records current counts and bounded cleanup candidates | 2026-03-18 |
 | ✅ 3.1 | Lock entry gate for Waves 3-5 | `5a01be449` | Phase gate verified | 2026-03-18 |
 
-**Key Achievement:** The next execution phases are now sequenced explicitly instead of living as a loose backlog. The roadmap starts with workflow reconciliation, then closes the live Forge rehost queue, then enters Wave 0, Wave 1, and Wave 2 in proof-first order. Waves 3-5 are now explicitly blocked until the earlier phases close cleanly.
+**Key Achievement:** The workflow canon, Forge proof bundles, Workbench real-host gate, and Wave 0 inventory baseline are now aligned to current evidence instead of stale assumptions. The former Atlas blocker reduced to a bounded Dais lazy-host harness defect in `workbenchRealHosting.gate.test.tsx`, the full host gate is now green, and Wave 1 auth/context threading is the next unblocked implementation lane. Waves 3-5 remain explicitly blocked until the earlier truths close cleanly.
 
 **Current State Calibration:**
-- `frontend/apps/os-shell/src` currently shows `console.` matches = `0`
+- `frontend/apps/os-shell/src` currently shows raw `console.` matches = `960`
 - `frontend/apps/os-shell/src` currently shows `@ts-ignore` matches = `0`
-- `frontend/apps/os-shell/src` currently shows raw `any` matches = `1013`
+- `frontend/apps/os-shell/src` currently shows raw `any` matches = `1010`
+- `frontend/apps/os-shell/src` currently shows `TODO` / `FIXME` / `HACK` matches = `37`
+- `frontend/apps/os-shell/src` currently shows skip markers (`describe.skip`, `it.skip`, `test.skip`) = `164`
+- Phase 2 host classification is closed: Atlas stayed green and the combined gate failure reduced to a bounded Dais lazy-host harness defect
 - Comparable Sales host surfaces verified in Forge:
   - `frontend/apps/os-shell/src/components/workbench/ComparableSalesPanel.tsx`
   - `frontend/apps/os-shell/src/services/comparableSalesService.ts`
@@ -440,13 +449,14 @@
   - `frontend/apps/os-shell/src/services/incomeValuationService.ts`
 
 **Roadmap Order Locked:**
-1. Workflow reconciliation
-2. Comparable Sales rehost closure
-3. Income Valuation rehost completion
-4. Wave 0 hygiene sweep
-5. Wave 1 auth context and core wiring
-6. Wave 2 RAG and GPT split
-7. Waves 3-5 entry only after earlier proof
+1. Workflow truth reconciliation
+2. Workbench real-host gate stabilization
+3. Forge lane F1: Comparable Sales rehost proof
+4. Forge lane F2: Income Valuation rehost proof
+5. Wave 0 inventory and governance pass
+6. Wave 1 auth context and core wiring
+7. Wave 2 backend truth then frontend wiring
+8. Waves 3-5 entry only after earlier proof
 
 **Operational Boundary:**
 - Codex stays in bounded recon, execution, and review lanes via `CODEX_DIRECTIVE_PACK_v1.md`
@@ -459,13 +469,15 @@
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
-| 🔵 1 | 25.4 / Phase 1 | Reconcile stale workflow truth across `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` | None |
-| 🔵 2 | 25.4 / Phase 2 | Close Comparable Sales rehost proof gaps inside Forge | Phase 1 truth reconciliation |
-| 🔵 3 | 25.4 / Phase 3 | Complete Income Valuation rehost proof inside Forge | Comparable Sales closure |
-| 🔵 4 | 25.4 / Phase 4 | Execute recalibrated Wave 0 hygiene sweep with `any` triage first | Phases 1-3 |
-| 🔵 5 | 25.4 / Phase 5 | Finish Wave 1 auth threading on named surfaces | Wave 0 proof |
-| 🔵 6 | 25.4 / Phase 6 | Split Wave 2 into backend recon then frontend wiring | Wave 1 proof |
-| 🔵 7 | 25.4 / Phase 7 | Hold Waves 3-5 until prior proof gates land | Phases 1-6 |
+| ✅ 1 | 25.4 / Phase 1A | Reconcile stale workflow truth across `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` | Done |
+| ✅ 2 | 25.4 / Phase 1B | Publish proof-posture note for Muse seal and Workbench host boundary | Done |
+| ✅ 3 | 25.4 / Phase 2 | Close the real-host gate; Atlas suspicion proved stale and Dais lazy-host harness defect was fixed in the gate harness | Done |
+| ✅ 4 | 25.4 / Phase 3 | Complete Forge lane F1 Comparable Sales proof pack | Done |
+| ✅ 5 | 25.4 / Phase 4 | Complete Forge lane F2 Income Valuation proof pack | Done |
+| ✅ 6 | 25.4 / Phase 5 | Produce Wave 0 inventory/debt ledger with `any` triage first | Done |
+| 🔵 7 | 25.4 / Phase 6 | Finish Wave 1 auth threading on named surfaces | None |
+| 🔵 8 | 25.4 / Phase 7 | Split Wave 2 into backend recon then frontend wiring | Wave 1 proof |
+| 🔵 9 | 25.4 / Phase 8 | Hold Waves 3-5 until prior proof gates land | Phases 6-7 |
 | ✅ 8 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
 | ✅ 9 | Commit | Create docs commit for Slice 25.4 | Done |
 
@@ -480,7 +492,10 @@
 | 2026-03-18 | Keep Codex Directive Pack doc-only in v1 | Tighten execution without changing live entrypoint governance | No `.github/AGENT_ENTRYPOINT.md` drift |
 | 2026-03-18 | Standardize Codex prompts on `Objective` → `Output` | Prevent broad or under-specified Codex handoffs | More consistent bounded execution |
 | 2026-03-18 | Reconcile workflow truth before new feature execution | Completed slices still read as open in parts of the workflow ledger | Governance first, then feature work |
-| 2026-03-18 | Recalibrate Wave 0 from measured repo counts | Current probes show `console.` and `@ts-ignore` already at zero | Shift Wave 0 toward `any` triage and scoped cleanup |
+| 2026-03-18 | Recalibrate Wave 0 from fresh measured repo counts | Current probes show raw `console.` usage is still high (`960`), `@ts-ignore` is `0`, and raw `any` remains high (`1010`) | Keep Wave 0 inventory-first and do not claim a zero-console baseline |
+| 2026-03-18 | Use `progress.md` completion evidence as the winner for shipped Slices 2-6 | Historical `plan.md` checklists were still future-tense after the slices shipped | Workflow docs now reflect shipped state instead of stale intent |
+| 2026-03-18 | Land Forge proof bundles in parallel while keeping host classification separate | Comparable Sales and Income were bounded, disjoint frontend proof slices while the Workbench real-host gate needed a separate root-cause loop | Faster closure on live Forge lanes without mixing root-cause categories |
+| 2026-03-18 | Close Phase 2 as a bounded Dais lazy-host harness defect, not an Atlas regression | Direct Atlas proof stayed green; the combined host suite failed only on Dais and closed after aligning the lazy default-export path plus module preload in the harness | Prevents the stale Atlas label from blocking Wave 0 and Wave 1 |
 
 ---
 
@@ -488,6 +503,11 @@
 
 | ID | Item | Severity | Ticket/Issue |
 |----|------|----------|--------------|
+| WF-1 | Slice 22 and Slice 23 still show `Pending` commit fields and need separate git-history reconciliation | Low | Workflow ledger follow-up |
+| WF-2 | `frontend/apps/os-shell/src` is not on a zero-console baseline; Wave 0 cleanup must start from the new ledger, not the older plan assumption | Medium | Wave 0 follow-up |
+| CS-1 | Comparable Sales launch-to-sales selection depends on the current query/state hint convention | Low | Revisit if upstream module-launch metadata changes |
+| IV-1 | Forge Income proof is closed, but saved valuation record/list wiring is still a follow-up if persistence becomes a product requirement | Medium | Post-proof enhancement |
+| IV-2 | Legacy income valuation surfaces still need an archive-truth pass to collapse duplicate authority | Low | Archive truth follow-up |
 | ⚠️ D1 | Suite tab internals not restyled | Low | Deferred per plan |
 | ⚠️ D2 | Compositor jitter fix if observed | Med | Monitor after skin |
 
@@ -499,6 +519,7 @@
 |-------|--------|--------|---------|
 | type-check | ✅ | 0 | - |
 | phase83-tools | 54 | 0 | 0 |
+| workbenchRealHosting.gate | 15 | 0 | 0 |
 | prompt contract verification (`rg`) | ✅ | 0 | - |
 | cross-link verification (`rg`) | ✅ | 0 | - |
 | roadmap calibration probes (`rg`) | ✅ | 0 | - |

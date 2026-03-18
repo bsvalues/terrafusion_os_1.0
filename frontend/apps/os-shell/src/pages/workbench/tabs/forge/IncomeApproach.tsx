@@ -56,7 +56,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
           timestamp: new Date(),
           meta: { income },
         });
-        if (parsed.valuation && onValueIndicated) {
+        if (parsed.valuation !== undefined && parsed.valuation !== null && onValueIndicated) {
           onValueIndicated('income', parsed.valuation);
         }
       } else {

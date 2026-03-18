@@ -172,14 +172,14 @@
 
 > What MUST be true for this to be complete?
 
-- [ ] Every suite tile has explicit `intent: 'workbench' | 'standalone'` metadata
-- [ ] Badge/label visually communicates intent ("Opens in Workbench" vs "Standalone")
-- [ ] All tile hrefs are valid and routed (no dead tiles)
-- [ ] Routing truth harness remains green
-- [ ] Keyboard navigation order stable
-- [ ] No navigation jitter
-- [ ] Test coverage for routing + a11y
-- [ ] Gate 8 + Gate 9 pass
+- [x] Every suite tile has explicit `intent: 'workbench' | 'standalone'` metadata
+- [x] Badge/label visually communicates intent ("Opens in Workbench" vs "Standalone")
+- [x] All tile hrefs are valid and routed (no dead tiles)
+- [x] Routing truth harness remains green
+- [x] Keyboard navigation order stable
+- [x] No navigation jitter
+- [x] Test coverage for routing + a11y
+- [x] Gate 8 + Gate 9 pass
 
 ---
 
@@ -324,17 +324,17 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 > What MUST be true for this to be complete?
 
-- [ ] Launcher exists as first-class surface (Start Menu equivalent)
-- [ ] Opens/closes deterministically (keyboard shortcut + Start button)
-- [ ] Focus is trapped while open; ESC closes; ENTER activates selection
-- [ ] Items include Workbench targets, Standalone suite homes, and system actions
-- [ ] Each item declares intent (`workbench|standalone|system`) with explicit route/action
-- [ ] Opening launcher does not cause desktop/shell jitter
-- [ ] No idle-pulse regressions; no routing-truth regressions
-- [ ] Launcher uses LiquidPanel + TactileButton behind materialQualityGate
-- [ ] Fallback remains clean on low-power/reduced-motion
-- [ ] Test coverage for behavior, routing, materials
-- [ ] Gate 8 + Gate 9 pass
+- [x] Launcher exists as first-class surface (Start Menu equivalent)
+- [x] Opens/closes deterministically (keyboard shortcut + Start button)
+- [x] Focus is trapped while open; ESC closes; ENTER activates selection
+- [x] Items include Workbench targets, Standalone suite homes, and system actions
+- [x] Each item declares intent (`workbench|standalone|system`) with explicit route/action
+- [x] Opening launcher does not cause desktop/shell jitter
+- [x] No idle-pulse regressions; no routing-truth regressions
+- [x] Launcher uses LiquidPanel + TactileButton behind materialQualityGate
+- [x] Fallback remains clean on low-power/reduced-motion
+- [x] Test coverage for behavior, routing, materials
+- [x] Gate 8 + Gate 9 pass
 
 ---
 
@@ -516,7 +516,7 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Risk register complete
 - [x] Git strategy defined
 - [x] Dependencies verified
-- [x] Ready for execution
+- [x] Execution complete
 
 ---
 
@@ -531,14 +531,14 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 > What MUST be true for this to be complete?
 
-- [ ] Jitter is measurable (layout shift probe implemented)
-- [ ] No layout shift > threshold during: route change, launcher open/close, idle pulse
-- [ ] Ambient layer renders only when materialQualityGate allows
-- [ ] Reduced-motion forces stable fallback (no compositor animation primitives)
-- [ ] Low-power path bypasses expensive backdrop effects
-- [ ] All existing test harnesses remain green (55 launcher, routing truth, focus order)
-- [ ] `pnpm type-check` passes
-- [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+- [x] Jitter is measurable (layout shift probe implemented)
+- [x] No layout shift > threshold during: route change, launcher open/close, idle pulse
+- [x] Ambient layer renders only when materialQualityGate allows
+- [x] Reduced-motion forces stable fallback (no compositor animation primitives)
+- [x] Low-power path bypasses expensive backdrop effects
+- [x] All existing test harnesses remain green (55 launcher, routing truth, focus order)
+- [x] `pnpm type-check` passes
+- [x] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
 
 ---
 
@@ -678,7 +678,7 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Risk register complete
 - [x] Git strategy defined
 - [x] Dependencies verified
-- [x] Ready for execution
+- [x] Execution complete
 
 ---
 
@@ -693,18 +693,18 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 > What MUST be true for this to be complete?
 
-- [ ] User can pin/unpin any launcher item (suite or system)
-- [ ] Pinned items appear in a **Pinned** section at the top
-- [ ] Pins persist across reloads (localStorage)
-- [ ] Activated launcher items are recorded as recents (bounded to 10)
-- [ ] Recents appear in a **Recent** section below Pinned
-- [ ] Recents dedupe by item id and update timestamp on re-activation
-- [ ] Search ranking is deterministic: prefix > word > substring > keywords
-- [ ] Empty query shows: Pinned → Recent → Suites → System
-- [ ] No regressions to focus trap, ESC close, keyboard navigation
-- [ ] No routing truth regressions
-- [ ] `pnpm type-check` passes
-- [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
+- [x] User can pin/unpin any launcher item (suite or system)
+- [x] Pinned items appear in a **Pinned** section at the top
+- [x] Pins persist across reloads (localStorage)
+- [x] Activated launcher items are recorded as recents (bounded to 10)
+- [x] Recents appear in a **Recent** section below Pinned
+- [x] Recents dedupe by item id and update timestamp on re-activation
+- [x] Search ranking is deterministic: prefix > word > substring > keywords
+- [x] Empty query shows: Pinned → Recent → Suites → System
+- [x] No regressions to focus trap, ESC close, keyboard navigation
+- [x] No routing truth regressions
+- [x] `pnpm type-check` passes
+- [x] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes
 
 ---
 
@@ -928,6 +928,7 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Risk register complete
 - [x] Git strategy defined
 - [x] Dependencies verified
+- [x] Execution complete
 
 ---
 
@@ -942,20 +943,20 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 > What MUST be true for this to be complete?
 
-- [ ] Every standalone suite home renders a consistent shell contract
+- [x] Every standalone suite home renders a consistent shell contract
   - Same header structure (title, intent badge "Standalone", optional subtitle)
   - Same container rhythm (LiquidPanel when gated; clean fallback when not)
   - Same primary actions pattern (Tactile buttons; keyboard reachable)
-- [ ] Navigation truth stays intact
+- [x] Navigation truth stays intact
   - From ShellHome tile → Standalone home loads without redirect hacks
   - From Launcher → Standalone home loads identically
   - Standalone home includes clear "Open Workbench (current parcel)" CTA only when parcel context exists
-- [ ] A11y baseline
+- [x] A11y baseline
   - h1 present, landmark regions sane, focus order stable, no hidden interactive decorations
-- [ ] No suite boundary violations
+- [x] No suite boundary violations
   - OS shell owns chrome + layout; suites own their internal content
-- [ ] All tests pass
-- [ ] Build succeeds
+- [x] All tests pass
+- [x] Build succeeds
 
 ---
 
@@ -1123,7 +1124,7 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Risk register complete
 - [x] Git strategy defined
 - [x] Dependencies verified
-- [ ] Ready for execution
+- [x] Execution complete
 
 ---
 
@@ -1263,8 +1264,8 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 # Slice 25.4: Next-Phase Execution Roadmap
 
-> **Purpose:** Lock the next execution phases into a proof-first sequence after the Codex directive pack so future work starts with governance truth, closes the active module-rehost queue, and only then enters the broader remediation waves.
-> **Strategy:** Reconcile workflow truth first, finish the live rehost surfaces second, then execute Wave 0, Wave 1, and Wave 2 in bounded slices. Do not enter Waves 3-5 until earlier proof gates are satisfied.
+> **Purpose:** Lock the next execution phases into a proof-first sequence after the Codex directive pack so future work starts with governance truth, classifies the live Workbench real-host failure that was initially attributed to Atlas, closes the active Forge rehost queue, and only then enters Wave 0, Wave 1, and Wave 2.
+> **Strategy:** Produce explicit workflow-canon and proof-posture artifacts first, treat the Workbench real-host gate as a hard classification gate with only three legal outcomes, split Forge closure into independent Comparable Sales and Income Valuation proof lanes, and keep Wave 0 inventory-only. Do not enter Waves 3-5 until earlier proof gates are satisfied.
 
 ---
 
@@ -1280,8 +1281,9 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 > What MUST be true for this planning slice to be complete?
 
 - [x] The next execution phases are ordered explicitly, not left as an informal backlog
-- [x] Workflow reconciliation is Phase 1 before new feature execution
-- [x] Comparable Sales and Income Valuation rehost work are defined before broader remediation waves
+- [x] Workflow reconciliation is Phase 1 before new feature execution and produces explicit canon artifacts
+- [x] Workbench host truth is a hard classification gate before any broader execution
+- [x] Comparable Sales and Income Valuation are separated into independent Forge proof lanes before broader remediation waves
 - [x] Wave 0, Wave 1, and Wave 2 are separated into distinct phases with explicit proof requirements
 - [x] Entry gates for Waves 3-5 are documented so they do not start early
 - [x] Tool ownership is explicit: Codex for bounded recon/execution/review, Copilot for UI/auth-heavy implementation, Claude Code for backend-risky work
@@ -1293,9 +1295,10 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 > These facts were rechecked before locking the roadmap.
 
-- [x] `frontend/apps/os-shell/src` currently shows `console.` count = `0`
+- [x] `frontend/apps/os-shell/src` currently shows raw `console.` matches = `960`, so Wave 0 must treat console cleanup as a real inventory item rather than a closed baseline
 - [x] `frontend/apps/os-shell/src` currently shows `@ts-ignore` count = `0`
-- [x] Raw `any` references remain high in `frontend/apps/os-shell/src` (`1013` matches), so Wave 0 must start with triage and scope narrowing instead of a blind bulk sweep
+- [x] Raw `any` references remain high in `frontend/apps/os-shell/src` (`1010` matches), so Wave 0 must start with triage and scope narrowing instead of a blind bulk sweep
+- [x] The former Atlas host blocker proved to be a stale label; direct Atlas proof stayed green while the combined real-host gate failure reduced to a bounded Dais lazy-host harness defect in `workbenchRealHosting.gate.test.tsx`
 - [x] Comparable Sales host files exist in Forge:
   - `frontend/apps/os-shell/src/components/workbench/ComparableSalesPanel.tsx`
   - `frontend/apps/os-shell/src/services/comparableSalesService.ts`
@@ -1321,11 +1324,11 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 ## Phases & Tasks
 
-### Phase 1: Workflow Reconciliation
+### Phase 1: Workflow Truth Reconciliation
 
 > Clean the governance ledger before starting new execution.
 
-#### Task 1.1: Normalize workflow truth
+#### Task 1.1: Publish workflow canon update
 
 * **Description:** Reconcile stale open/completed states between `plan.md`, `progress.md`, and the active remediation memo
 * **Files:**
@@ -1341,11 +1344,54 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
   - [x] Cross-doc reconciliation identified as the first execution phase
   - [x] Wave 0 count drift explicitly called out
 
-### Phase 2: Comparable Sales Rehost Closure
+#### Task 1.2: Publish proof-posture note
 
-> Close the live rehost item before widening scope.
+* **Description:** Record the current proof boundary in one canonical note so later work cannot drift into invented staged-proof claims
+* **Files:**
+  - `.governance/workflow/proof-posture.md`
+  - `.governance/workflow/progress.md`
+* **Implementation:**
+  - State that Muse-first is sealed on committed code only
+  - State that no lawful staged-cache proof exists today
+  - State that the Workbench real-host gate remains open until Phase 2 is classified and resolved
+* **Acceptance Criteria:**
+  - [x] Dedicated proof-posture artifact required
+  - [x] Muse/staged-cache/Workbench-host truth called out explicitly
 
-#### Task 2.1: Prove parcel-bound Forge sales hosting
+### Phase 2: Workbench Real-Host Root-Cause Classification
+
+> Classify the Workbench real-host failure before rehost proof lanes or broader cleanup work begin.
+
+#### Task 2.1: Classify the Workbench real-host failure
+
+* **Description:** Investigate the current Workbench real-host failure, which was initially labeled as Atlas, and stop at a bounded root-cause classification unless the fix is trivial and local
+* **Files:**
+  - `frontend/apps/os-shell/src/__tests__/workbench/workbenchRealHosting.gate.test.tsx`
+  - `frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx`
+  - `frontend/apps/os-shell/src/__tests__/workbench/PropertyDais.test.tsx`
+  - `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyAtlas.tsx`
+  - `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDais.tsx`
+  - `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbench.tsx`
+  - `frontend/apps/os-shell/src/context/workbenchTabContext.tsx`
+* **Implementation:**
+  - Allow only three legal outcomes: harness/provider gap, lazy import/export resolution defect, or real host regression in the named Workbench tab surface / Workbench integration
+  - Produce a bounded fix plan or apply a direct fix only if the issue is trivial and local
+  - Do not mix this phase with opportunistic cleanup or unrelated refactors
+* **Acceptance Criteria:**
+  - [x] Phase defined
+  - [x] Legal outcomes constrained to A/B/C classification
+  - [x] Exit condition is bounded classification or trivial direct fix
+
+* **Execution Outcome (2026-03-18):**
+  - The Atlas label was stale. Direct Atlas proof stayed green while the combined real-host gate failed on Dais under the lazy host harness.
+  - The bounded repair aligned `LazyDais` to the module default export path and preloaded the real tab modules in `workbenchRealHosting.gate.test.tsx`.
+  - The real-host gate then passed `15/15`, closing Phase 2 without changing `PropertyAtlas.tsx` or `PropertyDais.tsx`.
+
+### Phase 3: Forge Lane F1 — Comparable Sales Rehost Proof
+
+> Close the first live Forge rehost lane before widening scope.
+
+#### Task 3.1: Prove parcel-bound Forge sales hosting
 
 * **Description:** Close the remaining proof gaps for Comparable Sales inside Forge
 * **Files:**
@@ -1358,16 +1404,18 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
   - Prove Benton snapshot filtering against the current parcel context
   - Verify selection/adjustment and reconciliation API reachability or record an explicit backend blocker with evidence
   - Verify suite launch lands on the Forge tab correctly
+  - Prove no fake replacement surface was introduced
 * **Acceptance Criteria:**
   - [x] Phase defined
   - [x] Required proof points named
   - [x] Files and boundaries named
+  - [x] Dedicated evidence pack implied for F1 lane
 
-### Phase 3: Income Valuation Rehost Completion
+### Phase 4: Forge Lane F2 — Income Valuation Rehost Proof
 
-> Finish the second live Forge rehost surface after Comparable Sales closes.
+> Close the second live Forge rehost lane after Workbench host classification and alongside the first Forge proof lane.
 
-#### Task 3.1: Prove Forge income hosting and persistence path
+#### Task 4.1: Prove Forge income hosting and persistence path
 
 * **Description:** Convert Income Valuation from “in progress” into a fully verified Forge sub-tab surface
 * **Files:**
@@ -1380,35 +1428,40 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
   - Verify the income sub-tab host renders correctly from Forge
   - Prove API reachability for calculation and valuation-record persistence/retrieval paths
   - Clarify whether legacy standalone income surfaces remain archived-only or still require route cleanup
+  - Prove no fake replacement surface was introduced
 * **Acceptance Criteria:**
   - [x] Phase defined
   - [x] Host, service, and backend controller surfaces named
   - [x] Persistence/retrieval proof included in the phase scope
+  - [x] Dedicated evidence pack implied for F2 lane
 
-### Phase 4: Wave 0 Hygiene Sweep
+### Phase 5: Wave 0 Inventory and Governance Pass
 
-> Start the remediation waves only after the workflow and module queue are stable.
+> Start Wave 0 only after the workflow truth, Workbench host classification, and Forge proof lanes are stable.
 
-#### Task 4.1: Recalibrated hygiene execution
+#### Task 5.1: Recalibrated debt inventory
 
-* **Description:** Execute Wave 0 using current counts, not stale assumptions
+* **Description:** Inventory and categorize debt using current counts, not stale assumptions
 * **Files:**
   - `frontend/apps/os-shell/**`
   - related tests only
 * **Implementation:**
-  - Skip console and `@ts-ignore` cleanup unless new hits are introduced, because current probes show both at zero
-  - Triage `any` usage into governed, test-only, archived, and deferred buckets before bulk edits
-  - Use Codex only for bounded mechanical cleanup after the triage pass
+  - Preserve the zero-`@ts-ignore` baseline
+  - Treat raw `console.` usage as a live inventory bucket because current probes show `960` matches in `frontend/apps/os-shell/src`
+  - Triage `any` usage into governed production, test-only, compatibility/generator, archived, and deferred buckets before any bulk edits
+  - End with a debt ledger, not a default cleanup sweep
+  - Use Codex only for bounded mechanical cleanup after the inventory pass is explicitly approved
 * **Acceptance Criteria:**
   - [x] Phase defined
   - [x] Current measured counts reflected in scope
   - [x] Codex usage constrained to post-triage mechanical work
+  - [x] Wave 0 locked to inventory/governance by default
 
-### Phase 5: Wave 1 Auth Context and Core Wiring
+### Phase 6: Wave 1 Auth Context and Core Wiring
 
 > Thread real auth after hygiene assumptions are corrected.
 
-#### Task 5.1: Complete auth wiring on named surfaces
+#### Task 6.1: Complete auth wiring on named surfaces
 
 * **Description:** Finish the Wave 1 auth work on the existing named hooks and surfaces
 * **Files:**
@@ -1429,11 +1482,11 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
   - [x] Named target files grounded in the current repo
   - [x] Tool split called out explicitly
 
-### Phase 6: Wave 2 RAG and GPT Split
+### Phase 7: Wave 2 RAG and GPT Split
 
 > Break Wave 2 into a backend recon pass and a bounded implementation pass.
 
-#### Task 6.1: Backend inventory first
+#### Task 7.1: Backend inventory first
 
 * **Description:** Start Wave 2 with a recon pass across RAG and CoPilot backend paths before touching implementation
 * **Files:**
@@ -1447,7 +1500,7 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
   - [x] Backend recon phase defined
   - [x] Relevant controllers named
 
-#### Task 6.2: Frontend wiring after backend truth
+#### Task 7.2: Frontend wiring after backend truth
 
 * **Description:** Only after backend truth is known, wire the frontend RAG and GPT surfaces
 * **Files:**
@@ -1463,15 +1516,15 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
   - [x] Frontend implementation phase defined
   - [x] Backend-before-frontend ordering is explicit
 
-### Phase 7: Waves 3-5 Entry Gate
+### Phase 8: Waves 3-5 Entry Gate
 
 > Prevent larger standalone/backend/infrastructure work from starting early.
 
-#### Task 7.1: Gate later waves on earlier proof
+#### Task 8.1: Gate later waves on earlier proof
 
 * **Description:** Enter Waves 3-5 only after Phases 1-6 are closed with proof
 * **Implementation:**
-  - Do not start Standalone Page Completion, Backend Service Completion, or Infrastructure & Quality while workflow truth, module rehost closure, hygiene, auth, and Wave 2 remain open
+  - Do not start Standalone Page Completion, Backend Service Completion, or Infrastructure & Quality while workflow canon, proof-posture truth, Workbench host classification, Forge proof lanes, Wave 0 inventory, auth, and Wave 2 remain open
   - Require `pnpm run type-check` and `node --test os-platform/core/tests/phase83-tools.test.mjs` at each phase boundary
 * **Acceptance Criteria:**
   - [x] Gate documented
