@@ -1,6 +1,9 @@
 # Legacy Test Debt Ledger
 ## Opened: 2026-03-17
+## Closed: 2026-03-17
 ## Context: Stage 7 proof wall on branch `post-r3/w5f-registry-edge-cleanup`
+
+All 4 items resolved in commit `c5e9e0062`. Proof wall re-sealed fully green.
 
 ---
 
@@ -15,7 +18,7 @@
 | Classification | **date-expiry** |
 | Root Cause | `.github/workflows/seal-gate-fast.yml` escape hatch cutoff dates hardcoded to `2026-03-15` — expired as of 2026-03-17 |
 | Fix | Bump cutoff dates in seal-gate-fast.yml to future date |
-| Status | **quarantined** |
+| Status | **resolved** — bumped to 2026-06-30 in `c5e9e0062` |
 | W5F Impact | None |
 
 ### 2. Missing-Await Test Debt (Handler14)
@@ -27,7 +30,7 @@
 | Classification | **missing-await** |
 | Root Cause | Test method is `void` but calls async `controller.GetCertificationStatus()` without `await` — FluentAssertions sees `Task<IActionResult>` instead of `OkObjectResult` |
 | Fix | Change `void` → `async Task`, add `await` before controller call. Test-only — production code is already correctly async. |
-| Status | **quarantined** |
+| Status | **resolved** — added `async Task` + `await` + mock setup in `c5e9e0062` |
 | W5F Impact | None |
 
 ### 3. Missing-Await Test Debt (CertAlt)
@@ -39,7 +42,7 @@
 | Classification | **missing-await** |
 | Root Cause | Same pattern as #2 — `void` method calls async `controller.GetCertStatus()` without `await` |
 | Fix | Change `void` → `async Task`, add `await` before controller call. Test-only. |
-| Status | **quarantined** |
+| Status | **resolved** — added `async Task` + `await` in `c5e9e0062` |
 | W5F Impact | None |
 
 ### 4. Async-Pattern Governance Debt
@@ -51,5 +54,5 @@
 | Classification | **async-pattern** |
 | Root Cause | Test asserts `TerraFusionSyncIntegrationService.cs` contains `"Task.Run(async"` — but the service uses pure sync constructor + proper async methods. No fire-and-forget init exists or is needed. |
 | Fix | Convert to "no sync-over-async anti-patterns" assertion (reject `.Result`, `.Wait()`, `.GetAwaiter().GetResult()`) — this is the truthful governance check. |
-| Status | **quarantined** |
+| Status | **resolved** — converted to sync-over-async guard in `c5e9e0062` |
 | W5F Impact | None |
