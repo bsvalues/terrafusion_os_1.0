@@ -50,6 +50,7 @@
       "autonomy-tpi-guard.yml",
       "autonomy-incident-label-guard.yml",
       "autonomy-incident-triage.yml",
+      "ci.yml",
       "release-lane-guard.yml",
       "ui-governance.yml"
     ],
