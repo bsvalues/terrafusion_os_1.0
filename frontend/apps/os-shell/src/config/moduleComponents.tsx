@@ -13,6 +13,9 @@ import React, { lazy, Suspense } from 'react';
 import { GenericModuleHost } from '../shell/desktop/GenericModuleHost';
 import { MODULES, type ModuleDefinition } from './modules';
 import { validateSuiteRendering } from '../contracts/objectPlacement';
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('ModuleRenderer');
 
 // ============================================================================
 // Module Aliases - Maps legacy/short IDs to canonical IDs (Phase 2)
@@ -910,7 +913,7 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'suite-gpt': {
       const suiteViolation = validateSuiteRendering(module.id);
       if (suiteViolation) {
-        console.warn('[Codex] Suite boundary violation:', suiteViolation);
+        logger.warn('Suite boundary violation:', suiteViolation);
         return (
           <SuiteBoundaryViolationNotice
             moduleId={suiteViolation.moduleId}

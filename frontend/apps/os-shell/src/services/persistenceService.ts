@@ -9,6 +9,9 @@
  */
 
 import type { Position, Size, SnapZone, WindowState } from '../stores/desktopStore';
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('PersistenceService');
 
 // ============================================================================
 // Constants
@@ -191,7 +194,7 @@ class PersistenceService {
       localStorage.setItem(STORAGE_KEYS.DESKTOP, JSON.stringify(cleaned));
       localStorage.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
     } catch (error) {
-      console.warn('[PersistenceService] Failed to save desktop state:', error);
+      logger.warn('Failed to save desktop state:', error);
     }
   }
 
@@ -214,13 +217,13 @@ class PersistenceService {
       const parsed = JSON.parse(raw);
 
       if (!isValidDesktopState(parsed)) {
-        console.warn('[PersistenceService] Invalid desktop state schema');
+        logger.warn('Invalid desktop state schema');
         return null;
       }
 
       return parsed;
     } catch (error) {
-      console.warn('[PersistenceService] Failed to load desktop state:', error);
+      logger.warn('Failed to load desktop state:', error);
       return null;
     }
   }
@@ -233,7 +236,7 @@ class PersistenceService {
       localStorage.setItem(STORAGE_KEYS.START_MENU, JSON.stringify(state));
       localStorage.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
     } catch (error) {
-      console.warn('[PersistenceService] Failed to save start menu state:', error);
+      logger.warn('Failed to save start menu state:', error);
     }
   }
 
@@ -256,13 +259,13 @@ class PersistenceService {
       const parsed = JSON.parse(raw);
 
       if (!isValidStartMenuState(parsed)) {
-        console.warn('[PersistenceService] Invalid start menu state schema');
+        logger.warn('Invalid start menu state schema');
         return null;
       }
 
       return parsed;
     } catch (error) {
-      console.warn('[PersistenceService] Failed to load start menu state:', error);
+      logger.warn('Failed to load start menu state:', error);
       return null;
     }
   }
@@ -275,7 +278,7 @@ class PersistenceService {
       localStorage.setItem(STORAGE_KEYS.THEME, JSON.stringify(state));
       localStorage.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
     } catch (error) {
-      console.warn('[PersistenceService] Failed to save theme state:', error);
+      logger.warn('Failed to save theme state:', error);
     }
   }
 
@@ -298,13 +301,13 @@ class PersistenceService {
       const parsed = JSON.parse(raw);
 
       if (!isValidThemeState(parsed)) {
-        console.warn('[PersistenceService] Invalid theme state schema');
+        logger.warn('Invalid theme state schema');
         return null;
       }
 
       return parsed;
     } catch (error) {
-      console.warn('[PersistenceService] Failed to load theme state:', error);
+      logger.warn('Failed to load theme state:', error);
       return null;
     }
   }
@@ -333,7 +336,7 @@ class PersistenceService {
         recentModuleIds: limited,
       });
     } catch (error) {
-      console.warn('[PersistenceService] Failed to add recent module:', error);
+      logger.warn('Failed to add recent module:', error);
     }
   }
 
@@ -347,7 +350,7 @@ class PersistenceService {
       localStorage.removeItem(STORAGE_KEYS.THEME);
       localStorage.removeItem(STORAGE_KEYS.VERSION);
     } catch (error) {
-      console.warn('[PersistenceService] Failed to clear state:', error);
+      logger.warn('Failed to clear state:', error);
     }
   }
 
@@ -371,7 +374,7 @@ class PersistenceService {
    */
   migrateIfNeeded(): void {
     if (this.needsMigration()) {
-      console.info('[PersistenceService] Migrating from old version, clearing state');
+      logger.info('Migrating from old version, clearing state');
       this.clearAll();
     }
   }

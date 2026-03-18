@@ -21,6 +21,9 @@ import {
     type TfBadgeState,
 } from './ipcTypes';
 import { getModuleIdByOrigin } from './originAllowlist';
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('shellIpcBridge');
 
 // ============================================================================
 // Boot Dedupe (HMR Spam Protection)
@@ -124,7 +127,7 @@ function handleMessage(event: MessageEvent): void {
   if (!appId) {
     // Untrusted origin - reject silently
     if (import.meta.env.DEV) {
-      console.warn(`[ipc/shellIpcBridge] Rejected message from untrusted origin: ${event.origin}`);
+      logger.warn(`Rejected message from untrusted origin: ${event.origin}`);
     }
     return;
   }
@@ -135,7 +138,7 @@ function handleMessage(event: MessageEvent): void {
   switch (msg.type) {
     case TF_MESSAGE_TYPES.SYSTEM_LOG: {
       if (!isTfSystemLog(msg)) {
-        console.warn('[ipc/shellIpcBridge] Invalid TF_SYSTEM_LOG payload');
+        logger.warn('Invalid TF_SYSTEM_LOG payload');
         return;
       }
 
@@ -144,7 +147,7 @@ function handleMessage(event: MessageEvent): void {
       // ✅ BOOT DEDUPE: Drop HMR spam (topic === 'boot' within 2s window)
       if (shouldDedupeBootMessage(appId, topic)) {
         if (import.meta.env.DEV) {
-          console.debug(`[ipc] ${appId} → SYSTEM_LOG: [${level}] DEDUPED (boot within TTL)`);
+          logger.debug(`[ipc] ${appId} → SYSTEM_LOG: [${level}] DEDUPED (boot within TTL)`);
         }
         return;
       }
@@ -172,14 +175,14 @@ function handleMessage(event: MessageEvent): void {
       );
 
       if (import.meta.env.DEV) {
-        console.debug(`[ipc] ${appId} → SYSTEM_LOG: [${level}] ${message}`, data);
+        logger.debug(`[ipc] ${appId} → SYSTEM_LOG: [${level}] ${message}`, data);
       }
       break;
     }
 
     case TF_MESSAGE_TYPES.OPEN_APP: {
       if (!isTfOpenApp(msg)) {
-        console.warn('[ipc/shellIpcBridge] Invalid TF_OPEN_APP payload');
+        logger.warn('Invalid TF_OPEN_APP payload');
         return;
       }
 
@@ -211,18 +214,18 @@ function handleMessage(event: MessageEvent): void {
         source: 'system',
         focusIfOpen: focus,
       }).catch((err) => {
-        console.error(`[ipc/shellIpcBridge] Failed to open app: ${targetAppId}`, err);
+        logger.error(`Failed to open app: ${targetAppId}`, err);
       });
 
       if (import.meta.env.DEV) {
-        console.debug(`[ipc] ${appId} → OPEN_APP: ${targetAppId}`);
+        logger.debug(`[ipc] ${appId} → OPEN_APP: ${targetAppId}`);
       }
       break;
     }
 
     case TF_MESSAGE_TYPES.SET_BADGE: {
       if (!isTfSetBadge(msg)) {
-        console.warn('[ipc/shellIpcBridge] Invalid TF_SET_BADGE payload');
+        logger.warn('Invalid TF_SET_BADGE payload');
         return;
       }
 
@@ -236,7 +239,7 @@ function handleMessage(event: MessageEvent): void {
       });
 
       if (import.meta.env.DEV) {
-        console.debug(`[ipc] ${appId} → SET_BADGE: ${state}${label ? ` "${label}"` : ''}`);
+        logger.debug(`[ipc] ${appId} → SET_BADGE: ${state}${label ? ` "${label}"` : ''}`);
       }
       break;
     }
@@ -244,7 +247,7 @@ function handleMessage(event: MessageEvent): void {
     default:
       // Unknown message type - ignore
       if (import.meta.env.DEV) {
-        console.debug(`[ipc] ${appId} → Unknown message type: ${msg.type}`);
+        logger.debug(`[ipc] ${appId} → Unknown message type: ${msg.type}`);
       }
       break;
   }
@@ -266,19 +269,19 @@ let isInstalled = false;
  */
 export function installShellIpcBridge(): () => void {
   if (isInstalled) {
-    console.warn('[ipc/shellIpcBridge] Bridge already installed');
+    logger.warn('Bridge already installed');
     return () => {};
   }
 
   window.addEventListener('message', handleMessage);
   isInstalled = true;
 
-  console.info('[ipc/shellIpcBridge] IPC bridge installed ✓');
+  logger.info('IPC bridge installed');
 
   return () => {
     window.removeEventListener('message', handleMessage);
     isInstalled = false;
-    console.info('[ipc/shellIpcBridge] IPC bridge removed');
+    logger.info('IPC bridge removed');
   };
 }
 

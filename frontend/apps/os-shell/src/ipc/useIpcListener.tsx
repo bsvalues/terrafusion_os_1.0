@@ -13,6 +13,7 @@ import { routeIpcMessage, type TelemetryEvent } from './ipcRouter';
 import { useAgentStore } from '../sentinel/agentStore';
 import { useDesktopStore } from '../stores/desktopStore';
 import { MODULES } from '../config/modules';
+import { useLogger } from '@/hooks/useLogger';
 
 // ============================================================================
 // Helper: Find module by ID
@@ -35,6 +36,7 @@ function findModuleById(moduleId: string) {
 export function useIpcListener() {
   const appendEvents = useAgentStore((s) => s.appendEvents);
   const openWindow = useDesktopStore((s) => s.openWindow);
+  const logger = useLogger('useIpcListener');
 
   /**
    * Push telemetry event to Neural Feed
@@ -66,7 +68,7 @@ export function useIpcListener() {
     (appId: string) => {
       const module = findModuleById(appId);
       if (!module) {
-        console.warn(`[IPC] openApp: Unknown module "${appId}"`);
+        logger.warn(`openApp: Unknown module "${appId}"`);
         return;
       }
 
@@ -98,8 +100,8 @@ export function useIpcListener() {
 
       // Log routing failures for debugging (only in dev)
       if (!result.routed && import.meta.env.DEV) {
-        console.debug(
-          `[IPC] Message from "${verifiedAppId}" not routed:`,
+        logger.debug(
+          `Message from "${verifiedAppId}" not routed:`,
           result.reason,
           event.data
         );
@@ -113,14 +115,14 @@ export function useIpcListener() {
     window.addEventListener('message', handleMessage);
 
     if (import.meta.env.DEV) {
-      console.log('[IPC] Shell IPC bridge installed');
+      logger.info('Shell IPC bridge installed');
     }
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      
+
       if (import.meta.env.DEV) {
-        console.log('[IPC] Shell IPC bridge removed');
+        logger.info('Shell IPC bridge removed');
       }
     };
   }, [handleMessage]);

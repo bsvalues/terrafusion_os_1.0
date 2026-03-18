@@ -14,6 +14,7 @@ import { useAgentStore } from '../sentinel/agentStore';
 import { getViteEnv } from '../shared/viteEnv';
 import { useDesktopStore } from '../stores/desktopStore';
 import { installIpcBridge, type IpcBridgeDeps } from './ipcBridge';
+import { useLogger } from '@/hooks/useLogger';
 
 /**
  * Install the IPC bridge and connect to Shell stores.
@@ -27,6 +28,7 @@ export function useIpcBridge(): void {
   // Get store actions
   const appendEvents = useAgentStore((state) => state.appendEvents);
   const openWindow = useDesktopStore((state) => state.openWindow);
+  const logger = useLogger('useIpcBridge');
 
   const env = getViteEnv();
 
@@ -48,7 +50,7 @@ export function useIpcBridge(): void {
         // Find module in registry
         const module = GENERATED_MODULES.find((m) => m.id === moduleId);
         if (!module) {
-          console.warn(`[IPC] Unknown app requested: ${moduleId}`);
+          logger.warn(`Unknown app requested: ${moduleId}`);
           return;
         }
 
@@ -61,7 +63,7 @@ export function useIpcBridge(): void {
       setAppBadge: (appId, state, label) => {
         // Badge system not yet implemented - log for now
         if (env.DEV) {
-          console.log(`[IPC] Badge update: ${appId} → ${state}${label ? ` (${label})` : ''}`);
+          logger.debug(`Badge update: ${appId} → ${state}${label ? ` (${label})` : ''}`);
         }
       },
     };
@@ -71,14 +73,14 @@ export function useIpcBridge(): void {
 
     // Log installation in dev
     if (env.DEV) {
-      console.log('[IPC] Bridge installed - listening for app messages');
+      logger.info('Bridge installed - listening for app messages');
     }
 
     return () => {
       cleanup();
       installedRef.current = false;
       if (env.DEV) {
-        console.log('[IPC] Bridge uninstalled');
+        logger.info('Bridge uninstalled');
       }
     };
   }, [appendEvents, openWindow]);
