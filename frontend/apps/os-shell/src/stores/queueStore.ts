@@ -6,7 +6,14 @@
  */
 
 import { create } from 'zustand';
-import type { QueueWorkItem, QueueMetrics, AppraiserProductivity } from '@/data/queueFixtures';
+import {
+  APPRAISER_PRODUCTIVITY,
+  QUEUE_ITEMS,
+  QUEUE_METRICS,
+  type QueueWorkItem,
+  type QueueMetrics,
+  type AppraiserProductivity,
+} from '@/data/queueFixtures';
 import {
   getQueueItems,
   getQueueMetrics,
@@ -21,6 +28,7 @@ interface QueueState {
   productivity: AppraiserProductivity[];
   loading: boolean;
   error: string | null;
+  isFixture: boolean;
   selectedItemIds: Set<string>;
 
   // Actions
@@ -38,19 +46,27 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   productivity: [],
   loading: false,
   error: null,
+  isFixture: false,
   selectedItemIds: new Set(),
 
   fetchQueue: async () => {
     set({ loading: true, error: null });
     try {
       const [items, metrics, productivity] = await Promise.all([
-        getQueueItems(),
-        getQueueMetrics(),
-        getAppraiserProductivity(),
+        getQueueItems({ throwOnError: true }),
+        getQueueMetrics({ throwOnError: true }),
+        getAppraiserProductivity({ throwOnError: true }),
       ]);
-      set({ items, metrics, productivity, loading: false });
+      set({ items, metrics, productivity, loading: false, isFixture: false });
     } catch (e) {
-      set({ error: e instanceof Error ? e.message : 'Failed to load queue', loading: false });
+      set({
+        items: QUEUE_ITEMS,
+        metrics: QUEUE_METRICS,
+        productivity: APPRAISER_PRODUCTIVITY,
+        error: e instanceof Error ? e.message : 'Failed to load queue',
+        loading: false,
+        isFixture: true,
+      });
     }
   },
 

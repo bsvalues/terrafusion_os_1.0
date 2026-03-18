@@ -9,6 +9,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -99,7 +100,7 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
   const [reassignDropdown, setReassignDropdown] = useState<string | null>(null);
 
   const {
-    items, metrics, productivity, loading,
+    items, metrics, productivity, loading, error, isFixture,
     selectedItemIds, fetchQueue,
     toggleSelection, selectAll, clearSelection,
     assignItems, reviewItem,
@@ -156,6 +157,22 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
       className="space-y-4 p-4"
       style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}
     >
+      {isFixture && <DemoDataBanner module="TerraQueue" />}
+      {isFixture && (
+        <div
+          role="status"
+          data-testid="terra-queue-fixture-note"
+          className="rounded-md border px-3 py-2 text-sm"
+          style={{
+            borderColor: 'rgba(234, 179, 8, 0.35)',
+            background: 'rgba(234, 179, 8, 0.08)',
+            color: 'rgb(234, 179, 8)',
+          }}
+        >
+          Live queue endpoints are unavailable. Assignments and review actions simulate locally in this session.
+          {error ? ` Last API error: ${error}` : ''}
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">TerraQueue</h1>
         <div className="flex gap-2">
