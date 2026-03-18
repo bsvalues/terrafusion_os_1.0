@@ -43,7 +43,7 @@ Prove the 8 shell assumptions with diagnostic-only tests. No source edits. No da
 |---|----------|---------------|
 | 1 | Does the desktop render launch surfaces? | Assert `StageZeroState` + `DesktopIconGrid` are imported and used in `Desktop.tsx` |
 | 2 | Does the dock contain zero utilities? | Assert `Taskbar.tsx` does NOT import Clock, NotificationBell, SentinelChip, Settings, or Search |
-| 3 | Does the top bar contain Clock/NotificationBell/SentinelChip? | Assert `Desktop.tsx` renders `DesktopTopSystemBar` containing all three + Search + ControlCenter + Profile |
+| 3 | Does the top bar contain Clock/NotificationBell/SentinelChip? | Assert `Desktop.tsx` imports and uses `DesktopTopSystemBar`, and that `DesktopTopSystemBar` is the shell-owned container for Clock / NotificationBell / SentinelChip / Search / ControlCenter / Profile (static/import-graph analysis, not render test) |
 | 4 | Do suite windows open near-full-stage? | Assert `MODULE_OBJECT_TYPES['suite-forge'].objectType === 'suite-workspace'` for all 5 suite IDs. Sizing is tested indirectly via classification — `getModuleWindowSize` is module-private and cannot be imported. Defer direct sizing test to Phase 22 where the export can be added. |
 | 5 | Does the Property Workbench open maximized? | Assert `MODULE_OBJECT_TYPES['property-workbench'].objectType === 'tier0-workbench'`. Direct `getModuleWindowSize` call deferred to Phase 22. |
 | 6 | Do os-pilot/os-trace/os-canon open in-shell? | Assert all 3 exist in `MODULE_REGISTRY` with `objectType: 'os-feature-window'` |
@@ -124,7 +124,8 @@ The spec defines the real rule as: **no hardcoded Tailwind z-depth classes in go
 
 ```bash
 npx vitest run "shellChrome.contract" "shellTruthAudit.contract" "ZIndexOrdering"
-rg -n '\bz-\d+\b|z-\[\d+\]' frontend/apps/os-shell/src/shell -g '*.tsx' -g '*.ts'
+rg -n '\bz-\d+\b|z-\[\d+\]' frontend/apps/os-shell/src -g '*.tsx' -g '*.ts'
+# Note: scoped to full src/ to catch all governed files. Phase 21 shellTruthAudit remains the cross-file audit source of truth.
 ```
 
 ### Agent Strategy
