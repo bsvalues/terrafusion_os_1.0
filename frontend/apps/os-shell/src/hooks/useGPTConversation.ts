@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAuthContext, toOsActor } from '@/auth/useAuthContext';
 import { gptAPI } from '@/services/gptAPI';
 import type { GPTConversation, GPTMessage } from '@/services/gptAPI';
@@ -14,9 +14,9 @@ export function useGPTConversation(gptConfigId: number): {
   createConversation: () => Promise<GptActorResult<GPTConversation>>;
 } {
   const auth = useAuthContext();
-  const actor = toOsActor(auth);
-  const actorResult = resolveGptActor(actor);
+  const actorResult = useMemo(() => resolveGptActor(toOsActor(auth)), [auth]);
 
+  const cancelledRef = useRef(false);
   const [conversation, setConversation] = useState<GPTConversation | null>(null);
   const [messages, setMessages] = useState<GPTMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +28,7 @@ export function useGPTConversation(gptConfigId: number): {
     try {
       setIsLoading(true);
       const conv = await gptAPI.createConversation({ gptConfigId, title: 'New Conversation' });
-      setConversation(conv);
+      if (!cancelledRef.current) setConversation(conv);
       return { ok: true, data: conv };
     } catch (err: unknown) {
       const e = err as { code?: string; response?: { status: number; data?: { message?: string } } };
@@ -54,7 +54,7 @@ export function useGPTConversation(gptConfigId: number): {
     try {
       setIsLoading(true);
       const msg = await gptAPI.sendMessage(conversation.id, { gptConfigId, message: text });
-      setMessages(prev => [...prev, msg]);
+      if (!cancelledRef.current) setMessages(prev => [...prev, msg]);
       return { ok: true, data: msg };
     } catch (err: unknown) {
       const e = err as { code?: string; response?: { status: number; data?: { message?: string } } };
@@ -73,8 +73,10 @@ export function useGPTConversation(gptConfigId: number): {
   }, [actorResult, conversation, gptConfigId]);
 
   useEffect(() => {
+    cancelledRef.current = false;
     setConversation(null);
     setMessages([]);
+    return () => { cancelledRef.current = true; };
   }, [gptConfigId]);
 
   return { conversation, messages, actorError, isLoading, sendMessage, createConversation };
