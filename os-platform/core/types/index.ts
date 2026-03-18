@@ -206,6 +206,8 @@ export interface TraceEvent extends TraceEventInput {
   timestamp: string;
   /** Schema version for forward compatibility */
   schemaVersion: string;
+  /** SHA-256 of the previous event (null for genesis). Enables tamper-evident chain verification. */
+  previousHash?: string | null;
 }
 
 export interface TraceQueryOptions {
