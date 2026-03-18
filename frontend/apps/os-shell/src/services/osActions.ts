@@ -14,6 +14,7 @@
 
 import { createLogger } from '@/hooks/useLogger';
 import type { OsActor } from '@/auth/useAuthContext';
+import { getTraceContext } from '@/services/terraTrace';
 
 const logger = createLogger('osActions');
 
@@ -413,13 +414,17 @@ export function executeOsAction(action: OsAction, context: OsActionContext): voi
   }
 
   // Resolve effective actor once — prefer explicit context.actor (Wave 1 callers),
-  // fall back to null for pre-Wave-1 legacy callers.
+  // fall back to getTraceContext() for pre-Wave-1 legacy callers.
   // Never split identity across two sources in the same emit.
-  // TODO Wave1: add getTraceContext() fallback after Task 2A commits
   const effectiveActor: OsActor | null =
     context.actor !== undefined
       ? context.actor   // Wave 1: explicitly threaded
-      : null;           // Legacy: no actor context available yet
+      : (() => {        // Legacy fallback: reconstruct from trace session globals
+          const tc = getTraceContext();
+          return tc.actor && tc.countyId
+            ? { userId: tc.actor, countyId: tc.countyId, roles: [] as readonly string[] }
+            : null;
+        })();
 
   // Emit trace event for audit trail
   emitActionTrace(action, context, effectiveActor);
