@@ -5,7 +5,7 @@
  * Initializes from localStorage via authStorage.
  * Registers a bridge so non-React code (axios interceptor) can trigger logout.
  */
-import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { getToken, setToken as persistToken, clearToken } from './authStorage';
 import { registerLogoutHandler, unregisterLogoutHandler } from './authBridge';
@@ -13,15 +13,11 @@ import { useAuth } from './useAuth';
 import { isDevPreviewMode, shouldForceLoginRedirect } from './authPolicy';
 import { decodeAuthClaims } from '@/auth/useAuthContext';
 import { initTraceContext } from '@/services/terraTrace';
-
-export interface AuthContextValue {
-  token: string | null;
-  isAuthenticated: boolean;
-  login: (token: string) => void;
-  logout: (reason?: string) => void;
-}
-
-export const AuthContext = createContext<AuthContextValue | null>(null);
+// AuthContext and AuthContextValue live in authContextDef.ts to break the circular
+// import between this file and useAuthContext.ts.
+// Re-exported here for backward compatibility with existing importers.
+export { AuthContext } from './authContextDef';
+export type { AuthContextValue } from './authContextDef';
 
 const DEV_PREVIEW_TOKEN = 'dev-preview-token';
 const DEV_SESSION_KEY = 'tf.session.dev';

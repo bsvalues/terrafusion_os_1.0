@@ -27,7 +27,7 @@ import {
     type LauncherItem,
     type LauncherSection
 } from './launcherModel';
-import { useAuthContext, toOsActor } from '@/auth/useAuthContext';
+import { useAuthContextOptional, toOsActor } from '@/auth/useAuthContext';
 
 const INTENT_ICON_VARIANT: Record<LauncherItem['intent'], TerraSphereIconVariant> = {
   workbench: 'assessment',
@@ -302,7 +302,7 @@ const LauncherSectionView: React.FC<{
 
 export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => {
   const navigate = useNavigate();
-  const auth = useAuthContext();
+  const auth = useAuthContextOptional();
   const quality = useMaterialQuality();
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -356,7 +356,7 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
     (item: LauncherItem) => {
       // Record in recents before navigating (Slice 5)
       recordRecent(item.id);
-      navigateToLauncherItem(item, navigate, toOsActor(auth));
+      navigateToLauncherItem(item, navigate, auth ? toOsActor(auth) : null);
       close();
     },
     [navigate, close, recordRecent]
