@@ -284,7 +284,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
       <div className='pointer-events-auto h-full flex gap-3'>
 
         {/* ═══ Left Panel: Recent Work ═══ */}
-        <div className='w-[240px] shrink-0 flex flex-col gap-3'>
+        <div data-testid='recent-work-panel' className='w-[240px] shrink-0 flex flex-col gap-3'>
           <GlassCard className='flex-1'>
             <SectionHeader icon={<Clock className='h-3.5 w-3.5' />} title='Recent Work' />
             <div className='flex flex-col gap-0.5 -mx-2.5 flex-1'>
@@ -308,14 +308,14 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         </div>
 
         {/* ═══ Center: County Map Overview ═══ */}
-        <div className='flex-1 flex flex-col gap-3 min-w-0'>
+        <div data-testid='county-map-center' className='flex-1 flex flex-col gap-3 min-w-0'>
           <GlassCard className='flex-1 p-2'>
             <CountyMapOverview onClick={handleOpenAtlas} />
           </GlassCard>
 
           {/* Bottom strip: County status */}
           <LiquidPanel variant='shell' radius='lg' className='px-4 py-2 shrink-0'>
-            <div className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-text-primary-hs) 45%)' }}>
+            <div data-testid='county-status-strip' className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-text-primary-hs) 45%)' }}>
               <span className='font-medium' style={{ color: 'hsl(var(--tf-text-primary-hs) 65%)' }}>
                 Benton County, WA
               </span>
