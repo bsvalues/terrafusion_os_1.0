@@ -4,9 +4,9 @@
 
 ---
 
-* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions
+* **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions + Codex Directive Pack v1
 * **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-02-08 02:30
+* **Last Updated:** 2026-03-18
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Phase 6: Suite Standalone Home Maturation** ✅ COMPLETE |
-| **Phase** | Phase 6H: Phase 5 Regression Gate — All Invariants Hold |
-| **Task** | 5 suite homes verified, GptSuiteHome launchMode fix, 92 Phase 6 tests + 32 Phase 5 tests = 124 green |
+| **Slice** | **Slice 25.3: Codex Directive Pack v1** ✅ COMPLETE |
+| **Phase** | Phase 3: Structure and doctrine verification |
+| **Task** | Operator pack created, workflow docs cross-linked, 6 prompts + contract fields verified |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | `83d9b43e3` Phase 6 closeout — suite maturation complete |
+| **Latest Commit** | `Pending` docs-only slice, not committed in this working tree |
 
 ---
 
@@ -381,6 +381,39 @@
 
 ---
 
+## Slice 25.3: Codex Directive Pack v1 ✅ COMPLETE
+
+| Task | Description | Commit | Tests | Date |
+|------|-------------|--------|-------|------|
+| ✅ 1.1 | Create `CODEX_DIRECTIVE_PACK_v1.md` | Pending | Structure verified | 2026-03-18 |
+| ✅ 2.1 | Link pack from workflow README | Pending | Cross-link verified | 2026-03-18 |
+| ✅ 2.2 | Align remediation plan to bounded Codex prompts | Pending | Cross-link verified | 2026-03-18 |
+| ✅ 3.1 | Verify 6 prompts + operator contract consistency | Pending | `rg` verification pass | 2026-03-18 |
+
+**Key Achievement:** TerraFusion now has a dedicated Codex operator playbook that formalizes Codex as a bounded execution swarm, not a decider. The pack defines `Recon`, `Execution`, and `Review` modes, locks a single `Objective` → `Output` prompt contract, and provides 6 TerraFusion-specific prompt frames for drift audits, bounded frontend work, governed contract alignment, and PR hardening.
+
+**Files Modified:**
+- `.governance/workflow/CODEX_DIRECTIVE_PACK_v1.md` (NEW) - Codex doctrine, modes, prompt contract, 6 ready-to-paste prompts
+- `.governance/workflow/README.md` - Added `Operator Playbooks` section + non-replacement guidance
+- `.governance/workflow/REMEDIATION_PLAN_v1.md` - Added bounded Codex operating rule + prompt-pack references
+- `.governance/workflow/plan.md` - Added Slice 25.3 planning record
+- `.governance/workflow/progress.md` - Recorded Slice 25.3 completion, proof status, and next-step state
+
+**Verification Evidence:**
+- `pnpm run type-check` passed on 2026-03-18
+- `node --test os-platform/core/tests/phase83-tools.test.mjs` passed on 2026-03-18 (54/54)
+- `rg` confirmed exactly 6 prompt headers in `CODEX_DIRECTIVE_PACK_v1.md`
+- `rg` confirmed each prompt includes `Objective`, `Allowed files`, `Forbidden`, `Acceptance criteria`, `Proof`, `Non-goals`, and `Output`
+- `rg` confirmed README and remediation-plan references resolve to the new pack
+- Manual doctrine check confirmed v1 remains doc-only and does not promote changes into `.github/AGENT_ENTRYPOINT.md`
+
+**Operational Boundary:**
+- Codex stays in bounded recon/execution/review lanes
+- Humans retain scope, governance exceptions, architecture, and merge judgment
+- Claude Code and Copilot remain preferred for architecture-heavy or risky slices
+
+---
+
 ## Next Steps (explicit)
 
 | Priority | Task | Description | Blocked By |
@@ -391,7 +424,8 @@
 | ✅ 4 | 2.1-2.2 | Create StandaloneHomeShell + contracts | Done |
 | ✅ 5 | 3.1 | Migrate PilotConsole | Done |
 | ✅ 6 | 4.1 | Run all gates | Done |
-| 🔵 7 | Commit | Create Slice 6 commit | - |
+| ✅ 7 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
+| 🔵 8 | Commit | Create docs commit for Slice 25.3 | - |
 
 ---
 
@@ -401,6 +435,8 @@
 |------|----------|-----------|--------|
 | 2026-02-07 | Reuse existing discovery | Design-system primitive adoption = NOT new initiative | Skip 30 Q/A |
 | 2026-02-07 | Variant: infrastructure for headers | Matches material hierarchy spec | Consistent theming |
+| 2026-03-18 | Keep Codex Directive Pack doc-only in v1 | Tighten execution without changing live entrypoint governance | No `.github/AGENT_ENTRYPOINT.md` drift |
+| 2026-03-18 | Standardize Codex prompts on `Objective` → `Output` | Prevent broad or under-specified Codex handoffs | More consistent bounded execution |
 
 ---
 
@@ -418,33 +454,26 @@
 | Suite | Passed | Failed | Skipped |
 |-------|--------|--------|---------|
 | type-check | ✅ | 0 | - |
-| phase83-tools | 32 | 0 | - |
-| launcher tests | 57 | 0 | - |
-| ranking tests | 26 | 0 | - |
-| pins tests | 15 | 0 | - |
-| recents tests | 15 | 0 | - |
-| standalone contract | 0 | 0 | 14 (TDD) |
-| standalone nav | 0 | 0 | 7 (TDD) |
-| standalone a11y | 12 | 0 | 0 |
-| build | ✅ | - | - |
+| phase83-tools | 54 | 0 | 0 |
+| prompt contract verification (`rg`) | ✅ | 0 | - |
+| cross-link verification (`rg`) | ✅ | 0 | - |
 
 ---
 
 ## Gates Before Merge
 
 - [x] All planned tasks complete
-- [x] All tests passing
-- [x] Build succeeds
+- [x] Required gates passing for this slice
 - [x] No blockers
 - [x] Known debt documented
-- [x] Latest commit hash in this document (`234b06ec1`)
+- [ ] Latest commit hash in this document
 
 ---
 
 ## Document Status
 
 - [x] Current status accurate
-- [x] All completed tasks have commits
+- [ ] All completed tasks have commits
 - [x] Next steps defined
 - [x] Debt documented
-- [x] Ready for merge
+- [ ] Ready for merge

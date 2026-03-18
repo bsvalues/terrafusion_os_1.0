@@ -1124,3 +1124,137 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Git strategy defined
 - [x] Dependencies verified
 - [ ] Ready for execution
+
+---
+
+# Slice 25.3: Codex Directive Pack v1
+
+> **Purpose:** Establish a TerraFusion-specific Codex operator playbook that keeps Codex in bounded recon, execution, and review lanes.
+> **Strategy:** Documentation-only workflow slice. Tighten operator prompts without changing runtime code or promoting new rules into the live agent entrypoint.
+
+---
+
+* **Project:** TerraFusion Codex Directive Pack v1
+* **Branch/PR:** current working tree
+* **Date:** 2026-03-18
+* **Prereq:** Existing workflow governance in `.governance/workflow/**`
+
+---
+
+## Definition of Done
+
+> What MUST be true for this to be complete?
+
+- [x] New `CODEX_DIRECTIVE_PACK_v1.md` exists under `.governance/workflow/`
+- [x] Codex doctrine states bounded executor/reviewer role, not decider role
+- [x] `Recon`, `Execution`, and `Review` modes are defined
+- [x] Exactly 6 ready-to-paste TerraFusion prompts are included
+- [x] Every prompt uses the same operator contract:
+  - `Objective`
+  - `Allowed files`
+  - `Forbidden`
+  - `Acceptance criteria`
+  - `Proof`
+  - `Non-goals`
+  - `Output`
+- [x] `README.md` links to the new pack and states it complements workflow governance
+- [x] `REMEDIATION_PLAN_v1.md` points Codex assignments to the new bounded prompt pack
+- [x] No promotion into `.github/AGENT_ENTRYPOINT.md` in v1
+- [x] No runtime APIs, schemas, or types changed
+
+---
+
+## Phases & Tasks
+
+### Phase 1: Pack Creation
+
+#### Task 1.1: Create directive pack
+
+* **Description:** Add the new Codex operator playbook under workflow governance docs
+* **Files:**
+  - `.governance/workflow/CODEX_DIRECTIVE_PACK_v1.md` (NEW)
+* **Implementation:**
+  - Define operating doctrine
+  - Define `Recon`, `Execution`, `Review` modes
+  - Lock the standard prompt contract and field order
+  - Add 6 TerraFusion-specific prompts for recon, execution, and review lanes
+* **Acceptance Criteria:**
+  - [x] Pack exists
+  - [x] All 6 prompts present
+  - [x] Prompt contract consistent across all prompts
+
+### Phase 2: Discoverability and Alignment
+
+#### Task 2.1: Link from workflow README
+
+* **Description:** Make the pack discoverable from canonical workflow docs
+* **Files:**
+  - `.governance/workflow/README.md`
+* **Implementation:**
+  - Add `Operator Playbooks` section
+  - Link to `CODEX_DIRECTIVE_PACK_v1.md`
+  - State that the pack complements, not replaces, `discovery.md`, `research.md`, `plan.md`, and `progress.md`
+* **Acceptance Criteria:**
+  - [x] README link added
+  - [x] Non-replacement language explicit
+
+#### Task 2.2: Align remediation plan
+
+* **Description:** Point Codex references in the remediation plan to the bounded prompt pack
+* **Files:**
+  - `.governance/workflow/REMEDIATION_PLAN_v1.md`
+* **Implementation:**
+  - Add Codex operating rule near tool strategy
+  - Tighten Codex rows in the tool-assignment matrix
+  - Add cross-reference to the standard operator contract
+* **Acceptance Criteria:**
+  - [x] Remediation plan references the pack
+  - [x] Human scope/governance ownership preserved
+
+### Phase 3: Verification
+
+#### Task 3.1: Structure and doctrine verification
+
+* **Description:** Verify prompt count, field order, and cross-reference consistency
+* **Acceptance Criteria:**
+  - [x] 6 prompt headers confirmed
+  - [x] Each prompt includes `Objective` through `Output` in order
+  - [x] README and remediation plan references resolve
+  - [x] Manual doctrine check confirms Codex remains bounded executor/reviewer only
+
+---
+
+## Risk Register
+
+| ID | Risk | Severity | Likelihood | Mitigation | Rollback |
+|----|------|----------|------------|------------|----------|
+| R1 | Pack drifts from workflow governance | Med | Low | README states pack complements canonical workflow docs | Remove/adjust pack references |
+| R2 | Prompts become too broad and invite scope creep | High | Low | Explicit `Allowed files` and `Forbidden` sections in every prompt | Tighten prompts in v1.1 |
+| R3 | Live entrypoint and workflow docs diverge | Med | Low | Defer entrypoint promotion in v1 and state that explicitly | Keep pack doc-only |
+
+---
+
+## Git Strategy
+
+1. `docs(workflow): add Codex directive pack v1`
+2. `docs(workflow): link Codex operator pack from governance docs`
+
+---
+
+## Dependencies
+
+- [x] Existing `.governance/workflow/**` docs available
+- [x] Remediation plan already assigns Codex to mechanical lanes
+- [x] No runtime or entrypoint changes required for v1
+
+---
+
+## Document Status (Slice 25.3)
+
+- [x] Definition of Done defined
+- [x] All phases defined
+- [x] All tasks have acceptance criteria
+- [x] Risk register complete
+- [x] Git strategy defined
+- [x] Dependencies verified
+- [x] Execution complete

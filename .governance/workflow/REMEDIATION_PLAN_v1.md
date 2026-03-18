@@ -15,6 +15,8 @@
 
 **Strategy**: Use Copilot + Claude Code for Weeks 1–2. Reserve Codex for mechanical bulk work starting 3/18.
 
+**Codex operating rule**: When Codex is assigned a slice in this plan, use the bounded prompt frames in [`CODEX_DIRECTIVE_PACK_v1.md`](./CODEX_DIRECTIVE_PACK_v1.md). Codex stays in recon, execution, and review lanes; scope, governance exceptions, architecture, and merge judgment stay with the human operator.
+
 ---
 
 ## AUDIT CALIBRATION (Ground Truth vs. Report)
@@ -194,9 +196,9 @@ The original audit was directionally correct but overstated several claims. Vali
 |-----------|-----------|-----|
 | Interactive component edits | **Copilot** | File context, preview, iterative refinement |
 | Contract test writing | **Copilot** | Needs conversation context, test patterns |
-| Bulk find-and-replace | **Codex** | Parallel file edits, mechanical transforms |
-| Console.log sweep | **Codex** | 200+ locations, mechanical |
-| `any` type fixing | **Codex** | Repetitive, per-file |
+| Bulk find-and-replace | **Codex** | Parallel file edits, mechanical transforms inside a bounded prompt pack |
+| Console.log sweep | **Codex** | 200+ locations, mechanical, and suited to execution-mode proof loops |
+| `any` type fixing | **Codex** | Repetitive, per-file, and safer when constrained to approved files plus proof commands |
 | Backend .NET service impl | **Claude Code** | Large file context, autonomous work |
 | Cross-file refactors | **Claude Code** | Multi-file reasoning |
 | Auth context threading | **Copilot** | Needs understanding of component tree |
@@ -204,6 +206,8 @@ The original audit was directionally correct but overstated several claims. Vali
 | CI/CD workflow edits | **Copilot** | Governance rules, allowed scope |
 | Type definitions | **Copilot** | os-platform/core/types/ is allowed scope |
 | Research/investigation | **Claude Code** | Autonomous exploration |
+
+For Codex task framing, see [`CODEX_DIRECTIVE_PACK_v1.md`](./CODEX_DIRECTIVE_PACK_v1.md) for the standard `Objective` → `Output` operator contract and the TerraFusion-specific recon, execution, and review prompts.
 
 ---
 
