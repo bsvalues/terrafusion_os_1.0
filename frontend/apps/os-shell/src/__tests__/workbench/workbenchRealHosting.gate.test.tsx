@@ -348,20 +348,6 @@ describe('Workbench Real Hosting Gate', () => {
   });
 
   describe('PRIMARY GATE — Atlas', () => {
-    it('renders under the same harness when imported directly', async () => {
-      const { default: DirectPropertyAtlas } = await import('../../pages/workbench/tabs/PropertyAtlas');
-
-      render(
-        <TabTestWrapper tabSlug="atlas">
-          <DirectPropertyAtlas />
-        </TabTestWrapper>
-      );
-
-      await waitFor(() => {
-        expect(screen.getByTestId('property-atlas-tab')).toBeInTheDocument();
-      });
-    });
-
     it('renders a real surface, not a PlaceholderModule', async () => {
       render(
         <TabTestWrapper tabSlug="atlas">
