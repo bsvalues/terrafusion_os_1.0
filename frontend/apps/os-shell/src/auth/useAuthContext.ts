@@ -5,8 +5,12 @@
  * The shell chrome (Window.tsx, Taskbar, etc.) does NOT use this — only feature surfaces.
  */
 
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { useAuth } from './useAuth';
+// Import AuthContext from authContextDef (not AuthProvider) to avoid circular imports.
+// AuthProvider.tsx imports decodeAuthClaims from this file; importing AuthContext
+// from the leaf file breaks that cycle.
+import { AuthContext } from './authContextDef';
 
 export type AuthContextValue = {
   isAuthenticated: boolean;
@@ -93,4 +97,21 @@ export function useAuthContext(): AuthContextValue {
     const claims = decodeAuthClaims(token ?? null);
     return { isAuthenticated, token: token ?? null, ...claims };
   }, [isAuthenticated, token]);
+}
+
+/**
+ * useAuthContextOptional() — returns null instead of throwing when called outside AuthProvider.
+ *
+ * Use only in components that may legitimately render without an auth context
+ * (e.g., Launcher rendered in test harnesses, or shell chrome outside auth boundary).
+ * When null is returned the caller should treat the session as unauthenticated.
+ *
+ * Does NOT call useAuth() — reads AuthContext directly to avoid the throw guard.
+ */
+export function useAuthContextOptional(): AuthContextValue | null {
+  const rawCtx = useContext(AuthContext);
+  if (rawCtx === null) return null;
+  // rawCtx has { token, isAuthenticated } — derive claims the same way useAuthContext does.
+  const claims = decodeAuthClaims(rawCtx.token ?? null);
+  return { isAuthenticated: rawCtx.isAuthenticated, token: rawCtx.token ?? null, ...claims };
 }
