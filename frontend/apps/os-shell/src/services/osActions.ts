@@ -13,6 +13,7 @@
  */
 
 import { createLogger } from '@/hooks/useLogger';
+import type { OsActor } from '@/auth/useAuthContext';
 
 const logger = createLogger('osActions');
 
@@ -76,6 +77,8 @@ export interface OsActionContext {
   parcelIdHash?: string;
   /** Optional tab ID for workbench tab interactions */
   tabId?: string;
+  /** Wave 1: authenticated actor. null = unauthenticated; omitted = pre-Wave-1 caller. */
+  actor?: OsActor | null;
 }
 
 // ============================================================================
@@ -155,6 +158,10 @@ export interface OsActionTracePayload {
   handlerKey?: string;
   /** Optional additional metadata (e.g., tabId for workbench tabs) */
   tabId?: string;
+  /** Wave 1: resolved actor identity for audit trail. Empty string = unauthenticated. */
+  actor?: string;
+  /** Wave 1: county scope for audit trail. Empty string = unknown. */
+  countyId?: string;
 }
 
 export interface OsActionTraceEvent {
@@ -234,13 +241,16 @@ export function isValidOsAction(action: unknown): action is OsAction {
 // Trace Emission
 // ============================================================================
 
-function emitActionTrace(action: OsAction, context: OsActionContext): void {
+function emitActionTrace(action: OsAction, context: OsActionContext, effectiveActor: OsActor | null): void {
   const payload: OsActionTracePayload = {
     actionId: action.id,
     actionType: isNavigationAction(action) ? 'navigation' : 'handler',
     intent: action.intent,
     surface: context.surface,
     suiteId: context.suiteId,
+    // Wave 1: single resolved identity — never split actor across two sources.
+    actor: effectiveActor?.userId ?? '',
+    countyId: effectiveActor?.countyId ?? '',
   };
 
   if (context.moduleId) {
@@ -402,8 +412,17 @@ export function executeOsAction(action: OsAction, context: OsActionContext): voi
     return;
   }
 
+  // Resolve effective actor once — prefer explicit context.actor (Wave 1 callers),
+  // fall back to null for pre-Wave-1 legacy callers.
+  // Never split identity across two sources in the same emit.
+  // TODO Wave1: add getTraceContext() fallback after Task 2A commits
+  const effectiveActor: OsActor | null =
+    context.actor !== undefined
+      ? context.actor   // Wave 1: explicitly threaded
+      : null;           // Legacy: no actor context available yet
+
   // Emit trace event for audit trail
-  emitActionTrace(action, context);
+  emitActionTrace(action, context, effectiveActor);
 
   // Route to appropriate executor
   if (isNavigationAction(action)) {
