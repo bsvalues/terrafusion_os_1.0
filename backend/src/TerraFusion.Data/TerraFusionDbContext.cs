@@ -41,9 +41,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
 
   // GPT/RAG AI Entities (TerraFusion.AI.Entities — registered via OnModelCreatingExtensions
   // hook to avoid circular dependency Data → AI → Data).
-  // Extension method: TerraFusion.AI.Data.GptAiEntityConfigurations.Apply(ModelBuilder)
+  // Extension method: TerraFusion.AI.Data.GptAiEntityConfigurations.Apply(ModelBuilder, string?)
   // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
-  public static Action<ModelBuilder>? OnModelCreatingExtensions { get; set; }
+  // The second parameter receives Database.ProviderName so vector-specific type mapping
+  // is skipped for non-Postgres providers (e.g. InMemory used in unit tests).
+  public static Action<ModelBuilder, string?>? OnModelCreatingExtensions { get; set; }
 
   // Module System Entities
   public DbSet<Module> Modules { get; set; }
@@ -631,7 +633,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
 
     // GPT/RAG AI Entities (Wave 4 — entities in TerraFusion.AI, registered via hook)
     // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
-    OnModelCreatingExtensions?.Invoke(modelBuilder);
+    // Database.ProviderName is available here; pass it so the AI config can skip
+    // vector-specific type mapping when the provider is not Postgres (e.g. InMemory tests).
+    OnModelCreatingExtensions?.Invoke(modelBuilder, Database.ProviderName);
 
     // Configure encryption for sensitive fields
     ConfigureEncryption(modelBuilder);

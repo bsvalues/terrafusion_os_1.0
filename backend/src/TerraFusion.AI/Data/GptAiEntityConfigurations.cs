@@ -1,4 +1,5 @@
-// Wave 4 — GPT/RAG AI Entity EF Configurations
+// Wave 4 — GPT/RAG AI Entity EF Configurations (Post-R1: UseVector + Pgvector.Vector converter)
+using Pgvector;
 // These entity types live in TerraFusion.AI.Entities, which cannot be referenced
 // by TerraFusion.Data directly (circular dep: Data → AI → Data).
 //
@@ -23,12 +24,18 @@ public static class GptAiEntityConfigurations
     /// Wired by Program.cs into TerraFusionDbContext.OnModelCreatingExtensions.
     /// Registers all AI-only entity types without introducing a circular assembly reference.
     /// </summary>
-    public static void Apply(ModelBuilder mb)
+    /// <param name="mb">The model builder.</param>
+    /// <param name="providerName">
+    /// Database.ProviderName from TerraFusionDbContext — used to skip the
+    /// Pgvector.Vector value converter for non-Postgres providers (e.g. InMemory).
+    /// </param>
+    public static void Apply(ModelBuilder mb, string? providerName = null)
     {
+        bool isPostgres = providerName?.Contains("Npgsql", StringComparison.OrdinalIgnoreCase) == true;
         mb.ApplyConfiguration(new GPTMessageConfiguration());
         mb.ApplyConfiguration(new RAGDatasetConfiguration());
         mb.ApplyConfiguration(new RAGDocumentConfiguration());
-        mb.ApplyConfiguration(new RAGEmbeddingConfiguration());
+        mb.ApplyConfiguration(new RAGEmbeddingConfiguration(isPostgres));
         mb.ApplyConfiguration(new GPTUsageMetricConfiguration());
         mb.ApplyConfiguration(new GPTAuditConfiguration());
         mb.ApplyConfiguration(new GPTMarketplaceInstallConfiguration());
@@ -126,6 +133,10 @@ public static class GptAiEntityConfigurations
 
     private sealed class RAGEmbeddingConfiguration : IEntityTypeConfiguration<RAGEmbedding>
     {
+        private readonly bool _isPostgres;
+
+        public RAGEmbeddingConfiguration(bool isPostgres) => _isPostgres = isPostgres;
+
         public void Configure(EntityTypeBuilder<RAGEmbedding> builder)
         {
             builder.HasKey(e => e.Id);
@@ -138,16 +149,26 @@ public static class GptAiEntityConfigurations
             builder.Property(e => e.CreatedAt).IsRequired();
 
             // RAGEmbedding.Embedding stores 1536-dimensional float vectors.
-            // Mapped to PostgreSQL real[] (native float array) so EF migration generates without
-            // requiring the Pgvector.EntityFrameworkCore package. The entity carries
-            // [Column(TypeName = "vector(1536)")] but EF Fluent API takes precedence over attributes.
+            // Post-R1: Pgvector.EntityFrameworkCore + UseVector() registered for Postgres.
+            // Value converter bridges float[] ↔ Pgvector.Vector for EF type mapping.
+            // EnableNativeVectorColumn migration converts real[] → vector(1536) with USING cast.
             //
-            // FOLLOW-ON (Post-R1): Add Pgvector.EntityFrameworkCore, call UseVector() in
-            // DbContextFactory, and run a migration that does:
-            //   ALTER TABLE "RAGEmbeddings" ALTER COLUMN "Embedding" TYPE vector(1536)
-            //   USING "Embedding"::vector(1536);
-            // This enables cosine/L2 distance queries via the pgvector extension.
-            builder.Property(e => e.Embedding).IsRequired().HasColumnType("real[]");
+            // For non-Postgres providers (InMemory used in unit tests) the Pgvector.Vector
+            // store type is unsupported.  In that case we leave Embedding as a plain float[]
+            // column so the InMemory model validation passes.
+            if (_isPostgres)
+            {
+                builder.Property(e => e.Embedding)
+                    .IsRequired()
+                    .HasColumnType("vector(1536)")
+                    .HasConversion(
+                        v => new Vector(v),
+                        v => v.Memory.ToArray());
+            }
+            else
+            {
+                builder.Property(e => e.Embedding).IsRequired();
+            }
 
             builder.HasOne(e => e.Document)
                    .WithMany()

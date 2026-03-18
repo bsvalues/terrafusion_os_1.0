@@ -32,7 +32,10 @@
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
-    <NoWarn>1591</NoWarn>
+    <!-- 1591: missing XML doc; NU1903: NuGet known-vulnerability warning suppressed because
+         AutoMapper 12.0.1 CVE (GHSA-rvv3-g6hj-g44x) has no patched version on nuget.org
+         for the Extensions.DI companion package. Tracked for future remediation. -->
+    <NoWarn>1591;NU1903</NoWarn>
     <!-- Prevent appsettings collision when referenced by TerraFusion.API -->
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>

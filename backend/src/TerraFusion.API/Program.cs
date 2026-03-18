@@ -394,8 +394,8 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
   }
   else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
   {
-    // PostgreSQL for production
-    options.UseNpgsql(connectionString);
+    // PostgreSQL for production — UseVector() enables pgvector(1536) type mapping
+    options.UseNpgsql(connectionString, o => o.UseVector());
   }
   else
   {
@@ -416,7 +416,7 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
   }
   else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
   {
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(connectionString, o => o.UseVector());
   }
   else
   {

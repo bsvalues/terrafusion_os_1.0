@@ -28,15 +28,15 @@
   - ✅ County isolation (Benton-only query returns 0 Yakima rows)
   - ✅ RAGEmbedding `real[]` storage and retrieval
 
-### Embedding Column: real[] Instead of vector(1536)
-`RAGEmbedding.Embedding` is stored as PostgreSQL `real[]` (not `vector(1536)`) because `Pgvector.EntityFrameworkCore` is not in `Directory.Packages.props`. The `[Column(TypeName = "vector(1536)")]` entity attribute is overridden by fluent API `HasColumnType("real[]")` in `GptAiEntityConfigurations.cs`.
-
-**Follow-on (Post-R1):** Add `Pgvector.EntityFrameworkCore`, call `UseVector()` in `TerraFusionDbContextFactory`, and run a migration:
-```sql
-ALTER TABLE "RAGEmbeddings" ALTER COLUMN "Embedding" TYPE vector(1536)
-USING "Embedding"::vector(1536);
-```
-This enables cosine/L2 distance similarity search via pgvector operators.
+### Embedding Column: ✅ Upgraded to vector(1536) (Phase 6, 2026-03-18)
+`RAGEmbedding.Embedding` was stored as `real[]` at R1. Phase 6 of the Post-R1 R3 roadmap
+delivered the full native vector upgrade:
+- `Pgvector.EntityFrameworkCore` 0.2.0 added; `UseVector()` registered on all Npgsql options
+- `EnableNativeVectorColumn` migration applied — `ALTER COLUMN TYPE vector(1536) USING "Embedding"::vector(1536)`
+- `IX_RAGEmbeddings_Embedding_ivfflat` (ivfflat cosine index) created
+- Provider-aware EF config: `HasConversion(float[] ↔ Pgvector.Vector)` skipped for InMemory
+- All 2,810 dotnet tests pass; all 4 frontend gates green
+- Distance queries (`<=>`) and county-scoped nearest-neighbour search are now operational
 
 ### Dev Note: Npgsql SCRAM-SHA-256 via Docker NAT
 `dotnet ef database update` with `--connection` flag failed authentication from host → container via Docker NAT (SCRAM-SHA-256 challenge with pgvector container). Workaround: use `dotnet ef migrations script --idempotent` to generate SQL, then `docker cp` + `psql -f` inside the container. This is a dev environment quirk; production connections use direct network (no Docker NAT layer).
