@@ -4,40 +4,17 @@
  * Choropleth map by neighborhood/area showing equity distribution.
  * Atlas renders the map -- Forge computed the ratios.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import { useAtlasSpatialStore } from '@/stores/atlasSpatialStore';
+import { EQUITY_AREAS as FALLBACK_EQUITY_AREAS } from '@/data/atlasSpatialFixtures';
+import type { EquityArea } from '@/data/atlasSpatialFixtures';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-export interface EquityArea {
-  id: string;
-  name: string;
-  equityRatio: number; // e.g. 0.95 = 95% COD
-  cod: number; // coefficient of dispersion
-  prd: number; // price-related differential
-  parcelCount: number;
-  propertyType: string;
-  center: [number, number];
-}
+export type { EquityArea };
 
 type PropertyTypeFilter = 'All' | 'Residential' | 'Commercial' | 'Industrial' | 'Agricultural';
-
-// ---------------------------------------------------------------------------
-// Demo data
-// ---------------------------------------------------------------------------
-
-const EQUITY_AREAS: EquityArea[] = [
-  { id: 'ea1', name: 'Downtown', equityRatio: 0.96, cod: 12.5, prd: 1.02, parcelCount: 1245, propertyType: 'Commercial', center: [46.23, -119.2] },
-  { id: 'ea2', name: 'Riverside', equityRatio: 0.98, cod: 8.2, prd: 1.01, parcelCount: 3420, propertyType: 'Residential', center: [46.24, -119.21] },
-  { id: 'ea3', name: 'West Hills', equityRatio: 1.03, cod: 10.1, prd: 1.03, parcelCount: 2180, propertyType: 'Residential', center: [46.25, -119.23] },
-  { id: 'ea4', name: 'Eastgate', equityRatio: 0.89, cod: 18.4, prd: 1.08, parcelCount: 890, propertyType: 'Industrial', center: [46.22, -119.18] },
-  { id: 'ea5', name: 'Southridge', equityRatio: 1.01, cod: 7.5, prd: 1.0, parcelCount: 4100, propertyType: 'Residential', center: [46.21, -119.22] },
-  { id: 'ea6', name: 'Northview', equityRatio: 0.93, cod: 14.2, prd: 1.05, parcelCount: 1560, propertyType: 'Residential', center: [46.26, -119.19] },
-  { id: 'ea7', name: 'Farm District', equityRatio: 0.87, cod: 22.0, prd: 1.12, parcelCount: 420, propertyType: 'Agricultural', center: [46.215, -119.25] },
-];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -64,13 +41,26 @@ function equityLabel(ratio: number): string {
 export default function GeoEquityDashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<PropertyTypeFilter>('All');
+  const [isFixture, setIsFixture] = useState(false);
+
+  // Consume from store if available, fall back to fixtures
+  const storeAreas = useAtlasSpatialStore((s) => s.equityAreas);
+  const fetchSpatialData = useAtlasSpatialStore((s) => s.fetchSpatialData);
+  const EQUITY_AREAS = storeAreas.length > 0 ? storeAreas : FALLBACK_EQUITY_AREAS;
+
+  useEffect(() => {
+    fetchSpatialData().then(() => {
+      const areas = useAtlasSpatialStore.getState().equityAreas;
+      setIsFixture(areas.length === 0);
+    });
+  }, [fetchSpatialData]);
 
   const filteredAreas = useMemo(
     () =>
       propertyTypeFilter === 'All'
         ? EQUITY_AREAS
         : EQUITY_AREAS.filter((a) => a.propertyType === propertyTypeFilter),
-    [propertyTypeFilter],
+    [propertyTypeFilter, EQUITY_AREAS],
   );
 
   const selectedArea = useMemo(
@@ -81,7 +71,9 @@ export default function GeoEquityDashboard() {
   const propertyTypes: PropertyTypeFilter[] = ['All', 'Residential', 'Commercial', 'Industrial', 'Agricultural'];
 
   return (
-    <div data-testid="geo-equity-dashboard" className="flex h-full bg-terra-midnight text-white">
+    <div data-testid="geo-equity-dashboard" className="flex flex-col h-full bg-terra-midnight text-white">
+      {isFixture && <DemoDataBanner module="GeoEquity" />}
+      <div className="flex flex-1 overflow-hidden">
       {/* Map */}
       <main className="flex-1 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -246,6 +238,7 @@ export default function GeoEquityDashboard() {
           </Card>
         )}
       </aside>
+      </div>
     </div>
   );
 }
