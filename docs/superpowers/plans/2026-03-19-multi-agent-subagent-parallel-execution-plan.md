@@ -11,6 +11,17 @@ Classification: Docs-only superpowers artifact (bounded planning; no execution a
 - Those files are intentionally excluded from this plan scope.
 - This artifact is limited to `docs/superpowers/plans/**` and does not normalize unrelated dirty files.
 
+## Excluded Dirty File Fingerprints
+
+To preserve proof that unrelated dirty files were not modified by this docs-only slice, record working-tree fingerprints before and after any plan edits.
+
+Pre-flight fingerprint targets:
+- `os-platform/core/pilot/ToolRunner.ts`
+- `os-platform/core/pilot/ToolRunner.js`
+
+Verification rule:
+- If either fingerprint changes during a docs-only slice, hard-stop immediately and classify as scope breach unless explicitly approved by a disjoint write grant.
+
 ## Objective
 
 Define a bounded multi-agent and parallel subagent execution model to move from current governed closure posture to full production go-live readiness for TerraFusion OS and the broader TerraFusion ecosystem.
@@ -40,6 +51,9 @@ Rule: No target-state claim may override active execution truth without explicit
 - Hard-stop on failed gate, scope violation, missing proof, or dependency breach.
 - No implicit scope widening.
 - No edits in unrelated dirty files detected at pre-flight.
+- Docs-only slices may not be blocked by unrelated runtime proof requirements.
+- Every phase must define its own proof surface based on touched files, active dependencies, and gate intent.
+- Excluded dirty files must be fingerprinted before and after the slice when the working tree is pre-dirty.
 
 ## Agent Topology and Lane Ownership
 
@@ -129,20 +143,49 @@ Rules:
 
 ### Phase P4 - Closure Wall and Seal
 
-Required proof minimum:
+Proof model for this superpowers plan is split into two classes:
+
+#### A. Planning-Lane Baseline Proof (required for docs-only slices)
+
+Required:
+- changed-file set is confined to approved allowlist
+- excluded dirty files retain identical fingerprints
+- required artifact bundle exists for the slice
+- checkpoint note records next entry condition
+
+Example commands:
+
+```bash
+git diff --name-only
+shasum -a 256 os-platform/core/pilot/ToolRunner.ts os-platform/core/pilot/ToolRunner.js
+```
+
+Docs-only green definition:
+
+- no unauthorized file touches
+- excluded dirty file fingerprints unchanged
+- artifact bundle complete
+- checkpoint seal written
+
+#### B. Slice-Specific Runtime Proof (required only when a slice touches runtime code)
+
+Runtime proof commands must be declared in that slice's `proof-commands.md` and must be relevant to the touched files and active gate.
+
+Examples:
 
 ```bash
 pnpm run type-check
-node --test os-platform/core/tests/phase83-tools.test.mjs
-```
-
-Optional lane proofs (when applicable):
-
-```bash
 pnpm vitest run <targeted-tests>
+node --test os-platform/core/tests/phase83-tools.test.mjs
 node --test os-platform/core/tests/phase85-tools.test.mjs
 node --test os-platform/core/tests/phase86-toolrunner.test.mjs
 ```
+
+Policy:
+
+- ToolRunner- or tools-specific tests are not universal mandatory proof for every phase.
+- They become mandatory only when the active slice touches those lanes or depends on their contract behavior.
+- No phase may inherit unrelated runtime proof obligations by default.
 
 Outputs:
 
@@ -164,6 +207,19 @@ CP-12 Truth Reconciliation
 
 Policy rule:
 - No downstream phase opens until upstream closure evidence is green and checkpointed.
+
+## Phase Register (Entry / Outputs / Exit Gates)
+
+| Phase | Entry Condition | Required Outputs | Exit Gate |
+|---|---|---|---|
+| CP-12 Truth Reconciliation | Current checkpoint artifacts available | canonical truth ledger, normalized status table, residual-risk register | status conflicts resolved or explicitly labeled |
+| CP-13 Production Gate Matrix Buildout | CP-12 sealed | gate catalog, owners, commands, artifact map | every must-pass gate has proof path |
+| CP-14 Tenant + RBAC + Isolation Closure | CP-13 sealed | tenant-scope matrix, RBAC contract list, isolation proof plan | all critical tenant boundaries covered by tests |
+| CP-15 Workbench/Suite Runtime Completeness Closure | CP-14 sealed | route readiness map, placeholder elimination list, runtime completeness report | every must-use route has production behavior proof |
+| CP-16 Service Registry + Orchestration Activation Closure | CP-15 sealed | registry activation plan, service metadata contract, orchestration checklist | registry active and contract-verified |
+| CP-17 SRE/Restore/DR/Hypercare Proof Pack | CP-16 sealed | monitoring pack, backup/restore runbooks, DR rehearsal evidence, hypercare plan | restore/failover rehearsal passes |
+| CP-18 Security/Compliance Final Seal | CP-17 sealed | security closure packet, residual risk signoff, compliance evidence map | no open criticals; highs explicitly accepted or closed |
+| CP-19 Go-Live Cutover Decision Packet | CP-18 sealed | go-live checklist, rollback plan, launch packet, decision memo | final go/no-go evidence bundle complete |
 
 ## Merge and Order Strategy
 
@@ -235,8 +291,10 @@ Barrier for activation:
 ## Acceptance Criteria (This Artifact)
 
 - Includes pre-flight dirty-tree disclaimer
+- Includes excluded-file fingerprint control for pre-dirty working tree safety
 - Defines parallel agent lanes and ownership
-- Defines dependency graph and merge order strategy
+- Defines dependency graph and per-phase entry/output/exit gates
+- Separates docs-only proof from slice-specific runtime proof
 - Defines proof requirements and artifacts
 - Defines rollback and containment rules
 - Remains docs-only within `docs/superpowers/plans/**`
