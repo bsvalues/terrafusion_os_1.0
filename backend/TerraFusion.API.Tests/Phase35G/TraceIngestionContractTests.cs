@@ -98,25 +98,36 @@ public class TraceIngestionContractTests
         Assert.Equal(5, page.TotalIngested);
     }
 
-    // Test 5: Follow cursor returns remaining events
+    // Test 5: Follow cursor returns only NEW events, no overlap with previous page
     [Fact]
-    public void GetEvents_FollowCursor_ReturnsRemainingEvents()
+    public void GetEvents_FollowCursor_ReturnsRemainingEvents_NoOverlap()
     {
         var svc = CreateService();
 
+        // Ingest 5 events
         for (var i = 0; i < 5; i++)
             svc.Ingest(MakeDto("benton"));
 
+        // First page: 3 most-recent events
         var firstPage = svc.GetRecent(3, null);
+        Assert.Equal(3, firstPage.Events.Count);
         Assert.NotNull(firstPage.NextCursor);
 
-        // After getting 3, get remaining with cursor; since ring buffer returns tail-N events,
-        // using a cursor > 0 should produce a non-null nextCursor pointing to current total
-        var secondPage = svc.GetRecent(500, firstPage.NextCursor);
+        // Ingest 2 more events AFTER capturing the cursor
+        svc.Ingest(MakeDto("benton"));
+        svc.Ingest(MakeDto("benton"));
 
-        // Total ingested is still 5; nextCursor from second page should equal cursor passed in
-        // (no new events), verifying cursor propagation logic
-        Assert.Equal(5, secondPage.TotalIngested);
+        // Follow cursor: should get only the 2 newly ingested events (seq > firstPage cursor)
+        var secondPage = svc.GetRecent(500, firstPage.NextCursor);
+        Assert.Equal(2, secondPage.Events.Count);
+
+        // Verify total ingested is now 7
+        Assert.Equal(7, secondPage.TotalIngested);
+
+        // Critical: no overlap between page 1 and page 2 event IDs
+        var ids1 = firstPage.Events.Select(e => e.Id).ToHashSet();
+        var ids2 = secondPage.Events.Select(e => e.Id).ToHashSet();
+        Assert.Empty(ids1.Intersect(ids2));
     }
 
     // Test 6: GET ?countyId=X returns only county X events
