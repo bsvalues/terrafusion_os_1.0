@@ -9,7 +9,7 @@ public sealed class TraceIngestionService : ITraceIngestionService
 {
     private readonly object _gate = new();
     private readonly int _capacity;
-    private readonly TraceEventDto?[] _buffer;
+    private readonly (long Seq, TraceEventDto Dto)?[] _buffer;
     private readonly ILogger<TraceIngestionService> _logger;
 
     private long _seq;
@@ -21,7 +21,7 @@ public sealed class TraceIngestionService : ITraceIngestionService
         _logger = logger;
         var cap = configuration.GetValue<int>("Tracing:TraceIngestionBufferCapacity", 1000);
         _capacity = Math.Max(100, cap);
-        _buffer = new TraceEventDto?[_capacity];
+        _buffer = new (long Seq, TraceEventDto Dto)?[_capacity];
     }
 
     public long Ingest(TraceEventDto evt)
@@ -36,7 +36,7 @@ public sealed class TraceIngestionService : ITraceIngestionService
 
         lock (_gate)
         {
-            _buffer[_writeIndex] = evt;
+            _buffer[_writeIndex] = (seq, evt);
             _writeIndex = (_writeIndex + 1) % _capacity;
             _count = Math.Min(_capacity, _count + 1);
         }
@@ -49,23 +49,23 @@ public sealed class TraceIngestionService : ITraceIngestionService
         limit = Math.Clamp(limit, 1, 500);
         var afterSeq = ParseCursor(afterCursor);
 
+        var totalIngested = Interlocked.Read(ref _seq); // read outside lock — same pattern as AgentTelemetryService
+
         List<TraceEventDto> events;
         long maxSeq;
-        long totalIngested;
 
         lock (_gate)
         {
-            totalIngested = Interlocked.Read(ref _seq);
-
             events = new List<TraceEventDto>(_count);
             var startIndex = _count == _capacity ? _writeIndex : 0;
 
             for (var i = 0; i < _count; i++)
             {
                 var idx = (startIndex + i) % _capacity;
-                var item = _buffer[idx];
-                if (item is null) continue;
-                events.Add(item);
+                var slot = _buffer[idx];
+                if (slot is null) continue;
+                if (slot.Value.Seq > afterSeq)
+                    events.Add(slot.Value.Dto);
             }
 
             if (events.Count > limit)
@@ -73,7 +73,7 @@ public sealed class TraceIngestionService : ITraceIngestionService
                 events = events.Skip(events.Count - limit).ToList();
             }
 
-            maxSeq = totalIngested;
+            maxSeq = events.Count == 0 ? afterSeq : totalIngested;
         }
 
         var nextCursor = maxSeq > afterSeq ? MakeCursor(maxSeq) : afterCursor;
