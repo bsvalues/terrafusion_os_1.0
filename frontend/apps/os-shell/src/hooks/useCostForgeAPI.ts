@@ -195,9 +195,6 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
 
         // Performance warning for SLA monitoring
         if (duration > 150) {
-          console.warn(
-            `[CostForge API] Performance warning: ${endpoint} took ${duration.toFixed(2)}ms (SLA: <150ms)`
-          );
         }
 
         if (!response.ok) {
@@ -397,7 +394,6 @@ export const useBackendConnection = (baseUrl: string = (getViteEnv().VITE_API_UR
 
       if (healthy) {
         setConnectionAttempts(0);
-        console.log('[TerraFusion] Backend connection established ✓');
       } else {
         throw new Error('Health check failed');
       }
@@ -405,7 +401,6 @@ export const useBackendConnection = (baseUrl: string = (getViteEnv().VITE_API_UR
       setIsConnected(false);
       setConnectionAttempts((prev) => prev + 1);
 
-      console.warn(`[TerraFusion] Connection attempt ${connectionAttempts + 1} failed:`, error);
 
       // Exponential backoff reconnection
       const backoffDelay = Math.min(1000 * Math.pow(2, connectionAttempts), 30000);

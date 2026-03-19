@@ -39,7 +39,6 @@ function getOriginMap(): Map<string, string> {
         originToModuleCache.set(origin, module.id);
       } catch {
         // Invalid URL - skip
-        console.warn(`[ipc/originAllowlist] Invalid URL for module: ${module.id}`);
       }
     }
   }

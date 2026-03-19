@@ -101,7 +101,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
       }
 
       await connectionRef.current.invoke('SubscribeToWorkflow', workflowId, userId, countyId);
-      console.log(`🔄 Subscribed to workflow ${workflowId}`);
     },
     []
   );
@@ -112,7 +111,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
     }
 
     await connectionRef.current.invoke('UnsubscribeFromWorkflow', workflowId);
-    console.log(`🔄 Unsubscribed from workflow ${workflowId}`);
   }, []);
 
   const lockWorkflow = useCallback(
@@ -170,7 +168,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
         connection.on(
           'WorkflowStatus',
           (data: { workflowId: number; runningExecutions: any[]; subscribedAt: string }) => {
-            console.log(`🔄 Workflow ${data.workflowId} status received`);
           }
         );
 
@@ -184,7 +181,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
             startedAt: string;
             status: string;
           }) => {
-            console.log(`▶️ Workflow ${data.workflowId} execution ${data.executionId} started`);
             setState((prev) => {
               const newExecutions = new Map(prev.executions);
               newExecutions.set(data.executionId, {
@@ -238,7 +234,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
             nodeName: string;
             startedAt: string;
           }) => {
-            console.log(`🔵 Node ${data.nodeName} started`);
             setState((prev) => {
               const newNodeExecutions = new Map(prev.nodeExecutions);
               const executionNodes = newNodeExecutions.get(data.executionId) || new Map();
@@ -264,7 +259,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
             result: { output: string; durationMs: number; metadata?: any };
             completedAt: string;
           }) => {
-            console.log(`✅ Node completed in ${data.result.durationMs}ms`);
             setState((prev) => {
               const newNodeExecutions = new Map(prev.nodeExecutions);
               const executionNodes = newNodeExecutions.get(data.executionId);
@@ -327,7 +321,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
             durationMs: number;
             completedAt: string;
           }) => {
-            console.log(`✅ Workflow execution completed in ${data.durationMs}ms`);
             setState((prev) => {
               const newExecutions = new Map(prev.executions);
               const existing = newExecutions.get(data.executionId);
@@ -353,7 +346,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
             reason: string;
             cancelledAt: string;
           }) => {
-            console.log(`⚠️ Workflow execution cancelled: ${data.reason}`);
             setState((prev) => {
               const newExecutions = new Map(prev.executions);
               const existing = newExecutions.get(data.executionId);
@@ -371,7 +363,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
 
         // Workflow locked
         connection.on('WorkflowLocked', (lockInfo: WorkflowLock) => {
-          console.log(`🔒 Workflow locked by ${lockInfo.userName}`);
           setState((prev) => ({
             ...prev,
             workflowLock: lockInfo,
@@ -384,14 +375,10 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
 
         // Lock acquired
         connection.on('LockAcquired', (data: { workflowId: number }) => {
-          console.log(`✅ Lock acquired for workflow ${data.workflowId}`);
         });
 
         // Lock denied
         connection.on('LockDenied', (data: { workflowId: number; currentLock: WorkflowLock }) => {
-          console.warn(
-            `⚠️ Lock denied for workflow ${data.workflowId} - locked by ${data.currentLock.userName}`
-          );
           setState((prev) => ({
             ...prev,
             workflowLock: data.currentLock,
@@ -404,7 +391,6 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
         connection.on(
           'WorkflowUnlocked',
           (data: { workflowId: number; reason?: string; unlockedAt: string }) => {
-            console.log(`🔓 Workflow ${data.workflowId} unlocked`);
             setState((prev) => ({
               ...prev,
               workflowLock: null,

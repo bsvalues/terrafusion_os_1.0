@@ -51,7 +51,6 @@ function emitAuditEvent(
     timestamp: new Date().toISOString(),
   };
   // eslint-disable-next-line no-console
-  console.info('[TerraTrace] CoefficientPreview audit event:', evt);
   return evt;
 }
 

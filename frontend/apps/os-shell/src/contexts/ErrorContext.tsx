@@ -189,7 +189,6 @@ const sendErrorToMonitoring = async (error: ErrorInfo) => {
       }),
     });
   } catch (monitoringError) {
-    console.warn('Failed to send error to monitoring:', monitoringError);
   }
 };
 

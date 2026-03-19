@@ -592,15 +592,12 @@ function ConfigSwitch({ label, description, checked, onChange }: ConfigSwitchPro
 function validateConfiguration(config: CodexConfiguration): boolean {
   // Divine constants validation
   if (config.foundationMax !== 12.0) {
-    console.warn('Foundation max should be 12.0 (sacred geometry)');
   }
 
   if (config.amplificationSafeguard !== 666.0) {
-    console.warn('Amplification safeguard should be 666.0');
   }
 
   if (Math.abs(config.amplificationScale - 55.5) > 0.1) {
-    console.warn('Amplification scale should be 55.5 (666 / 12)');
   }
 
   // Threshold validation

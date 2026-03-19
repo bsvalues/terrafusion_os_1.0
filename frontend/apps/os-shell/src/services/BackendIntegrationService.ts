@@ -49,13 +49,11 @@ export class BackendIntegrationService {
    * Initialize backend connection and verify system health
    */
   async initialize(): Promise<{ success: boolean; mockMode: boolean; healthStatus: SystemHealth }> {
-    console.log('BACKEND INTEGRATION: Connecting to Terrafusion API...');
 
     try {
       const healthCheck = await this.performHealthCheck();
 
       if (healthCheck.backend_connected) {
-        console.log('BACKEND CONNECTED: Production APIs active');
         return {
           success: true,
           mockMode: false,
@@ -211,15 +209,12 @@ export class BackendIntegrationService {
    * Attempt to reconnect to backend
    */
   async reconnect(): Promise<boolean> {
-    console.log('RECONNECTING: Attempting backend reconnection...');
 
     const result = await this.initialize();
 
     if (result.success) {
-      console.log('RECONNECTION SUCCESS: Backend now available');
       return true;
     } else {
-      console.log('RECONNECTION FAILED: Backend still unavailable');
       return false;
     }
   }

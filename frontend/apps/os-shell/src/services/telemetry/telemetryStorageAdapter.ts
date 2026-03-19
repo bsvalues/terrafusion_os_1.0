@@ -329,7 +329,6 @@ export function getStorageAdapter(): TelemetryStorageAdapter {
     defaultAdapter = createIndexedDBAdapter();
   } else {
     // Fallback to in-memory (SSR, test environments)
-    console.warn('[Telemetry] IndexedDB not available, using in-memory adapter');
     defaultAdapter = createMemoryAdapter();
   }
 

@@ -217,7 +217,6 @@ export class DesktopErrorBoundary extends Component<
       // Clear sessionStorage too
       sessionStorage.clear();
     } catch (e) {
-      console.warn('Failed to clear storage:', e);
     }
     
     // Reload the page

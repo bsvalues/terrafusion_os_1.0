@@ -104,12 +104,10 @@ export function useQuantumPerformance() {
 
         entries.forEach((entry) => {
           if (entry.entryType === 'paint' && entry.name === 'first-contentful-paint') {
-            console.log(`🎨 TerraFusion First Paint: ${entry.startTime.toFixed(2)}ms`);
           }
 
           if (entry.entryType === 'layout-shift') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any -- LayoutShift.value is not in TypeScript's PerformanceEntry lib
-            console.warn(`⚠️ Layout Shift Detected: ${(entry as any).value}`);
           }
         });
       });
@@ -117,7 +115,6 @@ export function useQuantumPerformance() {
       try {
         performanceObserver.current.observe({ entryTypes: ['paint', 'layout-shift'] });
       } catch (e) {
-        console.warn('Performance Observer not fully supported');
       }
     }
 
@@ -154,7 +151,6 @@ export function useQuantumPerformance() {
     if (animationFps < 45 || renderTime > 20) {
       document.documentElement.style.setProperty('--animation-duration', '0.1s');
       document.documentElement.style.setProperty('--blur-intensity', '5px');
-      console.log('🔧 TerraFusion: Optimizing for performance');
     }
 
     // Memory cleanup
@@ -164,7 +160,6 @@ export function useQuantumPerformance() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- window.gc() is non-standard V8 GC API, not in TypeScript lib
         (window as any).gc();
       }
-      console.log('🧹 TerraFusion: Memory optimization triggered');
     }
   }, [metrics]);
 

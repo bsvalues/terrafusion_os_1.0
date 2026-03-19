@@ -169,7 +169,6 @@ class TerraFusionEliteAPIService {
           };
         }
       } catch (error) {
-        console.log('🏛️ TerraFusion: Backend unavailable, using elite simulation mode');
       }
     }
 

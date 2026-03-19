@@ -265,7 +265,6 @@ export const StatisticalValidationWorkbench: React.FC = () => {
       const data = await response.json();
       setComplianceMetrics(data);
     } catch (error) {
-      console.error('IAAO compliance validation failed:', error);
     } finally {
       setIsValidating(false);
     }
@@ -286,7 +285,6 @@ export const StatisticalValidationWorkbench: React.FC = () => {
       const data = await response.json();
       setSalesRatioAnalysis(data.analyses);
     } catch (error) {
-      console.error('Sales ratio analysis failed:', error);
     }
   }, [selectedPeriod]);
 
@@ -306,7 +304,6 @@ export const StatisticalValidationWorkbench: React.FC = () => {
       const data = await response.json();
       setAccuracyTimeSeries(data.timeSeries);
     } catch (error) {
-      console.error('Time series loading failed:', error);
     }
   }, [selectedPropertyType]);
 
@@ -325,7 +322,6 @@ export const StatisticalValidationWorkbench: React.FC = () => {
       const data = await response.json();
       setCertificationAnalysis(data);
     } catch (error) {
-      console.error('Certification analysis failed:', error);
     }
   }, [selectedPeriod, targetCertificationLevel]);
 
@@ -347,7 +343,6 @@ export const StatisticalValidationWorkbench: React.FC = () => {
       const data = await response.json();
       setComplianceReport(data);
     } catch (error) {
-      console.error('Report generation failed:', error);
     }
   }, [selectedPeriod]);
 

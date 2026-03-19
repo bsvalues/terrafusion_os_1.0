@@ -87,7 +87,6 @@ class FrontendPerformanceService {
         longTaskObserver.observe({ entryTypes: ['longtask'] });
         this.observers.push(longTaskObserver);
       } catch (e) {
-        console.warn('Long task tracking not supported');
       }
     }
 
@@ -102,7 +101,6 @@ class FrontendPerformanceService {
         resourceObserver.observe({ entryTypes: ['resource'] });
         this.observers.push(resourceObserver);
       } catch (e) {
-        console.warn('Resource timing tracking not supported');
       }
     }
 
@@ -116,7 +114,6 @@ class FrontendPerformanceService {
       navigationObserver.observe({ entryTypes: ['navigation'] });
       this.observers.push(navigationObserver);
     } catch (e) {
-      console.warn('Navigation timing tracking not supported');
     }
 
     // Paint timing observer
@@ -129,12 +126,10 @@ class FrontendPerformanceService {
       paintObserver.observe({ entryTypes: ['paint'] });
       this.observers.push(paintObserver);
     } catch (e) {
-      console.warn('Paint timing tracking not supported');
     }
   }
 
   private trackLongTask(entry: PerformanceEntry) {
-    console.warn(`Long task detected: ${entry.duration}ms at ${entry.startTime}`);
 
     // Report long tasks to analytics
     this.reportMetric('longtask', {
@@ -149,7 +144,6 @@ class FrontendPerformanceService {
     const loadTime = entry.responseEnd - entry.startTime;
     if (loadTime > 1000) {
       // Resources taking more than 1 second
-      console.warn(`Slow resource: ${entry.name} took ${loadTime}ms`);
 
       this.reportMetric('slow-resource', {
         name: entry.name,
@@ -299,7 +293,6 @@ class FrontendPerformanceService {
       });
     } catch (error) {
       // Fail silently for performance reporting
-      console.debug('Failed to report performance metric:', error);
     }
   }
 

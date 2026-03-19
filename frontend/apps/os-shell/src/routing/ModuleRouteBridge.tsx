@@ -268,7 +268,6 @@ export const ModuleRouteBridge: React.FC<ModuleRouteBridgeProps> = ({ className 
       })
       .catch((error) => {
         // Log error but don't crash - orchestrator handles gracefully
-        console.warn('Module activation via route failed:', error);
         setBridgeState('not-found');
       });
 

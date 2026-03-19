@@ -142,7 +142,6 @@ export const useErrorHandler = () => {
             return null;
           }
 
-          console.warn(`⚠️ Retry attempt ${attempt}/${maxRetries} failed:`, error.message);
           await new Promise((resolve) => setTimeout(resolve, delay * attempt)); // Exponential backoff
         }
       }
@@ -193,7 +192,6 @@ const reportToMonitoring = async (errorInfo: ErrorInfo) => {
       body: JSON.stringify(errorInfo),
     });
   } catch (reportingError) {
-    console.warn('Failed to report error to monitoring service:', reportingError);
   }
 };
 
