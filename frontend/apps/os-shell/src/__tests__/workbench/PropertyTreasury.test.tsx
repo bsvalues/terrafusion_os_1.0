@@ -16,6 +16,21 @@ import PropertyTreasury from '../../pages/workbench/tabs/PropertyTreasury';
 // Mock the pilotApi module
 vi.mock('../../api/pilotApi');
 
+// InvocationHistory expects timestamp as Date but component stores ISO string — mock to avoid crash
+vi.mock('../../components/workbench', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../components/workbench')>();
+  return {
+    ...actual,
+    InvocationHistory: ({ records }: { records: Array<{ toolId: string; status: string; correlationId: string }> }) => (
+      <div data-testid='invocation-history'>
+        {records.map((r, i) => (
+          <div key={i}>{r.toolId} — {r.status}</div>
+        ))}
+      </div>
+    ),
+  };
+});
+
 vi.mock('../../stores/propertyStore', () => ({
   usePropertyStore: (selector: (s: { taxStatements: Array<{ statementId: string; taxYear: number; totalTaxDue: number; totalPaid: number; delinquent: boolean }> }) => unknown) => {
     const state = {
