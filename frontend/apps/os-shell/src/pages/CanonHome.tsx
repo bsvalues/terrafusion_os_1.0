@@ -106,6 +106,14 @@ import { StandaloneHomeShell } from '../components/standalone';
 import '../styles/canon-ide.css';
 import '../styles/canon.css';
 import { LiquidPanel } from '../ui/materials';
+import { explainContext } from '../api/explainApi';
+import {
+  generateCorrelationId,
+  emitToolInvoked,
+  emitToolSucceeded,
+  emitToolFailed,
+  getTraceContext,
+} from '../services/terraTrace';
 
 // ============================================================================
 // Workspace File types
@@ -803,6 +811,27 @@ function CanonContent(): React.ReactElement {
     refreshGitStatus();
   }, [activeFilePath, activeFileId, notify]);
 
+  /** Explain the active file context via TerraPilot Muse (read-only). */
+  const handleCanonExplain = useCallback(async () => {
+    const { countyId } = getTraceContext();
+    const correlationId = generateCorrelationId();
+    const contextId = activeFilePath ?? 'canon';
+    emitToolInvoked({ suite: 'os', correlationId, countyId, inputSummary: `canon.explain:${contextId}`, risk: 'read_only' });
+    try {
+      const result = await explainContext({
+        contextType: 'TerraCanon',
+        contextId,
+        metadata: { filePath: activeFilePath },
+      });
+      emitToolSucceeded({ suite: 'os', correlationId, countyId, outputSummary: `explained:${contextId}` });
+      notify(result.explanation?.slice(0, 120) ?? 'Explanation ready', 'success');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: message });
+      notify(`Explain failed: ${message}`, 'error');
+    }
+  }, [activeFilePath, notify]);
+
   /** Create a new file on disk and open it in the editor. */
   const handleNewFile = useCallback(
     async (filePath: string) => {
@@ -1456,6 +1485,12 @@ function CanonContent(): React.ReactElement {
         label: 'Select to Bracket (Ctrl+Shift+\\)',
         group: 'Multi-Cursor',
         onRun: () => { canonEditorRef.current?.selectToBracket(); },
+      },
+      {
+        id: 'explain-active-file',
+        label: 'Explain with Pilot (Muse)',
+        group: 'AI',
+        onRun: () => { void handleCanonExplain(); },
       },
     ],
     [] // eslint-disable-line react-hooks/exhaustive-deps

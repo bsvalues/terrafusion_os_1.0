@@ -16,10 +16,10 @@
 | Field | Value |
 |-------|-------|
 | **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
-| **Phase** | **Phase 35-D CLOSED** — TerraCanon recon synthesized into bounded charter; implementation remains gated |
-| **Task** | Lane 1 debt sweep closed; Lane 2 recon closed with charter; awaiting founder acceptance to open 35-E |
-| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 recon CLOSED, ⛔ Lane 2 implementation gated on charter acceptance, ⛔ Lane 3 gated on `GATE-35-2` |
-| **Latest Commit** | `a5e5f758a` (current HEAD baseline at ledger update time) |
+| **Phase** | **Phase 35-E CLOSED** — TerraCanon trace hardening + explain binding implemented |
+| **Task** | Lane 1 CLOSED; Lane 2 CLOSED (recon + implementation); Lane 3 gated on `GATE-35-2` |
+| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, ⛔ Lane 3 gated on `GATE-35-2` |
+| **Latest Commit** | `e78d1262c` (current HEAD at 35-E closure) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -48,7 +48,7 @@
 | Lane | Authorization |
 |------|--------------|
 | **Lane 1 — Debt Sweep** (35-A, 35-B, 35-C) | ✅ OPEN — founder go 2026-03-19 |
-| **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | 🟡 `GATE-35-1` consumed; 35-D recon CLOSED; 35-E still gated pending founder acceptance of TerraCanon charter |
+| **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | � CLOSED — 35-D recon + charter done; 35-E TC Phase 1 + 2 implemented and proven |
 | **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | ⛔ GATED — requires explicit `GATE-35-2` after CP-35-C |
 
 **Scope authorized for Lane 1:**
@@ -59,6 +59,38 @@
 **Charter document:** `docs/superpowers/plans/2026-03-19-slice35-debt-terracanon-aiswarm.md`
 **TerraCanon charter output:** `docs/superpowers/plans/2026-03-19-terracanon-charter.md`
 **Plan reference:** plan.md Slice 35
+
+## CP-35-E — TerraCanon TC Phase 1 + TC Phase 2 — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: post-r3/w5f-registry-edge-cleanup  
+**Commit baseline**: `e78d1262c`
+
+### Verdict: PASS — GREEN (bounded implementation + proof wall)
+
+**What closed:**
+- **TC Phase 1 (Trace hardening)**: Wired canonical TerraTrace helpers (`emitToolInvoked`, `emitToolSucceeded`, `emitToolFailed`, `emitArtifactCreated`) into all 5 TerraCanon file service functions in `canonFs.ts` — following the `pilotApi.ts` service-layer pattern established in CP-W9-1.
+  - `fetchReadFile`, `writeCanonFile`, `createCanonFile`, `deleteCanonFile`, `renameCanonFile` — all emit invoked→result pairs with `suite: 'os'` and county-scoped context.
+  - `createCanonFile` additionally emits `artifact_created` on success.
+- **TC Phase 2 (AI integration hardening)**: Added `handleCanonExplain` callback and `explain-active-file` command palette entry to `CanonHome.tsx`.
+  - Calls `explainContext()` from `explainApi.ts` with `contextType: 'TerraCanon'` and active file as `contextId`.
+  - Emits TerraTrace `tool_invoked → tool_succeeded/failed` pair (risk: `read_only`).
+  - Available via Canon command palette: `Explain with Pilot (Muse)` in the `AI` group.
+
+**Evidence artifacts:**
+- `frontend/apps/os-shell/src/api/canonFs.ts` — trace wiring in all 5 file action functions
+- `frontend/apps/os-shell/src/pages/CanonHome.tsx` — `handleCanonExplain` + palette entry
+- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonTrace.contract.test.ts` — 10/10 GATES GREEN
+
+**Proof gate results:**
+- ✅ `pnpm vitest run '.../TerraCanonTrace.contract.test.ts'` — 10/10 tests pass
+- ✅ `pnpm run type-check` — clean (no errors)
+- ✅ `node --test os-platform/core/tests/phase83-tools.test.mjs` — 56/56 pass
+- ✅ Trace suite regression: `__tests__/trace/` — 39/39 pass
+
+**Classification:** Implemented bounded integration + hardening slice (no new execution capabilities, no hardcoded ports)
+
+---
 
 ## CP-35-D — TerraCanon Recon + Charter Synthesis — CLOSED ✅
 
@@ -1008,8 +1040,9 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 16 | Slice 35 / Phase 35-B | WF-2: console noise sweep 724 → ≤ 200 (REMOVE/PROMOTE rules) | Done — count reduced to `197` |
 | ✅ 17 | Slice 35 / Phase 35-C | IV-1/IV-2: wire income valuation persistence + archive IncomeForgeModule orphan | Done — IV-1 already wired/proven, IV-2 archived in `legacy/IncomeForge.archived.tsx` |
 | ✅ 18 | Slice 35 / Phase 35-D | TerraCanon TC-A..TC-G recon + bounded charter synthesis | Done — `docs/superpowers/plans/2026-03-19-terracanon-charter.md` |
-| ⛔ 19 | Gate | Founder acceptance of TerraCanon charter (opens 35-E implementation) | CP-35-D closed |
-| ⛔ 20 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | CP-35-C closed |
+| ✅ 19 | Gate | Founder acceptance of TerraCanon charter (opens 35-E implementation) | Done — `go` signal received 2026-03-19 |
+| ✅ 20 | Phase 35-E | TerraCanon TC Phase 1 + TC Phase 2 implementation | Done — canonFs.ts trace wiring + CanonHome.tsx explain command |
+| ⛔ 21 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | CP-35-C closed |
 
 ---
 
