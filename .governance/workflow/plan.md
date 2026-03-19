@@ -2226,3 +2226,213 @@ pnpm test
 ```
 
 **Rule:** If the proof lane is docs-first and no product files have changed yet, log that honestly. No confetti-driven fake green.
+
+---
+
+# Phase 4 Execution — Wave 3A: Standalone Suite Homes Completion
+
+> **Status:** AWAITING FOUNDER GO
+> **Entry gate:** CP-W0-1 closed ✅
+> **Checkpoint on close:** CP-W3-3
+
+---
+
+## Phase 4 Charter
+
+**Objective:**
+Prove that every suite home (Forge, Atlas, Dais, Dossier, GPT) meets the "honest home"
+definition: no hardcoded fixture data in production paths, canonical route wired, backend
+service confirmed reachable or explicit blocker recorded, no silent TODO-wired-to-real-API.
+
+**Known baseline (pre-execution recon, 2026-03-18):**
+- Canonical routes wired in `Router.tsx`: `/forge` `/atlas` `/dais` `/dossier` `/gpt` ✅
+- Suite home files exist: `ForgeSuiteHome.tsx` (111L) · `AtlasSuiteHome.tsx` (94L) · `DaisSuiteHome.tsx` (122L) · `DossierSuiteHome.tsx` (88L) · `GptSuiteHome.tsx` (300L)
+- Fixture signal scan (hardcoded/fixture/TODO wire/mock data/fake): **0 hits** across all 5
+- API signal scan (fetch/useQuery/axios/service): **0 hits** across all 5
+- Interpretation: suite homes may be blank shells that render without error but make no real service calls — this is what Phase B must verify per suite
+
+**Scope:**
+- 5 suite home files listed above
+- Their direct service modules (per lane: `forgeAPI.ts`, `atlasAPI.ts`, `daisAPI.ts`, `dossierAPI.ts`, `gptAPI.ts` if they exist)
+- Their direct test files if new tests are needed
+- No cross-suite changes
+- No Property Workbench changes
+- No auth redesign
+
+**Forbidden in this phase:**
+- `**/ARCHIVE/**`
+- `specialized/**`, `applications/**`
+- `os-platform/ai-systems/ai-swarm/**`
+- Wave 0 debt cleanup (belongs to Phase 5+)
+- Any workbench tab files
+
+**Success criteria (per suite — all 5 must pass):**
+1. Suite home renders without hardcoded fixture data in production code path
+2. Canonical route is confirmed wired (already true, must remain true after any edits)
+3. Backend service is confirmed reachable OR an explicit, named blocker is recorded in the proof wall
+4. No `TODO: wire to real API` passing silently in any test for this suite
+
+**Proof commands:**
+```
+pnpm run type-check
+node --test os-platform/core/tests/phase83-tools.test.mjs
+```
+
+**Closure artifact:** New `CP-W3-3` section in `progress.md` with per-suite honesty verdict.
+
+---
+
+## Multi-Agent Parallel Execution Model
+
+```
+Phase A  — Orchestrator reads charter, confirms scope, issues agent invocation plan
+             │
+             ▼
+Phase B  — PARALLEL (10 subagents, 5 suite pairs)
+             │
+             ├── Suite: TerraForge ─────┬── @tf-contract-truth  (truth subagent F)
+             │                          └── @tf-proof-audit     (proof subagent F)
+             │
+             ├── Suite: TerraAtlas ─────┬── @tf-contract-truth  (truth subagent A)
+             │                          └── @tf-proof-audit     (proof subagent A)
+             │
+             ├── Suite: TerraDais ──────┬── @tf-contract-truth  (truth subagent D)
+             │                          └── @tf-proof-audit     (proof subagent D)
+             │
+             ├── Suite: TerraDossier ───┬── @tf-contract-truth  (truth subagent O)
+             │                          └── @tf-proof-audit     (proof subagent O)
+             │
+             └── Suite: TerraGPT ───────┬── @tf-contract-truth  (truth subagent G)
+                                        └── @tf-proof-audit     (proof subagent G)
+             │
+             ▼
+Phase B Sync — Orchestrator collects all 10 subagent reports
+               Builds per-suite verdict table (HONEST | BLOCKER RECORDED | GAP FOUND)
+               │
+               ├── All 5 HONEST → skip Phase C, go directly to Phase E
+               └── Any GAP FOUND → open Phase C for that specific suite only
+             │
+             ▼
+Phase C  — SEQUENTIAL (one suite at a time)
+             @tf-writer opens only when Phase B identifies a gap
+             Writes only the allowed files for the failing suite
+             Does not open next suite until current suite is GREEN
+             │
+             ▼
+Phase D  — Re-verification pass (if Phase C made any writes)
+             @tf-proof-audit re-runs the affected suite's proof criteria
+             type-check + phase83 gates must pass before Phase E
+             │
+             ▼
+Phase E  — @tf-checkpoint records CP-W3-3
+             Hard stop reinstated immediately
+             Phase 5 requires new explicit founder go
+```
+
+---
+
+## Phase B — Subagent Invocation Specs
+
+All 10 subagents run in a single parallel batch. They are read-only. They do not write files.
+
+### @tf-contract-truth Subagent (per suite)
+
+**Invocation (spawn one per suite):**
+
+```
+Agent: @tf-contract-truth
+Task:  Suite <NAME> backend route reachability audit
+
+Read these files:
+  - frontend/apps/os-shell/src/pages/suites/<Name>SuiteHome.tsx
+  - frontend/apps/os-shell/src/services/<suiteName>API.ts (if exists)
+  - frontend/apps/os-shell/src/services/suites/<suiteName>Service.ts (if exists)
+  - Backend controller: search for <SuiteName>Controller in backend/src/
+  - Router.tsx (confirm canonical route is wired)
+
+Report:
+  1. Is the canonical /<slug> route wired in Router.tsx? YES/NO
+  2. Does the suite home make any real service calls? List them or state NONE.
+  3. Is there a backend controller for this suite? Name it or state MISSING.
+  4. Are there any 'TODO: wire to real API' or silent fixture patterns? List or state NONE.
+  5. VERDICT: HONEST | BLOCKER:<description> | GAP:<description>
+```
+
+### @tf-proof-audit Subagent (per suite)
+
+**Invocation (spawn one per suite):**
+
+```
+Agent: @tf-proof-audit
+Task:  Suite <NAME> proof wall design — RED→GREEN criteria
+
+Read these files:
+  - frontend/apps/os-shell/src/pages/suites/<Name>SuiteHome.tsx
+  - frontend/apps/os-shell/src/__tests__/suites/ (relevant test files for this suite)
+  - frontend/apps/os-shell/src/services/<suiteName>API.ts (if exists)
+
+Report:
+  1. Current test coverage for this suite home: list test files or state NONE.
+  2. Does any existing test assert real service wiring? YES/NO, which.
+  3. RED criteria: what specific assertion would expose a fake/blank shell?
+  4. GREEN criteria: what must be true for this suite to pass the honesty definition?
+  5. Does @tf-writer need to create/modify any file to close the gap? YES (list) / NO.
+  6. VERDICT: PASS (already honest) | NEEDS_PROOF_TEST | NEEDS_WIRING | NEEDS_BOTH
+```
+
+---
+
+## Phase B Sync — Per-Suite Verdict Table (to be filled during execution)
+
+| Suite | Route wired | Backend confirmed | Service calls present | Silent fixture | `@tf-contract-truth` | `@tf-proof-audit` | Final verdict |
+|-------|------------|------------------|-----------------------|---------------|----------------------|-------------------|---------------|
+| TerraForge | ✅ (pre-recon) | TBD | TBD | TBD | TBD | TBD | TBD |
+| TerraAtlas | ✅ (pre-recon) | TBD | TBD | TBD | TBD | TBD | TBD |
+| TerraDais | ✅ (pre-recon) | TBD | TBD | TBD | TBD | TBD | TBD |
+| TerraDossier | ✅ (pre-recon) | TBD | TBD | TBD | TBD | TBD | TBD |
+| TerraGPT | ✅ (pre-recon) | TBD | TBD | TBD | TBD | TBD | TBD |
+
+---
+
+## CP-W3-3 Proof Wall
+
+> **This wall must be GREEN before Phase 4 is closed. `@tf-proof-audit` owns this checklist.**
+> **One row per suite. Any FAIL = phase does not close.**
+
+### Per-suite honesty checklist
+
+| Suite | Canonical route wired | No hardcoded fixture in prod | Backend confirmed / blocker recorded | No silent TODO | Tests honest | VERDICT |
+|-------|-----------------------|------------------------------|--------------------------------------|----------------|--------------|---------|
+| TerraForge | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| TerraAtlas | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| TerraDais | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| TerraDossier | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| TerraGPT | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+
+### Gate commands (must pass before CP-W3-3 is recorded)
+
+- [ ] `pnpm run type-check` — clean
+- [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` — 56/56
+
+### Fail conditions (any one = phase does not close)
+
+- Any suite home with hardcoded fixture data in the production render path
+- Any suite without a named backend controller OR a named blocker recorded in this proof wall
+- Any test that silently asserts a fake service response as if it were real wiring
+- Any new cross-suite import introduced by `@tf-writer`
+- Any forbidden-path file touched
+- type-check errors
+- phase83 regression below 56/56
+
+---
+
+## Write Authority for Phase 4
+
+| Agent | Authorized writes |
+|-------|------------------|
+| `@tf-writer` | `frontend/apps/os-shell/src/pages/suites/<Name>SuiteHome.tsx` (only if gap found) · matching service file · matching test file · no other files |
+| `@tf-checkpoint` | `progress.md` (CP-W3-3 closure section only) |
+| All other agents | Read-only. No file writes. |
+
+**Rule:** `@tf-writer` does not open a file until `@tf-contract-truth` AND `@tf-proof-audit`
+have both returned a non-PASS verdict for that specific suite. One suite at a time. No bulk edits.
