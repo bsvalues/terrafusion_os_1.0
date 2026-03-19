@@ -19,7 +19,7 @@
 | **Phase** | **Phase 35-G CLOSED** — CP-35-G-1/2/3 delivered and sealed |
 | **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 CLOSED |
 | **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟢 Lane 3 CLOSED |
-| **Latest Commit** | `f3196d528` (Phase 35-G seal: ingestion + rate limiter + observability bridge) |
+| **Latest Commit** | `288f03558` (Workflow alignment: Phase 35-G sealed status reconciled) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
