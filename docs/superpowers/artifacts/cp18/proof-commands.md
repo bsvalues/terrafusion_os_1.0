@@ -14,9 +14,9 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 ## Targeted Security/Compliance Checks
 
 ```bash
-<cp18-security-closure-check-command>
-<cp18-compliance-evidence-validation-command>
-<cp18-vulnerability-register-verification-command>
+pnpm run security:scan
+pnpm run validate:compliance
+pnpm run ci:dependency-scope-quarantine:gate
 ```
 
 ## Conditional Commands
