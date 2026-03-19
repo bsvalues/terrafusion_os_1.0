@@ -7,6 +7,7 @@
 * **Date:** 2026-03-18
 * **Status:** v1, TerraFusion-specific, documentation-only
 * **Scope:** Workflow guidance only; no promotion into `.github/AGENT_ENTRYPOINT.md` in this version
+* **Related wrapper:** [`COFOUNDER_EXECUTION_PROMPT_v1.md`](./COFOUNDER_EXECUTION_PROMPT_v1.md) for single-slice implementation sessions that reuse this pack's contract
 
 ---
 

@@ -9,10 +9,10 @@
  */
 
 import React from 'react';
-import type { CountyAggregateStats } from '../../../types/domain';
+import type { DaisOperationalStats } from '../../pages/suites/daisOperationalStats';
 
 interface ManagementDashboardPanelProps {
-  stats: CountyAggregateStats | null;
+  stats: DaisOperationalStats | null;
 }
 
 export default function ManagementDashboardPanel({ stats }: ManagementDashboardPanelProps) {

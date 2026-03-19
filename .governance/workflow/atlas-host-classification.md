@@ -2,7 +2,7 @@
 
 ## Status
 
-Phase 2 is closed. The original Atlas label was stale.
+Phase 2 is closed via bounded real-host harness stabilization. The original Atlas label was stale.
 
 ## Final Evidence
 
@@ -15,7 +15,7 @@ Phase 2 is closed. The original Atlas label was stale.
 
 ## Final Classification
 
-- **B. lazy import/export resolution defect** in the real-host harness, with the stale Atlas label replaced by the actual Dais host path.
+- **B. bounded lazy-host harness defect** in the real-host harness, with the stale Atlas label replaced by the actual Dais host path.
 - **Not C:** no real host regression was identified in `PropertyAtlas.tsx`.
 - **Not A as primary closure:** the issue closed as a bounded lazy-host harness defect, not as an unresolved provider gap.
 
