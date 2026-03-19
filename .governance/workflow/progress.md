@@ -15,11 +15,37 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 26 — Phase 4: Wave 3A — Standalone Suite Homes Completion** |
-| **Phase** | Phase 4 — **CP-W3-3 CLOSED** ✅ |
-| **Task** | All 5 suite homes verified honest; proof tests passing 12/12; phase83 56/56 |
+| **Slice** | **Slice 26 — Phase 5: Wave 3B — Property Workbench Completeness** |
+| **Phase** | Phase 5 — **CP-W3-4 CLOSED** ✅ |
+| **Task** | Workbench Tier-0 surfaces verified complete: ContextRibbon, SuiteCompass, BadgeProvider API, QuickActions, all 5 work modes; 274/274 workbench tests |
 | **Status** | ✅ COMPLETE — hard stop reinstated |
-| **Latest Commit** | `40c0582b1` + Phase C+D edits (pending commit) |
+| **Latest Commit** | pending |
+
+## Phase 5 — CP-W3-4 CLOSED — 2026-03-18
+
+### Workbench Tier-0 Completeness Verdict
+
+| Surface | Verdict | Notes |
+|---------|---------|-------|
+| PropertyWorkbench.tsx (route-based) | ✅ COMPLETE | ContextRibbon, SuiteCompass, BadgeProviders, QuickActions, all 5 work modes, auth, TerraTrace wired |
+| PropertyWorkbenchWindow.tsx (window adapter) | ✅ COMPLETE | Identical wiring to route-based; pre-existing |
+| workbenchTabContext.tsx | ✅ COMPLETE | Dual-mode hook (Window adapter + Router Outlet) |
+| BadgeProvider API | ✅ COMPLETE | 4 providers: forge, atlas, dais, dossier |
+| QuickAction Providers | ✅ COMPLETE | Mode-aware: valuation→"Run Comps", admin→"New Workflow", case→"New Packet" |
+| WorkModeSelector | ✅ COMPLETE | 5 modes: overview · valuation · mapping · admin · case |
+
+### Fix Applied
+- `services/suites/dossierService.ts` — Added `Array.isArray` guards at API boundary for `getDocuments`, `getEvidence`, `getPackets`, `getNarratives` (defensive against `{}` from test mock returning non-array)
+
+### Gates
+- `pnpm vitest run frontend/apps/os-shell/src/__tests__/workbench/` → **274/274 PASS**
+- `node --test os-platform/core/tests/phase83-tools.test.mjs` → **56/56 PASS**
+- `pnpm run type-check` → **CLEAN (0 errors)**
+
+### Files Modified
+1. `src/services/suites/dossierService.ts` — Array.isArray guards on 4 array-returning fetch functions
+
+**Phase 6 (Wave 1: Auth Hardening Pass) requires new explicit founder go.**
 
 ## Phase 4 — CP-W3-3 CLOSED — 2026-03-18
 
