@@ -5,11 +5,24 @@ import React from 'react';
 // Quantum-enhanced performance monitoring with terra-cyan themed metrics
  */
 
+interface ChromeMemoryInfo {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+}
+
+interface NetworkConnectionInfo {
+  effectiveType: string;
+  downlink: number;
+  rtt: number;
+  saveData: boolean;
+}
+
 interface PerformanceMetrics {
   navigation: PerformanceNavigationTiming | null;
   paint: PerformancePaintTiming[];
-  memory: any;
-  connection: any;
+  memory: ChromeMemoryInfo | null;
+  connection: NetworkConnectionInfo | null;
   resources: PerformanceResourceTiming[];
   timestamp: number;
 }
@@ -68,7 +81,7 @@ class FrontendPerformanceService {
       try {
         const longTaskObserver = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
-            this.trackLongTask(entry as any);
+            this.trackLongTask(entry as PerformanceEntry);
           }
         });
         longTaskObserver.observe({ entryTypes: ['longtask'] });
@@ -120,7 +133,7 @@ class FrontendPerformanceService {
     }
   }
 
-  private trackLongTask(entry: any) {
+  private trackLongTask(entry: PerformanceEntry) {
     console.warn(`Long task detected: ${entry.duration}ms at ${entry.startTime}`);
 
     // Report long tasks to analytics
@@ -191,7 +204,7 @@ class FrontendPerformanceService {
     }
   }
 
-  public trackUserAction(action: string, data: any = {}) {
+  public trackUserAction(action: string, data: Record<string, unknown> = {}) {
     this.reportMetric('user-action', {
       action,
       timestamp: Date.now(),
@@ -246,17 +259,17 @@ class FrontendPerformanceService {
     return [];
   }
 
-  private getMemoryInfo(): any {
+  private getMemoryInfo(): ChromeMemoryInfo | null {
     // @ts-expect-error Chrome-only performance.memory API
-    return (performance as any).memory || null;
+    return (performance as { memory?: ChromeMemoryInfo }).memory ?? null;
   }
 
-  private getConnectionInfo(): any {
+  private getConnectionInfo(): NetworkConnectionInfo | null {
     // @ts-expect-error Network Information API (navigator.connection)
     return (
-      (navigator as any).connection ||
-      (navigator as any).mozConnection ||
-      (navigator as any).webkitConnection ||
+      (navigator as { connection?: NetworkConnectionInfo }).connection ??
+      (navigator as { mozConnection?: NetworkConnectionInfo }).mozConnection ??
+      (navigator as { webkitConnection?: NetworkConnectionInfo }).webkitConnection ??
       null
     );
   }
@@ -268,7 +281,7 @@ class FrontendPerformanceService {
     return [];
   }
 
-  private async reportMetric(type: string, data: any) {
+  private async reportMetric(type: string, data: Record<string, unknown> | PerformanceMetrics) {
     try {
       // Report to backend performance API
       await fetch('/api/performance/frontend-metrics', {
@@ -309,14 +322,14 @@ class FrontendPerformanceService {
 export const performanceService = new FrontendPerformanceService();
 
 // Auto-track React component rendering (if using React)
-export function withPerformanceTracking<T extends React.ComponentType<any>>(
+export function withPerformanceTracking<T extends React.ComponentType<Record<string, unknown>>>(
   WrappedComponent: T,
   componentName?: string
 ): T {
   const name =
     componentName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
-  const PerformanceTrackedComponent = (props: any) => {
+  const PerformanceTrackedComponent = (props: Record<string, unknown>) => {
     React.useEffect(() => {
       performanceService.startTiming(`${name}-render`);
       return () => {
@@ -342,7 +355,7 @@ export function usePerformanceTracking(name: string) {
   }, [name]);
 
   return {
-    trackAction: (action: string, data?: any) => performanceService.trackUserAction(action, data),
+    trackAction: (action: string, data?: Record<string, unknown>) => performanceService.trackUserAction(action, data),
     trackError: (error: Error, context?: string) => performanceService.trackError(error, context),
   };
 }
