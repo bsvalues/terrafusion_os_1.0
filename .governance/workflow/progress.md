@@ -923,9 +923,9 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 9 | Commit | Create docs commit for Slice 25.4 | Done |
 | ✅ 10 | Slice 34 / Phase A | Workflow ledger reconciliation (`CP-W9-A`) | Done |
 | ✅ 11 | Slice 34 / Phase B | Dirty-worktree triage (`CP-TRIAGE-1`) | Done |
-| 🔵 12 | Slice 34 / WF-C | Decide disposition of untracked superpowers plan docs (`phase5-workbench-completeness`, `phase9b-10-11-explain-hitl-sovereign`) | None |
-| 🔵 13 | Slice 34 / GIT-1 | Classify `.gitignore` drift as explicit hygiene/config lane | None |
-| 🔵 14 | Slice 34 / LOCAL-1 | Clean or ignore local artifacts (`.claude/**`, `backend/tests/**/TestResults/**`) | None |
+| ✅ 12 | Slice 34 / WF-C | Decide disposition of untracked superpowers plan docs (`phase5-workbench-completeness`, `phase9b-10-11-explain-hitl-sovereign`) | Done — committed in `520344e49` |
+| ✅ 13 | Slice 34 / GIT-1 | Classify `.gitignore` drift as explicit hygiene/config lane | Done — TestResults/ + .claude/agents/ + .claude/settings.json added to `.gitignore` in `520344e49` |
+| ✅ 14 | Slice 34 / LOCAL-1 | Clean or ignore local artifacts (`.claude/**`, `backend/tests/**/TestResults/**`) | Done — .gitignored in `520344e49` |
 
 ---
 
@@ -957,9 +957,9 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | WF-1 | Slice 22 and Slice 23 still show `Pending` commit fields and need separate git-history reconciliation | Low | Workflow ledger follow-up |
 | WF-2 | `frontend/apps/os-shell/src` is not on a zero-console baseline; Wave 0 cleanup must start from the new ledger, not the older plan assumption | Medium | Wave 0 follow-up |
 | WF-3 | Legacy React test helpers still emit `ReactDOMTestUtils.act` deprecation warnings in the home/Wave 1 hook proofs | Low | Test harness cleanup follow-up |
-| WF-4 | Untracked superpowers plan docs (`phase5-workbench-completeness`, `phase9b-10-11-explain-hitl-sovereign`) need explicit `WF-C` disposition (track, archive, or discard) | Low | Slice 34 follow-up |
-| WF-5 | `.gitignore` is dirty and needs explicit `GIT-1` classification before any mixed commit | Low | Repo hygiene follow-up |
-| WF-6 | Local artifacts (`.claude/**`, `backend/tests/**/TestResults/**`) are present and should stay out of merge-bound commits | Low | LOCAL-1 hygiene follow-up |
+| ~~WF-4~~ | ~~Untracked superpowers plan docs~~ | ~~Low~~ | ✅ RESOLVED — committed in `520344e49` |
+| ~~WF-5~~ | ~~`.gitignore` drift~~ | ~~Low~~ | ✅ RESOLVED — .gitignore updated in `520344e49` |
+| ~~WF-6~~ | ~~Local artifacts in working tree~~ | ~~Low~~ | ✅ RESOLVED — .gitignored in `520344e49` |
 | CS-1 | Comparable Sales launch-to-sales selection depends on the current query/state hint convention | Low | Revisit if upstream module-launch metadata changes |
 | IV-1 | Forge Income proof is closed, but saved valuation record/list wiring is still a follow-up if persistence becomes a product requirement | Medium | Post-proof enhancement |
 | IV-2 | Legacy income valuation surfaces still need an archive-truth pass to collapse duplicate authority | Low | Archive truth follow-up |
