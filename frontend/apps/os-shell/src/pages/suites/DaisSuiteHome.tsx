@@ -105,13 +105,13 @@ export default function DaisSuiteHome() {
           <SuiteModuleGrid modules={DAIS_MODULES} accentVar="--tf-suite-dais" />
         </div>
         <div data-testid="dais-mgmt-ops">
-          <ManagementDashboardPanel />
+          <ManagementDashboardPanel stats={stats} />
         </div>
         <div data-testid="dais-cert-ops">
-          <CertRollPanel />
+          <CertRollPanel stats={stats} />
         </div>
         <div data-testid="dais-notice-ops">
-          <NoticeBatchQueuePanel />
+          <NoticeBatchQueuePanel stats={stats} />
         </div>
         <div data-testid="dais-queue">
           <OperationalQueue title="Pending Appeals" accentVar="--tf-suite-dais" emptyMessage="No recent appeal activity" />
