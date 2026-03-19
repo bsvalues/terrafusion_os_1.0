@@ -19,7 +19,7 @@
 | **Phase** | **Phase 35-G OPEN** — SW Phase 1 trace bridge implemented; SW Phase 2 constrained by governance scope |
 | **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 implementation active (SW Phase 1 complete) |
 | **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 IN PROGRESS |
-| **Latest Commit** | `18335d739` (post-SW1 ledger reconciliation to commit truth) |
+| **Latest Commit** | `a154454a7` (SW-2 scope-exception packet + ledger linkage) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -130,7 +130,7 @@
 - Read-only target inspection reconfirmed SW-2 deltas are in forbidden scope files (`SwarmStrategicCoordinator.ts`, `SwarmOrchestrator.ts`)
 - Working tree includes unrelated backend trace drift (tracked + untracked) and remains untouched by Lane 3 execution
 - Execution posture remains: continue bounded governance-safe work only; open SW-2 only after explicit scope exception
-- Scope exception packet published: `.governance/workflow/phase35g-sw2-scope-exception.md` (pending approval)
+- Scope exception packet published and committed in `a154454a7`: `.governance/workflow/phase35g-sw2-scope-exception.md` (pending approval)
 
 ---
 
