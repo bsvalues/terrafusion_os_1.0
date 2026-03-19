@@ -555,13 +555,13 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| ✅ 1.1 | Jump Actions tests (TDD) | Pending | 16 pass | 2026-02-07 |
-| ✅ 1.2 | Golden Journey 9 (TDD) | Pending | 3 pass | 2026-02-07 |
-| ✅ 2.1 | traceToOsAction mapper | Pending | ✅ Pass | 2026-02-07 |
-| ✅ 2.2 | Add 'trace' to surface union | Pending | ✅ Type-check | 2026-02-07 |
-| ✅ 3.1 | ActionStreamModule Jump buttons | Pending | ✅ Pass | 2026-02-07 |
-| ✅ 3.2 | Wire handleJump callback | Pending | ✅ Pass | 2026-02-07 |
-| ✅ 4.1 | Run all gates | Pending | 32/32 phase83, type-check | 2026-02-07 |
+| ✅ 1.1 | Jump Actions tests (TDD) | `6b74c6c93` | 16 pass | 2026-02-07 |
+| ✅ 1.2 | Golden Journey 9 (TDD) | `2e04006bf` | 3 pass | 2026-02-07 |
+| ✅ 2.1 | traceToOsAction mapper | `decaa8757` | ✅ Pass | 2026-02-07 |
+| ✅ 2.2 | Add 'trace' to surface union | `decaa8757` | ✅ Type-check | 2026-02-07 |
+| ✅ 3.1 | ActionStreamModule Jump buttons | `decaa8757` | ✅ Pass | 2026-02-07 |
+| ✅ 3.2 | Wire handleJump callback | `decaa8757` | ✅ Pass | 2026-02-07 |
+| ✅ 4.1 | Run all gates | `decaa8757` | 32/32 phase83, type-check | 2026-02-07 |
 
 **Key Achievement:** TerraTrace now operational - Jump buttons convert trace events into policy-gated, telemetry-tracked navigation actions. From any trace event (Live or History mode), operators can jump directly to implicated surfaces (Workbench tabs, Standalone homes). Execution flows through `executeOsAction()` with `surface: 'trace'`, ensuring full policy enforcement + audit trail. No PII leakage (uses existing routes + parcelIdHash patterns).
 
@@ -583,14 +583,14 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 
 | Task | Description | Commit | Tests | Date |
 |------|-------------|--------|-------|------|
-| ✅ 1.1 | Policy Rules Engine tests (TDD) | Pending | 12 pass | 2026-02-08 |
-| ✅ 1.2 | Policy Store tests (TDD) | Pending | 12 pass | 2026-02-08 |
-| ✅ 1.3 | PolicyPanel UI tests (TDD) | Pending | 14 pass | 2026-02-08 |
-| ✅ 2.1 | policyEngine.ts implementation | Pending | ✅ Pass | 2026-02-08 |
-| ✅ 2.2 | policyStore.ts implementation | Pending | ✅ Pass | 2026-02-08 |
-| ✅ 2.3 | PolicyPanel.tsx implementation | Pending | ✅ Pass | 2026-02-08 |
-| ✅ 3.1 | emitTrace helper for custom events | Pending | ✅ Pass | 2026-02-08 |
-| ✅ 4.1 | Run all gates | Pending | 32/32 phase83, type-check | 2026-02-08 |
+| ✅ 1.1 | Policy Rules Engine tests (TDD) | `0b589be66` | 12 pass | 2026-02-08 |
+| ✅ 1.2 | Policy Store tests (TDD) | `0b589be66` | 12 pass | 2026-02-08 |
+| ✅ 1.3 | PolicyPanel UI tests (TDD) | `0b589be66` | 14 pass | 2026-02-08 |
+| ✅ 2.1 | policyEngine.ts implementation | `decaa8757` | ✅ Pass | 2026-02-08 |
+| ✅ 2.2 | policyStore.ts implementation | `decaa8757` | ✅ Pass | 2026-02-08 |
+| ✅ 2.3 | PolicyPanel.tsx implementation | `8c84562d9` | ✅ Pass | 2026-02-08 |
+| ✅ 3.1 | emitTrace helper for custom events | `decaa8757` | ✅ Pass | 2026-02-08 |
+| ✅ 4.1 | Run all gates | `decaa8757` | 32/32 phase83, type-check | 2026-02-08 |
 
 **Key Achievement:** Policy system now operable through visual UI (not code-only). PolicyPanel provides "see → act" interface for rule management: view active rules, add/remove deny rules with surface/suiteId/actionId selectors, reset to default-allow. All changes emit audit traces (`policy_updated`, `policy_reset`) with rule hashes for forensic tie-off. Rules persist via local Storage with versioning.
 
