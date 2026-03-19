@@ -1594,6 +1594,13 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 
 Execution artifact (2026-03-19 refresh):
 - `docs/superpowers/plans/2026-03-19-multi-agent-subagent-parallel-execution-plan.md`
+- `docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md`
+- `docs/superpowers/plans/2026-03-19-cp14-tenant-rbac-isolation-closure-packet.md`
+- `docs/superpowers/plans/2026-03-19-cp15-runtime-completeness-closure-packet.md`
+- `docs/superpowers/plans/2026-03-19-cp16-service-registry-orchestration-closure-packet.md`
+- `docs/superpowers/plans/2026-03-19-cp17-sre-restore-dr-hypercare-closure-packet.md`
+- `docs/superpowers/plans/2026-03-19-cp18-security-compliance-seal-packet.md`
+- `docs/superpowers/plans/2026-03-19-cp19-go-live-decision-packet.md`
 
 ---
 
