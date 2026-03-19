@@ -20,7 +20,25 @@
 | **Phase** | **Phase 35-G CLOSED + SW-2 CLOSED** — CP-35-G-1/2/3 + SW-2 scope exception delivered and sealed |
 | **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 CLOSED; SW-2 CLOSED |
 | **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟢 Lane 3 CLOSED, 🟢 SW-2 CLOSED |
-| **Latest Commit** | `d35980379` (Phase 35-G SW-2 exception-bounded hardening) |
+| **Latest Commit** | `acc42d7f1` (multi-agent/subagent parallel execution plan + governance links) |
+
+## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: post-r3/w5f-registry-edge-cleanup  
+**Commit baseline**: `acc42d7f1`
+
+### Verdict: PASS — GREEN (docs-only governance publication)
+
+**What closed:**
+- Published post-Slice-35 multi-agent/subagent parallel execution artifact:
+  - `docs/superpowers/plans/2026-03-19-multi-agent-subagent-parallel-execution-plan.md`
+- Added governance plan discoverability pointer:
+  - `.governance/workflow/plan.md`
+- Added progress surface discoverability pointer:
+  - `.governance/workflow/progress.md`
+
+**Classification:** Implemented bounded docs-only execution-planning slice
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -48,7 +66,7 @@
 
 | Lane | Authorization |
 |------|--------------|
-| **Lane 1 — Debt Sweep** (35-A, 35-B, 35-C) | ✅ OPEN — founder go 2026-03-19 |
+| **Lane 1 — Debt Sweep** (35-A, 35-B, 35-C) | ✅ CLOSED — 35-A/35-B/35-C delivered and sealed |
 | **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | ✅ CLOSED — 35-D recon + charter done; 35-E TC Phase 1 + 2 implemented and proven |
 | **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | ✅ CLOSED — 35-F recon + charter closed; 35-G SW Phase 1 + SW-2 exception-bounded hardening delivered |
 
