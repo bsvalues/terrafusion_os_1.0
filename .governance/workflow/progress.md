@@ -16,10 +16,10 @@
 | Field | Value |
 |-------|-------|
 | **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
-| **Phase** | **Phase 35-G OPEN** — SW Phase 1 trace bridge implemented; SW Phase 2 constrained by governance scope |
-| **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 implementation active (SW Phase 1 complete) |
-| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 IN PROGRESS |
-| **Latest Commit** | `14cf9527b` (Phase 35-G-3 swarm entry-point telemetry bridge) |
+| **Phase** | **Phase 35-G CLOSED** — CP-35-G-1/2/3 delivered and sealed |
+| **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 CLOSED |
+| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟢 Lane 3 CLOSED |
+| **Latest Commit** | `f3196d528` (Phase 35-G seal: ingestion + rate limiter + observability bridge) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -146,6 +146,11 @@
   - `backend/src/TerraFusion.API/Controllers/SwarmController.cs`
   - `backend/src/TerraFusion.API/Controllers/AISwarmController.cs`
 - SW-2 forbidden-scope edits under `os-platform/ai-systems/ai-systems/ai-swarm/**` remain blocked pending governance scope exception approval.
+
+### Phase 35-G Seal Update — 2026-03-19
+
+- HEAD advanced to `f3196d528` with explicit seal posture: Phase 35-G is closed after CP-35-G-1/2/3 gate completion.
+- Seal commit scope is docs-only (`.governance/workflow/progress.md`) and records closure for trace ingestion, concurrency guards, and swarm observability bridge.
 
 ---
 
