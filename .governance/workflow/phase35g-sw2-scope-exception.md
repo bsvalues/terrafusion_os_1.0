@@ -3,7 +3,7 @@
 Date: 2026-03-19
 Branch: post-r3/w5f-registry-edge-cleanup
 Requester lane: Slice 35 / Lane 3 / AI Swarm Scale
-Status: PENDING APPROVAL
+Status: APPROVED — founder go 2026-03-19; implemented in `d35980379`
 
 ## Purpose
 
