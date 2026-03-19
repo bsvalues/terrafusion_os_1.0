@@ -14,9 +14,9 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 ## Targeted Go-Live Decision Checks
 
 ```bash
-<cp19-gate-seal-integrity-check-command>
-<cp19-launch-packet-completeness-check-command>
-<cp19-rollback-readiness-check-command>
+pnpm run governance:check
+pnpm run ci:governance-proof
+pwsh -File ops/dev/tf.ps1 status
 ```
 
 ## Conditional Commands
