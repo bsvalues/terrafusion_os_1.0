@@ -15,20 +15,44 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **CP-W2-8: Wave 2 frontend hard stop review** |
-| **Phase** | Phase 3: hard stop and entry-gate review |
-| **Task** | Wave 2 frontend is closed on evidence; hard stop remains in force pending an explicit go/no-go decision before any Waves 3–5 motion |
-| **Status** | 🟢 CHECKPOINT |
-| **Latest Commit** | Working tree - CP-W2-7 closure wall and CP-W2-8 hard stop review recorded |
+| **Slice** | **GATE-0 open → Phase 1 Charter active** |
+| **Phase** | Phase 1 — Forge F1: Comparable Sales Rehost Proof |
+| **Task** | Build CP-W3-1 proof wall before any source edits |
+| **Status** | 🟡 IN PROGRESS |
+| **Latest Commit** | `76b2a5efd` — docs(agents): add copilot multi-agent swarm roles |
 
-## Checkpoint — 2026-03-18
+## GATE-0 — Human Go/No-Go Decision — 2026-03-18
+
+Status: **APPROVED TO OPEN PHASE 1 ONLY**
+
+Authorized phase:
+- Phase 1 — Forge F1: Comparable Sales rehost proof
+
+Conditions:
+- CP-W2-8 hard stop is lifted only for Phase 1 execution
+- No automatic opening of later phases
+- One active charter at a time
+- `@tf-writer` is the sole general writer
+- `@tf-checkpoint` may write governance closure artifacts only
+- All other agents are read-only
+- Closure at CP-W3-1 is mandatory before any request to open Phase 2
+
+Non-authorizations:
+- No Wave 3B+ opening
+- No Wave 4 or Wave 5 opening
+- No runtime governance authority is granted by agent docs
+
+---
+
+## Checkpoint — 2026-03-18 (CP-W2-8 closure)
 
 - CP-W2-7 frontend closure wall passed: 8 files, 154 tests green.
 - `/gpt` is closed as a bounded, honest workspace on the canonical service lane.
 - Management, RAG, chat, and manual trace/source affordances are live within confirmed backend truth.
 - Prototype and duplicate GPT client lanes remain quarantined.
-- Hard stop review complete: no Waves 3–5 motion until an explicit go/no-go decision is recorded.
-- Planning-only follow-up is defined in `.governance/workflow/plan.md`: future Copilot phases reuse the same multi-agent, proof-first pattern and remain gated behind the current hard stop.
+- Hard stop review complete. GATE-0 human go/no-go decision recorded above.
+- Agent swarm scaffolding landed at `76b2a5efd` (docs/tooling only — no execution authority granted).
+- Slice 26 end-to-end phase map written in `plan.md` (planning only).
 
 ---
 
