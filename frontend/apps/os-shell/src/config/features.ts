@@ -17,6 +17,7 @@ interface FeatureFlags {
 }
 
 const getEnvBool = (key: string, defaultVal: boolean = false): boolean => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- globalThis.import.meta is a Jest test mock shim, not in TypeScript lib
   const env =
     (globalThis as any).import?.meta?.env ??
     (globalThis as any).importMeta?.env ??
