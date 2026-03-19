@@ -211,6 +211,21 @@
 
 ---
 
+### CP-W11-1 — Phase 11 Sovereign Deploy — CLOSED
+- Opened: 2026-03-19
+- Closed: 2026-03-19
+- Deliverables:
+  - SovereignGuard.cs wired at startup as singleton with fail-fast verification
+  - sovereign.yaml manifest at repo root (all law sections: hitl, county_isolation, truthgate, trace, audit, zero_tolerance)
+  - 6 SovereignGuardTests passing (valid manifest, hash determinism, missing/empty/incomplete manifest rejection)
+  - test-safety.ts CLI (8 sovereignty checks, exit 0/1)
+  - deploy-sovereign.sh (3 gates: safety → drift → shadow-write)
+  - County pilot runbook (docs/county-pilot-runbook.md)
+- Gate: 6 Phase11 backend tests green + test-safety.ts exits 0 against sovereign.yaml
+- Commits: 9703d3d87, 37b8643af + this seal commit
+
+---
+
 ## Phase 8 — CP-W8-1 CLOSED — 2026-03-18
 
 ### Deliverables
