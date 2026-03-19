@@ -2724,7 +2724,7 @@ Report:
 
 ## Known Baseline (Repo Truth, 2026-03-19)
 
-- Current `HEAD` is `862e8de61`
+- Current `HEAD` is `55489dca4` (sync point for the latest workflow barrier check)
 - Earlier Dais + backend Pilot dirty lanes are no longer dirty in working tree; they were absorbed in `862e8de61`
 - Active docs/workflow paths needing explicit lane classification are:
   - `.governance/workflow/plan.md`
@@ -2761,8 +2761,8 @@ Report:
 | **Type** | Human decision gate |
 | **Trigger** | Explicit `go` naming the next bounded phase below |
 | **If go** | Open exactly one phase |
-| **If no-go** | Stay at `CP-W9-1`; docs-only evidence refresh is allowed |
-| **Checkpoint** | `CP-W9-1` (current closed baseline) |
+| **If no-go** | Stay at `CP-W9-B`; docs-only evidence refresh is allowed |
+| **Checkpoint** | `CP-W9-B` (current closed baseline) |
 
 This gate is phase-specific. Saying `go` for Phase A does not automatically open
 Phase B or later phases.
@@ -2987,9 +2987,8 @@ Report:
 > mechanical lanes, then charter Phase B (TerraCanon IDE) and Phase D (AI Swarm Scale)
 > as post-assessor product initiatives with defined scope, file maps, and proof gates.
 >
-> **Classification:** Lane 1 (debt sweep) is OPEN — founder go/no-go satisfied 2026-03-19.
-> Lanes 2 and 3 (TerraCanon, AI Swarm) require explicit `GATE-35-1` and `GATE-35-2` go/no-go
-> AFTER Lane 1 closes.
+> **Classification:** Lane 1, Lane 2, and Lane 3 are CLOSED.
+> This section is retained as execution history for Slice 35.
 >
 > **Full specification:** `docs/superpowers/plans/2026-03-19-slice35-debt-terracanon-aiswarm.md`
 
@@ -2997,27 +2996,27 @@ Report:
 
 ## Slice 35 Phase Map
 
-### Lane 1: Debt Sweep (OPEN — immediate)
+### Lane 1: Debt Sweep (CLOSED)
 
 | Phase | ID | Scope | Gate |
 |-------|----|-------|------|
-| WF-1 + WF-3 | `CP-35-A` | Backfill Slice 22/23 commit hashes + fix `react-dom/test-utils` act() imports | Lane 1 open |
-| WF-2 Console Noise | `CP-35-B` | Remove/promote ~500 `console.*` calls in production code (724 → ≤ 200) | `CP-35-A` closed |
-| IV-1 + IV-2 Income | `CP-35-C` | Wire `saveIncomeValuationRecord` persistence + archive `IncomeForgeModule.tsx` orphan | `CP-35-B` closed |
+| WF-1 + WF-3 | `CP-35-A` | Backfill Slice 22/23 commit hashes + fix `react-dom/test-utils` act() imports | Closed (`CP-35-A`) |
+| WF-2 Console Noise | `CP-35-B` | Remove/promote ~500 `console.*` calls in production code (724 → ≤ 200) | Closed (`CP-35-B`) |
+| IV-1 + IV-2 Income | `CP-35-C` | Wire `saveIncomeValuationRecord` persistence + archive `IncomeForgeModule.tsx` orphan | Closed (`CP-35-C`) |
 
-### Lane 2: TerraCanon IDE (gated on GATE-35-1)
-
-| Phase | ID | Scope | Gate |
-|-------|----|-------|------|
-| TerraCanon Recon | `CP-35-D` | 7 parallel read-only subagents → bounded charter artifact | `GATE-35-1` human go |
-| TerraCanon Impl | `CP-35-E` | Monaco + file I/O + TerraPilot explain + TerraTrace audit; code execution sandbox Phase 3 only | Charter accepted |
-
-### Lane 3: AI Swarm Scale (gated on GATE-35-2)
+### Lane 2: TerraCanon IDE (CLOSED)
 
 | Phase | ID | Scope | Gate |
 |-------|----|-------|------|
-| Swarm Recon | `CP-35-F` | 5 parallel read-only subagents → bounded charter artifact | `GATE-35-2` human go |
-| Swarm Scale Impl | `CP-35-G` | TerraTrace coverage gaps + coordinator hardening + synthetic scale test | Charter accepted |
+| TerraCanon Recon | `CP-35-D` | 7 parallel read-only subagents → bounded charter artifact | Closed (`GATE-35-1` consumed) |
+| TerraCanon Impl | `CP-35-E` | Monaco + file I/O + TerraPilot explain + TerraTrace audit; code execution sandbox Phase 3 only | Closed (`CP-35-E`) |
+
+### Lane 3: AI Swarm Scale (CLOSED)
+
+| Phase | ID | Scope | Gate |
+|-------|----|-------|------|
+| Swarm Recon | `CP-35-F` | 5 parallel read-only subagents → bounded charter artifact | Closed (`GATE-35-2` consumed) |
+| Swarm Scale Impl | `CP-35-G` | TerraTrace coverage gaps + coordinator hardening + synthetic scale test | Closed (`CP-35-G`) |
 
 ---
 
@@ -3056,9 +3055,9 @@ Lane 3 — AI Swarm Scale
 
 ## Slice 35 Document Status
 
-- [x] Debt sweep (Lane 1) fully specified — immediate, no additional gate
-- [x] TerraCanon (Lane 2) recon defined — gated on `GATE-35-1`
-- [x] AI Swarm Scale (Lane 3) recon defined — gated on `GATE-35-2`
+- [x] Debt sweep (Lane 1) delivered and sealed
+- [x] TerraCanon (Lane 2) recon + implementation delivered and sealed
+- [x] AI Swarm Scale (Lane 3) recon + implementation delivered and sealed
 - [x] Multi-agent parallel model defined for all three lanes
 - [x] Single-writer isolation preserved per phase
 - [x] Security constraints explicit (sandbox, PII, county isolation)
