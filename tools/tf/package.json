@@ -1,0 +1,13 @@
+{
+  "name": "@terrafusion/tf-cli",
+  "version": "1.0.0",
+  "description": "TerraFusion CLI tooling — sweep and verify-ops",
+  "type": "module",
+  "scripts": {
+    "sweep": "npx tsx sweep.ts",
+    "verify-ops": "npx tsx verify-ops.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0"
+  }
+}
