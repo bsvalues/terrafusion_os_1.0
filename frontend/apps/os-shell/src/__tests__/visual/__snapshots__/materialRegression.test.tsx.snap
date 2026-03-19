@@ -536,3 +536,540 @@ exports[`Phase 7: Material Regression Gate > StageZeroState snapshot matches bas
   </div>
 </div>
 `;
+
+exports[`Phase 7: Material Regression Gate > Value reachable in 3 clicks 1`] = `
+<div
+  class="absolute inset-0 pointer-events-none"
+  data-testid="stage-zero-state"
+  style="z-index: 0; padding: 48px 24px 88px 24px;"
+>
+  <div
+    class="pointer-events-auto h-full flex gap-3"
+  >
+    <div
+      class="w-[240px] shrink-0 flex flex-col gap-3"
+      data-testid="recent-work-panel"
+    >
+      <div
+        class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg p-4 flex flex-col flex-1"
+        data-material="liquid-glass"
+        data-quality-tier="high"
+        data-reduced-motion="false"
+      >
+        <div
+          class="flex items-center gap-2 mb-3"
+        >
+          <span
+            class="opacity-50"
+          >
+            <span
+              class="h-3.5 w-3.5"
+              data-icon="Clock"
+            />
+          </span>
+          <span
+            class="text-xs font-semibold uppercase tracking-wider"
+            style="color: hsl(var(--tf-text-primary-hs) 50%);"
+          >
+            Recent Work
+          </span>
+        </div>
+        <div
+          class="flex flex-col gap-0.5 -mx-2.5 flex-1"
+        >
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-80 hover:opacity-100"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="Building2"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              11-1234-001
+            </span>
+            <span
+              class="h-3 w-3 ml-auto opacity-30 flex-shrink-0"
+              data-icon="ArrowRight"
+            />
+          </button>
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-80 hover:opacity-100"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="Building2"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              11-1234-002
+            </span>
+            <span
+              class="h-3 w-3 ml-auto opacity-30 flex-shrink-0"
+              data-icon="ArrowRight"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex-1 flex flex-col gap-3 min-w-0"
+      data-testid="county-map-center"
+    >
+      <div
+        class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg p-4 flex flex-col flex-1 p-2"
+        data-material="liquid-glass"
+        data-quality-tier="high"
+        data-reduced-motion="false"
+      >
+        <button
+          aria-label="Open TerraAtlas for full county map"
+          class="relative w-full h-full rounded-xl overflow-hidden group focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] transition-all duration-300"
+        >
+          <svg
+            class="w-full h-full"
+            preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 500 340"
+          >
+            <defs>
+              <pattern
+                height="25"
+                id="county-grid"
+                patternUnits="userSpaceOnUse"
+                width="25"
+              >
+                <path
+                  d="M 25 0 L 0 0 0 25"
+                  fill="none"
+                  stroke="hsl(var(--tf-text-primary-hs) 100% / 0.04)"
+                  stroke-width="0.5"
+                />
+              </pattern>
+              <radialgradient
+                cx="50%"
+                cy="50%"
+                id="county-glow"
+                r="50%"
+              >
+                <stop
+                  offset="0%"
+                  stop-color="hsl(var(--tf-transcend-cyan-hs) 40% / 0.08)"
+                />
+                <stop
+                  offset="100%"
+                  stop-color="transparent"
+                />
+              </radialgradient>
+            </defs>
+            <rect
+              fill="url(#county-grid)"
+              height="340"
+              width="500"
+            />
+            <rect
+              fill="url(#county-glow)"
+              height="340"
+              width="500"
+            />
+            <polygon
+              class="group-hover:fill-[hsl(var(--tf-transcend-cyan-hs)_30%_/_0.12)] transition-all duration-300"
+              fill="hsl(var(--tf-transcend-cyan-hs) 30% / 0.06)"
+              points="100,40 220,30 340,50 400,90 420,180 380,260 300,300 180,310 80,270 60,180 70,100"
+              stroke="hsl(var(--tf-transcend-cyan-hs) 50% / 0.25)"
+              stroke-width="1.5"
+            />
+            <line
+              stroke="hsl(var(--tf-text-primary-hs) 100% / 0.06)"
+              stroke-width="0.5"
+              x1="180"
+              x2="160"
+              y1="50"
+              y2="290"
+            />
+            <line
+              stroke="hsl(var(--tf-text-primary-hs) 100% / 0.06)"
+              stroke-width="0.5"
+              x1="300"
+              x2="310"
+              y1="45"
+              y2="300"
+            />
+            <line
+              stroke="hsl(var(--tf-text-primary-hs) 100% / 0.06)"
+              stroke-width="0.5"
+              x1="70"
+              x2="410"
+              y1="140"
+              y2="130"
+            />
+            <line
+              stroke="hsl(var(--tf-text-primary-hs) 100% / 0.06)"
+              stroke-width="0.5"
+              x1="65"
+              x2="400"
+              y1="220"
+              y2="210"
+            />
+            <circle
+              cx="300"
+              cy="200"
+              fill="hsl(var(--tf-transcend-cyan-hs) 55% / 0.4)"
+              r="5"
+            />
+            <circle
+              cx="300"
+              cy="200"
+              fill="none"
+              r="8"
+              stroke="hsl(var(--tf-transcend-cyan-hs) 55% / 0.2)"
+              stroke-width="1"
+            />
+            <text
+              fill="hsl(var(--tf-text-primary-hs) 60%)"
+              font-family="system-ui"
+              font-size="10"
+              x="312"
+              y="204"
+            >
+              Kennewick
+            </text>
+            <circle
+              cx="340"
+              cy="130"
+              fill="hsl(var(--tf-transcend-cyan-hs) 55% / 0.35)"
+              r="4"
+            />
+            <text
+              fill="hsl(var(--tf-text-primary-hs) 55%)"
+              font-family="system-ui"
+              font-size="10"
+              x="350"
+              y="134"
+            >
+              Richland
+            </text>
+            <circle
+              cx="230"
+              cy="160"
+              fill="hsl(var(--tf-transcend-cyan-hs) 55% / 0.3)"
+              r="3"
+            />
+            <text
+              fill="hsl(var(--tf-text-primary-hs) 45%)"
+              font-family="system-ui"
+              font-size="9"
+              x="240"
+              y="164"
+            >
+              W. Richland
+            </text>
+            <circle
+              cx="140"
+              cy="230"
+              fill="hsl(var(--tf-transcend-cyan-hs) 55% / 0.3)"
+              r="3"
+            />
+            <text
+              fill="hsl(var(--tf-text-primary-hs) 45%)"
+              font-family="system-ui"
+              font-size="9"
+              x="150"
+              y="234"
+            >
+              Prosser
+            </text>
+            <circle
+              cx="190"
+              cy="180"
+              fill="hsl(var(--tf-transcend-cyan-hs) 55% / 0.25)"
+              r="2.5"
+            />
+            <text
+              fill="hsl(var(--tf-text-primary-hs) 40%)"
+              font-family="system-ui"
+              font-size="8"
+              x="198"
+              y="184"
+            >
+              Benton City
+            </text>
+            <path
+              d="M 60,100 Q 150,80 250,100 Q 350,120 420,90"
+              fill="none"
+              stroke="hsl(var(--tf-network-blue-hs) 50% / 0.2)"
+              stroke-linecap="round"
+              stroke-width="3"
+            />
+            <text
+              fill="hsl(var(--tf-network-blue-hs) 50% / 0.4)"
+              font-family="system-ui"
+              font-size="8"
+              font-style="italic"
+              x="240"
+              y="80"
+            >
+              Columbia River
+            </text>
+            <text
+              class="group-hover:fill-[hsl(var(--tf-transcend-cyan-hs)_70%_/_0.8)] transition-all"
+              fill="hsl(var(--tf-transcend-cyan-hs) 60% / 0.5)"
+              font-family="system-ui"
+              font-size="11"
+              text-anchor="middle"
+              x="250"
+              y="320"
+            >
+              Click to launch TerraAtlas
+            </text>
+          </svg>
+        </button>
+      </div>
+      <div
+        class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg px-4 py-2 shrink-0"
+        data-material="liquid-glass"
+        data-quality-tier="high"
+        data-reduced-motion="false"
+      >
+        <div
+          class="flex items-center justify-between text-xs"
+          data-testid="county-status-strip"
+          style="color: hsl(var(--tf-text-primary-hs) 45%);"
+        >
+          <span
+            class="font-medium"
+            style="color: hsl(var(--tf-text-primary-hs) 65%);"
+          >
+            Benton County, WA
+          </span>
+          <span>
+            89,247 parcels
+          </span>
+          <span>
+            Last sync: 2 min ago
+          </span>
+          <span>
+            3 appeals pending
+          </span>
+          <span
+            class="flex items-center gap-1"
+          >
+            <span
+              class="inline-block w-1.5 h-1.5 rounded-full bg-green-400"
+            />
+            All systems operational
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[240px] shrink-0 flex flex-col gap-3"
+    >
+      <div
+        class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg p-4 flex flex-col flex-1"
+        data-material="liquid-glass"
+        data-quality-tier="high"
+        data-reduced-motion="false"
+      >
+        <div
+          class="flex flex-col gap-1"
+          data-testid="todays-work-panel"
+        >
+          <div
+            class="flex items-center gap-2 mb-3"
+          >
+            <span
+              class="opacity-50"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="CalendarDays"
+              />
+            </span>
+            <span
+              class="text-xs font-semibold uppercase tracking-wider"
+              style="color: hsl(var(--tf-text-primary-hs) 50%);"
+            >
+              Today's Work
+            </span>
+          </div>
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-80 hover:opacity-100"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="Clock"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              Review 3 appeals — Dais
+            </span>
+            <span
+              class="h-3 w-3 ml-auto opacity-30 flex-shrink-0"
+              data-icon="ArrowRight"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="liquid-panel liquid-panel--shell liquid-panel--glass liquid-panel--distortion liquid-panel--blur-2 liquid-panel--radius-lg p-4 flex flex-col shrink-0"
+        data-material="liquid-glass"
+        data-quality-tier="high"
+        data-reduced-motion="false"
+      >
+        <div
+          class="flex items-center gap-2 mb-3"
+        >
+          <span
+            class="opacity-50"
+          >
+            <span
+              class="h-3.5 w-3.5"
+              data-icon="Zap"
+            />
+          </span>
+          <span
+            class="text-xs font-semibold uppercase tracking-wider"
+            style="color: hsl(var(--tf-text-primary-hs) 50%);"
+          >
+            Quick Actions
+          </span>
+        </div>
+        <div
+          class="flex flex-col gap-0.5 -mx-2.5"
+        >
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-80 hover:opacity-100"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="Search"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              Search Parcels
+            </span>
+            <span
+              class="ml-auto flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded"
+              style="color: hsl(var(--tf-text-primary-hs) 35%); background: hsl(var(--tf-text-primary-hs) 10% / 0.3);"
+            >
+              ⌘K
+            </span>
+          </button>
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-80 hover:opacity-100"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="LayoutDashboard"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              Open Workbench
+            </span>
+            <span
+              class="h-3 w-3 ml-auto opacity-30 flex-shrink-0"
+              data-icon="ArrowRight"
+            />
+          </button>
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-80 hover:opacity-100"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="Map"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              Launch Atlas
+            </span>
+            <span
+              class="h-3 w-3 ml-auto opacity-30 flex-shrink-0"
+              data-icon="ArrowRight"
+            />
+          </button>
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-60 hover:opacity-90"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="BarChart3"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              Open Ratio Study
+            </span>
+            <span
+              class="h-3 w-3 ml-auto opacity-30 flex-shrink-0"
+              data-icon="ArrowRight"
+            />
+          </button>
+          <button
+            class="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)] opacity-60 hover:opacity-90"
+          >
+            <span
+              class="flex-shrink-0 opacity-60"
+            >
+              <span
+                class="h-3.5 w-3.5"
+                data-icon="FileSearch"
+              />
+            </span>
+            <span
+              class="text-sm font-medium truncate"
+              style="color: hsl(var(--tf-text-primary-hs) 90%);"
+            >
+              Review Appeals
+            </span>
+            <span
+              class="h-3 w-3 ml-auto opacity-30 flex-shrink-0"
+              data-icon="ArrowRight"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -6,6 +6,7 @@ const {
   mockCreateConversation,
   mockGetConversation,
   mockGetConversationHistory,
+  mockGetConversationTrace,
   mockSendMessage,
   mockArchiveConversation,
   mockDeleteConversation,
@@ -13,6 +14,7 @@ const {
   mockCreateConversation: vi.fn(),
   mockGetConversation: vi.fn(),
   mockGetConversationHistory: vi.fn(),
+  mockGetConversationTrace: vi.fn(),
   mockSendMessage: vi.fn(),
   mockArchiveConversation: vi.fn(),
   mockDeleteConversation: vi.fn(),
@@ -23,6 +25,7 @@ vi.mock('@/services/gptAPI', () => ({
     createConversation: mockCreateConversation,
     getConversation: mockGetConversation,
     getConversationHistory: mockGetConversationHistory,
+    getConversationTrace: mockGetConversationTrace,
     sendMessage: mockSendMessage,
     archiveConversation: mockArchiveConversation,
     deleteConversation: mockDeleteConversation,
@@ -121,6 +124,47 @@ function makeMessage(overrides: Record<string, unknown> = {}) {
   };
 }
 
+function makeConversationTraceMessage(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 100,
+    role: 'assistant',
+    content: 'Here is the county valuation summary.',
+    createdAt: '2026-03-18T12:01:00.000Z',
+    tokensUsed: 70,
+    cost: 0.0123,
+    ragUsed: true,
+    ragDocuments: ['doc-1', 'doc-2'],
+    ragScore: 0.88,
+    ragChunkDetails: [
+      {
+        chunkId: 'chunk-1',
+        documentTitle: 'Parcel Record 1234',
+        sourceUrl: 'https://county.example/parcel/1234',
+        textSnippet: 'Parcel 1234 assessment reflects the latest Benton County adjustments.',
+        score: 0.91,
+        chunkIndex: 3,
+      },
+    ],
+    ...overrides,
+  };
+}
+
+function makeConversationTrace(overrides: Record<string, unknown> = {}) {
+  return {
+    conversationId: 55,
+    gptKey: 'county-valuation-helper',
+    gptDisplayName: 'County Valuation Helper',
+    title: 'New conversation with County Valuation Helper',
+    messageCount: 2,
+    totalTokensUsed: 70,
+    totalCost: 0.0123,
+    messages: [makeConversationTraceMessage()],
+    createdAt: '2026-03-18T12:00:00.000Z',
+    lastMessageAt: '2026-03-18T12:01:00.000Z',
+    ...overrides,
+  };
+}
+
 describe('GPTChatInterface interactions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -149,6 +193,7 @@ describe('GPTChatInterface interactions', () => {
     mockSendMessage.mockResolvedValue(assistantMessage);
     mockGetConversation.mockResolvedValue(syncedConversation);
     mockGetConversationHistory.mockImplementation(async () => history);
+    mockGetConversationTrace.mockResolvedValue(makeConversationTrace());
 
     const onConversationChange = vi.fn();
     render(<GPTChatInterface gpt={gpt} onConversationChange={onConversationChange} />);
@@ -160,7 +205,7 @@ describe('GPTChatInterface interactions', () => {
     });
     expect(onConversationChange).toHaveBeenCalledWith(createdConversation);
     expect(
-      screen.getByText(/streaming, typing indicators, and live hub push are not currently mapped by the backend/i),
+      screen.getByText(/manual trace fetch through the canonical GPT API/i),
     ).toBeInTheDocument();
 
     fireEvent.change(screen.getByPlaceholderText('Message County Valuation Helper...'), {
@@ -179,6 +224,22 @@ describe('GPTChatInterface interactions', () => {
 
     expect(await screen.findByText('Here is the county valuation summary.')).toBeInTheDocument();
     expect(screen.getByText('RAG: 2 docs')).toBeInTheDocument();
+
+    const traceButton = await screen.findByRole('button', { name: 'Trace & Sources' });
+
+    await waitFor(() => {
+      expect(traceButton).toBeEnabled();
+    });
+
+    fireEvent.click(traceButton);
+
+    await waitFor(() => {
+      expect(mockGetConversationTrace).toHaveBeenCalledWith(55);
+    });
+
+    expect(await screen.findByText('Source documents')).toBeInTheDocument();
+    expect(screen.getByText('Parcel Record 1234')).toBeInTheDocument();
+    expect(screen.getByText('https://county.example/parcel/1234')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Refresh conversation' }));
 
@@ -206,6 +267,39 @@ describe('GPTChatInterface interactions', () => {
     expect(mockGetConversation).toHaveBeenCalledWith(77);
     expect(mockGetConversationHistory).toHaveBeenCalledWith(77);
     expect(screen.getByText('Tokens: 88')).toBeInTheDocument();
+  });
+
+  it('labels empty trace states honestly when a response has no source details', async () => {
+    const gpt = makeGpt();
+    const existingConversation = makeConversation({ id: 77, totalMessages: 2 });
+    const existingHistory = [
+      makeMessage({ id: 301, conversationId: 77, role: 'user', content: 'Show trace status.', totalTokens: 8, cost: 0, ragDocumentsUsed: undefined, responseTime: undefined }),
+      makeMessage({ id: 302, conversationId: 77, content: 'No supporting documents were returned for this answer.', conversationId: 77, ragDocumentsUsed: undefined }),
+    ];
+
+    mockGetConversation.mockResolvedValue(existingConversation);
+    mockGetConversationHistory.mockResolvedValue(existingHistory);
+    mockGetConversationTrace.mockResolvedValue(
+      makeConversationTrace({
+        conversationId: 77,
+        messages: [
+          makeConversationTraceMessage({
+            id: 302,
+            content: 'No supporting documents were returned for this answer.',
+            ragDocuments: [],
+            ragChunkDetails: [],
+          }),
+        ],
+      }),
+    );
+
+    render(<GPTChatInterface gpt={gpt} conversationId={77} />);
+
+    expect(await screen.findByText('No supporting documents were returned for this answer.')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trace & Sources' }));
+
+    expect(await screen.findByText('Trace is present, but this response did not return source or chunk details.')).toBeInTheDocument();
   });
 
   it('surfaces initialization errors truthfully', async () => {

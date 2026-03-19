@@ -7,6 +7,8 @@ import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
 
 const API_BASE_URL = getViteEnv().VITE_API_URL || '';
+export const WAVE2_RAG_SERVICE_LANE = 'canonical';
+export const RAG_API_BASE_PATH = '/api/rag';
 
 // ==================== Types (mirror RAGDatasetManager local types) ====================
 
@@ -75,7 +77,7 @@ class RAGAPIService {
 
   constructor() {
     this.api = axios.create({
-      baseURL: `${API_BASE_URL}/api/rag`,
+      baseURL: `${API_BASE_URL}${RAG_API_BASE_PATH}`,
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -143,3 +145,4 @@ class RAGAPIService {
 
 /** Singleton instance — import this in components. */
 export const ragAPI = new RAGAPIService();
+export default ragAPI;

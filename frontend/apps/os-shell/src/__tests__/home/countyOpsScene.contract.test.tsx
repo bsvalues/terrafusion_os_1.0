@@ -93,7 +93,7 @@ vi.mock('../../lib/utils', () => ({
 // Mock useTodaysWork
 vi.mock('../../hooks/useTodaysWork', () => ({
   __esModule: true,
-  useTodaysWork: () => ({ tasks: [] }),
+  useTodaysWork: () => ({ tasks: [], loading: false, isSampleData: false }),
 }));
 
 // Import the REAL components/stores after mocks

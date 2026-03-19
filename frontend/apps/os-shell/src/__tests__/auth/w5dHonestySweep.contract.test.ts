@@ -21,22 +21,23 @@ function readSrc(relPath: string): string {
 }
 
 // ============================================================================
-// Gate 1 — useTodaysWork: fixture provenance disclosure
+// Gate 1 — useTodaysWork: API-first with fallback provenance
 // ============================================================================
 
-describe('Gate 1 — useTodaysWork exposes fixture provenance', () => {
+describe('Gate 1 — useTodaysWork exposes fallback provenance', () => {
   const src = readSrc('hooks/useTodaysWork.ts');
 
   it('returns isSampleData field', () => {
     expect(src).toContain('isSampleData');
   });
 
-  it('isSampleData defaults to true (always fixture)', () => {
-    expect(src).toMatch(/isSampleData:\s*true/);
+  it('defines SAMPLE_TASKS constant for bounded fallback', () => {
+    expect(src).toContain('SAMPLE_TASKS');
   });
 
-  it('defines SAMPLE_TASKS constant (not named as live data)', () => {
-    expect(src).toContain('SAMPLE_TASKS');
+  it('reads live queue tasks before falling back', () => {
+    expect(src).toContain("import { getQueueItems } from '../services/suites/queueService'");
+    expect(src).toContain('getQueueItems({ throwOnError: true })');
   });
 
   it('returns tasks, loading, and isSampleData in hook signature', () => {
@@ -45,39 +46,38 @@ describe('Gate 1 — useTodaysWork exposes fixture provenance', () => {
     expect(src).toContain('isSampleData:');
   });
 
-  it('has no fetch/API call (pure fixture hook)', () => {
-    expect(src).not.toContain('fetch(');
-    expect(src).not.toContain('axios');
-    expect(src).not.toContain('/api/');
+  it('tracks both live and fallback provenance states', () => {
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
   });
 });
 
 // ============================================================================
-// Gate 2 — useBudgetData: fixture provenance disclosure
+// Gate 2 — useBudgetData: API-first with fallback provenance
 // ============================================================================
 
-describe('Gate 2 — useBudgetData exposes fixture provenance', () => {
+describe('Gate 2 — useBudgetData exposes fallback provenance', () => {
   const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
 
   it('returns isSampleData field', () => {
     expect(src).toContain('isSampleData');
   });
 
-  it('isSampleData defaults to true (backend not yet integrated)', () => {
-    expect(src).toMatch(/isSampleData:\s*true/);
+  it('uses the governed API client for levy budget reads', () => {
+    expect(src).toMatch(/import\s+api\s+from\s+['"]@\/services\/api['"]/);
+    expect(src).toContain('/levy/dashboard/summary');
+    expect(src).toContain('/levy/budget/scenarios');
+    expect(src).toContain('/levy/budget/visualization');
   });
 
-  it('has no fetch/API call (pure no-op hook)', () => {
-    expect(src).not.toContain('fetch(');
-    expect(src).not.toContain('axios');
-    expect(src).not.toContain('/api/');
+  it('tracks both live and fallback provenance states', () => {
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
   });
 
-  it('refreshData and updateBudgetCategory are no-ops', () => {
+  it('refreshData and updateBudgetCategory remain exposed to consumers', () => {
     expect(src).toContain('refreshData');
     expect(src).toContain('updateBudgetCategory');
-    // Both callbacks are empty no-ops
-    expect(src).toMatch(/No-op until backend/);
   });
 });
 

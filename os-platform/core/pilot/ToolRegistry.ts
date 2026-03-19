@@ -16,7 +16,7 @@ import type { Mode, Risk, Suite, Tool, ToolManifest } from '../types/index.js';
 // Constants
 // ============================================================================
 
-const MANIFEST_VERSION = '1.3.0';
+const MANIFEST_VERSION = '2.0.0';
 const BASE_DIR = __dirname;
 const CANONICAL_MANIFEST_PATH = resolve(
   BASE_DIR,
@@ -137,6 +137,8 @@ function validateManifest(manifest: ToolManifest): string[] {
   // Version check
   if (!manifest.version) {
     violations.push('Manifest version is required');
+  } else if (manifest.version !== MANIFEST_VERSION) {
+    violations.push(`Manifest version must be ${MANIFEST_VERSION}, got ${manifest.version}`);
   }
 
   // Tools array

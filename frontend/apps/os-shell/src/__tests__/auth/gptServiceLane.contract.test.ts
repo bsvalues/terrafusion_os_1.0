@@ -17,6 +17,8 @@ describe('Gate 1 — canonical Wave 2 GPT service lane exports', () => {
     expect(gptApiSrc).toContain("export const WAVE2_GPT_SERVICE_LANE = 'canonical'");
     expect(gptApiSrc).toContain("export const GPT_API_BASE_PATH = '/api/gpt'");
     expect(gptApiSrc).toContain('baseURL: `${API_BASE_URL}${GPT_API_BASE_PATH}`');
+    expect(gptApiSrc).toContain('async getConversationTrace(conversationId: number)');
+    expect(gptApiSrc).toContain('`/conversations/${conversationId}/trace`');
   });
 
   it('ragAPI declares the canonical lane and base path', () => {
@@ -43,14 +45,14 @@ describe('Gate 2 — routed GPT surfaces use canonical services', () => {
     expect(managementSrc).toContain("from '@/services/gptHub'");
   });
 
-  it('dataset manager imports ragAPI and gptHub from services', () => {
+  it('dataset manager imports ragAPI from services and avoids hub wiring in this slice', () => {
     expect(ragSrc).toContain("from '@/services/ragAPI'");
-    expect(ragSrc).toContain("from '@/services/gptHub'");
+    expect(ragSrc).not.toContain("from '@/services/gptHub'");
   });
 
-  it('chat interface imports gptAPI and gptHub from services', () => {
+  it('chat interface imports gptAPI from services and avoids non-live hub wiring', () => {
     expect(chatSrc).toContain("from '@/services/gptAPI'");
-    expect(chatSrc).toContain("from '@/services/gptHub'");
+    expect(chatSrc).not.toContain("from '@/services/gptHub'");
   });
 
   it('the /gpt host only mounts management and rag surfaces for the live slice', () => {

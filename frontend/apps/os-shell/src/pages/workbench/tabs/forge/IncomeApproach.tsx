@@ -91,7 +91,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Full IncomeValuationPanel — existing 555-line component, no changes */}
-      <IncomeValuationPanel />
+      <IncomeValuationPanel taxYear={taxYear} />
 
       {/* Governed Tool: Quick Income Valuation */}
       <BentoCard title="&#128176; Quick Income Valuation" variant="default">

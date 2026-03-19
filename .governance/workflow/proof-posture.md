@@ -8,7 +8,7 @@ This note is the canonical proof-boundary artifact for the current checkpoint.
 - No lawful non-empty staged Muse/frontend slice exists in the current worktree.
 - No staged-cache proof may be claimed for the current checkpoint.
 - The full bounded Workbench real-host gate is now green.
-- The former Atlas blocker was stale; the actual combined-suite failure reduced to a bounded Dais lazy-host harness defect in `workbenchRealHosting.gate.test.tsx`.
+- The former Atlas blocker was stale; Phase 2 is closed via bounded real-host harness stabilization in `workbenchRealHosting.gate.test.tsx`.
 
 ## Verified Passing Evidence
 
@@ -31,7 +31,7 @@ This note is the canonical proof-boundary artifact for the current checkpoint.
 
 - `frontend/apps/os-shell/src/__tests__/workbench/workbenchRealHosting.gate.test.tsx`
 - Final classification: the combined host suite failure was not a real Atlas regression.
-- Final repair: align `LazyDais` to the module default export path and preload the real host tab modules before the lazy-host assertions.
+- Final repair: bounded real-host harness stabilization by aligning the Dais lazy path and preloading the real host tab modules before the lazy-host assertions.
 - Final state: the Workbench host suite passes without changing `PropertyAtlas.tsx` or `PropertyDais.tsx`.
 
 ## Interpretation Rule

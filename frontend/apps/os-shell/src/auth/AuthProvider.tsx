@@ -16,6 +16,7 @@ import { initTraceContext } from '@/services/terraTrace';
 // AuthContext and AuthContextValue live in authContextDef.ts to break the circular
 // import between this file and useAuthContext.ts.
 // Re-exported here for backward compatibility with existing importers.
+import { AuthContext } from './authContextDef';
 export { AuthContext } from './authContextDef';
 export type { AuthContextValue } from './authContextDef';
 

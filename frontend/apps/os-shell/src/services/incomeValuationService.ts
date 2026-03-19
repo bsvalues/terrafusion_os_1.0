@@ -12,6 +12,9 @@
  *   - Expense ratios: CostForge GET /api/costforge/income-approach/expense-ratios
  *   - Location premiums: CostForge GET /api/costforge/income-approach/location-premiums/benton
  *   - Market data: CostForge GET /api/costforge/income-approach/market-data/benton
+ *   - Save valuation: CostForge POST /api/costforge/valuations
+ *   - Get valuation: CostForge GET /api/costforge/valuations/{id}
+ *   - List parcel valuations: CostForge GET /api/costforge/parcels/{parcelId}/valuations
  *   - Client-side preview: forgeService.ts calculateIncome() (deprecated, offline only)
  *   - UI patterns: IncomeForgeModule.tsx (standalone module)
  *
@@ -77,6 +80,44 @@ export interface IncomeValuationResult {
   riskClassification: string;
   effectiveDate: string;
   source: string;
+}
+
+/** Input for saving an income valuation record */
+export interface SaveIncomeValuationRecordInput {
+  parcelId: string;
+  taxYear: number;
+  propertyType: string;
+  incomeApproachValue: number;
+  incomeConfidence?: string;
+  grossIncome: number;
+  vacancyRate: number;
+  operatingExpenses: number;
+  netOperatingIncome: number;
+  capRate: number;
+  notes?: string;
+}
+
+/** Minimal response from valuation save endpoint */
+export interface SaveValuationRecordResult {
+  id: string;
+  status: string;
+}
+
+/** Persisted valuation record shape consumed by the income lane */
+export interface ValuationRecord {
+  id: string;
+  parcelId: string;
+  taxYear: number;
+  propertyType: string;
+  incomeApproachValue?: number;
+  incomeConfidence?: string;
+  grossIncome?: number;
+  vacancyRate?: number;
+  operatingExpenses?: number;
+  netOperatingIncome?: number;
+  capRate?: number;
+  status?: string;
+  createdAt?: string;
 }
 
 /** Cap rate entry from cap-rates endpoint */
@@ -223,6 +264,77 @@ export async function calculateIncomeValuation(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+/** Save income valuation as a CostForge valuation record */
+export async function saveIncomeValuationRecord(
+  input: SaveIncomeValuationRecordInput,
+): Promise<SaveValuationRecordResult> {
+  const body = {
+    parcelId: input.parcelId,
+    taxYear: input.taxYear,
+    propertyType: input.propertyType,
+    incomeApproachValue: input.incomeApproachValue,
+    incomeConfidence: input.incomeConfidence,
+    grossIncome: input.grossIncome,
+    vacancyRate: input.vacancyRate,
+    operatingExpenses: input.operatingExpenses,
+    netOperatingIncome: input.netOperatingIncome,
+    capRate: input.capRate,
+    notes: input.notes,
+  };
+
+  const res = await fetch(`${COSTFORGE_BASE}/valuations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(`CostForge save valuation failed: ${res.status}`);
+  }
+
+  const data = (await res.json()) as {
+    id?: string;
+    Id?: string;
+    status?: string;
+    Status?: string;
+  };
+  const id = data.id ?? data.Id;
+  const status = data.status ?? data.Status ?? 'draft';
+
+  if (!id) {
+    throw new Error('CostForge save valuation failed: missing record id');
+  }
+
+  return { id, status };
+}
+
+/** Retrieve a saved valuation record by id */
+export async function fetchValuationRecord(recordId: string): Promise<ValuationRecord> {
+  const res = await fetch(`${COSTFORGE_BASE}/valuations/${encodeURIComponent(recordId)}`);
+  if (!res.ok) {
+    throw new Error(`CostForge valuation record fetch failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+/** Retrieve valuation history for a parcel, optionally narrowed by tax year */
+export async function fetchParcelValuationRecords(
+  parcelId: string,
+  taxYear?: number,
+): Promise<ValuationRecord[]> {
+  const query = taxYear !== undefined ? `?taxYear=${encodeURIComponent(String(taxYear))}` : '';
+  const res = await fetch(
+    `${COSTFORGE_BASE}/parcels/${encodeURIComponent(parcelId)}/valuations${query}`,
+  );
+
+  if (!res.ok) {
+    throw new Error(`CostForge parcel valuations failed: ${res.status}`);
+  }
+
+  const data = (await res.json()) as unknown;
+  return Array.isArray(data) ? (data as ValuationRecord[]) : [];
 }
 
 /** Fetch cap rates by property type */
