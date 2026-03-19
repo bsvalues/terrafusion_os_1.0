@@ -29,12 +29,16 @@ vi.mock('../../services/incomeValuationService', async () => {
   return {
     ...actual,
     calculateIncomeValuation: vi.fn(),
+    fetchValuationRecord: vi.fn(),
     previewValuation: vi.fn(),
+    saveIncomeValuationRecord: vi.fn(),
   };
 });
 
 const calculateIncomeValuation = vi.mocked(incomeService.calculateIncomeValuation);
+const fetchValuationRecord = vi.mocked(incomeService.fetchValuationRecord);
 const previewValuation = vi.mocked(incomeService.previewValuation);
+const saveIncomeValuationRecord = vi.mocked(incomeService.saveIncomeValuationRecord);
 
 describe('IncomeValuationPanel', () => {
   beforeEach(() => {
@@ -45,6 +49,16 @@ describe('IncomeValuationPanel', () => {
       propertyType: 'Commercial',
     };
     vi.clearAllMocks();
+    saveIncomeValuationRecord.mockResolvedValue({
+      id: 'val-123',
+      status: 'draft',
+    });
+    fetchValuationRecord.mockResolvedValue({
+      id: 'val-123',
+      parcelId: 'P-100',
+      taxYear: 2026,
+      propertyType: '300',
+    });
   });
 
   it('shows a no-parcel empty state when no parcel context exists', () => {
@@ -72,14 +86,29 @@ describe('IncomeValuationPanel', () => {
       source: 'backend-income',
     });
 
-    render(<IncomeValuationPanel />);
+    render(<IncomeValuationPanel taxYear={2026} />);
 
     fireEvent.click(screen.getByRole('button', { name: /run income valuation/i }));
 
     await waitFor(() => {
       expect(calculateIncomeValuation).toHaveBeenCalledTimes(1);
+      expect(saveIncomeValuationRecord).toHaveBeenCalledWith({
+        parcelId: 'P-100',
+        taxYear: 2026,
+        propertyType: '300',
+        incomeApproachValue: 1234000,
+        incomeConfidence: 'low',
+        grossIncome: 240000,
+        vacancyRate: 5,
+        operatingExpenses: 68500,
+        netOperatingIncome: 84000,
+        capRate: 7.5,
+        notes: 'Income approach valuation (backend-income)',
+      });
+      expect(fetchValuationRecord).toHaveBeenCalledWith('val-123');
       expect(screen.getByText(/\$1,234,000/)).toBeInTheDocument();
       expect(screen.getByText(/backend-income/i)).toBeInTheDocument();
+      expect(screen.getByText(/valuation record saved/i)).toBeInTheDocument();
     });
     expect(screen.queryByText(/preview only/i)).not.toBeInTheDocument();
   });
@@ -101,12 +130,14 @@ describe('IncomeValuationPanel', () => {
       source: 'Client-side preview (not authoritative)',
     });
 
-    render(<IncomeValuationPanel />);
+    render(<IncomeValuationPanel taxYear={2026} />);
 
     fireEvent.click(screen.getByRole('button', { name: /run income valuation/i }));
 
     await waitFor(() => {
       expect(previewValuation).toHaveBeenCalledTimes(1);
+      expect(saveIncomeValuationRecord).not.toHaveBeenCalled();
+      expect(fetchValuationRecord).not.toHaveBeenCalled();
       expect(screen.getByText(/backend unavailable/i)).toBeInTheDocument();
       expect(screen.getByText(/preview only/i)).toBeInTheDocument();
       expect(screen.getByText(/\$1,013,333/)).toBeInTheDocument();

@@ -4,13 +4,17 @@ import { IncomeApproach } from '../../pages/workbench/tabs/forge/IncomeApproach'
 import * as pilotApi from '../../api/pilotApi';
 
 let mockParcelId = 'P-100';
+const incomePanelPropSpy = vi.hoisted(() => vi.fn());
 
 vi.mock('../../context/workbenchTabContext', () => ({
   useWorkbenchTab: () => ({ parcelId: mockParcelId }),
 }));
 
 vi.mock('../../components/workbench/IncomeValuationPanel', () => ({
-  IncomeValuationPanel: () => <div data-testid="income-valuation-panel" />,
+  IncomeValuationPanel: ({ taxYear }: { taxYear?: number }) => {
+    incomePanelPropSpy({ taxYear });
+    return <div data-testid="income-valuation-panel" />;
+  },
 }));
 
 vi.mock('../../api/pilotApi', () => ({
@@ -23,6 +27,7 @@ describe('IncomeApproach wrapper', () => {
   beforeEach(() => {
     mockParcelId = 'P-100';
     vi.clearAllMocks();
+    incomePanelPropSpy.mockClear();
   });
 
   it('records history, emits value, and renders success output', async () => {
@@ -52,6 +57,8 @@ describe('IncomeApproach wrapper', () => {
         onValueIndicated={onValueIndicated}
       />,
     );
+
+    expect(incomePanelPropSpy).toHaveBeenCalledWith({ taxYear: 2026 });
 
     fireEvent.change(screen.getByLabelText(/annual rental income/i), {
       target: { value: '120000' },

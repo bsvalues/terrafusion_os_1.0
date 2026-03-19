@@ -16,7 +16,7 @@ const commandGovernance_js_1 = require("../types/commandGovernance.js");
 // ============================================================================
 // Constants
 // ============================================================================
-const MANIFEST_VERSION = '1.3.0';
+const MANIFEST_VERSION = '2.0.0';
 const BASE_DIR = __dirname;
 const CANONICAL_MANIFEST_PATH = (0, path_1.resolve)(BASE_DIR, '../../../tools/registry/terrapilot.tools.json');
 const VALID_SUITES = ['forge', 'atlas', 'dais', 'dossier', 'os', 'pilot', 'gpt', 'clerk', 'treasury', 'audit'];
@@ -116,6 +116,9 @@ function validateManifest(manifest) {
     // Version check
     if (!manifest.version) {
         violations.push('Manifest version is required');
+    }
+    else if (manifest.version !== MANIFEST_VERSION) {
+        violations.push(`Manifest version must be ${MANIFEST_VERSION}, got ${manifest.version}`);
     }
     // Tools array
     if (!Array.isArray(manifest.tools)) {

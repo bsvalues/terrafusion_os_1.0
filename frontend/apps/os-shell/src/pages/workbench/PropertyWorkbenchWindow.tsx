@@ -38,6 +38,7 @@ import { useRecentParcels, openWorkbenchWindow } from '../../context/parcelConte
 import { useParcelSearch } from '../../shell/command-palette/useParcelSearch';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useSession } from '../../auth/useSession';
+import { useAuthContext } from '../../auth/useAuthContext';
 import { LiquidPanel } from '../../ui/materials';
 import { cn } from '@/lib/utils';
 
@@ -531,6 +532,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   const parcelId = (metadata?.parcelId as string) ?? null;
   const initialTab = (metadata?.tabId as WorkbenchTabSlug) ?? 'summary';
   const session = useSession();
+  const auth = useAuthContext();
 
   // Resolve initial tab from metadata slug
   const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
@@ -573,8 +575,13 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   // Work Mode state
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
-  // ── Role-based tab visibility (wired to session.role — Wave 1) ──
-  const roles = useMemo(() => (session.role ? [session.role] : []), [session.role]);
+  // ── Role-based tab visibility (auth claims first, session fallback) ──
+  const countyId = auth.countyId ?? session.countyId;
+  const userId = auth.userId ?? session.userId;
+  const roles = useMemo(
+    () => (auth.roles.length > 0 ? [...auth.roles] : session.role ? [session.role] : []),
+    [auth.roles, session.role]
+  );
   const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved */
@@ -614,9 +621,9 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: session.countyId,
-      userId: session.userId,
-      roles: [],
+      countyId,
+      userId,
+      roles,
       parcelId,
       workMode,
     };
@@ -633,7 +640,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     });
 
     return () => { cancelled = true; };
-  }, [parcelId, workMode]);
+  }, [countyId, parcelId, roles, userId, workMode]);
 
   // Quick Actions — mode-aware, collected from providers
   const [quickActions, setQuickActions] = useState<QuickActionDefinition[]>([]);
@@ -643,9 +650,9 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: session.countyId,
-      userId: session.userId,
-      roles: [],
+      countyId,
+      userId,
+      roles,
       parcelId,
       workMode,
     };
@@ -662,7 +669,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     });
 
     return () => { cancelled = true; };
-  }, [parcelId, workMode]);
+  }, [countyId, parcelId, roles, userId, workMode]);
 
   // Pop out to full-screen route
   const handlePopOut = useCallback(() => {

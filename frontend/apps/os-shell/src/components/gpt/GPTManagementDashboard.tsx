@@ -1,7 +1,7 @@
 // TerraFusionGPT Suite: Management Dashboard Component
 // Elite Government OS Engineering - GPT Management & Administration
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Plus,
   Edit,
@@ -9,13 +9,10 @@ import {
   MessageSquare,
   BarChart3,
   Download,
-  Upload,
   Search,
   Filter,
-  TrendingUp,
   DollarSign,
   Users,
-  Clock,
   Star,
   Settings,
   Eye,
@@ -23,6 +20,7 @@ import {
   Copy,
   CheckCircle,
   AlertCircle,
+  Info,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,7 +33,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
@@ -62,7 +60,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { gptAPI, GPTConfiguration, GPTUsageStatistics } from '@/services/gptAPI';
 import { gptHub } from '@/services/gptHub';
 import { useSession } from '@/auth/useSession';
@@ -75,19 +75,184 @@ interface GPTManagementDashboardProps {
 
 type TabType = 'my-gpts' | 'installed' | 'all';
 type SortBy = 'recent' | 'popular' | 'cost' | 'name';
+type EditorMode = 'create' | 'edit';
 
-/**
- * GPT Management Dashboard - Manage created and installed GPTs
- */
-export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
-  onCreateGPT,
-  onEditGPT,
-  onChatWithGPT,
-}) => {
-  // Auth context
+type GPTFormState = {
+  name: string;
+  displayName: string;
+  description: string;
+  category: string;
+  modelProvider: string;
+  modelName: string;
+  systemPrompt: string;
+  temperature: string;
+  maxTokens: string;
+  topP: string;
+  frequencyPenalty: string;
+  presencePenalty: string;
+  enableRAG: boolean;
+  ragDatasetId: string;
+  ragTopK: string;
+  ragScoreThreshold: string;
+  enableFunctions: boolean;
+  functionsJson: string;
+  requiredRole: string;
+  isPublic: boolean;
+  isFeatured: boolean;
+  price: string;
+};
+
+const MODEL_PROVIDERS = ['OpenAI', 'Anthropic', 'Azure', 'Local'] as const;
+
+const DEFAULT_FORM_STATE: GPTFormState = {
+  name: '',
+  displayName: '',
+  description: '',
+  category: '',
+  modelProvider: 'OpenAI',
+  modelName: 'gpt-4.1-mini',
+  systemPrompt: '',
+  temperature: '0.7',
+  maxTokens: '4000',
+  topP: '1',
+  frequencyPenalty: '0',
+  presencePenalty: '0',
+  enableRAG: false,
+  ragDatasetId: '',
+  ragTopK: '5',
+  ragScoreThreshold: '0.7',
+  enableFunctions: false,
+  functionsJson: '',
+  requiredRole: '',
+  isPublic: false,
+  isFeatured: false,
+  price: '0',
+};
+
+function toFormState(gpt?: GPTConfiguration | null): GPTFormState {
+  if (!gpt) {
+    return { ...DEFAULT_FORM_STATE };
+  }
+
+  return {
+    name: gpt.name,
+    displayName: gpt.displayName,
+    description: gpt.description ?? '',
+    category: gpt.category ?? '',
+    modelProvider: gpt.modelProvider,
+    modelName: gpt.modelName,
+    systemPrompt: gpt.systemPrompt,
+    temperature: String(gpt.temperature),
+    maxTokens: String(gpt.maxTokens),
+    topP: String(gpt.topP),
+    frequencyPenalty: String(gpt.frequencyPenalty),
+    presencePenalty: String(gpt.presencePenalty),
+    enableRAG: gpt.enableRAG,
+    ragDatasetId: gpt.ragDatasetId ? String(gpt.ragDatasetId) : '',
+    ragTopK: String(gpt.ragTopK),
+    ragScoreThreshold: String(gpt.ragScoreThreshold),
+    enableFunctions: gpt.enableFunctions,
+    functionsJson: gpt.functionsJson ?? '',
+    requiredRole: gpt.requiredRole ?? '',
+    isPublic: gpt.isPublic,
+    isFeatured: gpt.isFeatured,
+    price: String(gpt.price),
+  };
+}
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (typeof error === 'object' && error !== null) {
+    const maybeResponse = error as {
+      response?: { data?: { error?: string; message?: string } };
+      message?: string;
+    };
+    return (
+      maybeResponse.response?.data?.error ||
+      maybeResponse.response?.data?.message ||
+      maybeResponse.message ||
+      fallback
+    );
+  }
+
+  return fallback;
+}
+
+function normalizeOptional(value: string): string | undefined {
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function parseInteger(value: string, fallback: number): number {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function parseDecimal(value: string, fallback: number): number {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function buildManagementPayload(
+  form: GPTFormState,
+  existing?: GPTConfiguration | null,
+): Partial<GPTConfiguration> {
+  return {
+    name: existing?.name ?? form.name.trim(),
+    displayName: form.displayName.trim(),
+    description: normalizeOptional(form.description),
+    category: normalizeOptional(form.category),
+    isSystemGPT: existing?.isSystemGPT ?? false,
+    isPublic: form.isPublic,
+    createdByUserId: existing?.createdByUserId,
+    countyId: existing?.countyId,
+    modelProvider: form.modelProvider,
+    modelName: form.modelName.trim(),
+    systemPrompt: form.systemPrompt.trim(),
+    temperature: parseDecimal(form.temperature, existing?.temperature ?? 0.7),
+    maxTokens: parseInteger(form.maxTokens, existing?.maxTokens ?? 4000),
+    topP: parseDecimal(form.topP, existing?.topP ?? 1),
+    frequencyPenalty: parseDecimal(
+      form.frequencyPenalty,
+      existing?.frequencyPenalty ?? 0,
+    ),
+    presencePenalty: parseDecimal(
+      form.presencePenalty,
+      existing?.presencePenalty ?? 0,
+    ),
+    enableRAG: form.enableRAG,
+    ragDatasetId:
+      form.enableRAG && form.ragDatasetId.trim().length > 0
+        ? parseInteger(form.ragDatasetId, existing?.ragDatasetId ?? 0)
+        : undefined,
+    ragTopK: parseInteger(form.ragTopK, existing?.ragTopK ?? 5),
+    ragScoreThreshold: parseDecimal(
+      form.ragScoreThreshold,
+      existing?.ragScoreThreshold ?? 0.7,
+    ),
+    enableFunctions: form.enableFunctions,
+    functionsJson: form.enableFunctions ? normalizeOptional(form.functionsJson) : undefined,
+    requiredRole: normalizeOptional(form.requiredRole),
+    totalConversations: existing?.totalConversations ?? 0,
+    totalMessages: existing?.totalMessages ?? 0,
+    totalTokensUsed: existing?.totalTokensUsed ?? 0,
+    totalCost: existing?.totalCost ?? 0,
+    averageRating: existing?.averageRating,
+    ratingCount: existing?.ratingCount ?? 0,
+    installCount: existing?.installCount ?? 0,
+    isFeatured: form.isFeatured,
+    price: parseDecimal(form.price, existing?.price ?? 0),
+    status: existing?.status ?? 'Active',
+    version: existing?.version ?? '1.0',
+    createdAt: existing?.createdAt,
+    updatedAt: existing?.updatedAt,
+    createdBy: existing?.createdBy,
+    updatedBy: existing?.updatedBy,
+  };
+}
+
+export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = () => {
   const session = useSession();
 
-  // State
   const [activeTab, setActiveTab] = useState<TabType>('my-gpts');
   const [allGPTs, setAllGPTs] = useState<GPTConfiguration[]>([]);
   const [myGPTs, setMyGPTs] = useState<GPTConfiguration[]>([]);
@@ -97,98 +262,84 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
-
-  // Statistics dialog
   const [statsDialogOpen, setStatsDialogOpen] = useState(false);
   const [selectedGPTStats, setSelectedGPTStats] = useState<GPTUsageStatistics | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
-
-  // Delete confirmation
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [gptToDelete, setGPTToDelete] = useState<GPTConfiguration | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // Success/Error messages
+  const [editorMode, setEditorMode] = useState<EditorMode>('create');
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editingGPT, setEditingGPT] = useState<GPTConfiguration | null>(null);
+  const [editorForm, setEditorForm] = useState<GPTFormState>(DEFAULT_FORM_STATE);
+  const [isSaving, setIsSaving] = useState(false);
+  const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  /**
-   * Load GPTs on mount
-   */
+  const clearMessages = () => {
+    setNoticeMessage(null);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+  };
+
+  const loadGPTs = async () => {
+    setIsLoading(true);
+
+    try {
+      const gpts = await gptAPI.getAvailableGPTs();
+      setAllGPTs(gpts);
+
+      const currentUserId = session.userId;
+      const myCreatedGPTs = gpts.filter((gpt) => gpt.createdByUserId === currentUserId);
+      const myInstalledGPTs = gpts.filter(
+        (gpt) => gpt.createdByUserId !== currentUserId && !gpt.isSystemGPT,
+      );
+
+      setMyGPTs(myCreatedGPTs);
+      setInstalledGPTs(myInstalledGPTs);
+
+      const nextCategories = Array.from(
+        new Set(gpts.map((gpt) => gpt.category).filter(Boolean)),
+      ) as string[];
+      setCategories(nextCategories);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error, 'Failed to load GPTs'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    loadGPTs();
+    void loadGPTs();
   }, []);
 
-  /**
-   * Connect to SignalR for real-time updates
-   */
   useEffect(() => {
     const connectHub = async () => {
       try {
         if (!gptHub.isConnected()) {
           await gptHub.start({
             onGPTUpdate: (update) => {
-              // Update GPT in lists
-              const updateGPTInList = (gpts: GPTConfiguration[]) =>
-                gpts.map((gpt) =>
-                  gpt.id === update.gptId ? { ...gpt, ...update.data } : gpt
-                );
+              const updateList = (gpts: GPTConfiguration[]) =>
+                gpts.map((gpt) => (gpt.id === update.gptId ? { ...gpt, ...update.data } : gpt));
 
-              setAllGPTs((prev) => updateGPTInList(prev));
-              setMyGPTs((prev) => updateGPTInList(prev));
-              setInstalledGPTs((prev) => updateGPTInList(prev));
+              setAllGPTs((prev) => updateList(prev));
+              setMyGPTs((prev) => updateList(prev));
+              setInstalledGPTs((prev) => updateList(prev));
             },
           });
         }
-      } catch (err) {
-        console.error('Failed to connect to GPT Hub:', err);
+      } catch (error) {
+        console.error('Failed to connect to GPT Hub:', error);
       }
     };
 
-    connectHub();
+    void connectHub();
   }, []);
 
-  /**
-   * Load all GPTs and categorize
-   */
-  const loadGPTs = async () => {
-    setIsLoading(true);
-
-    try {
-      // Get all available GPTs
-      const gpts = await gptAPI.getAvailableGPTs();
-      setAllGPTs(gpts);
-
-      // Use authenticated user ID from session
-      const currentUserId = session.userId;
-
-      // Separate my GPTs and installed GPTs
-      const myCreatedGPTs = gpts.filter((g) => g.createdByUserId === currentUserId);
-      const myInstalledGPTs = gpts.filter(
-        (g) => g.createdByUserId !== currentUserId && !g.isSystemGPT
-      );
-
-      setMyGPTs(myCreatedGPTs);
-      setInstalledGPTs(myInstalledGPTs);
-
-      // Extract categories
-      const cats = Array.from(new Set(gpts.map((g) => g.category).filter(Boolean))) as string[];
-      setCategories(cats);
-    } catch (err) {
-      setErrorMessage('Failed to load GPTs');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Get filtered and sorted GPTs for current tab
-   */
   const filteredGPTs = useMemo(() => {
     let gpts: GPTConfiguration[] = [];
 
-    // Select GPTs based on active tab
     switch (activeTab) {
       case 'my-gpts':
         gpts = myGPTs;
@@ -196,166 +347,175 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
       case 'installed':
         gpts = installedGPTs;
         break;
-      case 'all':
+      default:
         gpts = allGPTs;
         break;
     }
 
-    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       gpts = gpts.filter(
         (gpt) =>
           gpt.displayName.toLowerCase().includes(query) ||
           gpt.description?.toLowerCase().includes(query) ||
-          gpt.category?.toLowerCase().includes(query)
+          gpt.category?.toLowerCase().includes(query),
       );
     }
 
-    // Filter by category
     if (selectedCategory !== 'all') {
       gpts = gpts.filter((gpt) => gpt.category === selectedCategory);
     }
 
-    // Sort GPTs
-    gpts = [...gpts].sort((a, b) => {
+    return [...gpts].sort((left, right) => {
       switch (sortBy) {
         case 'recent':
-          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+          return new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime();
         case 'popular':
-          return b.installCount - a.installCount;
+          return right.installCount - left.installCount;
         case 'cost':
-          return b.totalCost - a.totalCost;
+          return right.totalCost - left.totalCost;
         case 'name':
-          return a.displayName.localeCompare(b.displayName);
+          return left.displayName.localeCompare(right.displayName);
         default:
           return 0;
       }
     });
+  }, [activeTab, allGPTs, installedGPTs, myGPTs, searchQuery, selectedCategory, sortBy]);
 
-    return gpts;
-  }, [activeTab, myGPTs, installedGPTs, allGPTs, searchQuery, selectedCategory, sortBy]);
+  const openCreateEditor = () => {
+    clearMessages();
+    setEditorMode('create');
+    setEditingGPT(null);
+    setEditorForm({ ...DEFAULT_FORM_STATE });
+    setEditorOpen(true);
+  };
 
-  /**
-   * Handle view statistics
-   */
+  const openEditEditor = (gpt: GPTConfiguration) => {
+    clearMessages();
+    setEditorMode('edit');
+    setEditingGPT(gpt);
+    setEditorForm(toFormState(gpt));
+    setEditorOpen(true);
+  };
+
+  const handleEditorSubmit = async () => {
+    clearMessages();
+    setIsSaving(true);
+
+    try {
+      const payload = buildManagementPayload(editorForm, editingGPT);
+
+      if (editorMode === 'create') {
+        const created = await gptAPI.createGPT(payload);
+        setSuccessMessage(`GPT "${created.displayName}" created successfully`);
+      } else if (editingGPT) {
+        const updated = await gptAPI.updateGPT(editingGPT.id, payload);
+        setSuccessMessage(`GPT "${updated.displayName}" updated successfully`);
+      }
+
+      setEditorOpen(false);
+      setEditingGPT(null);
+      await loadGPTs();
+    } catch (error) {
+      setErrorMessage(
+        getErrorMessage(
+          error,
+          editorMode === 'create' ? 'Failed to create GPT' : 'Failed to update GPT',
+        ),
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleViewStats = async (gpt: GPTConfiguration) => {
+    clearMessages();
     setLoadingStats(true);
     setStatsDialogOpen(true);
 
     try {
       const stats = await gptAPI.getGPTStatistics(gpt.id);
       setSelectedGPTStats(stats);
-    } catch (err) {
-      setErrorMessage('Failed to load statistics');
-      console.error(err);
+    } catch (error) {
+      setStatsDialogOpen(false);
+      setErrorMessage(getErrorMessage(error, 'Failed to load statistics'));
     } finally {
       setLoadingStats(false);
     }
   };
 
-  /**
-   * Handle edit GPT
-   */
-  const handleEdit = (gpt: GPTConfiguration) => {
-    onEditGPT?.(gpt);
-  };
-
-  /**
-   * Handle delete GPT
-   */
   const handleDeleteClick = (gpt: GPTConfiguration) => {
+    clearMessages();
     setGPTToDelete(gpt);
     setDeleteDialogOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
-    if (!gptToDelete) return;
+    if (!gptToDelete) {
+      return;
+    }
 
     setIsDeleting(true);
+    clearMessages();
 
     try {
       await gptAPI.deleteGPT(gptToDelete.id);
-      setSuccessMessage(`GPT "${gptToDelete.displayName}" deleted successfully`);
+      setSuccessMessage(`GPT "${gptToDelete.displayName}" archived successfully`);
       setDeleteDialogOpen(false);
       setGPTToDelete(null);
-
-      // Reload GPTs
       await loadGPTs();
-    } catch (err) {
-      setErrorMessage('Failed to delete GPT');
-      console.error(err);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error, 'Failed to delete GPT'));
     } finally {
       setIsDeleting(false);
     }
   };
 
-  /**
-   * Handle chat with GPT
-   */
-  const handleChat = (gpt: GPTConfiguration) => {
-    onChatWithGPT?.(gpt);
-  };
-
-  /**
-   * Handle duplicate GPT
-   */
   const handleDuplicate = async (gpt: GPTConfiguration) => {
+    clearMessages();
+
     try {
       const duplicate = await gptAPI.createGPT({
-        ...gpt,
-        id: undefined,
+        ...buildManagementPayload(toFormState(gpt), null),
         name: `${gpt.name}-copy`,
         displayName: `${gpt.displayName} (Copy)`,
-        createdAt: undefined,
-        updatedAt: undefined,
       });
-
       setSuccessMessage(`GPT duplicated as "${duplicate.displayName}"`);
       await loadGPTs();
-    } catch (err) {
-      setErrorMessage('Failed to duplicate GPT');
-      console.error(err);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error, 'Failed to duplicate GPT'));
     }
   };
 
-  /**
-   * Handle toggle GPT visibility
-   */
   const handleToggleVisibility = async (gpt: GPTConfiguration) => {
+    clearMessages();
+
     try {
-      await gptAPI.updateGPT(gpt.id, { isPublic: !gpt.isPublic });
-      setSuccessMessage(
-        `GPT is now ${!gpt.isPublic ? 'public' : 'private'}`
-      );
+      await gptAPI.updateGPT(gpt.id, { ...gpt, isPublic: !gpt.isPublic });
+      setSuccessMessage(`GPT is now ${!gpt.isPublic ? 'public' : 'private'}`);
       await loadGPTs();
-    } catch (err) {
-      setErrorMessage('Failed to update visibility');
-      console.error(err);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error, 'Failed to update visibility'));
     }
   };
 
-  /**
-   * Format cost display
-   */
-  const formatCost = (cost: number): string => {
-    return `$${cost.toFixed(4)}`;
+  const handleChat = (gpt: GPTConfiguration) => {
+    clearMessages();
+    setNoticeMessage(
+      `Chat for ${gpt.displayName} stays queued until CP-W2-5 when conversation truth is opened.`,
+    );
   };
 
-  /**
-   * Format number display
-   */
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
+  const formatCost = (cost: number): string => `$${cost.toFixed(4)}`;
+
+  const formatNumber = (value: number): string => {
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+    return value.toString();
   };
 
-  /**
-   * Render GPT card
-   */
   const renderGPTCard = (gpt: GPTConfiguration) => {
-    const isMyGPT = myGPTs.some((g) => g.id === gpt.id);
+    const isMyGPT = myGPTs.some((candidate) => candidate.id === gpt.id);
 
     return (
       <Card key={gpt.id} className="hover:shadow-lg transition-shadow">
@@ -372,7 +532,7 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
 
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-lg truncate">{gpt.displayName}</CardTitle>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
                   {gpt.category && <Badge variant="secondary">{gpt.category}</Badge>}
                   {gpt.isSystemGPT && <Badge variant="outline">System</Badge>}
                   {isMyGPT && <Badge>Created by Me</Badge>}
@@ -380,36 +540,39 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
               </div>
             </div>
 
-            {/* Actions Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label={`Manage GPT ${gpt.displayName}`}
+                >
                   <Settings className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleChat(gpt)}>
+                <DropdownMenuItem disabled onSelect={(event) => event.preventDefault()}>
                   <MessageSquare className="h-4 w-4 mr-2" />
-                  Start Chat
+                  Chat queued for CP-W2-5
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleViewStats(gpt)}>
+                <DropdownMenuItem onClick={() => void handleViewStats(gpt)}>
                   <BarChart3 className="h-4 w-4 mr-2" />
                   View Statistics
                 </DropdownMenuItem>
                 {isMyGPT && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => handleEdit(gpt)}>
+                    <DropdownMenuItem onClick={() => openEditEditor(gpt)}>
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Configuration
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleDuplicate(gpt)}>
+                    <DropdownMenuItem onClick={() => void handleDuplicate(gpt)}>
                       <Copy className="h-4 w-4 mr-2" />
                       Duplicate
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleToggleVisibility(gpt)}>
+                    <DropdownMenuItem onClick={() => void handleToggleVisibility(gpt)}>
                       {gpt.isPublic ? (
                         <>
                           <EyeOff className="h-4 w-4 mr-2" />
@@ -423,10 +586,7 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
                       )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => handleDeleteClick(gpt)}
-                      className="text-red-600"
-                    >
+                    <DropdownMenuItem onClick={() => handleDeleteClick(gpt)} className="text-red-600">
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete
                     </DropdownMenuItem>
@@ -440,7 +600,6 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
         <CardContent>
           <CardDescription className="line-clamp-2 mb-4">{gpt.description}</CardDescription>
 
-          {/* Key Metrics */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="flex items-center gap-2 text-sm">
               <MessageSquare className="h-4 w-4 text-gray-500" />
@@ -468,8 +627,7 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
             </div>
           </div>
 
-          {/* Model Info */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
             <Badge variant="outline" className="text-xs">
               {gpt.modelProvider}
             </Badge>
@@ -488,25 +646,36 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
             )}
           </div>
 
-          {/* Status */}
           <div className="flex items-center justify-between text-xs text-gray-500">
             <span>Updated {new Date(gpt.updatedAt).toLocaleDateString()}</span>
-            <Badge variant={gpt.status === 'Active' ? 'default' : 'secondary'}>
-              {gpt.status}
-            </Badge>
+            <Badge variant={gpt.status === 'Active' ? 'default' : 'secondary'}>{gpt.status}</Badge>
           </div>
         </CardContent>
 
         <CardFooter className="flex gap-2">
-          <Button className="flex-1" onClick={() => handleChat(gpt)}>
+          <Button
+            className="flex-1"
+            variant="outline"
+            disabled
+            aria-label={`Chat queued for ${gpt.displayName}`}
+            onClick={() => handleChat(gpt)}
+          >
             <MessageSquare className="h-4 w-4 mr-2" />
-            Chat
+            Chat queued
           </Button>
-          <Button variant="outline" onClick={() => handleViewStats(gpt)}>
+          <Button
+            variant="outline"
+            aria-label={`View statistics for ${gpt.displayName}`}
+            onClick={() => void handleViewStats(gpt)}
+          >
             <BarChart3 className="h-4 w-4" />
           </Button>
           {isMyGPT && (
-            <Button variant="outline" onClick={() => handleEdit(gpt)}>
+            <Button
+              variant="outline"
+              aria-label={`Edit GPT ${gpt.displayName}`}
+              onClick={() => openEditEditor(gpt)}
+            >
               <Edit className="h-4 w-4" />
             </Button>
           )}
@@ -515,9 +684,6 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
     );
   };
 
-  /**
-   * Render statistics dialog
-   */
   const renderStatsDialog = () => {
     if (!selectedGPTStats) return null;
 
@@ -538,7 +704,6 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Key Metrics Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card>
                   <CardHeader className="pb-2">
@@ -577,7 +742,6 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
                 </Card>
               </div>
 
-              {/* Additional Metrics */}
               <div className="grid grid-cols-2 gap-4">
                 <Card>
                   <CardHeader className="pb-2">
@@ -601,29 +765,21 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
                       <p className="text-xl font-semibold">
                         {selectedGPTStats.averageRating.toFixed(1)}/5.0
                       </p>
-                      <span className="text-sm text-gray-500">
-                        ({selectedGPTStats.ratingCount} ratings)
-                      </span>
+                      <span className="text-sm text-gray-500">({selectedGPTStats.ratingCount} ratings)</span>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Cost Per Conversation */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-sm">Cost Per Conversation</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-lg">
-                    {formatCost(
-                      selectedGPTStats.totalCost / Math.max(selectedGPTStats.totalConversations, 1)
-                    )}
+                    {formatCost(selectedGPTStats.totalCost / Math.max(selectedGPTStats.totalConversations, 1))}
                   </p>
-                  <Progress
-                    value={(selectedGPTStats.totalCost / 100) * 100}
-                    className="mt-2"
-                  />
+                  <Progress value={Math.min(selectedGPTStats.totalCost, 100)} className="mt-2" />
                 </CardContent>
               </Card>
             </div>
@@ -639,67 +795,365 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
     );
   };
 
-  /**
-   * Render delete confirmation dialog
-   */
-  const renderDeleteDialog = () => {
-    return (
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete GPT</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete "{gptToDelete?.displayName}"? This action cannot be
-              undone.
-            </DialogDescription>
-          </DialogHeader>
+  const renderDeleteDialog = () => (
+    <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete GPT</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete "{gptToDelete?.displayName}"? This action archives the GPT from active collections.
+          </DialogDescription>
+        </DialogHeader>
 
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              All conversations and usage data for this GPT will be permanently deleted.
-            </AlertDescription>
-          </Alert>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Active listings will drop this GPT after deletion. Historical records may still exist for audit continuity.
+          </AlertDescription>
+        </Alert>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isDeleting}>
-              {isDeleting ? 'Deleting...' : 'Delete GPT'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  };
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={() => void handleDeleteConfirm()} disabled={isDeleting}>
+            {isDeleting ? 'Deleting...' : 'Delete GPT'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
+  const renderEditorDialog = () => (
+    <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{editorMode === 'create' ? 'Create GPT' : 'Edit GPT Configuration'}</DialogTitle>
+          <DialogDescription>
+            {editorMode === 'create'
+              ? 'Create a real GPT configuration on the canonical /api/gpt surface.'
+              : 'Update the live GPT configuration using the canonical /api/gpt/{id} contract.'}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-6 py-2 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="gpt-name">GPT name</Label>
+            <Input
+              id="gpt-name"
+              aria-label="GPT name"
+              value={editorForm.name}
+              disabled={editorMode === 'edit' || isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, name: event.target.value }))}
+            />
+            {editorMode === 'edit' && (
+              <p className="text-xs text-gray-500">Backend truth: `name` is immutable after creation in the update lane.</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-display-name">Display name</Label>
+            <Input
+              id="gpt-display-name"
+              aria-label="GPT display name"
+              value={editorForm.displayName}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, displayName: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="gpt-description">Description</Label>
+            <Textarea
+              id="gpt-description"
+              aria-label="GPT description"
+              value={editorForm.description}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, description: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-category">Category</Label>
+            <Input
+              id="gpt-category"
+              aria-label="GPT category"
+              value={editorForm.category}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, category: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-model-provider">Model provider</Label>
+            <Select
+              value={editorForm.modelProvider}
+              onValueChange={(value) => setEditorForm((prev) => ({ ...prev, modelProvider: value }))}
+              disabled={isSaving}
+            >
+              <SelectTrigger id="gpt-model-provider" aria-label="GPT model provider">
+                <SelectValue placeholder="Model provider" />
+              </SelectTrigger>
+              <SelectContent>
+                {MODEL_PROVIDERS.map((provider) => (
+                  <SelectItem key={provider} value={provider}>
+                    {provider}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-model-name">Model name</Label>
+            <Input
+              id="gpt-model-name"
+              aria-label="GPT model name"
+              value={editorForm.modelName}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, modelName: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-required-role">Required role</Label>
+            <Input
+              id="gpt-required-role"
+              aria-label="GPT required role"
+              value={editorForm.requiredRole}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, requiredRole: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="gpt-system-prompt">System prompt</Label>
+            <Textarea
+              id="gpt-system-prompt"
+              aria-label="GPT system prompt"
+              value={editorForm.systemPrompt}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, systemPrompt: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-temperature">Temperature</Label>
+            <Input
+              id="gpt-temperature"
+              aria-label="GPT temperature"
+              type="number"
+              min="0"
+              max="2"
+              step="0.1"
+              value={editorForm.temperature}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, temperature: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-max-tokens">Max tokens</Label>
+            <Input
+              id="gpt-max-tokens"
+              aria-label="GPT max tokens"
+              type="number"
+              min="100"
+              max="128000"
+              value={editorForm.maxTokens}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, maxTokens: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-top-p">Top P</Label>
+            <Input
+              id="gpt-top-p"
+              aria-label="GPT top p"
+              type="number"
+              min="0"
+              max="1"
+              step="0.1"
+              value={editorForm.topP}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, topP: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gpt-price">Price</Label>
+            <Input
+              id="gpt-price"
+              aria-label="GPT price"
+              type="number"
+              min="0"
+              step="0.01"
+              value={editorForm.price}
+              disabled={isSaving}
+              onChange={(event) => setEditorForm((prev) => ({ ...prev, price: event.target.value }))}
+            />
+          </div>
+
+          <div className="space-y-3 rounded-lg border p-4 md:col-span-2">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label htmlFor="gpt-public-switch">Public visibility</Label>
+                <p className="text-xs text-gray-500">Uses the canonical update contract on the GPT record.</p>
+              </div>
+              <Switch
+                id="gpt-public-switch"
+                aria-label="GPT public visibility"
+                checked={editorForm.isPublic}
+                disabled={isSaving}
+                onCheckedChange={(checked) => setEditorForm((prev) => ({ ...prev, isPublic: checked }))}
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label htmlFor="gpt-featured-switch">Featured</Label>
+                <p className="text-xs text-gray-500">Featured state persists as `isFeatured` on the GPT record.</p>
+              </div>
+              <Switch
+                id="gpt-featured-switch"
+                aria-label="GPT featured"
+                checked={editorForm.isFeatured}
+                disabled={isSaving}
+                onCheckedChange={(checked) => setEditorForm((prev) => ({ ...prev, isFeatured: checked }))}
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label htmlFor="gpt-rag-switch">Enable RAG</Label>
+                <p className="text-xs text-gray-500">If enabled, backend validation requires a dataset id.</p>
+              </div>
+              <Switch
+                id="gpt-rag-switch"
+                aria-label="GPT enable rag"
+                checked={editorForm.enableRAG}
+                disabled={isSaving}
+                onCheckedChange={(checked) => setEditorForm((prev) => ({ ...prev, enableRAG: checked }))}
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label htmlFor="gpt-functions-switch">Enable functions</Label>
+                <p className="text-xs text-gray-500">Function JSON only ships when this is enabled.</p>
+              </div>
+              <Switch
+                id="gpt-functions-switch"
+                aria-label="GPT enable functions"
+                checked={editorForm.enableFunctions}
+                disabled={isSaving}
+                onCheckedChange={(checked) => setEditorForm((prev) => ({ ...prev, enableFunctions: checked }))}
+              />
+            </div>
+          </div>
+
+          {editorForm.enableRAG && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="gpt-rag-dataset-id">RAG dataset id</Label>
+                <Input
+                  id="gpt-rag-dataset-id"
+                  aria-label="GPT rag dataset id"
+                  type="number"
+                  value={editorForm.ragDatasetId}
+                  disabled={isSaving}
+                  onChange={(event) => setEditorForm((prev) => ({ ...prev, ragDatasetId: event.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="gpt-rag-top-k">RAG Top K</Label>
+                <Input
+                  id="gpt-rag-top-k"
+                  aria-label="GPT rag top k"
+                  type="number"
+                  min="1"
+                  value={editorForm.ragTopK}
+                  disabled={isSaving}
+                  onChange={(event) => setEditorForm((prev) => ({ ...prev, ragTopK: event.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="gpt-rag-threshold">RAG score threshold</Label>
+                <Input
+                  id="gpt-rag-threshold"
+                  aria-label="GPT rag score threshold"
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={editorForm.ragScoreThreshold}
+                  disabled={isSaving}
+                  onChange={(event) => setEditorForm((prev) => ({ ...prev, ragScoreThreshold: event.target.value }))}
+                />
+              </div>
+            </>
+          )}
+
+          {editorForm.enableFunctions && (
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="gpt-functions-json">Functions JSON</Label>
+              <Textarea
+                id="gpt-functions-json"
+                aria-label="GPT functions json"
+                value={editorForm.functionsJson}
+                disabled={isSaving}
+                onChange={(event) => setEditorForm((prev) => ({ ...prev, functionsJson: event.target.value }))}
+              />
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setEditorOpen(false)} disabled={isSaving}>
+            Cancel
+          </Button>
+          <Button onClick={() => void handleEditorSubmit()} disabled={isSaving}>
+            {isSaving ? 'Saving...' : editorMode === 'create' ? 'Create GPT' : 'Save Changes'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
+    <div className="h-full flex flex-col" data-testid="gpt-management-dashboard">
       <div className="p-6 border-b">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
           <div>
             <h1 className="text-3xl font-bold">My GPTs</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Manage your created and installed GPTs
+              Create, edit, review statistics, and retire GPT configurations on the canonical service lane.
             </p>
           </div>
 
-          <Button onClick={onCreateGPT}>
+          <Button onClick={openCreateEditor} aria-label="Create GPT">
             <Plus className="h-4 w-4 mr-2" />
             Create GPT
           </Button>
         </div>
 
-        {/* Search and Filters */}
-        <div className="flex gap-4">
-          <div className="flex-1 relative">
+        <Alert className="mb-4 border-blue-200 bg-blue-50 text-blue-900">
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Live in this slice: create, edit, duplicate, visibility, delete, and statistics. Chat remains deferred until CP-W2-5.
+          </AlertDescription>
+        </Alert>
+
+        <div className="flex gap-4 flex-wrap">
+          <div className="flex-1 relative min-w-[280px]">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search GPTs..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(event) => setSearchQuery(event.target.value)}
               className="pl-10"
             />
           </div>
@@ -711,15 +1165,15 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}>
+          <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortBy)}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -733,7 +1187,12 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
         </div>
       </div>
 
-      {/* Success/Error Messages */}
+      {noticeMessage && (
+        <Alert className="m-6 mb-0">
+          <Info className="h-4 w-4" />
+          <AlertDescription>{noticeMessage}</AlertDescription>
+        </Alert>
+      )}
       {successMessage && (
         <Alert className="m-6 mb-0">
           <CheckCircle className="h-4 w-4" />
@@ -747,40 +1206,30 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
         </Alert>
       )}
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)} className="flex-1 flex flex-col">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabType)} className="flex-1 flex flex-col">
         <div className="px-6 pt-4 border-b">
           <TabsList>
-            <TabsTrigger value="my-gpts">
-              My GPTs ({myGPTs.length})
-            </TabsTrigger>
-            <TabsTrigger value="installed">
-              Installed ({installedGPTs.length})
-            </TabsTrigger>
-            <TabsTrigger value="all">
-              All Available ({allGPTs.length})
-            </TabsTrigger>
+            <TabsTrigger value="my-gpts">My GPTs ({myGPTs.length})</TabsTrigger>
+            <TabsTrigger value="installed">Installed ({installedGPTs.length})</TabsTrigger>
+            <TabsTrigger value="all">All Available ({allGPTs.length})</TabsTrigger>
           </TabsList>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-full">
             <div className="p-6">
               {isLoading ? (
-                <div className="text-center py-12">
+                <div className="text-center py-12" data-testid="gpt-management-loading">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
                   <p className="text-gray-600 dark:text-gray-400 mt-4">Loading GPTs...</p>
                 </div>
               ) : filteredGPTs.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    {activeTab === 'my-gpts'
-                      ? "You haven't created any GPTs yet"
-                      : "No GPTs found"}
+                    {activeTab === 'my-gpts' ? "You haven't created any GPTs yet" : 'No GPTs found'}
                   </p>
                   {activeTab === 'my-gpts' && (
-                    <Button onClick={onCreateGPT}>
+                    <Button onClick={openCreateEditor}>
                       <Plus className="h-4 w-4 mr-2" />
                       Create Your First GPT
                     </Button>
@@ -796,11 +1245,9 @@ export const GPTManagementDashboard: React.FC<GPTManagementDashboardProps> = ({
         </div>
       </Tabs>
 
-      {/* Statistics Dialog */}
       {renderStatsDialog()}
-
-      {/* Delete Confirmation Dialog */}
       {renderDeleteDialog()}
+      {renderEditorDialog()}
     </div>
   );
 };
