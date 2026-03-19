@@ -9,8 +9,8 @@ Status: draft
 
 | Gate | Evidence Reference | Owner | Status |
 |---|---|---|---|
-| G1 | docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md (CP-12 row) | Orchestrator | pending |
-| G2 | docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md (CP-13 row) | Orchestrator | pending |
+| G1 | .governance/workflow/TRUTH_GATE_2026-03-19.md | Orchestrator | pass |
+| G2 | docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md | Orchestrator | pass |
 | G3 | docs/superpowers/plans/2026-03-19-cp14-tenant-rbac-isolation-closure-packet.md | Platform Security Owner | pending |
 | G4 | docs/superpowers/plans/2026-03-19-cp14-tenant-rbac-isolation-closure-packet.md | Platform Security Owner | pending |
 | G5 | docs/superpowers/plans/2026-03-19-cp15-runtime-completeness-closure-packet.md | Suite Runtime Owner | pending |

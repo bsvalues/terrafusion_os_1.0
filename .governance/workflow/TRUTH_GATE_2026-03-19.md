@@ -67,3 +67,21 @@ Entry conditions met:
 - PR #656: confirmed merged, R1 evidence intact
 
 Proceed to Sprint 0.
+
+---
+
+## Rerun Evidence Update (Copilot Deep-Dive Session)
+
+**Rerun timestamp**: 2026-03-19
+**Rerun HEAD**: `99988b8a6`
+
+| Check | Command | Result | Notes |
+|-------|---------|--------|-------|
+| dotnet build | `dotnet build TerraFusion.sln --configuration Release` | ✅ PASS | 0 errors (warnings remain non-blocking) |
+| TypeScript type-check | `pnpm run type-check` | ✅ PASS | clean |
+| Duplicate-definition scan | `node --test os-platform/core/tests/phase83-tools.test.mjs` | ✅ PASS | 56/56 |
+| Office-scope runtime policy | `node --test os-platform/core/tests/phase85-tools.test.mjs` | ✅ PASS | 22/22 |
+| ToolRunner canonical execution | `node --test os-platform/core/tests/phase86-toolrunner.test.mjs` | ✅ PASS | 9/9 |
+| Auth baseline | `pnpm vitest run src/__tests__/auth/` | ✅ PASS | command exit 0 |
+
+Rerun verdict: Truth Gate remains GREEN.

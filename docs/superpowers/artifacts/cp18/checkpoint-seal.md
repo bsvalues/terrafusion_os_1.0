@@ -3,13 +3,14 @@
 Date: 2026-03-19
 Phase: CP-18
 Gate: G9
-Status: pending
+Status: blocked
 
 ## Seal Decision
 
-- Entry criteria met: pending
-- Gate result: pending
+- Entry criteria met: partial
+- Gate result: blocked
 - Next entry condition: CP-19 opens only after G9 green and signed residual risk.
+- Blocker: `pnpm run validate:compliance` fails due to missing `mcp-init-validation.cjs`.
 
 ## Approvals
 
