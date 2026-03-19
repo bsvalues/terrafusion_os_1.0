@@ -20,7 +20,7 @@
 | **Phase** | **Phase 11 + tool trace patch CLOSED** — all phases 6–11 sealed; 532/532 frontend + 31/31 backend contract tests green |
 | **Task** | Phases 6–11 CLOSED; TerraPilotPanel emitToolInvoked/Succeeded/Failed instrument fix |
 | **Status** | 🟢 All phases CLOSED — working tree clean |
-| **Latest Commit** | `ba6d14b3c` (TerraPilotPanel tool trace fix — 532/532 ✅) |
+| **Latest Commit** | `217d631ce` (docs workflow metadata refresh) |
 
 ## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
 
