@@ -90,7 +90,7 @@ export const AppContextMenu: React.FC<AppContextMenuProps> = ({ module, position
     return null;
   }
 
-  const iconKey = module.icon || (module as any).iconName || 'Package';
+  const iconKey = module.icon || 'Package';
   const Icon = getLucideIcon(iconKey);
 
   // Check if current module is pinned
