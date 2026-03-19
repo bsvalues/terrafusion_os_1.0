@@ -19,7 +19,7 @@
 | **Phase** | **Phase 35-G OPEN** — SW Phase 1 trace bridge implemented; SW Phase 2 constrained by governance scope |
 | **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 implementation active (SW Phase 1 complete) |
 | **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 IN PROGRESS |
-| **Latest Commit** | `23beb0dc2` (CP-35-F charter synthesis) |
+| **Latest Commit** | `32ba2cd72` (CP-35-G1 SW Phase 1 trace bridge + proof wall) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -81,7 +81,8 @@
 
 **Gate transition:**
 - `GATE-35-2` consumed by explicit founder go 2026-03-19
-- Phase 35-G remains blocked on founder acceptance of `docs/superpowers/plans/2026-03-19-aiswarm-charter.md`
+- Founder accepted AI Swarm charter via `go` on 2026-03-19 (`GATE-35-3` consumed)
+- Phase 35-G opened; SW Phase 1 closed in `32ba2cd72`; SW Phase 2 remains blocked by governance scope constraints
 
 **Classification:** Implemented bounded recon + planning slice (no production behavior changes)
 
@@ -91,7 +92,7 @@
 
 **Date**: 2026-03-19  
 **Branch**: post-r3/w5f-registry-edge-cleanup  
-**Commit baseline**: pending (current HEAD before commit: `23beb0dc2`)
+**Commit baseline**: `32ba2cd72`
 
 ### Verdict: PASS — GREEN (bounded implementation in allowed core scope)
 
