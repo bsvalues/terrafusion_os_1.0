@@ -15,11 +15,27 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 28 — Phase 7: Sovereign Spine — VERIFIED (pre-existing, sealed at a7fa3cde7)** |
-| **Phase** | Phase 7 — **CP-W7-1 CLOSED** ✅ (VERIFIED, not newly built) |
-| **Task** | ITerraOperation, TruthGate, C# mirror, source tagging — all pre-existing; 18/18 vitest contract tests PASS |
-| **Status** | ✅ VERIFIED — hard stop reinstated |
-| **Latest Commit** | `ee2e2e369` (no new commits — Phase 7 pre-existing) |
+| **Slice** | **Slice 29 — Phase 8: TerraTrace Fidelity + Honesty Sweep** |
+| **Phase** | Phase 8 — **CP-W8-1 CLOSED** ✅ |
+| **Task** | sweep.ts + verify-ops.ts CLI tools; TraceContractTests 9→20; PII email fix |
+| **Status** | ✅ SEALED — hard stop reinstated |
+| **Latest Commit** | `0a0d57fe5` |
+
+## Phase 8 — CP-W8-1 CLOSED — 2026-03-18
+
+### Deliverables
+
+| Artifact | Result |
+|----------|--------|
+| `tools/tf/sweep.ts` — drift detector | ✅ Created; exits 1 on 18 drift sites detected |
+| `tools/tf/verify-ops.ts` — shadow write detector | ✅ Created; exits 1 on 13 candidates detected |
+| `TraceContractTests.cs` expanded 9→20 | ✅ 20/20 PASS |
+| `AuthenticationConfiguration.cs` PII fix | ✅ `{Email}` → `{EmailHash}` |
+| Frontend phase8 contract tests | ✅ 13/13 PASS (pre-existing) |
+| Type-check | ✅ CLEAN |
+| dotnet build | ✅ 0 errors |
+
+**Phase 9 (TerraPilot Muse Mode) requires new explicit founder go.**
 
 ## Phase 7 — CP-W7-1 CLOSED — 2026-03-18 (VERIFIED)
 
