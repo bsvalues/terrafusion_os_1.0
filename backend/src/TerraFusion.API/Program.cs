@@ -701,6 +701,9 @@ else
   Console.WriteLine("ℹ️ QuantumMetricsBackgroundService disabled by default. Set TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE=true to enable.");
 }
 
+// Phase 11 — Sovereign Guard: verify sovereign.yaml manifest at startup
+builder.Services.AddSingleton<SovereignGuard>();
+
 // Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
 {
@@ -721,6 +724,17 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Phase 11 — Sovereign Guard: fail fast if manifest is missing or tampered
+{
+  var sovereignGuard = app.Services.GetRequiredService<SovereignGuard>();
+  var verification = sovereignGuard.Verify();
+  if (!verification.IsValid)
+  {
+    Console.Error.WriteLine($"[SOVEREIGN VIOLATION] {verification.Violation}. Startup blocked.");
+    Environment.Exit(1);
+  }
+}
 
 // 🤖 Seed GPT configurations on startup (PropertyAssessmentGPT, etc.)
 using (var scope = app.Services.CreateScope())
