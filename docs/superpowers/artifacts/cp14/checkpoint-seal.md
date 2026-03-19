@@ -20,6 +20,9 @@ Status: open — implementation pending
 
 - Controller audit completed against current code in `backend/src/TerraFusion.API/Controllers/*`.
 - G3/G4 remain open and require backend writer-lane implementation.
+- Line-level evidence and backend patch checklist are captured in:
+  - `docs/superpowers/artifacts/cp14/isolation-proof.md`
+  - `docs/superpowers/artifacts/cp14/rbac-proof.md`
 
 ## Sprint 0 Completed Items
 

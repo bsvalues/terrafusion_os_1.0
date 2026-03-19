@@ -42,6 +42,22 @@ Controller audit completed against current code:
 
 Result: G3 remains open; explicit code changes are required.
 
+## Line-Level Evidence
+
+- `PropertiesController`
+	- `GetProperties` optional county query: `Guid? countyId = null` (line 28)
+	- entrypoint missing mandatory claim/query reconciliation: `GetProperties` (line 24)
+	- protected single-record path uses claim extraction: `TryGetCountyId` (line 64), but collection/stat endpoints do not
+	- non-isolated endpoints needing contract review: `GetPropertyByParcel` (line 72), `GetPropertyValuations` (line 90), `CreateValuation` (line 105), `GetPropertyStats` (line 121)
+- `DaisController`
+	- class has `[Authorize]` (line 21) but many endpoints are `[AllowAnonymous]` (examples at lines 128, 145, 161, 179, 206)
+	- claim resolver entrypoint: `ResolveCountyIdAsync` (line 55)
+	- missing-claim path returns `Forbid()` (line 227) where phase contract requires 401 fail-closed
+- `MarketplaceController`
+	- class lacks `[Authorize]` between `[ApiController]` (line 10) and route (line 11)
+	- stub metrics are still wired in plugin projection (lines 42-44)
+	- stub helper implementations remain (`GetDownloadCount` line 150, `GetRating` line 160, `GetRatingCount` line 170)
+
 ## Pass Conditions (G3)
 
 - All critical county boundaries enforced in controller layer
@@ -78,3 +94,19 @@ Required backend tests to add in handoff:
 	- county mismatch returns 403
 - `MarketplaceController`:
 	- unauthorized requests return 401
+
+## Backend Patch Checklist (implementation lane)
+
+- `PropertiesController`
+	- require county context on all read/write endpoints (claim and/or query contract)
+	- enforce: missing county context => 400
+	- enforce: request county mismatch to claim => 403
+	- ensure property/valuation/stats queries pass county filter to service methods
+- `DaisController`
+	- remove `[AllowAnonymous]` from governed write/read endpoints where county context is required
+	- replace missing-claim `Forbid()` path with explicit 401 for absent county claim
+	- preserve 403 semantics for claim/request mismatch
+- `MarketplaceController`
+	- add class-level `[Authorize]`
+	- remove synthetic rating/download helpers and source values from governed module registry metadata
+	- constrain submit/publish endpoints to internal-admin policy path only
