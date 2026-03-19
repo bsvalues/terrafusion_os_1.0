@@ -146,6 +146,12 @@ Phase 7B closes its governed-core proof obligations on evidence.
 7B is complete and can be treated as a satisfied Codex evidence input.  
 However, 7E execution is still phase-blocked until 7C (and optional 7D if invoked) are closed.
 
+### Dependency update (2026-03-19, Phase D.1)
+- `7A` closure is satisfied by Wave 2 backend truth inventory evidence (`W2.1`, `2c70b4e2a`).
+- `7C` closure is satisfied by Wave 2 frontend wiring + closure gate evidence (`W2.2`, `dad0f72af`; `W2.CLOSE`, `2a8973e43`).
+- `7D` remains optional and was not invoked.
+- Result: the prior 7E dependency-prep blocker is now satisfied.
+
 ## Version Reference
 The relevant 7B core changes are already present in:
 

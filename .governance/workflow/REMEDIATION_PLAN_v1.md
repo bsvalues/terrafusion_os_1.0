@@ -55,6 +55,7 @@ No later-wave expansion opens until these three truths are green at the same tim
   - `7A -> 7C`
   - `7C/7D -> 7E`
   - `7A + 7B + 7C (+7D) + 7E -> 8`
+- Execution update (2026-03-19): `7C` is now closed via Wave 2 proof closure (`W2.2` + `W2.CLOSE`), `7D` remains optional/not-invoked, and the 7E dependency-prep blocker is satisfied.
 
 ---
 

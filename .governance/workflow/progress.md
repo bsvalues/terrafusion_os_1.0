@@ -20,7 +20,7 @@
 | **Phase** | **Phase 11 + tool trace patch CLOSED** — all phases 6–11 sealed; 532/532 frontend + 31/31 backend contract tests green |
 | **Task** | Phases 6–11 CLOSED; TerraPilotPanel emitToolInvoked/Succeeded/Failed instrument fix |
 | **Status** | 🟢 All phases CLOSED — working tree clean |
-| **Latest Commit** | `217d631ce` (docs workflow metadata refresh) |
+| **Latest Commit** | `515362171` (docs/workflow commit metadata sync) |
 
 ## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
 
@@ -556,6 +556,7 @@ Non-authorizations:
 - Slice 26 end-to-end phase map written in `plan.md` (planning only).
 - Phase 7B governed-core evidence packet is published at [PHASE_7B_EVIDENCE_SUMMARY.md](./PHASE_7B_EVIDENCE_SUMMARY.md) and accepted as a 7E intake input.
 - Dependency wall preserved: 7E execution remains blocked pending 7C closure (and 7D only if invoked).
+- Dependency wall update (2026-03-19): `7C` is now closed via CP-W2-7C evidence closure (`W2.2` + `W2.CLOSE`); `7D` remains optional-only if explicitly invoked.
 
 ---
 
@@ -674,6 +675,29 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 - Scope held to `os-platform/core/**` + `tools/registry/**` only
 - Command wall rerun is green across type-check + phase83/85/86 + ingress/runtime/trace suites
 - Intake posture: ready for 7E evidence review, not an execution unblocking event
+- Dependency-prep update (2026-03-19): 7C is closed (CP-W2-7C), so the prior 7E dependency blocker is now satisfied with 7D remaining optional/not-invoked.
+
+## CP-W2-7C — Dependency Closure for 7E Intake — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: post-r3/w5f-registry-edge-cleanup  
+**Classification**: Phase D.1 dependency-prep closure
+
+### Verdict: PASS — GREEN
+
+**What closed:**
+- `7C` dependency is satisfied by the existing Wave 2 closure chain:
+  - `W2.1` backend truth inventory (`2c70b4e2a`)
+  - `W2.2` frontend wiring proof (`dad0f72af`)
+  - `W2.CLOSE` phase closure gate (`2a8973e43`)
+- `7D` remains optional and was not invoked.
+- 7E intake dependency blocker posture is now cleared.
+
+**Proof wall (Phase D.1 rerun):**
+- ✅ `pnpm run type-check`
+- ✅ `node --test os-platform/core/tests/phase83-tools.test.mjs` (56/56)
+- ✅ `node --test os-platform/core/tests/phase85-tools.test.mjs` (22/22)
+- ✅ `node --test os-platform/core/tests/phase86-toolrunner.test.mjs` (9/9)
 
 ---
 
@@ -1146,7 +1170,7 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
 | ✅ 0 | Wave 2 / 7B | Publish governed-core evidence packet for 7E intake | Done |
-| ⛔ 0A | Wave 2 / 7E | Consume 7B packet during 7E intake only after dependency closure | 7C (+7D if invoked) |
+| ✅ 0A | Wave 2 / 7E | Consume 7B packet during 7E intake after dependency closure | Done — 7C closed in CP-W2-7C; 7D not invoked |
 | ✅ 1 | 25.4 / Phase 1A | Reconcile stale workflow truth across `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` | Done |
 | ✅ 2 | 25.4 / Phase 1B | Publish proof-posture note for Muse seal and Workbench host boundary | Done |
 | ✅ 3 | 25.4 / Phase 2 | Close the real-host gate via bounded real-host harness stabilization; Atlas suspicion proved stale without a product rewrite | Done |
@@ -1217,6 +1241,7 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | 2026-03-18 | Accept Phase 7B as a satisfied governed-core evidence input to 7E only | 7B proofs are green, but dependency order still governs execution | Prevents 7E from opening early while preserving reuse of 7B evidence |
 | 2026-03-19 | Re-baseline post-`CP-W9-1` workflow truth to `HEAD` `862e8de61` | New commit absorbed earlier Dais/backend drift lanes and made Slice 34 baseline stale | Prevents execution against outdated dirty-tree assumptions |
 | 2026-03-19 | Close dirty-worktree triage as a standalone docs/evidence phase | Mixed dirty paths were previously treated as one broad lane | Enforces one-lane-at-a-time reopening and isolates `WF-C` / `LOCAL-1` from product execution |
+| 2026-03-19 | Execute Phase D.1 dependency-first prep for 7E by closing 7C | Legacy blocker text remained after Wave 2 closure evidence landed | Cleared 7E dependency blocker `0A`; 7D remains optional/not-invoked |
 
 ---
 

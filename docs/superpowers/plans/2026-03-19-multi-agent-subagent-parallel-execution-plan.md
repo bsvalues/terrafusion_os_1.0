@@ -11,7 +11,8 @@ Define the next governed execution sequence using a multi-agent topology with pa
 ## Current Truth Baseline
 
 - Slice 35 is closed: Lane 1, Lane 2, Lane 3, and SW-2 are closed in workflow status.
-- 7E remains dependency-gated and cannot open until 7C is closed (and 7D only if invoked).
+- Historical publication baseline: 7E was dependency-gated until 7C closure (and 7D only if invoked).
+- Execution update (2026-03-19, Phase D.1): 7C closure has now been recorded; dependency-prep blocker for 7E is cleared with 7D still optional/not-invoked.
 - This plan does not lift any existing go/no-go checkpoints.
 
 ## Governance Constraints
