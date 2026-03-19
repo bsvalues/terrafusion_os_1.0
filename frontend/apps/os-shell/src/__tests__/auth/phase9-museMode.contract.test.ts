@@ -21,8 +21,12 @@ describe('Gate 2 — TerraPilotPanel component', () => {
   const src = readSrc('components/pilot/TerraPilotPanel.tsx');
   it('exports TerraPilotPanel', () => { expect(src).toMatch(/export function TerraPilotPanel/); });
   it('imports pilotBridge', () => { expect(src).toContain('pilotBridge'); });
-  it('imports emitIntent from terraTrace', () => { expect(src).toContain('emitIntent'); });
-  it('imports emitResult from terraTrace', () => { expect(src).toContain('emitResult'); });
+  it('imports canonical tool trace helpers from terraTrace', () => {
+    expect(src).toContain('emitToolInvoked');
+    expect(src).toContain('emitToolSucceeded');
+    expect(src).toContain('emitToolFailed');
+    expect(src).toContain('generateCorrelationId');
+  });
   it('has data-testid for panel', () => { expect(src).toContain('terra-pilot-panel'); });
   it('has unauthenticated state', () => { expect(src).toContain('pilot-unauthenticated'); });
   it('has no-parcel state', () => { expect(src).toContain('pilot-no-parcel'); });
@@ -62,6 +66,10 @@ describe('Gate 4 — buildExplainRequest runtime', () => {
 describe('Gate 5 — Muse Mode is read-only', () => {
   const src = readSrc('components/pilot/TerraPilotPanel.tsx');
   it('does not import executeOsAction', () => { expect(src).not.toContain('executeOsAction'); });
+  it('does not use legacy intent/result trace helpers', () => {
+    expect(src).not.toContain('emitIntent');
+    expect(src).not.toContain('emitResult');
+  });
   it('does not import gptAPI mutation methods', () => {
     expect(src).not.toContain('createConversation');
     expect(src).not.toContain('sendMessage');

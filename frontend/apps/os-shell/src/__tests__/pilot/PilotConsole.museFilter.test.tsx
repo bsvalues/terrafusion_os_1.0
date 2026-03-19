@@ -100,6 +100,8 @@ describe('Pilot Muse surface filters', () => {
   it('PilotConsoleContent requests muse tools and hides non-muse or write-capable tools', async () => {
     renderInRouter(<PilotConsoleContent />);
 
+    fireEvent.click(screen.getByRole('button', { name: 'Load Tools' }));
+
     await waitFor(() => {
       expect(listPilotToolsMock).toHaveBeenCalledWith('muse');
     });

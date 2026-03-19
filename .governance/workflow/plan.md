@@ -2436,3 +2436,249 @@ Report:
 
 **Rule:** `@tf-writer` does not open a file until `@tf-contract-truth` AND `@tf-proof-audit`
 have both returned a non-PASS verdict for that specific suite. One suite at a time. No bulk edits.
+
+---
+
+# Phase 9 Execution — TerraPilot Muse Mode
+
+> **Status:** CLOSED — bounded implementation + proof tightening landed 2026-03-18
+> **Entry gate:** historical founder go recorded in `progress.md`
+> **Checkpoint on close:** `CP-W9-1`
+
+---
+
+## Phase 9 Charter
+
+**Objective:**
+Document the bounded TerraPilot Muse Mode lane as it actually exists in repo truth:
+a read-only, context-grounded Muse surface with trace emission, explicit no-mutation
+boundaries, and Muse-only tool exposure.
+
+**Known baseline (repo truth, 2026-03-18):**
+- `frontend/apps/os-shell/src/services/pilotBridge.ts` exports the bounded `buildPilotContext` and `buildExplainRequest` helpers
+- `frontend/apps/os-shell/src/components/pilot/TerraPilotPanel.tsx` renders the Muse shell, now emits canonical TerraTrace tool events, and enforces unauthenticated and no-parcel states
+- `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyPilot.tsx` loads only Muse/read-only tools via `listPilotTools('muse')` plus `filterMuseReadOnlyTools`
+- `frontend/apps/os-shell/src/pages/PilotConsole.tsx` and `frontend/apps/os-shell/src/pages/PilotConsoleContent.tsx` now pin validate/invoke calls to `mode: 'muse'`
+- `frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts`, `frontend/apps/os-shell/src/__tests__/workbench/PropertyPilot.museFirst.test.tsx`, `frontend/apps/os-shell/src/__tests__/pilot/TerraPilotPanel.muse.test.tsx`, and `frontend/apps/os-shell/src/__tests__/pilot/PilotConsole.museFilter.test.tsx` now prove the current Phase 9 boundary
+- Numbering drift remains real: this block follows the live Slice 29 Phase 9 naming in `progress.md` and does not rewrite the older Slice 26 roadmap numbering
+
+**Scope:**
+- PilotBridge contract truth
+- TerraPilotPanel Muse shell truth
+- PropertyPilot / full-console Muse-only tool exposure
+- Trace-emission and read-only boundary proof
+- Related tests only
+- No backend explain redesign
+- No RBAC / allowlist reopening beyond read-only evidence
+
+**Allowed agents:**
+- `@tf-phase-orchestrator`
+- `@tf-contract-truth`
+- `@tf-proof-audit`
+- `@tf-writer`
+- `@tf-checkpoint`
+
+**Write authority:**
+- `@tf-writer`: sole writer for source/test changes in this phase if a bounded gap is found
+- `@tf-checkpoint`: governance files only
+- all others: read-only
+
+**Allowed files:**
+- `frontend/apps/os-shell/src/services/pilotBridge.ts`
+- `frontend/apps/os-shell/src/components/pilot/TerraPilotPanel.tsx`
+- `frontend/apps/os-shell/src/api/pilotApi.ts`
+- `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyPilot.tsx`
+- `frontend/apps/os-shell/src/pages/PilotConsole.tsx`
+- `frontend/apps/os-shell/src/pages/PilotConsoleContent.tsx`
+- `frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts`
+- `frontend/apps/os-shell/src/__tests__/workbench/PropertyPilot.museFirst.test.tsx`
+- directly related files under `frontend/apps/os-shell/src/__tests__/pilot/**`
+
+**Forbidden in this phase:**
+- `**/ARCHIVE/**`
+- `specialized/**`, `applications/**`
+- `os-platform/ai-systems/ai-swarm/**`
+- Multi-tenant / security / deployment work
+- Broad Pilot UI redesign
+- Write-capable Muse tools
+- Runtime governance changes outside the named Muse shell lane
+
+**Success criteria:**
+1. `PilotBridge` remains the bounded source of actor/county/parcel context assembly for Muse Mode
+2. `TerraPilotPanel` remains read-only and emits canonical TerraTrace tool events without invoking mutation paths
+3. Muse surfaces expose only Muse/read-only tools and hide pilot-mode or write-capable tools
+4. Auth/no-parcel states and explain UI states remain explicit and testable
+5. Phase 9 proof surfaces remain green
+
+**Proof commands:**
+```bash
+pnpm run type-check
+node --test os-platform/core/tests/phase83-tools.test.mjs
+pnpm vitest run frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts frontend/apps/os-shell/src/__tests__/workbench/PropertyPilot.museFirst.test.tsx frontend/apps/os-shell/src/__tests__/pilot/TerraPilotPanel.muse.test.tsx frontend/apps/os-shell/src/__tests__/pilot/PilotConsole.museFilter.test.tsx
+```
+
+**Closure artifact:** `CP-W9-1` in `progress.md`, recording the bounded Muse-mode trace/proof tightening that landed in this phase.
+
+---
+
+## Multi-Agent Parallel Execution Model
+
+```
+Phase A  — Orchestrator reads charter, confirms live scope, issues lane plan
+             │
+             ▼
+Phase B  — PARALLEL (6 subagents, 3 lane pairs; read-only)
+             │
+             ├── Lane PB (PilotBridge + Panel) ──┬── @tf-contract-truth (PB)
+             │                                   └── @tf-proof-audit    (PB)
+             │
+             ├── Lane MS (Muse Surface Filter) ──┬── @tf-contract-truth (MS)
+             │                                   └── @tf-proof-audit    (MS)
+             │
+             └── Lane TR (Trace + Read-Only) ────┬── @tf-contract-truth (TR)
+                                                 └── @tf-proof-audit    (TR)
+             │
+             ▼
+Phase B Sync — Orchestrator merges reports into one verdict table
+               (PASS | BLOCKER RECORDED | GAP FOUND)
+               │
+               ├── All lanes PASS → treat as verification slice
+               └── Any GAP FOUND → open Phase C only for the failing lane
+             │
+             ▼
+Phase C  — SEQUENTIAL (single writer lane, only if needed)
+             @tf-writer runs alone inside allowed files only
+             │
+             ▼
+Phase D  — Re-verification
+             @tf-proof-audit re-runs the affected proof lane
+             │
+             ▼
+Phase E  — @tf-checkpoint records or confirms CP-W9-1
+```
+
+---
+
+## Execution Outcome (2026-03-18)
+
+- Phase B read-only lanes found three bounded gaps inside the allowed file set:
+  - PB: `TerraPilotPanel` lacked runtime proof for auth/no-parcel/trace behavior and still relied on placeholder explain output
+  - MS: standalone Muse console flows loaded Muse-only tools correctly but did not explicitly pin validate/invoke requests to `mode: 'muse'`
+  - TR: `TerraPilotPanel` still used legacy `emitIntent` / `emitResult` instead of canonical TerraTrace tool helpers
+- Phase C stayed inside strict single-writer isolation and applied only the bounded repair:
+  - rewired `TerraPilotPanel.tsx` to `generateCorrelationId` + `emitToolInvoked` / `emitToolSucceeded` / `emitToolFailed`
+  - pinned `PilotConsole.tsx` and `PilotConsoleContent.tsx` validate/invoke calls to `mode: 'muse'`
+  - strengthened the Muse contract test and added runtime proof for the panel plus both console surfaces
+- Phase D closure wall passed:
+  - `pnpm vitest run ...phase9-museMode.contract.test.ts ...PropertyPilot.museFirst.test.tsx ...TerraPilotPanel.muse.test.tsx ...PilotConsole.museFilter.test.tsx` → `27/27 PASS`
+  - `pnpm run type-check` → clean
+  - `node --test os-platform/core/tests/phase83-tools.test.mjs` → `56/56 PASS`
+- Backend explain integration remains explicitly deferred. This phase closed the Muse shell boundary, not the backend explain pipeline.
+
+---
+
+## Phase B — Subagent Invocation Specs
+
+All 6 subagents run in one parallel batch. They are read-only and do not write files.
+
+### @tf-contract-truth Subagent (per lane)
+
+**Invocation template (spawn one per lane):**
+
+```text
+Agent: @tf-contract-truth
+Task:  TerraPilot Muse lane <PB|MS|TR> contract truth audit
+
+Read these files:
+  - PB: frontend/apps/os-shell/src/services/pilotBridge.ts
+        frontend/apps/os-shell/src/components/pilot/TerraPilotPanel.tsx
+  - MS: frontend/apps/os-shell/src/api/pilotApi.ts
+        frontend/apps/os-shell/src/pages/workbench/tabs/PropertyPilot.tsx
+        frontend/apps/os-shell/src/pages/PilotConsole.tsx
+        frontend/apps/os-shell/src/pages/PilotConsoleContent.tsx
+  - TR: frontend/apps/os-shell/src/components/pilot/TerraPilotPanel.tsx
+        frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts
+
+Report:
+  1. Current source-of-truth contract for this lane (files + symbols)
+  2. Current placeholder or stub behavior, if any
+  3. Any read-only / mode / trace-boundary risk discovered (NONE or list)
+  4. VERDICT: PASS | BLOCKER:<description> | GAP:<description>
+```
+
+### @tf-proof-audit Subagent (per lane)
+
+**Invocation template (spawn one per lane):**
+
+```text
+Agent: @tf-proof-audit
+Task:  TerraPilot Muse lane <PB|MS|TR> proof wall design (RED→GREEN)
+
+Read these files:
+  - frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts
+  - frontend/apps/os-shell/src/__tests__/workbench/PropertyPilot.museFirst.test.tsx
+  - relevant files under frontend/apps/os-shell/src/__tests__/pilot/
+  - lane-specific source files from @tf-contract-truth output
+
+Report:
+  1. Current test coverage for lane (list files or NONE)
+  2. Does current proof match the live Muse boundary? YES/NO, evidence
+  3. RED criteria: assertion that would fail if Muse truth regressed
+  4. GREEN criteria: explicit conditions to close the lane
+  5. Does `@tf-writer` need to modify files? YES(list) / NO
+  6. VERDICT: PASS | NEEDS_PROOF_TEST | NEEDS_WIRING | NEEDS_BOTH
+```
+
+---
+
+## Phase B Sync — Lane Verdict Table
+
+| Lane | Context truth | Muse-only filter | Read-only trace boundary | `@tf-contract-truth` | `@tf-proof-audit` | Final verdict |
+|------|---------------|------------------|--------------------------|----------------------|-------------------|---------------|
+| PB — PilotBridge + Panel | ✅ PASS | ✅ PASS | ✅ PASS | ✅ PASS | ⚠️ NEEDS_BOTH | **PASS AFTER BOUNDED FIX ✅** |
+| MS — Muse Surface Filter | ✅ PASS | ✅ PASS | ✅ PASS | ✅ PASS | ⚠️ NEEDS_PROOF_TEST | **PASS AFTER BOUNDED FIX ✅** |
+| TR — Trace + Read-Only | ✅ PASS | ✅ PASS | ✅ PASS | ✅ PASS | ⚠️ NEEDS_BOTH | **PASS AFTER BOUNDED FIX ✅** |
+
+---
+
+## CP-W9-1 Proof Wall
+
+> **This wall defines the bounded closure criteria for Phase 9.**
+> **This wall is now closed on executed evidence, not a reconstructed placeholder.**
+
+### Closure evidence
+
+- [x] `PilotBridge` exports `buildPilotContext` and `buildExplainRequest`
+- [x] `TerraPilotPanel` exposes auth/no-parcel/explain states
+- [x] `TerraPilotPanel` uses `generateCorrelationId` plus canonical TerraTrace tool emitters
+- [x] Muse surfaces load only Muse/read-only tools and standalone console validate/invoke paths pin `mode: 'muse'`
+- [x] Runtime tests cover `TerraPilotPanel` auth/no-parcel/success/failure behavior
+- [x] Runtime tests cover Muse-only filtering in `PilotConsole` and `PilotConsoleContent`
+- [x] Targeted Phase 9 proof tests pass
+
+### Gate commands
+
+- [x] `pnpm run type-check`
+- [x] `node --test os-platform/core/tests/phase83-tools.test.mjs`
+- [x] `pnpm vitest run frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts frontend/apps/os-shell/src/__tests__/workbench/PropertyPilot.museFirst.test.tsx frontend/apps/os-shell/src/__tests__/pilot/TerraPilotPanel.muse.test.tsx frontend/apps/os-shell/src/__tests__/pilot/PilotConsole.museFilter.test.tsx`
+
+### Fail conditions
+
+- Any write-capable tool appears on a Muse surface
+- Any direct mutation path is introduced into `TerraPilotPanel`
+- Any actor/county/parcel bridge contract is removed or bypassed
+- Any unauthorized file outside the allowed set is touched
+
+**Result:** CLOSED — BOUNDED IMPLEMENTATION
+
+---
+
+## Write Authority for Phase 9
+
+| Agent | Authorized writes |
+|-------|------------------|
+| `@tf-writer` | `frontend/apps/os-shell/src/services/pilotBridge.ts` · `frontend/apps/os-shell/src/components/pilot/TerraPilotPanel.tsx` · `frontend/apps/os-shell/src/api/pilotApi.ts` · `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyPilot.tsx` · `frontend/apps/os-shell/src/pages/PilotConsole.tsx` · `frontend/apps/os-shell/src/pages/PilotConsoleContent.tsx` · `frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts` · `frontend/apps/os-shell/src/__tests__/workbench/PropertyPilot.museFirst.test.tsx` · directly related files in `frontend/apps/os-shell/src/__tests__/pilot/**` |
+| `@tf-checkpoint` | `progress.md` (`CP-W9-1` closure section only) |
+| All other agents | Read-only. No file writes. |
+
+**Rule:** `@tf-writer` runs alone. If a gap is found, only one Muse lane may be open at a time.

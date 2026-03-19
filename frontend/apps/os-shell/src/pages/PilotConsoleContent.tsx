@@ -195,6 +195,7 @@ export function PilotConsoleContent(): React.ReactElement {
       const validation = await validatePilotTool({
         toolId: tool.toolId,
         params: parsedParams,
+        mode: 'muse',
         confirmation: confirmed,
         reasonCode: reasonCode || undefined,
       });
@@ -292,6 +293,7 @@ export function PilotConsoleContent(): React.ReactElement {
       const result = await invokePilotTool({
         toolId: tool.toolId,
         params: parsedParams,
+        mode: 'muse',
         confirmation: confirmed,
         reasonCode: reasonCode || undefined,
         supervisorApproval,

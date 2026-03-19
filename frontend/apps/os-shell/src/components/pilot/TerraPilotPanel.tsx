@@ -8,7 +8,12 @@ import { useState, useCallback } from 'react';
 import { useAuthContext, toOsActor } from '@/auth/useAuthContext';
 import { buildPilotContext, buildExplainRequest } from '@/services/pilotBridge';
 import type { PilotExplainResponse } from '@/services/pilotBridge';
-import { emitIntent, emitResult } from '@/services/terraTrace';
+import {
+  emitToolFailed,
+  emitToolInvoked,
+  emitToolSucceeded,
+  generateCorrelationId,
+} from '@/services/terraTrace';
 
 interface TerraPilotPanelProps {
   parcelId: string | null;
@@ -26,19 +31,21 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
   const [error, setError] = useState<string | null>(null);
 
   const handleExplain = useCallback(async () => {
-    if (!pilotContext || !query.trim()) return;
+    if (!pilotContext || !query.trim() || !actor) return;
 
-    const intentId = `pilot-${Date.now()}`;
-    const traceId = `trace-${Date.now()}`;
-    const startTime = Date.now();
+    const correlationId = generateCorrelationId();
 
-    emitIntent({
-      intentId,
-      source: 'AI_PILOT',
-      intent: 'EXPLAIN',
+    emitToolInvoked({
+      suite: 'pilot',
+      correlationId,
       countyId: pilotContext.countyId,
-      actorId: pilotContext.actorId,
-      timestamp: new Date().toISOString(),
+      actor: {
+        userId: pilotContext.actorId,
+        roles: actor.roles,
+      },
+      parcelId: parcelId ?? undefined,
+      inputSummary: 'muse explain request',
+      risk: 'read_only',
     });
 
     setIsLoading(true);
@@ -53,33 +60,41 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
         explanation: `Muse Mode: Context assembled for parcel ${parcelId ?? 'none'} in county ${pilotContext.countyId}. Query: "${query}". Full explain pipeline connects in Phase 9 backend integration.`,
         sources: [{ type: 'parcel_data', reference: parcelId ?? 'no-parcel' }],
         confidence: 0.0, // Placeholder until backend wired
-        traceId,
+        traceId: correlationId,
       };
       setResponse(mockResponse);
 
-      emitResult({
-        intentId,
-        outcome: 'EXECUTED',
-        traceId,
-        durationMs: Date.now() - startTime,
-        timestamp: new Date().toISOString(),
+      emitToolSucceeded({
+        suite: 'pilot',
+        correlationId,
+        countyId: pilotContext.countyId,
+        actor: {
+          userId: pilotContext.actorId,
+          roles: actor.roles,
+        },
+        parcelId: parcelId ?? undefined,
+        outputSummary: 'muse explain response generated locally',
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Explain failed';
       setError(message);
 
-      emitResult({
-        intentId,
-        outcome: 'BLOCKED',
-        reason: message,
-        traceId,
-        durationMs: Date.now() - startTime,
-        timestamp: new Date().toISOString(),
+      emitToolFailed({
+        suite: 'pilot',
+        correlationId,
+        countyId: pilotContext.countyId,
+        actor: {
+          userId: pilotContext.actorId,
+          roles: actor.roles,
+        },
+        parcelId: parcelId ?? undefined,
+        inputSummary: 'muse explain request',
+        outputSummary: message,
       });
     } finally {
       setIsLoading(false);
     }
-  }, [pilotContext, query, parcelId]);
+  }, [actor, parcelId, pilotContext, query]);
 
   if (!actor) {
     return <div data-testid="pilot-unauthenticated">Authentication required for TerraPilot.</div>;
