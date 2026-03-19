@@ -8,6 +8,7 @@
 * **Branch/PR:** post-r3/w5f-registry-edge-cleanup
 * **Last Updated:** 2026-03-19
 * **Plan Link:** [plan.md](./plan.md)
+* **Execution Plan Link:** `docs/superpowers/plans/2026-03-19-multi-agent-subagent-parallel-execution-plan.md`
 
 ---
 
