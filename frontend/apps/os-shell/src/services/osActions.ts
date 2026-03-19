@@ -15,6 +15,7 @@
 import { createLogger } from '@/hooks/useLogger';
 import type { OsActor } from '@/auth/useAuthContext';
 import { getTraceContext } from '@/services/terraTrace';
+import type { OperationSource } from '@/types/terraOperation';
 
 const logger = createLogger('osActions');
 
@@ -80,6 +81,8 @@ export interface OsActionContext {
   tabId?: string;
   /** Wave 1: authenticated actor. null = unauthenticated; omitted = pre-Wave-1 caller. */
   actor?: OsActor | null;
+  /** Phase 7: operation source for audit attribution. Defaults to UI_WORKBENCH. */
+  source?: OperationSource;
 }
 
 // ============================================================================
@@ -163,6 +166,8 @@ export interface OsActionTracePayload {
   actor?: string;
   /** Wave 1: county scope for audit trail. Empty string = unknown. */
   countyId?: string;
+  /** Phase 7: operation source for audit attribution. */
+  source?: OperationSource;
 }
 
 export interface OsActionTraceEvent {
@@ -242,7 +247,12 @@ export function isValidOsAction(action: unknown): action is OsAction {
 // Trace Emission
 // ============================================================================
 
-function emitActionTrace(action: OsAction, context: OsActionContext, effectiveActor: OsActor | null): void {
+function emitActionTrace(
+  action: OsAction,
+  context: OsActionContext,
+  effectiveActor: OsActor | null,
+  effectiveSource: OperationSource
+): void {
   const payload: OsActionTracePayload = {
     actionId: action.id,
     actionType: isNavigationAction(action) ? 'navigation' : 'handler',
@@ -252,6 +262,8 @@ function emitActionTrace(action: OsAction, context: OsActionContext, effectiveAc
     // Wave 1: single resolved identity — never split actor across two sources.
     actor: effectiveActor?.userId ?? '',
     countyId: effectiveActor?.countyId ?? '',
+    // Phase 7: resolved operation source for audit attribution.
+    source: effectiveSource,
   };
 
   if (context.moduleId) {
@@ -426,8 +438,11 @@ export function executeOsAction(action: OsAction, context: OsActionContext): voi
             : null;
         })();
 
+  // Phase 7: resolve operation source — callers may pass explicit source; default UI_WORKBENCH.
+  const effectiveSource: OperationSource = context.source ?? 'UI_WORKBENCH';
+
   // Emit trace event for audit trail
-  emitActionTrace(action, context, effectiveActor);
+  emitActionTrace(action, context, effectiveActor, effectiveSource);
 
   // Route to appropriate executor
   if (isNavigationAction(action)) {
