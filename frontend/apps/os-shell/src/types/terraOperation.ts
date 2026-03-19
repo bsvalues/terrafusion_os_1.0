@@ -17,7 +17,10 @@ export type OperationIntent =
   | 'DELETE_RECORD'
   | 'APPROVE_DRAFT'
   | 'REJECT_DRAFT'
-  | 'EXPLAIN';
+  | 'EXPLAIN'
+  | 'DRAFT_PROPOSE'
+  | 'DRAFT_APPROVE'
+  | 'DRAFT_REJECT';
 
 /** Operation status after TruthGate evaluation */
 export type OperationOutcome = 'EXECUTED' | 'STAGED' | 'BLOCKED';
@@ -50,6 +53,33 @@ export interface ITerraOperation<TPayload = Record<string, unknown>> {
 
   /** Human approver ID — required for AI_PILOT mutations (Phase 10+) */
   humanApproverId?: string;
+}
+
+/**
+ * Phase 10: Draft operation for HITL approval flow.
+ * AI proposes a change; human approves or rejects before persistence.
+ */
+export interface DraftOperation {
+  /** Unique draft ID */
+  draftId: string;
+  /** The proposed change description */
+  description: string;
+  /** Current value (before) */
+  currentValue: Record<string, unknown>;
+  /** Proposed value (after) */
+  proposedValue: Record<string, unknown>;
+  /** Who proposed this (always AI_PILOT) */
+  proposedBy: string;
+  /** When proposed */
+  proposedAt: string;
+  /** Who approved (null until approved) */
+  approvedBy?: string;
+  /** When approved */
+  approvedAt?: string;
+  /** Draft status */
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED';
+  /** Rejection reason */
+  rejectionReason?: string;
 }
 
 /**
