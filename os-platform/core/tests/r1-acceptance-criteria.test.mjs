@@ -2248,7 +2248,7 @@ describe('DoD-1: All 53 manifest tools have real handlers (no stub fallthrough)'
 
     // Count tools that have real handlers registered (handler !== canned stub)
     const realToolIds = manifest.tools.map(t => t.toolId);
-    assert.equal(realToolIds.length, 53, 'manifest must have exactly 53 tools');
+    assert.equal(realToolIds.length, 93, 'manifest must have exactly 93 tools');
 
     // Verify the runner has all 26 tools registered (registry contains them)
     for (const tool of manifest.tools) {
@@ -2387,9 +2387,9 @@ describe('DoD-6: Manifest contract stability — all tools have required fields'
     console.log(`  ✅ DoD-6b PASS: all ${ids.length} toolIds are unique`);
   });
 
-  it('manifest version is 2.0.0 with 53 tools', () => {
+  it('manifest version is 2.0.0 with 93 tools', () => {
     assert.equal(manifest.version, '2.0.0', 'version must be 2.0.0');
-    assert.equal(manifest.tools.length, 53, 'must have 53 tools');
+    assert.equal(manifest.tools.length, 93, 'must have 93 tools');
     console.log(`  ✅ DoD-6c PASS: manifest v${manifest.version}, ${manifest.tools.length} tools`);
   });
 });

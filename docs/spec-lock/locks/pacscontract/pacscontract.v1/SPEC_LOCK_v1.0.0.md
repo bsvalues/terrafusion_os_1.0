@@ -63,9 +63,14 @@ TerraFusion ONLY queries these TerraFusion-specific views (not raw tables):
 
 | View Name | Purpose | Required Columns |
 |-----------|---------|------------------|
-| `vw_TerraFusion_Property_Core` | Core property data for API | prop_id, geo_id, prop_type_cd, assessed_val, taxable_val, situs_display |
-| `vw_TerraFusion_Property_Ownership` | Ownership/mailing | prop_id, owner_id, owner_name, mail_addr_1, mail_city, mail_state, mail_zip |
-| `vw_TerraFusion_Assessment_History` | Valuation history | prop_id, prop_val_yr, assessed_val, improvement_value, land_value |
+| `vw_TerraFusion_Property_Core` | Core property data for API | prop_id, geo_id, prop_type_cd, assessed_val, market_val, land_val, imprv_val, appr_year, situs_addr, situs_city, situs_zip, legal_desc, last_modified |
+| `vw_TerraFusion_Property_Ownership` | Ownership/mailing | prop_id, owner_name, mail_addr_1, mail_addr_2, mail_city, mail_state, mail_zip, pct_ownership, deed_date |
+| `vw_TerraFusion_Assessment_History` | Valuation history by year | prop_id, prop_val_yr, assessed_val, market_val, land_val, imprv_val, appraised_by, appraisal_dt |
+| `vw_TerraFusion_Comparable_Sales` | Sale/transfer events for comp analysis | prop_id, geo_id, sale_date, sale_price, prop_type_cd, situs_addr, neighborhood, sale_ratio_type_cd, deed_type_cd, consideration, last_modified |
+| `vw_TerraFusion_Cama_Characteristics` | CAMA improvement/land characteristics | prop_id, geo_id, tax_year, building_type, square_feet, stories, basement_sqft, garage_sqft, quality_grade, condition_grade, year_built, effective_age, bedrooms, bathrooms, fireplaces, has_pool, functional_obsolescence, external_obsolescence, neighborhood, last_modified |
+| `vw_TerraFusion_Improvement_Cost_Matrices` | Cost schedule matrices for mass appraisal | source_matrix_id, matrix_year, matrix_type, base_rate, multiplier, region, building_type, base_cost, grade, condition, year_built, depreciation_rate, axis1, axis2, adjustment_factor_raw, matrix_label |
+
+**Note (Sprint 0 amendment 2026-03-19)**: Views 4–6 were implemented in `PacsSqlAdapter.cs` and `.tmp/pacs-contract-views.pacs_golive.sql` prior to this SpecLock update. This amendment declares them formally. No contract version increment required — all views are read-only and conform to existing connectivity and permission invariants.
 
 **Invariant**: Missing view → fail-closed with explicit error code `PACS_VIEW_MISSING`.
 
