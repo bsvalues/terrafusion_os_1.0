@@ -19,7 +19,7 @@
 | **Phase** | **Phase 35-G OPEN** — SW Phase 1 trace bridge implemented; SW Phase 2 constrained by governance scope |
 | **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 implementation active (SW Phase 1 complete) |
 | **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 IN PROGRESS |
-| **Latest Commit** | `0bc8fa60a` (Phase 35-G-1 ring-buffer pagination fix) |
+| **Latest Commit** | `168b318ef` (Phase 35-G-2 backend rate limiter + DB pool config) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -131,6 +131,14 @@
 - Working tree includes unrelated backend trace drift (tracked + untracked) and remains untouched by Lane 3 execution
 - Execution posture remains: continue bounded governance-safe work only; open SW-2 only after explicit scope exception
 - Scope exception packet published and committed in `a154454a7`: `.governance/workflow/phase35g-sw2-scope-exception.md` (pending approval)
+
+### Phase 35-G-2 Update — 2026-03-19
+
+- HEAD advanced to `168b318ef` with backend-scoped swarm hardening deltas in allowed paths:
+  - `backend/src/TerraFusion.Consciousness/Program.cs`
+  - `backend/src/TerraFusion.API/appsettings.json`
+  - `backend/src/TerraFusion.API/appsettings.Production.json`
+- SW-2 forbidden-scope edits under `os-platform/ai-systems/ai-systems/ai-swarm/**` remain blocked pending governance scope exception approval.
 
 ---
 
