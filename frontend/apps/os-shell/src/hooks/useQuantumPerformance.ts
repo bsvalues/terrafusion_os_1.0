@@ -108,6 +108,7 @@ export function useQuantumPerformance() {
           }
 
           if (entry.entryType === 'layout-shift') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- LayoutShift.value is not in TypeScript's PerformanceEntry lib
             console.warn(`⚠️ Layout Shift Detected: ${(entry as any).value}`);
           }
         });
@@ -123,6 +124,7 @@ export function useQuantumPerformance() {
     // Monitor memory usage
     const memoryInterval = setInterval(() => {
       if ('memory' in performance) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- performance.memory is non-standard (Chrome only), not in TypeScript lib
         const memory = (performance as any).memory;
         const memoryMB = memory.usedJSHeapSize / 1024 / 1024;
 
@@ -159,6 +161,7 @@ export function useQuantumPerformance() {
     if (memoryUsage > 100) {
       // Trigger garbage collection if available
       if ('gc' in window) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- window.gc() is non-standard V8 GC API, not in TypeScript lib
         (window as any).gc();
       }
       console.log('🧹 TerraFusion: Memory optimization triggered');
