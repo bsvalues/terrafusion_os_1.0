@@ -7,9 +7,11 @@ import * as signalR from '@microsoft/signalr';
 import { GPTConfiguration, GPTMessage } from './gptAPI';
 
 const env = getViteEnv();
+export const WAVE2_GPT_HUB_LANE = 'canonical';
+export const GPT_HUB_PATH = '/hubs/gpt';
 const HUB_URL = env.VITE_API_URL
-  ? `${env.VITE_API_URL}/hubs/gpt`
-  : '/hubs/gpt';
+  ? `${env.VITE_API_URL}${GPT_HUB_PATH}`
+  : GPT_HUB_PATH;
 
 /**
  * Message chunk for streaming responses
@@ -37,7 +39,7 @@ export interface TypingIndicator {
 export interface ConversationUpdate {
   conversationId: number;
   updateType: string;
-  data: any;
+  data: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -47,7 +49,7 @@ export interface ConversationUpdate {
 export interface GPTUpdate {
   gptId: number;
   updateType: string;
-  data: any;
+  data: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -57,7 +59,37 @@ export interface GPTUpdate {
 export interface UsageAlert {
   countyId: number;
   alertType: string;
-  data: any;
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+
+/**
+ * County GPT update event
+ */
+export interface CountyGPTUpdate {
+  countyId: number;
+  updateType: string;
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+
+/**
+ * RAG processing status event
+ */
+export interface RAGProcessingStatus {
+  documentId: string;
+  status: string;
+  progress: number;
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+
+/**
+ * Refresh requested event
+ */
+export interface RefreshRequestedEvent {
+  scope: string;
+  data: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -81,11 +113,11 @@ export interface GPTHubEventHandlers {
   onConversationUpdate?: (update: ConversationUpdate) => void;
   onNewGPT?: (data: { gpt: GPTConfiguration; timestamp: string }) => void;
   onGPTUpdate?: (update: GPTUpdate) => void;
-  onCountyGPTUpdate?: (update: any) => void;
+  onCountyGPTUpdate?: (update: CountyGPTUpdate) => void;
   onUsageAlert?: (alert: UsageAlert) => void;
   onCostUpdate?: (update: CostUpdate) => void;
-  onRAGProcessingStatus?: (status: any) => void;
-  onRefreshRequested?: (data: any) => void;
+  onRAGProcessingStatus?: (status: RAGProcessingStatus) => void;
+  onRefreshRequested?: (data: RefreshRequestedEvent) => void;
   onPong?: (data: { timestamp: string; connectionId: string }) => void;
   onConnected?: () => void;
   onDisconnected?: () => void;
@@ -186,7 +218,7 @@ class GPTHubClient {
     });
 
     // Complete message
-    this.connection.on('ReceiveMessage', (data: any) => {
+    this.connection.on('ReceiveMessage', (data: { conversationId: number; message: GPTMessage; timestamp: string }) => {
       this.handlers.onMessage?.(data);
     });
 
@@ -201,7 +233,7 @@ class GPTHubClient {
     });
 
     // New GPT available
-    this.connection.on('NewGPTAvailable', (data: any) => {
+    this.connection.on('NewGPTAvailable', (data: { gpt: GPTConfiguration; timestamp: string }) => {
       this.handlers.onNewGPT?.(data);
     });
 
@@ -211,7 +243,7 @@ class GPTHubClient {
     });
 
     // County GPT update
-    this.connection.on('CountyGPTUpdate', (data: any) => {
+    this.connection.on('CountyGPTUpdate', (data: CountyGPTUpdate) => {
       this.handlers.onCountyGPTUpdate?.(data);
     });
 
@@ -226,17 +258,17 @@ class GPTHubClient {
     });
 
     // RAG processing status
-    this.connection.on('RAGProcessingStatus', (data: any) => {
+    this.connection.on('RAGProcessingStatus', (data: RAGProcessingStatus) => {
       this.handlers.onRAGProcessingStatus?.(data);
     });
 
     // Refresh requested
-    this.connection.on('RefreshRequested', (data: any) => {
+    this.connection.on('RefreshRequested', (data: RefreshRequestedEvent) => {
       this.handlers.onRefreshRequested?.(data);
     });
 
     // Pong response
-    this.connection.on('Pong', (data: any) => {
+    this.connection.on('Pong', (data: { timestamp: string; connectionId: string }) => {
       this.handlers.onPong?.(data);
     });
 
