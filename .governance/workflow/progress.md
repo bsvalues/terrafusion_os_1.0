@@ -15,11 +15,45 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 26 — Phase 5B: Wave 3B — Workbench Tab Completeness + as-any Sweep** |
-| **Phase** | Phase 5B — **CP-W5-1 CLOSED** ✅ |
-| **Task** | 4 missing tab contract tests written (Summary, Clerk, Treasury, Audit); InvocationHistory timestamp bug fixed; as-any sweep: 12 casts eliminated/documented |
+| **Slice** | **Slice 27 — Phase 6: Debt Triage Pass — error narrowing, CostForge types, console noise** |
+| **Phase** | Phase 6 — **CP-W6-1 CLOSED** ✅ |
+| **Task** | catch(error:unknown) narrowing (3 files); APIResponse<any>→typed (useCostForgeAPI, 9 occurrences); abort-retry inversion fix; console noise removed (3 files); 8 contract tests added |
 | **Status** | ✅ COMPLETE — hard stop reinstated |
-| **Latest Commit** | `39bedc7e9` |
+| **Latest Commit** | `be73736a2` |
+
+## Phase 6 — CP-W6-1 CLOSED — 2026-03-18
+
+### Targets Addressed
+
+| Target | Files | Result |
+|--------|-------|--------|
+| `catch (error: any)` → `catch (error: unknown)` | researchServices.ts, APIConnectionTest.tsx, useBackendConnection.tsx | ✅ Eliminated |
+| Abort-retry inversion bug | researchServices.ts | ✅ Fixed (`!isAbort &&` guard) |
+| `APIResponse<any>` → typed interfaces | useCostForgeAPI.ts (9 occurrences) | ✅ Typed |
+| `Record<string, any>` → `Record<string, unknown>` | useCostForgeAPI.ts | ✅ Tightened |
+| Dead `?? 'UNKNOWN_ERROR'` on Error.prototype.name | researchServices.ts | ✅ Removed |
+| `console.debug` noise | PropertyForge.tsx, useCostForgeAPI.ts | ✅ Removed |
+| `console.info` noise | GovernmentAIStatus.tsx | ✅ Removed |
+| `console.debug` → `console.warn` on error paths | ModuleHost.tsx | ✅ Promoted |
+
+### New Interfaces Added to useCostForgeAPI.ts
+- `BatchCalculateResult`, `AgentStatusResult`, `AgentScaleResult`, `HarrisPACSSyncResult`
+
+### Gates
+- `pnpm run type-check` → **0 errors**
+- `node --test os-platform/core/tests/phase83-tools.test.mjs` → **56/56 PASS**
+- `npx jest --testPathPattern="phase6"` → **8/8 PASS** (new Phase 6 contract tests)
+
+### New Files
+- `src/__tests__/phase6/phase6-debt-contract.test.ts` — 8 contract tests asserting debt eliminated
+
+### Commits
+- `6b0d7e233` — catch(error:unknown) + contract test
+- `f18ee7de4` — abort-retry fix + dead ?? removal
+- `bf5e157f3` — useCostForgeAPI type tightening
+- `be73736a2` — console noise removal
+
+**Phase 7 (Sovereign Spine Contract Hardening) requires new explicit founder go.**
 
 ## Phase 5 — CP-W3-4 CLOSED — 2026-03-18
 
