@@ -29,7 +29,7 @@ function getOriginMap(): Map<string, string> {
   originToModuleCache = new Map();
 
   for (const module of ALL_MODULES) {
-    const entry = (module as any).entry;
+    const entry = module.entry;
     if (!entry) continue;
 
     // Only URL-type entries have origins
