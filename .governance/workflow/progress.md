@@ -16,11 +16,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
-| **Phase** | **Phase 35-G CLOSED + SW-2 CLOSED** — CP-35-G-1/2/3 + SW-2 scope exception delivered and sealed |
-| **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 CLOSED; SW-2 CLOSED |
-| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟢 Lane 3 CLOSED, 🟢 SW-2 CLOSED |
-| **Latest Commit** | `c539fed1a` (Phase 6 — PgVector RAG embedding repository landed) |
+| **Slice** | **Slice 35 → Phase 6 pgvector** |
+| **Phase** | **Phase 6 CLOSED** — native pgvector column, PgVectorRAGEmbeddingRepository, conditional DI, docker fix, quality fixes |
+| **Task** | Phase 35-G CLOSED; SW-2 CLOSED; Phase 6 CLOSED |
+| **Status** | 🟢 Phase 35-G CLOSED, 🟢 SW-2 CLOSED, 🟢 Phase 6 CLOSED |
+| **Latest Commit** | `84bf408f4` (Phase 6 quality fixes seal) |
 
 ## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
 
@@ -140,7 +140,7 @@
 
 **Scope boundary enforced:**
 - No writes made to forbidden paths under `os-platform/ai-systems/ai-systems/ai-swarm/**`
-- SW Phase 2 items from charter (port hardcode fix, queue guard in swarm orchestrators) remain pending governance-approved scope exception
+- SW Phase 2 items from charter (port hardcode fix, queue guard in swarm orchestrators) were pending at this stage and later closed via founder-go scope exception (`d35980379`).
 
 **Classification:** Implemented bounded core integration slice (trace bridge + proof)
 
@@ -156,14 +156,14 @@
   - `backend/src/TerraFusion.Consciousness/Program.cs`
   - `backend/src/TerraFusion.API/appsettings.json`
   - `backend/src/TerraFusion.API/appsettings.Production.json`
-- SW-2 forbidden-scope edits under `os-platform/ai-systems/ai-systems/ai-swarm/**` remain blocked pending governance scope exception approval.
+- SW-2 forbidden-scope edits under `os-platform/ai-systems/ai-systems/ai-swarm/**` were blocked at this point in time and were later closed via founder-go scope exception (`d35980379`).
 
 ### Phase 35-G-3 Update — 2026-03-19
 
 - HEAD advanced to `14cf9527b` with backend observability bridge deltas in allowed API controller scope:
   - `backend/src/TerraFusion.API/Controllers/SwarmController.cs`
   - `backend/src/TerraFusion.API/Controllers/AISwarmController.cs`
-- SW-2 forbidden-scope edits under `os-platform/ai-systems/ai-systems/ai-swarm/**` remain blocked pending governance scope exception approval.
+- SW-2 forbidden-scope edits under `os-platform/ai-systems/ai-systems/ai-swarm/**` were blocked at this point in time and were later closed via founder-go scope exception (`d35980379`).
 
 ### Phase 35-G Seal Update — 2026-03-19
 
@@ -222,7 +222,7 @@
 
 **Gate transition:**
 - `GATE-35-1` treated as consumed by explicit founder go
-- Phase 35-E remains blocked on founder acceptance of the published TerraCanon charter
+- Phase 35-E opened after founder charter acceptance and is now closed.
 
 **Classification:** Implemented bounded recon + planning slice (no production behavior changes)
 
