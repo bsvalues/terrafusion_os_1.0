@@ -169,7 +169,7 @@ export default function SentimentDashboard() {
   }, []);
 
   return (
-    <div className="flex h-full bg-terra-midnight text-white">
+    <div data-testid="sentiment-dashboard" className="flex h-full bg-terra-midnight text-white">
       {/* Map area */}
       <main className="flex-1 relative overflow-hidden">
         {/* Grid background */}
@@ -270,7 +270,7 @@ export default function SentimentDashboard() {
         </div>
 
         {/* Rankings */}
-        <Card variant="glass">
+        <Card variant="glass" data-material="bento">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-white/70">Rankings</CardTitle>
           </CardHeader>
@@ -284,6 +284,7 @@ export default function SentimentDashboard() {
                 <button
                   key={n.id}
                   onClick={() => setSelectedId(n.id)}
+                  role="link"
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded text-sm transition-colors ${
                     selectedId === n.id ? 'bg-white/10' : 'hover:bg-white/5'
                   }`}
@@ -300,7 +301,7 @@ export default function SentimentDashboard() {
 
         {/* Selected detail */}
         {selectedNeighborhood && (
-          <Card variant="glass">
+          <Card variant="glass" data-material="bento">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm text-terra-cyan">{selectedNeighborhood.name}</CardTitle>

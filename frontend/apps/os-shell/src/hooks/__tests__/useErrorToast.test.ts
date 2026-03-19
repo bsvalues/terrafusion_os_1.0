@@ -11,8 +11,8 @@
  * @vitest-environment jsdom
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 
 import { useNotificationStore } from '../../stores/notificationStore';
 import { errorTracker } from '../useErrorReporter';
@@ -23,8 +23,8 @@ const originalError = console.error;
 const originalWarn = console.warn;
 
 beforeEach(() => {
-  console.error = jest.fn();
-  console.warn = jest.fn();
+  console.error = vi.fn();
+  console.warn = vi.fn();
 
   // Clear stores
   errorTracker.clear();

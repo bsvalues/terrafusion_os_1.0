@@ -41,6 +41,7 @@ import { executeOsAction, type OsAction, type OsActionContext } from '../../serv
 import { usePropertyStore } from '../../stores/propertyStore';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
+import { useSession } from '../../auth/useSession';
 import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
 
 // ============================================================================
@@ -231,6 +232,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const { parcelId } = useParams<{ parcelId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const session = useSession();
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -272,9 +274,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // ── Work Mode state ──
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
-  // ── Role-based tab visibility (Phase 2) ──
-  // TODO: replace [] with real roles from auth context when available
-  const roles: string[] = useMemo(() => [], []);
+  // ── Role-based tab visibility (wired to session.role — Wave 1) ──
+  const roles = useMemo(() => (session.role ? [session.role] : []), [session.role]);
   const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved, never mutated */
@@ -307,8 +308,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton', // TODO: from session
-      userId: 'current-user', // TODO: from auth
+      countyId: session.countyId,
+      userId: session.userId,
       roles: [],
       parcelId,
       workMode,
@@ -336,8 +337,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: 'benton',
-      userId: 'current-user',
+      countyId: session.countyId,
+      userId: session.userId,
       roles: [],
       parcelId,
       workMode,

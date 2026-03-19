@@ -21,6 +21,7 @@ export default defineConfig({
       'os-platform/core/tests/**/*.test.ts',
       'os-platform/core/pilot/**/*.test.ts',
       'os-platform/core/terratrc/**/*.test.ts',
+      'frontend/apps/os-shell/src/__tests__/**/*.test.{ts,tsx}',
     ],
     exclude: [
       'node_modules/**',
@@ -78,9 +79,17 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './frontend/src'),
+      '@': path.resolve(__dirname, './frontend/apps/os-shell/src'),
       '@/tests': path.resolve(__dirname, './tests'),
       '@/fixtures': path.resolve(__dirname, './tests/fixtures'),
+      '@components': path.resolve(__dirname, './frontend/apps/os-shell/src/components'),
+      '@services': path.resolve(__dirname, './frontend/apps/os-shell/src/services'),
+      '@hooks': path.resolve(__dirname, './frontend/apps/os-shell/src/hooks'),
+      '@utils': path.resolve(__dirname, './frontend/apps/os-shell/src/utils'),
+      '@types': path.resolve(__dirname, './frontend/apps/os-shell/src/types'),
+      '@terrafusion/shared': path.resolve(__dirname, './terrafusion-shared/dist/index.js'),
+      '@terrafusion/ui': path.resolve(__dirname, './frontend/__mocks__/@terrafusion/ui.ts'),
+      'monaco-editor': path.resolve(__dirname, './frontend/__mocks__/monaco-editor.ts'),
     },
   },
 });

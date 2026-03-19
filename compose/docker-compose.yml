@@ -8,10 +8,10 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-backend
     ports:
-      - "5000:5000"
+      - '${TF_API_PORT:-5046}:5046'
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:5046
     volumes:
       - ./database:/app/database
       - ./logs:/app/logs
@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: terrafusion-frontend
     ports:
-      - "3000:3000"
+      - '${TF_FRONTEND_PORT:-3102}:3102'
     environment:
       - NODE_ENV=production
     restart: unless-stopped
@@ -53,7 +53,7 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-ai-command-brain
     ports:
-      - "3001:3001"
+      - '${TF_AI_BRAIN_PORT:-3001}:3001'
     environment:
       - NODE_ENV=production
       - PORT=3001
@@ -67,7 +67,7 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-ai-swarm
     ports:
-      - "3002:3002"
+      - '${TF_AI_SWARM_PORT:-3002}:3002'
     environment:
       - NODE_ENV=production
       - PORT=3002
@@ -81,7 +81,7 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-ai-advanced
     ports:
-      - "3003:3003"
+      - '${TF_AI_ADVANCED_PORT:-3003}:3003'
     environment:
       - NODE_ENV=production
       - PORT=3003
@@ -95,7 +95,7 @@ services:
       dockerfile: Dockerfile
     container_name: terrafusion-consciousness-layer
     ports:
-      - "3004:3004"
+      - '${TF_CONSCIOUSNESS_PORT:-8080}:3004'
     environment:
       - NODE_ENV=production
       - PORT=3004
@@ -108,8 +108,8 @@ services:
     image: nginx:alpine
     container_name: terrafusion-nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./frontend/dist:/usr/share/nginx/html:ro
@@ -125,7 +125,7 @@ services:
     image: prom/prometheus:latest
     container_name: terrafusion-prometheus
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
@@ -144,7 +144,7 @@ services:
     image: prom/alertmanager:latest
     container_name: terrafusion-alertmanager
     ports:
-      - "9093:9093"
+      - '9093:9093'
     volumes:
       - ./monitoring/alertmanager:/etc/alertmanager
       - alertmanager_data:/alertmanager
@@ -161,7 +161,7 @@ services:
     image: grafana/grafana:latest
     container_name: terrafusion-grafana
     ports:
-      - "3001:3000"
+      - '3001:3000'
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=terrafusion2025
@@ -177,7 +177,7 @@ services:
     image: prom/node-exporter:latest
     container_name: terrafusion-node-exporter
     ports:
-      - "9100:9100"
+      - '9100:9100'
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -195,7 +195,7 @@ services:
     image: nginx/nginx-prometheus-exporter:latest
     container_name: terrafusion-nginx-exporter
     ports:
-      - "9113:9113"
+      - '9113:9113'
     command:
       - '-nginx.scrape-uri=http://nginx/nginx_status'
     restart: unless-stopped
@@ -208,7 +208,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: terrafusion-cadvisor
     ports:
-      - "8080:8080"
+      - '8080:8080'
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro

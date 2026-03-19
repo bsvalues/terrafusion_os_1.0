@@ -15,6 +15,9 @@ import { useNavigate } from 'react-router-dom';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
+import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
+import CertRollPanel from '../../components/dais/CertRollPanel';
+import ManagementDashboardPanel from '../../components/dais/ManagementDashboardPanel';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   ArrowLeft,
@@ -27,6 +30,9 @@ import {
   Search,
   Bot,
   LayoutDashboard,
+  ClipboardList,
+  Mail,
+  FileCheck,
 } from 'lucide-react';
 
 const DAIS_MODULES: SuiteModuleDef[] = [
@@ -41,6 +47,9 @@ const DAIS_MODULES: SuiteModuleDef[] = [
   { id: 'vei', label: 'VEI', icon: Search, description: 'Vertical Equality Index — assessment equity & PRB analysis', launchMode: 'standalone', moduleId: 'vei' },
   { id: 'property-tax-ai', label: 'PropertyTax AI', icon: Bot, description: 'AI-driven property tax analysis & anomaly detection', launchMode: 'standalone', moduleId: 'property-tax-ai' },
   { id: 'management-dashboard', label: 'Management', icon: LayoutDashboard, description: 'Assessor operations — certification, workload, staff assignment (ADR-003)', launchMode: 'standalone', moduleId: 'management-dashboard' },
+  { id: 'terra-queue', label: 'TerraQueue', icon: ClipboardList, description: 'Cross-parcel work queue — assignment, progress, quality review', launchMode: 'standalone', moduleId: 'terra-queue' },
+  { id: 'terra-cert', label: 'TerraCert', icon: FileCheck, description: 'Roll sign-off, statutory export, and certification operations', launchMode: 'standalone', moduleId: 'terra-cert' },
+  { id: 'terra-notice', label: 'TerraNotice', icon: Mail, description: 'Batch notice dispatch — mail/print queue and delivery tracking', launchMode: 'standalone', moduleId: 'terra-notice' },
 ];
 
 const fmtNum = (n: number) => n.toLocaleString();
@@ -48,15 +57,22 @@ const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
 
 export default function DaisSuiteHome() {
   const navigate = useNavigate();
-  const { stats } = useCountyStats();
+  const { stats, loading, error } = useCountyStats();
 
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dais" />
 
+      {loading && !stats && (
+        <div data-testid="dais-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
+      )}
+      {error && (
+        <div data-testid="dais-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-dais))' }}>{error}</div>
+      )}
+
       {/* Stats Strip */}
       {stats && (
-        <div className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
+        <div data-testid="dais-stats" className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Active Appeals</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-suite-dais))' }}>{fmtNum(stats.activeAppeals)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Levy Revenue</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(stats.totalLevyRevenue)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Pending</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.pendingAssessments)}</span></div>
@@ -85,8 +101,21 @@ export default function DaisSuiteHome() {
 
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
-        <SuiteModuleGrid modules={DAIS_MODULES} accentVar="--tf-suite-dais" />
-        <OperationalQueue title="Pending Appeals" accentVar="--tf-suite-dais" emptyMessage="No recent appeal activity" />
+        <div data-testid="dais-modules">
+          <SuiteModuleGrid modules={DAIS_MODULES} accentVar="--tf-suite-dais" />
+        </div>
+        <div data-testid="dais-mgmt-ops">
+          <ManagementDashboardPanel />
+        </div>
+        <div data-testid="dais-cert-ops">
+          <CertRollPanel />
+        </div>
+        <div data-testid="dais-notice-ops">
+          <NoticeBatchQueuePanel />
+        </div>
+        <div data-testid="dais-queue">
+          <OperationalQueue title="Pending Appeals" accentVar="--tf-suite-dais" emptyMessage="No recent appeal activity" />
+        </div>
       </main>
     </div>
   );

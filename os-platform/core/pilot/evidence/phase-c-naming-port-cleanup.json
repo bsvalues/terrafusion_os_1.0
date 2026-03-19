@@ -1,0 +1,124 @@
+{
+  "checkpointId": "phase-c-naming-port-cleanup",
+  "description": "Phase C naming sweep (governed scope) + port-literal cleanup in os-platform/core/**",
+  "parentCheckpoint": "r3.0-constitutional-gates",
+  "commitSha": "429353a2b",
+  "parentCommitSha": "b614da47c",
+  "branch": "phase-7-county-ops-visual-governance",
+  "timestamp": "2026-03-16T00:00:00Z",
+  "commitChain": [
+    { "sha": "21c0a3cf7", "label": "Lanes 1-3 proof + handler truth" },
+    {
+      "sha": "b614da47c",
+      "label": "R3.0 constitutional manifest/SEAL hardening"
+    },
+    {
+      "sha": "429353a2b",
+      "label": "Phase C naming sweep + governed port cleanup"
+    }
+  ],
+  "namingSweep": {
+    "title": "Naming governance promoted to hard-fail (governed scope)",
+    "status": "PASS",
+    "scope": "Governed scope passes with zero violations. Historical/frozen/legacy/out-of-scope areas are excluded by config, not renamed.",
+    "action": "Renamed 'TerraFusion IDE' → 'TerraCanon' in 13 doc files within governed scope",
+    "configChanges": {
+      "file": "tools/naming/naming-lint.config.json",
+      "version": "v1 → v2",
+      "canonicalReplacement": "'Pillar Studio' → 'TerraCanon'",
+      "excludedDirs": [
+        "TerraFusionIDE",
+        "TERRAFUSION_ULTIMATE_STANDALONE",
+        "IDEGateway",
+        ".ai",
+        "ai-systems",
+        "packages"
+      ],
+      "excludedFiles": [
+        "naming-lint.test.mjs",
+        "naming-lint.config.json",
+        "r3-constitutional-gates.json"
+      ],
+      "rationale": "Excluded dirs are frozen legacy, out-of-scope, or third-party. Excluded files are test fixtures or factual evidence references."
+    },
+    "sealChange": "Removed continue-on-error from naming_governance step in seal-gate-fast.yml — naming lint now blocks merge on violation",
+    "priorViolations": 105,
+    "postViolations": 0,
+    "honestDisclaimer": "Zero violations means the lint passes for the active governed scope with configured exclusions. It does NOT mean every historical repo occurrence was renamed."
+  },
+  "portLiteralCleanup": {
+    "title": "Governed os-platform/core/** port-literal debt closed",
+    "status": "PASS",
+    "scope": "os-platform/core/**/*.ts, *.mjs, *.js",
+    "fixes": [
+      {
+        "file": "os-platform/core/pilot/dev-preview.mjs",
+        "lines": [14, 15, 16],
+        "before": ["localhost:5000", "localhost:4317", "localhost:5173"],
+        "after": [
+          "TF_API_PORT:-5046",
+          "PILOT_PORT:-4317",
+          "TF_FRONTEND_PORT:-3102"
+        ]
+      },
+      {
+        "file": "os-platform/core/pilot/phase18-pacs-runtime-productization-packet.mjs",
+        "lines": [8],
+        "before": ["localhost:5000"],
+        "after": ["TF_API_PORT:-5046"]
+      },
+      {
+        "file": "os-platform/core/pilot/preview-smoke.mjs",
+        "lines": [3],
+        "before": ["localhost:4317"],
+        "after": ["PILOT_PORT:-4317"]
+      },
+      {
+        "file": "os-platform/core/pilot/r1-local-proof.mjs",
+        "lines": [8, 9],
+        "before": ["localhost:5000", "localhost:4317"],
+        "after": ["TF_API_PORT:-5046", "PILOT_PORT:-4317"]
+      }
+    ],
+    "remainingExceptions": [
+      {
+        "file": "os-platform/core/trace/drizzle.config.ts",
+        "line": 19,
+        "content": "Example: postgresql://user:pass@localhost:5432/terrafusion",
+        "disposition": "Documentation/error-message literal, not a runtime binding. Correctly left as-is."
+      }
+    ],
+    "outOfScopeHits": {
+      "toolsRegistryTests": "2 hits in policy.lintgate.contract.test.ts — test fixtures for port-literal detection (correct)",
+      "workflows": "CI workflows use localhost:4173 (Vite preview port) and env-var-backed URLs — not governed port violations"
+    }
+  },
+  "gateResults": {
+    "typeCheck": "PASS",
+    "phase83Tests": "54/54 PASS (17 suites, unchanged from R3.0)",
+    "namingLint": "PASS (0 violations, governed scope)",
+    "uiTokenRatchet": "PASS (828 violations <= baseline 1200, improved by 372)",
+    "preCommitQualityGate": "PASS"
+  },
+  "filesModified": [
+    ".github/copilot-instructions-full.md",
+    ".github/workflows/seal-gate-fast.yml",
+    "docs/DEV_ENV_BUN.md",
+    "docs/ENGINEERING_EXCELLENCE_REPORT.md",
+    "docs/QUANTUM_AI_IDE_INTEGRATION_SPEC.md",
+    "docs/architecture/ECOSYSTEM_DOCUMENTATION_COMPLETE.md",
+    "docs/architecture/TerraFusion_IDE_ARCHITECTURE_DESIGN.md",
+    "docs/development/TERRAFUSION_POWER_SKIN_STRATEGY.md",
+    "docs/guides/THE_TERRAFUSION_JOURNEY.md",
+    "docs/milestones/✅_IDE_FIXED_AND_WORKING.md",
+    "docs/milestones/🎊_ULTIMATE_SUCCESS_MASTER_GUIDE_COMPLETE.md",
+    "docs/milestones/🎯_ROOT_CAUSE_FIXED_TAILWIND.md",
+    "docs/milestones/🚀_IDE_NOW_RUNNING_PORT_5177.md",
+    "os-platform/ELITE_COPILOT_INSTRUCTIONS.md",
+    "os-platform/core/pilot/dev-preview.mjs",
+    "os-platform/core/pilot/phase18-pacs-runtime-productization-packet.mjs",
+    "os-platform/core/pilot/preview-smoke.mjs",
+    "os-platform/core/pilot/r1-local-proof.mjs",
+    "tools/naming/naming-lint.config.json"
+  ]
+}

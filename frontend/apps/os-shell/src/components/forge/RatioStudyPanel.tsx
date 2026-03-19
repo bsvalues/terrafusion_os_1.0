@@ -50,7 +50,7 @@ export function RatioStudyPanel({ data, loading }: RatioStudyPanelProps) {
   }
 
   return (
-    <Card>
+    <Card data-testid="ratio-study-panel">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">Ratio Study</CardTitle>
         <p className="text-xs text-muted-foreground">
@@ -63,7 +63,7 @@ export function RatioStudyPanel({ data, loading }: RatioStudyPanelProps) {
             const value = data[key];
             const variant = getVariant(value, range.min, range.max);
             return (
-              <div key={key} className="flex items-center justify-between rounded-md border p-3">
+              <div key={key} className="flex items-center justify-between rounded-md border p-3" data-material="bento">
                 <div>
                   <p className="text-sm font-medium">{range.label}</p>
                   <p className="text-xs text-muted-foreground">

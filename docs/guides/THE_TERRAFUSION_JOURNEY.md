@@ -147,7 +147,7 @@ TerraFusion OS 1.0 (October 2025)
 │    └─ Public records
 │
 └─── Developer Tools
-     ├─ TerraFusion IDE (electron)
+     ├─ TerraCanon (electron)
      ├─ SDK & APIs
      ├─ Testing frameworks
      └─ Deployment automation
@@ -276,7 +276,7 @@ TerraFusion OS 1.0 (October 2025)
 
 ### **What Needs Attention**
 
-**TerraFusion IDE**:
+**TerraCanon**:
 
 - ⏳ Not actively developed recently
 - ⏳ Electron shell exists (`terrafusion-ide-electron/`)
@@ -380,7 +380,7 @@ you:
 - Document the full ecosystem
 - Create master architecture diagram
 
-**Option C: Work on TerraFusion IDE** (3 weeks)
+**Option C: Work on TerraCanon** (3 weeks)
 
 - Explore existing IDE code
 - Understand current state
@@ -450,7 +450,7 @@ own success.**
 **Tell me**:
 
 1. Do you want to **deploy** TerraFusion OS to production?
-2. Do you want to **explore** the TerraFusion IDE?
+2. Do you want to **explore** the TerraCanon?
 3. Do you want to **understand** all 30+ historical apps?
 4. Do you want to **build something new**?
 5. Do you want to just **talk** about what to do next?

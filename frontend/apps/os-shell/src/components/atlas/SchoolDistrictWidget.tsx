@@ -29,9 +29,9 @@ export interface SchoolDistrictWidgetProps {
 // ---------------------------------------------------------------------------
 
 function ratingColor(rating: number): string {
-  if (rating >= 8) return '#22C55E';
-  if (rating >= 6) return '#F59E0B';
-  return '#EF4444';
+  if (rating >= 8) return 'hsl(var(--tf-success))';
+  if (rating >= 6) return 'hsl(var(--tf-warning))';
+  return 'hsl(var(--tf-error))';
 }
 
 function typeAbbr(type: string): string {
@@ -97,7 +97,7 @@ export default function SchoolDistrictWidget({
             {/* Rating badge */}
             <div
               className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
-              style={{ backgroundColor: ratingColor(school.rating), color: '#FFF' }}
+              style={{ backgroundColor: ratingColor(school.rating), color: 'white' }}
             >
               {school.rating}
             </div>

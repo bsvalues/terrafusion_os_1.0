@@ -66,6 +66,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: hsl(var(--tf-surface-dark-hs) 10% / 0.9);
+  border: 1px solid hsl(var(--tf-border) / 0.15);
+  border-radius: var(--bento-radius, 0.75rem);
 }
 
 /* Card content area */

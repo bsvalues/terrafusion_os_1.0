@@ -11,9 +11,9 @@ export function TerraFusionSystemCheck() {
 
   const systemMetrics = useMemo(
     () => ({
-      frontend: { status: 'ONLINE', health: 69, port: 5174 },
-      experimentsAPI: { status: 'ONLINE', health: 100, port: 5000 },
-      consciousnessEngine: { status: 'STARTING', health: 85, port: 3004 },
+      frontend: { status: 'ONLINE', health: 69, port: Number(import.meta.env.VITE_TF_FRONTEND_PORT ?? 3102) },
+      experimentsAPI: { status: 'ONLINE', health: 100, port: Number(import.meta.env.VITE_TF_API_PORT ?? 5046) },
+      consciousnessEngine: { status: 'STARTING', health: 85, port: Number(import.meta.env.VITE_TF_CONSCIOUSNESS_PORT ?? 8080) },
       quantumCoherence: 96.4,
       aiAgents: 995677,
       systemGrade: 'A+',

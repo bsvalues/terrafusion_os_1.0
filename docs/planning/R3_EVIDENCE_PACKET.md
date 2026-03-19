@@ -200,6 +200,38 @@ All 9 tabs: visible in tab bar, routed via React Router, lazy-loaded via Suspens
 | 18+ new acceptance criteria | ✅ 30 tests passing (promoted) |
 | No stubs/mocks in production surface | ✅ All real handlers |
 | Backend controllers (CX lane) | ⏳ Branch-only (PR #656) — 3 controllers, 18 endpoints, 10 entities |
+| TerraDais persistence (Stage 2) | ✅ Migration `20260317074518_AddDaisEntities` committed |
+| Frontend honesty sweep | ✅ MOCK_TASKS/PLACEHOLDER_DATA = 0 matches |
+
+---
+
+## Stage 7 Ops Verification — March 17, 2026
+
+| Gate | Result | Detail |
+|------|--------|--------|
+| `dotnet build backend/TerraFusion.sln` | ✅ | 0 errors, 6 NuGet warnings |
+| `dotnet test backend/TerraFusion.sln` | ✅ | 1592 passed, 2 accepted pre-existing failures |
+| `tsc --noEmit` (frontend) | ✅ | 0 errors |
+| `node --test phase83-tools.test.mjs` | ✅ | 54/54 pass |
+| `npm run r1:verify-evidence` | ✅ | R1 evidence chain verified |
+| `MOCK_TASKS\|PLACEHOLDER_DATA` grep | ✅ | 0 matches in frontend |
+| Integration tests | ✅ | 671/671 pass |
+| Unit tests (secondary) | ✅ | 36/36 pass |
+
+### Accepted Pre-Existing Failures (2)
+- `SealGateWorkflow_AllEscapeHatchDates_AreFuture` — date-sensitive test, expired
+- `SyncIntegrationService_UsesTaskRunForInit` — async pattern expectation
+
+### Dais Persistence Evidence
+- Migration: `20260317074518_AddDaisEntities.cs` (committed `c7dfbaf62`)
+- Tables: Appeals, CertificationSteps, Exemptions, Notices, QueueItems
+- Status: Migration committed, applies on deployment (requires PostgreSQL)
+
+### Remaining Mechanical Cleanup (Package B — non-blocking)
+- 7 hardcoded `localhost:5000` in 5 .cs files
+- ~80 `console.log` in frontend
+- 6 `@ts-ignore` in frontend
+- Assigned: Codex batch sweep (post-signoff)
 
 ---
 

@@ -32,7 +32,7 @@ export function PropertyValuationPage() {
   };
 
   return (
-    <div className="space-y-4 p-4">
+    <div data-testid="property-valuation" className="space-y-4 p-4">
       <h1 className="text-2xl font-bold">Property Valuation</h1>
       <p className="text-sm text-muted-foreground">
         All three approaches side by side with reconciliation

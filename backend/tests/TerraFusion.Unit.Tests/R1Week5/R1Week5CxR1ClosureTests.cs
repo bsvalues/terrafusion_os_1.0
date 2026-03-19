@@ -10,6 +10,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
+using IExemptionService = TerraFusion.Core.Services.IExemptionService;
+using IAppealService = TerraFusion.Core.Services.IAppealService;
+using ICertificationService = TerraFusion.Core.Services.ICertificationService;
+using INoticeService = TerraFusion.Core.Services.INoticeService;
+using IQueueService = TerraFusion.Core.Services.IQueueService;
+using TerraFusion.Core.Auth;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Models;
@@ -1372,7 +1378,13 @@ public sealed class R1Week5CxR1ClosureTests
   {
     var controller = new DaisController(
         CreateDbContext(nameof(Dais_PermitTypesEndpoint_ReturnsOk)),
-        NullLogger<DaisController>.Instance);
+        NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.GetPermitTypes();
@@ -1386,7 +1398,13 @@ public sealed class R1Week5CxR1ClosureTests
   {
     var controller = new DaisController(
         CreateDbContext(nameof(Dais_WorkflowStagesEndpoint_ReturnsOk)),
-        NullLogger<DaisController>.Instance);
+        NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.GetWorkflowStages();
@@ -1400,7 +1418,13 @@ public sealed class R1Week5CxR1ClosureTests
   {
     var controller = new DaisController(
         CreateDbContext(nameof(Dais_FeeScheduleEndpoint_ReturnsOk)),
-        NullLogger<DaisController>.Instance);
+        NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.GetFeeSchedule();
@@ -1414,7 +1438,13 @@ public sealed class R1Week5CxR1ClosureTests
   {
     var controller = new DaisController(
         CreateDbContext(nameof(Dais_ClassificationRulesEndpoint_ReturnsOk)),
-        NullLogger<DaisController>.Instance);
+        NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.GetClassificationRules();
@@ -1428,7 +1458,13 @@ public sealed class R1Week5CxR1ClosureTests
   {
     var controller = new DaisController(
         CreateDbContext(nameof(Dais_ClassifyEndpoint_WithValidInput_ReturnsOk)),
-        NullLogger<DaisController>.Instance);
+        NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var request = new DaisController.PermitClassifyRequest("New construction dwelling", null);
@@ -1447,7 +1483,13 @@ public sealed class R1Week5CxR1ClosureTests
   {
     var controller = new DaisController(
         CreateDbContext(nameof(Dais_ClassifyEndpoint_NullRequest_ReturnsBadRequest)),
-        NullLogger<DaisController>.Instance);
+        NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.ClassifyPermit(null!);
@@ -1459,7 +1501,13 @@ public sealed class R1Week5CxR1ClosureTests
   public async Task Dais_AssessmentImpact_WithoutClaims_ReturnsForbid()
   {
     await using var db = CreateDbContext(nameof(Dais_AssessmentImpact_WithoutClaims_ReturnsForbid));
-    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     AttachPrincipal(controller, CreateEmptyPrincipal());
 
     var result = await controller.GetPermitAssessmentImpact("12345");
@@ -1475,7 +1523,13 @@ public sealed class R1Week5CxR1ClosureTests
     db.Counties.Add(new County { Id = countyId, Name = "Benton", State = "WA", FipsCode = "003" });
     await db.SaveChangesAsync();
 
-    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
 
     var result = await controller.GetPermitAssessmentImpact("NONEXISTENT");
@@ -1493,7 +1547,13 @@ public sealed class R1Week5CxR1ClosureTests
     db.Properties.Add(prop);
     await db.SaveChangesAsync();
 
-    var controller = new DaisController(db, NullLogger<DaisController>.Instance);
+    var controller = new DaisController(db, NullLogger<DaisController>.Instance,
+        new Mock<IExemptionService>().Object,
+        new Mock<IAppealService>().Object,
+        new Mock<ICertificationService>().Object,
+        new Mock<INoticeService>().Object,
+        new Mock<IQueueService>().Object,
+        new Mock<IRequestUserContextAccessor>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext
     {
       User = CreatePrincipal(countyId, "BENTON"),

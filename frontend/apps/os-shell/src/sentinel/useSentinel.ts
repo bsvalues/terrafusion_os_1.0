@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { probeHealth } from './sentinelProbe';
 import { useSentinelStore } from './sentinelStore';
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('Sentinel');
 
 type SentinelStatus = 'healthy' | 'degraded' | 'down';
 
@@ -54,12 +57,7 @@ export function useSentinel(pollMs = 7000) {
       if (lastStatusRef.current !== result.status) {
         const prev = lastStatusRef.current;
         lastStatusRef.current = result.status;
-        console.groupCollapsed('[Sentinel] status change');
-        console.log('from:', prev, 'to:', result.status);
-        console.log('endpoint:', endpoint);
-        console.log('latencyMs:', result.latencyMs);
-        console.log('warnings:', result.warnings);
-        console.groupEnd();
+        logger.info('status change', { from: prev, to: result.status, endpoint, latencyMs: result.latencyMs, warnings: result.warnings });
       }
 
       probeInFlight = false;

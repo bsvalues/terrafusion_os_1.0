@@ -10,6 +10,7 @@
  *  - Admin diagnostics drawer (toggle, content, cap=0 rendering)
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -21,13 +22,13 @@ import type { PilotTraceEvent } from '../../api/pilotApi';
 // Mock material components (same as existing tests)
 // ---------------------------------------------------------------------------
 
-jest.mock('../../ui/materials/LiquidPanel', () => ({
+vi.mock('../../ui/materials/LiquidPanel', () => ({
   LiquidPanel: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div {...props}>{children}</div>
   ),
 }));
 
-jest.mock('../../ui/materials/TactileButton', () => ({
+vi.mock('../../ui/materials/TactileButton', () => ({
   TactileButton: ({ children, ...props }: React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) => (
     <button {...props}>{children}</button>
   ),
@@ -71,7 +72,7 @@ function renderRail(overrides: Partial<EvidenceRailProps> = {}) {
     phase: 'ready',
     events: MOCK_EVENTS,
     error: null,
-    onRetry: jest.fn(),
+    onRetry: vi.fn(),
   };
   return render(<EvidenceRail {...defaults} {...overrides} />);
 }

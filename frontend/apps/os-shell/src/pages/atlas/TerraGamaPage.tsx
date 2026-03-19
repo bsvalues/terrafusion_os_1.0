@@ -102,7 +102,7 @@ export default function TerraGamaPage() {
   const hasActiveFilters = filters.zoning || filters.neighborhood || filters.propertyClass;
 
   return (
-    <div className="flex flex-col h-full bg-terra-midnight text-white">
+    <div data-testid="terra-gama" className="flex flex-col h-full bg-terra-midnight text-white">
       {/* Filter bar */}
       <header className="flex-shrink-0 p-3 border-b border-white/10 flex items-center gap-3 flex-wrap">
         <span className="text-sm font-semibold text-terra-cyan">TerraGAMA</span>
@@ -214,7 +214,7 @@ export default function TerraGamaPage() {
           })}
 
           {/* Zoning legend */}
-          <div className="absolute bottom-4 left-4 bg-terra-midnight/80 backdrop-blur-sm rounded border border-white/10 p-3">
+          <div data-material="bento" className="absolute bottom-4 left-4 bg-terra-midnight/80 backdrop-blur-sm rounded border border-white/10 p-3">
             <p className="text-[10px] text-white/40 uppercase tracking-wider mb-2">Zoning</p>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
               {Object.entries(ZONING_COLORS).map(([code, color]) => (
@@ -230,7 +230,7 @@ export default function TerraGamaPage() {
         {/* Detail panel */}
         {selectedParcel && (
           <aside className="w-72 flex-shrink-0 border-l border-white/10 p-4 overflow-y-auto space-y-4">
-            <Card variant="glass">
+            <Card variant="glass" data-material="bento">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm text-terra-cyan">Parcel Detail</CardTitle>
@@ -257,7 +257,7 @@ export default function TerraGamaPage() {
             </Card>
 
             {showRegulations && REGULATION_DATA[selectedParcel.zoning] && (
-              <Card variant="glass">
+              <Card variant="glass" data-material="bento">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm text-white/70">
                     {selectedParcel.zoning} Regulations

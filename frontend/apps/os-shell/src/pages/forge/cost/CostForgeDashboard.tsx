@@ -13,6 +13,17 @@ import {
   ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell,
 } from 'recharts';
 
+/** Centralized chart palette — single source of truth for all Recharts colors */
+const FORGE_CHART_COLORS = {
+  residential: '#3b82f6',
+  commercial: '#10b981',
+  industrial: '#f59e0b',
+  agricultural: '#8b5cf6',
+  multiFamily: '#ef4444',
+  barAvg: '#3b82f6',
+  barMax: '#64748b',
+};
+
 interface ScheduleStatus {
   type: string;
   lastUpdated: string;
@@ -44,11 +55,11 @@ const DEPRECIATION_SUMMARY = [
 ];
 
 const PROPERTY_TYPE_DIST = [
-  { name: 'Residential', value: 72450, color: '#3b82f6' },
-  { name: 'Commercial', value: 8240, color: '#10b981' },
-  { name: 'Industrial', value: 3120, color: '#f59e0b' },
-  { name: 'Agricultural', value: 4200, color: '#8b5cf6' },
-  { name: 'Multi-Family', value: 1237, color: '#ef4444' },
+  { name: 'Residential', value: 72450, color: FORGE_CHART_COLORS.residential },
+  { name: 'Commercial', value: 8240, color: FORGE_CHART_COLORS.commercial },
+  { name: 'Industrial', value: 3120, color: FORGE_CHART_COLORS.industrial },
+  { name: 'Agricultural', value: 4200, color: FORGE_CHART_COLORS.agricultural },
+  { name: 'Multi-Family', value: 1237, color: FORGE_CHART_COLORS.multiFamily },
 ];
 
 const statusBadge = (status: string) => {
@@ -64,7 +75,7 @@ export function CostForgeDashboard() {
   const totalParcels = PROPERTY_TYPE_DIST.reduce((sum, p) => sum + p.value, 0);
 
   return (
-    <div className="space-y-4 p-4">
+    <div data-testid="cost-forge-dashboard" className="space-y-4 p-4">
       <h1 className="text-2xl font-bold">CostForge Dashboard</h1>
 
       {loading ? (
@@ -75,25 +86,25 @@ export function CostForgeDashboard() {
         <>
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
+            <Card data-material="bento">
               <CardContent className="pt-6 text-center">
                 <div className="text-3xl font-bold">{totalParcels.toLocaleString()}</div>
                 <div className="text-sm text-muted-foreground">Total Parcels</div>
               </CardContent>
             </Card>
-            <Card>
+            <Card data-material="bento">
               <CardContent className="pt-6 text-center">
                 <div className="text-3xl font-bold">{SCHEDULE_STATUS.length}</div>
                 <div className="text-sm text-muted-foreground">Cost Schedules</div>
               </CardContent>
             </Card>
-            <Card>
+            <Card data-material="bento">
               <CardContent className="pt-6 text-center">
                 <div className="text-3xl font-bold">$148</div>
                 <div className="text-sm text-muted-foreground">Avg Res. Cost/sqft</div>
               </CardContent>
             </Card>
-            <Card>
+            <Card data-material="bento">
               <CardContent className="pt-6 text-center">
                 <div className="text-3xl font-bold">22.5%</div>
                 <div className="text-sm text-muted-foreground">Avg Physical Dep.</div>
@@ -114,9 +125,9 @@ export function CostForgeDashboard() {
                     <XAxis dataKey="year" />
                     <YAxis label={{ value: '$/sqft', angle: -90, position: 'insideLeft' }} />
                     <Tooltip formatter={(value: number) => `$${value}/sqft`} />
-                    <Line type="monotone" dataKey="residential" stroke="#3b82f6" strokeWidth={2} name="Residential" />
-                    <Line type="monotone" dataKey="commercial" stroke="#10b981" strokeWidth={2} name="Commercial" />
-                    <Line type="monotone" dataKey="industrial" stroke="#f59e0b" strokeWidth={2} name="Industrial" />
+                    <Line type="monotone" dataKey="residential" stroke={FORGE_CHART_COLORS.residential} strokeWidth={2} name="Residential" />
+                    <Line type="monotone" dataKey="commercial" stroke={FORGE_CHART_COLORS.commercial} strokeWidth={2} name="Commercial" />
+                    <Line type="monotone" dataKey="industrial" stroke={FORGE_CHART_COLORS.industrial} strokeWidth={2} name="Industrial" />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -162,8 +173,8 @@ export function CostForgeDashboard() {
                   <XAxis type="number" domain={[0, 80]} tickFormatter={(v) => `${v}%`} />
                   <YAxis type="category" dataKey="category" width={70} />
                   <Tooltip formatter={(value: number) => `${value}%`} />
-                  <Bar dataKey="avg" fill="#3b82f6" name="Average" radius={[0, 4, 4, 0]} />
-                  <Bar dataKey="max" fill="#e5e7eb" name="Max" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="avg" fill={FORGE_CHART_COLORS.barAvg} name="Average" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="max" fill={FORGE_CHART_COLORS.barMax} name="Max" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -175,7 +186,7 @@ export function CostForgeDashboard() {
               <CardTitle>Cost Schedule Status</CardTitle>
             </CardHeader>
             <CardContent>
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" data-material="bento">
                 <thead>
                   <tr className="border-b">
                     <th className="text-left py-2">Type</th>
@@ -186,7 +197,7 @@ export function CostForgeDashboard() {
                 </thead>
                 <tbody>
                   {SCHEDULE_STATUS.map(s => (
-                    <tr key={s.type} className="border-b hover:bg-gray-50">
+                    <tr key={s.type} className="border-b hover:bg-white/5 cursor-pointer" role="link">
                       <td className="py-2 font-medium">{s.type}</td>
                       <td className="py-2 text-right">{s.entryCount}</td>
                       <td className="py-2 text-muted-foreground">{s.lastUpdated}</td>

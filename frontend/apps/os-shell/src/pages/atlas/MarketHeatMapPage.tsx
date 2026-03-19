@@ -103,7 +103,7 @@ export default function MarketHeatMapPage() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-terra-midnight text-white">
+    <div data-testid="market-heat-map" className="flex flex-col h-full bg-terra-midnight text-white">
       {/* Time slider header */}
       <header className="flex-shrink-0 p-3 border-b border-white/10 flex items-center gap-4">
         <span className="text-sm font-semibold text-terra-cyan">Market Activity</span>
@@ -202,7 +202,7 @@ export default function MarketHeatMapPage() {
 
         {/* Sidebar */}
         <aside className="w-72 flex-shrink-0 border-l border-white/10 overflow-y-auto p-4 space-y-4">
-          <Card variant="glass">
+          <Card variant="glass" data-material="bento">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-white/70">Activity Rankings</CardTitle>
             </CardHeader>
@@ -213,6 +213,7 @@ export default function MarketHeatMapPage() {
                 return (
                   <button
                     key={area.id}
+                    role="link"
                     onClick={() => setSelectedAreaId(area.id)}
                     className={`w-full text-left px-2 py-1.5 rounded text-xs transition-colors ${
                       selectedAreaId === area.id ? 'bg-white/10' : 'hover:bg-white/5'
@@ -232,7 +233,7 @@ export default function MarketHeatMapPage() {
           </Card>
 
           {selectedArea && (
-            <Card variant="glass">
+            <Card variant="glass" data-material="bento">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-terra-cyan">{selectedArea.name}</CardTitle>
               </CardHeader>

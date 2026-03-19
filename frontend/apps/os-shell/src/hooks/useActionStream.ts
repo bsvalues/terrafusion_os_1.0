@@ -20,6 +20,7 @@ import {
     type OsActionTraceEvent,
 } from '../services/osActions';
 import { getTelemetryStore, type StoredTraceEvent } from '../services/telemetry/telemetryStore';
+import { useLogger } from '@/hooks/useLogger';
 
 // ============================================================================
 // Constants
@@ -209,6 +210,7 @@ function matchesFilter(event: ActionStreamEvent, filter: ActionStreamFilter): bo
 export function useActionStream(options?: {
   telemetryStore?: ReturnType<typeof getTelemetryStore>;
 }): UseActionStreamResult {
+  const logger = useLogger('useActionStream');
   const [liveEvents, setLiveEvents] = useState<ActionStreamEvent[]>([]);
   const [historyEvents, setHistoryEvents] = useState<ActionStreamEvent[]>([]);
   const [filter, setFilter] = useState<ActionStreamFilter>({ status: 'all' });
@@ -250,7 +252,7 @@ export function useActionStream(options?: {
       setHistoryEvents(events.map(storedEventToStreamEvent));
       setHistoryStats(stats);
     } catch (error) {
-      console.warn('[useActionStream] Failed to load history:', error);
+      logger.warn('Failed to load history:', error);
       setHistoryEvents([]);
       setHistoryStats({ eventCount: 0 });
     } finally {

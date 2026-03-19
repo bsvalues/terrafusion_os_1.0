@@ -29,7 +29,7 @@ namespace TerraFusion.AI.Services
             return new QuantumValuation
             {
                 ParcelId = parcelId,
-                EstimatedValue = 425000m, // Placeholder - will be replaced with actual quantum analysis
+                EstimatedValue = 425000m, // DEMO DATA — hardcoded placeholder, not a real valuation
                 ConfidenceScore = 0.95m,
                 ValuationMethod = "Quantum-Enhanced AI Swarm Analysis",
                 ValuationDate = DateTime.UtcNow,

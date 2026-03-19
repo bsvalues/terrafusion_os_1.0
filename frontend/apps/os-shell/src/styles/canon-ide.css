@@ -685,7 +685,7 @@
 }
 
 .canon-search__status--error {
-  color: hsl(0 70% 60%);
+  color: hsl(var(--tf-error) / 1);
 }
 
 .canon-search__status--empty {
@@ -967,7 +967,7 @@
 }
 
 .canon-terminal__stderr {
-  color: hsl(30 80% 65%);
+  color: hsl(var(--tf-warning) / 1);
 }
 
 .canon-terminal__status {
@@ -977,7 +977,7 @@
 }
 
 .canon-terminal__result:not(.canon-terminal__result--error) .canon-terminal__status {
-  color: hsl(142 60% 55%);
+  color: hsl(var(--tf-success) / 1);
 }
 
 .canon-terminal__input-row {
@@ -1090,7 +1090,7 @@
 .canon-goto-line__backdrop {
   position: absolute;
   inset: 0;
-  background: hsl(0 0% 0% / 0.4);
+  background: hsl(0 0% 0% / 0.4); /* tf-allow-raw-color */
 }
 
 .canon-goto-line__dialog {
@@ -1102,7 +1102,7 @@
   border: 1px solid hsl(var(--tf-text) / 0.12);
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
-  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5);
+  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5); /* tf-allow-raw-color */
   min-width: 260px;
 }
 
@@ -1228,7 +1228,7 @@
 .canon-new-file__backdrop {
   position: absolute;
   inset: 0;
-  background: hsl(0 0% 0% / 0.4);
+  background: hsl(0 0% 0% / 0.4); /* tf-allow-raw-color */
 }
 
 .canon-new-file__dialog {
@@ -1240,7 +1240,7 @@
   border: 1px solid hsl(var(--tf-text) / 0.12);
   border-radius: 6px;
   padding: 0.75rem 1rem;
-  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5);
+  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5); /* tf-allow-raw-color */
   min-width: 400px;
   max-width: 90vw;
 }
@@ -1670,39 +1670,40 @@
   vertical-align: middle;
 }
 
+/* Git status badge colors — tf-allow-raw-color (semantic git palette, no tf-* token equivalent) */
 .canon-git--modified {
-  color: hsl(45, 90%, 65%);
-  background: hsl(45, 90%, 65% / 0.1);
+  color: hsl(45, 90%, 65%); /* tf-allow-raw-color */
+  background: hsl(45, 90%, 65% / 0.1); /* tf-allow-raw-color */
 }
 
 .canon-git--added {
-  color: hsl(140, 70%, 55%);
-  background: hsl(140, 70%, 55% / 0.1);
+  color: hsl(140, 70%, 55%); /* tf-allow-raw-color */
+  background: hsl(140, 70%, 55% / 0.1); /* tf-allow-raw-color */
 }
 
 .canon-git--deleted {
-  color: hsl(0, 75%, 60%);
-  background: hsl(0, 75%, 60% / 0.1);
+  color: hsl(0, 75%, 60%); /* tf-allow-raw-color */
+  background: hsl(0, 75%, 60% / 0.1); /* tf-allow-raw-color */
 }
 
 .canon-git--untracked {
-  color: hsl(210, 20%, 55%);
-  background: hsl(210, 20%, 55% / 0.1);
+  color: hsl(210, 20%, 55%); /* tf-allow-raw-color */
+  background: hsl(210, 20%, 55% / 0.1); /* tf-allow-raw-color */
 }
 
 .canon-git--renamed {
-  color: hsl(200, 75%, 60%);
-  background: hsl(200, 75%, 60% / 0.1);
+  color: hsl(200, 75%, 60%); /* tf-allow-raw-color */
+  background: hsl(200, 75%, 60% / 0.1); /* tf-allow-raw-color */
 }
 
 .canon-git--copied {
-  color: hsl(280, 60%, 65%);
-  background: hsl(280, 60%, 65% / 0.1);
+  color: hsl(280, 60%, 65%); /* tf-allow-raw-color */
+  background: hsl(280, 60%, 65% / 0.1); /* tf-allow-raw-color */
 }
 
 .canon-git--conflict {
-  color: hsl(15, 90%, 60%);
-  background: hsl(15, 90%, 60% / 0.15);
+  color: hsl(15, 90%, 60%); /* tf-allow-raw-color */
+  background: hsl(15, 90%, 60% / 0.15); /* tf-allow-raw-color */
 }
 
 .canon-git-branch {
@@ -1811,14 +1812,15 @@
   flex-shrink: 0;
 }
 
-.canon-outline__kind--function { color: hsl(45, 90%, 65%); }
-.canon-outline__kind--class { color: hsl(30, 80%, 60%); }
-.canon-outline__kind--interface { color: hsl(200, 75%, 60%); }
-.canon-outline__kind--type { color: hsl(280, 60%, 65%); }
-.canon-outline__kind--enum { color: hsl(140, 70%, 55%); }
-.canon-outline__kind--variable { color: hsl(210, 40%, 60%); }
+/* Outline kind colors — tf-allow-raw-color (semantic syntax palette, no tf-* token equivalent) */
+.canon-outline__kind--function { color: hsl(45, 90%, 65%); } /* tf-allow-raw-color */
+.canon-outline__kind--class { color: hsl(30, 80%, 60%); } /* tf-allow-raw-color */
+.canon-outline__kind--interface { color: hsl(200, 75%, 60%); } /* tf-allow-raw-color */
+.canon-outline__kind--type { color: hsl(280, 60%, 65%); } /* tf-allow-raw-color */
+.canon-outline__kind--enum { color: hsl(140, 70%, 55%); } /* tf-allow-raw-color */
+.canon-outline__kind--variable { color: hsl(210, 40%, 60%); } /* tf-allow-raw-color */
 .canon-outline__kind--property { color: hsl(var(--tf-text) / 0.5); }
-.canon-outline__kind--selector { color: hsl(320, 60%, 60%); }
+.canon-outline__kind--selector { color: hsl(320, 60%, 60%); } /* tf-allow-raw-color */
 
 .canon-outline__name {
   flex: 1;
@@ -1950,12 +1952,12 @@
 }
 
 .canon-problems__clean {
-  color: hsl(140, 60%, 55%);
+  color: hsl(var(--tf-success) / 1);
 }
 
 .canon-problems__error {
   padding: 0.75rem;
-  color: hsl(0, 80%, 65%);
+  color: hsl(var(--tf-error) / 1);
   font-size: 0.75rem;
 }
 
@@ -2056,15 +2058,15 @@
 }
 
 .canon-problems__severity--error {
-  color: hsl(0, 80%, 65%);
+  color: hsl(0, 80%, 65%); /* tf-allow-raw-color */
 }
 
 .canon-problems__severity--warning {
-  color: hsl(45, 90%, 60%);
+  color: hsl(45, 90%, 60%); /* tf-allow-raw-color */
 }
 
 .canon-problems__severity--info {
-  color: hsl(210, 70%, 65%);
+  color: hsl(210, 70%, 65%); /* tf-allow-raw-color */
 }
 
 .canon-problems__footer {
@@ -2126,9 +2128,9 @@
 }
 
 .canon-bookmarks__action-btn--danger:hover {
-  background: hsl(0, 60%, 50% / 0.15);
-  color: hsl(0, 70%, 65%);
-  border-color: hsl(0, 60%, 50% / 0.3);
+  background: hsl(0, 60%, 50% / 0.15); /* tf-allow-raw-color */
+  color: hsl(0, 70%, 65%); /* tf-allow-raw-color */
+  border-color: hsl(0, 60%, 50% / 0.3); /* tf-allow-raw-color */
 }
 
 .canon-bookmarks__action-btn--star {
@@ -2137,7 +2139,7 @@
 }
 
 .canon-bookmarks__action-btn--star.active {
-  color: hsl(45, 90%, 55%);
+  color: hsl(45, 90%, 55%); /* tf-allow-raw-color */
 }
 
 .canon-bookmarks__filter {
@@ -2239,7 +2241,7 @@
 }
 
 .canon-bookmarks__item-icon {
-  color: hsl(45, 80%, 55%);
+  color: hsl(45, 80%, 55%); /* tf-allow-raw-color */
   font-size: 0.7rem;
   flex-shrink: 0;
 }
@@ -2274,7 +2276,7 @@
 }
 
 .canon-bookmarks__item-remove:hover {
-  color: hsl(0, 70%, 60%);
+  color: hsl(0, 70%, 60%); /* tf-allow-raw-color */
 }
 
 .canon-bookmarks__empty {
@@ -2301,10 +2303,10 @@
 .canon-bookmarks__error {
   padding: 0.75rem;
   margin: 0.5rem;
-  background: hsl(0, 60%, 50% / 0.1);
-  border: 1px solid hsl(0, 60%, 50% / 0.2);
+  background: hsl(0, 60%, 50% / 0.1); /* tf-allow-raw-color */
+  border: 1px solid hsl(0, 60%, 50% / 0.2); /* tf-allow-raw-color */
   border-radius: 4px;
-  color: hsl(0, 70%, 65%);
+  color: hsl(0, 70%, 65%); /* tf-allow-raw-color */
   font-size: 0.72rem;
 }
 
@@ -2323,7 +2325,7 @@
   position: fixed;
   inset: 0;
   z-index: 9000;
-  background: hsl(0 0% 0% / 0.45);
+  background: hsl(0 0% 0% / 0.45); /* tf-allow-raw-color */
   display: flex;
   justify-content: center;
   padding-top: 12vh;
@@ -2335,7 +2337,7 @@
   background: hsl(var(--tf-surface, 220 15% 13%));
   border: 1px solid hsl(var(--tf-text) / 0.12);
   border-radius: 8px;
-  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5), 0 2px 8px hsl(0 0% 0% / 0.3);
+  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5), 0 2px 8px hsl(0 0% 0% / 0.3); /* tf-allow-raw-color */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2457,7 +2459,7 @@
 }
 
 .canon-quickopen__status--error {
-  color: hsl(0, 70%, 60%);
+  color: hsl(0, 70%, 60%); /* tf-allow-raw-color */
   font-style: normal;
 }
 
@@ -2513,7 +2515,7 @@
   position: fixed;
   inset: 0;
   z-index: 120;
-  background: hsl(0 0% 0% / 0.45);
+  background: hsl(0 0% 0% / 0.45); /* tf-allow-raw-color */
   display: flex;
   justify-content: center;
   padding-top: 12vh;
@@ -2527,7 +2529,7 @@
   background: hsl(var(--tf-surface) / 0.96);
   border: 1px solid hsl(var(--tf-text) / 0.1);
   border-radius: 8px;
-  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.35);
+  box-shadow: 0 8px 32px hsl(0 0% 0% / 0.35); /* tf-allow-raw-color */
   overflow: hidden;
   align-self: flex-start;
 }
@@ -2609,12 +2611,12 @@
   flex-shrink: 0;
 }
 
-.canon-symbol--function { color: hsl(210, 80%, 65%); }
-.canon-symbol--class { color: hsl(35, 85%, 60%); }
-.canon-symbol--interface { color: hsl(170, 65%, 55%); }
-.canon-symbol--type { color: hsl(280, 60%, 65%); }
-.canon-symbol--constant { color: hsl(50, 70%, 55%); }
-.canon-symbol--enum { color: hsl(120, 50%, 55%); }
+.canon-symbol--function { color: hsl(210, 80%, 65%); } /* tf-allow-raw-color */
+.canon-symbol--class { color: hsl(35, 85%, 60%); } /* tf-allow-raw-color */
+.canon-symbol--interface { color: hsl(170, 65%, 55%); } /* tf-allow-raw-color */
+.canon-symbol--type { color: hsl(280, 60%, 65%); } /* tf-allow-raw-color */
+.canon-symbol--constant { color: hsl(50, 70%, 55%); } /* tf-allow-raw-color */
+.canon-symbol--enum { color: hsl(120, 50%, 55%); } /* tf-allow-raw-color */
 
 .canon-symbol__name {
   font-weight: 600;
@@ -2655,7 +2657,7 @@
 }
 
 .canon-symbol__status--error {
-  color: hsl(0, 70%, 60%);
+  color: hsl(0, 70%, 60%); /* tf-allow-raw-color */
 }
 
 .canon-symbol__footer {
@@ -2725,9 +2727,9 @@
 .canon-snippets-panel__error {
   padding: 0.375rem 0.75rem;
   font-size: 0.7rem;
-  color: hsl(0, 70%, 60%);
-  background: hsl(0, 70%, 60% / 0.08);
-  border-bottom: 1px solid hsl(0, 70%, 60% / 0.15);
+  color: hsl(0, 70%, 60%); /* tf-allow-raw-color */
+  background: hsl(0, 70%, 60% / 0.08); /* tf-allow-raw-color */
+  border-bottom: 1px solid hsl(0, 70%, 60% / 0.15); /* tf-allow-raw-color */
 }
 
 .canon-snippets-panel__empty {
@@ -2903,9 +2905,9 @@
 }
 
 .canon-snippets-panel__action-btn--delete:hover {
-  color: hsl(0, 70%, 60%);
-  background: hsl(0, 70%, 60% / 0.08);
-  border-color: hsl(0, 70%, 60% / 0.2);
+  color: hsl(0, 70%, 60%); /* tf-allow-raw-color */
+  background: hsl(0, 70%, 60% / 0.08); /* tf-allow-raw-color */
+  border-color: hsl(0, 70%, 60% / 0.2); /* tf-allow-raw-color */
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -2967,8 +2969,8 @@
 }
 
 .canon-minimap__error {
-  color: hsl(0, 70%, 60%);
-  background: hsl(0, 70%, 60% / 0.06);
+  color: hsl(0, 70%, 60%); /* tf-allow-raw-color */
+  background: hsl(0, 70%, 60% / 0.06); /* tf-allow-raw-color */
 }
 
 /* Density heatbar */
@@ -3116,7 +3118,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5); /* tf-allow-raw-color */
   font-style: italic;
 }
 
@@ -3125,30 +3127,30 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* tf-allow-raw-color */
 }
 
 .canon-settings-title {
   font-weight: 600;
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(255, 255, 255, 0.92); /* tf-allow-raw-color */
 }
 
 .canon-settings-badge {
   font-size: 0.625rem;
   padding: 0.125rem 0.375rem;
   border-radius: 3px;
-  background: rgba(0, 200, 120, 0.15);
-  color: rgba(0, 200, 120, 0.9);
+  background: rgba(0, 200, 120, 0.15); /* tf-allow-raw-color */
+  color: rgba(0, 200, 120, 0.9); /* tf-allow-raw-color */
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .canon-settings-error {
-  background: rgba(255, 80, 80, 0.1);
-  border: 1px solid rgba(255, 80, 80, 0.2);
-  color: rgba(255, 80, 80, 0.9);
+  background: rgba(255, 80, 80, 0.1); /* tf-allow-raw-color */
+  border: 1px solid rgba(255, 80, 80, 0.2); /* tf-allow-raw-color */
+  color: rgba(255, 80, 80, 0.9); /* tf-allow-raw-color */
   padding: 0.375rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -3165,7 +3167,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.45); /* tf-allow-raw-color */
   padding: 0.25rem 0;
 }
 
@@ -3177,17 +3179,17 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.12s;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8); /* tf-allow-raw-color */
 }
 
 .canon-settings-toggle:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.04); /* tf-allow-raw-color */
 }
 
 .canon-settings-toggle select {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.06); /* tf-allow-raw-color */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* tf-allow-raw-color */
+  color: rgba(255, 255, 255, 0.85); /* tf-allow-raw-color */
   border-radius: 3px;
   padding: 0.125rem 0.375rem;
   font-size: 0.75rem;
@@ -3195,11 +3197,11 @@
 }
 
 .canon-settings-toggle select:focus {
-  border-color: rgba(100, 180, 255, 0.5);
+  border-color: rgba(100, 180, 255, 0.5); /* tf-allow-raw-color */
 }
 
 .canon-settings-toggle input[type='checkbox'] {
-  accent-color: rgba(100, 180, 255, 0.8);
+  accent-color: rgba(100, 180, 255, 0.8); /* tf-allow-raw-color */
   width: 14px;
   height: 14px;
 }
@@ -3213,9 +3215,9 @@
 .canon-settings-stepper button {
   width: 22px;
   height: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1); /* tf-allow-raw-color */
+  background: rgba(255, 255, 255, 0.06); /* tf-allow-raw-color */
+  color: rgba(255, 255, 255, 0.8); /* tf-allow-raw-color */
   border-radius: 3px;
   cursor: pointer;
   font-size: 0.75rem;
@@ -3224,7 +3226,7 @@
 }
 
 .canon-settings-stepper button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1); /* tf-allow-raw-color */
 }
 
 .canon-settings-stepper button:disabled {
@@ -3237,20 +3239,20 @@
   text-align: center;
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.85); /* tf-allow-raw-color */
 }
 
 .canon-settings-actions {
   padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08); /* tf-allow-raw-color */
 }
 
 .canon-settings-reset {
   width: 100%;
   padding: 0.375rem 0.75rem;
-  border: 1px solid rgba(255, 80, 80, 0.25);
-  background: rgba(255, 80, 80, 0.06);
-  color: rgba(255, 80, 80, 0.85);
+  border: 1px solid rgba(255, 80, 80, 0.25); /* tf-allow-raw-color */
+  background: rgba(255, 80, 80, 0.06); /* tf-allow-raw-color */
+  color: rgba(255, 80, 80, 0.85); /* tf-allow-raw-color */
   border-radius: 4px;
   font-size: 0.75rem;
   cursor: pointer;
@@ -3258,13 +3260,13 @@
 }
 
 .canon-settings-reset:hover {
-  background: rgba(255, 80, 80, 0.12);
+  background: rgba(255, 80, 80, 0.12); /* tf-allow-raw-color */
 }
 
 /* ── Find & Replace Panel ──────────────────────────────────────────── */
 .canon-find-replace {
-  background: rgba(30, 30, 44, 0.98);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(30, 30, 44, 0.98); /* tf-allow-raw-color */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* tf-allow-raw-color */
   padding: 0.5rem 0.75rem;
   font-size: 0.8125rem;
   z-index: 10;
@@ -3281,7 +3283,7 @@
 .canon-find-replace__title {
   font-weight: 600;
   font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.85); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__header-actions {
@@ -3293,9 +3295,9 @@
 .canon-find-replace__close-btn {
   width: 22px;
   height: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1); /* tf-allow-raw-color */
+  background: rgba(255, 255, 255, 0.04); /* tf-allow-raw-color */
+  color: rgba(255, 255, 255, 0.6); /* tf-allow-raw-color */
   border-radius: 3px;
   cursor: pointer;
   font-size: 0.6875rem;
@@ -3307,14 +3309,14 @@
 
 .canon-find-replace__toggle-btn:hover,
 .canon-find-replace__close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.1); /* tf-allow-raw-color */
+  color: rgba(255, 255, 255, 0.85); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__toggle-btn--active {
-  background: rgba(100, 180, 255, 0.15);
-  border-color: rgba(100, 180, 255, 0.3);
-  color: rgba(100, 180, 255, 0.9);
+  background: rgba(100, 180, 255, 0.15); /* tf-allow-raw-color */
+  border-color: rgba(100, 180, 255, 0.3); /* tf-allow-raw-color */
+  color: rgba(100, 180, 255, 0.9); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__inputs {
@@ -3331,9 +3333,9 @@
 
 .canon-find-replace__input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.06); /* tf-allow-raw-color */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* tf-allow-raw-color */
+  color: rgba(255, 255, 255, 0.9); /* tf-allow-raw-color */
   border-radius: 3px;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
@@ -3342,15 +3344,15 @@
 }
 
 .canon-find-replace__input:focus {
-  border-color: rgba(100, 180, 255, 0.5);
+  border-color: rgba(100, 180, 255, 0.5); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__opt-btn {
   width: 26px;
   height: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1); /* tf-allow-raw-color */
+  background: rgba(255, 255, 255, 0.04); /* tf-allow-raw-color */
+  color: rgba(255, 255, 255, 0.5); /* tf-allow-raw-color */
   border-radius: 3px;
   cursor: pointer;
   font-size: 0.6875rem;
@@ -3359,21 +3361,21 @@
 }
 
 .canon-find-replace__opt-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.08); /* tf-allow-raw-color */
+  color: rgba(255, 255, 255, 0.8); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__opt-btn--active {
-  background: rgba(100, 180, 255, 0.15);
-  border-color: rgba(100, 180, 255, 0.3);
-  color: rgba(100, 180, 255, 0.9);
+  background: rgba(100, 180, 255, 0.15); /* tf-allow-raw-color */
+  border-color: rgba(100, 180, 255, 0.3); /* tf-allow-raw-color */
+  color: rgba(100, 180, 255, 0.9); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__action-btn {
   padding: 0.25rem 0.5rem;
-  border: 1px solid rgba(255, 140, 60, 0.3);
-  background: rgba(255, 140, 60, 0.1);
-  color: rgba(255, 140, 60, 0.9);
+  border: 1px solid rgba(255, 140, 60, 0.3); /* tf-allow-raw-color */
+  background: rgba(255, 140, 60, 0.1); /* tf-allow-raw-color */
+  color: rgba(255, 140, 60, 0.9); /* tf-allow-raw-color */
   border-radius: 3px;
   cursor: pointer;
   font-size: 0.6875rem;
@@ -3383,7 +3385,7 @@
 }
 
 .canon-find-replace__action-btn:hover:not(:disabled) {
-  background: rgba(255, 140, 60, 0.2);
+  background: rgba(255, 140, 60, 0.2); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__action-btn:disabled {
@@ -3402,22 +3404,22 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.65); /* tf-allow-raw-color */
   font-size: 0.6875rem;
   cursor: pointer;
 }
 
 .canon-find-replace__checkbox input[type='checkbox'] {
-  accent-color: rgba(100, 180, 255, 0.8);
+  accent-color: rgba(100, 180, 255, 0.8); /* tf-allow-raw-color */
   width: 12px;
   height: 12px;
 }
 
 .canon-find-replace__find-btn {
   padding: 0.25rem 0.75rem;
-  border: 1px solid rgba(100, 180, 255, 0.3);
-  background: rgba(100, 180, 255, 0.1);
-  color: rgba(100, 180, 255, 0.9);
+  border: 1px solid rgba(100, 180, 255, 0.3); /* tf-allow-raw-color */
+  background: rgba(100, 180, 255, 0.1); /* tf-allow-raw-color */
+  color: rgba(100, 180, 255, 0.9); /* tf-allow-raw-color */
   border-radius: 3px;
   cursor: pointer;
   font-size: 0.6875rem;
@@ -3426,7 +3428,7 @@
 }
 
 .canon-find-replace__find-btn:hover:not(:disabled) {
-  background: rgba(100, 180, 255, 0.2);
+  background: rgba(100, 180, 255, 0.2); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__find-btn:disabled {
@@ -3435,9 +3437,9 @@
 }
 
 .canon-find-replace__error {
-  background: rgba(255, 80, 80, 0.1);
-  border: 1px solid rgba(255, 80, 80, 0.2);
-  color: rgba(255, 80, 80, 0.9);
+  background: rgba(255, 80, 80, 0.1); /* tf-allow-raw-color */
+  border: 1px solid rgba(255, 80, 80, 0.2); /* tf-allow-raw-color */
+  color: rgba(255, 80, 80, 0.9); /* tf-allow-raw-color */
   padding: 0.25rem 0.5rem;
   border-radius: 3px;
   font-size: 0.6875rem;
@@ -3445,9 +3447,9 @@
 }
 
 .canon-find-replace__replaced-banner {
-  background: rgba(0, 200, 120, 0.1);
-  border: 1px solid rgba(0, 200, 120, 0.2);
-  color: rgba(0, 200, 120, 0.9);
+  background: rgba(0, 200, 120, 0.1); /* tf-allow-raw-color */
+  border: 1px solid rgba(0, 200, 120, 0.2); /* tf-allow-raw-color */
+  color: rgba(0, 200, 120, 0.9); /* tf-allow-raw-color */
   padding: 0.25rem 0.5rem;
   border-radius: 3px;
   font-size: 0.6875rem;
@@ -3455,13 +3457,13 @@
 }
 
 .canon-find-replace__summary {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5); /* tf-allow-raw-color */
   font-size: 0.6875rem;
   padding: 0.25rem 0;
 }
 
 .canon-find-replace__empty {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.35); /* tf-allow-raw-color */
   font-size: 0.75rem;
   font-style: italic;
   padding: 0.5rem 0;
@@ -3483,24 +3485,24 @@
   gap: 0.25rem;
   width: 100%;
   padding: 0.1875rem 0.375rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.03); /* tf-allow-raw-color */
   border: none;
   border-radius: 2px;
   cursor: pointer;
   text-align: left;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8); /* tf-allow-raw-color */
   font-size: 0.75rem;
   transition: background 0.12s;
 }
 
 .canon-find-replace__file-header:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.06); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__chevron {
   font-size: 0.625rem;
   width: 10px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.45); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__file-name {
@@ -3515,8 +3517,8 @@
   font-size: 0.625rem;
   padding: 0 0.25rem;
   border-radius: 3px;
-  background: rgba(100, 180, 255, 0.1);
-  color: rgba(100, 180, 255, 0.8);
+  background: rgba(100, 180, 255, 0.1); /* tf-allow-raw-color */
+  color: rgba(100, 180, 255, 0.8); /* tf-allow-raw-color */
   font-variant-numeric: tabular-nums;
 }
 
@@ -3530,17 +3532,17 @@
   cursor: pointer;
   text-align: left;
   font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.7); /* tf-allow-raw-color */
   transition: background 0.12s;
 }
 
 .canon-find-replace__match-row:hover {
-  background: rgba(100, 180, 255, 0.06);
+  background: rgba(100, 180, 255, 0.06); /* tf-allow-raw-color */
 }
 
 .canon-find-replace__line-num {
   min-width: 32px;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.35); /* tf-allow-raw-color */
   font-variant-numeric: tabular-nums;
   text-align: right;
   flex-shrink: 0;
@@ -3554,8 +3556,8 @@
 }
 
 .canon-find-replace__highlight {
-  background: rgba(255, 200, 50, 0.3);
-  color: rgba(255, 220, 100, 1);
+  background: rgba(255, 200, 50, 0.3); /* tf-allow-raw-color */
+  color: rgba(255, 220, 100, 1); /* tf-allow-raw-color */
   border-radius: 1px;
   padding: 0 1px;
 }
@@ -3614,7 +3616,7 @@
 }
 
 .canon-split-editor__divider:hover {
-  background: hsl(190 80% 55% / 0.5);
+  background: hsl(190 80% 55% / 0.5); /* tf-allow-raw-color */
 }
 
 /* ── Tab Drag & Drop ──────────────────────────────────────── */
@@ -3628,11 +3630,11 @@
 }
 
 .canon-ide__tab--drop-target {
-  box-shadow: inset 2px 0 0 0 hsl(190 80% 55% / 0.9);
+  box-shadow: inset 2px 0 0 0 hsl(190 80% 55% / 0.9); /* tf-allow-raw-color */
 }
 
 .canon-ide__tab--drop-target.canon-ide__tab--active {
-  box-shadow: inset 2px 0 0 0 hsl(190 80% 70% / 1);
+  box-shadow: inset 2px 0 0 0 hsl(190 80% 70% / 1); /* tf-allow-raw-color */
 }
 
 /* ── Line Markers & Decorations ───────────────────────────────── */
@@ -3641,23 +3643,23 @@
 }
 
 .canon-line-marker--error {
-  background: hsl(0 70% 45% / 0.12);
+  background: hsl(0 70% 45% / 0.12); /* tf-allow-raw-color */
 }
 
 .canon-line-marker--warning {
-  background: hsl(40 80% 50% / 0.10);
+  background: hsl(40 80% 50% / 0.10); /* tf-allow-raw-color */
 }
 
 .canon-line-marker--info {
-  background: hsl(210 70% 55% / 0.08);
+  background: hsl(210 70% 55% / 0.08); /* tf-allow-raw-color */
 }
 
 .canon-line-marker--hint {
-  background: hsl(150 50% 45% / 0.08);
+  background: hsl(150 50% 45% / 0.08); /* tf-allow-raw-color */
 }
 
 .canon-glyph--error {
-  background: hsl(0 70% 50%);
+  background: hsl(0 70% 50%); /* tf-allow-raw-color */
   border-radius: 50%;
   width: 8px !important;
   height: 8px !important;
@@ -3665,7 +3667,7 @@
 }
 
 .canon-glyph--warning {
-  background: hsl(40 90% 55%);
+  background: hsl(40 90% 55%); /* tf-allow-raw-color */
   border-radius: 2px;
   width: 8px !important;
   height: 8px !important;
@@ -3673,7 +3675,7 @@
 }
 
 .canon-glyph--info {
-  background: hsl(210 70% 60%);
+  background: hsl(210 70% 60%); /* tf-allow-raw-color */
   border-radius: 50%;
   width: 6px !important;
   height: 6px !important;
@@ -3681,7 +3683,7 @@
 }
 
 .canon-glyph--hint {
-  background: hsl(150 50% 50%);
+  background: hsl(150 50% 50%); /* tf-allow-raw-color */
   border-radius: 50%;
   width: 6px !important;
   height: 6px !important;

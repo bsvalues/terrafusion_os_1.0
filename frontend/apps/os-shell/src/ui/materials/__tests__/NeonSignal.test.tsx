@@ -7,11 +7,12 @@
  * @module NeonSignal.test
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-/* ── Jest mock: framer-motion passthrough ─────────────────────── */
-jest.mock('framer-motion', () => ({
+/* ── Vitest mock: framer-motion passthrough ─────────────────────── */
+vi.mock('framer-motion', () => ({
   motion: new Proxy({}, { get: (_t, prop) => React.forwardRef((p: Record<string, unknown>, ref) => React.createElement(prop as string, { ...p, ref })) }),
   useReducedMotion: () => false,
   AnimatePresence: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),

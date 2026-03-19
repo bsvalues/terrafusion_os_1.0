@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { Bold } from 'lucide-react';
 import React from 'react';
+import { vi } from 'vitest';
 import { Toggle } from './toggle';
 
 expect.extend(toHaveNoViolations);
@@ -98,7 +99,7 @@ describe('Toggle', () => {
     });
 
     it('calls onPressedChange when clicked', async () => {
-      const onPressedChange = jest.fn();
+      const onPressedChange = vi.fn();
       const user = userEvent.setup();
 
       render(<Toggle onPressedChange={onPressedChange}>Toggle</Toggle>);
@@ -109,7 +110,7 @@ describe('Toggle', () => {
     });
 
     it('calls onPressedChange with false when unpressing', async () => {
-      const onPressedChange = jest.fn();
+      const onPressedChange = vi.fn();
       const user = userEvent.setup();
 
       render(
@@ -210,7 +211,7 @@ describe('Toggle', () => {
     });
 
     it('does not toggle when disabled', async () => {
-      const onPressedChange = jest.fn();
+      const onPressedChange = vi.fn();
       const user = userEvent.setup();
 
       render(
@@ -273,7 +274,7 @@ describe('Toggle', () => {
     });
 
     it('calls onPressedChange on Space key', async () => {
-      const onPressedChange = jest.fn();
+      const onPressedChange = vi.fn();
       const user = userEvent.setup();
 
       render(<Toggle onPressedChange={onPressedChange}>Toggle</Toggle>);
@@ -287,7 +288,7 @@ describe('Toggle', () => {
     });
 
     it('calls onPressedChange on Enter key', async () => {
-      const onPressedChange = jest.fn();
+      const onPressedChange = vi.fn();
       const user = userEvent.setup();
 
       render(<Toggle onPressedChange={onPressedChange}>Toggle</Toggle>);
@@ -301,7 +302,7 @@ describe('Toggle', () => {
     });
 
     it('does not toggle on other keys', async () => {
-      const onPressedChange = jest.fn();
+      const onPressedChange = vi.fn();
       const user = userEvent.setup();
 
       render(<Toggle onPressedChange={onPressedChange}>Toggle</Toggle>);

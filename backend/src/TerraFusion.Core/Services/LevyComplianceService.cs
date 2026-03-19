@@ -81,10 +81,10 @@ namespace TerraFusion.Core.Services
         /// <summary>
         /// Generate a compliance report for a district and tax year.
         /// </summary>
-        public Task<ComplianceReport> GenerateComplianceReportAsync(int districtId, int taxYear)
+        public Task<LevyComplianceReport> GenerateLevyComplianceReportAsync(int districtId, int taxYear)
         {
             // Stub — in production, fetches data from EF Core context
-            var report = new ComplianceReport
+            var report = new LevyComplianceReport
             {
                 DistrictId = districtId,
                 TaxYear = taxYear,
@@ -129,7 +129,7 @@ namespace TerraFusion.Core.Services
     }
 
     /// <summary>Full compliance report for a district and year.</summary>
-    public class ComplianceReport
+    public class LevyComplianceReport
     {
         public int DistrictId { get; set; }
         public int TaxYear { get; set; }

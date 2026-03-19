@@ -85,10 +85,6 @@ function App() {
     setAllApps(startMenuApps);
     setPinnedApps(startMenuApps.filter((_, i) => MODULES[i].isCore));
 
-    console.log('🚀 TerraFusion OS initialized');
-    console.log(`📦 ${MODULES.length} modules registered`);
-    console.log('📡 IPC bridge installed');
-
     return () => {
       cleanupIpc();
     };

@@ -37,6 +37,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" />
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
+    <PackageReference Include="System.Data.Odbc" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" />
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="FluentValidation" />

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
+import { vi } from 'vitest';
 import {
   Command,
   CommandDialog,
@@ -360,7 +361,7 @@ describe('Command', () => {
 
     it('handles click events', async () => {
       const user = userEvent.setup();
-      const onSelect = jest.fn();
+      const onSelect = vi.fn();
 
       render(
         <Command>
@@ -611,7 +612,7 @@ describe('Command', () => {
 
     it('supports Enter to select item', async () => {
       const user = userEvent.setup();
-      const onSelect = jest.fn();
+      const onSelect = vi.fn();
       render(
         <Command>
           <CommandInput placeholder='Search...' />

@@ -65,6 +65,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { gptHub } from '@/services/gptHub';
+import { ragAPI } from '@/services/ragAPI';
 
 // RAG API interfaces (extending gptAPI)
 interface RAGDataset {
@@ -203,15 +204,8 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     setIsLoading(true);
 
     try {
-      // TODO: Implement RAG API endpoints
-      // const response = await fetch('/api/rag/datasets');
-      // const data = await response.json();
-      // setDatasets(data);
-
-      // RAG dataset loading — disabled pending R2 knowledge base backend
-      const mockDatasets: RAGDataset[] = [];
-
-      setDatasets(mockDatasets);
+      const data = await ragAPI.getDatasets();
+      setDatasets(data);
     } catch (err) {
       setErrorMessage('Failed to load datasets');
       console.error(err);
@@ -227,15 +221,8 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     setIsLoading(true);
 
     try {
-      // TODO: Implement API call
-      // const response = await fetch(`/api/rag/datasets/${datasetId}/documents`);
-      // const data = await response.json();
-      // setDocuments(data);
-
-      // RAG dataset loading — disabled pending R2 knowledge base backend
-      const mockDocuments: RAGDocument[] = [];
-
-      setDocuments(mockDocuments);
+      const data = await ragAPI.getDocuments(datasetId);
+      setDocuments(data);
     } catch (err) {
       setErrorMessage('Failed to load documents');
       console.error(err);
@@ -251,15 +238,8 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     setIsLoading(true);
 
     try {
-      // TODO: Implement API call
-      // const response = await fetch(`/api/rag/documents/${documentId}/chunks`);
-      // const data = await response.json();
-      // setChunks(data);
-
-      // RAG dataset loading — disabled pending R2 knowledge base backend
-      const mockChunks: RAGDocumentChunk[] = [];
-
-      setChunks(mockChunks);
+      const data = await ragAPI.getChunks(documentId);
+      setChunks(data);
     } catch (err) {
       setErrorMessage('Failed to load chunks');
       console.error(err);
@@ -273,12 +253,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
    */
   const handleCreateDataset = async () => {
     try {
-      // TODO: Implement API call
-      // const response = await fetch('/api/rag/datasets', {
-      //   method: 'POST',
-      //   body: JSON.stringify(newDatasetForm),
-      // });
-      // const dataset = await response.json();
+      await ragAPI.createDataset(newDatasetForm);
 
       setSuccessMessage('Dataset created successfully');
       setCreateDatasetDialogOpen(false);
@@ -312,11 +287,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
         setUploadProgress(i);
       }
 
-      // TODO: Implement API call
-      // const response = await fetch(`/api/rag/datasets/${selectedDataset.id}/documents`, {
-      //   method: 'POST',
-      //   body: JSON.stringify(uploadForm),
-      // });
+      await ragAPI.addDocument(selectedDataset.id, uploadForm);
 
       setSuccessMessage('Document uploaded and processing started');
       setUploadDialogOpen(false);
@@ -346,8 +317,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     }
 
     try {
-      // TODO: Implement API call
-      // await fetch(`/api/rag/datasets/${dataset.id}`, { method: 'DELETE' });
+      await ragAPI.deleteDataset(dataset.id);
 
       setSuccessMessage('Dataset deleted successfully');
       await loadDatasets();
@@ -366,8 +336,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
     }
 
     try {
-      // TODO: Implement API call
-      // await fetch(`/api/rag/documents/${document.id}`, { method: 'DELETE' });
+      await ragAPI.deleteDocument(document.id);
 
       setSuccessMessage('Document deleted successfully');
       if (selectedDataset) {
@@ -384,8 +353,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
    */
   const handleReindex = async (dataset: RAGDataset) => {
     try {
-      // TODO: Implement API call
-      // await fetch(`/api/rag/datasets/${dataset.id}/reindex`, { method: 'POST' });
+      await ragAPI.reindexDataset(dataset.id);
 
       setSuccessMessage('Reindexing started');
     } catch (err) {

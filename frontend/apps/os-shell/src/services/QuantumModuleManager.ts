@@ -236,8 +236,10 @@ class QuantumModuleManagerService {
       const mountElement = targetElement || this.createModuleContainer(module);
 
       // Create quantum loading context
+      const sessionRaw = typeof localStorage !== 'undefined' ? localStorage.getItem('tf.session.dev') : null;
+      const session = sessionRaw ? JSON.parse(sessionRaw) : {};
       const context: ModuleLoadingContext = {
-        countyId: 'default', // TODO: Get from user session
+        countyId: session.countyId ?? 'default',
         sessionId: this.generateSessionId(),
         permissions: ['read', 'write', 'execute'], // TODO: Get from user permissions
         securityLevel: 'STANDARD', // TODO: Get from security context

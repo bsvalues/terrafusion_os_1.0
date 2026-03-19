@@ -15,10 +15,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - DOTNET_WATCH=true
-    command: ["dotnet", "watch", "run", "--project", "/app/backend/TerraFusion.API/TerraFusion.API.csproj"]
+    command:
+      ['dotnet', 'watch', 'run', '--project', '/app/backend/TerraFusion.API/TerraFusion.API.csproj']
     ports:
-      - "5000:5000"
-      - "5001:5001" # HTTPS port for development
+      - '${TF_API_PORT:-5046}:5046'
+      - '${TF_API_HTTPS_PORT:-5047}:5047' # HTTPS port for development
 
   terrafusion-frontend:
     image: node:20-alpine
@@ -28,10 +29,10 @@ services:
       - /app/node_modules # Prevent overwriting node_modules
     environment:
       - NODE_ENV=development
-    command: ["npm", "run", "dev", "--", "--host"]
+    command: ['npm', 'run', 'dev', '--', '--host']
     ports:
-      - "3000:3000"
-      - "3001:3001" # Vite HMR port
+      - '${TF_FRONTEND_PORT:-3102}:3102'
+      - '${TF_FRONTEND_HMR_PORT:-3103}:3103' # Vite HMR port
 
   ai-command-brain:
     volumes:
@@ -39,7 +40,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: ["npx", "nodemon", "ai-command-brain.js"]
+    command: ['npx', 'nodemon', 'ai-command-brain.js']
 
   ai-swarm:
     volumes:
@@ -47,7 +48,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: ["npx", "nodemon", "ai-swarm.js"]
+    command: ['npx', 'nodemon', 'ai-swarm.js']
 
   ai-advanced:
     volumes:
@@ -55,7 +56,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: ["npx", "nodemon", "ai-advanced.js"]
+    command: ['npx', 'nodemon', 'ai-advanced.js']
 
   # Development tools
   adminer:
@@ -63,6 +64,6 @@ services:
     container_name: terrafusion-adminer
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - '8080:8080'
     networks:
       - terrafusion-network

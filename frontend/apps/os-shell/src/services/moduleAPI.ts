@@ -2,6 +2,9 @@ import axios from 'axios';
 
 import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('moduleAPI');
 const API_BASE_URL = getViteEnv().VITE_API_URL || '/api';
 
 const api = axios.create({
@@ -309,7 +312,7 @@ export const moduleAPI = {
       const response = await api.get('/modules');
       return response.data;
     } catch (error) {
-      console.warn('Backend not available, using real Terrafusion module data:', error.message);
+      logger.warn('Backend not available, using real Terrafusion module data:', error.message);
       return realModules;
     }
   },
@@ -319,7 +322,7 @@ export const moduleAPI = {
       const response = await api.get(`/modules/${id}`);
       return response.data;
     } catch (error) {
-      console.warn('Backend not available, using fallback data');
+      logger.warn('Backend not available, using fallback data');
       return realModules.find((m) => m.id === id) || null;
     }
   },
@@ -329,7 +332,7 @@ export const moduleAPI = {
       const response = await api.get(`/modules/by-name/${name}`);
       return response.data;
     } catch (error) {
-      console.warn('Backend not available, using fallback data');
+      logger.warn('Backend not available, using fallback data');
       return realModules.find((m) => m.name === name) || null;
     }
   },
@@ -339,7 +342,7 @@ export const moduleAPI = {
       const response = await api.get(`/modules/tier/${tier}`);
       return response.data;
     } catch (error) {
-      console.warn('Backend not available, using fallback data');
+      logger.warn('Backend not available, using fallback data');
       return realModules.filter((m) => m.tier === tier);
     }
   },
@@ -349,7 +352,7 @@ export const moduleAPI = {
       const response = await api.get('/modules/active');
       return response.data;
     } catch (error) {
-      console.warn('Backend not available, using fallback data');
+      logger.warn('Backend not available, using fallback data');
       return realModules.filter((m) => m.status === 'active');
     }
   },
@@ -359,7 +362,7 @@ export const moduleAPI = {
       const response = await api.post(`/modules/${id}/launch`);
       return response.data;
     } catch (error) {
-      console.warn('Backend not available, simulating module launch');
+      logger.warn('Backend not available, simulating module launch');
       const module = realModules.find((m) => m.id === id);
       return {
         success: true,

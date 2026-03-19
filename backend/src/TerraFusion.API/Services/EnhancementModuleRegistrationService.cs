@@ -20,6 +20,7 @@ public class EnhancementModuleRegistrationService : IEnhancementModuleRegistrati
 {
     private readonly ILogger<EnhancementModuleRegistrationService> _logger;
     private readonly IEnhancementOrchestrationService _enhancementService;
+    private readonly IConfiguration _configuration;
 
     // Enhancement modules configuration
     private readonly List<EnhancementModuleDefinition> _enhancementModules = new()
@@ -143,10 +144,34 @@ public class EnhancementModuleRegistrationService : IEnhancementModuleRegistrati
 
     public EnhancementModuleRegistrationService(
         ILogger<EnhancementModuleRegistrationService> logger,
-        IEnhancementOrchestrationService enhancementService)
+        IEnhancementOrchestrationService enhancementService,
+        IConfiguration configuration)
     {
         _logger = logger;
         _enhancementService = enhancementService;
+        _configuration = configuration;
+
+        // Resolve health/metrics URLs from configuration (platform.json-aligned)
+        var brainBase = _configuration["ServiceEndpoints:AICommandBrain"] ?? "http://localhost:3001";
+        var swarmBase = _configuration["ServiceEndpoints:AISwarm"] ?? "http://localhost:3002";
+        var securityBase = _configuration["ServiceEndpoints:AIAdvanced"] ?? "http://localhost:3003";
+        var perfBase = _configuration["ServiceEndpoints:Consciousness"] ?? "http://localhost:3004";
+        var integBase = _configuration["ServiceEndpoints:Integration"] ?? "http://localhost:3005";
+
+        foreach (var mod in _enhancementModules)
+        {
+            var baseUrl = mod.Port switch
+            {
+                3001 => brainBase,
+                3002 => swarmBase,
+                3003 => securityBase,
+                3004 => perfBase,
+                3005 => integBase,
+                _ => $"http://localhost:{mod.Port}"
+            };
+            if (mod.HealthCheckUrl != null) mod.HealthCheckUrl = mod.HealthCheckUrl.Replace($"http://localhost:{mod.Port}", baseUrl);
+            if (mod.MetricsUrl != null) mod.MetricsUrl = mod.MetricsUrl.Replace($"http://localhost:{mod.Port}", baseUrl);
+        }
     }
 
     public async Task<IEnumerable<Module>> GetEnhancementModulesAsync()

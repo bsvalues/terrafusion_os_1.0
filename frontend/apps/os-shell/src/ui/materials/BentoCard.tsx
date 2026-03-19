@@ -2,20 +2,19 @@
  * @fileoverview BentoCard Component
  *
  * Individual card container for BentoGrid layouts.
- * Uses LiquidPanel variant="infrastructure" for consistent glass material.
+ * Individual card container for BentoGrid layouts.
  *
  * Features:
  * - Pre-defined span sizes: 1x1, 2x1, 1x2, 2x2, full
  * - Content variants: stat, chart, table, form, map
  * - Optional "promote" state for next-action highlighting
  * - Optional header with title, subtitle, and action slot
- * - Quality-gated glass via LiquidPanel
+ * - Own material identity via data-material="bento"
  *
  * @module BentoCard
  */
 
 import React, { forwardRef, HTMLAttributes, useMemo } from 'react';
-import { LiquidPanel } from './LiquidPanel';
 import './bento-grid.css';
 
 // ============================================================================
@@ -59,10 +58,10 @@ const BENTO_PROMOTE_VARS: React.CSSProperties = {
 // ============================================================================
 
 /**
- * BentoCard - Glass card container for BentoGrid layouts.
+ * BentoCard - Card container for BentoGrid layouts.
  *
- * Uses LiquidPanel variant="infrastructure" so cards are visually subordinate
- * to OS chrome (which uses variant="shell").
+ * Uses its own bento material (data-material="bento") with opaque background,
+ * visually subordinate to OS chrome.
  *
  * @example
  * ```tsx
@@ -115,10 +114,9 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(function Ben
   }), [promote]);
 
   return (
-    <LiquidPanel
+    <div
       ref={ref}
-      variant="infrastructure"
-      radius="lg"
+      data-material="bento"
       className={`${classes} ${className}`.trim()}
       style={tokenStyle}
       {...props}
@@ -135,7 +133,7 @@ export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>(function Ben
       <div className="bento-card__content">
         {children}
       </div>
-    </LiquidPanel>
+    </div>
   );
 });
 

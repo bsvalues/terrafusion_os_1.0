@@ -80,6 +80,9 @@ namespace TerraFusion.DataMining.Services
         /// <summary>Confidence score (0.0 to 1.0).</summary>
         public double ConfidenceScore { get; set; }
 
+        /// <summary>Service availability status ("available" or "not-yet-available").</summary>
+        public string Status { get; set; } = "available";
+
         /// <summary>Data sources used in this analysis.</summary>
         public List<string> DataSourcesUsed { get; set; } = new();
 
@@ -134,12 +137,13 @@ namespace TerraFusion.DataMining.Services
                 SubjectAddress = subject?.SitusAddress ?? "Unknown",
                 CountyId = countyId,
                 DataSourcesUsed = subject?.DataSources ?? new List<string>(),
-                ConfidenceScore = 0.0, // Stub: no real analysis performed
+                ConfidenceScore = 0.0,
+                Status = "not-yet-available", // CMA multi-source integration pending (Post-R3)
             };
 
-            _logger.LogInformation(
-                "[CMA] Stub: report generated for {Parcel} with {CompCount} comparables",
-                parcelNumber, report.Comparables.Count);
+            _logger.LogWarning(
+                "[CMA] Service not-yet-available: report for {Parcel} returned with zero comparables. Multi-source integration deferred to Post-R3.",
+                parcelNumber);
 
             return report;
         }

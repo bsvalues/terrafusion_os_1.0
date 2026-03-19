@@ -6,40 +6,53 @@
  *   2. Saving clears the dirty state and persists the content to localStorage.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 
 // ---------------------------------------------------------------------------
 // Mocks — same pattern as WorkspaceMVP
 // ---------------------------------------------------------------------------
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useNavigate: () => vi.fn(),
 }));
 
-jest.mock('../../components/standalone', () => ({
+vi.mock('../../components/standalone', () => ({
   StandaloneHomeShell: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-jest.mock('../../canon/CanonModuleHost', () => ({
+vi.mock('../../canon/CanonModuleHost', () => ({
   CanonModuleHost: () => <div data-testid='canon-module-host-stub' />,
 }));
 
-jest.mock('../../canon/useCanonLayout', () => ({
+vi.mock('../../canon/useCanonLayout', () => ({
   useCanonLayout: () => [
     { leftPaneWidth: 250, rightPaneWidth: 750, inspectorOpen: false },
-    jest.fn(),
+    vi.fn(),
   ],
 }));
 
-jest.mock('../../canon/invokeWithPreflight', () => ({
-  invokeWithPreflight: jest.fn(),
+vi.mock('../../canon/invokeWithPreflight', () => ({
+  invokeWithPreflight: vi.fn(),
 }));
 
-jest.mock('../../api/canonDoctor', () => ({ runCanonDoctor: jest.fn() }));
-jest.mock('../../api/canonGateFast', () => ({ runCanonGateFast: jest.fn() }));
-jest.mock('../../api/canonPing', () => ({ runCanonPing: jest.fn() }));
+vi.mock('../../api/canonDoctor', () => ({ runCanonDoctor: vi.fn() }));
+vi.mock('../../api/canonGateFast', () => ({ runCanonGateFast: vi.fn() }));
+vi.mock('../../api/canonPing', () => ({ runCanonPing: vi.fn() }));
+
+// Mock the lazy-loaded Monaco editor to render a plain textarea for testability
+vi.mock('../../canon/CanonEditor', () => ({
+  CanonEditor: ({ value, onChange }: { value: string; onChange?: (val: string) => void }) => (
+    <textarea
+      data-testid='terracanon-editor-textarea'
+      value={value}
+      onChange={(e) => onChange?.(e.target.value)}
+    />
+  ),
+  detectLanguage: vi.fn().mockReturnValue('plaintext'),
+}));
 
 // ---------------------------------------------------------------------------
 // Import under test
@@ -64,9 +77,12 @@ describe('P21 – In-memory Editing + Dirty State', () => {
     localStorage.clear();
   });
 
-  it('typing in editor toggles dirty indicator on tab', () => {
+  it('typing in editor toggles dirty indicator on tab', async () => {
     render(<CanonHome />);
     openWorkspaceAndFile();
+
+    // Flush React.lazy Suspense resolution so editor mounts
+    await act(async () => {});
 
     const tab = screen.getByTestId('terracanon-tab-README.md');
 
@@ -83,9 +99,12 @@ describe('P21 – In-memory Editing + Dirty State', () => {
     expect(tab.className).toContain('dirty');
   });
 
-  it('save clears dirty state and persists to localStorage', () => {
+  it('save clears dirty state and persists to localStorage', async () => {
     render(<CanonHome />);
     openWorkspaceAndFile();
+
+    // Flush React.lazy Suspense resolution so editor mounts
+    await act(async () => {});
 
     // Type in the textarea
     const textarea = screen.getByTestId('terracanon-editor-textarea');

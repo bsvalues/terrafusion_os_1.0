@@ -299,9 +299,9 @@ const ModuleEcosystemDashboard: React.FC = () => {
                 </Tooltip>
               </Box>
               <Box height={300}>
-                {/* @ts-ignore - Recharts React 18 compatibility */}
+                {/* @ts-expect-error Recharts types lag React 18 children prop */}
                 <ResponsiveContainer width='100%' height='100%'>
-                  {/* @ts-ignore - Recharts React 18 compatibility */}
+                  {/* @ts-expect-error Recharts types lag React 18 children prop */}
                   <LineChart data={performanceData}>
                     <CartesianGrid strokeDasharray='3 3' />
                     <XAxis dataKey='time' />
@@ -336,9 +336,9 @@ const ModuleEcosystemDashboard: React.FC = () => {
                 Module Distribution
               </Typography>
               <Box height={300}>
-                {/* @ts-ignore - Recharts React 18 compatibility */}
+                {/* @ts-expect-error Recharts types lag React 18 children prop */}
                 <ResponsiveContainer width='100%' height='100%'>
-                  {/* @ts-ignore - Recharts React 18 compatibility */}
+                  {/* @ts-expect-error Recharts types lag React 18 children prop */}
                   <PieChart>
                     <Pie
                       data={[

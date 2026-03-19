@@ -130,6 +130,7 @@ function getModuleDisplayName(moduleId: string): string {
     'pacs-bridge': 'PACS DataBridge',
     'terra-sync': 'TerraSync',
     'terra-flow': 'TerraFlow',
+    'terra-queue': 'TerraQueue',
     'terra-permit': 'TerraPermit',
     // Phase B audit additions
     'terra-miner': 'TerraMiner',
@@ -198,6 +199,7 @@ function getModuleIcon(moduleId: string): string {
     'terra-flow': '⚡',
     'terra-permit': '🏗️',
     // Phase B audit additions
+    'terra-queue': '📋',
     'terra-miner': '⛏️',
     'legislative-pulse': '📢',
     // GPT Suite namespaced modules

@@ -5,9 +5,10 @@
  * the loader state machine with UI rendering.
  *
  * @module components/modules/__tests__/ModuleHost.test
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -16,14 +17,14 @@ import { useModuleRegistryStore } from '../../../stores/moduleRegistryStore';
 import { ModuleHost } from '../ModuleHost';
 
 // Mock analytics
-jest.mock('../../../utils/analytics', () => ({
+vi.mock('../../../utils/analytics', () => ({
   analytics: {
-    trackEvent: jest.fn(),
+    trackEvent: vi.fn(),
   },
 }));
 
 // Mock moduleComponents to avoid lazy loading complexity
-jest.mock('../../../config/moduleComponents', () => ({
+vi.mock('../../../config/moduleComponents', () => ({
   normalizeModuleId: (id: string) => {
     const aliases: Record<string, string> = {
       terrabuild: 'costforge',
@@ -93,7 +94,7 @@ const resetStore = () => {
 describe('ModuleHost', () => {
   beforeEach(() => {
     resetStore();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
@@ -262,7 +263,7 @@ describe('ModuleHost', () => {
 
   describe('onClose callback', () => {
     it('calls onClose when provided in error state', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       const failingModuleId = 'failing-close-test-module';
 
       useModuleLoaderStore.setState({

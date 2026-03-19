@@ -6,9 +6,11 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 // Mock the API module BEFORE any imports to avoid import.meta.env parsing
-jest.mock('../../../api/systemDiagnosticsApi', () => ({
-  getSystemDiagnostics: jest.fn(),
+vi.mock('../../../api/systemDiagnosticsApi', () => ({
+  getSystemDiagnostics: vi.fn(),
 }));
 
 import '@testing-library/jest-dom';
@@ -72,15 +74,15 @@ const mockDiagnosticsDegraded: api.SystemDiagnosticsResponse = {
 
 describe('AIHealthStatusChip', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('renders loading state initially', () => {
-    jest.mocked(api.getSystemDiagnostics).mockImplementation(() => new Promise(() => {})); // Never resolves
+    vi.mocked(api.getSystemDiagnostics).mockImplementation(() => new Promise(() => {})); // Never resolves
 
     render(<AIHealthStatusChip />);
 
@@ -88,7 +90,7 @@ describe('AIHealthStatusChip', () => {
   });
 
   it('renders healthy status after successful fetch', async () => {
-    jest.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
+    vi.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
 
     render(<AIHealthStatusChip />);
 
@@ -98,7 +100,7 @@ describe('AIHealthStatusChip', () => {
   });
 
   it('renders degraded status with warning styling', async () => {
-    jest.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsDegraded);
+    vi.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsDegraded);
 
     render(<AIHealthStatusChip />);
 
@@ -108,7 +110,7 @@ describe('AIHealthStatusChip', () => {
   });
 
   it('renders error state on fetch failure', async () => {
-    jest.mocked(api.getSystemDiagnostics).mockRejectedValue(new Error('Network error'));
+    vi.mocked(api.getSystemDiagnostics).mockRejectedValue(new Error('Network error'));
 
     render(<AIHealthStatusChip />);
 
@@ -118,8 +120,8 @@ describe('AIHealthStatusChip', () => {
   });
 
   it('calls onClick handler when clicked', async () => {
-    jest.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
-    const handleClick = jest.fn();
+    vi.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
+    const handleClick = vi.fn();
 
     render(<AIHealthStatusChip onClick={handleClick} />);
 
@@ -132,7 +134,7 @@ describe('AIHealthStatusChip', () => {
   });
 
   it('shows AI label in non-compact mode', async () => {
-    jest.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
+    vi.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
 
     render(<AIHealthStatusChip compact={false} />);
 
@@ -142,7 +144,7 @@ describe('AIHealthStatusChip', () => {
   });
 
   it('hides AI label in compact mode', async () => {
-    jest.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
+    vi.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
 
     render(<AIHealthStatusChip compact={true} />);
 
@@ -154,7 +156,7 @@ describe('AIHealthStatusChip', () => {
   });
 
   it('shows tooltip with summary on hover', async () => {
-    jest.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
+    vi.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
 
     render(<AIHealthStatusChip />);
 
@@ -168,8 +170,8 @@ describe('AIHealthStatusChip', () => {
   });
 
   it('auto-refreshes at specified interval', async () => {
-    jest.useFakeTimers();
-    jest.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
+    vi.useFakeTimers();
+    vi.mocked(api.getSystemDiagnostics).mockResolvedValue(mockDiagnosticsHealthy);
 
     render(<AIHealthStatusChip refreshInterval={5000} />);
 
@@ -181,12 +183,12 @@ describe('AIHealthStatusChip', () => {
     expect(api.getSystemDiagnostics).toHaveBeenCalledTimes(1);
 
     // Advance time by refresh interval
-    jest.advanceTimersByTime(5000);
+    vi.advanceTimersByTime(5000);
 
     await waitFor(() => {
       expect(api.getSystemDiagnostics).toHaveBeenCalledTimes(2);
     });
 
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });

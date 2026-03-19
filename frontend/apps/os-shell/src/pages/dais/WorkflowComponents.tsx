@@ -32,8 +32,8 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card">
-      <div className="border-b border-border px-4 py-3">
+    <div className="rounded-lg border border-border bg-card" data-material="bento">
+      <div className="px-4 py-3" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
         <h3 className="text-lg font-semibold">{title}</h3>
       </div>
       <div className="p-4">{children}</div>
@@ -73,16 +73,16 @@ function StatusBadge({
   status: string;
   variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
 }) {
-  const colors = {
-    default: 'bg-gray-600 text-white',
-    success: 'bg-green-600 text-white',
-    warning: 'bg-yellow-600 text-white',
-    error: 'bg-red-600 text-white',
-    info: 'bg-blue-600 text-white',
+  const variantClasses = {
+    default: 'bg-primary text-primary-foreground',
+    success: 'bg-primary text-primary-foreground',
+    warning: 'bg-white/10 text-muted-foreground',
+    error: 'bg-destructive text-destructive-foreground',
+    info: 'border border-border text-foreground',
   };
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${colors[variant]}`}
+      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${variantClasses[variant]}`}
     >
       {status}
     </span>
@@ -155,6 +155,7 @@ export function PermitsWorkflow({ parcelId }: { parcelId: string }) {
   };
 
   return (
+    <div data-testid="permits-workflow" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
     <SectionCard title="Permits">
       {loading && <LoadingState />}
       {error && <ErrorState message={error} />}
@@ -164,7 +165,7 @@ export function PermitsWorkflow({ parcelId }: { parcelId: string }) {
       {!loading && permits.length > 0 && (
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border text-left text-sm font-medium text-muted-foreground">
+            <tr className="text-left text-sm font-medium text-muted-foreground" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
               <th className="pb-2">Permit ID</th>
               <th className="pb-2">Type</th>
               <th className="pb-2">Status</th>
@@ -174,7 +175,7 @@ export function PermitsWorkflow({ parcelId }: { parcelId: string }) {
           </thead>
           <tbody>
             {permits.map((p) => (
-              <tr key={p.permitId} className="border-b border-border last:border-0">
+              <tr key={p.permitId} className="last:border-0" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
                 <td className="py-2 font-mono text-sm">{p.permitId}</td>
                 <td className="py-2 text-sm">{p.type}</td>
                 <td className="py-2">
@@ -205,6 +206,7 @@ export function PermitsWorkflow({ parcelId }: { parcelId: string }) {
         </table>
       )}
     </SectionCard>
+    </div>
   );
 }
 
@@ -239,6 +241,7 @@ export function ExemptionsWorkflow({ parcelId }: { parcelId: string }) {
   };
 
   return (
+    <div data-testid="exemptions-workflow" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
     <SectionCard title="Exemptions">
       {loading && <LoadingState />}
       {error && <ErrorState message={error} />}
@@ -248,7 +251,7 @@ export function ExemptionsWorkflow({ parcelId }: { parcelId: string }) {
       {!loading && exemptions.length > 0 && (
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border text-left text-sm font-medium text-muted-foreground">
+            <tr className="text-left text-sm font-medium text-muted-foreground" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
               <th className="pb-2">Exemption ID</th>
               <th className="pb-2">Type</th>
               <th className="pb-2">Tier</th>
@@ -259,7 +262,7 @@ export function ExemptionsWorkflow({ parcelId }: { parcelId: string }) {
           </thead>
           <tbody>
             {exemptions.map((ex) => (
-              <tr key={ex.exemptionId} className="border-b border-border last:border-0">
+              <tr key={ex.exemptionId} className="last:border-0" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
                 <td className="py-2 font-mono text-sm">{ex.exemptionId}</td>
                 <td className="py-2 text-sm">{ex.type}</td>
                 <td className="py-2 text-sm">{ex.tier}</td>
@@ -278,13 +281,13 @@ export function ExemptionsWorkflow({ parcelId }: { parcelId: string }) {
                       <>
                         <button
                           onClick={() => handleProcess(ex.exemptionId, 'approve')}
-                          className="rounded bg-green-700 px-2 py-0.5 text-xs text-white hover:bg-green-600"
+                          className="rounded bg-primary px-2 py-0.5 text-xs text-primary-foreground hover:bg-primary/90"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleProcess(ex.exemptionId, 'deny')}
-                          className="rounded bg-red-700 px-2 py-0.5 text-xs text-white hover:bg-red-600"
+                          className="rounded bg-destructive px-2 py-0.5 text-xs text-destructive-foreground hover:bg-destructive/90"
                         >
                           Deny
                         </button>
@@ -294,13 +297,13 @@ export function ExemptionsWorkflow({ parcelId }: { parcelId: string }) {
                       <>
                         <button
                           onClick={() => handleProcess(ex.exemptionId, 'renew')}
-                          className="rounded bg-blue-700 px-2 py-0.5 text-xs text-white hover:bg-blue-600"
+                          className="rounded bg-primary px-2 py-0.5 text-xs text-primary-foreground hover:bg-primary/90"
                         >
                           Renew
                         </button>
                         <button
                           onClick={() => handleProcess(ex.exemptionId, 'revoke')}
-                          className="rounded bg-red-700 px-2 py-0.5 text-xs text-white hover:bg-red-600"
+                          className="rounded bg-destructive px-2 py-0.5 text-xs text-destructive-foreground hover:bg-destructive/90"
                         >
                           Revoke
                         </button>
@@ -314,6 +317,7 @@ export function ExemptionsWorkflow({ parcelId }: { parcelId: string }) {
         </table>
       )}
     </SectionCard>
+    </div>
   );
 }
 
@@ -352,6 +356,7 @@ export function NoticesPanel({ parcelId }: { parcelId: string }) {
   };
 
   return (
+    <div data-testid="notices-panel" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
     <SectionCard title="Assessment Notices">
       {loading && <LoadingState />}
       {error && <ErrorState message={error} />}
@@ -383,6 +388,7 @@ export function NoticesPanel({ parcelId }: { parcelId: string }) {
         </div>
       )}
     </SectionCard>
+    </div>
   );
 }
 
@@ -419,6 +425,7 @@ export function CertificationDashboard() {
   };
 
   return (
+    <div data-testid="certification-dashboard" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
     <SectionCard title="Certification Status">
       {loading && <LoadingState />}
       {error && <ErrorState message={error} />}
@@ -442,10 +449,10 @@ export function CertificationDashboard() {
                 <div
                   className={`h-full rounded-full transition-all ${
                     s.percentComplete >= 90
-                      ? 'bg-green-600'
+                      ? 'bg-green-500'
                       : s.percentComplete >= 70
-                        ? 'bg-yellow-600'
-                        : 'bg-red-600'
+                        ? 'bg-white/10'
+                        : 'bg-destructive'
                   }`}
                   style={{ width: `${Math.min(s.percentComplete, 100)}%` }}
                 />
@@ -459,5 +466,6 @@ export function CertificationDashboard() {
         </div>
       )}
     </SectionCard>
+    </div>
   );
 }

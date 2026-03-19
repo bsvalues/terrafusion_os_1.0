@@ -1,54 +1,37 @@
 /**
- * RegressionStudio.tsx (TFR-053)
+ * RegressionStudio.tsx (Phase 16B)
  *
- * Regression studio landing page. Model list, create new, run history.
- * Orchestrates RegressionControlPanel + charts.
+ * Regression studio landing page. Model list, create new, version
+ * comparison, coefficient detail. Store-driven via forgeRegressionStore.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RegressionControlPanel } from './RegressionControlPanel';
+import { CoefficientPanel } from './CoefficientPanel';
+import { VersionComparePanel } from './VersionComparePanel';
 import { ResidualPlot, CoefficientBarChart, PredictedVsActual, QQPlot } from './charts';
+import { useForgeRegressionStore } from '@/stores/forgeRegressionStore';
 
-interface SavedModel {
-  id: string;
-  name: string;
-  modelType: string;
-  rSquared: number;
-  variables: number;
-  createdAt: string;
-  status: 'draft' | 'validated' | 'production';
-}
-
-interface RunHistoryEntry {
-  id: string;
-  modelType: string;
-  rSquared: number;
-  timestamp: string;
-  variables: string[];
-}
-
-type View = 'list' | 'new' | 'results';
+type View = 'list' | 'new' | 'compare' | 'detail';
 
 export function RegressionStudio() {
   const [view, setView] = useState<View>('list');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showCharts, setShowCharts] = useState(false);
 
-  const [savedModels] = useState<SavedModel[]>([
-    { id: 'm1', name: 'SFR Base Model', modelType: 'OLS', rSquared: 0.8742, variables: 6, createdAt: '2026-02-15', status: 'production' },
-    { id: 'm2', name: 'Commercial GWR', modelType: 'GWR', rSquared: 0.9103, variables: 8, createdAt: '2026-03-01', status: 'validated' },
-    { id: 'm3', name: 'Multi-Family Quantile', modelType: 'Quantile', rSquared: 0.8321, variables: 5, createdAt: '2026-03-10', status: 'draft' },
-  ]);
+  const models = useForgeRegressionStore((s) => s.models);
+  const runs = useForgeRegressionStore((s) => s.runs);
+  const selectedModelId = useForgeRegressionStore((s) => s.selectedModelId);
+  const loading = useForgeRegressionStore((s) => s.loading);
+  const error = useForgeRegressionStore((s) => s.error);
+  const fetchModels = useForgeRegressionStore((s) => s.fetchModels);
+  const selectModel = useForgeRegressionStore((s) => s.selectModel);
 
-  const [runHistory] = useState<RunHistoryEntry[]>([
-    { id: 'r1', modelType: 'OLS', rSquared: 0.8742, timestamp: '2026-03-14 14:30', variables: ['sqft', 'lot_size', 'year_built', 'quality_grade', 'neighborhood', 'condition'] },
-    { id: 'r2', modelType: 'GWR', rSquared: 0.9103, timestamp: '2026-03-14 10:15', variables: ['sqft', 'lot_size', 'year_built', 'quality_grade', 'neighborhood', 'condition', 'dist_cbd', 'view'] },
-    { id: 'r3', modelType: 'OLS', rSquared: 0.8501, timestamp: '2026-03-13 16:45', variables: ['sqft', 'lot_size', 'year_built', 'quality_grade'] },
-  ]);
+  useEffect(() => {
+    fetchModels();
+  }, [fetchModels]);
 
   const statusColor = (status: string) => {
     switch (status) {
@@ -58,24 +41,51 @@ export function RegressionStudio() {
     }
   };
 
+  const handleModelClick = (modelId: string) => {
+    selectModel(modelId);
+    setView('detail');
+  };
+
   return (
-    <div className="space-y-4 p-4">
+    <div data-testid="regression-studio" className="space-y-4 p-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Regression Studio</h1>
         <div className="flex gap-2">
-          <Button variant={view === 'list' ? 'default' : 'outline'} size="sm" onClick={() => setView('list')}>
+          <Button
+            variant={view === 'list' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => { setView('list'); selectModel(null); }}
+          >
             Models
           </Button>
-          <Button variant={view === 'new' ? 'default' : 'outline'} size="sm" onClick={() => setView('new')}>
+          <Button
+            variant={view === 'new' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setView('new')}
+          >
             New Run
+          </Button>
+          <Button
+            variant={view === 'compare' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setView('compare')}
+          >
+            Compare
           </Button>
         </div>
       </div>
 
       {error && (
-        <div className="p-3 rounded bg-red-50 text-red-700 text-sm border border-red-200">{error}</div>
+        <div className="p-3 rounded text-sm border" style={{
+          background: 'hsl(var(--tf-error, 0 80% 60%) / 0.1)',
+          color: 'hsl(var(--tf-error, 0 80% 60%))',
+          borderColor: 'hsl(var(--tf-error, 0 80% 60%) / 0.2)',
+        }}>
+          {error}
+        </div>
       )}
 
+      {/* View: Models List */}
       {view === 'list' && (
         <>
           <Card>
@@ -85,20 +95,30 @@ export function RegressionStudio() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <span className="text-muted-foreground">Loading models...</span>
+                  <span style={{ color: 'hsl(var(--tf-muted))' }}>Loading models...</span>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {savedModels.map(model => (
-                    <div key={model.id} className="flex items-center justify-between p-3 rounded border hover:bg-gray-50 cursor-pointer">
+                  {models.map((model) => (
+                    <div
+                      key={model.id}
+                      data-model-id={model.id}
+                      data-material="bento"
+                      className="flex items-center justify-between p-3 rounded border cursor-pointer"
+                      style={{ borderColor: 'hsl(var(--tf-border) / 0.2)' }}
+                      onClick={() => handleModelClick(model.id)}
+                      role="link"
+                    >
                       <div>
-                        <div className="font-medium">{model.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {model.modelType} | {model.variables} variables | Created {model.createdAt}
+                        <div className="font-medium" style={{ color: 'hsl(var(--tf-fg))' }}>{model.name}</div>
+                        <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+                          {model.modelType} v{model.version} | {model.variables.length} variables | Created {model.createdAt}
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-mono text-sm">R² = {model.rSquared.toFixed(4)}</span>
+                        <span className="font-mono text-sm" style={{ color: 'hsl(var(--tf-fg))' }}>
+                          R² = {model.rSquared.toFixed(4)}
+                        </span>
                         <Badge variant={statusColor(model.status) as any}>{model.status}</Badge>
                       </div>
                     </div>
@@ -115,20 +135,30 @@ export function RegressionStudio() {
             <CardContent>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Timestamp</th>
-                    <th className="text-left py-2">Type</th>
-                    <th className="text-right py-2">R-squared</th>
-                    <th className="text-right py-2">Variables</th>
+                  <tr style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.2)' }}>
+                    <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Timestamp</th>
+                    <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Type</th>
+                    <th className="text-right py-2" style={{ color: 'hsl(var(--tf-muted))' }}>R²</th>
+                    <th className="text-right py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Variables</th>
+                    <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {runHistory.map(run => (
-                    <tr key={run.id} className="border-b hover:bg-gray-50 cursor-pointer">
-                      <td className="py-2 text-muted-foreground">{run.timestamp}</td>
-                      <td className="py-2"><Badge variant="outline" className="text-xs">{run.modelType}</Badge></td>
-                      <td className="py-2 text-right font-mono">{run.rSquared.toFixed(4)}</td>
-                      <td className="py-2 text-right">{run.variables.length}</td>
+                  {runs.map((run) => (
+                    <tr key={run.id} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.1)' }}>
+                      <td className="py-2" style={{ color: 'hsl(var(--tf-muted))' }}>{run.timestamp}</td>
+                      <td className="py-2"><Badge variant="outline">{run.modelType}</Badge></td>
+                      <td className="py-2 text-right font-mono" style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {run.rSquared.toFixed(4)}
+                      </td>
+                      <td className="py-2 text-right" style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {run.variables.length}
+                      </td>
+                      <td className="py-2">
+                        <Badge variant={run.status === 'completed' ? 'secondary' : 'outline'}>
+                          {run.status}
+                        </Badge>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -138,6 +168,7 @@ export function RegressionStudio() {
         </>
       )}
 
+      {/* View: New Run */}
       {view === 'new' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <RegressionControlPanel onRunComplete={() => setShowCharts(true)} />
@@ -166,6 +197,19 @@ export function RegressionStudio() {
               </Card>
             </div>
           )}
+        </div>
+      )}
+
+      {/* View: Compare */}
+      {view === 'compare' && <VersionComparePanel />}
+
+      {/* View: Model Detail */}
+      {view === 'detail' && selectedModelId && (
+        <div className="space-y-4">
+          <Button variant="outline" size="sm" onClick={() => { setView('list'); selectModel(null); }}>
+            ← Back to Models
+          </Button>
+          <CoefficientPanel />
         </div>
       )}
     </div>

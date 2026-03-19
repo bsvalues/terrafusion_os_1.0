@@ -7,14 +7,14 @@ interface CanonMinimapPanelProps {
 }
 
 const KIND_COLORS: Record<string, string> = {
-  function: '#4fc1ff',
-  class: '#e5935a',
-  interface: '#3dc9b0',
-  type: '#c586c0',
-  import: '#808080',
-  export: '#9cdcfe',
-  comment: '#6a9955',
-  block: '#555',
+  function: 'var(--tf-syntax-function, #4fc1ff)',
+  class: 'var(--tf-syntax-class, #e5935a)',
+  interface: 'var(--tf-syntax-interface, #3dc9b0)',
+  type: 'var(--tf-syntax-type, #c586c0)',
+  import: 'var(--tf-syntax-import, #808080)',
+  export: 'var(--tf-syntax-export, #9cdcfe)',
+  comment: 'var(--tf-syntax-comment, #6a9955)',
+  block: 'var(--tf-syntax-block, #555)',
 };
 
 const KIND_LABELS: Record<string, string> = {

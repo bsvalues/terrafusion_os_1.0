@@ -1,0 +1,84 @@
+{
+  "tranche": "1D",
+  "title": "Batch Cost Model Runs + Coefficient Application Preview",
+  "scope": "forge-standalone",
+  "writeLane": "forge",
+  "surfaces": [
+    {
+      "name": "BatchCostRun",
+      "moduleId": "batch-cost-run",
+      "launchMode": "standalone",
+      "features": [
+        "Run configuration form (label, model year, cost table version)",
+        "Strata / neighborhood / property class filter badges",
+        "Dry-run preview summary (total parcels, increased/decreased/unchanged, mean/median change)",
+        "Run history table with status and dry-run/live type"
+      ]
+    },
+    {
+      "name": "CoefficientPreview",
+      "moduleId": "coefficient-preview",
+      "launchMode": "standalone",
+      "features": [
+        "Production vs candidate model selector",
+        "COD / PRD / mean ratio / median ratio delta cards",
+        "Impacted parcel count vs total evaluated",
+        "Coefficient delta table (variable, current, proposed, Δ, Δ%)",
+        "Impact distribution bar chart with dollar impact by bucket"
+      ]
+    }
+  ],
+  "governedTypes": [
+    "BatchCostRunFilter",
+    "BatchCostRunStatus",
+    "BatchCostRunRequest",
+    "BatchCostRunSummary",
+    "BatchCostRunRecord",
+    "CoefficientDelta",
+    "CoefficientDeltaSet",
+    "CoefficientImpactMetrics",
+    "ImpactBucket",
+    "CoefficientPreviewResult",
+    "BATCH_COST_THRESHOLDS"
+  ],
+  "contractTests": {
+    "file": "os-platform/core/tests/forge-batchcost-contract.test.mjs",
+    "suites": 10,
+    "assertions": 54,
+    "pass": 54,
+    "fail": 0
+  },
+  "gates": {
+    "batchcostContract": "54/54",
+    "regressionContract": "60/60",
+    "phase83Tools": "54/54",
+    "typeCheck": "PASS"
+  },
+  "filesChanged": [
+    "os-platform/core/types/index.ts",
+    "frontend/apps/os-shell/src/pages/forge/batch/BatchCostRun.tsx",
+    "frontend/apps/os-shell/src/pages/forge/batch/CoefficientPreview.tsx",
+    "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx",
+    "frontend/apps/os-shell/src/config/moduleComponents.tsx",
+    "os-platform/core/tests/forge-batchcost-contract.test.mjs",
+    "os-platform/core/pilot/evidence/tranche-1d-batchcost.json"
+  ],
+  "parentSha": "d3564d0d9",
+  "branch": "phase-7-county-ops-visual-governance",
+  "commitSha": "8ed1a75dd",
+  "cleanup": {
+    "status": "normalized",
+    "mixedCommitNote": "8ed1a75dd is a mixed-scope commit containing both Forge 1D files and Dais AppealCertification (Phase 19 Tranche 9) files. The Dais files were included because the pre-commit hook requires all untracked governed-path files to be staged. History rewrite was not performed because downstream Dais commits (fed26adf3, 9bbcd6238) depend on this tree state.",
+    "evidenceRelocation": "tranche-1d-batchcost.json moved from repo root to os-platform/core/pilot/evidence/ during cleanup",
+    "daisSpilloverFiles": [
+      "frontend/apps/os-shell/src/__tests__/dais/appealCertificationImpact.contract.test.ts",
+      "frontend/apps/os-shell/src/__tests__/dais/appealCertificationReadiness.contract.test.ts",
+      "frontend/apps/os-shell/src/__tests__/dais/appealOutcomeDecision.contract.test.ts",
+      "frontend/apps/os-shell/src/__tests__/trace/appealCertificationTrace.contract.test.ts",
+      "frontend/apps/os-shell/src/__tests__/workbench/daisAppealCertificationRouting.contract.test.tsx",
+      "frontend/apps/os-shell/src/components/dais/AppealCertificationPanel.tsx",
+      "frontend/apps/os-shell/src/services/suites/daisAppealCertification.ts"
+    ],
+    "cleanupCommitSha": "b1dc43d4a"
+  }
+}

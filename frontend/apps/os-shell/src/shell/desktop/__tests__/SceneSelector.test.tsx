@@ -1,11 +1,12 @@
 /**
  * SceneSelector Tests — Phase 8 Context Mode
  */
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 // Mock LiquidPanel
-jest.mock('../../../ui/materials', () => ({
+vi.mock('../../../ui/materials', () => ({
   LiquidPanel: ({ children, ...props }: any) => (
     <div data-testid='liquid-panel' {...props}>
       {children}
@@ -14,8 +15,8 @@ jest.mock('../../../ui/materials', () => ({
 }));
 
 // Mock activateModule
-const mockActivateModule = jest.fn();
-jest.mock('../../../orchestration/moduleActivation', () => ({
+const mockActivateModule = vi.fn();
+vi.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: any[]) => mockActivateModule(...args),
 }));
 
@@ -23,10 +24,10 @@ import SceneSelector from '../SceneSelector';
 import { useSceneStore, SCENE_LIBRARY } from '../../../stores/sceneStore';
 
 describe('SceneSelector', () => {
-  const mockClose = jest.fn();
+  const mockClose = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     useSceneStore.setState({ activeSceneId: null });
   });
 

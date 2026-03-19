@@ -27,9 +27,9 @@ export interface SentimentHeatMapWidgetProps {
 // ---------------------------------------------------------------------------
 
 function sentimentColor(score: number): string {
-  if (score >= 80) return '#22C55E';
-  if (score >= 60) return '#F59E0B';
-  return '#EF4444';
+  if (score >= 80) return 'hsl(var(--tf-success))';
+  if (score >= 60) return 'hsl(var(--tf-warning))';
+  return 'hsl(var(--tf-error))';
 }
 
 // ---------------------------------------------------------------------------
@@ -117,9 +117,9 @@ export default function SentimentHeatMapWidget({
 
       {/* Simplified legend */}
       <div className="absolute bottom-1 right-1 flex gap-1.5 text-[8px] bg-terra-midnight/60 px-1 py-0.5 rounded">
-        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />Good</span>
-        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" />Fair</span>
-        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[#EF4444]" />Low</span>
+        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--tf-success))]" />Good</span>
+        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--tf-warning))]" />Fair</span>
+        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--tf-error))]" />Low</span>
       </div>
     </div>
   );

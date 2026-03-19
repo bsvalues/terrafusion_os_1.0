@@ -1,6 +1,7 @@
 // TFT-191 — canon-observability: Prometheus metric definitions
 // TerraCanon domain — observability infrastructure. No valuation math.
 
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace TerraFusion.API.Monitoring;

@@ -1,0 +1,93 @@
+{
+  "generatedAt": "2026-03-16T17:01:05.439Z",
+  "scope": "Phase 25 County Replication Readiness Packet",
+  "decision": "GO",
+  "checks": [
+    {
+      "name": "prerequisite.phase24",
+      "ok": true,
+      "detail": "Phase 24 decision=GO",
+      "payload": {
+        "decision": "GO",
+        "generatedAt": "2026-03-16T17:01:05.023Z"
+      },
+      "blocker": null
+    },
+    {
+      "name": "replication.env_var_secrets",
+      "ok": true,
+      "detail": "All 4 secret env vars referenced",
+      "payload": {
+        "found": [
+          "${TF_DB_PASSWORD}",
+          "${TF_REDIS_PASSWORD}",
+          "${JWT_SECRET}",
+          "${ENCRYPTION_KEY}"
+        ],
+        "missing": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "replication.fisma_flags",
+      "ok": true,
+      "detail": "All FISMA feature flags enabled",
+      "payload": {
+        "flags": {
+          "UseAccountLockout": true,
+          "UsePasswordHistory": true,
+          "UseCommonPasswordCheck": true,
+          "EnforceFipsCompliance": true
+        },
+        "disabledFlags": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "replication.env_template",
+      "ok": true,
+      "detail": "All 7 required vars in .env.example",
+      "payload": {
+        "found": [
+          "TF_DB_PASSWORD",
+          "TF_REDIS_PASSWORD",
+          "JWT_SECRET",
+          "TF_API_PORT",
+          "TF_FRONTEND_PORT",
+          "POSTGRES_PASSWORD",
+          "REDIS_PASSWORD"
+        ],
+        "missing": []
+      },
+      "blocker": null
+    },
+    {
+      "name": "replication.staging_config",
+      "ok": true,
+      "detail": "Staging config populated with env var references",
+      "payload": {
+        "hasContent": true,
+        "hasEnvVars": true
+      },
+      "blocker": null
+    },
+    {
+      "name": "replication.proof_chain",
+      "ok": true,
+      "detail": "21 proof:phase scripts wired (phases 5-25)",
+      "payload": {
+        "phases": [
+          5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+          24, 25
+        ]
+      },
+      "blocker": null
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "failures": 0,
+    "blockers": [],
+    "description": "Validates that env-var driven configuration, FISMA compliance, staging parity, and the complete proof chain support county replication."
+  }
+}

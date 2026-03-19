@@ -4,6 +4,7 @@ import React from 'react';
 
 interface RatioMetrics {
   medianRatio: number;
+  weightedMeanRatio: number;
   cod: number;
   prd: number;
   prb: number;
@@ -165,6 +166,12 @@ export default function RatioStudyPanel({ ratioData, loading, onRefresh }: Ratio
         <MetricCard
           label="Median Ratio"
           value={ratioData.medianRatio}
+          format="ratio"
+          metricKey="medianRatio"
+        />
+        <MetricCard
+          label="Weighted Mean"
+          value={ratioData.weightedMeanRatio}
           format="ratio"
           metricKey="medianRatio"
         />

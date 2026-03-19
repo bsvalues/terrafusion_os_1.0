@@ -14,6 +14,7 @@
  * @module shell/command-palette/__tests__/ParcelSearch.test
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -24,37 +25,37 @@ import { CommandPalette } from '../CommandPalette';
 // Mocks
 // ============================================================================
 
-const mockActivateModule = jest.fn();
-jest.mock('../../../orchestration/moduleActivation', () => ({
+const mockActivateModule = vi.fn();
+vi.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: (...args: unknown[]) => mockActivateModule(...args),
 }));
 
-jest.mock('../../../stores/settingsStore', () => ({
-  useSettingsStore: jest.fn(() => ({
+vi.mock('../../../stores/settingsStore', () => ({
+  useSettingsStore: vi.fn(() => ({
     keyboardShortcuts: [],
   })),
 }));
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => ({
+  ...await vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }));
 
-const mockOpenWorkbenchWindow = jest.fn();
-jest.mock('../../../context/parcelContext', () => ({
+const mockOpenWorkbenchWindow = vi.fn();
+vi.mock('../../../context/parcelContext', () => ({
   openWorkbenchWindow: (...args: unknown[]) => mockOpenWorkbenchWindow(...args),
   useParcelContextStore: {
     getState: () => ({
       context: null,
-      setContext: jest.fn(),
-      recordRecent: jest.fn(),
+      setContext: vi.fn(),
+      recordRecent: vi.fn(),
     }),
   },
   useRecentParcels: () => [],
 }));
 
-jest.mock('../useParcelSearch', () => ({
+vi.mock('../useParcelSearch', () => ({
   useParcelSearch: () => ({ results: [], isLoading: false, error: null }),
 }));
 
@@ -63,7 +64,7 @@ jest.mock('../useParcelSearch', () => ({
 // ============================================================================
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   act(() => {
     useCommandPaletteStore.setState({
       isOpen: false,

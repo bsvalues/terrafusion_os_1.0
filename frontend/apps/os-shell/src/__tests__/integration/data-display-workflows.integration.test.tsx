@@ -5,6 +5,7 @@
  * @testCategory Integration Testing
  */
 
+import { vi, describe, it, expect } from 'vitest';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,8 @@ import {
 } from '@/components/ui/table';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { axe } from 'jest-axe';
+import { axe, toHaveNoViolations } from 'jest-axe';
+expect.extend(toHaveNoViolations);
 import React, { useState } from 'react';
 
 // ============================================================================
@@ -421,7 +423,7 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
   describe('User Workflow: Row Click', () => {
     it('should handle row click events', async () => {
       const user = userEvent.setup();
-      const handleRowClick = jest.fn();
+      const handleRowClick = vi.fn();
       render(<UserTable onRowClick={handleRowClick} />);
 
       const rows = screen.getAllByRole('row');

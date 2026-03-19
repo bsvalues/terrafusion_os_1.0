@@ -1,8 +1,8 @@
-// Vitest imports removed - Jest globals used
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useState } from 'react';
+import { vi } from 'vitest';
 import { Button } from './button';
 import {
   Dialog,
@@ -236,7 +236,7 @@ describe('Dialog Component', () => {
 
     it('calls onOpenChange when dialog state changes', async () => {
       const user = userEvent.setup();
-      const onOpenChange = jest.fn();
+      const onOpenChange = vi.fn();
 
       render(
         <Dialog onOpenChange={onOpenChange}>
@@ -736,7 +736,7 @@ describe('Dialog Component', () => {
   describe('Form Integration', () => {
     it('handles form submission inside dialog', async () => {
       const user = userEvent.setup();
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       function FormDialog() {
         const [open, setOpen] = useState(false);
@@ -798,7 +798,7 @@ describe('Dialog Component', () => {
 
     it('validates form inputs before submission', async () => {
       const user = userEvent.setup();
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       function ValidatedFormDialog() {
         const [open, setOpen] = useState(false);
@@ -869,7 +869,7 @@ describe('Dialog Component', () => {
 
     it('prevents form submission via Enter key when appropriate', async () => {
       const user = userEvent.setup();
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       render(
         <Dialog>

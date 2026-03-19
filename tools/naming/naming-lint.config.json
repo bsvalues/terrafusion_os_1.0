@@ -1,12 +1,12 @@
 {
-  "version": 1,
+  "version": 2,
   "ruleId": "naming-governance",
-  "description": "Bans placeholder label pending rename sweep. Phase C will perform replacements and activate required checks.",
+  "description": "Enforces constitutional naming rules. Bans retired placeholder labels; canonical replacement is 'TerraCanon'.",
   "root": ".",
   "bannedPhrases": [
     {
       "phrase": "TerraFusion IDE",
-      "message": "Placeholder label detected. Use 'Pillar Studio' after Phase C rename sweep."
+      "message": "Retired placeholder label. Use 'TerraCanon' — the OS's own creation/development/maintenance environment."
     }
   ],
   "extensions": [
@@ -42,9 +42,23 @@
     "archive",
     "zzz-archive",
     "worktrees",
-    ".worktrees"
+    ".worktrees",
+    "TerraFusionIDE",
+    "TERRAFUSION_ULTIMATE_STANDALONE",
+    "IDEGateway",
+    ".ai",
+    "ai-systems",
+    "packages"
   ],
-  "excludeFiles": ["pnpm-lock.yaml", "package-lock.json", "yarn.lock"],
+  "excludeFiles": [
+    "pnpm-lock.yaml",
+    "package-lock.json",
+    "yarn.lock",
+    "naming-lint.test.mjs",
+    "naming-lint.config.json",
+    "phase-c-naming-port-cleanup.json",
+    "r3-constitutional-gates.json"
+  ],
   "maxFileBytes": 2000000,
   "required": []
 }

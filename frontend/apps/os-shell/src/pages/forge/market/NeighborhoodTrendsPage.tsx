@@ -29,9 +29,8 @@ export function NeighborhoodTrendsPage() {
       <NeighborhoodTrendsGrid
         neighborhoods={neighborhoods}
         loading={loading}
-        onNeighborhoodClick={(n) => {
-          // Navigate to neighborhood detail — can be wired to router
-          console.log('Navigate to neighborhood:', n.neighborhoodId);
+        onNeighborhoodClick={() => {
+          // Navigation to neighborhood detail — to be wired to router
         }}
       />
     </div>

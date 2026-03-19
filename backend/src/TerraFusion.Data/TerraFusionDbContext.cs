@@ -144,6 +144,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<AuditFinding> AuditFindings { get; set; }
   public DbSet<AuditReconciliation> AuditReconciliations { get; set; }
 
+  // Dais County Ops — Exemptions, Appeals, Certification, Notices, Queue (Phase 7)
+  public DbSet<Exemption> Exemptions { get; set; } = null!;
+  public DbSet<Appeal> Appeals { get; set; } = null!;
+  public DbSet<CertificationStep> CertificationSteps { get; set; } = null!;
+  public DbSet<Notice> Notices { get; set; } = null!;
+  public DbSet<QueueItem> QueueItems { get; set; } = null!;
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)

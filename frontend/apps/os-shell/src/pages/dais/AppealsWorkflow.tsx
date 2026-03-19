@@ -17,24 +17,31 @@ import {
 // Status Badge
 // ============================================================================
 
-const STATUS_COLORS: Record<Appeal['status'], string> = {
-  filed: 'bg-blue-600 text-white',
-  scheduled: 'bg-yellow-600 text-white',
-  hearing: 'bg-orange-600 text-white',
-  decided: 'bg-green-600 text-white',
-  withdrawn: 'bg-gray-500 text-white',
+const STATUS_VARIANTS: Record<Appeal['status'], 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  filed: 'default',
+  scheduled: 'secondary',
+  hearing: 'outline',
+  decided: 'default',
+  withdrawn: 'secondary',
 };
 
-const OUTCOME_COLORS: Record<string, string> = {
-  sustained: 'bg-green-700 text-white',
-  reduced: 'bg-yellow-700 text-white',
-  dismissed: 'bg-red-700 text-white',
+const OUTCOME_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  sustained: 'default',
+  reduced: 'secondary',
+  dismissed: 'destructive',
 };
 
 function StatusBadge({ status }: { status: Appeal['status'] }) {
+  const variant = STATUS_VARIANTS[status] || 'secondary';
+  const variantClasses: Record<string, string> = {
+    default: 'bg-primary text-primary-foreground',
+    secondary: 'bg-white/10 text-muted-foreground',
+    destructive: 'bg-destructive text-destructive-foreground',
+    outline: 'border border-border text-foreground',
+  };
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${STATUS_COLORS[status] || 'bg-gray-500 text-white'}`}
+      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${variantClasses[variant]}`}
     >
       {status}
     </span>
@@ -80,7 +87,7 @@ function AppealForm({ onCreated, onCancel }: AppealFormProps) {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div className="rounded-lg border border-border bg-card p-6" data-testid="appeal-form" data-material="bento">
       <h3 className="mb-4 text-lg font-semibold">File New Appeal</h3>
       {error && (
         <div className="mb-4 rounded-md bg-red-900/20 p-3 text-sm text-red-400">
@@ -236,7 +243,7 @@ export default function AppealsWorkflow() {
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6" data-testid="appeals-workflow" style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -279,8 +286,8 @@ export default function AppealsWorkflow() {
 
       {/* Appeals Table */}
       {!loading && appeals.length > 0 && (
-        <div className="rounded-lg border border-border">
-          <table className="w-full">
+        <div className="rounded-lg border border-border" data-material="bento">
+          <table className="w-full" data-testid="appeals-table">
             <thead>
               <tr className="border-b border-border bg-muted/50">
                 <th className="px-4 py-3 text-left text-sm font-medium">Appeal ID</th>
@@ -298,7 +305,8 @@ export default function AppealsWorkflow() {
               {appeals.map((appeal) => (
                 <tr
                   key={appeal.appealId}
-                  className="border-b border-border hover:bg-muted/30 cursor-pointer"
+                  role="link"
+                  className="border-b border-border hover:bg-white/5 cursor-pointer"
                   onClick={() => setSelectedAppeal(appeal)}
                 >
                   <td className="px-4 py-3 text-sm font-mono">{appeal.appealId}</td>
@@ -316,7 +324,18 @@ export default function AppealsWorkflow() {
                   <td className="px-4 py-3 text-center">
                     {appeal.outcome ? (
                       <span
-                        className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${OUTCOME_COLORS[appeal.outcome] || ''}`}
+                        className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ${
+                          (() => {
+                            const v = OUTCOME_VARIANTS[appeal.outcome] || 'outline';
+                            const c: Record<string, string> = {
+                              default: 'bg-primary text-primary-foreground',
+                              secondary: 'bg-white/10 text-muted-foreground',
+                              destructive: 'bg-destructive text-destructive-foreground',
+                              outline: 'border border-border text-foreground',
+                            };
+                            return c[v];
+                          })()
+                        }`}
                       >
                         {appeal.outcome}
                       </span>
@@ -359,7 +378,7 @@ export default function AppealsWorkflow() {
 
       {/* Selected Appeal Detail */}
       {selectedAppeal && (
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="rounded-lg border border-border bg-card p-6" data-material="bento">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-semibold">
               Appeal {selectedAppeal.appealId}

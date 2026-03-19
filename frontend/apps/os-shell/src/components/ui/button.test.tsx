@@ -1,10 +1,7 @@
-/**
- * @jest-environment jsdom
- */
-
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as React from 'react';
+import { vi } from 'vitest';
 import { Button } from './button';
 
 describe('Button Component', () => {
@@ -74,7 +71,7 @@ describe('Button Component', () => {
     });
 
     it('does not trigger onClick when disabled', async () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(
         <Button disabled onClick={handleClick}>
           Disabled
@@ -90,7 +87,7 @@ describe('Button Component', () => {
 
   describe('Interactions', () => {
     it('triggers onClick handler when clicked', async () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(<Button onClick={handleClick}>Click me</Button>);
 
       const button = screen.getByRole('button');
@@ -100,7 +97,7 @@ describe('Button Component', () => {
     });
 
     it('can be clicked multiple times', async () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(<Button onClick={handleClick}>Click me</Button>);
 
       const button = screen.getByRole('button');
@@ -121,7 +118,7 @@ describe('Button Component', () => {
     });
 
     it('can be activated with Enter key', async () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(<Button onClick={handleClick}>Press Enter</Button>);
 
       const button = screen.getByRole('button');
@@ -132,7 +129,7 @@ describe('Button Component', () => {
     });
 
     it('can be activated with Space key', async () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(<Button onClick={handleClick}>Press Space</Button>);
 
       const button = screen.getByRole('button');
@@ -177,7 +174,7 @@ describe('Button Component', () => {
     });
 
     it('is keyboard accessible', async () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(<Button onClick={handleClick}>Accessible</Button>);
 
       await userEvent.tab();

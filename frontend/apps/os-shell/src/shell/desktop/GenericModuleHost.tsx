@@ -3,6 +3,9 @@ import type { ModuleDefinition } from '../../config/modules';
 import { useSentinelStore } from '../../sentinel/sentinelStore';
 import { useWindowInteraction } from './Window';
 
+/** Window-internal z-layering (scoped, not shell-level) */
+const INTERNAL_Z = { base: 10, controls: 20, overlay: 50 } as const;
+
 interface GenericModuleHostProps {
   module: ModuleDefinition;
 }
@@ -15,8 +18,10 @@ type IframeState = 'loading' | 'loaded' | 'error';
 function LoadingOverlay({ moduleName }: { moduleName: string }) {
   return (
     <div
-      className='absolute inset-0 flex flex-col items-center justify-center z-10'
+      className='absolute inset-0 flex flex-col items-center justify-center'
       style={{
+        position: 'relative',
+        zIndex: INTERNAL_Z.base,
         background:
           'linear-gradient(135deg, hsl(var(--tf-bg) / 0.98) 0%, hsl(var(--tf-bg) / 0.95) 100%)',
       }}
@@ -51,8 +56,10 @@ function ErrorOverlay({
 }) {
   return (
     <div
-      className='absolute inset-0 flex flex-col items-center justify-center z-10 p-6'
+      className='absolute inset-0 flex flex-col items-center justify-center p-6'
       style={{
+        position: 'relative',
+        zIndex: INTERNAL_Z.base,
         background:
           'linear-gradient(135deg, hsl(var(--tf-bg) / 0.98) 0%, hsl(var(--tf-bg) / 0.95) 100%)',
       }}
@@ -146,8 +153,10 @@ function SentinelWarningBanner() {
   const openPanel = useSentinelStore((s) => s.togglePanel);
   return (
     <div
-      className='absolute top-0 left-0 right-0 z-20 flex items-center justify-between gap-3 px-4 py-2 text-xs'
+      className='absolute top-0 left-0 right-0 flex items-center justify-between gap-3 px-4 py-2 text-xs'
       style={{
+        position: 'relative',
+        zIndex: INTERNAL_Z.controls,
         background: 'hsl(var(--tf-error) / 0.15)',
         borderBottom: '1px solid hsl(var(--tf-error) / 0.3)',
         backdropFilter: 'blur(8px)',
@@ -205,7 +214,7 @@ function IframeHost({ module, url }: { module: ModuleDefinition; url: string }) 
         <ErrorOverlay moduleName={module.displayName} url={url} onRetry={handleRetry} />
       )}
       {/* Transparent overlay during drag/resize to prevent iframe from stealing events */}
-      {isInteracting && <div className='absolute inset-0 z-50' />}
+      {isInteracting && <div className='absolute inset-0' style={{ position: 'relative', zIndex: INTERNAL_Z.overlay }} />}
       <iframe
         key={key}
         title={module.displayName}

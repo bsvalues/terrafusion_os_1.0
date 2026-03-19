@@ -17,6 +17,7 @@ import {
 import { useDesktopStore } from '../stores/desktopStore';
 import { useModuleRegistryStore } from '../stores/moduleRegistryStore';
 import { useStartMenuStore, type Module } from '../stores/startMenuStore';
+import { useLogger } from '@/hooks/useLogger';
 
 // ============================================================================
 // Types
@@ -65,6 +66,7 @@ export interface HydrationResult extends HydrationState {
  * ```
  */
 export function useHydration(): HydrationResult {
+  const logger = useLogger('useHydration');
   const [state, setState] = useState<HydrationState>({
     isHydrating: true,
     isHydrated: false,
@@ -95,7 +97,7 @@ export function useHydration(): HydrationResult {
         // Check if module exists (skip if removed)
         const module = getModuleById(w.moduleId);
         if (!module) {
-          console.warn(`[Hydration] Skipping window for missing module: ${w.moduleId}`);
+          logger.warn(`Skipping window for missing module: ${w.moduleId}`);
           return;
         }
 
@@ -174,7 +176,7 @@ export function useHydration(): HydrationResult {
 
         setState({ isHydrating: false, isHydrated: true, error: null });
       } catch (error) {
-        console.error('[Hydration] Failed to hydrate state:', error);
+        logger.error('Failed to hydrate state:', error);
         setState({
           isHydrating: false,
           isHydrated: false,

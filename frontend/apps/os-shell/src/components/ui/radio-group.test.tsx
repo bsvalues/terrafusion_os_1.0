@@ -14,6 +14,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { vi } from 'vitest';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
 describe('RadioGroup', () => {
@@ -106,7 +107,7 @@ describe('RadioGroup', () => {
     });
 
     it('calls onValueChange when selection changes', async () => {
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
       const user = userEvent.setup();
 
       render(
@@ -216,7 +217,7 @@ describe('RadioGroup', () => {
     });
 
     it('does not call onValueChange for disabled items', async () => {
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
       const user = userEvent.setup();
 
       render(
@@ -312,7 +313,7 @@ describe('RadioGroup', () => {
     });
 
     it('submits selected value with form', async () => {
-      const handleSubmit = jest.fn((e) => {
+      const handleSubmit = vi.fn((e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         return Object.fromEntries(formData);

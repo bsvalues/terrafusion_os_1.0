@@ -8,8 +8,8 @@
  * @see SUCCESS CRITERIA SC-5.17, SC-5.18, SC-5.19: Hydration
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
-// Jest globals used (describe, it, expect, beforeEach, afterEach, jest)
 import { STORAGE_KEYS } from '../../services/persistenceService';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { useModuleRegistryStore } from '../../stores/moduleRegistryStore';
@@ -99,19 +99,19 @@ beforeEach(() => {
 
   // Reset localStorage mock
   mockStorage = {};
-  jest.spyOn(Storage.prototype, 'getItem').mockImplementation(
+  vi.spyOn(Storage.prototype, 'getItem').mockImplementation(
     (key: string) => mockStorage[key] ?? null
   );
-  jest.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string, value: string) => {
     mockStorage[key] = value;
   });
-  jest.spyOn(Storage.prototype, 'removeItem').mockImplementation((key: string) => {
+  vi.spyOn(Storage.prototype, 'removeItem').mockImplementation((key: string) => {
     delete mockStorage[key];
   });
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 // ============================================================================
@@ -195,7 +195,7 @@ describe('useHydration', () => {
         ],
       });
 
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const { result } = renderHook(() => useHydration());
 

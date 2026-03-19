@@ -12,6 +12,10 @@
  * @see Slice 16: Cross-Surface Action Parity + Disabled/Policy Enforcement
  */
 
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('osActions');
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -370,7 +374,7 @@ function executeHandler(handlerKey: string, context: OsActionContext): void {
   if (handler) {
     handler(context);
   } else {
-    console.warn(`[osActions] No handler registered for key: ${handlerKey}`);
+    logger.warn(`No handler registered for key: ${handlerKey}`);
   }
 }
 

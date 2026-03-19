@@ -60,6 +60,9 @@ export interface WindowProps {
 // Constants
 // ============================================================================
 
+/** Window-chrome z-layering (scoped, not shell-level) */
+const WINDOW_CHROME_Z = { titleControls: 50, titleCenter: 10 } as const;
+
 const MIN_WIDTH = 400;
 const MIN_HEIGHT = 300;
 const TITLE_BAR_HEIGHT = 40;
@@ -298,7 +301,8 @@ const TitleBar: React.FC<TitleBarProps> = ({
 
       {/* Window Controls (left) - macOS traffic lights: close, minimize, maximize */}
       <div
-        className='group/controls flex items-center gap-2 relative z-50 pointer-events-auto'
+        className='group/controls flex items-center gap-2 relative pointer-events-auto'
+        style={{ zIndex: WINDOW_CHROME_Z.titleControls }}
         data-testid='window-controls'
       >
         <WindowControlButton label='Close' onClick={handleClose} variant='close' />
@@ -312,7 +316,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
       </div>
 
       {/* Title (center) - pointer-events-none so it doesn't block */}
-      <div className='flex items-center gap-2 absolute left-1/2 -translate-x-1/2 pointer-events-none z-10'>
+      <div className='flex items-center gap-2 absolute left-1/2 -translate-x-1/2 pointer-events-none' style={{ zIndex: WINDOW_CHROME_Z.titleCenter }}>
         <div role='img' aria-hidden='true'>
           <TerraSphereIcon size={24} variant='default' glyph={<Icon className='h-2.5 w-2.5' />} />
         </div>

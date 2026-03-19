@@ -199,7 +199,7 @@ function LayerTogglePanel({
   ];
 
   return (
-    <Card variant="glass" className="w-64">
+    <Card variant="glass" data-material="bento" className="w-64">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium text-terra-cyan">Layers</CardTitle>
       </CardHeader>
@@ -261,7 +261,7 @@ function ParcelSidebar({ parcel, onClose }: ParcelSidebarProps) {
   ];
 
   return (
-    <Card variant="glass" className="w-72">
+    <Card variant="glass" data-material="bento" className="w-72">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium text-terra-cyan">Parcel Details</CardTitle>
@@ -321,7 +321,7 @@ export default function MassAppraisalGIS() {
   }, [overlayMode]);
 
   return (
-    <div className="flex h-full bg-terra-midnight text-white">
+    <div data-testid="mass-appraisal-gis" className="flex h-full bg-terra-midnight text-white">
       {/* Layer panel */}
       <aside className="flex-shrink-0 p-4 space-y-4 overflow-y-auto border-r border-white/10">
         <LayerTogglePanel
@@ -332,7 +332,7 @@ export default function MassAppraisalGIS() {
         />
 
         {legendItems.length > 0 && (
-          <Card variant="glass" className="w-64">
+          <Card variant="glass" data-material="bento" className="w-64">
             <CardHeader className="pb-2">
               <CardTitle className="text-xs uppercase tracking-wider text-white/50">
                 Legend

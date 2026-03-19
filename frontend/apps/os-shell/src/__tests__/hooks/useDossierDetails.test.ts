@@ -6,6 +6,7 @@
  * correlationId exposure, and refetch.
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useDossierDetails } from '../../hooks/useDossierDetails';
 import type { DossierDetailsResponse } from '../../contracts/dossierDetails';
@@ -14,12 +15,12 @@ import type { DossierDetailsResponse } from '../../contracts/dossierDetails';
 // Mock dossierService.getDetails
 // ============================================================================
 
-const mockGetDetails = jest.fn<
+const mockGetDetails = vi.fn<
   Promise<{ data: DossierDetailsResponse; correlationId: string }>,
   [string, any?]
 >();
 
-jest.mock('../../services/dossierService', () => ({
+vi.mock('../../services/dossierService', () => ({
   dossierService: {
     getDetails: (...args: any[]) => mockGetDetails(...args),
   },

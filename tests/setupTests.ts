@@ -113,6 +113,21 @@ global.electron = {
   },
 };
 
+// Mock window.matchMedia (jsdom does not implement it)
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 // Mock ResizeObserver for responsive components
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
@@ -125,8 +140,9 @@ beforeAll(() => {
   if (server) {
     server.listen({ onUnhandledRequest: 'bypass' });
   }
-  // Freeze time for deterministic tests
-  vi.useFakeTimers();
+  // Freeze time for deterministic tests while allowing timers to advance
+  // (shouldAdvanceTime prevents userEvent timeouts in @testing-library)
+  vi.useFakeTimers({ shouldAdvanceTime: true });
   vi.setSystemTime(new Date('2025-01-18T12:00:00Z'));
 });
 

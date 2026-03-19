@@ -10,6 +10,7 @@
  *   3. Click issues correct request URL (parcelId + correlationId when present)
  *   4. 403/500 handled gracefully (error state visible)
  */
+import { vi, describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -17,18 +18,18 @@ import { ExecutionConsole } from '../../components/pilot/ExecutionConsole';
 
 // ── Mocks ──────────────────────────────────────────────────────────────
 
-const mockUseTraceByCorrelationId = jest.fn();
-const mockUseTraceStats = jest.fn();
-const mockGetSession = jest.fn();
-const mockExportTraces = jest.fn();
+const mockUseTraceByCorrelationId = vi.fn();
+const mockUseTraceStats = vi.fn();
+const mockGetSession = vi.fn();
+const mockExportTraces = vi.fn();
 
-jest.mock('../../ui/materials/LiquidPanel', () => ({
+vi.mock('../../ui/materials/LiquidPanel', () => ({
   LiquidPanel: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div {...props}>{children}</div>
   ),
 }));
 
-jest.mock('../../ui/materials/TactileButton', () => ({
+vi.mock('../../ui/materials/TactileButton', () => ({
   TactileButton: ({
     children,
     ...props
@@ -37,23 +38,23 @@ jest.mock('../../ui/materials/TactileButton', () => ({
   ),
 }));
 
-jest.mock('../../hooks/useTraceByCorrelationId', () => ({
+vi.mock('../../hooks/useTraceByCorrelationId', () => ({
   useTraceByCorrelationId: (...args: unknown[]) => mockUseTraceByCorrelationId(...args),
 }));
 
-jest.mock('../../hooks/useTraceStats', () => ({
+vi.mock('../../hooks/useTraceStats', () => ({
   useTraceStats: (...args: unknown[]) => mockUseTraceStats(...args),
 }));
 
-jest.mock('../../auth/session', () => ({
-  ...jest.requireActual('../../auth/session'),
+vi.mock('../../auth/session', () => ({
+  ...vi.importActual('../../auth/session'),
   getSession: () => mockGetSession(),
 }));
 
-jest.mock('../../api/pilotApi', () => ({
-  ...jest.requireActual('../../api/pilotApi'),
+vi.mock('../../api/pilotApi', () => ({
+  ...vi.importActual('../../api/pilotApi'),
   exportTraces: (...args: unknown[]) => mockExportTraces(...args),
-  requestApprovalToken: jest.fn(),
+  requestApprovalToken: vi.fn(),
 }));
 
 // ── Helpers ────────────────────────────────────────────────────────────
@@ -63,13 +64,13 @@ function hooksDefaults() {
     phase: 'ready',
     events: [],
     error: null,
-    refresh: jest.fn(),
+    refresh: vi.fn(),
   });
   mockUseTraceStats.mockReturnValue({
     diagnostics: null,
     lastFetchedAt: null,
     fetchFailed: false,
-    refresh: jest.fn(),
+    refresh: vi.fn(),
   });
 }
 
@@ -90,7 +91,7 @@ const succeededState = (overrides?: Record<string, unknown>) => ({
   ...overrides,
 });
 
-const noop = jest.fn();
+const noop = vi.fn();
 const invocation = (stateOverrides?: Record<string, unknown>) => ({
   state: succeededState(stateOverrides),
   invoke: noop,
@@ -108,12 +109,12 @@ const tool = {
 
 // suppress URL.createObjectURL / revokeObjectURL in jsdom
 beforeAll(() => {
-  global.URL.createObjectURL = jest.fn(() => 'blob:mock');
-  global.URL.revokeObjectURL = jest.fn();
+  global.URL.createObjectURL = vi.fn(() => 'blob:mock');
+  global.URL.revokeObjectURL = vi.fn();
 });
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   hooksDefaults();
 });
 
@@ -162,7 +163,7 @@ describe('Lane K4: Trace export button', () => {
     mockExportTraces.mockResolvedValue(new Blob(['{}'], { type: 'application/x-ndjson' }));
 
     // Spy on createElement to verify download was triggered
-    const appendSpy = jest.spyOn(document.body, 'appendChild');
+    const appendSpy = vi.spyOn(document.body, 'appendChild');
 
     render(<ExecutionConsole invocation={invocation()} tool={tool} />);
 

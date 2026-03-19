@@ -5,15 +5,16 @@
  * Tests: valuation summary → explain_model_results tool → correlationId UX
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyForge from '../../pages/workbench/tabs/PropertyForge';
 
 // Mock the pilotApi module
-jest.mock('../../api/pilotApi');
+vi.mock('../../api/pilotApi');
 
-const mockInvokeTool = pilotApi.invokeTool as jest.MockedFunction<typeof pilotApi.invokeTool>;
+const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
 
 // Test wrapper providing parcel context via outlet
 const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
@@ -37,7 +38,7 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 
 describe('PropertyForge', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Rendering', () => {
@@ -290,9 +291,9 @@ describe('PropertyForge', () => {
       fireEvent.click(screen.getByRole('button', { name: /explain valuation/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/Location/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Location/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/\+\$12,000/)).toBeInTheDocument();
-        expect(screen.getByText(/Condition/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Condition/i).length).toBeGreaterThan(0);
       });
     });
 

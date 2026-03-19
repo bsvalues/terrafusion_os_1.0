@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,49 +6,49 @@ import { EvidenceRail } from '../../components/pilot/EvidenceRail';
 import { ExecutionConsole } from '../../components/pilot/ExecutionConsole';
 import type { PilotTraceEvent } from '../../api/pilotApi';
 
-const mockUseTraceByCorrelationId = jest.fn();
-const mockUseTraceStats = jest.fn();
-const mockGetSession = jest.fn();
+const mockUseTraceByCorrelationId = vi.fn();
+const mockUseTraceStats = vi.fn();
+const mockGetSession = vi.fn();
 
-jest.mock('../../ui/materials/LiquidPanel', () => ({
+vi.mock('../../ui/materials/LiquidPanel', () => ({
   LiquidPanel: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
     <div {...props}>{children}</div>
   ),
 }));
 
-jest.mock('../../ui/materials/TactileButton', () => ({
+vi.mock('../../ui/materials/TactileButton', () => ({
   TactileButton: ({ children, ...props }: React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) => (
     <button {...props}>{children}</button>
   ),
 }));
 
-jest.mock('../../hooks/useTraceByCorrelationId', () => ({
+vi.mock('../../hooks/useTraceByCorrelationId', () => ({
   useTraceByCorrelationId: (...args: unknown[]) => mockUseTraceByCorrelationId(...args),
 }));
 
-jest.mock('../../hooks/useTraceStats', () => ({
+vi.mock('../../hooks/useTraceStats', () => ({
   useTraceStats: (...args: unknown[]) => mockUseTraceStats(...args),
 }));
 
-jest.mock('../../auth/session', () => ({
-  ...jest.requireActual('../../auth/session'),
+vi.mock('../../auth/session', () => ({
+  ...vi.importActual('../../auth/session'),
   getSession: () => mockGetSession(),
 }));
 
 describe('Governance evidence + execution surfaces', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockUseTraceByCorrelationId.mockReturnValue({
       phase: 'ready',
       events: [],
       error: null,
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     });
     mockUseTraceStats.mockReturnValue({
       diagnostics: null,
       lastFetchedAt: null,
       fetchFailed: false,
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     });
     mockGetSession.mockReturnValue({
       userId: 'u-1',
@@ -76,7 +77,7 @@ describe('Governance evidence + execution surfaces', () => {
       },
     ];
 
-    render(<EvidenceRail phase="ready" events={events} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={events} error={null} onRetry={vi.fn()} />);
 
     expect(screen.getByText('Value change explained.')).toBeInTheDocument();
     expect(screen.getByTestId('evidence-header')).toBeInTheDocument();
@@ -102,7 +103,7 @@ describe('Governance evidence + execution surfaces', () => {
       },
     ];
 
-    render(<EvidenceRail phase="ready" events={events} error={null} onRetry={jest.fn()} />);
+    render(<EvidenceRail phase="ready" events={events} error={null} onRetry={vi.fn()} />);
 
     const payloadRef = screen.getByTestId('payload-ref');
     expect(payloadRef).toHaveTextContent('Payload stored: dossier://doc/42');
@@ -112,9 +113,9 @@ describe('Governance evidence + execution surfaces', () => {
 
   it('renders ExecutionConsole lifecycle output with correlationId', async () => {
     const user = userEvent.setup();
-    const confirm = jest.fn();
-    const cancel = jest.fn();
-    const reset = jest.fn();
+    const confirm = vi.fn();
+    const cancel = vi.fn();
+    const reset = vi.fn();
 
     render(
       <ExecutionConsole
@@ -135,7 +136,7 @@ describe('Governance evidence + execution surfaces', () => {
             error: null,
             errorCode: null,
           },
-          invoke: jest.fn(),
+          invoke: vi.fn(),
           confirm,
           cancel,
           reset,
@@ -160,8 +161,8 @@ describe('Governance evidence + execution surfaces', () => {
 
   it('write_high tool blocks in confirming phase until reason code is selected', async () => {
     const user = userEvent.setup();
-    const confirm = jest.fn();
-    const cancel = jest.fn();
+    const confirm = vi.fn();
+    const cancel = vi.fn();
 
     render(
       <ExecutionConsole
@@ -186,10 +187,10 @@ describe('Governance evidence + execution surfaces', () => {
             error: null,
             errorCode: null,
           },
-          invoke: jest.fn(),
+          invoke: vi.fn(),
           confirm,
           cancel,
-          reset: jest.fn(),
+          reset: vi.fn(),
         }}
         tool={{
           toolId: 'run_valuation_model',
@@ -246,10 +247,10 @@ describe('Governance evidence + execution surfaces', () => {
             error: null,
             errorCode: null,
           },
-          invoke: jest.fn(),
-          confirm: jest.fn(),
-          cancel: jest.fn(),
-          reset: jest.fn(),
+          invoke: vi.fn(),
+          confirm: vi.fn(),
+          cancel: vi.fn(),
+          reset: vi.fn(),
         }}
         tool={{
           toolId: 'explain_value_change',
@@ -290,7 +291,7 @@ describe('Governance evidence + execution surfaces', () => {
         },
       ],
       error: null,
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     });
     mockUseTraceStats.mockReturnValue({
       diagnostics: {
@@ -302,7 +303,7 @@ describe('Governance evidence + execution surfaces', () => {
       },
       lastFetchedAt: new Date('2026-03-03T10:00:01.000Z'),
       fetchFailed: false,
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     });
 
     render(
@@ -324,10 +325,10 @@ describe('Governance evidence + execution surfaces', () => {
             error: null,
             errorCode: null,
           },
-          invoke: jest.fn(),
-          confirm: jest.fn(),
-          cancel: jest.fn(),
-          reset: jest.fn(),
+          invoke: vi.fn(),
+          confirm: vi.fn(),
+          cancel: vi.fn(),
+          reset: vi.fn(),
         }}
         tool={{
           toolId: 'explain_value_change',
@@ -371,13 +372,13 @@ describe('Governance evidence + execution surfaces', () => {
         },
       ],
       error: null,
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     });
     mockUseTraceStats.mockReturnValue({
       diagnostics: null,
       lastFetchedAt: null,
       fetchFailed: true,
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     });
 
     render(
@@ -399,10 +400,10 @@ describe('Governance evidence + execution surfaces', () => {
             error: null,
             errorCode: null,
           },
-          invoke: jest.fn(),
-          confirm: jest.fn(),
-          cancel: jest.fn(),
-          reset: jest.fn(),
+          invoke: vi.fn(),
+          confirm: vi.fn(),
+          cancel: vi.fn(),
+          reset: vi.fn(),
         }}
         tool={{
           toolId: 'explain_value_change',
@@ -430,7 +431,7 @@ describe('Governance evidence + execution surfaces', () => {
       phase: 'ready',
       events: [],
       error: null,
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     });
 
     render(
@@ -452,10 +453,10 @@ describe('Governance evidence + execution surfaces', () => {
             error: null,
             errorCode: null,
           },
-          invoke: jest.fn(),
-          confirm: jest.fn(),
-          cancel: jest.fn(),
-          reset: jest.fn(),
+          invoke: vi.fn(),
+          confirm: vi.fn(),
+          cancel: vi.fn(),
+          reset: vi.fn(),
         }}
         tool={{
           toolId: 'explain_value_change',

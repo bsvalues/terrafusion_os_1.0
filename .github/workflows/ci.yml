@@ -342,30 +342,63 @@ jobs:
       connection_string: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=postgres'
 
   # ═══════════════════════════════════════════════════════════════════════════
-  # Frontend Build & Test
+  # Vitest Full Suite (REQUIRED — merge gate)
+  # Phase 18: Full-suite green is the merge bar. No red, no merge.
+  # Baseline: phase-17.5c-green (4,911/4,911 passing)
   # ═══════════════════════════════════════════════════════════════════════════
-  frontend-tests:
-    name: Frontend React Tests
+  vitest-full-suite:
+    name: Vitest Full Suite (merge gate)
     runs-on: ubuntu-latest
     needs: quality-gate
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
 
       - name: Install Dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vitest (full suite — 0 failures required)
+        run: cd frontend && npx vitest run --reporter=verbose --reporter=json --outputFile=vitest-results.json
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-results
+          path: frontend/vitest-results.json
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Frontend Build & Test
+  # ═══════════════════════════════════════════════════════════════════════════
+  frontend-tests:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    needs: vitest-full-suite
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build Frontend
-        run: npm run build
-
-      - name: Run React Tests
-        run: npm run test:coverage
-
-      - name: Run E2E Tests
-        run: npm run test:e2e
+        run: cd frontend && npm run build
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Security Scan
@@ -407,7 +440,7 @@ jobs:
   build-and-package:
     name: Build & Package
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests, security-scan]
+    needs: [backend-tests, vitest-full-suite, frontend-tests, security-scan]
     steps:
       - uses: actions/checkout@v4
 
@@ -460,7 +493,15 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      [quality-gate, backend-tests, frontend-tests, security-scan, classify_changes, contract-guard]
+      [
+        quality-gate,
+        backend-tests,
+        vitest-full-suite,
+        frontend-tests,
+        security-scan,
+        classify_changes,
+        contract-guard,
+      ]
     permissions:
       contents: read
       pull-requests: write

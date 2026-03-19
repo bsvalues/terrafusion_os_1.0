@@ -1,0 +1,29 @@
+{
+  "tranche": "1B",
+  "title": "Tranche 1B — Parcel-scoped three-approach reconciliation in Workbench Forge tab",
+  "parentSha": "62a994a353ff4ac521692c7959bf75edc05db63a",
+  "branch": "phase-7-county-ops-visual-governance",
+  "timestamp": "2025-07-25T00:00:00Z",
+  "scope": "Workbench > Forge > Reconciliation sub-tab (parcel-scoped)",
+  "artifacts": {
+    "governedTypes": "os-platform/core/types/index.ts (ApproachType, ApproachIndication, ReconciliationMethod, ReconciliationResult, RECONCILIATION_RULES)",
+    "component": "frontend/apps/os-shell/src/pages/workbench/tabs/forge/Reconciliation.tsx",
+    "wiring": "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyForge.tsx (5th sub-tab: reconcile)",
+    "contractTests": "os-platform/core/tests/forge-reconciliation-contract.test.mjs (30 tests, 7 suites)"
+  },
+  "gates": {
+    "reconciliationContractTests": "30/30 PASS",
+    "phase83Tools": "54/54 PASS",
+    "typeCheck": "PASS"
+  },
+  "truthLabel": "Three-approach reconciliation surface wired into Workbench Forge tab as 5th sub-tab (overview|cost|sales|income|reconcile). Parcel-scoped via useWorkbenchTab(). Cost/Sales/Income side-by-side with weights, method selector, preview, and final reconciled value. No cross-parcel leakage. Write lane = Forge.",
+  "dod": {
+    "reconSurfaceInForgeTab": true,
+    "threeApproachesSideBySide": true,
+    "explicitFinalReconciledValue": true,
+    "parcelScoped": true,
+    "noStandaloneLeakage": true,
+    "contractTests": true,
+    "evidenceArtifact": true
+  }
+}

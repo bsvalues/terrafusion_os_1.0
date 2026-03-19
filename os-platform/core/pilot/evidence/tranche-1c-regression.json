@@ -1,0 +1,31 @@
+{
+  "tranche": "1C",
+  "title": "Tranche 1C — Regression Studio in TerraForge standalone",
+  "parentSha": "9f67636f9f2cc0624145fe8150e02b1ee62d0b47",
+  "branch": "phase-7-county-ops-visual-governance",
+  "timestamp": "2026-03-16T00:00:00Z",
+  "scope": "TerraForge standalone > Regression Studio (cross-parcel)",
+  "artifacts": {
+    "governedTypes": "os-platform/core/types/index.ts (RegressionModelType, RegressionModelStatus, RegressionCoefficient, RegressionFeature, RegressionDiagnostics, RegressionValidation, RegressionModelRecord, CoefficientDelta, RegressionMetricDeltas, REGRESSION_THRESHOLDS)",
+    "wiring": "frontend/apps/os-shell/src/config/moduleComponents.tsx (lazy-load RegressionStudio, replace PlaceholderModule)",
+    "contractTests": "os-platform/core/tests/forge-regression-contract.test.mjs (60 tests, 10 suites)",
+    "existingComponent": "frontend/apps/os-shell/src/pages/forge/regression/RegressionStudio.tsx (already built, now wired)"
+  },
+  "gates": {
+    "regressionContractTests": "60/60 PASS",
+    "phase83Tools": "54/54 PASS",
+    "typeCheck": "PASS"
+  },
+  "truthLabel": "Regression Studio wired as live standalone module in TerraForge (was PlaceholderModule, now lazy-loaded). Cross-parcel scope, no parcel-scoped leakage. Governed types define model spec, feature set, coefficient set, diagnostics, validation metrics, and IAAO-aligned qualification thresholds. Write lane = Forge. 4 views: model list, new run, version compare, model detail with coefficient review.",
+  "dod": {
+    "launchFromForgeStandaloneOnly": true,
+    "explicitForgeWriteLane": true,
+    "noParcelScopedLeakage": true,
+    "contractTestsGreen": true,
+    "evidenceArtifactMinted": true,
+    "governedCoreTypes": true,
+    "diagnosticsTable": true,
+    "coefficientReview": true,
+    "validationSummary": true
+  }
+}

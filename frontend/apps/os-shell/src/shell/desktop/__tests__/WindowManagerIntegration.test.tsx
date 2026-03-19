@@ -10,7 +10,7 @@
  * @vitest-environment jsdom
  */
 
-// Vitest imports removed - Jest globals used
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -23,7 +23,7 @@ import { WindowManager } from '../WindowManager';
 // Suppress console.error for error boundary tests
 const originalError = console.error;
 beforeEach(() => {
-  console.error = jest.fn();
+  console.error = vi.fn();
 
   // Reset stores
   act(() => {

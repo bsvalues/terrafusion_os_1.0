@@ -11,11 +11,10 @@
  * @vitest-environment jsdom
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import '@testing-library/jest-dom';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-// Vitest imports removed - Jest globals used
-import '@testing-library/jest-dom';
 
 import { AIStatusIndicator, AIStatusPanel } from '../AIStatusPanel';
 
@@ -37,7 +36,7 @@ const mockAIStatus = {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterEach(() => {
@@ -168,7 +167,7 @@ describe('AIStatusPanel', () => {
 
   describe('Close Behavior', () => {
     it('calls onClose when close button clicked', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<AIStatusPanel status={mockAIStatus} onClose={onClose} />);
 
       await userEvent.click(screen.getByRole('button', { name: /close/i }));
@@ -177,7 +176,7 @@ describe('AIStatusPanel', () => {
     });
 
     it('calls onClose on Escape key', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(<AIStatusPanel status={mockAIStatus} onClose={onClose} />);
 
       await userEvent.keyboard('{Escape}');
@@ -186,7 +185,7 @@ describe('AIStatusPanel', () => {
     });
 
     it('calls onClose when clicking outside', async () => {
-      const onClose = jest.fn();
+      const onClose = vi.fn();
       render(
         <div data-testid='outside' style={{ padding: '100px' }}>
           <AIStatusPanel status={mockAIStatus} onClose={onClose} />

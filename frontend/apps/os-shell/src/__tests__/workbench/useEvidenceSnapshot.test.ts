@@ -10,14 +10,15 @@
  * 6. Re-fetch replaces previous snapshot
  */
 
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useEvidenceSnapshot } from '../../hooks/useEvidenceSnapshot';
 import { dossierService } from '../../services/dossierService';
 import type { EvidenceSnapshotResult, EvidenceSnapshot } from '../../services/dossierService';
 
-jest.mock('../../services/dossierService');
+vi.mock('../../services/dossierService');
 
-const mockGetEvidenceSnapshot = dossierService.getEvidenceSnapshot as jest.MockedFunction<
+const mockGetEvidenceSnapshot = dossierService.getEvidenceSnapshot as vi.MockedFunction<
   typeof dossierService.getEvidenceSnapshot
 >;
 
@@ -58,7 +59,7 @@ const MOCK_RESULT: EvidenceSnapshotResult = {
 
 describe('useEvidenceSnapshot', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('starts with idle state (no data, not loading)', () => {

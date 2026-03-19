@@ -11,6 +11,10 @@
  * @see useCostForgeAPI.ts for backend API integration
  */
 
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('forgeService');
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -425,7 +429,7 @@ export function calculateCost(inputs: CostCalculationInput): CostCalculationResu
 // ============================================================================
 
 export function saveScenario(name: string, inputs: CostCalculationInput, result: CostCalculationResult): CostScenario {
-  console.warn('[forgeService] saveScenario: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('saveScenario: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
   return {
     id: 'deprecated',
     name,
@@ -436,12 +440,12 @@ export function saveScenario(name: string, inputs: CostCalculationInput, result:
 }
 
 export function loadScenarios(): CostScenario[] {
-  console.warn('[forgeService] loadScenarios: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('loadScenarios: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
   return [];
 }
 
 export function deleteScenario(id: string): void {
-  console.warn('[forgeService] deleteScenario: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('deleteScenario: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
 }
 
 // ============================================================================
@@ -592,7 +596,7 @@ export interface AppealRecord {
 }
 
 export function saveAppeal(appeal: Omit<AppealRecord, 'id' | 'createdAt'>): AppealRecord {
-  console.warn('[forgeService] saveAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('saveAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
   return {
     ...appeal,
     id: 'deprecated',
@@ -601,16 +605,16 @@ export function saveAppeal(appeal: Omit<AppealRecord, 'id' | 'createdAt'>): Appe
 }
 
 export function loadAppeals(): AppealRecord[] {
-  console.warn('[forgeService] loadAppeals: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('loadAppeals: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
   return [];
 }
 
 export function updateAppeal(id: string, updates: Partial<AppealRecord>): void {
-  console.warn('[forgeService] updateAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('updateAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
 }
 
 export function deleteAppeal(id: string): void {
-  console.warn('[forgeService] deleteAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('deleteAppeal: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
 }
 
 // ============================================================================
@@ -800,7 +804,7 @@ export interface ValuationAuditEntry {
 }
 
 export function appendAuditEntry(entry: Omit<ValuationAuditEntry, 'id' | 'timestamp'>): ValuationAuditEntry {
-  console.warn('[forgeService] appendAuditEntry: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('appendAuditEntry: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
   return {
     ...entry,
     id: 'deprecated',
@@ -809,17 +813,17 @@ export function appendAuditEntry(entry: Omit<ValuationAuditEntry, 'id' | 'timest
 }
 
 export function loadAuditEntries(): ValuationAuditEntry[] {
-  console.warn('[forgeService] loadAuditEntries: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('loadAuditEntries: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
   return [];
 }
 
 export function loadAuditEntriesForParcel(parcelId: string): ValuationAuditEntry[] {
-  console.warn('[forgeService] loadAuditEntriesForParcel: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('loadAuditEntriesForParcel: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
   return [];
 }
 
 export function clearAuditEntries(): void {
-  console.warn('[forgeService] clearAuditEntries: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
+  logger.warn('clearAuditEntries: localStorage persistence removed in R1. Scenario/appeal/audit data now governed by trace store.');
 }
 
 // ============================================================================

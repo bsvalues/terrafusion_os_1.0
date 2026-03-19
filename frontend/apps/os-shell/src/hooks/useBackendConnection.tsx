@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildApiUrl } from '../lib/apiBase';
+import { useLogger } from '@/hooks/useLogger';
 
 interface BackendConnectionState {
   isConnected: boolean;
@@ -30,6 +31,7 @@ interface HealthCheckResponse {
 }
 
 export const useBackendConnection = () => {
+  const logger = useLogger('useBackendConnection');
   const [state, setState] = useState<BackendConnectionState>({
     isConnected: false,
     lastSuccessfulConnection: null,
@@ -101,12 +103,12 @@ export const useBackendConnection = () => {
       const responseTime = Math.round(endTime - startTime);
 
       if (error.name === 'AbortError') {
-        console.log('Health check aborted');
+        logger.debug('Health check aborted');
         return null;
       }
 
       const errorMessage = error.message || 'Unknown connection error';
-      console.error('Backend connection failed:', errorMessage);
+      logger.error('Backend connection failed:', errorMessage);
 
       setState((prev) => ({
         ...prev,
@@ -123,17 +125,17 @@ export const useBackendConnection = () => {
   const scheduleReconnect = useCallback(
     (attemptNumber: number) => {
       if (attemptNumber >= MAX_RETRY_ATTEMPTS) {
-        console.warn(
+        logger.warn(
           `Max retry attempts (${MAX_RETRY_ATTEMPTS}) reached. Stopping automatic reconnection.`
         );
         return;
       }
 
       const delay = RETRY_DELAY_BASE * Math.pow(2, attemptNumber); // Exponential backoff
-      console.log(`Scheduling reconnection attempt ${attemptNumber + 1} in ${delay}ms`);
+      logger.debug(`Scheduling reconnection attempt ${attemptNumber + 1} in ${delay}ms`);
 
       reconnectTimeoutRef.current = setTimeout(async () => {
-        console.log(`Reconnection attempt ${attemptNumber + 1}...`);
+        logger.debug(`Reconnection attempt ${attemptNumber + 1}...`);
         const result = await testConnection();
 
         if (!result) {
@@ -147,7 +149,7 @@ export const useBackendConnection = () => {
   const startMonitoring = useCallback(() => {
     if (isMonitoring) return;
 
-    console.log('🔍 Starting backend connection monitoring...');
+    logger.info('Starting backend connection monitoring...');
     setIsMonitoring(true);
 
     // Initial connection test
@@ -159,13 +161,13 @@ export const useBackendConnection = () => {
   }, [isMonitoring, testConnection, scheduleReconnect]);
 
   const stopMonitoring = useCallback(() => {
-    console.log('⏹️ Stopping backend connection monitoring...');
+    logger.info('Stopping backend connection monitoring...');
     setIsMonitoring(false);
     cleanup();
   }, [cleanup]);
 
   const forceReconnect = useCallback(() => {
-    console.log('🔄 Forcing backend reconnection...');
+    logger.info('Forcing backend reconnection...');
     setState((prev) => ({ ...prev, connectionAttempts: 0, lastError: null }));
     testConnection();
   }, [testConnection]);

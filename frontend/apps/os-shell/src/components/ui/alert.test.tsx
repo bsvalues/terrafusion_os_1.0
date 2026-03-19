@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import React from 'react';
+import { vi } from 'vitest';
 import { Alert, AlertDescription, AlertTitle } from './alert';
 
 expect.extend(toHaveNoViolations);
@@ -222,7 +223,7 @@ describe('Alert', () => {
     });
 
     it('renders dismiss button', () => {
-      const handleDismiss = jest.fn();
+      const handleDismiss = vi.fn();
       render(
         <Alert>
           <AlertDescription>Dismissible alert</AlertDescription>

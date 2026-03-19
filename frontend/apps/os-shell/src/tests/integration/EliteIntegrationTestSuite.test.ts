@@ -6,7 +6,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 import 'whatwg-fetch'; // Ensure fetch polyfill is available
 
 interface HealthCheckResponse {

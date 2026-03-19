@@ -14,6 +14,7 @@
  * @module shell/settings/__tests__/SettingsPanel.test
  */
 
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -25,12 +26,12 @@ import { SettingsPanel } from '../SettingsPanel';
 // Mocks
 // ============================================================================
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, fallback?: string) => fallback || key,
     i18n: {
       language: 'en',
-      changeLanguage: jest.fn(),
+      changeLanguage: vi.fn(),
     },
   }),
 }));

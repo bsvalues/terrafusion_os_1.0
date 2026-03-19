@@ -3,6 +3,9 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { createLogger } from '@/hooks/useLogger';
+
+const logger = createLogger('ErrorBoundary');
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -44,8 +47,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error details
-    console.error('🚨 ErrorBoundary caught an error:', error);
-    console.error('📍 Error Info:', errorInfo);
+    logger.error('ErrorBoundary caught an error:', error);
+    logger.error('Error Info:', errorInfo);
     this.setState({
       error,
       errorInfo,
@@ -105,10 +108,10 @@ export class ErrorBoundary extends Component<Props, State> {
         body: JSON.stringify(errorReport),
       }).catch(() => {
         // Silently fail if error reporting fails
-        console.warn('Failed to report error to server');
+        logger.warn('Failed to report error to server');
       });
     } catch (reportingError) {
-      console.error('Error while reporting error:', reportingError);
+      logger.error('Error while reporting error:', reportingError);
     }
   };
   private getUserId = (): string | null => {
@@ -291,9 +294,9 @@ Component Stack: ${errorInfo?.componentStack}
 // Hook version for functional components
 export const useErrorHandler = () => {
   const handleError = React.useCallback((error: Error, errorInfo?: ErrorInfo) => {
-    console.error('🚨 Handled Error:', error);
+    logger.error('Handled Error:', error);
     if (errorInfo) {
-      console.error('📍 Error Info:', errorInfo);
+      logger.error('Error Info:', errorInfo);
     }
 
     // You can add custom error handling logic here
@@ -344,7 +347,7 @@ export class AsyncErrorBoundary extends Component<Props, State> {
     });
   };
   handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-    console.error('🚨 Unhandled Promise Rejection:', event.reason);
+    logger.error('Unhandled Promise Rejection:', event.reason);
 
     // Create a synthetic error for promise rejections
     const error = new Error(`Unhandled Promise Rejection: ${event.reason}`);

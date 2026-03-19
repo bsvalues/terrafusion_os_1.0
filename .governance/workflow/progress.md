@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Phase 5: Shell Integrity Recovery** ✅ COMPLETE |
-| **Phase** | Phase 5H: Z-Index Authority Verification — All Tests Green |
-| **Task** | 5 defects fixed, 30 tests passing, live-verified maximized workbench |
+| **Slice** | **Phase 6: Suite Standalone Home Maturation** ✅ COMPLETE |
+| **Phase** | Phase 6H: Phase 5 Regression Gate — All Invariants Hold |
+| **Task** | 5 suite homes verified, GptSuiteHome launchMode fix, 92 Phase 6 tests + 32 Phase 5 tests = 124 green |
 | **Status** | ✅ COMPLETE |
-| **Latest Commit** | Phase 5 commits (5A-5H): truth freeze → sizing fix → verification → cleanup → z-index |
+| **Latest Commit** | `83d9b43e3` Phase 6 closeout — suite maturation complete |
 
 ---
 

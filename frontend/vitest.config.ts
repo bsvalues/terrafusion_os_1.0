@@ -9,11 +9,14 @@ export default defineConfig({
       strict: false,
     },
   },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: ['./setupTests.vitest.ts'],
+  resolve: {
     alias: {
+      'monaco-editor/esm/vs/editor/editor.worker?worker': path.resolve(__dirname, '__mocks__/monaco-editor.ts'),
+      'monaco-editor/esm/vs/language/css/css.worker?worker': path.resolve(__dirname, '__mocks__/monaco-editor.ts'),
+      'monaco-editor/esm/vs/language/html/html.worker?worker': path.resolve(__dirname, '__mocks__/monaco-editor.ts'),
+      'monaco-editor/esm/vs/language/json/json.worker?worker': path.resolve(__dirname, '__mocks__/monaco-editor.ts'),
+      'monaco-editor/esm/vs/language/typescript/ts.worker?worker': path.resolve(__dirname, '__mocks__/monaco-editor.ts'),
+      'monaco-editor': path.resolve(__dirname, '__mocks__/monaco-editor.ts'),
       '@': path.resolve(__dirname, 'apps/os-shell/src'),
       '@components': path.resolve(__dirname, 'apps/os-shell/src/components'),
       '@services': path.resolve(__dirname, 'apps/os-shell/src/services'),
@@ -21,6 +24,18 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, 'apps/os-shell/src/utils'),
       '@types': path.resolve(__dirname, 'apps/os-shell/src/types'),
       '@terrafusion/shared': path.resolve(__dirname, '../terrafusion-shared/dist/index.js'),
+      '@terrafusion/ui': path.resolve(__dirname, '__mocks__/@terrafusion/ui.ts'),
     },
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./setupTests.vitest.ts'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/*.spec.ts',
+      '**/e2e/**',
+    ],
   },
 });

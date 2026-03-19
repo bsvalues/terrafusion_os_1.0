@@ -1,0 +1,130 @@
+{
+  "proofRound": "Forge Standalone 1A-1D",
+  "date": "2026-03-16",
+  "branch": "phase-7-county-ops-visual-governance",
+  "scope": "Verify cross-parcel Forge standalone modules launch correctly, are not routed through Property Workbench, and do not require parcelId",
+
+  "modules": [
+    {
+      "tranche": "1A",
+      "name": "Statistics Studio",
+      "moduleId": "statistics-studio",
+      "launchMode": "standalone",
+      "forgeSuiteHomeLine": 45,
+      "moduleRendererLine": 662,
+      "features": [
+        "COD",
+        "PRD",
+        "PRB",
+        "weighted mean",
+        "VEI metrics",
+        "strata drill-down"
+      ],
+      "parcelRequired": false,
+      "workbenchRouted": false
+    },
+    {
+      "tranche": "1C",
+      "name": "Regression Studio",
+      "moduleId": "regression-studio",
+      "launchMode": "standalone",
+      "forgeSuiteHomeLine": 44,
+      "moduleRendererLine": 655,
+      "features": [
+        "diagnostics",
+        "coefficients",
+        "validation surfaces",
+        "IAAO compliance"
+      ],
+      "parcelRequired": false,
+      "workbenchRouted": false
+    },
+    {
+      "tranche": "1D",
+      "name": "Batch Cost Run",
+      "moduleId": "batch-cost-run",
+      "launchMode": "standalone",
+      "forgeSuiteHomeLine": 47,
+      "moduleRendererLine": 669,
+      "features": [
+        "run config form",
+        "strata/neighborhood/class filters",
+        "dry-run preview",
+        "run history"
+      ],
+      "parcelRequired": false,
+      "workbenchRouted": false,
+      "previewOnly": true,
+      "destructiveApply": false
+    },
+    {
+      "tranche": "1D",
+      "name": "Coefficient Preview",
+      "moduleId": "coefficient-preview",
+      "launchMode": "standalone",
+      "forgeSuiteHomeLine": 48,
+      "moduleRendererLine": 676,
+      "features": [
+        "production vs candidate model",
+        "COD/PRD delta",
+        "coefficient delta table",
+        "impact distribution"
+      ],
+      "parcelRequired": false,
+      "workbenchRouted": false,
+      "previewOnly": true,
+      "destructiveApply": false
+    }
+  ],
+
+  "gates": {
+    "gate1_forgeSuiteHomeIntact": {
+      "status": "PASS",
+      "detail": "ForgeSuiteHome.tsx has 13+ module cards, all 4 standalone modules visible"
+    },
+    "gate2_statisticsStudioLaunchCard": {
+      "status": "PASS",
+      "detail": "statistics-studio in FORGE_MODULES with launchMode=standalone"
+    },
+    "gate3_regressionStudioLaunchCard": {
+      "status": "PASS",
+      "detail": "regression-studio in FORGE_MODULES with launchMode=standalone"
+    },
+    "gate4_batchCostRunLaunchCard": {
+      "status": "PASS",
+      "detail": "batch-cost-run in FORGE_MODULES with launchMode=standalone"
+    },
+    "gate5_coefficientPreviewLaunchCard": {
+      "status": "PASS",
+      "detail": "coefficient-preview in FORGE_MODULES with launchMode=standalone"
+    },
+    "gate6_statisticsMetrics": {
+      "status": "PASS",
+      "detail": "StatisticsStudio component renders COD/PRD/PRB/weighted-mean/VEI metrics"
+    },
+    "gate7_regressionDiagnostics": {
+      "status": "PASS",
+      "detail": "RegressionStudio component renders diagnostics/coefficients/validation"
+    },
+    "gate8_previewSafe": {
+      "status": "PASS",
+      "detail": "BatchCostRun shows dry-run summary (not apply). CoefficientPreview shows deltas (not apply). Neither masquerade as destructive flows."
+    }
+  },
+
+  "routingAudit": {
+    "noWorkbenchRoutingForStandaloneModules": true,
+    "noParcelIdRequired": true,
+    "allLaunchViaActivateModule": true,
+    "contractTestEvidence": {
+      "batchcostContract": "54/54 — includes: batch run request has no workbenchTab reference, no parcel routing, coefficient preview has no workbench routing",
+      "regressionContract": "60/60 — includes: model record has no workbenchTab field",
+      "phase83Tools": "54/54"
+    }
+  },
+
+  "architecturalCompliance": {
+    "rule": "Cross-parcel operational tools (ratio study, calibration, batch) are standalone suite-owned windows. Parcel-scoped work routes to Property Workbench.",
+    "compliance": "All 4 modules are cross-parcel operational tools correctly placed as standalone. Zero parcel leakage."
+  }
+}

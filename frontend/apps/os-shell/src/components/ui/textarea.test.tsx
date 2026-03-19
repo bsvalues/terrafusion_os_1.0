@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import React from 'react';
+import { vi } from 'vitest';
 import { Textarea } from './textarea';
 
 expect.extend(toHaveNoViolations);
@@ -63,7 +64,7 @@ describe('Textarea', () => {
 
     it('calls onChange when typing', async () => {
       const user = userEvent.setup();
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
       render(<Textarea onChange={handleChange} />);
       const textarea = screen.getByRole('textbox');
 
@@ -105,7 +106,7 @@ describe('Textarea', () => {
 
     it('does not call onChange when disabled', async () => {
       const user = userEvent.setup();
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
       render(<Textarea disabled onChange={handleChange} />);
       const textarea = screen.getByRole('textbox');
 
@@ -362,7 +363,7 @@ describe('Textarea', () => {
 
     it('renders as feedback form', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmit = vi.fn((e) => e.preventDefault());
 
       render(
         <form onSubmit={handleSubmit}>
@@ -427,7 +428,7 @@ describe('Textarea', () => {
   describe('Form Integration', () => {
     it('submits value in form', async () => {
       const user = userEvent.setup();
-      const handleSubmit = jest.fn((e) => {
+      const handleSubmit = vi.fn((e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         return formData.get('message');

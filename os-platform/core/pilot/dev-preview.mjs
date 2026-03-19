@@ -11,9 +11,9 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..", "..", "..");
 const READY_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 750;
-const DEFAULT_KERNEL_BASE_URL = "http://localhost:5000";
-const DEFAULT_PILOT_BASE_URL = "http://localhost:4317";
-const DEFAULT_FRONTEND_BASE_URL = "http://localhost:5173";
+const DEFAULT_KERNEL_BASE_URL = `http://localhost:${process.env.TF_API_PORT || "5046"}`;
+const DEFAULT_PILOT_BASE_URL = `http://localhost:${process.env.PILOT_PORT || "4317"}`;
+const DEFAULT_FRONTEND_BASE_URL = `http://localhost:${process.env.TF_FRONTEND_PORT || "3102"}`;
 
 function parseArgs(argv) {
   const args = argv.slice(2).filter((arg) => arg !== "--");

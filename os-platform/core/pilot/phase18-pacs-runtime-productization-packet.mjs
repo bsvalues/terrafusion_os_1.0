@@ -5,7 +5,7 @@ import path from "node:path";
 import process from "node:process";
 import { spawn } from "node:child_process";
 
-const LOCAL_API_BASE_URL = process.env.TF_API_BASE_URL || "http://localhost:5000";
+const LOCAL_API_BASE_URL = process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT || "5046"}`;
 const DEFAULT_OUT_PATH = path.resolve(
   process.cwd(),
   "os-platform/core/pilot/evidence/phase18-pacs-runtime-productization.latest.json"

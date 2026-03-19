@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import React from 'react';
+import { vi } from 'vitest';
 import { Button } from './button';
 import {
   Sheet,
@@ -321,7 +322,7 @@ describe('Sheet', () => {
     });
 
     it('calls onOpenChange when sheet opens', async () => {
-      const onOpenChange = jest.fn();
+      const onOpenChange = vi.fn();
       const user = userEvent.setup();
 
       render(
@@ -343,7 +344,7 @@ describe('Sheet', () => {
     });
 
     it('calls onOpenChange when sheet closes', async () => {
-      const onOpenChange = jest.fn();
+      const onOpenChange = vi.fn();
       const user = userEvent.setup();
 
       render(

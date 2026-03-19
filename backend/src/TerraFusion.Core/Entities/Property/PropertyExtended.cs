@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TerraFusion.Core.Entities.Property;
+namespace TerraFusion.Core.Entities;
 
 /// <summary>
 /// Extended property model that aggregates data from multiple external sources
