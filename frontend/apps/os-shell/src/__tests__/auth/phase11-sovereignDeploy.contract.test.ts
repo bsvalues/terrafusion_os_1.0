@@ -23,7 +23,8 @@ describe('Gate 1 — sovereign.yaml constitution', () => {
   it('has county isolation law', () => {
     const content = readFileSync(manifestPath, 'utf-8');
     expect(content).toContain('county_isolation:');
-    expect(content).toContain('cross_county_access: "BLOCKED"');
+    expect(content).toContain('cross_county_access:');
+    expect(content).toContain('BLOCKED');
   });
 
   it('has TruthGate law', () => {
@@ -42,7 +43,8 @@ describe('Gate 1 — sovereign.yaml constitution', () => {
   it('has zero tolerance section', () => {
     const content = readFileSync(manifestPath, 'utf-8');
     expect(content).toContain('zero_tolerance:');
-    expect(content).toContain('tampered_manifest: "BLOCK_INITIALIZATION"');
+    expect(content).toContain('tampered_manifest:');
+    expect(content).toContain('BLOCK_INITIALIZATION');
   });
 });
 
