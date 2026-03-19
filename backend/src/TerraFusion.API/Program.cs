@@ -510,8 +510,12 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
 });
 // Register RAG Embedding Repository — pgvector for Postgres, in-memory for SQLite/dev
 {
-    var usePostgres = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?.Contains("Host=", StringComparison.OrdinalIgnoreCase) ?? false;
+    var ragConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+    var ragProvider = builder.Configuration["DatabaseProvider"] ?? "";
+    var usePostgres = ragConnStr.Contains("Host=", StringComparison.OrdinalIgnoreCase)
+        || ragProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase);
+    var ragRepoName = usePostgres ? "PgVectorRAGEmbeddingRepository" : "InMemoryRAGEmbeddingRepository";
+    Console.WriteLine("[RAG] Embedding repository: {0}", ragRepoName);
     if (usePostgres)
     {
         builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.PgVectorRAGEmbeddingRepository>();

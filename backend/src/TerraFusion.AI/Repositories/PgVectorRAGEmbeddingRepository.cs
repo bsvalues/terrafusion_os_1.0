@@ -41,7 +41,7 @@ namespace TerraFusion.AI.Repositories
         /// </summary>
         private static string ToVectorLiteral(float[] embedding)
         {
-            return $"[{string.Join(",", embedding.Select(f => f.ToString("G", CultureInfo.InvariantCulture)))}]";
+            return $"[{string.Join(",", embedding.Select(f => f.ToString("G9", CultureInfo.InvariantCulture)))}]";
         }
 
         public async Task<RAGEmbedding> StoreEmbeddingAsync(
@@ -108,11 +108,17 @@ namespace TerraFusion.AI.Repositories
             var vectorLiteral = ToVectorLiteral(queryEmbedding);
 
             var connection = _context.Database.GetDbConnection();
-            if (connection.State != ConnectionState.Open)
-                await connection.OpenAsync();
+            bool openedHere = false;
+            try
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    await connection.OpenAsync();
+                    openedHere = true;
+                }
 
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = @"
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = @"
                 SELECT re.""Id"", re.""DocumentId"", re.""DatasetId"", re.""ChunkIndex"",
                        re.""ChunkText"", re.""Metadata"",
                        1 - (re.""Embedding"" <=> $1::vector) AS similarity_score
@@ -122,20 +128,31 @@ namespace TerraFusion.AI.Repositories
                 ORDER BY re.""Embedding"" <=> $1::vector
                 LIMIT $4";
 
-            AddParam(cmd, "$1", DbType.String, vectorLiteral);
-            AddParam(cmd, "$2", DbType.Int32, datasetId);
-            AddParam(cmd, "$3", DbType.Double, (double)minScore);
-            AddParam(cmd, "$4", DbType.Int32, topK);
+                AddParam(cmd, "$1", DbType.String, vectorLiteral);
+                AddParam(cmd, "$2", DbType.Int32, datasetId);
+                AddParam(cmd, "$3", DbType.Double, (double)minScore);
+                AddParam(cmd, "$4", DbType.Int32, topK);
 
-            var results = new List<RAGEmbeddingSearchResult>();
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                results.Add(MapSearchResult(reader));
+                var results = new List<RAGEmbeddingSearchResult>();
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    results.Add(MapSearchResult(reader));
+                }
+
+                _logger.LogDebug("pgvector search returned {Count} results", results.Count);
+                return results;
             }
-
-            _logger.LogDebug("pgvector search returned {Count} results", results.Count);
-            return results;
+            catch (DbException ex)
+            {
+                _logger.LogError(ex, "Vector similarity search failed for dataset {DatasetId}", datasetId);
+                return new List<RAGEmbeddingSearchResult>();
+            }
+            finally
+            {
+                if (openedHere)
+                    await connection.CloseAsync();
+            }
         }
 
         public async Task<List<RAGEmbeddingSearchResult>> SearchMultipleDatasetsAsync(
@@ -144,6 +161,7 @@ namespace TerraFusion.AI.Repositories
             int topK = 5,
             float minScore = 0.7f)
         {
+            topK = Math.Max(1, topK);
             var datasetIdList = datasetIds.ToList();
 
             _logger.LogDebug(
@@ -160,11 +178,17 @@ namespace TerraFusion.AI.Repositories
                 datasetIdList.Select((_, i) => $"${i + 3}"));
 
             var connection = _context.Database.GetDbConnection();
-            if (connection.State != ConnectionState.Open)
-                await connection.OpenAsync();
+            bool openedHere = false;
+            try
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    await connection.OpenAsync();
+                    openedHere = true;
+                }
 
-            using var cmd = connection.CreateCommand();
-            cmd.CommandText = $@"
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = $@"
                 SELECT re.""Id"", re.""DocumentId"", re.""DatasetId"", re.""ChunkIndex"",
                        re.""ChunkText"", re.""Metadata"",
                        1 - (re.""Embedding"" <=> $1::vector) AS similarity_score
@@ -174,22 +198,33 @@ namespace TerraFusion.AI.Repositories
                 ORDER BY re.""Embedding"" <=> $1::vector
                 LIMIT {topK}";
 
-            AddParam(cmd, "$1", DbType.String, vectorLiteral);
-            AddParam(cmd, "$2", DbType.Double, (double)minScore);
-            for (int i = 0; i < datasetIdList.Count; i++)
-            {
-                AddParam(cmd, $"${i + 3}", DbType.Int32, datasetIdList[i]);
-            }
+                AddParam(cmd, "$1", DbType.String, vectorLiteral);
+                AddParam(cmd, "$2", DbType.Double, (double)minScore);
+                for (int i = 0; i < datasetIdList.Count; i++)
+                {
+                    AddParam(cmd, $"${i + 3}", DbType.Int32, datasetIdList[i]);
+                }
 
-            var results = new List<RAGEmbeddingSearchResult>();
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                results.Add(MapSearchResult(reader));
-            }
+                var results = new List<RAGEmbeddingSearchResult>();
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    results.Add(MapSearchResult(reader));
+                }
 
-            _logger.LogDebug("pgvector multi-dataset search returned {Count} results", results.Count);
-            return results;
+                _logger.LogDebug("pgvector multi-dataset search returned {Count} results", results.Count);
+                return results;
+            }
+            catch (DbException ex)
+            {
+                _logger.LogError(ex, "Vector multi-dataset similarity search failed across {Count} datasets", datasetIdList.Count);
+                return new List<RAGEmbeddingSearchResult>();
+            }
+            finally
+            {
+                if (openedHere)
+                    await connection.CloseAsync();
+            }
         }
 
         public async Task<List<RAGEmbedding>> GetDocumentEmbeddingsAsync(int documentId)
