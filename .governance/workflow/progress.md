@@ -5,7 +5,7 @@
 ---
 
 * **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions + Codex Directive Pack v1
-* **Branch/PR:** post-r3/w5f-registry-edge-cleanup
+* **Branch/PR:** main
 * **Last Updated:** 2026-03-19
 * **Plan Link:** [plan.md](./plan.md)
 * **Execution Plan Link:** `docs/superpowers/plans/2026-03-19-multi-agent-subagent-parallel-execution-plan.md`
@@ -21,7 +21,7 @@
 | **Phase** | **Phase 11 + tool trace patch CLOSED** — all phases 6–11 sealed; 532/532 frontend + 31/31 backend contract tests green |
 | **Task** | Phases 6–11 CLOSED; TerraPilotPanel emitToolInvoked/Succeeded/Failed instrument fix |
 | **Status** | 🟢 All phases CLOSED — working tree clean |
-| **Latest Commit** | `515362171` (docs/workflow commit metadata sync) |
+| **Latest Commit** | `1417c35f2` (docs/workflow commit metadata sync) |
 
 ## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
 
