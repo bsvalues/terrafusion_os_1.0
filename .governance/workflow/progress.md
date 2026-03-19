@@ -19,7 +19,7 @@
 | **Phase** | **CP-TRIAGE-1 CLOSED** ✅ |
 | **Task** | Phase A workflow ledger reconciliation + Phase B dirty-worktree triage (docs/evidence only) |
 | **Status** | ✅ GOVERNANCE RECON CLOSED — workflow truth aligned to current `HEAD`, dirty tree classified into bounded lanes |
-| **Latest Commit** | `862e8de61` (Dais + backend drift absorbed; baseline recalibrated) |
+| **Latest Commit** | `36c64cf3b` (CP-W9-A + CP-TRIAGE-1 closure update) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
