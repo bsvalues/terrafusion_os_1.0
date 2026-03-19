@@ -1151,6 +1151,28 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 23 | GATE-35-3 | Founder acceptance of AI Swarm Scale charter (opens Phase 35-G implementation) | Done — `go` signal 2026-03-19 |
 | ✅ 24 | Phase 35-G / SW-1 | Implement swarm trace bridge in `os-platform/core/**` + contract proof wall | Done — `swarmTraceAdapter` + `swarm.ts` + 7/7 contract pass |
 | ⛔ 25 | Phase 35-G / SW-2 | Apply charter's swarm orchestrator hardening (port env var + queue guard) | Governance scope exception required for `os-platform/ai-systems/ai-systems/ai-swarm/**`; request packet published in `.governance/workflow/phase35g-sw2-scope-exception.md` |
+| ✅ 26 | CP-35-G-1 | Trace Ingestion Endpoint — POST /api/trace/events, ring-buffer, cursor pagination, 7/7 contract tests | Done — TraceEventDto.cs, ITraceIngestionService.cs, TraceIngestionService.cs, TraceController.cs, TraceIngestionContractTests.cs |
+| ✅ 27 | CP-35-G-2 | Concurrency Guards — AddRateLimiter consciousness-default + Maximum Pool Size=50/100 | Done — Consciousness/Program.cs + appsettings.json/Production.json |
+| ✅ 28 | CP-35-G-3 | Swarm Observability Bridge — _telemetry.Emit at every action entry in SwarmController + AISwarmController, no PII, correlationId wired | Done |
+
+---
+
+## CP-35-G-1 — Trace Ingestion Endpoint [CLOSED]
+- Status: CLOSED
+- Commits: see Phase 35-G commit history
+- New files: TraceEventDto.cs, ITraceIngestionService.cs, TraceIngestionService.cs (ring-buffer), TraceController.cs, TraceIngestionContractTests.cs (7 tests)
+- Modified: Program.cs (AddSingleton ITraceIngestionService), appsettings.json (Tracing section)
+- Gate: POST /api/trace/events → 200 + accepted:true; missing countyId → 400; cursor pagination no-overlap verified
+
+## CP-35-G-2 — Concurrency Guards [CLOSED]
+- Status: CLOSED
+- Files: TerraFusion.Consciousness/Program.cs (AddRateLimiter consciousness-default, UseRateLimiter), appsettings.json (Maximum Pool Size=50), appsettings.Production.json (Maximum Pool Size=100)
+- Gate: grep AddRateLimiter Consciousness/Program.cs → exit 0; grep Maximum Pool Size appsettings.json → exit 0
+
+## CP-35-G-3 — Swarm Observability Bridge [CLOSED]
+- Status: CLOSED
+- Files: SwarmController.cs (6 entry-point emits), AISwarmController.cs (5 entry-point emits)
+- Gate: _telemetry.Emit at every action entry; no PII; correlationId wired
 
 ---
 
@@ -1210,6 +1232,7 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | prompt contract verification (`rg`) | ✅ | 0 | - |
 | cross-link verification (`rg`) | ✅ | 0 | - |
 | roadmap calibration probes (`rg`) | ✅ | 0 | - |
+| Phase35G (dotnet) | 7 | 0 | 0 |
 
 ---
 
