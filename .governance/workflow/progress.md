@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Phase 3 — Wave 0: Debt Inventory and Governance Pass** |
-| **Phase** | Phase 3 CLOSED — CP-W0-1 ✅ |
-| **Task** | Wave 0 debt ledger written. Awaiting founder go for Phase 4. |
-| **Status** | ✅ CP-W0-1 CLOSED |
-| **Latest Commit** | `de0243388` → pending CP-W0-1 commit |
+| **Slice** | **Slice 26 — Phase 4: Wave 3A — Standalone Suite Homes Completion** |
+| **Phase** | Phase 4 — AWAITING FOUNDER GO |
+| **Task** | CP-W0-1 formally accepted. Phase 4 entry gate open on explicit go. |
+| **Status** | 🔴 HARD STOP — founder go required to open Phase 4 |
+| **Latest Commit** | `e49cd81dd` — Wave 0 debt ledger (CP-W0-1) |
 
 ## Phase 3 — Founder Go — 2026-03-18
 
@@ -42,6 +42,30 @@ Proof wall:
 - type-check: CLEAN | phase83: 56/56
 
 Phase 3 complete. **Phase 4 requires founder explicit go.**
+
+## CP-W0-1 — Co-Founder Formal Acceptance — 2026-03-18
+
+Status: **ACCEPTED**
+Form: Co-founder status report, same session.
+
+Accepted evidence:
+- `@ts-ignore` production: **0** — baseline intact
+- `console.*` production: ~766 (log=461, error=278, warn=95, debug/info=16)
+- `any` production: ~470 (param=241, cast=144, generic=93, array=50)
+- `as any` casts: elevated to **Phase 5 priority** (highest-signal debt)
+- Non-error console: mechanical bucket, deferred to Phase 5+
+- `console.error`: careful-review bucket
+- type-check: CLEAN | phase83: 56/56 | source edits: none
+- Sha: `e49cd81dd`
+
+Founder note (verbatim): *"The debt scanner put on a helmet and counted the ghosts without becoming one. Counts are a recon ledger, not mathematically perfect semantic truth. Correct outcome for Wave 0: inventory first, no cleanup drift, no surprise refactors, no emotional support regex."*
+
+Priority stack locked:
+1. `as any` casts — Phase 5 sweep target
+2. `console.log/debug/info/warn` — mechanical cleanup, Phase 5+
+3. `console.error` — review-preserve-or-replace, Phase 5+
+
+**Phase 4 entry gate now open.** Founder explicit go required to begin Phase 4 execution.
 
 ---
 
