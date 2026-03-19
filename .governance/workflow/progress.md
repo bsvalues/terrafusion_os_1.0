@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 34 — Post-CP-W9 Codex Execution Plan** |
-| **Phase** | **CP-TRIAGE-1 CLOSED** ✅ |
-| **Task** | Phase A workflow ledger reconciliation + Phase B dirty-worktree triage (docs/evidence only) |
-| **Status** | ✅ GOVERNANCE RECON CLOSED — workflow truth aligned to current `HEAD`, dirty tree classified into bounded lanes |
-| **Latest Commit** | `36c64cf3b` (CP-W9-A + CP-TRIAGE-1 closure update) |
+| **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
+| **Phase** | **Phase 35-A OPEN** — WF-1 + WF-3 (Slice 22/23 hashes + act() imports) |
+| **Task** | Lane 1 debt sweep — 3 sequential phases (35-A → 35-B → 35-C) — then charter gates for TerraCanon + AI Swarm |
+| **Status** | 🔵 EXECUTION OPEN — Lane 1 authorized by founder 2026-03-19; GATE-35-1/GATE-35-2 pending Lane 1 close |
+| **Latest Commit** | `70eee4e1e` (feat(9b): add MuseService + Explain DTOs) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -38,6 +38,26 @@
 - `.governance/workflow/dirty-worktree-triage.md`
 
 **Classification:** Implemented bounded triage slice (no product-code edits)
+
+---
+
+## Slice 35 — Founder Go/No-Go — 2026-03-19
+
+**Status: APPROVED — LANE 1 OPEN, LANES 2 + 3 GATED**
+
+| Lane | Authorization |
+|------|--------------|
+| **Lane 1 — Debt Sweep** (35-A, 35-B, 35-C) | ✅ OPEN — founder go 2026-03-19 |
+| **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | ⛔ GATED — requires explicit `GATE-35-1` after CP-35-C |
+| **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | ⛔ GATED — requires explicit `GATE-35-2` after CP-35-C |
+
+**Scope authorized for Lane 1:**
+- `CP-35-A`: WF-1 backfill Slice 22/23 commit hashes + WF-3 migrate ReactDOMTestUtils.act → `from 'react'`
+- `CP-35-B`: WF-2 console noise sweep (production code 724 → ≤ 200 occurrences, REMOVE/PROMOTE rules)
+- `CP-35-C`: IV-1 wire income valuation persistence + IV-2 archive IncomeForgeModule.tsx orphan
+
+**Charter document:** `docs/superpowers/plans/2026-03-19-slice35-debt-terracanon-aiswarm.md`
+**Plan reference:** plan.md Slice 35
 
 ---
 
@@ -926,6 +946,11 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 12 | Slice 34 / WF-C | Decide disposition of untracked superpowers plan docs (`phase5-workbench-completeness`, `phase9b-10-11-explain-hitl-sovereign`) | Done — committed in `520344e49` |
 | ✅ 13 | Slice 34 / GIT-1 | Classify `.gitignore` drift as explicit hygiene/config lane | Done — TestResults/ + .claude/agents/ + .claude/settings.json added to `.gitignore` in `520344e49` |
 | ✅ 14 | Slice 34 / LOCAL-1 | Clean or ignore local artifacts (`.claude/**`, `backend/tests/**/TestResults/**`) | Done — .gitignored in `520344e49` |
+| 🔵 15 | Slice 35 / Phase 35-A | WF-1 + WF-3: backfill Slice 22/23 commit hashes + fix ReactDOMTestUtils.act imports | CP-35-A |  
+| 🔵 16 | Slice 35 / Phase 35-B | WF-2: console noise sweep 724 → ≤ 200 (REMOVE/PROMOTE rules) | CP-35-B after 35-A |
+| 🔵 17 | Slice 35 / Phase 35-C | IV-1/IV-2: wire income valuation persistence + archive IncomeForgeModule orphan | CP-35-C after 35-B |
+| ⛔ 18 | GATE-35-1 | Founder explicit go for TerraCanon IDE recon (Phase 35-D) | CP-35-C closed |
+| ⛔ 19 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | CP-35-C closed |
 
 ---
 
