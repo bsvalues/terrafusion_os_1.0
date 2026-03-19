@@ -403,12 +403,14 @@ class ToolRunner {
                 traceEventId: completeEvent.eventId,
             };
         }
-        catch {
+        catch (err) {
+            const stack = err instanceof Error ? (err.stack ?? String(err)) : String(err);
             this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
                 summary: `Failed ${toolId}: [diagnostic_redacted]`,
                 errorCode: exports.ErrorCodes.EXECUTION_FAILED,
                 component: 'Handler',
-                redactedFields: ['errorMessage', 'stackTrace'],
+                stackTrace: stack,
+                redactedFields: ['errorMessage'],
             });
             return this.fail(correlationId, exports.ErrorCodes.EXECUTION_FAILED, 'Tool execution failed. See trace with the correlationId for details.');
         }
