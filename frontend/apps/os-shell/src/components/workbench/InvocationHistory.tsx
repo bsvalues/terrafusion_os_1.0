@@ -23,7 +23,8 @@ export interface InvocationRecord {
   toolId: string;
   status: 'success' | 'error';
   correlationId: string;
-  timestamp: Date;
+  /** ISO string or Date — callers may pass either; component normalises before display */
+  timestamp: string | Date;
   errorCode?: string;
   /** Optional additional display info */
   meta?: Record<string, string | number>;
@@ -76,7 +77,7 @@ export const InvocationHistory: React.FC<InvocationHistoryProps> = ({
                 <div>
                   <code className='text-white/80 text-sm'>{record.toolId}</code>
                   <p className='text-white/40 text-xs'>
-                    {record.timestamp.toLocaleTimeString()}
+                    {new Date(record.timestamp).toLocaleTimeString()}
                     {record.meta &&
                       Object.entries(record.meta).map(([key, value]) => (
                         <span key={key}> • {value}</span>
