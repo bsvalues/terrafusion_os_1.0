@@ -105,7 +105,6 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
             countyId={countyId}
             department={department}
             onWorkflowExecute={(workflowId) => {
-              console.log(`✅ Workflow ${workflowId} completed successfully`);
               setNotificationCount((prev) => prev + 1);
             }}
           />

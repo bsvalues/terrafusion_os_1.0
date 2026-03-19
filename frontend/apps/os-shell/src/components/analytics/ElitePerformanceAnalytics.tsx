@@ -150,7 +150,6 @@ const ElitePerformanceAnalytics: React.FC = () => {
     const suggestion = optimizationSuggestions.find((s) => s.id === suggestionId);
     if (!suggestion) return;
 
-    console.log(`🚀 [Elite Performance] Applying optimization: ${suggestion.title}`);
 
     // Remove applied suggestion
     setOptimizationSuggestions((prev) => prev.filter((s) => s.id !== suggestionId));

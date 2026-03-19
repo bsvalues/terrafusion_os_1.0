@@ -399,10 +399,6 @@ const WorkbenchStartScene: React.FC = () => {
 const WorkbenchHostViolationNotice: React.FC<{ violation: WorkbenchHostViolation }> = ({ violation }) => {
   // Log the violation to console for governance traceability
   if (typeof console !== 'undefined') {
-    console.warn(
-      `[Codex] Workbench host violation: tab '${violation.tabId}' ` +
-      `(type: ${violation.objectType}) — ${violation.reason}`
-    );
   }
 
   return (

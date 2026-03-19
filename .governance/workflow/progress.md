@@ -16,10 +16,10 @@
 | Field | Value |
 |-------|-------|
 | **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
-| **Phase** | **Phase 35-A OPEN** — WF-1 + WF-3 (Slice 22/23 hashes + act() imports) |
+| **Phase** | **Phase 35-B CLOSED** — WF-2 console sweep complete (production `console.*` 724 → 197); **Phase 35-C NEXT** |
 | **Task** | Lane 1 debt sweep — 3 sequential phases (35-A → 35-B → 35-C) — then charter gates for TerraCanon + AI Swarm |
 | **Status** | 🔵 EXECUTION OPEN — Lane 1 authorized by founder 2026-03-19; GATE-35-1/GATE-35-2 pending Lane 1 close |
-| **Latest Commit** | `70eee4e1e` (feat(9b): add MuseService + Explain DTOs) |
+| **Latest Commit** | `ae83e8abb` (fix(debt): CP-35-A — WF-1 hash backfill + WF-3 act() migration) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -946,8 +946,8 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 12 | Slice 34 / WF-C | Decide disposition of untracked superpowers plan docs (`phase5-workbench-completeness`, `phase9b-10-11-explain-hitl-sovereign`) | Done — committed in `520344e49` |
 | ✅ 13 | Slice 34 / GIT-1 | Classify `.gitignore` drift as explicit hygiene/config lane | Done — TestResults/ + .claude/agents/ + .claude/settings.json added to `.gitignore` in `520344e49` |
 | ✅ 14 | Slice 34 / LOCAL-1 | Clean or ignore local artifacts (`.claude/**`, `backend/tests/**/TestResults/**`) | Done — .gitignored in `520344e49` |
-| 🔵 15 | Slice 35 / Phase 35-A | WF-1 + WF-3: backfill Slice 22/23 commit hashes + fix ReactDOMTestUtils.act imports | CP-35-A |  
-| 🔵 16 | Slice 35 / Phase 35-B | WF-2: console noise sweep 724 → ≤ 200 (REMOVE/PROMOTE rules) | CP-35-B after 35-A |
+| ✅ 15 | Slice 35 / Phase 35-A | WF-1 + WF-3: backfill Slice 22/23 commit hashes + fix ReactDOMTestUtils.act imports | Done — `ae83e8abb` |
+| ✅ 16 | Slice 35 / Phase 35-B | WF-2: console noise sweep 724 → ≤ 200 (REMOVE/PROMOTE rules) | Done — count reduced to `197` |
 | 🔵 17 | Slice 35 / Phase 35-C | IV-1/IV-2: wire income valuation persistence + archive IncomeForgeModule orphan | CP-35-C after 35-B |
 | ⛔ 18 | GATE-35-1 | Founder explicit go for TerraCanon IDE recon (Phase 35-D) | CP-35-C closed |
 | ⛔ 19 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | CP-35-C closed |
@@ -979,9 +979,9 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 
 | ID | Item | Severity | Ticket/Issue |
 |----|------|----------|--------------|
-| WF-1 | Slice 22 and Slice 23 still show `Pending` commit fields and need separate git-history reconciliation | Low | Workflow ledger follow-up |
-| WF-2 | `frontend/apps/os-shell/src` is not on a zero-console baseline; Wave 0 cleanup must start from the new ledger, not the older plan assumption | Medium | Wave 0 follow-up |
-| WF-3 | Legacy React test helpers still emit `ReactDOMTestUtils.act` deprecation warnings in the home/Wave 1 hook proofs | Low | Test harness cleanup follow-up |
+| ~~WF-1~~ | ~~Slice 22 and Slice 23 still show `Pending` commit fields and need separate git-history reconciliation~~ | ~~Low~~ | ✅ RESOLVED — backfilled in `ae83e8abb` |
+| ~~WF-2~~ | ~~`frontend/apps/os-shell/src` is not on a zero-console baseline; Wave 0 cleanup must start from the new ledger, not the older plan assumption~~ | ~~Medium~~ | ✅ RESOLVED — reduced to `197` in CP-35-B |
+| ~~WF-3~~ | ~~Legacy React test helpers still emit `ReactDOMTestUtils.act` deprecation warnings in the home/Wave 1 hook proofs~~ | ~~Low~~ | ✅ RESOLVED — migrated in `ae83e8abb` |
 | ~~WF-4~~ | ~~Untracked superpowers plan docs~~ | ~~Low~~ | ✅ RESOLVED — committed in `520344e49` |
 | ~~WF-5~~ | ~~`.gitignore` drift~~ | ~~Low~~ | ✅ RESOLVED — .gitignore updated in `520344e49` |
 | ~~WF-6~~ | ~~Local artifacts in working tree~~ | ~~Low~~ | ✅ RESOLVED — .gitignored in `520344e49` |

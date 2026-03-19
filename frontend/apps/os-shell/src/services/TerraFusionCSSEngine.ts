@@ -131,7 +131,6 @@ export class TerraFusionCSSEngine {
       });
 
       await this.signalRConnection.start();
-      console.log('🔗 Terrafusion CSS Engine connected to SignalR');
     } catch (error) {
       console.error('❌ SignalR connection failed:', error);
     }
@@ -356,7 +355,6 @@ export class TerraFusionCSSEngine {
       );
 
       if (!performanceMatch) {
-        console.warn('⚠️ Unsupported condition pattern:', condition);
         return false;
       }
 
@@ -366,7 +364,6 @@ export class TerraFusionCSSEngine {
 
       return this.compareMetric(actual, operator as ComparisonOperator, expected);
     } catch (error) {
-      console.warn('⚠️ Condition evaluation failed:', condition, error);
       return false;
     }
   }

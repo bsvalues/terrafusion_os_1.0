@@ -247,7 +247,6 @@ export const ResearchPortal: React.FC = () => {
       sessionStartRef.current = startedAt;
 
       const loadTime = performance.now() - startTime;
-      console.log(`✅ Research session initialized in ${loadTime.toFixed(2)}ms`);
     } catch (error) {
       console.error('❌ Failed to initialize research session:', error);
       const startedAt = new Date();
@@ -329,7 +328,6 @@ export const ResearchPortal: React.FC = () => {
 
       setActivePanel(targetPanel);
 
-      console.log(`🔄 Panel switched to ${targetPanel} in ${switchDuration.toFixed(2)}ms`);
     },
     [session]
   );
@@ -348,7 +346,6 @@ export const ResearchPortal: React.FC = () => {
       }
 
       setLastSaveTime(new Date());
-      console.log('💾 Research session auto-saved');
     } catch (error) {
       console.error('❌ Auto-save failed:', error);
     }
@@ -434,7 +431,6 @@ export const ResearchPortal: React.FC = () => {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
 
-        console.log(`📊 Research exported as ${config.format}`);
       } catch (error) {
         console.error('❌ Export failed:', error);
       }

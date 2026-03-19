@@ -44,7 +44,6 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
   const handleLaunch = (mod: SuiteModuleDef) => {
     if (mod.launchMode === 'workbench') {
       if (!mod.workbenchTab) {
-        console.warn(`[SuiteModuleGrid] workbench card "${mod.id}" missing workbenchTab — skipping`);
         return;
       }
       const metadata: Record<string, unknown> = { tabId: mod.workbenchTab };
@@ -59,7 +58,6 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
     } else {
       const targetId = mod.moduleId ?? mod.id;
       if (!targetId) {
-        console.warn(`[SuiteModuleGrid] standalone card "${mod.id}" missing moduleId — skipping`);
         return;
       }
       activateModule(targetId, { source: 'start_menu', actor });

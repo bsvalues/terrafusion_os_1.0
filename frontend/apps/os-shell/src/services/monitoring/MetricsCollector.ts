@@ -120,7 +120,6 @@ export class MetricsCollector {
       this.saveMetricsToStorage();
     }, intervalMs);
 
-    console.log(`Metrics collection started (interval: ${intervalMs}ms)`);
   }
 
   /**
@@ -130,7 +129,6 @@ export class MetricsCollector {
     if (this.collectionInterval) {
       clearInterval(this.collectionInterval);
       this.collectionInterval = null;
-      console.log('Metrics collection stopped');
     }
   }
 

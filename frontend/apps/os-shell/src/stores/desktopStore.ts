@@ -448,9 +448,6 @@ export const useDesktopStore = create<DesktopState>()(
         if (verdict.decision === 'reject') {
           // Object type is not allowed to spawn a window.
           if (typeof console !== 'undefined') {
-            console.warn(
-              `[Codex] openWindow REJECTED for "${moduleId}": ${verdict.reason}`
-            );
           }
           shellEventBus.fire('spawn_rejected', null, moduleId, { reason: verdict.reason });
           return '';

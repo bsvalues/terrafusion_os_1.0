@@ -173,7 +173,6 @@ export function CostForgeCollaborationTools() {
       };
 
       // In real implementation, this would be sent to the backend
-      console.log('New comment:', comment);
       setNewComment('');
       setSelectedMembers([]);
     }

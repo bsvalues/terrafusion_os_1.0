@@ -167,7 +167,6 @@ export const TerraFusionEliteServiceOrchestrator: React.FC = () => {
       );
 
       // In a real implementation, this would trigger actual service restart
-      console.log(`🔄 Service restart completed for ${serviceName}`);
     } catch (error) {
       // Handle restart failure
       const failedProtocol: RestartProtocol = {

@@ -86,7 +86,6 @@ export const TerraFusionMLIntelligenceHub: React.FC<MLIntelligenceHubProps> = ({
   }, []);
 
   const initializeMLIntelligenceHub = useCallback(() => {
-    console.log('🤖 Initializing TerraFusion ML Intelligence Hub...');
 
     // Initialize ML models
     const models: MLModel[] = [
@@ -241,7 +240,6 @@ export const TerraFusionMLIntelligenceHub: React.FC<MLIntelligenceHubProps> = ({
     setPredictiveAnalytics(analytics);
     calculateHubMetrics(models, pipelines, analytics);
 
-    console.log('✅ ML Intelligence Hub - Elite Status Achieved');
   }, []);
 
   const calculateHubMetrics = useCallback(

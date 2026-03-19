@@ -89,7 +89,6 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
         toast.error('Email configuration test failed');
       }
     } catch (error) {
-      console.error('Failed to test email configuration:', error);
       setTestResult({
         success: false,
         message: 'Failed to connect to notification service',
@@ -135,7 +134,6 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
         toast.error(error.error || 'Failed to send manual alert');
       }
     } catch (error) {
-      console.error('Failed to send manual alert:', error);
       toast.error('Failed to send manual alert');
     } finally {
       setSending(false);
@@ -166,7 +164,6 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
         toast.error('Failed to send daily digest');
       }
     } catch (error) {
-      console.error('Failed to send daily digest:', error);
       toast.error('Failed to send daily digest');
     } finally {
       setSending(false);
@@ -197,7 +194,6 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
         toast.error('Failed to send weekly summary');
       }
     } catch (error) {
-      console.error('Failed to send weekly summary:', error);
       toast.error('Failed to send weekly summary');
     } finally {
       setSending(false);

@@ -243,7 +243,6 @@ async function apiClient<T>(
 
       if (cached && cached.expiresAt > Date.now()) {
         const duration = performance.now() - startTime;
-        console.log(`📦 Cache hit for ${endpoint} (${duration.toFixed(2)}ms)`);
 
         return {
           success: true,
@@ -296,7 +295,6 @@ async function apiClient<T>(
       });
     }
 
-    console.log(`✅ API success: ${endpoint} (${duration.toFixed(2)}ms)`);
 
     return {
       success: true,
@@ -326,9 +324,6 @@ async function apiClient<T>(
 
     if (isRetryable && retryCount < MAX_RETRIES) {
       const delay = RETRY_DELAYS[retryCount];
-      console.warn(
-        `⚠️ API error, retrying ${endpoint} in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
-      );
 
       await new Promise((resolve) => setTimeout(resolve, delay));
       return apiClient<T>(endpoint, options, retryCount + 1);
@@ -617,7 +612,6 @@ export const exportAPI = {
 
 export function clearCache(): void {
   requestCache.clear();
-  console.log('🗑️ API cache cleared');
 }
 
 export function getCacheStats(): { size: number; oldestEntry: number; newestEntry: number } {

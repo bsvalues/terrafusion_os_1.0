@@ -186,7 +186,6 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
       const data = await response.json();
       setCorrelationMatrix(data);
     } catch (error) {
-      console.error('Correlation matrix calculation failed:', error);
     } finally {
       setIsCalculating(false);
     }
@@ -211,7 +210,6 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
       const data = await response.json();
       setHypothesisTestResult(data);
     } catch (error) {
-      console.error('Hypothesis test failed:', error);
     } finally {
       setIsCalculating(false);
     }
@@ -235,7 +233,6 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
       const data = await response.json();
       setPowerAnalysis(data);
     } catch (error) {
-      console.error('Power analysis failed:', error);
     } finally {
       setIsCalculating(false);
     }
@@ -259,7 +256,6 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
       const data = await response.json();
       setBayesianInference(data);
     } catch (error) {
-      console.error('Bayesian inference failed:', error);
     } finally {
       setIsCalculating(false);
     }
@@ -283,7 +279,6 @@ export const InfinitePrecisionAnalyticsPanel: React.FC = () => {
       const data = await response.json();
       setInfiniteMeasurements(data.measurements);
     } catch (error) {
-      console.error('Infinite precision measurement failed:', error);
     } finally {
       setIsCalculating(false);
     }

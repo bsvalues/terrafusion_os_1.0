@@ -136,10 +136,8 @@ class QuantumModuleManagerService {
    * Initialize the quantum module manager with government excellence
    */
   async initialize(): Promise<void> {
-    console.log('🚀 Initializing TerraFusion Quantum Module Manager...');
     await this.registerGovernmentModules();
     await this.loadCoreModules();
-    console.log('✅ Quantum Module Manager initialized with government excellence!');
   }
 
   /**
@@ -260,9 +258,7 @@ class QuantumModuleManagerService {
       };
 
       this.loadedModules.set(quantumModule.id, quantumModule);
-      console.log(`✅ Registered quantum module: ${quantumModule.displayName}`);
     } catch (error) {
-      console.warn(`⚠️ Failed to register plugin ${pluginName}:`, error);
     }
   }
 
@@ -274,7 +270,6 @@ class QuantumModuleManagerService {
       const response = await fetch(manifestPath);
       return await response.json();
     } catch (error) {
-      console.warn(`Could not load manifest from ${manifestPath}:`, error);
       return {};
     }
   }
@@ -291,7 +286,6 @@ class QuantumModuleManagerService {
       try {
         module.status = 'loading';
         // Pre-initialize core modules for instant availability
-        console.log(`🔄 Pre-loading core module: ${module.displayName}`);
         module.status = 'active';
       } catch (error) {
         console.error(`❌ Failed to load core module ${module.displayName}:`, error);
@@ -328,7 +322,6 @@ class QuantumModuleManagerService {
       module.status = 'active';
       module.mountedElement = mountElement;
 
-      console.log(`🚀 Successfully launched quantum module: ${module.displayName}`);
       return true;
     } catch (error) {
       console.error(`❌ Failed to launch module ${module.displayName}:`, error);
@@ -360,7 +353,6 @@ class QuantumModuleManagerService {
       module.status = 'inactive';
       module.mountedElement = undefined;
 
-      console.log(`🛑 Successfully stopped quantum module: ${module.displayName}`);
       return true;
     } catch (error) {
       console.error(`❌ Failed to stop module ${module.displayName}:`, error);
@@ -433,7 +425,6 @@ class QuantumModuleManagerService {
    * OS API methods for modules to interact with the system
    */
   async invoke(command: string, params: any): Promise<any> {
-    console.log(`🔧 TerraFusion OS API call: ${command}`, params);
 
     // Mock API responses for common commands
     switch (command) {

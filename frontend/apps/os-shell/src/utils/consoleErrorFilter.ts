@@ -63,7 +63,6 @@ class TerraFusionConsoleFilter {
     window.addEventListener('unhandledrejection', this.handleUnhandledRejection);
 
     this.isActive = true;
-    console.log('🛡️ TerraFusion Elite Console Filter - Activated');
   }
 
   /**
@@ -79,7 +78,6 @@ class TerraFusionConsoleFilter {
     window.removeEventListener('unhandledrejection', this.handleUnhandledRejection);
 
     this.isActive = false;
-    console.log('🛡️ TerraFusion Elite Console Filter - Deactivated');
   }
 
   private shouldFilter(args: any[]): boolean {

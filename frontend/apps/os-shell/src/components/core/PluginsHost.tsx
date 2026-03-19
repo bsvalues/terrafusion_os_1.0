@@ -210,7 +210,6 @@ async function buildPluginContext(moduleName: string, osState: OSState): Promise
       },
     };
   } catch (err) {
-    console.warn('Failed to build plugin context:', err);
     return {
       moduleName,
       countyConfig: null,
@@ -220,7 +219,6 @@ async function buildPluginContext(moduleName: string, osState: OSState): Promise
           throw new Error('OS bridge unavailable');
         },
         emit: () => {
-          console.warn('OS bridge unavailable');
         },
       },
     };

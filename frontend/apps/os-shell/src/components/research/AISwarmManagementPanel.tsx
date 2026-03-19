@@ -304,7 +304,6 @@ export const AISwarmManagementPanel: React.FC = () => {
       setAgents(data.agents);
       setCoordinationMetrics(data.metrics);
     } catch (error) {
-      console.error('Failed to load swarm data:', error);
     } finally {
       setIsLoadingSwarm(false);
     }
@@ -325,7 +324,6 @@ export const AISwarmManagementPanel: React.FC = () => {
       const data = await response.json();
       setIntelligenceAnalysis(data);
     } catch (error) {
-      console.error('Failed to analyze swarm intelligence:', error);
     }
   }, [selectedCoordinationMode]);
 
@@ -346,9 +344,7 @@ export const AISwarmManagementPanel: React.FC = () => {
       // Reload swarm data after optimization
       await loadSwarmData();
 
-      console.log('Swarm optimization complete:', data);
     } catch (error) {
-      console.error('Failed to optimize swarm:', error);
     }
   }, [selectedCoordinationMode, loadSwarmData]);
 
@@ -370,7 +366,6 @@ export const AISwarmManagementPanel: React.FC = () => {
         // Reload swarm data after deployment
         await loadSwarmData();
       } catch (error) {
-        console.error('Failed to deploy agent strategy:', error);
       }
     },
     [loadSwarmData]

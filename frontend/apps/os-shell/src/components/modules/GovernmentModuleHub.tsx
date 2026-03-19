@@ -78,7 +78,6 @@ export default function GovernmentModuleHub() {
         governmentCompliance: 99.8,
       });
 
-      console.log('🏛️ Government Module Hub initialized with excellence!');
     } catch (error) {
       console.error('❌ Failed to initialize Government Module Hub:', error);
       setHubState((prev) => ({ ...prev, loading: false }));

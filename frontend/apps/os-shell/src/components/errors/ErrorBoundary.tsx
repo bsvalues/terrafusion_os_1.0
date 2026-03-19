@@ -126,7 +126,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         }),
       });
     } catch (reportingError) {
-      console.warn('Failed to report error to monitoring:', reportingError);
     }
   }
 

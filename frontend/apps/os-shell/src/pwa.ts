@@ -5,11 +5,9 @@
  * Handles updates and offline readiness notifications.
  */
 export function registerPWA() {
-  console.log('PWA: Service Worker disabled temporarily for build validation');
   /*
   const updateSW = registerSW({
     onNeedRefresh() {
-      console.log('PWA: New content available');
       useNotificationStore.getState().addNotification(
         {
           title: 'Update Available',
@@ -28,7 +26,6 @@ export function registerPWA() {
       );
     },
     onOfflineReady() {
-      console.log('PWA: Offline ready');
       useNotificationStore.getState().addNotification(
         {
           title: 'Offline Ready',

@@ -410,9 +410,6 @@ export const EnhancedCostCalculator: React.FC = () => {
         }));
         setCostBreakdown(backendBreakdown);
 
-        console.log(
-          `[CostForge Backend] Calculation completed: $${backendTotal.toLocaleString()} in ${(performance.now() - startTime).toFixed(1)}ms`
-        );
       }
     } catch (error) {
       console.error('[CostForge Backend] Calculation failed:', error);
@@ -660,11 +657,9 @@ export const EnhancedCostCalculator: React.FC = () => {
         setBackendConnected(healthResponse);
 
         if (healthResponse && !backendConnected) {
-          console.log('[CostForge] Backend connection established ✓');
         }
       } catch (error) {
         setBackendConnected(false);
-        console.warn('[CostForge] Backend connection lost:', error);
       }
     };
 

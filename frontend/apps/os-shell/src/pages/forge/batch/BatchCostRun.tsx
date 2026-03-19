@@ -53,7 +53,7 @@ function emitAuditEvent(
   };
   // In production this would be sent to TerraTrace; for now log to console
   // eslint-disable-next-line no-console
-  console.info('[TerraTrace] BatchCostRun audit event:', evt);
+  console.info('[BatchCostRun:audit]', evt);
   return evt;
 }
 

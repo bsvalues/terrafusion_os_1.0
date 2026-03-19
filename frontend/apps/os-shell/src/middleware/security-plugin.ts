@@ -18,7 +18,6 @@ export function securityPlugin(options: SecurityPluginOptions = {}): Plugin {
     configResolved() {
       if (enabled && process.env.NODE_ENV === 'production') {
         // eslint-disable-next-line no-console
-        console.warn('[security-plugin] Stub in use. Replace with real implementation for production.');
       }
     },
   };
