@@ -58,19 +58,21 @@ export const ALL_MODULES: readonly ModuleDefinition[] = GENERATED_MODULES.map((m
   runnable: m.runnable,
 })) as const;
 
+type ModuleWithIntent = ModuleDefinition & { intent: Intent };
+
 // Gen2 modules only (what appears in the default desktop)
 export const MODULES: readonly ModuleDefinition[] = ALL_MODULES.filter(
-  (m) => (m as any).intent === 'gen2'
+  (m) => (m as ModuleWithIntent).intent === 'gen2'
 );
 
 // Legacy modules (for Legacy Lab toggle)
 export const LEGACY_MODULES: readonly ModuleDefinition[] = ALL_MODULES.filter(
-  (m) => (m as any).intent === 'legacy'
+  (m) => (m as ModuleWithIntent).intent === 'legacy'
 );
 
 // Archived modules (hidden by default)
 export const ARCHIVED_MODULES: readonly ModuleDefinition[] = ALL_MODULES.filter(
-  (m) => (m as any).intent === 'archive'
+  (m) => (m as ModuleWithIntent).intent === 'archive'
 );
 
 export const TERRAFUSION_MODULES = MODULES;
