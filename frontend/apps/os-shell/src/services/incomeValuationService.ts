@@ -3,7 +3,7 @@
  *
  * ADAPTER SERVICE — not greenfield.
  * Translates existing backend CostForge income-approach endpoints and
- * legacy IncomeForgeModule patterns into the Property Workbench surface.
+ * legacy archived income-module patterns into the Property Workbench surface.
  *
  * Provenance:
  *   - NOI calculation: CostForge POST /api/costforge/income-approach/calculate-noi
@@ -16,7 +16,7 @@
  *   - Get valuation: CostForge GET /api/costforge/valuations/{id}
  *   - List parcel valuations: CostForge GET /api/costforge/parcels/{parcelId}/valuations
  *   - Client-side preview: forgeService.ts calculateIncome() (deprecated, offline only)
- *   - UI patterns: IncomeForgeModule.tsx (standalone module)
+ *   - UI patterns: legacy income module (standalone)
  *
  * GUARDRAIL: All NOI/valuation math stays in backend CostForge endpoints.
  * Frontend only provides inputs and displays results. Client-side

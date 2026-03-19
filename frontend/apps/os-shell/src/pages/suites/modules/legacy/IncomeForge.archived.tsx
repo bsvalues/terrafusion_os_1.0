@@ -1,3 +1,5 @@
+// ARCHIVED 2026-03-19: No live imports. Forge income authority is IncomeApproach.tsx + IncomeValuationPanel.tsx. See CP-35-C.
+
 /**
  * IncomeForge Module — Income Approach (Direct Capitalization)
  * ===================================================================

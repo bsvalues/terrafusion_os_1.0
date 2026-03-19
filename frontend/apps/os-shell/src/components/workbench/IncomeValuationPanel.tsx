@@ -3,12 +3,12 @@
  *
  * ADAPTER HOST — not greenfield.
  * Translates existing backend CostForge income-approach endpoints and
- * legacy IncomeForgeModule patterns into the Property Workbench Forge tab.
+ * legacy archived income-module patterns into the Property Workbench Forge tab.
  *
  * Provenance:
- *   - Layout pattern: IncomeForgeModule.tsx (standalone suite module)
- *   - NOI waterfall: IncomeForgeModule.tsx NOI Waterfall section
- *   - Cap rate visualization: IncomeForgeModule.tsx market range bar
+ *   - Layout pattern: legacy income module (standalone suite surface)
+ *   - NOI waterfall: legacy income module NOI Waterfall section
+ *   - Cap rate visualization: legacy income module market range bar
  *   - Backend math: CostForge income-approach/calculate-noi + calculate-valuation
  *   - Expense structure: CostForge NoiCalculationRequest schema
  *   - Client preview: forgeService.ts calculateIncome() (deprecated, offline only)
