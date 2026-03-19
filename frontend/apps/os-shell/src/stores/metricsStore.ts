@@ -44,11 +44,11 @@ function buildKpis(health: Record<string, unknown>, stats: Record<string, unknow
 
   // Merge stats if available (e.g. agent count, parcel count)
   if (stats && typeof stats === 'object') {
-    if (typeof (stats as any).activeAgents === 'number') {
-      kpis.push({ id: 'agents', label: 'Active Agents', value: (stats as any).activeAgents.toLocaleString(), status: 'verified' });
+    if (typeof stats['activeAgents'] === 'number') {
+      kpis.push({ id: 'agents', label: 'Active Agents', value: (stats['activeAgents'] as number).toLocaleString(), status: 'verified' });
     }
-    if (typeof (stats as any).parcelCount === 'number') {
-      kpis.push({ id: 'parcels', label: 'Parcels Indexed', value: (stats as any).parcelCount.toLocaleString(), status: 'verified' });
+    if (typeof stats['parcelCount'] === 'number') {
+      kpis.push({ id: 'parcels', label: 'Parcels Indexed', value: (stats['parcelCount'] as number).toLocaleString(), status: 'verified' });
     }
   }
 
