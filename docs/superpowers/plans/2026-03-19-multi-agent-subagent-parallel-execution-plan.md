@@ -1,171 +1,242 @@
-# Multi-Agent + Subagent Parallel Execution Plan (Post Slice 35)
+# Multi-Agent + Subagent Parallel Execution Plan (CP-12 Through Go-Live)
 
 Date: 2026-03-19  
-Branch: post-r3/w5f-registry-edge-cleanup  
-Classification: Planning-only (no execution authorization)
+Branch: main  
+Classification: Docs-only superpowers artifact (bounded planning; no execution authority)
+
+## Pre-Flight Scope Disclaimer
+
+- Working tree was already dirty before this task started.
+- Unexpected pre-existing changes were detected in `os-platform/core/pilot/ToolRunner.ts` and `os-platform/core/pilot/ToolRunner.js`.
+- Those files are intentionally excluded from this plan scope.
+- This artifact is limited to `docs/superpowers/plans/**` and does not normalize unrelated dirty files.
 
 ## Objective
 
-Define the next governed execution sequence using a multi-agent topology with parallel subagent lanes, while preserving single-writer safety and hard-stop discipline.
+Define a bounded multi-agent and parallel subagent execution model to move from current governed closure posture to full production go-live readiness for TerraFusion OS and the broader TerraFusion ecosystem.
 
-## Current Truth Baseline
+## Current Repo Truth Anchors
 
-- Slice 35 is closed: Lane 1, Lane 2, Lane 3, and SW-2 are closed in workflow status.
-- Historical publication baseline: 7E was dependency-gated until 7C closure (and 7D only if invoked).
-- Execution update (2026-03-19, Phase D.1): 7C closure has now been recorded; dependency-prep blocker for 7E is cleared with 7D still optional/not-invoked.
-- This plan does not lift any existing go/no-go checkpoints.
+- Workflow closure history and phase ledger: `.governance/workflow/progress.md`
+- Execution-order and dependency posture: `.governance/workflow/plan.md`
+- Remediation inventory and lane sequencing: `.governance/workflow/REMEDIATION_PLAN_v1.md`
+- Current proof boundary posture: `.governance/workflow/proof-posture.md`
+- Existing multi-agent baseline artifact: `docs/superpowers/plans/2026-03-19-multi-agent-subagent-parallel-execution-plan.md` (this document, updated)
+
+## Authority Stack (Truth Precedence)
+
+1. Constitutional and governance constraints (immutable rules)
+2. Current execution truth and checkpoint artifacts
+3. Architecture target-state documents
+4. Secondary status narratives
+
+Rule: No target-state claim may override active execution truth without explicit proof artifacts tied to current HEAD.
 
 ## Governance Constraints
 
-- Single writer lane for any write phase.
+- Single-writer model for all write phases.
 - Parallel subagents are read-only by default.
-- Write access for non-writer subagents requires explicit disjoint file-set grants.
-- Hard stop on any failed gate, scope violation, or missing evidence artifact.
-- No forbidden-scope edits.
+- Disjoint-write grants require explicit file lists, time bounds, and approver.
+- Hard-stop on failed gate, scope violation, missing proof, or dependency breach.
+- No implicit scope widening.
+- No edits in unrelated dirty files detected at pre-flight.
 
-## Agent Topology
+## Agent Topology and Lane Ownership
 
-- Orchestrator Agent
-  - Controls phase entry/exit and barrier decisions.
-- Copilot Writer Lane
-  - Only lane that writes in standard execution.
-- Contract-Truth Subagent Lane (parallel, read-only)
-  - Confirms contract and governance truth.
-- Proof-Audit Subagent Lane (parallel, read-only)
-  - Runs proof commands and captures evidence.
-- Checkpoint Agent
-  - Enforces closure wall and hard-stop checkpoints.
+### Core Roles
 
-## RACI Matrix
+- Orchestrator Lane (human-directed, Copilot-assisted)
+  - Owns phase admission, barrier decisions, and dependency unlock checks.
+- Writer Lane (single writer)
+  - Owns bounded edits for one active slice at a time.
+- Contract-Truth Subagent Lane (parallel read-only)
+  - Validates policy, scope, dependency, and constitutional alignment.
+- Proof-Audit Subagent Lane (parallel read-only)
+  - Runs required command wall and compiles pass/fail evidence bundles.
+- Risk/Checkpoint Lane (parallel read-only)
+  - Produces residual-risk updates and confirms hard-stop compliance.
 
-| Work Item | Copilot Writer | Contract-Truth | Proof-Audit | Checkpoint |
-|---|---|---|---|---|
-| Charter and phase intent | A | C | C | R |
-| Scope and policy validation | C | R/A | I | C |
-| Evidence command execution | I | C | R/A | C |
-| Barrier admission prep | C | R | R | A |
-| File modifications | R/A | I | I | C |
-| Closure validation | C | C | R | A |
-| Hard-stop enforcement | I | C | C | R/A |
+### RACI
 
-Legend: R=Responsible, A=Accountable, C=Consulted, I=Informed
+| Work Item | Writer Lane | Contract-Truth | Proof-Audit | Risk/Checkpoint | Orchestrator |
+|---|---|---|---|---|---|
+| Slice chartering | C | C | C | C | A/R |
+| Scope validation | I | A/R | I | C | C |
+| Dependency classification | I | A/R | C | C | C |
+| Evidence commands | I | C | A/R | C | C |
+| File modifications | A/R | I | I | I | C |
+| Gate admission decision | I | C | C | C | A/R |
+| Hard-stop enforcement | I | C | C | A/R | C |
 
-## Phase Sequence
+Legend: R = Responsible, A = Accountable, C = Consulted, I = Informed
 
-### Phase A - Bootstrap
+## Parallel Execution Model
+
+### Phase P0 - Bootstrap and Scope Lock
 
 Entry:
-- Active checkpoint state confirmed.
-- Allowed/forbidden paths reaffirmed.
+- Confirm active checkpoint posture.
+- Confirm working tree containment note and excluded-file set.
 
-Output:
-- One execution charter with objective, scope, and proof wall.
+Outputs:
+- Bounded slice charter
+- Scope file-set allowlist
+- Proof command list for the slice
 
-### Phase B - Parallel Read-Only Sweep
+### Phase P1 - Parallel Recon Sweep
 
-Run in parallel:
+Run concurrently:
 
-- Contract-Truth subagent:
-  - Validate dependency gates and scope boundaries.
-  - Produce blocker map for 7E preconditions.
+- Contract-Truth lane:
+  - Dependency graph validation
+  - Scope boundary confirmation
+  - Gate preconditions checklist
 
-- Proof-Audit subagent:
-  - Run command wall on current state.
-  - Produce pass/fail and delta list.
+- Proof-Audit lane:
+  - Baseline command wall run
+  - Delta report against prior closure wall
 
-- Workflow Sync subagent (optional, read-only):
-  - Identify stale workflow statements that conflict with current closure truth.
+- Risk/Checkpoint lane:
+  - Residual risk updates
+  - Rollback trigger conditions for current slice
 
-Output:
-- Truth report + proof report + stale-statement report.
+Outputs:
+- `truth-report.md`
+- `proof-report.md`
+- `risk-register-delta.md`
 
-### Phase C - Synchronization Barrier
+### Phase P2 - Synchronization Barrier
 
-Admission requires all:
-- No unresolved forbidden-scope conflict.
-- Mandatory command wall complete.
-- Dependency posture explicitly classified (open vs blocked).
+Admission criteria (all required):
+
+- No forbidden-scope conflicts
+- Dependency posture explicitly classified
+- Mandatory baseline proof commands green
+- Residual risks documented for this slice
 
 Decision:
-- Pass -> Phase D.
-- Fail -> hard stop and checkpoint update.
+- PASS -> P3 write phase opens
+- FAIL -> hard stop + checkpoint note + re-entry requirements
 
-### Phase D - Single Writer Execution
-
-Writer lane executes one bounded slice at a time. Suggested queue order:
-
-1. Dependency-first preparation for 7E (no 7E execution until dependencies clear).
-2. Conditional next bounded slice if unblocked.
-3. Optional mechanical cleanup lane only after explicit approval.
+### Phase P3 - Single Writer Execution
 
 Rules:
-- No overlapping writes across agents.
-- If disjoint write grants are issued, grants must list exact files and expiration.
 
-### Phase E - Closure Wall
+- One bounded writer slice only
+- No overlapping write ownership
+- No edits outside explicit allowlist
+- No normalization of unrelated dirty files
 
-Minimum required evidence commands:
+### Phase P4 - Closure Wall and Seal
+
+Required proof minimum:
 
 ```bash
 pnpm run type-check
 node --test os-platform/core/tests/phase83-tools.test.mjs
 ```
 
-Recommended additions for active lane:
+Optional lane proofs (when applicable):
 
 ```bash
-# Optional targeted lane proof
 pnpm vitest run <targeted-tests>
+node --test os-platform/core/tests/phase85-tools.test.mjs
+node --test os-platform/core/tests/phase86-toolrunner.test.mjs
 ```
 
-Exit:
-- Green closure wall + checkpoint artifact recorded.
+Outputs:
 
-### Phase F - Hard Stop and Re-Entry
+- Closure evidence bundle
+- Checkpoint update with next entry condition
 
-Trigger hard stop on:
-- Any failed mandatory gate.
-- Scope violation.
-- Missing evidence artifact.
+## Dependency Graph (Execution Order)
 
-Re-entry requires:
-- Explicit checkpoint note with failure reason.
-- Updated bounded charter for retry.
+```text
+CP-12 Truth Reconciliation
+  -> CP-13 Production Gate Matrix Buildout
+    -> CP-14 Tenant + RBAC + Isolation Closure
+      -> CP-15 Workbench/Suite Runtime Completeness Closure
+        -> CP-16 Service Registry + Orchestration Activation Closure
+          -> CP-17 SRE/Restore/DR/Hypercare Proof Pack
+            -> CP-18 Security/Compliance Final Seal
+              -> CP-19 Go-Live Cutover Decision Packet
+```
 
-## Subagent Parallel Batch Template
+Policy rule:
+- No downstream phase opens until upstream closure evidence is green and checkpointed.
 
-Use this template at each phase opening:
+## Merge and Order Strategy
 
-1. Launch Contract-Truth subagent (read-only).
-2. Launch Proof-Audit subagent (read-only).
-3. Optionally launch Workflow Sync subagent (read-only).
-4. Wait for all reports.
-5. Run synchronization barrier checklist.
-6. Open writer lane only if barrier passes.
+- Strategy: stack-safe, small bounded merges with one active write lane.
+- Merge order:
+  1. Docs-only truth and gate artifacts
+  2. Narrow infrastructure/governance deltas
+  3. Runtime behavior changes with explicit proof walls
+  4. Final go-live docs and seal packet
+- Every merge must include:
+  - scope statement
+  - proof commands and outputs
+  - residual risk delta
+  - rollback path
 
-## Disjoint Write Grant Template (Only If Needed)
+## Proof Requirements and Artifacts
+
+For each phase, produce:
+
+- `phase-charter.md`
+- `scope-allowlist.txt`
+- `proof-commands.md`
+- `proof-results.md`
+- `risk-register.md`
+- `checkpoint-seal.md`
+
+Definition of green for each phase:
+
+- All mandatory proof commands pass
+- No unauthorized file edits
+- Dependency and scope checks pass
+- Checkpoint note includes explicit next entry condition
+
+## Rollback and Containment Rules
+
+Trigger rollback/containment when any occur:
+
+- Mandatory gate failure
+- Scope drift or forbidden-path touch
+- Missing artifact in proof bundle
+- Unresolved dependency mismatch
+
+Rollback steps:
+
+1. Stop writer lane immediately.
+2. Publish failure checkpoint with root cause and affected files.
+3. Re-open only with a narrowed retry charter.
+4. Preserve unrelated pre-existing dirty files without normalization.
+
+Containment invariant for this planning lane:
+
+- `os-platform/core/pilot/ToolRunner.ts` excluded
+- `os-platform/core/pilot/ToolRunner.js` excluded
+- No edits to either file in this docs-only slice
+
+## Disjoint Write Grant Template (Only if Explicitly Approved)
 
 Grant ID:  
 Subagent:  
 Mode: write-disjoint  
-Files:
+Allowed files:
 - path/one
 - path/two
-Start:
-End:
-Approved by:
+Start timestamp:  
+End timestamp:  
+Approver:  
+Barrier for activation:  
 
-## Deliverables
+## Acceptance Criteria (This Artifact)
 
-- Execution charter for the active bounded slice.
-- Parallel truth/proof report bundle.
-- Closure wall evidence bundle.
-- Checkpoint note with explicit next entry condition.
-
-## Acceptance Criteria
-
-- Single-writer integrity preserved for write phases.
-- Parallel subagents used only for read-only truth/proof unless explicitly granted disjoint writes.
-- Mandatory command wall captured in closure evidence.
-- Dependency-gated items do not execute early.
-- Hard-stop checkpoints remain authoritative.
+- Includes pre-flight dirty-tree disclaimer
+- Defines parallel agent lanes and ownership
+- Defines dependency graph and merge order strategy
+- Defines proof requirements and artifacts
+- Defines rollback and containment rules
+- Remains docs-only within `docs/superpowers/plans/**`
