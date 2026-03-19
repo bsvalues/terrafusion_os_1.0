@@ -20,7 +20,7 @@
 | **Phase** | **Phase 35-G CLOSED + SW-2 CLOSED** — CP-35-G-1/2/3 + SW-2 scope exception delivered and sealed |
 | **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 CLOSED; SW-2 CLOSED |
 | **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟢 Lane 3 CLOSED, 🟢 SW-2 CLOSED |
-| **Latest Commit** | `acc42d7f1` (multi-agent/subagent parallel execution plan + governance links) |
+| **Latest Commit** | `c539fed1a` (Phase 6 — PgVector RAG embedding repository landed) |
 
 ## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
 
@@ -101,7 +101,7 @@
 **Gate transition:**
 - `GATE-35-2` consumed by explicit founder go 2026-03-19
 - Founder accepted AI Swarm charter via `go` on 2026-03-19 (`GATE-35-3` consumed)
-- Phase 35-G opened; SW Phase 1 closed in `32ba2cd72`; SW Phase 2 remains blocked by governance scope constraints
+- Phase 35-G opened; SW Phase 1 closed in `32ba2cd72`; SW Phase 2 was initially blocked by governance scope constraints and later closed via founder-go exception in `d35980379`
 
 **Classification:** Implemented bounded recon + planning slice (no production behavior changes)
 
