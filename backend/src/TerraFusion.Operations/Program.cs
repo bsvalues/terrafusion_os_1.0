@@ -37,7 +37,16 @@ builder.Services.AddSwaggerGen(c =>
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JWT");
-var secretKey = Encoding.ASCII.GetBytes(jwtSettings["Secret"] ?? "TerraFusion-Default-Secret");
+var configuredSecret = jwtSettings["Secret"];
+if (string.IsNullOrEmpty(configuredSecret))
+{
+    // Generate a random session key so a predictable fallback cannot be used to forge tokens.
+    // Tokens will NOT survive app restarts — set JWT:Secret in appsettings for production.
+    configuredSecret = "TerraFusion-Ops-Session-" + Guid.NewGuid().ToString("N");
+    Console.WriteLine("⚠️  WARNING: No JWT:Secret configured in TerraFusion.Operations — using a random session key. " +
+        "Tokens will NOT survive app restarts. Set JWT:Secret in appsettings.json for production.");
+}
+var secretKey = Encoding.ASCII.GetBytes(configuredSecret);
 
 builder.Services.AddAuthentication(options =>
 {

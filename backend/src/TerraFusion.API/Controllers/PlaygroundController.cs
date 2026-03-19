@@ -22,7 +22,7 @@ namespace TerraFusion.API.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    [AllowAnonymous]
+    [Authorize]
     public class PlaygroundController : ControllerBase
     {
         private readonly PrototypeTestingEngine _engine;
@@ -38,7 +38,10 @@ namespace TerraFusion.API.Controllers
             _runs = runs;
             _logger = logger;
         }
+
+        // Read-only probe — safe to expose without auth (health check, demo usability)
         [HttpGet("health")]
+        [AllowAnonymous]
         public IActionResult GetHealth()
         {
             return Ok(new
@@ -53,7 +56,9 @@ namespace TerraFusion.API.Controllers
             });
         }
 
+        // Read-only scenario list — safe to expose without auth for demo discoverability
         [HttpGet("scenarios")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetScenarios()
         {
             _logger.LogInformation("🎯 GET /api/playground/scenarios called");
@@ -163,7 +168,9 @@ namespace TerraFusion.API.Controllers
             return jsonResult;
         }
 
+        // Read-only run list — safe to expose without auth for demo observability
         [HttpGet("runs")]
+        [AllowAnonymous]
         public IActionResult ListRuns()
         {
             var runs = _runs.List().Select(r => new
@@ -177,7 +184,9 @@ namespace TerraFusion.API.Controllers
             return Ok(new { count = runs.Count(), runs });
         }
 
+        // Read-only run detail — safe to expose without auth
         [HttpGet("runs/{id}")]
+        [AllowAnonymous]
         public IActionResult GetRun(string id)
         {
             if (!_runs.TryGet(id, out var run) || run == null)
