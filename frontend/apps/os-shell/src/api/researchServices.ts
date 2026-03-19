@@ -333,7 +333,7 @@ async function apiClient<T>(
 
     return {
       success: false,
-      data: null as any,
+      data: null as unknown as T,
       error: {
         code: error.name || 'UNKNOWN_ERROR',
         message: error.message || 'An unexpected error occurred',
