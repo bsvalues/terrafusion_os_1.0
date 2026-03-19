@@ -15,11 +15,51 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 33 — Phases 6–11: ALL VERIFIED (pre-existing)** |
-| **Phase** | Phase 11 — **CP-W11-1 CLOSED** ✅ (VERIFIED) |
-| **Task** | All 6 phases verified in sequence: pgvector, sovereign spine, trace fidelity, Muse Mode, HITL Drafter, sovereign deploy |
-| **Status** | ✅ MASTER ROADMAP COMPLETE — entire Phase 6–11 queue VERIFIED |
-| **Latest Commit** | `2271b8cf9` (Phase 6+9 seal) |
+| **Slice** | **Phase 9 — TerraPilot Muse Mode** |
+| **Phase** | **CP-W9-1 CLOSED** ✅ |
+| **Task** | Canonical Muse lane repair: canonical TerraTrace wiring, explicit `mode: 'muse'` pinning, and strengthened runtime proof |
+| **Status** | ✅ BOUNDED PHASE CLOSED — Muse shell truth tightened without widening into backend explain redesign |
+| **Latest Commit** | working tree (pending commit) |
+
+## CP-W9-1: Phase 9 — TerraPilot Muse Mode — CLOSED ✅
+
+**Date**: 2026-03-18
+**Branch**: working tree
+**Commit**: pending commit
+
+### Verdict: PASS — GREEN (bounded implementation + proof tightening)
+
+**What closed:**
+- `TerraPilotPanel` now emits canonical TerraTrace tool events via `generateCorrelationId`, `emitToolInvoked`, `emitToolSucceeded`, and `emitToolFailed`
+- `PilotConsole` and `PilotConsoleContent` now pin validation and invocation calls to `mode: 'muse'`
+- Phase 9 proof now covers panel auth/no-parcel/success/failure behavior and Muse-only filtering on both standalone console surfaces
+- No backend explain redesign or broader Pilot surface expansion was introduced
+
+**Pre-change synthesis (parallel read-only lanes):**
+- ✅ `pilotBridge.ts` already held the bounded actor/county/parcel context contract
+- ✅ `PropertyPilot.tsx` already enforced Muse/read-only list filtering
+- ⚠️ `TerraPilotPanel.tsx` still used legacy `emitIntent` / `emitResult` helpers and only placeholder explain output
+- ⚠️ `PilotConsole.tsx` and `PilotConsoleContent.tsx` did not explicitly pin validate/invoke requests to `mode: 'muse'`
+- ⚠️ Runtime proof was thin on panel behavior and standalone Muse surfaces
+
+**Post-change evidence:**
+- ✅ `frontend/apps/os-shell/src/components/pilot/TerraPilotPanel.tsx` uses canonical TerraTrace tool helpers and shares one correlation ID through the local Muse explain flow
+- ✅ `frontend/apps/os-shell/src/pages/PilotConsole.tsx` pins validate/invoke calls to `mode: 'muse'`
+- ✅ `frontend/apps/os-shell/src/pages/PilotConsoleContent.tsx` pins validate/invoke calls to `mode: 'muse'`
+- ✅ `frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts` now rejects legacy trace-helper usage and asserts canonical helper imports
+- ✅ `frontend/apps/os-shell/src/__tests__/pilot/TerraPilotPanel.muse.test.tsx` proves unauthenticated, no-parcel, success, and failure paths
+- ✅ `frontend/apps/os-shell/src/__tests__/pilot/PilotConsole.museFilter.test.tsx` proves Muse-only filtering in both standalone console surfaces
+
+**Closure wall evidence:**
+- ✅ `pnpm vitest run frontend/apps/os-shell/src/__tests__/auth/phase9-museMode.contract.test.ts frontend/apps/os-shell/src/__tests__/workbench/PropertyPilot.museFirst.test.tsx frontend/apps/os-shell/src/__tests__/pilot/TerraPilotPanel.muse.test.tsx frontend/apps/os-shell/src/__tests__/pilot/PilotConsole.museFilter.test.tsx` — 4 files, 27 tests passed
+- ✅ `pnpm run type-check` — clean
+- ✅ `node --test os-platform/core/tests/phase83-tools.test.mjs` — 56/56 pass
+
+**Classification: Implemented bounded proof slice**
+
+**Deferred items:** backend explain integration remains a separate future lane. Phase 9 closed the Muse shell boundary and proof posture only.
+
+---
 
 ## Phase 8 — CP-W8-1 CLOSED — 2026-03-18
 
@@ -773,6 +813,7 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 11.1 | Assessor Vertical Attestation | `be693b8d1` | 11/11 criteria ATTESTED. Proof wall 18/18 gates: TerraForge (F1+F2 proof lanes, income+sales hosted), TerraAtlas (standalone home, routes), TerraDais (standalone home, routes), TerraDossier (standalone home, routes), TerraGPT (GPT+RAG wiring closed), Property Workbench (5 suite tabs real-hosted, 5 work modes), TerraPilot RBAC (allowlists + PII redaction), TerraTrace (append-only, county-scoped, correlationId), Auth (no hardcoded admin), Multi-tenancy (cross-county isolation), OWASP Security (baseline clear). Document: .governance/ASSESSOR_VERTICAL_ATTESTATION.md. phase83 56/56, type-check CLEAN | 2025-07-10 |
 | ✅ W2.1 | Wave 2 GPT/RAG Backend Truth | `2c70b4e2a` | gptBackendTruth.ts: 29-endpoint registry across RAGController (9 endpoints, all REAL EF Core), GPTController (16 [AllowAnonymous] endpoints documented), CoPilotController (4 endpoints, no frontend client). Frontend alignment: ragAPI 9/9, gptAPI 20+/20+. Zero stubs. Key findings: 16 anonymous GPT endpoints (FISMA risk), 7 unscoped RAG endpoints, CoPilot unreachable from frontend. Proof wall 16/16 gates. phase83 56/56, type-check CLEAN | 2026-03-18 |
 | ✅ W2.2 | Wave 2 Frontend Wiring Proof | `dad0f72af` | wave2-frontend-wiring.contract.test.ts: RAGDatasetManager 9/9 ragAPI calls wired, GPTManagementDashboard 5 gptAPI CRUD+stats methods + useSession + gptHub real-time, SystemGptAtlasPanel has existing tests, all 3 targets zero TODO/FIXME/HACK, ragAPI+gptAPI Bearer auth interceptors, 9+20 endpoint methods, chat deferred to CP-W2-5, backend truth cross-check (7+ unscoped, 25+ aligned). Proof wall 20/20 gates. phase83 56/56, type-check CLEAN | 2025-07-10 |
+| ✅ W2.CLOSE | Wave 2 Phase Closure + Gate | `2a8973e43` | wave2-phase-closure.contract.test.ts: Full governance chain validated — CP-W4-1 TerraTrace, CP-W4-2 RBAC, CP-W5-1 Isolation, CP-W5-2 OWASP, CP-W2-1 Backend Truth, CP-W2-2 Frontend Wiring, CP-ASSESSOR-1 Attestation. All 5 governance modules export canonical types, zero debt markers. Phase 8 (Waves 3-5 gate) satisfied: all prior phases closed with proof. Proof wall 18/18 gates. phase83 56/56, type-check CLEAN | 2026-03-18 |
 | ✅ 3.1 | Lock entry gate for Waves 3-5 | `5a01be449` | Phase gate verified | 2026-03-18 |
 
 **Key Achievement:** The workflow canon, Forge proof bundles, Workbench real-host gate, Wave 0 inventory baseline, and Wave 1 auth/context threading are now aligned to current evidence instead of stale assumptions. Phase 6 is closed with bounded auth-first wiring plus proof on the named surfaces, and Wave 2 backend truth inventory is now the next unblocked implementation lane. Waves 3-5 remain explicitly blocked until the earlier truths close cleanly.
@@ -836,8 +877,8 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 5 | 25.4 / Phase 4 | Complete Forge lane F2 Income Valuation proof pack | Done |
 | ✅ 6 | 25.4 / Phase 5 | Produce Wave 0 inventory/debt ledger with `any` triage first | Done |
 | ✅ 7 | 25.4 / Phase 6 | Finish Wave 1 auth threading on named surfaces | Done |
-| 🔵 8 | 25.4 / Phase 7 | Split Wave 2 into backend recon then frontend wiring | None |
-| 🔵 9 | 25.4 / Phase 8 | Hold Waves 3-5 until prior proof gates land | Phase 7 |
+| ✅ 8 | 25.4 / Phase 7 | Split Wave 2 into backend recon then frontend wiring | Done (W2.1 + W2.2 + W2.CLOSE) |
+| ✅ 9 | 25.4 / Phase 8 | Hold Waves 3-5 until prior proof gates land | Satisfied — all prior phases closed |
 | ✅ 8 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
 | ✅ 9 | Commit | Create docs commit for Slice 25.4 | Done |
 
