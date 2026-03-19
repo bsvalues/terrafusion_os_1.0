@@ -16,11 +16,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 35 → Phase 6 pgvector** |
-| **Phase** | **Phase 6 CLOSED** — native pgvector column, PgVectorRAGEmbeddingRepository, conditional DI, docker fix, quality fixes |
-| **Task** | Phase 35-G CLOSED; SW-2 CLOSED; Phase 6 CLOSED |
-| **Status** | 🟢 Phase 35-G CLOSED, 🟢 SW-2 CLOSED, 🟢 Phase 6 CLOSED |
-| **Latest Commit** | `84bf408f4` (Phase 6 quality fixes seal) |
+| **Slice** | **Phases 6 / 7 / 8 — pgvector + Sovereign Spine + TerraTrace Fidelity** |
+| **Phase** | **Phase 8 CLOSED** — all three sealed (6=`84bf408f4`, 7=pre-session `a7fa3cde7`, 8=`0197bfa72`) |
+| **Task** | Phase 6 CLOSED; Phase 7 CLOSED (18/18); Phase 8 CLOSED (20/20 + sweep.ts + verify-ops.ts) |
+| **Status** | 🟢 Phase 6 CLOSED, 🟢 Phase 7 CLOSED, 🟢 Phase 8 CLOSED |
+| **Latest Commit** | `c2b37861b` (current branch HEAD — working tree clean) |
 
 ## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
 
