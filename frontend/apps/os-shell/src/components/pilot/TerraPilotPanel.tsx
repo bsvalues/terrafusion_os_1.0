@@ -6,14 +6,9 @@
 
 import { useState, useCallback } from 'react';
 import { useAuthContext, toOsActor } from '@/auth/useAuthContext';
-import { buildPilotContext, buildExplainRequest } from '@/services/pilotBridge';
-import type { PilotExplainResponse } from '@/services/pilotBridge';
-import {
-  emitToolFailed,
-  emitToolInvoked,
-  emitToolSucceeded,
-  generateCorrelationId,
-} from '@/services/terraTrace';
+import { buildPilotContext } from '@/services/pilotBridge';
+import { explain } from '@/services/pilotApi';
+import type { ExplainResponse } from '@/services/pilotApi';
 
 interface TerraPilotPanelProps {
   parcelId: string | null;
@@ -26,71 +21,30 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
   const pilotContext = buildPilotContext(actor, parcelId, parcelData);
 
   const [query, setQuery] = useState('');
-  const [response, setResponse] = useState<PilotExplainResponse | null>(null);
+  const [response, setResponse] = useState<ExplainResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleExplain = useCallback(async () => {
     if (!pilotContext || !query.trim() || !actor) return;
 
-    const correlationId = generateCorrelationId();
-
-    emitToolInvoked({
-      suite: 'pilot',
-      correlationId,
-      countyId: pilotContext.countyId,
-      actor: {
-        userId: pilotContext.actorId,
-        roles: actor.roles,
-      },
-      parcelId: parcelId ?? undefined,
-      inputSummary: 'muse explain request',
-      risk: 'read_only',
-    });
-
     setIsLoading(true);
     setError(null);
 
     try {
-      const req = buildExplainRequest(query, pilotContext);
-      // In production, this calls the explain API endpoint.
-      // For Phase 9, we emit the trace pair and show the context was assembled correctly.
-      void req; // context assembled; backend wiring in Phase 9 backend integration
-      const mockResponse: PilotExplainResponse = {
-        explanation: `Muse Mode: Context assembled for parcel ${parcelId ?? 'none'} in county ${pilotContext.countyId}. Query: "${query}". Full explain pipeline connects in Phase 9 backend integration.`,
-        sources: [{ type: 'parcel_data', reference: parcelId ?? 'no-parcel' }],
-        confidence: 0.0, // Placeholder until backend wired
-        traceId: correlationId,
-      };
-      setResponse(mockResponse);
-
-      emitToolSucceeded({
-        suite: 'pilot',
-        correlationId,
-        countyId: pilotContext.countyId,
-        actor: {
-          userId: pilotContext.actorId,
-          roles: actor.roles,
-        },
+      const result = await explain({
+        query,
         parcelId: parcelId ?? undefined,
-        outputSummary: 'muse explain response generated locally',
+        countyId: pilotContext.countyId,
+        actorId: pilotContext.actorId,
+        source: 'TerraPilotPanel',
+        parcelSummary: pilotContext.parcelSummary,
+        statutes: pilotContext.statutes,
       });
+      setResponse(result);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Explain failed';
       setError(message);
-
-      emitToolFailed({
-        suite: 'pilot',
-        correlationId,
-        countyId: pilotContext.countyId,
-        actor: {
-          userId: pilotContext.actorId,
-          roles: actor.roles,
-        },
-        parcelId: parcelId ?? undefined,
-        inputSummary: 'muse explain request',
-        outputSummary: message,
-      });
     } finally {
       setIsLoading(false);
     }
