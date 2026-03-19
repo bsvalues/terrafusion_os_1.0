@@ -1,3 +1,4 @@
+// GENERATED - DO NOT EDIT
 const { randomUUID } = require('crypto');
 const { traceService } = require('../trace/TraceService.js');
 
