@@ -62,7 +62,7 @@ CP-18 may open only if all are true:
 
 ## CP-18 Deliverables
 
-Required artifact bundle (artifacts/cp18/):
+Required artifact bundle (docs/superpowers/artifacts/cp18/):
 
 - security-closure-packet.md
 - compliance-evidence-map.md
@@ -98,7 +98,7 @@ pnpm run type-check
 node --test os-platform/core/tests/phase83-tools.test.mjs
 ```
 
-Targeted security/compliance commands (declare concrete commands in artifacts/cp18/proof-commands.md):
+Targeted security/compliance commands (declare concrete commands in docs/superpowers/artifacts/cp18/proof-commands.md):
 
 ```bash
 <cp18-security-closure-check-command>

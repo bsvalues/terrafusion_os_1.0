@@ -62,7 +62,7 @@ CP-19 may open only if all are true:
 
 ## CP-19 Deliverables
 
-Required artifact bundle (artifacts/cp19/):
+Required artifact bundle (docs/superpowers/artifacts/cp19/):
 
 - go-live-checklist.md
 - rollback-plan.md
@@ -103,7 +103,7 @@ pnpm run type-check
 node --test os-platform/core/tests/phase83-tools.test.mjs
 ```
 
-Targeted go-live decision commands (declare concrete commands in artifacts/cp19/proof-commands.md):
+Targeted go-live decision commands (declare concrete commands in docs/superpowers/artifacts/cp19/proof-commands.md):
 
 ```bash
 <cp19-gate-seal-integrity-check-command>
