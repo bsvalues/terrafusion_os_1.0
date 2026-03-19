@@ -2975,3 +2975,88 @@ Report:
 - [x] Parallel subagent model defined
 - [x] Single-writer rule preserved
 - [x] Execution not authorized by this text
+
+---
+
+# Slice 35: Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter
+
+> **Purpose:** Close the 5 known-debt items (WF-1, WF-2, WF-3, IV-1, IV-2) as bounded
+> mechanical lanes, then charter Phase B (TerraCanon IDE) and Phase D (AI Swarm Scale)
+> as post-assessor product initiatives with defined scope, file maps, and proof gates.
+>
+> **Classification:** Lane 1 (debt sweep) is OPEN — founder go/no-go satisfied 2026-03-19.
+> Lanes 2 and 3 (TerraCanon, AI Swarm) require explicit `GATE-35-1` and `GATE-35-2` go/no-go
+> AFTER Lane 1 closes.
+>
+> **Full specification:** `docs/superpowers/plans/2026-03-19-slice35-debt-terracanon-aiswarm.md`
+
+---
+
+## Slice 35 Phase Map
+
+### Lane 1: Debt Sweep (OPEN — immediate)
+
+| Phase | ID | Scope | Gate |
+|-------|----|-------|------|
+| WF-1 + WF-3 | `CP-35-A` | Backfill Slice 22/23 commit hashes + fix `react-dom/test-utils` act() imports | Lane 1 open |
+| WF-2 Console Noise | `CP-35-B` | Remove/promote ~500 `console.*` calls in production code (724 → ≤ 200) | `CP-35-A` closed |
+| IV-1 + IV-2 Income | `CP-35-C` | Wire `saveIncomeValuationRecord` persistence + archive `IncomeForgeModule.tsx` orphan | `CP-35-B` closed |
+
+### Lane 2: TerraCanon IDE (gated on GATE-35-1)
+
+| Phase | ID | Scope | Gate |
+|-------|----|-------|------|
+| TerraCanon Recon | `CP-35-D` | 7 parallel read-only subagents → bounded charter artifact | `GATE-35-1` human go |
+| TerraCanon Impl | `CP-35-E` | Monaco + file I/O + TerraPilot explain + TerraTrace audit; code execution sandbox Phase 3 only | Charter accepted |
+
+### Lane 3: AI Swarm Scale (gated on GATE-35-2)
+
+| Phase | ID | Scope | Gate |
+|-------|----|-------|------|
+| Swarm Recon | `CP-35-F` | 5 parallel read-only subagents → bounded charter artifact | `GATE-35-2` human go |
+| Swarm Scale Impl | `CP-35-G` | TerraTrace coverage gaps + coordinator hardening + synthetic scale test | Charter accepted |
+
+---
+
+## Slice 35 Multi-Agent Model (summary)
+
+```text
+Lane 1 — Debt Sweep
+  Phase 35-A: SubAgents HT-A1 + HT-A2 + HT-B1 → @tf-writer (docs + test imports)
+  Phase 35-B: SubAgents CN-A + CN-B + CN-C + CN-D → @tf-writer (console sweep)
+  Phase 35-C: SubAgents IV-A1 + IV-A2 → @tf-writer (persistence + archive)
+
+Lane 2 — TerraCanon IDE
+  Phase 35-D: SubAgents TC-A through TC-G → @tf-charter (charter synthesis)
+  Phase 35-E: @tf-writer per charter file map
+
+Lane 3 — AI Swarm Scale
+  Phase 35-F: SubAgents SW-A through SW-E → @tf-charter (charter synthesis)
+  Phase 35-G: @tf-writer per charter file map
+```
+
+---
+
+## Slice 35 Write Authority
+
+| Agent | Phase | Authorized writes |
+|-------|-------|------------------|
+| `@tf-writer` | 35-A | `progress.md` Slice 22/23 hash fields · `__tests__/**` act() imports |
+| `@tf-writer` | 35-B | Production `.ts`/`.tsx` in `frontend/apps/os-shell/src/` (not `__tests__/`) |
+| `@tf-writer` | 35-C | `IncomeApproach.tsx` · `IncomeValuationPanel.tsx` · `incomeValuationService.ts` · targeted tests · `IncomeForgeModule.tsx` archive move |
+| `@tf-charter` | 35-D | `docs/superpowers/plans/2026-03-19-terracanon-charter.md` |
+| `@tf-charter` | 35-F | `docs/superpowers/plans/2026-03-19-aiswarm-charter.md` |
+| `@tf-writer` | 35-E/G | Per respective charter file maps |
+| All other agents | All | Read-only |
+
+---
+
+## Slice 35 Document Status
+
+- [x] Debt sweep (Lane 1) fully specified — immediate, no additional gate
+- [x] TerraCanon (Lane 2) recon defined — gated on `GATE-35-1`
+- [x] AI Swarm Scale (Lane 3) recon defined — gated on `GATE-35-2`
+- [x] Multi-agent parallel model defined for all three lanes
+- [x] Single-writer isolation preserved per phase
+- [x] Security constraints explicit (sandbox, PII, county isolation)
+- [x] Full specification in `docs/superpowers/plans/2026-03-19-slice35-debt-terracanon-aiswarm.md`
