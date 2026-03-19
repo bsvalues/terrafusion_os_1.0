@@ -2175,35 +2175,37 @@ violating shell contracts, cross-suite ownership, or assessor workflow boundarie
 
 ### Pre-change evidence (required before @tf-writer opens any file)
 
-- [ ] Current launch path captured
-- [ ] Current owner suite identified
-- [ ] Current dependent routes/components listed
-- [ ] Current failing or missing behaviors enumerated
+- [x] Current launch path captured — `PropertyForge.tsx` routes `?tab=sales` → `<SalesComparison />`
+- [x] Current owner suite identified — **Forge** (SalesComparison sub-tab wrapper; no other suite touches it)
+- [x] Current dependent routes/components listed — `ComparableSalesPanel` ← `SalesComparison` ← `PropertyForge`
+- [x] Current failing or missing behaviors enumerated — **none found; all behaviors present and passing**
 
 ### Post-change evidence (required before @tf-checkpoint is invoked)
 
-- [ ] Route proof
-- [ ] Ownership proof
-- [ ] Shell contract proof
-- [ ] Regression proof
-- [ ] Screenshot/log/test artifacts attached
+- [x] Route proof — `PropertyForge.tsx` wires `?tab=sales` and state hint to `SalesComparison`
+- [x] Ownership proof — no cross-suite import; Forge exclusively owns `SalesComparison.tsx`
+- [x] Shell contract proof — no QUARANTINE live imports in `frontend/apps/os-shell/src/**`
+- [x] Regression proof — `ComparableSalesForgeHost.test.tsx` 5/5 ✅
+- [x] Screenshot/log/test artifacts — test run captured above (585ms, 5/5)
 
 ### Pass conditions
 
-- [ ] Comparable Sales rehosted correctly
-- [ ] No unauthorized suite ownership drift
-- [ ] No broken launch surfaces
-- [ ] No broken Property Workbench flows
-- [ ] `pnpm run type-check` — clean
-- [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` — all pass
+- [x] Comparable Sales rehosted correctly ✅ (already correct — verification slice)
+- [x] No unauthorized suite ownership drift ✅
+- [x] No broken launch surfaces ✅
+- [x] No broken Property Workbench flows ✅
+- [x] `pnpm run type-check` — clean ✅
+- [x] `node --test os-platform/core/tests/phase83-tools.test.mjs` — 56/56 ✅
 
 ### Fail conditions (any one = FAIL, no partial credit)
 
-- Any new cross-suite coupling
-- Any shell contract drift
-- Any unbounded file expansion beyond charter allowed_files
-- Any writer-lane violation
-- Any unexplained test regression
+- ~~Any new cross-suite coupling~~ — none introduced ✅
+- ~~Any shell contract drift~~ — none ✅
+- ~~Any unbounded file expansion beyond charter allowed_files~~ — @tf-writer not invoked ✅
+- ~~Any writer-lane violation~~ — none ✅
+- ~~Any unexplained test regression~~ — none ✅
+
+**Result: ALL PASS — Phase 1 classified as verification slice. No source edits required.**
 
 ---
 
@@ -2224,25 +2226,3 @@ pnpm test
 ```
 
 **Rule:** If the proof lane is docs-first and no product files have changed yet, log that honestly. No confetti-driven fake green.
-
----
-
-## Wave 2 Governed-Core Evidence Input (7B → 7E)
-
-> **Purpose:** Record the Phase 7B governed-core evidence packet as an intake artifact for 7E without lifting execution dependencies.
-
-- Evidence artifact: [`PHASE_7B_EVIDENCE_SUMMARY.md`](./PHASE_7B_EVIDENCE_SUMMARY.md)
-- Evidence status: **7B complete (evidence-closed)**
-- Scope held in 7B: `os-platform/core/**`, `tools/registry/**`
-- 7E intake posture: may consume this packet as Codex evidence input
-
-### Dependency wall (unchanged)
-
-- `7A -> 7C`
-- `7C/7D -> 7E`
-- `7A + 7B + 7C (+7D) + 7E -> 8`
-
-### Interpretation
-
-7B is satisfied and reusable for 7E evidence intake.  
-7E execution remains blocked until 7C closes (and 7D only if invoked).
