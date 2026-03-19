@@ -314,15 +314,15 @@ async function apiClient<T>(
     // Narrow error type — fetch AbortError is a DOMException, not an Error subclass
     const isAbort = error instanceof DOMException && error.name === 'AbortError';
     const message = error instanceof Error ? error.message : String(error);
-    const name = error instanceof Error ? (error.name ?? 'UNKNOWN_ERROR') : 'UNKNOWN_ERROR';
+    const name = error instanceof Error ? error.name : 'UNKNOWN_ERROR';
 
     // Retry logic for network errors and 5xx status codes
     const isRetryable =
-      isAbort ||
-      message.includes('500') ||
-      message.includes('502') ||
-      message.includes('503') ||
-      message.includes('504');
+      !isAbort &&
+      (message.includes('500') ||
+        message.includes('502') ||
+        message.includes('503') ||
+        message.includes('504'));
 
     if (isRetryable && retryCount < MAX_RETRIES) {
       const delay = RETRY_DELAYS[retryCount];
