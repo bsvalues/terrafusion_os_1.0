@@ -308,16 +308,21 @@ async function apiClient<T>(
         cached: false,
       },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = performance.now() - startTime;
+
+    // Narrow error type — fetch AbortError is a DOMException, not an Error subclass
+    const isAbort = error instanceof DOMException && error.name === 'AbortError';
+    const message = error instanceof Error ? error.message : String(error);
+    const name = error instanceof Error ? (error.name ?? 'UNKNOWN_ERROR') : 'UNKNOWN_ERROR';
 
     // Retry logic for network errors and 5xx status codes
     const isRetryable =
-      error.name === 'AbortError' ||
-      error.message.includes('500') ||
-      error.message.includes('502') ||
-      error.message.includes('503') ||
-      error.message.includes('504');
+      isAbort ||
+      message.includes('500') ||
+      message.includes('502') ||
+      message.includes('503') ||
+      message.includes('504');
 
     if (isRetryable && retryCount < MAX_RETRIES) {
       const delay = RETRY_DELAYS[retryCount];
@@ -335,8 +340,8 @@ async function apiClient<T>(
       success: false,
       data: null as unknown as T,
       error: {
-        code: error.name || 'UNKNOWN_ERROR',
-        message: error.message || 'An unexpected error occurred',
+        code: name,
+        message: message,
         details: { endpoint, retryCount },
         retryable: isRetryable,
       },
