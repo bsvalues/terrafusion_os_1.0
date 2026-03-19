@@ -286,6 +286,9 @@ builder.Services.AddHostedService<ModuleLoaderService>(provider =>
 // Agent telemetry buffer (read-only feed)
 builder.Services.AddSingleton<IAgentTelemetryService>(_ => new AgentTelemetryService(capacity: 1000));
 
+// Trace ingestion ring-buffer service (Phase 35-G-1)
+builder.Services.AddSingleton<ITraceIngestionService, TraceIngestionService>();
+
 // Register module services
 builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, TerraFusion.Core.Services.ModuleService>();
 
