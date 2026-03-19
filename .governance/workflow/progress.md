@@ -15,11 +15,35 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **CP-W3-2: Phase 2 Forge F2 — Income Valuation Rehost Proof** |
-| **Phase** | Phase E complete — checkpoint recorded |
-| **Task** | Hard stop in force; awaiting founder go for Phase 3 |
-| **Status** | 🟢 CHECKPOINT |
-| **Latest Commit** | `a05b6e888` — docs(proof): record CP-W3-1 Comparable Sales Forge-host attestation |
+| **Slice** | **Phase 3 — Wave 0: Debt Inventory and Governance Pass** |
+| **Phase** | Phase 3 CLOSED — CP-W0-1 ✅ |
+| **Task** | Wave 0 debt ledger written. Awaiting founder go for Phase 4. |
+| **Status** | ✅ CP-W0-1 CLOSED |
+| **Latest Commit** | `de0243388` → pending CP-W0-1 commit |
+
+## Phase 3 — Founder Go — 2026-03-18
+
+Status: **APPROVED TO OPEN PHASE 3 ONLY**
+Authorization: Founder direct instruction ("go") referencing CP-W3-2 closed state.
+Authorized phase: Phase 3 — Wave 0: Debt Inventory and Governance Pass
+Write scope: `.governance/workflow/debt-ledger.md` (new file) — no source edits permitted.
+
+## CP-W0-1 — Wave 0 Debt Inventory — 2026-03-18 ✅ CLOSED
+
+**Decision: CLOSED / PASS**
+
+Proof wall:
+- `@ts-ignore` (production): **0** — gate passing, baseline intact. 4 test-file string literals confirmed non-suppressions.
+- `console.*` (production): ~766 total (log=461, error=278, warn=95, debug/info=16). Logged, not blocked.
+- `any` (production): ~470 total (`:any` param=241, `as any` cast=144, `<any>` generic=93, `any[]`=50). Logged, not blocked.
+- `as any` casts flagged as Phase 5 priority (highest signal).
+- Ledger written: `.governance/workflow/debt-ledger.md`
+- No source edits in phase.
+- type-check: CLEAN | phase83: 56/56
+
+Phase 3 complete. **Phase 4 requires founder explicit go.**
+
+---
 
 ## GATE-0 — Human Go/No-Go Decision — 2026-03-18
 
@@ -71,40 +95,44 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 
 **Date**: 2026-03-18
 **Branch**: post-r3/w5f-registry-edge-cleanup
-**Commit**: a05b6e888 (no source changes — verification slice)
+**Commit**: working tree (pending commit)
 
-### Verdict: PASS — GREEN
+### Verdict: PASS — GREEN (Path B, bounded implementation)
 
 **What closed:**
 - Income Valuation is correctly Forge-owned and Forge-hosted
-- No cross-suite coupling in runtime code
-- Proof wall passed on all gates without any source edits
+- Backend CostForge endpoints remained unchanged; frontend consumed existing contracts
+- Valuation persistence/retrieval is now explicitly proven in the Income F2 lane
+- No cross-suite coupling or route/API rename was introduced
 
-**Pre-change evidence:**
+**Pre-change synthesis (parallel read-only lanes):**
 - ✅ Forge wrapper confirmed: `pages/workbench/tabs/forge/IncomeApproach.tsx`
 - ✅ `PropertyForge.tsx` imports `<IncomeApproach />` as the `income` sub-tab
-- ✅ `IncomeValuationPanel` (555 lines) owned exclusively by Forge via `IncomeApproach` sub-tab wrapper
+- ✅ `IncomeValuationPanel` owned exclusively by Forge via `IncomeApproach` sub-tab wrapper
 - ✅ `IncomeForgeModule.tsx` exists at `pages/suites/modules/` but has **zero live imports** — orphaned, not routed, not a runtime duplicate
-- ✅ All `IncomeForgeModule` references in `IncomeValuationPanel.tsx` and `incomeValuationService.ts` are **provenance comments only**
-- ✅ Backend routes confirmed real: `CostForgeController.cs` exposes `income-approach/calculate-noi`, `income-approach/calculate-valuation`, cap-rates, market-data, expense-ratios, location-premiums
+- ✅ Backend routes confirmed real: `CostForgeController.cs` exposes `income-approach/calculate-noi`, `income-approach/calculate-valuation`, `POST /valuations`, `GET /valuations/{id}`, and `GET /parcels/{parcelId}/valuations`
+- ✅ Contract/proof lanes converged on **Path B** (frontend proof gap only, no backend blocker)
 
-**Test evidence:**
-- ✅ `IncomeApproach.test.tsx` — **3/3 PASS** (177ms)
-  - `records history, emits value, and renders success output`
-  - `surfaces backend failures with correlationId`
-  - `surfaces network failures with client correlationId`
+**Post-change evidence:**
+- ✅ `IncomeApproach.tsx` passes `taxYear` into `IncomeValuationPanel`
+- ✅ `IncomeValuationPanel.tsx` persists backend valuation outputs and verifies retrieval (`saveIncomeValuationRecord` → `fetchValuationRecord`)
+- ✅ `incomeValuationService.ts` now exposes bounded adapters for save/get/list valuation record paths
+- ✅ `incomeValuationService.test.ts` now proves calculate + save + get + list request/response contracts
+- ✅ `IncomeValuationPanel.test.tsx` proves persistence/retrieval path is invoked on successful backend valuation
 
-**Mandatory gate evidence:**
-- ✅ `pnpm run type-check` — clean (0 errors)
+**Closure wall evidence:**
+- ✅ `pnpm -C frontend test -- apps/os-shell/src/__tests__/workbench/PropertyForge.income.test.tsx apps/os-shell/src/__tests__/workbench/IncomeApproach.test.tsx apps/os-shell/src/__tests__/workbench/IncomeValuationPanel.test.tsx apps/os-shell/src/__tests__/workbench/incomeValuationService.test.ts` — 4 files, 11 tests passed
+- ✅ `pnpm -C frontend type-check` — clean
+- ✅ `pnpm run type-check` — clean
 - ✅ `node --test os-platform/core/tests/phase83-tools.test.mjs` — 56/56 pass
 
-**Ownership evidence:**
+**Ownership evidence (unchanged):**
 - ✅ No `import.*IncomeForgeModule` anywhere in `frontend/apps/os-shell/src/**`
 - ✅ No live QUARANTINE imports
 - ✅ No cross-suite write coupling introduced
-- ✅ `@tf-writer` not invoked (not needed)
+- ✅ No backend/controller edits in Phase 2
 
-**Classification: Verification slice — no product files changed**
+**Classification: Implemented bounded proof slice**
 
 **Deferred items:** `IncomeForgeModule.tsx` is an orphaned file with no live imports. It is **not** a Phase 2 concern — it belongs in the Wave 3A suite home cleanup phase (Phase 4 per Slice 26).
 
