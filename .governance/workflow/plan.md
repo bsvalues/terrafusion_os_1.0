@@ -2113,4 +2113,114 @@ explicit human go/no-go:
 - [x] Parallel execution rules carried forward from Slice 25.5
 - [x] Risk register complete
 - [x] Hard-stop dependency preserved throughout
-- [ ] Execution: pending GATE-0 human go/no-go
+- [x] GATE-0 human go/no-go decision recorded in `progress.md` (2026-03-18)
+- [x] Phase 1 Charter open (see below)
+
+---
+
+# Phase 1 Execution — Forge F1: Comparable Sales Rehost Proof
+
+> **Status:** OPEN — proof wall must be built before any source edits
+> **Charter authorized by:** GATE-0 decision, 2026-03-18
+> **Checkpoint on close:** CP-W3-1
+
+---
+
+## Phase 1 Charter
+
+**Objective:**
+Prove Comparable Sales can be rehosted into its correct Forge-owned lane without
+violating shell contracts, cross-suite ownership, or assessor workflow boundaries.
+
+**Scope:**
+- Comparable Sales rehost proof only
+- Minimal files required for proof
+- No opportunistic cleanup
+- No unrelated UI modernization
+- No auth redesign
+- No persistence redesign outside the proof lane
+
+**Allowed agents:**
+- `@tf-phase-orchestrator`
+- `@tf-contract-truth`
+- `@tf-proof-audit`
+- `@tf-writer`
+- `@tf-checkpoint`
+
+**Write authority:**
+- `@tf-writer`: sole writer for source/test changes in this phase
+- `@tf-checkpoint`: governance files only
+- all others: read-only
+
+**Required proof before edits:**
+- current route ownership map
+- current suite ownership map
+- current shell launch behavior for Comparable Sales
+- current regression surface list
+
+**Required proof after edits:**
+- Comparable Sales launches from the correct Forge-owned surface
+- no cross-suite writes introduced
+- no shell contract regression
+- no Property Workbench regression
+- tests and proof artifacts attached
+
+**Exit checkpoint:** CP-W3-1 only. Hard stop reinstated immediately on closure.
+
+---
+
+## CP-W3-1 Proof Wall
+
+> **This wall must be GREEN before Phase 1 is closed. tf-proof-audit owns this checklist.**
+
+### Pre-change evidence (required before @tf-writer opens any file)
+
+- [ ] Current launch path captured
+- [ ] Current owner suite identified
+- [ ] Current dependent routes/components listed
+- [ ] Current failing or missing behaviors enumerated
+
+### Post-change evidence (required before @tf-checkpoint is invoked)
+
+- [ ] Route proof
+- [ ] Ownership proof
+- [ ] Shell contract proof
+- [ ] Regression proof
+- [ ] Screenshot/log/test artifacts attached
+
+### Pass conditions
+
+- [ ] Comparable Sales rehosted correctly
+- [ ] No unauthorized suite ownership drift
+- [ ] No broken launch surfaces
+- [ ] No broken Property Workbench flows
+- [ ] `pnpm run type-check` — clean
+- [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` — all pass
+
+### Fail conditions (any one = FAIL, no partial credit)
+
+- Any new cross-suite coupling
+- Any shell contract drift
+- Any unbounded file expansion beyond charter allowed_files
+- Any writer-lane violation
+- Any unexplained test regression
+
+---
+
+## Recon Commands (run before @tf-writer opens)
+
+```bash
+# Ownership recon
+git status --short
+rg "Comparable Sales|ComparableSales|comparable sales" .
+rg "property-workbench|Workbench" .
+rg "Forge|TerraForge" .
+rg "route|router|launch|surface" src .governance .github
+
+# Then, after proof wall is green:
+dotnet build
+pnpm run type-check
+pnpm test
+```
+
+**Rule:** If the proof lane is docs-first and no product files have changed yet, log that honestly. No confetti-driven fake green.
