@@ -85,7 +85,9 @@ const MCP_TOOLS = {
 
 class MCPInitializer {
     constructor() {
-        this.configPath = path.join(__dirname, 'config/mcp');
+        this.repoRoot = process.cwd();
+        this.configPath = path.join(this.repoRoot, 'config/mcp');
+        this.swarmDataPath = path.join(this.repoRoot, 'data/ai-swarm');
         this.totalTools = Object.values(MCP_TOOLS).reduce((sum, category) => sum + category.count, 0);
         this.initialized = false;
     }
@@ -239,7 +241,7 @@ class MCPInitializer {
             }
         };
         
-        const swarmPath = path.join(__dirname, 'data/ai-swarm/claude-flow-integration.json');
+        const swarmPath = path.join(this.swarmDataPath, 'claude-flow-integration.json');
         fs.writeFileSync(swarmPath, JSON.stringify(swarmIntegration, null, 2));
         
         console.log('  ✅ AI Swarm <-> Claude-Flow bridge established');
@@ -377,7 +379,7 @@ async function main() {
             await initializer.testMCP();
             break;
         default:
-            console.log('Usage: node mcp-init-validation.js [init|validate|test-mcp]');
+            console.log('Usage: node scripts/mcp-init-validation.cjs [init|validate|test-mcp]');
             process.exit(1);
     }
 }

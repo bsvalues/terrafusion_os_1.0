@@ -203,3 +203,40 @@ Current CP-19 blocker set:
 
 - Upstream gates G3-G9 still pending seal completion
 - Local Docker/WSL environment unavailable for `tf.ps1 status`
+
+## Execution Snapshot (2026-03-19 Session 4)
+
+Latest CP-18 command-wall rerun:
+
+| Command | Exit Code | Status | Notes |
+|---|---|---|---|
+| `pnpm run security:scan` | 0 | pass | optional scanner config absent (skip notice) |
+| `pnpm run validate:compliance` | 0 | soft-blocked | logs `MCP system not initialized. Run: npm run mcp:init` |
+| `pnpm run ci:dependency-scope-quarantine:gate` | 0 | pass | current 15 vs baseline 141 (net -126) |
+
+Latest CP-19 environment check rerun:
+
+| Command | Exit Code | Status | Notes |
+|---|---|---|---|
+| `pwsh -File ops/dev/tf.ps1 status` | 0 | blocked | WSL/Docker connectivity error `Wsl/Service/0x8007274c` |
+
+Interpretation:
+
+- CP-18 remains blocked until MCP initialization is completed and `validate:compliance` runs without MCP warnings.
+- CP-19 remains blocked on upstream gates and Docker/WSL environment readiness.
+
+## Execution Snapshot (2026-03-19 Session 5)
+
+MCP/bootstrap rerun after path-consistency fix in `scripts/mcp-init-validation.cjs`:
+
+| Command | Exit Code | Status | Notes |
+|---|---|---|---|
+| `pnpm run mcp:init` | 0 | pass | 87 MCP tools initialized; manifest + Claude-Flow + AI swarm integration validated |
+| `pnpm run mcp:validate` | 0 | pass | MCP system operational across all 9 tool categories |
+| `pnpm run validate:compliance` | 0 | pass | compliance audit chain completed; only optional scanner skip remains |
+
+Impact on gate status:
+
+- MCP initialization blocker is cleared for CP-18.
+- CP-18 remains blocked on upstream gate seals and swarm runtime evidence.
+- CP-19 remains blocked on upstream gates and Docker/WSL environment readiness.

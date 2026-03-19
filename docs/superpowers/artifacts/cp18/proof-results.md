@@ -9,12 +9,12 @@ Status: blocked
 
 | Command | Result (pass/fail) | Evidence Link | Notes |
 |---|---|---|---|
-| pnpm run security:scan | pass | terminal run 2026-03-19 | Optional scanner config missing, command exits 0 with skip notice |
-| pnpm run validate:compliance | fail | terminal run 2026-03-19 | mcp:validate fails: missing module `mcp-init-validation.cjs` |
-| pnpm run ci:dependency-scope-quarantine:gate | pass | terminal run 2026-03-19 | Quarantine gate succeeded (14 current vs 141 baseline) |
+| pnpm run security:scan | pass | terminal rerun 2026-03-19 | Optional scanner config missing, command exits 0 with skip notice |
+| pnpm run validate:compliance | pass | terminal rerun 2026-03-19 | `mcp:init` and `mcp:validate` now green; compliance audit chain complete |
+| pnpm run ci:dependency-scope-quarantine:gate | pass | terminal rerun 2026-03-19 | Quarantine gate succeeded (15 current vs 141 baseline; net -126) |
 
 ## Decision Summary
 
 - Gate outcome: blocked
-- Blocking issues: missing `mcp-init-validation.cjs` blocks compliance validation
-- Next action: restore or repoint `mcp:validate` entrypoint, rerun full CP-18 command wall
+- Blocking issues: upstream phases CP-14 through CP-17 remain open; CP-18 swarm stability evidence still pending
+- Next action: continue CP-17/CP-18 closure sequence and produce Phase 8 swarm load/queue/break-glass runtime evidence
