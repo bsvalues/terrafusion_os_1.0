@@ -15,11 +15,25 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 27 — Phase 6: Debt Triage Pass — error narrowing, CostForge types, console noise** |
-| **Phase** | Phase 6 — **CP-W6-1 CLOSED** ✅ |
-| **Task** | catch(error:unknown) narrowing (3 files); APIResponse<any>→typed (useCostForgeAPI, 9 occurrences); abort-retry inversion fix; console noise removed (3 files); 8 contract tests added |
-| **Status** | ✅ COMPLETE — hard stop reinstated |
-| **Latest Commit** | `be73736a2` |
+| **Slice** | **Slice 28 — Phase 7: Sovereign Spine — VERIFIED (pre-existing, sealed at a7fa3cde7)** |
+| **Phase** | Phase 7 — **CP-W7-1 CLOSED** ✅ (VERIFIED, not newly built) |
+| **Task** | ITerraOperation, TruthGate, C# mirror, source tagging — all pre-existing; 18/18 vitest contract tests PASS |
+| **Status** | ✅ VERIFIED — hard stop reinstated |
+| **Latest Commit** | `ee2e2e369` (no new commits — Phase 7 pre-existing) |
+
+## Phase 7 — CP-W7-1 CLOSED — 2026-03-18 (VERIFIED)
+
+All sovereign spine artifacts confirmed present and green:
+
+| Artifact | File | Status |
+|----------|------|--------|
+| `ITerraOperation<TPayload>` | `types/terraOperation.ts` | ✅ |
+| `OperationSource` enum + TruthGate | `services/truthGate.ts` | ✅ |
+| Source tagging in osActions | `services/osActions.ts` | ✅ |
+| C# mirror | `backend/.../ITerraOperation.cs` | ✅ |
+| 18 contract tests | `phase7-sovereignSpine.contract.test.ts` | ✅ 18/18 |
+
+**Phase 8 (TerraTrace Fidelity Sweep) requires new explicit founder go.**
 
 ## Phase 6 — CP-W6-1 CLOSED — 2026-03-18
 
