@@ -2682,3 +2682,296 @@ Report:
 | All other agents | Read-only. No file writes. |
 
 **Rule:** `@tf-writer` runs alone. If a gap is found, only one Muse lane may be open at a time.
+
+---
+
+# Slice 34: Post-CP-W9 Codex Execution Plan
+
+> **Purpose:** Turn the next realistic Codex work after `CP-W9-1` into bounded,
+> evidence-first phases that separate governance truth, dirty-worktree
+> classification, and any later product/backend repair.
+>
+> **Classification:** Planning-only. Does not authorize execution. Each phase
+> below still requires an explicit human go/no-go before `@tf-writer` opens.
+>
+> **Strategy:** Reconcile workflow truth first, classify the current dirty tree
+> second, then open exactly one writer lane at a time. Parallelism is read-only
+> until a bounded lane is proven.
+
+---
+
+* **Project:** Post-CP-W9 Codex Closure + Triage
+* **Date:** 2026-03-19
+* **Branch:** post-r3/w5f-registry-edge-cleanup
+* **Prereq:** `CP-W9-1` closed
+
+---
+
+## Definition of Done
+
+- [x] Next Codex phases are named and ordered
+- [x] Workflow/docs drift, Dais drift, backend Pilot drift, and local artifacts are separated into distinct lanes
+- [x] Each future lane has an explicit allowed-file set
+- [x] Each future lane has an explicit proof wall
+- [x] Read-only parallel subagent work is defined before any writer lane opens
+- [x] One-writer-per-lane isolation is preserved
+- [x] No text here authorizes execution by itself
+
+---
+
+## Known Baseline (Repo Truth, 2026-03-19)
+
+- Current `HEAD` is `862e8de61`
+- Earlier Dais + backend Pilot dirty lanes are no longer dirty in working tree; they were absorbed in `862e8de61`
+- Active docs/workflow paths needing explicit lane classification are:
+  - `.governance/workflow/plan.md`
+  - `.governance/workflow/progress.md` (for reconciliation closure notes)
+  - `docs/superpowers/plans/2026-03-18-phase5-workbench-completeness.md` (untracked)
+  - `docs/superpowers/plans/2026-03-18-phase9b-10-11-explain-hitl-sovereign.md` (untracked)
+- Active repository-hygiene drift requiring explicit classification:
+  - `.gitignore`
+- Local-only artifacts exist and must never be batched with product-code closure:
+  - `.claude/agents/`
+  - `.claude/settings.json`
+  - `.claude/settings.local.json`
+  - `backend/tests/**/TestResults/`
+- AGENTS default scope remains core-governance-first; any Dais or backend writer phase requires explicit authorization beyond this planning slice
+
+---
+
+## Hard Rules For The Next Lanes
+
+1. Workflow truth is closed before product truth. No suite or backend writer lane opens while commit/hash/queue drift remains in workflow docs.
+2. Dirty-tree classification is a separate phase. Do not silently fold docs, Dais, backend, and local artifacts into one cleanup commit.
+3. Dais and backend Pilot remain separate writer lanes. They do not share a closure wall.
+4. Local artifacts are hygiene-only. They never ride with Dais or backend product work.
+5. Wave 0 mechanical cleanup stays blocked until a human marks a bucket "mechanical" after triage.
+
+---
+
+## Phase Map
+
+### GATE-P0: Human Go/No-Go After `CP-W9-1`
+
+| Field | Value |
+|-------|-------|
+| **Type** | Human decision gate |
+| **Trigger** | Explicit `go` naming the next bounded phase below |
+| **If go** | Open exactly one phase |
+| **If no-go** | Stay at `CP-W9-1`; docs-only evidence refresh is allowed |
+| **Checkpoint** | `CP-W9-1` (current closed baseline) |
+
+This gate is phase-specific. Saying `go` for Phase A does not automatically open
+Phase B or later phases.
+
+---
+
+### Phase A: Workflow Ledger Reconciliation
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Bring workflow truth back in line with repo truth after `CP-W9-1` closure |
+| **Type** | Docs/governance only |
+| **Entry gate** | `GATE-P0` explicit go for Phase A |
+| **Allowed files** | `.governance/workflow/progress.md` · `.governance/workflow/plan.md` |
+| **Forbidden files** | Any frontend/backend product file |
+| **Proof commands** | `git log --oneline -5` · `git status --short` · `rg -n "^## Current Status|^## Next Steps|^## Known Debt / Follow-ups" .governance/workflow/progress.md` |
+| **Closure artifact** | Updated `progress.md` + `plan.md` truth with current `HEAD` and current next-lane posture |
+| **Checkpoint** | `CP-W9-A` |
+
+**Success criteria:**
+- top-level commit/hash truth matches `HEAD`
+- active next-step posture matches repo reality
+- no completed item is still written as open
+- no new product phase is implied by docs wording
+
+---
+
+### Phase B: Dirty Worktree Triage
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Classify every current dirty path into one lawful future lane |
+| **Type** | Docs/evidence only |
+| **Entry gate** | Phase A closed |
+| **Allowed files** | `.governance/workflow/dirty-worktree-triage.md` (new) · optional bounded `progress.md` note |
+| **Forbidden files** | Product source edits |
+| **Proof commands** | `git status --short` · `rg -n "WF-|DAIS-|PILOT-BE-|LOCAL-" .governance/workflow/dirty-worktree-triage.md` |
+| **Closure artifact** | `dirty-worktree-triage.md` with one owner lane per dirty path |
+| **Checkpoint** | `CP-TRIAGE-1` |
+
+**Required lane buckets:**
+- `WF-*` workflow/docs drift
+- `GIT-*` repository-hygiene/config drift
+- `DAIS-*` Dais frontend drift
+- `PILOT-BE-*` backend Pilot drift
+- `LOCAL-*` local artifacts / generated or machine-local residue
+
+**Minimum docs split inside `WF-*`:**
+- `WF-A` operator-governance docs
+- `WF-B` Atlas/workbench closure note
+- `WF-C` standalone workbench execution-plan doc
+
+---
+
+### Phase C: Dais Suite Reconciliation
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Close the Dais suite-home stats seam drift as one bounded frontend lane |
+| **Type** | Product/frontend |
+| **Entry gate** | Phase B closed + explicit authorization for Dais writer scope |
+| **Allowed files** | `frontend/apps/os-shell/src/pages/suites/DaisSuiteHome.tsx` · `frontend/apps/os-shell/src/pages/suites/useDaisSuiteStats.ts` · `frontend/apps/os-shell/src/pages/suites/daisOperationalStats.ts` · `frontend/apps/os-shell/src/components/dais/CertRollPanel.tsx` · `frontend/apps/os-shell/src/components/dais/ManagementDashboardPanel.tsx` · `frontend/apps/os-shell/src/components/dais/NoticeBatchQueuePanel.tsx` · `frontend/apps/os-shell/src/__tests__/suites/daisQueueRouting.contract.test.tsx` · `frontend/apps/os-shell/src/__tests__/suites/daisNoticeOperationsRouting.contract.test.tsx` · `frontend/apps/os-shell/src/__tests__/suites/daisCertOperationsRouting.contract.test.tsx` · `frontend/apps/os-shell/src/__tests__/suites/daisManagementDashboardRouting.contract.test.tsx` |
+| **Forbidden files** | Backend files · unrelated suites · workflow docs except checkpoint closure |
+| **Proof commands** | `pnpm -C frontend test -- --run apps/os-shell/src/__tests__/suites/daisQueueRouting.contract.test.tsx apps/os-shell/src/__tests__/suites/daisNoticeOperationsRouting.contract.test.tsx apps/os-shell/src/__tests__/suites/daisCertOperationsRouting.contract.test.tsx apps/os-shell/src/__tests__/suites/daisManagementDashboardRouting.contract.test.tsx` · `pnpm -C frontend test -- --run apps/os-shell/src/__tests__/workflows/workflowEntryPoints.contract.test.tsx apps/os-shell/src/__tests__/workflows/operatorJourneys.contract.test.tsx apps/os-shell/src/__tests__/integration/suiteHandoff.contract.test.tsx` · `pnpm -C frontend type-check` · `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Closure artifact** | `CP-DAIS-1` in `progress.md` |
+| **Checkpoint** | `CP-DAIS-1` |
+
+**Success criteria:**
+- `DaisSuiteHome` and the three Dais panels align on the `useDaisSuiteStats` / `DaisOperationalStats` seam
+- the four routing contract tests are deterministic against that seam
+- targeted Dais routing tests pass without async warning noise from incidental stats loading
+- no cross-suite file expansion occurs
+
+---
+
+### Phase D: Backend Pilot Isolation
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Classify and, if authorized, close the bounded backend drift in `CoPilotController.cs` |
+| **Type** | Product/backend |
+| **Entry gate** | Phase B closed + explicit authorization for backend writer scope |
+| **Allowed files** | `backend/src/TerraFusion.Consciousness/CoPilot/CoPilotController.cs` plus directly required backend tests only |
+| **Forbidden files** | Frontend Dais files · workflow docs except checkpoint closure |
+| **Proof commands** | backend-targeted test/build command set to be fixed during Phase B truth pass; minimum wall includes `dotnet build` |
+| **Closure artifact** | `CP-PILOT-BE-1` in `progress.md` |
+| **Checkpoint** | `CP-PILOT-BE-1` |
+
+**Success criteria:**
+- backend Pilot drift is isolated from Muse frontend closure work
+- route/contract truth is documented
+- no frontend coupling is introduced during backend repair
+
+---
+
+### Phase E: Wave 0 Mechanical Debt Sweep (Conditional Only)
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Execute a narrow mechanical debt bucket only after human approval |
+| **Type** | Conditional cleanup |
+| **Entry gate** | Phase B closed + human marks a bucket `mechanical` |
+| **Allowed files** | Bucket-specific only |
+| **Forbidden files** | Any non-approved debt bucket |
+| **Proof commands** | bucket-specific + `pnpm run type-check` + `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Closure artifact** | bucket-specific checkpoint |
+| **Checkpoint** | `CP-W0-M1` or later |
+
+**Rule:** This phase remains blocked until triage and human authorization narrow the bucket.
+
+---
+
+## Multi-Agent Parallel Execution Model
+
+```text
+Phase A  — Workflow Ledger Reconciliation
+             │
+             ├── PARALLEL (6 subagents, 3 lane pairs; read-only)
+             │    ├── Lane HT: hash / branch / commit truth
+             │    ├── Lane QS: queue / next-step / checkpoint truth
+             │    └── Lane KD: known debt / follow-up truth
+             │
+             └── SINGLE WRITER
+                  @tf-writer updates workflow docs only
+
+Phase B  — Dirty Worktree Triage
+             │
+             ├── PARALLEL (8 subagents, 4 lane pairs; read-only)
+             │    ├── Lane WF: workflow/docs drift
+             │    ├── Lane DAIS: Dais frontend drift
+             │    ├── Lane PILOT-BE: backend Pilot drift
+             │    └── Lane LOCAL: local artifacts / generated residue
+             │
+             └── SINGLE WRITER
+                  @tf-writer writes one triage artifact only
+
+Phase C  — Dais Suite Reconciliation
+             │
+             ├── PARALLEL (6 subagents, 3 lane pairs; read-only)
+             │    ├── Lane UI: Dais panels + suite shell
+             │    ├── Lane RT: routing contract tests
+             │    └── Lane CT: component/data contract truth
+             │
+             └── SINGLE WRITER
+                  @tf-writer closes Dais only
+
+Phase D  — Backend Pilot Isolation
+             │
+             ├── PARALLEL (4 subagents, 2 lane pairs; read-only)
+             │    ├── Lane API: controller route / contract truth
+             │    └── Lane PR: proof wall / test surface truth
+             │
+             └── SINGLE WRITER
+                  @tf-writer closes backend only
+```
+
+---
+
+## Subagent Invocation Templates
+
+### `@tf-contract-truth` Template
+
+```text
+Agent: @tf-contract-truth
+Task:  Post-CP-W9 lane <HT|QS|KD|WF|DAIS|PILOT-BE|LOCAL|UI|RT|CT|API|PR> truth pass
+
+Read only the files assigned to your lane.
+
+Report:
+  1. Current source-of-truth files
+  2. Current drift or ambiguity discovered
+  3. Narrowest lawful allowed-file set for a writer
+  4. VERDICT: PASS | BLOCKER:<description> | GAP:<description>
+```
+
+### `@tf-proof-audit` Template
+
+```text
+Agent: @tf-proof-audit
+Task:  Post-CP-W9 lane <HT|QS|KD|WF|DAIS|PILOT-BE|LOCAL|UI|RT|CT|API|PR> proof wall design
+
+Read only the files assigned to your lane and any directly related tests.
+
+Report:
+  1. Current proof surface
+  2. Missing proof, if any
+  3. RED criteria
+  4. GREEN criteria
+  5. Recommended proof commands
+  6. VERDICT: PASS | NEEDS_PROOF | NEEDS_WIRING | NEEDS_BOTH
+```
+
+---
+
+## Initial Phase-B Lane Ledger (Pre-Execution)
+
+| Lane | Current dirty paths | Writer lane? | Notes |
+|------|---------------------|--------------|-------|
+| `WF-A` | `.governance/workflow/plan.md`, `.governance/workflow/progress.md` | active docs lane | phase-A reconciliation + checkpoint notes |
+| `WF-C` | `docs/superpowers/plans/2026-03-18-phase5-workbench-completeness.md`, `docs/superpowers/plans/2026-03-18-phase9b-10-11-explain-hitl-sovereign.md` | separate docs lane | planning docs only; do not silently bundle with frontend execution |
+| `GIT-1` | `.gitignore` | separate hygiene lane | classify independently from governance and product lanes |
+| `DAIS-1` | none (clean in working tree) | no | closed in commit `862e8de61`; reopen only on new drift |
+| `PILOT-BE-1` | none (clean in working tree) | no | closed in commit `862e8de61`; reopen only on new drift |
+| `LOCAL-1` | `.claude/**`, `backend/tests/**/TestResults/` | no product writer | hygiene only |
+
+---
+
+## Document Status (Slice 34)
+
+- [x] Planning-only classification recorded
+- [x] Next Codex phases defined
+- [x] Dirty worktree lanes separated
+- [x] Parallel subagent model defined
+- [x] Single-writer rule preserved
+- [x] Execution not authorized by this text
