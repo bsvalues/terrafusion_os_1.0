@@ -17,11 +17,56 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Phases 6–11 + tool trace fix — full roadmap sealed** |
-| **Phase** | **Phase 11 + tool trace patch CLOSED** — all phases 6–11 sealed; 532/532 frontend + 31/31 backend contract tests green |
-| **Task** | Phases 6–11 CLOSED; TerraPilotPanel emitToolInvoked/Succeeded/Failed instrument fix |
-| **Status** | 🟢 All phases CLOSED — working tree clean |
-| **Latest Commit** | `1417c35f2` (docs/workflow commit metadata sync) |
+| **Slice** | **Benton County Onsite Demo — Day 5 Evidence Lock** |
+| **Phase** | **REHEARSAL COMPLETE — GO FOR ONSITE** |
+| **Task** | Evidence lock sealed. Day 6 onsite demo execution ready. |
+| **Status** | 🟢 GO — all gates green, all artifacts published, no open blockers |
+| **Latest Commit** | `00bc4d696` (fix+docs: Day 4 ToolRunner stackTrace + secondary journeys) |
+
+## CP-DEMO-DAY5 — Benton Demo Day 5 Go/No-Go Checkpoint — GO ✅
+
+**Date**: 2026-03-19
+**Branch**: main / HEAD: `00bc4d696`
+**Charter**: `docs/superpowers/plans/2026-03-19-benton-onsite-production-demo-charter.md`
+
+### Verdict: GO FOR ONSITE DEMO ✅
+
+| Gate | Status |
+|------|--------|
+| Mandatory command wall green | ✅ |
+| Security findings closed | ✅ Day 1: PlaygroundController + Operations JWT |
+| County isolation verified | ✅ Day 2: 9 tools × COUNTY_MISMATCH + OFFICE_SCOPE_DENIED |
+| Golden journeys 5/5 | ✅ Day 3: J1–J5 all pass |
+| Secondary journeys ≥90% | ✅ Day 4: 95.2%+, stackTrace fixed |
+| Rehearsal clean | ✅ Day 5: 291/291 rehearsal run |
+| No open blockers | ✅ 5 pre-existing defects all classified non-blocking |
+| Proof artifacts | ✅ 6 artifacts published (Day 0–5) |
+
+### Proof Artifacts Published
+
+| Day | Artifact |
+|-----|---------|
+| Day 0 | `COMMAND_WALL_RESULTS_2026-03-19.md`, `CONTRACT_TRUTH_AUDIT_2026-03-19.md` |
+| Day 1 | `SECURITY_DEMO_CLOSURE_2026-03-19.md` |
+| Day 2 | `COUNTY_ISOLATION_DEMO_PROOF_2026-03-19.md` |
+| Day 3 | `BENTON_DEMO_GOLDEN_JOURNEYS_2026-03-19.md` |
+| Day 4 | `BENTON_DEMO_GOLDEN_JOURNEYS_DAY4_2026-03-19.md` |
+| Day 5 | `COMMAND_WALL_RESULTS_DAY5_2026-03-19.md`, `CONTRACT_TRUTH_AUDIT_DAY5_2026-03-19.md` |
+
+### Rollback Procedure
+
+1. `git checkout 768f451b4` — Day 3 seal (all journeys green, pre-Day 4 fix)
+2. Or `git checkout 87836f51f` — Day 2 seal (security + county isolation only)
+3. Backend: `dotnet run --project TerraFusion.API` (port 5000)
+4. Frontend: `pnpm dev` from `frontend/apps/os-shell`
+5. Verify: `node --test os-platform/core/tests/phase83-tools.test.mjs`
+
+### Known Limitations (Onsite Deferred)
+
+- PropertiesController county filtering gaps — not on primary assessor demo path
+- DaisController sentinel GUID — unreachable under authenticated demo context
+- SystemIntegrationTests — require live server, not regressions
+- r1-demo-proof.mjs — live-server only, run against staging env
 
 ## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
 
