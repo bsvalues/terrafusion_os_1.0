@@ -5,8 +5,8 @@
 ---
 
 * **Project:** Workbench Materials + Suite UX Clarity + Launcher + Compositor + Polish + TerraTrace Jump Actions + Codex Directive Pack v1
-* **Branch/PR:** main (solo-dev mode)
-* **Last Updated:** 2026-03-18
+* **Branch/PR:** post-r3/w5f-registry-edge-cleanup
+* **Last Updated:** 2026-03-19
 * **Plan Link:** [plan.md](./plan.md)
 
 ---
@@ -15,11 +15,51 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Phase 9 — TerraPilot Muse Mode** |
-| **Phase** | **CP-W9-1 CLOSED** ✅ |
-| **Task** | Canonical Muse lane repair: canonical TerraTrace wiring, explicit `mode: 'muse'` pinning, and strengthened runtime proof |
-| **Status** | ✅ BOUNDED PHASE CLOSED — Muse shell truth tightened without widening into backend explain redesign |
-| **Latest Commit** | `1a644f565` (Muse proof boundary) |
+| **Slice** | **Slice 34 — Post-CP-W9 Codex Execution Plan** |
+| **Phase** | **CP-TRIAGE-1 CLOSED** ✅ |
+| **Task** | Phase A workflow ledger reconciliation + Phase B dirty-worktree triage (docs/evidence only) |
+| **Status** | ✅ GOVERNANCE RECON CLOSED — workflow truth aligned to current `HEAD`, dirty tree classified into bounded lanes |
+| **Latest Commit** | `862e8de61` (Dais + backend drift absorbed; baseline recalibrated) |
+
+## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: post-r3/w5f-registry-edge-cleanup  
+**Commit baseline**: `862e8de61`
+
+### Verdict: PASS — GREEN (docs/evidence-only closure)
+
+**What closed:**
+- Current dirty paths were classified into explicit lanes in `.governance/workflow/dirty-worktree-triage.md`
+- `DAIS-1` and `PILOT-BE-1` were marked clean/closed in working tree because their earlier drift was absorbed in `862e8de61`
+- Active writer scope is now narrowed to governance docs (`WF-A`) plus optional docs/hygiene handling (`WF-C`, `GIT-1`, `LOCAL-1`)
+
+**Evidence artifact:**
+- `.governance/workflow/dirty-worktree-triage.md`
+
+**Classification:** Implemented bounded triage slice (no product-code edits)
+
+---
+
+## CP-W9-A — Workflow Ledger Reconciliation — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: post-r3/w5f-registry-edge-cleanup  
+**Commit baseline**: `862e8de61`
+
+### Verdict: PASS — GREEN (docs-only reconciliation)
+
+**What closed:**
+- Top-level workflow status now reflects current branch and latest commit truth
+- Slice 34 baseline in `plan.md` was refreshed to current repo state (Dais/backend dirty lanes no longer active)
+- Reconciliation was performed without reopening or widening product lanes
+
+**Proof checks:**
+- `git log --oneline -5`
+- `git status --short`
+- `rg -n "^## Current Status|^## Next Steps|^## Known Debt / Follow-ups" .governance/workflow/progress.md`
+
+**Classification:** Implemented bounded reconciliation slice
 
 ## CP-W9-1: Phase 9 — TerraPilot Muse Mode — CLOSED ✅
 
@@ -881,6 +921,11 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 9 | 25.4 / Phase 8 | Hold Waves 3-5 until prior proof gates land | Satisfied — all prior phases closed |
 | ✅ 8 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
 | ✅ 9 | Commit | Create docs commit for Slice 25.4 | Done |
+| ✅ 10 | Slice 34 / Phase A | Workflow ledger reconciliation (`CP-W9-A`) | Done |
+| ✅ 11 | Slice 34 / Phase B | Dirty-worktree triage (`CP-TRIAGE-1`) | Done |
+| 🔵 12 | Slice 34 / WF-C | Decide disposition of untracked superpowers plan docs (`phase5-workbench-completeness`, `phase9b-10-11-explain-hitl-sovereign`) | None |
+| 🔵 13 | Slice 34 / GIT-1 | Classify `.gitignore` drift as explicit hygiene/config lane | None |
+| 🔵 14 | Slice 34 / LOCAL-1 | Clean or ignore local artifacts (`.claude/**`, `backend/tests/**/TestResults/**`) | None |
 
 ---
 
@@ -900,6 +945,8 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | 2026-03-18 | Use auth-first identity with session fallback on the named Wave 1 surfaces | Shell auth claims are now canonical, but several surfaces still needed safe fallback during the transition | Closed hardcoded user/role placeholders without widening auth-model scope |
 | 2026-03-18 | Move the new Wave 1 runtime proofs into the `__tests__/auth` suite | Root Vitest discovery ignored sidecar hook/service test directories during filtered runs | The Wave 1 proof bundle now executes under the governed harness instead of living as dead files |
 | 2026-03-18 | Accept Phase 7B as a satisfied governed-core evidence input to 7E only | 7B proofs are green, but dependency order still governs execution | Prevents 7E from opening early while preserving reuse of 7B evidence |
+| 2026-03-19 | Re-baseline post-`CP-W9-1` workflow truth to `HEAD` `862e8de61` | New commit absorbed earlier Dais/backend drift lanes and made Slice 34 baseline stale | Prevents execution against outdated dirty-tree assumptions |
+| 2026-03-19 | Close dirty-worktree triage as a standalone docs/evidence phase | Mixed dirty paths were previously treated as one broad lane | Enforces one-lane-at-a-time reopening and isolates `WF-C` / `LOCAL-1` from product execution |
 
 ---
 
@@ -910,6 +957,9 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | WF-1 | Slice 22 and Slice 23 still show `Pending` commit fields and need separate git-history reconciliation | Low | Workflow ledger follow-up |
 | WF-2 | `frontend/apps/os-shell/src` is not on a zero-console baseline; Wave 0 cleanup must start from the new ledger, not the older plan assumption | Medium | Wave 0 follow-up |
 | WF-3 | Legacy React test helpers still emit `ReactDOMTestUtils.act` deprecation warnings in the home/Wave 1 hook proofs | Low | Test harness cleanup follow-up |
+| WF-4 | Untracked superpowers plan docs (`phase5-workbench-completeness`, `phase9b-10-11-explain-hitl-sovereign`) need explicit `WF-C` disposition (track, archive, or discard) | Low | Slice 34 follow-up |
+| WF-5 | `.gitignore` is dirty and needs explicit `GIT-1` classification before any mixed commit | Low | Repo hygiene follow-up |
+| WF-6 | Local artifacts (`.claude/**`, `backend/tests/**/TestResults/**`) are present and should stay out of merge-bound commits | Low | LOCAL-1 hygiene follow-up |
 | CS-1 | Comparable Sales launch-to-sales selection depends on the current query/state hint convention | Low | Revisit if upstream module-launch metadata changes |
 | IV-1 | Forge Income proof is closed, but saved valuation record/list wiring is still a follow-up if persistence becomes a product requirement | Medium | Post-proof enhancement |
 | IV-2 | Legacy income valuation surfaces still need an archive-truth pass to collapse duplicate authority | Low | Archive truth follow-up |
