@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import { getCostSchedule } from '@/services/forge/propertyValuationClientService';
 import {
   Table,
   TableBody,
@@ -39,8 +40,64 @@ const SAMPLE_COST_SCHEDULES: CostScheduleRow[] = [
 export function CostManual() {
   const [search, setSearch] = useState('');
   const [qualityFilter, setQualityFilter] = useState<string>('all');
+  const [rows, setRows] = useState<CostScheduleRow[]>(SAMPLE_COST_SCHEDULES);
+  const [isSampleData, setIsSampleData] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filtered = SAMPLE_COST_SCHEDULES.filter((row) => {
+  useEffect(() => {
+    let active = true;
+
+    const loadRows = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await getCostSchedule({
+          qualityClass: qualityFilter === 'all' ? undefined : qualityFilter,
+        });
+
+        if (!active) {
+          return;
+        }
+
+        if (Array.isArray(result) && result.length > 0) {
+          const normalized: CostScheduleRow[] = result.map((entry) => ({
+            buildingClass: entry.description || entry.code || 'Unknown Class',
+            qualityGrade: entry.qualityClass || 'Unspecified',
+            baseRate: Number(entry.baseCost) || 0,
+            unit: entry.unit || '$/SF',
+            effectiveDate: entry.effectiveDate || 'Unknown',
+          }));
+          setRows(normalized);
+          setIsSampleData(false);
+        } else {
+          setRows(SAMPLE_COST_SCHEDULES);
+          setIsSampleData(true);
+          setError('Cost schedule endpoint returned no records. Showing sample reference data.');
+        }
+      } catch (cause) {
+        if (!active) {
+          return;
+        }
+        setRows(SAMPLE_COST_SCHEDULES);
+        setIsSampleData(true);
+        setError(cause instanceof Error ? cause.message : 'Failed to load cost schedules.');
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadRows();
+
+    return () => {
+      active = false;
+    };
+  }, [qualityFilter]);
+
+  const filtered = rows.filter((row) => {
     const matchesSearch = row.buildingClass.toLowerCase().includes(search.toLowerCase());
     const matchesQuality = qualityFilter === 'all' || row.qualityGrade === qualityFilter;
     return matchesSearch && matchesQuality;
@@ -48,13 +105,21 @@ export function CostManual() {
 
   return (
     <div className="space-y-4 p-4">
-      <DemoDataBanner module="Cost Manual" />
+      {isSampleData && <DemoDataBanner module="Cost Manual" />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Cost Manual Reference</h1>
           <p className="text-muted-foreground">
             Marshall &amp; Swift style cost schedules (read-only)
           </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Source: {isSampleData ? 'Sample fallback' : 'Live cost schedule API'}
+          </p>
+          {error && (
+            <p className="text-xs text-amber-600 mt-1">
+              {error}
+            </p>
+          )}
         </div>
         <Badge variant="outline">BIV-085</Badge>
       </div>
@@ -92,6 +157,13 @@ export function CostManual() {
               </TableRow>
             </TableHeader>
             <TableBody>
+              {isLoading && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    Loading cost schedules...
+                  </TableCell>
+                </TableRow>
+              )}
               {filtered.map((row, i) => (
                 <TableRow key={i}>
                   <TableCell className="font-medium">{row.buildingClass}</TableCell>
@@ -105,7 +177,7 @@ export function CostManual() {
                   <TableCell>{row.effectiveDate}</TableCell>
                 </TableRow>
               ))}
-              {filtered.length === 0 && (
+              {!isLoading && filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                     No matching cost schedules found.

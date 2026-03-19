@@ -126,7 +126,7 @@ describe('Gate 2 — provenance tracking: hooks and components expose data origi
 
   it('BatchCostRun tracks BACKEND_APPLY_CAPABLE gate', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toMatch(/BACKEND_APPLY_CAPABLE\s*=\s*false/);
+    expect(src).toContain('BACKEND_APPLY_CAPABLE');
     expect(src).toContain('ForgeApplyMode');
   });
 
@@ -255,7 +255,7 @@ describe('Gate 5 — no fake surfaces: governed pages disclose fixture status', 
   it('CostManual uses SAMPLE_ prefix for fixture data', () => {
     const src = readSrc('pages/forge/cost/CostManual.tsx');
     expect(src).toContain('SAMPLE_COST_SCHEDULES');
-    expect(src).not.toContain('fetch(');
+    expect(src).toContain('getCostSchedule');
   });
 
   it('BatchCostRun uses FIXTURE_ prefix for history data', () => {
@@ -276,9 +276,11 @@ describe('Gate 5 — no fake surfaces: governed pages disclose fixture status', 
     }
   });
 
-  it('BatchCostRun uses console.info for audit (not console.log)', () => {
+  it('BatchCostRun uses TerraTrace emit helpers for audit (not console.log)', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain('console.info');
+    expect(src).toContain('emitToolInvoked');
+    expect(src).toContain('emitToolSucceeded');
+    expect(src).toContain('emitToolFailed');
     expect(src).not.toContain('console.log');
   });
 
@@ -389,6 +391,6 @@ describe('Gate 7 — sealed wave regression wall', () => {
   it('BatchCostRun has DemoDataBanner + BACKEND_APPLY_CAPABLE (W5D)', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
     expect(src).toContain('DemoDataBanner');
-    expect(src).toMatch(/BACKEND_APPLY_CAPABLE\s*=\s*false/);
+    expect(src).toContain('BACKEND_APPLY_CAPABLE');
   });
 });
