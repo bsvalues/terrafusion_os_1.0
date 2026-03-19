@@ -3,7 +3,7 @@
 Date: 2026-03-19
 Phase: Phase 1 — Security & Isolation Closure
 Gate: G4 (RBAC Contract Closure)
-Status: PENDING IMPLEMENTATION
+Status: FAILED AUDIT — controller-layer RBAC incomplete
 
 ## RBAC Requirements
 
@@ -39,18 +39,18 @@ All privileged actions require valid claim + policy allowance per TerraFusion OS
 | phase86-toolrunner (canonical execution) | 9/9 |
 | HITL drafter | sealed e78d1262c |
 
-## Evidence Fields (to fill after implementation)
+## Evidence Fields (current state)
 
 | Check | Status |
 |---|---|
-| All controllers with mutations carry `[Authorize]` | PENDING |
-| JWT countyId extraction mandatory | PENDING |
-| write_high confirmation/reason enforced by ToolRunner | PENDING (phase83 covers tool layer, controller layer pending) |
-| Supervisor required for irreversible | PENDING |
-| MarketplaceController stubs removed | PENDING |
+| All controllers with mutations carry `[Authorize]` | FAIL (`MarketplaceController` missing class `[Authorize]`) |
+| JWT countyId extraction mandatory | FAIL (`PropertiesController` supports optional countyId query) |
+| write_high confirmation/reason enforced by ToolRunner | PASS (phase83 tool-layer enforcement confirmed) |
+| Supervisor required for irreversible | PASS (phase83 tool-layer enforcement confirmed) |
+| MarketplaceController stubs removed | FAIL (`GetDownloadCount`, `GetRating`, `GetRatingCount` still present) |
 
 ## Pass Condition (G4)
 
 All privileged actions require valid claim + policy allowance.
 Phase 83 tool-layer enforcement: CONFIRMED (56/56 — write_high and irreversible risk levels verified).
-Controller-layer RBAC: PENDING implementation by backend writer lane.
+Controller-layer RBAC: NOT YET COMPLIANT. Backend writer lane must close controller gaps before G4 can pass.

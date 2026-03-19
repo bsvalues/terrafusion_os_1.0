@@ -3,7 +3,7 @@
 Date: 2026-03-19
 Phase: Phase 1 — Security & Isolation Closure
 Gate: G3 (Tenant Isolation Coverage)
-Status: PENDING IMPLEMENTATION
+Status: FAILED AUDIT — backend implementation required
 
 ## Required Isolation Fixes (from Phase 1 roadmap)
 
@@ -24,10 +24,23 @@ Status: PENDING IMPLEMENTATION
 - Wire to real module registry (`IModuleService`) for internal admin surface only
 - No public publisher workflow — V1 is internal only
 
-## Current Assessment
+## Current Assessment (2026-03-19 audit)
 
-Each controller must be inspected and patched. This is backend implementation work.
-Implementation is a bounded handoff from Copilot lane → Backend Writer lane.
+Controller audit completed against current code:
+
+- `backend/src/TerraFusion.API/Controllers/PropertiesController.cs`
+	- class is `[Authorize]` but `GetProperties` accepts optional `Guid? countyId` and does not enforce claim match.
+	- `GetPropertyByParcel`, `GetPropertyValuations`, `CreateValuation`, `GetPropertyStats` do not enforce county isolation at controller boundary.
+	- required `countyId` + 400/403 behavior is not implemented.
+- `backend/src/TerraFusion.API/Controllers/DaisController.cs`
+	- class is `[Authorize]` but multiple endpoints are `[AllowAnonymous]`.
+	- county resolution returns `Forbid()` when missing claim (403), not required 401 fail-closed behavior.
+	- no sentinel GUID fallback observed (good), but claim-missing behavior still fails contract.
+- `backend/src/TerraFusion.API/Controllers/MarketplaceController.cs`
+	- no class-level `[Authorize]`.
+	- still contains stub metrics helpers (`GetDownloadCount`, `GetRating`, `GetRatingCount`).
+
+Result: G3 remains open; explicit code changes are required.
 
 ## Pass Conditions (G3)
 
@@ -41,16 +54,27 @@ Implementation is a bounded handoff from Copilot lane → Backend Writer lane.
 
 | Test | Expected | Actual | Status |
 |---|---|---|---|
-| PropertiesController missing countyId → 400 | 400 | — | PENDING |
-| PropertiesController county mismatch → 403 | 403 | — | PENDING |
-| DaisController no JWT → 401 | 401 | — | PENDING |
-| DaisController no countyId claim → 401 | 401 | — | PENDING |
-| DaisController county mismatch → 403 | 403 | — | PENDING |
-| MarketplaceController unauthorized → 401 | 401 | — | PENDING |
-| No sentinel GUID fallback present | absent | — | PENDING |
+| PropertiesController missing countyId → 400 | 400 | Optional `countyId` accepted | FAIL |
+| PropertiesController county mismatch → 403 | 403 | Claim/request mismatch check missing | FAIL |
+| DaisController no JWT → 401 | 401 | Class `[Authorize]` may challenge, but claim-missing path returns 403 | FAIL |
+| DaisController no countyId claim → 401 | 401 | `ResolveCountyIdAsync` null → `Forbid()` (403) | FAIL |
+| DaisController county mismatch → 403 | 403 | Partial (not explicitly asserted by controller tests) | PARTIAL |
+| MarketplaceController unauthorized → 401 | 401 | No class-level `[Authorize]` | FAIL |
+| No sentinel GUID fallback present | absent | No sentinel GUID fallback detected | PASS |
 
 ## Implementation Handoff
 
-Scope: `TerraFusionPlatform/Controllers/PropertiesController.cs`, `DaisController.cs`, `MarketplaceController.cs`
+Scope: `backend/src/TerraFusion.API/Controllers/PropertiesController.cs`, `backend/src/TerraFusion.API/Controllers/DaisController.cs`, `backend/src/TerraFusion.API/Controllers/MarketplaceController.cs`
 Out-of-scope for Copilot lane: backend C# controller edits
 These are in authorized scope for backend writer lane.
+
+Required backend tests to add in handoff:
+
+- `PropertiesController`:
+	- missing county claim/query returns 400
+	- county mismatch returns 403
+- `DaisController`:
+	- missing county claim returns 401
+	- county mismatch returns 403
+- `MarketplaceController`:
+	- unauthorized requests return 401
