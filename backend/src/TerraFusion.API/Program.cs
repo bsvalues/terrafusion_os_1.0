@@ -241,6 +241,8 @@ builder.Services.AddScoped<TerraFusion.AI.Services.IWorkflowAutomationService, T
 builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFusion.AI.Services.AIAssistantService>();
 // Phase 9B: Muse Mode explain service
 builder.Services.AddScoped<IMuseService, TerraFusion.AI.Services.MuseService>();
+// Phase 10: HITL Drafter Mode — draft/approve/reject pipeline
+builder.Services.AddScoped<IDraftService, TerraFusion.AI.Services.DraftService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
