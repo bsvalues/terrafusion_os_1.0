@@ -184,7 +184,7 @@ export const ModuleHost: React.FC<ModuleHostProps> = ({ moduleId, onClose, class
     if (loadState.status === 'idle' || loadState.status === 'error') {
       loadModule(normalizedId).catch((error) => {
         // Error is already handled by the store
-        console.debug(`[ModuleHost] Load failed for ${normalizedId}:`, error.message);
+        console.warn(`[ModuleHost] Load failed for ${normalizedId}:`, String(error));
       });
     }
   }, [normalizedId, loadState.status, loadModule]);
@@ -192,7 +192,7 @@ export const ModuleHost: React.FC<ModuleHostProps> = ({ moduleId, onClose, class
   // Handle retry
   const handleRetry = useCallback(() => {
     retryModule(normalizedId).catch((error) => {
-      console.debug(`[ModuleHost] Retry failed for ${normalizedId}:`, error.message);
+      console.warn(`[ModuleHost] Retry failed for ${normalizedId}:`, String(error));
     });
   }, [normalizedId, retryModule]);
 

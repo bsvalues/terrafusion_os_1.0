@@ -94,7 +94,6 @@ export const PropertyForge: React.FC = () => {
   /** Called when a sub-tab produces an indicated value */
   const handleValueIndicated = useCallback((approach: string, value: number) => {
     // Future: update overview summary cards with approach-specific indicated values
-    console.debug(`[Forge] Value indicated: ${approach} = $${value.toLocaleString()}`);
   }, []);
 
   return (
