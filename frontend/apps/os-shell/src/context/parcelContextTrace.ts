@@ -12,7 +12,7 @@
  * @see Slice 10: Parcel Context UX Surface
  */
 
-import { clearParcelContext, getParcelContext, setParcelContext } from './parcelContext';
+import { clearParcelContext, getParcelContext, setParcelContext, type ParcelContextSource } from './parcelContext';
 
 // ============================================================================
 // Types
@@ -142,7 +142,7 @@ export function setParcelContextWithTrace(
   setParcelContext({
     parcelId: context.parcelId,
     parcelName: context.parcelName,
-    source: context.source as any,
+    source: context.source as ParcelContextSource | undefined,
   });
 
   // Emit trace event
