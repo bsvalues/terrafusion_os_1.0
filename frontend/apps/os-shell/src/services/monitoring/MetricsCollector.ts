@@ -372,7 +372,10 @@ export class MetricsCollector {
       (Object.keys(metrics) as Array<keyof ServiceMetrics>).forEach((key) => {
         if (key !== 'serviceName' && Array.isArray(metrics[key])) {
           const dataPoints = metrics[key] as TimeSeriesDataPoint[];
-          metrics[key] = dataPoints.filter((dp) => dp.timestamp >= cutoffDate) as any;
+          // Cast required: TypeScript cannot narrow the union `string | TimeSeriesDataPoint[]`
+          // through a keyof assignment even with the `key !== 'serviceName'` guard above.
+          (metrics as Record<string, TimeSeriesDataPoint[] | string>)[key as string] =
+            dataPoints.filter((dp) => dp.timestamp >= cutoffDate);
         }
       });
     });
@@ -402,7 +405,7 @@ export class MetricsCollector {
     const metrics = this.metricsStorage.get(serviceName);
     if (!metrics) return null;
 
-    const dataPoints = (metrics as any)[metricType] as TimeSeriesDataPoint[];
+    const dataPoints = (metrics as Record<string, unknown>)[metricType] as TimeSeriesDataPoint[];
     if (!dataPoints || dataPoints.length < 10) return null; // Need at least 10 data points
 
     // Get recent data (last 7 days)
