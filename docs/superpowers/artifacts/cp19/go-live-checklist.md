@@ -17,7 +17,7 @@ Status: in-progress — artifact framework complete, upstream gates pending
 | G6 | docs/superpowers/artifacts/cp15/workbench-host-proof.md | Workbench Owner | pending — real tab surface verification |
 | G7 | docs/superpowers/artifacts/cp16/registry-contract-proof.md + yakima-proof.md + cowlitz-proof.md | Platform Core Owner | pending — Docker/WSL env required |
 | G8 | docs/superpowers/artifacts/cp17/restore-proof.md + dr-proof.md + sre-pack.md + hypercare-plan.md | Operations Owner | pending — staging env required |
-| G9 | docs/superpowers/artifacts/cp18/security-closure-packet.md + residual-risk-signoff.md + swarm-load-proof.md | Security Owner | pending — validate:compliance + swarm load |
+| G9 | docs/superpowers/artifacts/cp18/security-closure-packet.md + residual-risk-signoff.md + swarm-load-proof.md | Security Owner | pending — swarm load/runtime evidence + upstream gates |
 | G10 | this checklist + decision-memo.md + rollback-plan.md + codex-integration-proof.md | Founder/Release Authority | pending — all prior gates required |
 
 ## Additional Required Evidence
