@@ -33,6 +33,8 @@ Define a bounded multi-agent and parallel subagent execution model to move from 
 - CP-15 closure packet (G5/G6): `docs/superpowers/plans/2026-03-19-cp15-runtime-completeness-closure-packet.md`
 - CP-16 closure packet (G7): `docs/superpowers/plans/2026-03-19-cp16-service-registry-orchestration-closure-packet.md`
 - CP-17 closure packet (G8): `docs/superpowers/plans/2026-03-19-cp17-sre-restore-dr-hypercare-closure-packet.md`
+- CP-18 closure packet (G9): `docs/superpowers/plans/2026-03-19-cp18-security-compliance-seal-packet.md`
+- CP-19 closure packet (G10): `docs/superpowers/plans/2026-03-19-cp19-go-live-decision-packet.md`
 
 ## Current Repo Truth Anchors
 
