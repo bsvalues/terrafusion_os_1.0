@@ -43,13 +43,13 @@
 
 ## Slice 35 — Founder Go/No-Go — 2026-03-19
 
-**Status: APPROVED — LANE 1 CLOSED, LANE 2 CLOSED, LANE 3 OPEN (GATE-35-2 consumed)**
+**Status: APPROVED — LANE 1 CLOSED, LANE 2 CLOSED, LANE 3 CLOSED (GATE-35-2 consumed)**
 
 | Lane | Authorization |
 |------|--------------|
 | **Lane 1 — Debt Sweep** (35-A, 35-B, 35-C) | ✅ OPEN — founder go 2026-03-19 |
 | **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | ✅ CLOSED — 35-D recon + charter done; 35-E TC Phase 1 + 2 implemented and proven |
-| **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | 🟡 IN PROGRESS — 35-F recon + charter closed; 35-G SW Phase 1 delivered in `os-platform/core/**` |
+| **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | ✅ CLOSED — 35-F recon + charter closed; 35-G SW Phase 1 + SW-2 exception-bounded hardening delivered |
 
 **Scope authorized for Lane 1:**
 - `CP-35-A`: WF-1 backfill Slice 22/23 commit hashes + WF-3 migrate ReactDOMTestUtils.act → `from 'react'`
@@ -127,10 +127,9 @@
 
 ### SW Phase 2 Hold Update — 2026-03-19
 
-- Read-only target inspection reconfirmed SW-2 deltas are in forbidden scope files (`SwarmStrategicCoordinator.ts`, `SwarmOrchestrator.ts`)
-- Working tree includes unrelated backend trace drift (tracked + untracked) and remains untouched by Lane 3 execution
-- Execution posture remains: continue bounded governance-safe work only; open SW-2 only after explicit scope exception
-- Scope exception packet published and committed in `a154454a7`: `.governance/workflow/phase35g-sw2-scope-exception.md` (pending approval)
+- Read-only target inspection reconfirmed SW-2 deltas were in forbidden scope files (`SwarmStrategicCoordinator.ts`, `SwarmOrchestrator.ts`)
+- Scope exception packet was published in `a154454a7`: `.governance/workflow/phase35g-sw2-scope-exception.md`
+- Founder-go exception execution proceeded and SW-2 landed in `d35980379`.
 
 ### Phase 35-G-2 Update — 2026-03-19
 
