@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 26 — Phase 5: Wave 3B — Property Workbench Completeness** |
-| **Phase** | Phase 5 — **CP-W3-4 CLOSED** ✅ |
-| **Task** | Workbench Tier-0 surfaces verified complete: ContextRibbon, SuiteCompass, BadgeProvider API, QuickActions, all 5 work modes; 274/274 workbench tests |
+| **Slice** | **Slice 26 — Phase 5B: Wave 3B — Workbench Tab Completeness + as-any Sweep** |
+| **Phase** | Phase 5B — **CP-W5-1 CLOSED** ✅ |
+| **Task** | 4 missing tab contract tests written (Summary, Clerk, Treasury, Audit); InvocationHistory timestamp bug fixed; as-any sweep: 12 casts eliminated/documented |
 | **Status** | ✅ COMPLETE — hard stop reinstated |
-| **Latest Commit** | `b8aefca8d` |
+| **Latest Commit** | `39bedc7e9` |
 
 ## Phase 5 — CP-W3-4 CLOSED — 2026-03-18
 
