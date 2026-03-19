@@ -30,6 +30,7 @@ Define a bounded multi-agent and parallel subagent execution model to move from 
 
 - CP-13 gate catalog: `docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md`
 - CP-14 closure packet (G3/G4): `docs/superpowers/plans/2026-03-19-cp14-tenant-rbac-isolation-closure-packet.md`
+- CP-15 closure packet (G5/G6): `docs/superpowers/plans/2026-03-19-cp15-runtime-completeness-closure-packet.md`
 
 ## Current Repo Truth Anchors
 
