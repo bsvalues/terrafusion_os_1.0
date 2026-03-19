@@ -193,129 +193,122 @@ GO
 -- ─────────────────────────────────────────────────────────────────────────────
 -- VIEW 5: vw_TerraFusion_Cama_Characteristics
 -- ─────────────────────────────────────────────────────────────────────────────
--- Maps to PacsCamaCharacteristic DTO:
---   prop_id, geo_id, tax_year, building_type, building_type_description,
---   region, square_feet, stories, basement_sqft, garage_sqft, quality_grade,
---   condition_grade, complexity_grade, exterior_wall, roof_type, foundation,
---   hvac_type, interior_finish, year_built, effective_age, economic_life,
---   land_area_sqft, land_zone, land_adjustment_factor, bedrooms, bathrooms,
---   fireplaces, has_pool, functional_obsolescence, external_obsolescence,
---   neighborhood, property_type_cd, last_modified
--- Source tables: imprv, imprv_det, land, property
+-- Maps to PacsCamaCharacteristic DTO.
+-- Source: property_profile (PACS 9.0 WA — schema confirmed from phase15 probe)
+--   Confirmed columns: prop_id, prop_val_yr, yr_blt, living_area, land_sqft,
+--   region, neighborhood, condition_cd, property_use_cd, imprv_type_cd,
+--   imprv_det_sub_class_cd
+-- imprv_attr attribute IDs (bedrooms/bathrooms/etc.) stubbed NULL until
+--   confirmed from live pacs_golive: run
+--   SELECT DISTINCT i_attr_val_id, i_attr_val_cd FROM imprv_attr ORDER BY i_attr_val_id
+--   then replace NULL stubs with conditional aggregation.
 -- ─────────────────────────────────────────────────────────────────────────────
 CREATE OR ALTER VIEW [dbo].[vw_TerraFusion_Cama_Characteristics]
 AS
 SELECT
-    p.prop_id                                               AS prop_id,
+    pp.prop_id                                              AS prop_id,
     p.geo_id                                                AS geo_id,
-    i.prop_val_yr                                           AS tax_year,
-    i.imprv_type_cd                                         AS building_type,
-    i.imprv_desc                                            AS building_type_description,
-    i.neighborhood_cd                                       AS region,
-    ISNULL(id_rec.living_area, 0)                           AS square_feet,
-    ISNULL(id_rec.stories, 0)                               AS stories,
-    ISNULL(id_rec.basement_sqft, 0)                         AS basement_sqft,
-    ISNULL(id_rec.garage_sqft, 0)                           AS garage_sqft,
-    id_rec.quality_cd                                       AS quality_grade,
-    id_rec.condition_cd                                     AS condition_grade,
-    id_rec.class_cd                                         AS complexity_grade,
-    id_rec.ext_wall_cd                                      AS exterior_wall,
-    id_rec.roof_cover_cd                                    AS roof_type,
-    id_rec.foundation_cd                                    AS foundation,
-    id_rec.heat_type_cd                                     AS hvac_type,
-    id_rec.interior_finish_cd                               AS interior_finish,
-    ISNULL(id_rec.yr_blt, i.heat_yr_blt)                   AS year_built,
-    ISNULL(id_rec.eff_age, 0)                               AS effective_age,
-    ISNULL(i.economic_bldg_life, 0)                         AS economic_life,
-    ISNULL(l.land_area_sqft, 0)                             AS land_area_sqft,
-    l.land_zone_cd                                          AS land_zone,
-    ISNULL(l.land_adj_factor, 1.0)                          AS land_adjustment_factor,
-    ISNULL(id_rec.bedrooms, 0)                              AS bedrooms,
-    ISNULL(id_rec.bath_count, 0)                            AS bathrooms,
-    ISNULL(id_rec.fireplaces, 0)                            AS fireplaces,
-    ISNULL(id_rec.has_pool, 'N')                            AS has_pool,
-    ISNULL(id_rec.functional_obsolescence_pct, 0)           AS functional_obsolescence,
-    ISNULL(id_rec.economic_obsolescence_pct, 0)             AS external_obsolescence,
-    p.neighborhood                                          AS neighborhood,
-    p.prop_type_cd                                          AS property_type_cd,
-    COALESCE(id_rec.imprv_det_chg_dt, i.imprv_chg_dt, p.prop_create_dt)
-                                                            AS last_modified
+    pp.prop_val_yr                                          AS tax_year,
+    pp.imprv_type_cd                                        AS building_type,
+    pp.imprv_det_sub_class_cd                               AS building_type_description,
+    pp.region                                               AS region,
+    ISNULL(pp.living_area, 0)                               AS square_feet,
+    -- imprv_attr stubs — replace with MAX(CASE WHEN i_attr_val_id=N ...) when attr map known
+    CAST(NULL AS NUMERIC(5,1))                              AS stories,
+    CAST(NULL AS NUMERIC(10,2))                             AS basement_sqft,
+    CAST(NULL AS NUMERIC(10,2))                             AS garage_sqft,
+    CAST(NULL AS VARCHAR(10))                               AS quality_grade,
+    pp.condition_cd                                         AS condition_grade,
+    CAST(NULL AS VARCHAR(10))                               AS complexity_grade,
+    CAST(NULL AS VARCHAR(10))                               AS exterior_wall,
+    CAST(NULL AS VARCHAR(10))                               AS roof_type,
+    CAST(NULL AS VARCHAR(10))                               AS foundation,
+    CAST(NULL AS VARCHAR(10))                               AS hvac_type,
+    CAST(NULL AS VARCHAR(10))                               AS interior_finish,
+    pp.yr_blt                                               AS year_built,
+    CAST(YEAR(GETDATE()) - ISNULL(pp.yr_blt, YEAR(GETDATE())) AS INT)
+                                                            AS effective_age,
+    CAST(NULL AS INT)                                       AS economic_life,
+    ISNULL(pp.land_sqft, 0)                                 AS land_area_sqft,
+    CAST(NULL AS VARCHAR(20))                               AS land_zone,
+    CAST(NULL AS NUMERIC(8,4))                              AS land_adjustment_factor,
+    CAST(NULL AS INT)                                       AS bedrooms,
+    CAST(NULL AS NUMERIC(4,1))                              AS bathrooms,
+    CAST(NULL AS INT)                                       AS fireplaces,
+    CAST('N' AS CHAR(1))                                    AS has_pool,
+    CAST(NULL AS NUMERIC(5,2))                              AS functional_obsolescence,
+    CAST(NULL AS NUMERIC(5,2))                              AS external_obsolescence,
+    pp.neighborhood                                         AS neighborhood,
+    pp.property_use_cd                                      AS property_type_cd,
+    CAST(NULL AS DATETIME)                                  AS last_modified
 FROM
-    dbo.property p
-    -- Latest primary improvement header (sup_num=0, sale_id=0)
-    OUTER APPLY (
-        SELECT TOP 1 i2.*
-        FROM dbo.imprv i2
-        WHERE i2.prop_id = p.prop_id
-          AND i2.sup_num = 0
-          AND i2.sale_id = 0
-        ORDER BY i2.prop_val_yr DESC, i2.imprv_id ASC
-    ) i
-    -- Latest primary improvement detail record
-    OUTER APPLY (
-        SELECT TOP 1 id2.*
-        FROM dbo.imprv_det id2
-        WHERE id2.prop_id = p.prop_id
-          AND id2.sup_num = 0
-          AND id2.sale_id = 0
-          AND id2.imprv_id = i.imprv_id
-        ORDER BY id2.prop_val_yr DESC, id2.imprv_det_id ASC
-    ) id_rec
-    -- Latest primary land segment
-    OUTER APPLY (
-        SELECT TOP 1
-            l2.land_area_sqft,
-            l2.land_zone_cd,
-            l2.land_adj_factor
-        FROM dbo.land l2
-        WHERE l2.prop_id = p.prop_id
-          AND l2.sup_num = 0
-          AND l2.sale_id = 0
-        ORDER BY l2.prop_val_yr DESC, l2.land_seg_id ASC
-    ) l;
+    dbo.property_profile pp
+    LEFT JOIN dbo.property p ON p.prop_id = pp.prop_id
+WHERE
+    pp.prop_val_yr = (
+        SELECT MAX(pp2.prop_val_yr)
+        FROM dbo.property_profile pp2
+        WHERE pp2.prop_id = pp.prop_id
+    );
 GO
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- VIEW 6: vw_TerraFusion_Improvement_Cost_Matrices
 -- ─────────────────────────────────────────────────────────────────────────────
--- Maps to PacsImprovementCostMatrix DTO:
---   source_matrix_id, matrix_year, matrix_type, base_rate, multiplier,
---   region, building_type, building_type_description, base_cost,
---   matrix_description, data_points, min_cost, max_cost, grade, condition,
---   year_built, depreciation_rate, axis1, axis2, adjustment_factor_raw,
---   matrix_label
--- Source tables: imprv_sched (primary PACS 9.0 cost schedule table)
+-- Maps to PacsImprovementCostMatrix DTO.
+-- Source tables confirmed from phase15 schema probe:
+--   imprv_sched: imprv_det_type_cd, imprv_det_class_cd, imprv_det_sub_class_cd,
+--                imprv_yr, imprv_sched_slope_intercept, imprv_sched_value_type,
+--                matrix_id
+--   matrix:      matrix_id, matrix_yr, label, axis_1, axis_2,
+--                matrix_description, operator, default_cell_value,
+--                matrix_type, matrix_sub_type_cd
+--   matrix_detail: matrix_id, matrix_yr, axis_1_value, axis_2_value, cell_value
+--   imprv_sched_matrix_assoc: linking table (confirmed in phase15 probe)
 -- ─────────────────────────────────────────────────────────────────────────────
 CREATE OR ALTER VIEW [dbo].[vw_TerraFusion_Improvement_Cost_Matrices]
 AS
 SELECT
-    ms.sched_id                                             AS source_matrix_id,
-    ms.sched_yr                                             AS matrix_year,
-    ms.sched_type_cd                                        AS matrix_type,
-    ISNULL(ms.base_rate, 0)                                 AS base_rate,
-    ISNULL(ms.regional_multiplier, 1.0)                     AS multiplier,
-    ms.region_cd                                            AS region,
-    ms.imprv_type_cd                                        AS building_type,
-    ms.imprv_type_desc                                      AS building_type_description,
-    ISNULL(ms.base_cost, 0)                                 AS base_cost,
-    ms.sched_desc                                           AS matrix_description,
-    ISNULL(ms.data_point_count, 0)                          AS data_points,
-    ISNULL(ms.min_cost, 0)                                  AS min_cost,
-    ISNULL(ms.max_cost, 0)                                  AS max_cost,
-    ms.quality_cd                                           AS grade,
-    ms.condition_cd                                         AS condition,
-    ms.base_yr                                              AS year_built,
-    ISNULL(ms.dep_pct, 0)                                   AS depreciation_rate,
-    ms.x_axis_cd                                            AS axis1,
-    ms.y_axis_cd                                            AS axis2,
-    ISNULL(ms.adj_factor, 1.0)                              AS adjustment_factor_raw,
-    ISNULL(ms.sched_desc,
-        ISNULL(ms.imprv_type_cd, '') + ' ' + CAST(ISNULL(ms.sched_yr, 0) AS VARCHAR(4))
+    m.matrix_id                                             AS source_matrix_id,
+    m.matrix_yr                                             AS matrix_year,
+    m.matrix_type                                           AS matrix_type,
+    ISNULL(s.imprv_sched_slope_intercept, 0)                AS base_rate,
+    ISNULL(m.default_cell_value, 1.0)                       AS multiplier,
+    CAST(NULL AS VARCHAR(20))                               AS region,
+    s.imprv_det_type_cd                                     AS building_type,
+    s.imprv_det_class_cd                                    AS building_type_description,
+    ISNULL(m.default_cell_value, 0)                         AS base_cost,
+    m.matrix_description                                    AS matrix_description,
+    ISNULL(md_agg.data_points, 0)                           AS data_points,
+    ISNULL(md_agg.min_cost, 0)                              AS min_cost,
+    ISNULL(md_agg.max_cost, 0)                              AS max_cost,
+    s.imprv_sched_value_type                                AS grade,
+    CAST(NULL AS VARCHAR(10))                               AS condition,
+    s.imprv_yr                                              AS year_built,
+    CAST(NULL AS NUMERIC(6,4))                              AS depreciation_rate,
+    m.axis_1                                                AS axis1,
+    m.axis_2                                                AS axis2,
+    m.operator                                              AS adjustment_factor_raw,
+    ISNULL(m.label,
+        m.matrix_type + ' ' + CAST(m.matrix_yr AS VARCHAR(4))
     )                                                       AS matrix_label
 FROM
-    dbo.imprv_sched ms
+    dbo.matrix m
+    LEFT JOIN dbo.imprv_sched_matrix_assoc ism
+        ON ism.matrix_id = m.matrix_id
+    LEFT JOIN dbo.imprv_sched s
+        ON s.matrix_id = ism.matrix_id
+    OUTER APPLY (
+        SELECT
+            COUNT(*)            AS data_points,
+            MIN(md2.cell_value) AS min_cost,
+            MAX(md2.cell_value) AS max_cost
+        FROM dbo.matrix_detail md2
+        WHERE md2.matrix_id = m.matrix_id
+          AND md2.matrix_yr  = m.matrix_yr
+    ) md_agg
 WHERE
-    ms.sched_yr IS NOT NULL;
+    m.matrix_yr IS NOT NULL;
 GO
 
 -- ─────────────────────────────────────────────────────────────────────────────
