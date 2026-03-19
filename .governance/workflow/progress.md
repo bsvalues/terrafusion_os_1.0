@@ -19,7 +19,7 @@
 | **Phase** | **Phase 35-G OPEN** — SW Phase 1 trace bridge implemented; SW Phase 2 constrained by governance scope |
 | **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 implementation active (SW Phase 1 complete) |
 | **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 IN PROGRESS |
-| **Latest Commit** | `a154454a7` (SW-2 scope-exception packet + ledger linkage) |
+| **Latest Commit** | `0bc8fa60a` (Phase 35-G-1 ring-buffer pagination fix) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
