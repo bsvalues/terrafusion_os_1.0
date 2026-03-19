@@ -16,10 +16,10 @@
 | Field | Value |
 |-------|-------|
 | **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
-| **Phase** | **Phase 35-C CLOSED** — IV-1 persistence proof + IV-2 orphan archive complete; **Lane 1 CLOSED** |
-| **Task** | Lane 1 debt sweep — 3 sequential phases (35-A → 35-B → 35-C) — then charter gates for TerraCanon + AI Swarm |
-| **Status** | 🟢 LANE 1 CLOSED — founder gates `GATE-35-1` / `GATE-35-2` are now the only blockers for Lanes 2 + 3 |
-| **Latest Commit** | `79119067e` (fix(debt): CP-35-C — IV-1 persistence + IV-2 archive orphan) |
+| **Phase** | **Phase 35-D CLOSED** — TerraCanon recon synthesized into bounded charter; implementation remains gated |
+| **Task** | Lane 1 debt sweep closed; Lane 2 recon closed with charter; awaiting founder acceptance to open 35-E |
+| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 recon CLOSED, ⛔ Lane 2 implementation gated on charter acceptance, ⛔ Lane 3 gated on `GATE-35-2` |
+| **Latest Commit** | `a5e5f758a` (current HEAD baseline at ledger update time) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -43,12 +43,12 @@
 
 ## Slice 35 — Founder Go/No-Go — 2026-03-19
 
-**Status: APPROVED — LANE 1 OPEN, LANES 2 + 3 GATED**
+**Status: APPROVED — LANE 1 CLOSED, LANE 2 RECON CLOSED, LANE 2 IMPL + LANE 3 GATED**
 
 | Lane | Authorization |
 |------|--------------|
 | **Lane 1 — Debt Sweep** (35-A, 35-B, 35-C) | ✅ OPEN — founder go 2026-03-19 |
-| **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | ⛔ GATED — requires explicit `GATE-35-1` after CP-35-C |
+| **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | 🟡 `GATE-35-1` consumed; 35-D recon CLOSED; 35-E still gated pending founder acceptance of TerraCanon charter |
 | **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | ⛔ GATED — requires explicit `GATE-35-2` after CP-35-C |
 
 **Scope authorized for Lane 1:**
@@ -57,7 +57,30 @@
 - `CP-35-C`: IV-1 wire income valuation persistence + IV-2 archive IncomeForgeModule.tsx orphan
 
 **Charter document:** `docs/superpowers/plans/2026-03-19-slice35-debt-terracanon-aiswarm.md`
+**TerraCanon charter output:** `docs/superpowers/plans/2026-03-19-terracanon-charter.md`
 **Plan reference:** plan.md Slice 35
+
+## CP-35-D — TerraCanon Recon + Charter Synthesis — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: post-r3/w5f-registry-edge-cleanup  
+**Commit baseline**: `a5e5f758a`
+
+### Verdict: PASS — GREEN (recon + charter only, no product implementation)
+
+**What closed:**
+- Completed TC-A..TC-G recon for Lane 2 using existing Canon, Monaco, Pilot, Trace, and backend security surfaces
+- Confirmed TerraCanon has substantial existing shell/editor/API footprint (not a greenfield build)
+- Published bounded charter with explicit MVP scope, file map, proof gates, security gates, and phase sequencing
+
+**Evidence artifact:**
+- `docs/superpowers/plans/2026-03-19-terracanon-charter.md`
+
+**Gate transition:**
+- `GATE-35-1` treated as consumed by explicit founder go
+- Phase 35-E remains blocked on founder acceptance of the published TerraCanon charter
+
+**Classification:** Implemented bounded recon + planning slice (no production behavior changes)
 
 ---
 
@@ -135,6 +158,24 @@
   - A11y: role="alert", aria-label, stable source key
 - Gate: ExplainEndpointTests pass (4/4) + TypeScript clean
 - Commits: 70eee4e1e, b5da05902, 6e506585b
+
+---
+
+### CP-W10-1 — Phase 10 HITL Drafter Mode — CLOSED
+- Opened: 2026-03-19
+- Closed: 2026-03-19
+- Deliverables:
+  - PilotDraft entity with TruthGate (HumanApproverId must be set before approval)
+  - IDraftService interface (5 methods, county isolation enforced on all queries)
+  - DraftService implementation with state-machine guard (Pending→Approved/Rejected only)
+  - DraftDtos.cs (CreateDraftRequest, ApproveDraftRequest, RejectDraftRequest)
+  - PilotController: 5 new endpoints — create/get/list/approve/reject drafts
+  - Approve + reject require RequireAssessor policy (FISMA gate)
+  - pilotApi.ts: createDraft / approveDraft / rejectDraft with TerraTrace coverage
+  - 5 DraftServiceTests passing
+  - Phase 10 frontend contract tests passing
+- Gate: 5 backend unit tests green + frontend contract tests green + TypeScript clean
+- Commits: a5e5f758a, 5f1c5db36, cb1fa6c40 + this seal commit
 
 ---
 
@@ -966,8 +1007,9 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 15 | Slice 35 / Phase 35-A | WF-1 + WF-3: backfill Slice 22/23 commit hashes + fix ReactDOMTestUtils.act imports | Done — `ae83e8abb` |
 | ✅ 16 | Slice 35 / Phase 35-B | WF-2: console noise sweep 724 → ≤ 200 (REMOVE/PROMOTE rules) | Done — count reduced to `197` |
 | ✅ 17 | Slice 35 / Phase 35-C | IV-1/IV-2: wire income valuation persistence + archive IncomeForgeModule orphan | Done — IV-1 already wired/proven, IV-2 archived in `legacy/IncomeForge.archived.tsx` |
-| ⛔ 18 | GATE-35-1 | Founder explicit go for TerraCanon IDE recon (Phase 35-D) | CP-35-C closed |
-| ⛔ 19 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | CP-35-C closed |
+| ✅ 18 | Slice 35 / Phase 35-D | TerraCanon TC-A..TC-G recon + bounded charter synthesis | Done — `docs/superpowers/plans/2026-03-19-terracanon-charter.md` |
+| ⛔ 19 | Gate | Founder acceptance of TerraCanon charter (opens 35-E implementation) | CP-35-D closed |
+| ⛔ 20 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | CP-35-C closed |
 
 ---
 
