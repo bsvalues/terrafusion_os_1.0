@@ -1756,3 +1756,361 @@ This order is planning-only and does not lift the hard stop.
 - [x] Parallel execution map defined
 - [x] Hard-stop dependency preserved
 - [x] Planning complete
+
+---
+
+# Slice 26: End-to-End Copilot Phase Completion Map (Assessor Vertical + OS Core)
+
+> **Purpose:** Define every remaining Copilot phase from CP-W2-8 through
+> Assessor vertical attestation, using the Slice 25.5 multi-agent model for
+> every implementation phase. This is the master route map — each entry here
+> becomes a charter when the preceding checkpoint is green and the human gate
+> is open.
+>
+> **Classification:** Planning-only. Does not lift CP-W2-8 or authorize any
+> implementation. Every phase below requires its own bounded charter and an
+> explicit human go/no-go before `@tf-phase-orchestrator` is invoked.
+
+---
+
+* **Project:** TerraFusion OS — Assessor Vertical End-to-End Completion
+* **Date:** 2026-03-18
+* **Branch:** post-r3/w5f-registry-edge-cleanup (current)
+* **Prereq:** CP-W2-8 explicit human go/no-go
+
+---
+
+## Definition of Done
+
+> What must be true for this planning slice to be complete?
+
+- [x] Every remaining phase from CP-W2-8 to Assessor vertical attestation is named
+- [x] Agent assignment is explicit for every phase
+- [x] Entry gate and proof command set is explicit for every phase
+- [x] Hard-stop checkpoints are called out at each phase boundary
+- [x] No planning text constitutes execution approval
+- [x] Agent tooling slice (Slice 25.5 + README posture fixes) is classified honestly
+
+---
+
+## Honest Classification: Agent Tooling Slice
+
+The `.github/agents/` scaffolding created in Slice 25.5 is classified as:
+
+> **Bounded governance/tooling scaffolding** — not a product phase opening,
+> not a Wave 3–5 authorization, and not a hard-stop lift.
+
+It is subordinate to this plan. It does not change any proof posture claim.
+
+---
+
+## Phase Map
+
+Each phase below follows the Slice 25.5 Phase A–E law:
+`charter → parallel truth → implementation → closure wall → checkpoint + hard stop`
+
+---
+
+### GATE-0: Human Go/No-Go at CP-W2-8
+
+| Field | Value |
+|-------|-------|
+| **Type** | Human decision gate |
+| **Agent** | None (human only) |
+| **Trigger** | Human states explicit `go` or `no-go` referencing CP-W2-8 |
+| **If go** | Open Phase 1 via `@tf-phase-orchestrator` |
+| **If no-go** | Remain at CP-W2-8; limit to docs/evidence only |
+| **Checkpoint** | CP-W2-8 (current active) |
+
+This gate cannot be opened by any agent command. No charter, no proof wall,
+and no agent invocation substitutes for this explicit human decision.
+
+---
+
+### Phase 1: Forge F1 — Comparable Sales Rehost Proof
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Close ComparableSalesPanel + comparableSalesService proof lance |
+| **Copilot role** | `@tf-phase-orchestrator` (governs) · `@tf-writer` (implements) |
+| **Truth lane** | `@tf-contract-truth` recces `CostForgeController.cs` reachability |
+| **Proof lane** | `@tf-proof-audit` designs RED→GREEN for ComparableSales surface |
+| **Entry gate** | GATE-0 green + last proof wall still passing |
+| **Allowed files** | `ComparableSalesPanel.tsx`, `comparableSalesService.ts`, `PropertyForge.tsx`, related tests |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W3-1 on close |
+
+**Key proof points:**
+- Parcel-bound populated state renders without fake data
+- Benton snapshot filtering against current parcel context
+- Selection/adjustment reachability or explicit backend blocker with evidence
+- Suite launch lands on Forge tab correctly
+- No fake replacement surface introduced
+
+---
+
+### Phase 2: Forge F2 — Income Valuation Rehost Proof
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Close IncomeApproach + IncomeValuationPanel proof lane |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-writer` |
+| **Truth lane** | `@tf-contract-truth` recces `CostForgeController.cs` income endpoints |
+| **Proof lane** | `@tf-proof-audit` designs RED→GREEN for IncomeValuation surface |
+| **Entry gate** | Phase 1 closed (CP-W3-1 green) |
+| **Allowed files** | `IncomeApproach.tsx`, `IncomeValuationPanel.tsx`, `incomeValuationService.ts`, related tests |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W3-2 on close |
+
+**Key proof points:**
+- Income sub-tab host renders correctly from Forge
+- Calculation and valuation-record persistence/retrieval path proof
+- Legacy standalone income surfaces confirmed archived-only or route cleanup applied
+- No fake replacement surface introduced
+
+---
+
+### Phase 3: Wave 0 — Debt Inventory and Governance Pass
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Produce a quantified debt ledger; no bulk cleanup without explicit approval |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-contract-truth` (reads) · `@tf-writer` (ledger only) |
+| **Proof lane** | `@tf-proof-audit` confirms zero @ts-ignore baseline holds after ledger commit |
+| **Entry gate** | Phase 2 closed (CP-W3-2 green) |
+| **Allowed files** | `.governance/workflow/debt-ledger.md` (new) · no source edits |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W0-1 on close |
+
+**Inventory buckets (must be classified before any bulk edit):**
+
+| Bucket | Current count | Action |
+|--------|--------------|--------|
+| `console.` usages | ~960 | Triage: test-only vs production vs noise |
+| raw `any` references | ~1010 | Triage: governed, test-only, compat/gen, archived, deferred |
+| `@ts-ignore` baseline | 0 | Preserve; block any regressions |
+
+**Rule:** Codex may only touch Wave 0 items after the ledger is approved and the bucket is marked "mechanical" by a human.
+
+---
+
+### Phase 4: Wave 3A — Standalone Suite Homes Completion
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Every suite has a real, honest standalone home — no fake data in production paths |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-writer` |
+| **Truth lane** | `@tf-contract-truth` verifies backend route reachability for each suite home |
+| **Proof lane** | `@tf-proof-audit` designs RED→GREEN for each suite home surface |
+| **Entry gate** | Phase 3 closed (CP-W0-1 green) |
+| **Suites in scope** | TerraForge · TerraAtlas · TerraDais · TerraDossier · TerraGPT |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W3-3 on close |
+
+**Definition of "honest" suite home:**
+- Renders without hardcoded fixture data in the production code path
+- Route is wired in the canonical route table (`/forge`, `/atlas`, `/dais`, `/dossier`, `/gpt`)
+- Backend service is either confirmed reachable or an explicit blocker is recorded
+- No `TODO: wire to real API` silently passing tests
+
+---
+
+### Phase 5: Wave 3B — Property Workbench Completeness
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Workbench Tier-0 surface is complete: context ribbon, suite compass, work modes |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-writer` |
+| **Truth lane** | `@tf-contract-truth` verifies parcel service contracts and workbench tab harness |
+| **Proof lane** | `@tf-proof-audit` verifies RED→GREEN for all Workbench surfaces |
+| **Entry gate** | Phase 4 closed (CP-W3-3 green) |
+| **Key surfaces** | `PropertyWorkbench.tsx` · `workbenchTabContext.tsx` · context ribbon · BadgeProvider API · Suite Compass widget |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W3-4 on close |
+
+**Work mode coverage required:** overview · valuation · mapping · admin · case
+
+---
+
+### Phase 6: Wave 1 Completion — Auth Hardening Pass
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Eliminate all remaining hardcoded user/role placeholders across named surfaces |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-writer` |
+| **Truth lane** | `@tf-contract-truth` audits auth contract (RBAC claims shape, session shape) |
+| **Proof lane** | `@tf-proof-audit` audits Wave 1 auth bundle coverage |
+| **Entry gate** | Phase 5 closed (CP-W3-4 green) |
+| **Surfaces** | Any remaining hardcoded `countyId`/`userId`/`roles` usages not caught in the initial Wave 1 pass |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W1-C on close |
+
+**Note:** Initial Wave 1 auth pass completed 2026-03-18. This phase closes remaining gaps discovered during Wave 3 suite home work.
+
+---
+
+### Phase 7: Wave 4A — TerraTrace Real Implementation
+
+| Field | Value |
+|-------|-------|
+| **Goal** | TerraTrace append-only audit spine is a real implementation, not a stub |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-writer` |
+| **Truth lane** | `@tf-contract-truth` inventories current TerraTrace backend: what is real vs stub |
+| **Proof lane** | `@tf-proof-audit` designs proof wall for append-only constraint and county-scope isolation |
+| **Entry gate** | Phase 6 closed (CP-W1-C green) |
+| **Key rules** | Append-only: no in-place event updates · correlationId links invoke→result · county-scoped |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W4-1 on close |
+
+**Required event types at close:**
+`tool_invoked` · `tool_succeeded` · `tool_failed` · `mode_switched` ·
+`permission_denied` · `artifact_created` · `artifact_published`
+
+---
+
+### Phase 8: Wave 4B — TerraPilot RBAC + Tool Allowlist First Pass
+
+| Field | Value |
+|-------|-------|
+| **Goal** | TerraPilot tool allowlist + RBAC claims model is enforced, not placeholder |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-writer` |
+| **Truth lane** | `@tf-contract-truth` audits current Pilot mode/tool model vs Constitution spec |
+| **Proof lane** | `@tf-proof-audit` designs RED→GREEN for risk-level escalation paths |
+| **Entry gate** | Phase 7 closed (CP-W4-1 green) |
+| **Risk levels** | `read_only` · `write_low` · `write_high` (confirmation+reason) · `irreversible` (confirmation+reason+supervisor) |
+| **PII rule** | No SSN/phone/email in trace payloads — test must assert redaction |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W4-2 on close |
+
+---
+
+### Phase 9: Wave 5A — Multi-Tenant County Isolation Gates
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Proof that no cross-county data leak is possible at the API boundary |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-writer` |
+| **Truth lane** | `@tf-contract-truth` audits all controller routes for CountyId scope enforcement |
+| **Proof lane** | `@tf-proof-audit` designs cross-county isolation gate tests |
+| **Entry gate** | Phase 8 closed (CP-W4-2 green) |
+| **Scope** | All `TerraFusion.API` controllers that return parcel/valuation/assessment data |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W5-1 on close |
+
+**Isolation invariant:** A request authenticated to CountyId A must never return data owned by CountyId B.
+
+---
+
+### Phase 10: Wave 5B — Security Baseline (OWASP Top 10)
+
+| Field | Value |
+|-------|-------|
+| **Goal** | No OWASP Top 10 violations in exposed surface area |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-contract-truth` (audit) · `@tf-writer` (remediations) |
+| **Proof lane** | `@tf-proof-audit` designs proof wall against each applicable OWASP category |
+| **Entry gate** | Phase 9 closed (CP-W5-1 green) |
+| **Minimum categories** | A01 Broken Access Control · A02 Cryptographic Failures · A03 Injection · A05 Security Misconfiguration · A07 Auth Failures |
+| **Proof commands** | `pnpm run type-check` · `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| **Checkpoint** | CP-W5-2 on close |
+
+---
+
+### Phase 11: Assessor Vertical Attestation
+
+| Field | Value |
+|-------|-------|
+| **Goal** | Every suite (Forge, Atlas, Dais, Dossier, GPT) attested as honest, functional, and isolated |
+| **Copilot role** | `@tf-phase-orchestrator` · `@tf-contract-truth` · `@tf-proof-audit` (all read-only review) |
+| **Entry gate** | Phases 1–10 all closed with green proof walls |
+| **Output** | `ASSESSOR_VERTICAL_ATTESTATION.md` in `.governance/` |
+| **Attestation criteria** | See table below |
+| **Checkpoint** | CP-ASSESSOR-1 on close |
+
+**Attestation checklist (all must be true):**
+
+| Suite | Criteria |
+|-------|----------|
+| TerraForge | F1 + F2 proof lanes green · no fake valuation data · income + sales hosted |
+| TerraAtlas | Standalone home honest · GIS layer routes confirmed reachable |
+| TerraDais | Standalone home honest · admin workflow routes confirmed reachable |
+| TerraDossier | Standalone home honest · evidence/document routes confirmed reachable |
+| TerraGPT | GPT + RAG wiring closed on Wave 2 evidence · no prototype lanes in production |
+| Property Workbench | All 5 suite tabs real-hosted · all work modes operational |
+| TerraPilot | RBAC + tool allowlists enforced · PII redaction tested |
+| TerraTrace | Append-only confirmed · county-scoped · correlationId chain tested |
+| Auth | No hardcoded user/role in production code paths |
+| Multi-tenancy | Cross-county isolation gate passing |
+| Security | OWASP Top 10 baseline clear |
+
+---
+
+## Phases Not Yet Planned (Post-Assessor)
+
+The following phases exist in the product roadmap but are **out of scope for
+this planning slice**. They open only after CP-ASSESSOR-1 green + new
+explicit human go/no-go:
+
+| Future Phase | Description |
+|-------------|-------------|
+| TerraCanon IDE | God-mode self-development environment (Monaco + AI, replaces VS Code) |
+| County 2 Onboarding | Benton → second Washington State county; multi-tenant onboarding flow |
+| TerraClerk Vertical | County Clerk application vertical (reserved — do not enter Assessor code) |
+| TerraTreasury Vertical | County Treasurer application vertical (reserved) |
+| TerraAudit Vertical | County Auditor application vertical (reserved — "audit" ≠ TerraTrace) |
+| TerraRecorder Vertical | County Recorder application vertical (reserved) |
+| AI Swarm Scale | 1,008+ agent hierarchical coordination beyond current pilot architecture |
+
+---
+
+## Parallel Execution Rules (Slice 25.5 applies here)
+
+1. `@tf-contract-truth` and `@tf-proof-audit` always run in **parallel** (Phase B)
+2. `@tf-writer` always runs **alone** (Phase C / D fixes) — never alongside another writer
+3. `@tf-checkpoint` always runs **last** in a phase, after proof wall is green
+4. No phase may open while the previous phase is still at active checkpoint status
+5. A new explicit human go/no-go is required before every `@tf-phase-orchestrator` Phase A
+
+---
+
+## Agent Assignment Summary
+
+| Phase | Orchestrator | Truth | Proof | Writer | Checkpoint |
+|-------|-------------|-------|-------|--------|------------|
+| GATE-0 | — (human) | — | — | — | — |
+| 1: Forge F1 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 2: Forge F2 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 3: Wave 0 Debt | ✅ | ✅ | ✅ | ledger only | ✅ |
+| 4: Suite Homes | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 5: Workbench | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 6: Auth Close | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 7: TerraTrace | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 8: TerraPilot | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 9: Multi-tenant | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 10: Security | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 11: Attestation | ✅ | ✅ | ✅ | — | ✅ |
+
+---
+
+## Risk Register
+
+| ID | Risk | Severity | Likelihood | Mitigation |
+|----|------|----------|------------|------------|
+| R1 | Phase map treated as execution approval | High | Medium | Repeat hard-stop rule at every phase entry |
+| R2 | Agent scaffolding promotes itself to governance authority | High | Low | README posture fix + explicit "complement not override" language in every agent file |
+| R3 | Later phases begin before earlier proof walls close | High | Medium | Require explicit checkpoint ID before any new Phase A charter is opened |
+| R4 | Post-Assessor verticals bleed into Assessor code | High | Low | Forbidden-path list in orchestrator + NEVER-TOUCH labels on vertical directories |
+| R5 | Wave 0 debt cleanup starts without ledger approval | Med | Medium | Codex mechanical-only gate enforced after triage approval |
+| R6 | TerraTrace append-only constraint implemented as delete+re-insert | High | Low | Proof wall test must assert no in-place event mutation |
+
+---
+
+## Document Status (Slice 26)
+
+- [x] Definition of Done defined
+- [x] Honest classification of agent tooling slice recorded
+- [x] All 11 phases named with agent assignments and entry gates
+- [x] Post-Assessor phases deferred explicitly
+- [x] Parallel execution rules carried forward from Slice 25.5
+- [x] Risk register complete
+- [x] Hard-stop dependency preserved throughout
+- [ ] Execution: pending GATE-0 human go/no-go
