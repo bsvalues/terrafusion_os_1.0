@@ -334,7 +334,7 @@ export function useWorkflowHub(enabled: boolean = true): UseWorkflowHubReturn {
               if (existing) {
                 newExecutions.set(data.executionId, {
                   ...existing,
-                  status: data.status as any,
+                  status: data.status as WorkflowExecution['status'],
                   completedAt: data.completedAt,
                   durationMs: data.durationMs,
                 });
